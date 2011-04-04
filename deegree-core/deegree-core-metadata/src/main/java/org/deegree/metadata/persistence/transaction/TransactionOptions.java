@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.publication;
+package org.deegree.metadata.persistence.transaction;
 
 /**
  * This class holds all the necessary attributes needed for the transaction operation.

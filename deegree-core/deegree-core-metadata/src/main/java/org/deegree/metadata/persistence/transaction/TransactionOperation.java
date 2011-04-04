@@ -33,51 +33,44 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.publication;
+package org.deegree.metadata.persistence.transaction;
 
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * To specify individual property values to be updated.
+ * Abstract base class for the operations that can occur inside a CSW Transaction.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class MetadataProperty {
+public abstract class TransactionOperation {
 
-    private PropertyName propertyName;
-
-    private Object replacementValue;
+    private final String handle;
 
     /**
-     * To specify individual property values to be updated.
+     * Returns the type of operation. Use this to safely determine the subtype of {@link TransactionOperation}.
      * 
-     * @param propertyName
-     *            can be a string or an XPath-expression [1..1]
-     * @param replacementValue
-     *            can be anyType [0..1]
+     * @return type of operation
      */
-    public MetadataProperty( PropertyName propertyName, Object replacementValue ) {
-        this.propertyName = propertyName;
-        this.replacementValue = replacementValue;
-    }
+    public abstract TransactionType getType();
 
     /**
+     * Creates a new {@link TransactionOperation} with an optional handle.
      * 
-     * @return the propertyName element contains the name of a property to be updated. The name may be a path
-     *         expression.
+     * @param handle
+     *            identifier for the operation, may be null
      */
-    public PropertyName getPropertyName() {
-        return propertyName;
+    protected TransactionOperation( String handle ) {
+        this.handle = handle;
+
     }
 
     /**
-     * @return the replacementValue element contains the replacement value for the named property.
+     * @return the handle
      */
-    public Object getReplacementValue() {
-        return replacementValue;
+    public String getHandle() {
+        return handle;
     }
-
 }

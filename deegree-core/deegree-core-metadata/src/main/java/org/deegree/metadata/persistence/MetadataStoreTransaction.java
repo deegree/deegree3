@@ -37,9 +37,9 @@ package org.deegree.metadata.persistence;
 
 import java.util.List;
 
-import org.deegree.metadata.publication.DeleteTransaction;
-import org.deegree.metadata.publication.InsertTransaction;
-import org.deegree.metadata.publication.UpdateTransaction;
+import org.deegree.metadata.persistence.transaction.DeleteTransaction;
+import org.deegree.metadata.persistence.transaction.InsertTransaction;
+import org.deegree.metadata.persistence.transaction.UpdateTransaction;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**

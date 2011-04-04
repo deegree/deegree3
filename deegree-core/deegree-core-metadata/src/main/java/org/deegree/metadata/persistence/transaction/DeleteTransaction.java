@@ -33,40 +33,38 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.publication;
-
-import java.util.List;
+package org.deegree.metadata.persistence.transaction;
 
 import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMElement;
+import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * Represents a CSW <code>Insert</code> action (part of a Transaction request).
+ * Represents a CSW <code>Delete</code> action (part of a Transaction request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class InsertTransaction extends TransactionOperation {
-
-    private List<OMElement> element;
+public class DeleteTransaction extends TransactionOperation {
 
     private QName typeName;
 
-    /**
-     * 
-     * @param insertElement
-     * @param typeName
-     * @param handle
-     */
-    public InsertTransaction( List<OMElement> insertElement, QName typeName, String handle ) {
-        super( handle );
-        this.element = insertElement;
-        this.typeName = typeName;
+    private Filter constraint;
 
+    /**
+     * Creates a new {@link DeleteTransaction} instance.
+     * 
+     * @param handle
+     * @param typeName
+     * @param constraint
+     */
+    public DeleteTransaction( String handle, QName typeName, Filter constraint ) {
+        super( handle );
+        this.typeName = typeName;
+        this.constraint = constraint;
     }
 
     /*
@@ -77,12 +75,7 @@ public class InsertTransaction extends TransactionOperation {
     @Override
     public TransactionType getType() {
 
-        return TransactionType.INSERT;
-    }
-
-    // @Override
-    public List<OMElement> getElements() {
-        return element;
+        return TransactionType.DELETE;
     }
 
     /**
@@ -90,5 +83,12 @@ public class InsertTransaction extends TransactionOperation {
      */
     public QName getTypeName() {
         return typeName;
+    }
+
+    /**
+     * @return the constraint
+     */
+    public Filter getConstraint() {
+        return constraint;
     }
 }

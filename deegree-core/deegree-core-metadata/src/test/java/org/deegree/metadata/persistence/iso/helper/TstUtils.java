@@ -62,7 +62,7 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.ISOMetadataStore;
-import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.metadata.persistence.transaction.InsertTransaction;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.slf4j.Logger;
