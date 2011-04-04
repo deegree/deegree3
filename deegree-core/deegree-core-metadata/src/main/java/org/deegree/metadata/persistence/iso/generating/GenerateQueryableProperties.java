@@ -52,13 +52,13 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.iso.MSSQLMappingsISODC;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -100,8 +100,11 @@ public class GenerateQueryableProperties {
 
     private String opOnTable;
 
-    public GenerateQueryableProperties( Type dbtype ) {
+    private AnyText anyTextConfig;
+
+    public GenerateQueryableProperties( Type dbtype, AnyText anyTextConfig ) {
         this.connectionType = dbtype;
+        this.anyTextConfig = anyTextConfig;
         if ( connectionType == Type.PostgreSQL ) {
             idColumn = PostGISMappingsISODC.CommonColumnNames.id.name();
             fk_main = PostGISMappingsISODC.CommonColumnNames.fk_main.name();
@@ -204,7 +207,7 @@ public class GenerateQueryableProperties {
                             throws SQLException, ParseException {
         // abstract, anytext, language, modified, parentid, type, title, hassecurityconstraints, topiccategories,
         stm.setString( next++, concatenate( Arrays.asList( rec.getAbstract() ) ) );
-        stm.setString( next++, rec.getAnyText() );
+        stm.setString( next++, rec.getAnyText( anyTextConfig ) );
         stm.setString( next++, rec.getLanguage() );
         if ( rec.getModified() != null ) {
             stm.setTimestamp( next, new Timestamp( rec.getModified().getDate().getTime() ) );

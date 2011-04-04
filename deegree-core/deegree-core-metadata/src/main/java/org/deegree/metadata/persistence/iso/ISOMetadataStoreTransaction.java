@@ -54,7 +54,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final List<RecordInspector<ISORecord>> inspectors;
 
-    private final AnyText anyText;
+    private final AnyText anyTextConfig;
 
     private final boolean useLegacyPredicates;
 
@@ -63,7 +63,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     ISOMetadataStoreTransaction( Connection conn, List<RecordInspector<ISORecord>> inspectors, AnyText anyText,
                                  boolean useLegacyPredicates, Type connectionType ) throws SQLException {
         this.conn = conn;
-        this.anyText = anyText;
+        this.anyTextConfig = anyText;
         this.inspectors = inspectors;
         this.useLegacyPredicates = useLegacyPredicates;
         this.connectionType = connectionType;
@@ -119,12 +119,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         List<String> identifierList = new ArrayList<String>();
         for ( MetadataRecord record : insert.getRecords() ) {
             try {
-                for ( RecordInspector r : inspectors ) {
-                    record = r.inspect( record, conn, connectionType );
+                for ( RecordInspector<ISORecord> r : inspectors ) {
+                    record = r.inspect( (ISORecord) record, conn, connectionType );
                 }
                 if ( record != null ) {
-                    ISORecord rec = new ISORecord( record.getAsOMElement(), anyText );
-                    GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
+                    ISORecord rec = new ISORecord( record.getAsOMElement() );
+                    GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType,
+                                                                                              anyTextConfig );
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
                     identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
@@ -139,7 +140,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException {
-        GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType );
+        GenerateQueryableProperties generateQP = new GenerateQueryableProperties( connectionType, anyTextConfig );
         int result = 0;
 
         if ( update.getRecord() != null && update.getConstraint() == null ) {
@@ -148,8 +149,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             for ( RecordInspector<ISORecord> r : inspectors ) {
                 record = r.inspect( record, conn, connectionType );
             }
-            // TODO outfactor anyText
-            ISORecord rec = new ISORecord( record.getAsOMElement(), anyText );
+            ISORecord rec = new ISORecord( record.getAsOMElement() );
             int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, null );
             generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
             return 1;
@@ -167,11 +167,10 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             rs = preparedStatement.executeQuery();
 
             // get all metadatasets to update
-            ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement, anyText );
+            ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement, anyTextConfig );
             while ( isoRs.next() ) {
                 ISORecord rec = isoRs.getRecord();
                 LOG.debug( "record to update" + rec );
-                ISORecord newRec = null;
                 boolean updated = false;
 
                 if ( update.getRecord() != null ) {
@@ -179,7 +178,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     for ( RecordInspector<ISORecord> r : inspectors ) {
                         record = r.inspect( record, conn, connectionType );
                     }
-                    newRec = new ISORecord( record.getAsOMElement(), anyText );
+                    rec = new ISORecord( record.getAsOMElement() );
                     updated = true;
                 } else if ( update.getConstraint() != null
                             && ( update.getRecordProperty() != null && update.getRecordProperty().size() > 0 ) ) {
@@ -228,7 +227,6 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         } finally {
             JDBCUtils.close( rs, preparedStatement, null, LOG );
         }
-
         return result;
     }
 

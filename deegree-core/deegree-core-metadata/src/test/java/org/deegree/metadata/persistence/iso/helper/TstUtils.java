@@ -98,8 +98,7 @@ public class TstUtils {
             ta = store.acquireTransaction();
             OMElement record = new XMLAdapter( file ).getRootElement();
             LOG.info( "inserting filename: " + file.getFile() );
-            // TODO anytext
-            records.add( new ISORecord( record, null ) );
+            records.add( new ISORecord( record ) );
             try {
                 if ( countInsert > 0 ) {
                     insert = new InsertOperation( records, records.get( 0 ).getAsOMElement().getQName(), "insert" );
@@ -122,7 +121,6 @@ public class TstUtils {
                     throw new MetadataInspectorException();
                 }
             }
-
         }
 
         if ( !ids.isEmpty() ) {

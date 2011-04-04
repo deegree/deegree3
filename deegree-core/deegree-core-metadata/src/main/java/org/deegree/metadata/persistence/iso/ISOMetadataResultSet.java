@@ -92,7 +92,7 @@ public class ISOMetadataResultSet implements MetadataResultSet<ISORecord> {
         try {
             BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
             XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( bais );
-            record = new ISORecord( xmlReader, anyText );
+            record = new ISORecord( xmlReader );
         } catch ( Exception e ) {
             throw new MetadataStoreException( "Error re-creating MetadataRecord from result set: " + e.getMessage() );
         }

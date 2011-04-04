@@ -114,8 +114,6 @@ public class ISORecord implements MetadataRecord {
 
     private ParsedProfileElement pElem;
 
-    private AnyText anyText;
-
     private final static String STOPWORD = " ";
 
     private static String[] summaryLocalParts = new String[14];
@@ -187,20 +185,16 @@ public class ISORecord implements MetadataRecord {
 
     private static List<XPath> briefFilterElementsXPath;
 
-    public ISORecord( XMLStreamReader xmlStream, AnyText anyText ) {
-
-        this.anyText = anyText;
+    public ISORecord( XMLStreamReader xmlStream ) {
         this.root = new XMLAdapter( xmlStream ).getRootElement();
         this.pElem = new ISOQPParsing().parseAPISO( root );
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
         summaryFilterElementsXPath = removeElementsXPath( summaryLocalParts );
-
         briefFilterElementsXPath = removeElementsXPath( briefSummaryLocalParts );
-
     }
 
-    public ISORecord( OMElement root, AnyText anyText ) {
-        this( root.getXMLStreamReader(), anyText );
+    public ISORecord( OMElement root ) {
+        this( root.getXMLStreamReader() );
     }
 
     @Override
@@ -226,8 +220,7 @@ public class ISORecord implements MetadataRecord {
         return s;
     }
 
-    @Override
-    public String getAnyText() {
+    public String getAnyText( AnyText anyText ) {
         String anyTextString = null;
         if ( anyText == null || anyText.getCore() != null ) {
             StringBuilder sb = new StringBuilder();

@@ -642,13 +642,10 @@ public class CommonISOTest extends AbstractISOTest {
             return;
         }
 
-        // constraint
-
         // md to update
         InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
         XMLAdapter a = new XMLAdapter( is );
-        // TODO anytext
-        ISORecord value = new ISORecord( a.getRootElement(), null );
+        ISORecord value = new ISORecord( a.getRootElement() );
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
@@ -699,8 +696,7 @@ public class CommonISOTest extends AbstractISOTest {
         // md to update
         InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
         XMLAdapter a = new XMLAdapter( is );
-        // TODO anytext
-        ISORecord value = new ISORecord( a.getRootElement(), null );
+        ISORecord value = new ISORecord( a.getRootElement() );
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
@@ -749,8 +745,7 @@ public class CommonISOTest extends AbstractISOTest {
         // md to update
         InputStream is = CommonISOTest.class.getResourceAsStream( "../update/9update.xml" );
         XMLAdapter a = new XMLAdapter( is );
-        // TODO anytext
-        ISORecord value = new ISORecord( a.getRootElement(), null);        
+        ISORecord value = new ISORecord( a.getRootElement() );
 
         // update!
         MetadataStoreTransaction mst = store.acquireTransaction();
@@ -780,5 +775,4 @@ public class CommonISOTest extends AbstractISOTest {
 
         return ids.get( 0 );
     }
-
 }

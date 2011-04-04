@@ -79,8 +79,6 @@ public class DCRecord implements MetadataRecord {
 
     private final String[] _abstract;
 
-    private final String anyText;
-
     private final Envelope[] boundingBox;
 
     private final String[] formats;
@@ -118,7 +116,6 @@ public class DCRecord implements MetadataRecord {
         this.titles = record.getTitle();
         this.identifier = record.getIdentifier();
         this._abstract = record.getAbstract();
-        this.anyText = record.getAnyText();
         this.boundingBox = record.getBoundingBox();
         this.formats = record.getFormat();
         this.modified = record.getModified();
@@ -132,7 +129,6 @@ public class DCRecord implements MetadataRecord {
         this.language = record.getLanguage();
         this.source = record.getSource();
         this.root = record.getName();
-
     }
 
     @Override
@@ -149,11 +145,6 @@ public class DCRecord implements MetadataRecord {
     public String[] getAbstract() {
 
         return _abstract;
-    }
-
-    @Override
-    public String getAnyText() {
-        return anyText;
     }
 
     @Override

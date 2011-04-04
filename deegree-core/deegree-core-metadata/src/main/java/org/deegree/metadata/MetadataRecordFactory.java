@@ -44,7 +44,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
 
 /**
- * Main entry point for creating {@link MetadataRecord} instances.
+ * Main entry point for creating {@link MetadataRecord} instances from XML representations.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -53,12 +53,20 @@ import org.deegree.commons.xml.XMLAdapter;
  */
 public class MetadataRecordFactory {
 
+    /**
+     * Creates a new {@link MetadataRecord} from the given element.
+     * 
+     * @param rootEl
+     *            root element, must not be <code>null</code>
+     * @return metadata record instance, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the metadata format is unknown / record invalid
+     */
     public static MetadataRecord create( OMElement rootEl )
                             throws IllegalArgumentException {
         String ns = rootEl.getNamespace().getNamespaceURI();
         if ( ISO_RECORD_NS.equals( ns ) ) {
-            // TODO anytext
-            return new ISORecord( rootEl, null );
+            return new ISORecord( rootEl );
         }
         if ( DC_RECORD_NS.equals( ns ) ) {
             throw new UnsupportedOperationException( "Creating DC records from XML is not implemented yet." );
@@ -66,7 +74,17 @@ public class MetadataRecordFactory {
         throw new IllegalArgumentException( "Unknown / unsuppported metadata namespace '" + ns + "'." );
     }
 
-    public static MetadataRecord create( File file ) {
+    /**
+     * Creates a new {@link MetadataRecord} from the given file.
+     * 
+     * @param file
+     *            record file, must not be <code>null</code>
+     * @return metadata record instance, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the metadata format is unknown / record invalid
+     */
+    public static MetadataRecord create( File file )
+                            throws IllegalArgumentException {
         return create( new XMLAdapter( file ).getRootElement() );
     }
 }
