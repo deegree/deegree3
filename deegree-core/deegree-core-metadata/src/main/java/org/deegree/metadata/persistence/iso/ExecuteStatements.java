@@ -58,7 +58,6 @@ import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.persistence.GenericDatabaseExecution;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
@@ -71,7 +70,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class ExecuteStatements implements GenericDatabaseExecution {
+public class ExecuteStatements {
 
     private static final Logger LOG = getLogger( ExecuteStatements.class );
 
@@ -97,7 +96,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
         }
     }
 
-    @Override
     public int executeDeleteStatement( Connection connection, AbstractWhereBuilder builder )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
@@ -225,7 +223,6 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
     }
 
-    @Override
     public PreparedStatement executeGetRecords( MetadataQuery query, AbstractWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {
         PreparedStatement preparedStatement = null;
