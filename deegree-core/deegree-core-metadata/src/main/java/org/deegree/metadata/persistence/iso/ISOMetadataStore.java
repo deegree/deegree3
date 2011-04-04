@@ -242,17 +242,30 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
-        Connection conn = getConnection();
-        MetadataResultSet<ISORecord> result = null;
+        AbstractWhereBuilder builder = null;
         try {
-            AbstractWhereBuilder builder = getWhereBuilder( query );
-            result = doResultsOnGetRecord( query, builder, conn );
+            builder = getWhereBuilder( query );
         } catch ( FilterEvaluationException e ) {
             String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getLocalizedMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
-        return result;
+
+        ResultSet rs = null;
+        PreparedStatement preparedStatement = null;
+        ExecuteStatements exe = new ExecuteStatements( getDBType() );
+        Connection conn = getConnection();
+        try {
+            preparedStatement = exe.executeGetRecords( query, builder, conn );
+            preparedStatement.setFetchSize( DEFAULT_FETCH_SIZE );
+            rs = preparedStatement.executeQuery();
+        } catch ( Throwable t ) {
+            JDBCUtils.close( rs, preparedStatement, conn, LOG );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
+        }
+        return new ISOMetadataResultSet( rs, conn, preparedStatement );
     }
 
     /**
@@ -286,29 +299,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             JDBCUtils.close( rs, ps, conn, LOG );
         }
         return countRows;
-    }
-
-    /**
-     * The mandatory "resultType" attribute in the GetRecords operation is set to "results".
-     */
-    private MetadataResultSet<ISORecord> doResultsOnGetRecord( MetadataQuery recordStoreOptions,
-                                                               AbstractWhereBuilder builder, Connection conn )
-                            throws MetadataStoreException {
-        LOG.debug( Messages.getMessage( "INFO_EXEC", "do results on getRecords" ) );
-        ResultSet rs = null;
-        PreparedStatement preparedStatement = null;
-        ExecuteStatements exe = new ExecuteStatements( getDBType() );
-        try {
-            preparedStatement = exe.executeGetRecords( recordStoreOptions, builder, conn );
-            preparedStatement.setFetchSize( DEFAULT_FETCH_SIZE );
-            rs = preparedStatement.executeQuery();
-        } catch ( Throwable t ) {
-            JDBCUtils.close( rs, preparedStatement, conn, LOG );
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        }
-        return new ISOMetadataResultSet( rs, conn, preparedStatement );
     }
 
     @Override

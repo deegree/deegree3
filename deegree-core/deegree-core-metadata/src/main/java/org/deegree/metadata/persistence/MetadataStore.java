@@ -55,6 +55,10 @@ public interface MetadataStore<T extends MetadataRecord> extends Resource {
 
     /**
      * Performs the given {@link MetadataQuery} and provides access to the {@link MetadataRecord}s that match it.
+     * <p>
+     * NOTE: A caller <b>must</b> ensure to call {@link MetadataResultSet#close()} after working with the result set.
+     * Otherwise, DB resources may be left open.
+     * </p>
      * 
      * @param query
      *            query that selects the records, must not be <code>null</code>
@@ -77,6 +81,10 @@ public interface MetadataStore<T extends MetadataRecord> extends Resource {
 
     /**
      * Looks up the given {@link MetadataRecord} identifiers and provides access to matching {@link MetadataRecord}s.
+     * <p>
+     * NOTE: A caller <b>must</b> ensure to call {@link MetadataResultSet#close()} after working with the result set.
+     * Otherwise, DB resources may be left open.
+     * </p>
      * 
      * @param idList
      *            list of the requested record identifiers, can be empty, but must not be <code>null</code>
