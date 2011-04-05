@@ -46,7 +46,6 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
-import org.deegree.feature.persistence.sql.rules.CodeMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -189,7 +188,7 @@ public class PostGISDDLCreator {
             sql.append( " text PRIMARY KEY" );
         }
 
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+        for ( PropertyType pt : ft.getPropertyDeclarations( ft.getSchema().getXSModel().getVersion() ) ) {
             Mapping propMapping = ftMapping.getMapping( pt.getName() );
             if ( propMapping != null ) {
                 ddls.addAll( process( sql, ftMapping.getFtTable(), propMapping ) );
@@ -199,19 +198,19 @@ public class PostGISDDLCreator {
         return ddls;
     }
 
-    private List<StringBuffer> process( StringBuffer sql, QTableName table, Mapping propMapping ) {
+    private List<StringBuffer> process( StringBuffer sql, QTableName table, Mapping mapping ) {
 
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
-        JoinChain jc = propMapping.getJoinedTable();
+        JoinChain jc = mapping.getJoinedTable();
         if ( jc != null ) {
             sql = createJoinedTable( table, jc );
             table = new QTableName( jc.getFields().get( 1 ).getTable() );
             ddls.add( sql );
         }
 
-        if ( propMapping instanceof PrimitiveMapping ) {
-            PrimitiveMapping primitiveMapping = (PrimitiveMapping) propMapping;
+        if ( mapping instanceof PrimitiveMapping ) {
+            PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
             MappingExpression me = primitiveMapping.getMapping();
             if ( me instanceof DBField ) {
                 DBField dbField = (DBField) me;
@@ -220,45 +219,27 @@ public class PostGISDDLCreator {
                 sql.append( " " );
                 sql.append( getPostgreSQLType( primitiveMapping.getType() ) );
             }
-        } else if ( propMapping instanceof GeometryMapping ) {
-            GeometryMapping geometryMapping = (GeometryMapping) propMapping;
+        } else if ( mapping instanceof GeometryMapping ) {
+            GeometryMapping geometryMapping = (GeometryMapping) mapping;
             MappingExpression me = geometryMapping.getMapping();
             if ( me instanceof DBField ) {
                 ddls.addAll( getGeometryCreate( geometryMapping, (DBField) me, table ) );
             } else {
                 LOG.info( "Skipping geometry mapping -- not mapped to a db field. " );
             }
-        } else if ( propMapping instanceof FeatureMapping ) {
-            FeatureMapping featureMapping = (FeatureMapping) propMapping;
+        } else if ( mapping instanceof FeatureMapping ) {
+            FeatureMapping featureMapping = (FeatureMapping) mapping;
             MappingExpression me = featureMapping.getMapping();
             if ( me instanceof DBField ) {
                 sql.append( ",\n    " );
                 sql.append( ( (DBField) me ).getColumn() );
                 sql.append( " integer" );
             }
-        } else if ( propMapping instanceof CompoundMapping ) {
-            CompoundMapping compoundMapping = (CompoundMapping) propMapping;
+        } else if ( mapping instanceof CompoundMapping ) {
+            CompoundMapping compoundMapping = (CompoundMapping) mapping;
             ddls.addAll( process( sql, table, compoundMapping ) );
-        } else if ( propMapping instanceof CodeMapping ) {
-            CodeMapping codeMapping = (CodeMapping) propMapping;
-            MappingExpression me = codeMapping.getMapping();
-            if ( me instanceof DBField ) {
-                DBField dbField = (DBField) me;
-                sql.append( ",\n    " );
-                sql.append( dbField.getColumn() );
-                sql.append( " " );
-                sql.append( getPostgreSQLType( PrimitiveType.STRING ) );
-            }
-            MappingExpression codeSpaceMapping = codeMapping.getCodeSpaceMapping();
-            if ( codeSpaceMapping instanceof DBField ) {
-                DBField dbField = (DBField) codeSpaceMapping;
-                sql.append( ",\n    " );
-                sql.append( dbField.getColumn() );
-                sql.append( " " );
-                sql.append( getPostgreSQLType( PrimitiveType.STRING ) );
-            }
         } else {
-            throw new RuntimeException( "Internal error. Unhandled mapping type '" + propMapping.getClass() + "'" );
+            throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
         }
 
         if ( jc != null ) {

@@ -43,14 +43,14 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * {@link ReferenceMapping} for {@link Feature}-valued particles.
+ * {@link Mapping} for {@link Feature}-valued particles.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureMapping extends ReferenceMapping {
+public class FeatureMapping extends Mapping {
 
     private MappingExpression mapping;
 

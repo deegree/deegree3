@@ -53,7 +53,6 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
-import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -170,14 +169,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 if ( column instanceof DBField ) {
                     columns.add( ( (DBField) column ).getColumn() );
                 }
-            } else if ( mapping instanceof CodeMapping ) {
-                CodeMapping cm = (CodeMapping) mapping;
-                if ( cm.getMapping() instanceof DBField ) {
-                    columns.add( cm.getMapping().toString() );
-                }
-                if ( cm.getCodeSpaceMapping() instanceof DBField ) {
-                    columns.add( cm.getCodeSpaceMapping().toString() );
-                }
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
                 for ( Mapping particle : cm.getParticles() ) {
@@ -289,19 +280,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                                                 isNil ) );
             } else {
                 values.add( new Pair<TypedObjectNode, Boolean>( null, isNil ) );
-            }
-        } else if ( mapping instanceof CodeMapping ) {
-            CodeMapping cm = (CodeMapping) mapping;
-            String code = null;
-            if ( cm.getMapping() instanceof DBField ) {
-                code = rs.getString( i++ );
-            }
-            String codeSpace = null;
-            if ( cm.getCodeSpaceMapping() instanceof DBField ) {
-                codeSpace = rs.getString( i++ );
-            }
-            if ( code != null ) {
-                values.add( new Pair<TypedObjectNode, Boolean>( new CodeType( code, codeSpace ), isNil ) );
             }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;

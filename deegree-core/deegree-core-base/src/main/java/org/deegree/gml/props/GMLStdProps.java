@@ -186,7 +186,7 @@ public class GMLStdProps {
         // TODO correct this (should be a ReferenceType)
         PT_DESCRIPTION_REFERENCE_GML32 = new StringOrRefPropertyType( new QName( GML3_2_NS, "descriptionReference" ),
                                                                       0, 1, false, false, null );
-        PT_IDENTIFIER_GML32 = new CodePropertyType( new QName( GML3_2_NS, "identifier" ), 0, -1, false, false, null );
+        PT_IDENTIFIER_GML32 = new CodePropertyType( new QName( GML3_2_NS, "identifier" ), 0, 1, false, false, null );
         PT_NAME_GML32 = new CodePropertyType( new QName( GML3_2_NS, "name" ), 0, -1, false, false, null );
     }
 

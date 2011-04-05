@@ -58,7 +58,6 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
-import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
@@ -83,7 +82,6 @@ import org.deegree.feature.persistence.sql.id.UUIDGenerator;
 import org.deegree.feature.persistence.sql.insert.InsertRow;
 import org.deegree.feature.persistence.sql.insert.InsertRowManager;
 import org.deegree.feature.persistence.sql.insert.InsertRowNode;
-import org.deegree.feature.persistence.sql.rules.CodeMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -464,24 +462,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     throw new FeatureStoreException( e.getMessage(), e );
                 }
                 currentRow.addPreparedArgument( column, sqlValue, fs.getWKBParamTemplate( srid ) );
-            } else if ( mapping instanceof CodeMapping ) {
-                String column = null;
-                MappingExpression me = ( (CodeMapping) mapping ).getMapping();
-                if ( !( me instanceof DBField ) ) {
-                    LOG.debug( "Code particle is not mapped to a column. Skipping it." );
-                    return;
-                }
-                column = ( (DBField) me ).getColumn();
-                CodeType value = (CodeType) particle;
-                currentRow.addPreparedArgument( column, value.getCode() );
-
-                me = ( (CodeMapping) mapping ).getCodeSpaceMapping();
-                if ( !( me instanceof DBField ) ) {
-                    LOG.debug( "Code particle is not mapped to a column. Skipping it." );
-                    return;
-                }
-                column = ( (DBField) me ).getColumn();
-                currentRow.addPreparedArgument( column, value.getCodeSpace() );
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
                 GenericXMLElement propNode = (GenericXMLElement) particle;
