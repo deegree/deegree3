@@ -39,6 +39,7 @@ import java.sql.Connection;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
@@ -52,19 +53,29 @@ import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
+ * @version $Revision$, $Date: 2011-04-04 17:43:08 +0200 (Mo, 04. Apr
+ *          2011) $
  */
 public class InspireComplianceInspector implements RecordInspector<ISORecord> {
 
-    private final InspireInspector config;
+	private final InspireInspector config;
 
-    public InspireComplianceInspector( InspireInspector config ) {
-        this.config = config;
-    }
+	
+	public InspireComplianceInspector(InspireInspector config) {
+		this.config = config;
+	}
 
-    @Override
-    public ISORecord inspect( ISORecord record, Connection conn, Type connectionType )
-                            throws MetadataInspectorException {
-        return record;
-    }
+	@Override
+	public ISORecord inspect(ISORecord record, Connection conn,
+			Type connectionType) throws MetadataInspectorException {
+		// 2.2.5 Unique resource identifier for dataset and dataset series
+		String type = record.getType();
+		if ((type == null || "dataset".equals(type) || "series".equals(type))
+				&& record.getParsedElement().getQueryableProperties()
+						.getResourceIdentifier() == null) {
+			throw new MetadataInspectorException(Messages.get(
+					"INSPIRE_COMPLIANCE_MISSING_RI", record.getIdentifier()));
+		}
+		return record;
+	}
 }
