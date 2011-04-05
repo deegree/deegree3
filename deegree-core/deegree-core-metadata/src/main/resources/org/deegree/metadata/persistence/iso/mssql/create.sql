@@ -36,7 +36,7 @@ CREATE TABLE IDXTB_MAIN (
 	SpecDate date,
 	SpecDateType varchar(15),
 	SpecTitle varchar(500),
-	bbox geometry NOT NULL,
+	bbox geometry,
 	recordfull varbinary(max) NOT NULL
 );
 CREATE TABLE IDXTB_Constraint ( 
