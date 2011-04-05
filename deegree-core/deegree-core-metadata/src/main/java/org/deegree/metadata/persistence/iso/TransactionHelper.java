@@ -335,7 +335,7 @@ class TransactionHelper {
      * @throws MetadataStoreException
      *             if updating fails
      */
-    public int updateMainDatabaseTable( Connection conn, ISORecord rec, String fileIdentifier )
+    int updateMainDatabaseTable( Connection conn, ISORecord rec, String fileIdentifier )
                             throws MetadataStoreException {
         PreparedStatement stm = null;
         ResultSet rs = null;

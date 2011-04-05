@@ -285,7 +285,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             AbstractWhereBuilder builder = getWhereBuilder( query );
             conn = getConnection();
             ps = new ExecuteStatements( getDBType() ).executeCounting( builder, conn );
-            LOG.debug( ps.toString() );
             rs = ps.executeQuery();
             rs.next();
             countRows = rs.getInt( 1 );
