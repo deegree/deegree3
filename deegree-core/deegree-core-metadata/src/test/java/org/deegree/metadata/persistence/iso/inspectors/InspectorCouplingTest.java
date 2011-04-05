@@ -33,9 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.testclasses;
+package org.deegree.metadata.persistence.iso.inspectors;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.deegree.commons.config.ResourceInitException;
@@ -60,110 +59,96 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class InspectorIdentifierTest extends AbstractISOTest {
-    private static Logger LOG = LoggerFactory.getLogger( InspectorIdentifierTest.class );
+public class InspectorCouplingTest extends AbstractISOTest {
 
-    /**
-     * If the fileIdentifier shouldn't be generated automaticaly if not set.
-     * <p>
-     * 1.xml has no fileIdentifier and no ResourceIdentifier -> reject<br>
-     * 3.xml has a fileIdentifier -> insert <br>
-     * Output should be a MetadataStoreException
-     * 
-     * @throws MetadataStoreException
-     * 
-     * @throws MetadataInspectorException
-     * @throws MetadataStoreException
-     * @throws MetadataInspectorException
-     * @throws MetadataInspectorException
-     * @throws ResourceInitException
-     * @throws SQLException
-     */
-    @Test(expected = MetadataInspectorException.class)
-    public void testIdentifierRejectTrue2()
+    private static Logger LOG = LoggerFactory.getLogger( InspectorCouplingTest.class );
+
+    @Test
+    public void testCouplingConsistencyErrorFALSE()
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: test if the configuration rejects the insert of the missing identifier. (Reject TRUE)" );
+        LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_ACCEPT );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
+                                                    TstConstants.tst_13 );
+
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+
+        Assert.assertEquals( 3, size );
+
+    }
+
+    @Test
+    public void testCouplingConsistencyErrorFALSE_NO_CONSISTENCY()
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
+        LOG.info( "START Test: test if the the coupled service metadata will be inserted without any coupling but no exception will be thrown. " );
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_ACCEPT );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
+
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+
+        Assert.assertEquals( 2, size );
+
+    }
+
+    @Test
+    public void testCouplingConsistencyErrorTRUE_NO_Exception()
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
+        LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
+        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_Ex_AWARE );
+        }
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
+                                                    TstConstants.tst_13 );
+
+        resultSet = store.getRecordById( ids );
+        int size = 0;
+        while ( resultSet.next() ) {
+            size++;
+        }
+
+        Assert.assertEquals( 3, size );
+
+    }
+
+    
+    // strictness when testing for coupling was set more relaxed
+//    @Test(expected = MetadataInspectorException.class)
+    public void testCouplingConsistencyErrorTRUE_WITH_Exception()
+                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
+        LOG.info( "START Test: test if an exception will be thrown if there is an insert of the service metadata. " );
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_TRUE );
-
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_Ex_AWARE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
             throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
-
-        TstUtils.insertMetadata( store, TstConstants.tst_1, TstConstants.tst_3 );
-
-    }
-
-    /**
-     * If the fileIdentifier should be generated automaticaly if not set.
-     * <p>
-     * 1.xml has no fileIdentifier<br>
-     * 2.xml has a fileIdentifier
-     * 
-     * @throws MetadataStoreException
-     * @throws MetadataInspectorException
-     * @throws ResourceInitException
-     */
-
-    @Test
-    public void testIdentifierRejectFalse()
-                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: test if the configuration generates the identifier automaticaly. (Reject FALSE)" );
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_FALSE );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
-
-        resultSet = store.getRecordById( ids );
-        int size = 0;
-        while ( resultSet.next() ) {
-            size++;
-        }
-
-        Assert.assertEquals( 2, size );
-
-    }
-
-    /**
-     * If the fileIdentifier shouldn't be generated automaticaly if not set.
-     * <p>
-     * 1.xml has no fileIdentifier but with one ResourceIdentifier -> insert<br>
-     * 2.xml has a fileIdentifier -> insert Output: 2 because 1.xml has a resourceIdentifier which can be taken
-     * 
-     * @throws MetadataStoreException
-     * @throws MetadataInspectorException
-     * @throws ResourceInitException
-     */
-
-    @Test
-    public void testIdentifierRejectTrue()
-                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: test if the configuration rejects the insert of the missing identifier. (Reject TRUE)" );
-
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_TRUE );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
-
-        resultSet = store.getRecordById( ids );
-        int size = 0;
-        while ( resultSet.next() ) {
-            size++;
-        }
-
-        Assert.assertEquals( 2, size );
+        TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
 
     }
 

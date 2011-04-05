@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
+import org.deegree.metadata.persistence.iso.inspectors.InspectorCouplingTest;
+import org.deegree.metadata.persistence.iso.inspectors.InspectorIdentifierTest;
 import org.deegree.metadata.persistence.iso.testclasses.CommonISOTest;
-import org.deegree.metadata.persistence.iso.testclasses.InspectorCouplingTest;
-import org.deegree.metadata.persistence.iso.testclasses.InspectorIdentifierTest;
 import org.deegree.metadata.persistence.iso.testclasses.TstAnyTextElement;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
