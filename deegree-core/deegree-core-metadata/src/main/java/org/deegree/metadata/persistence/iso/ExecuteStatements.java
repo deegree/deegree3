@@ -104,7 +104,7 @@ public class ExecuteStatements {
         List<Integer> deletableDatasets;
         int deleted = 0;
         try {
-            StringBuilder header = getPreparedStatementDatasetIDs( true, builder );
+            StringBuilder header = getPreparedStatementDatasetIDs( builder );
             getPSBody( builder, header );
             preparedStatement = connection.prepareStatement( header.toString() );
             int i = 1;
@@ -152,7 +152,7 @@ public class ExecuteStatements {
         return deleted;
     }
 
-    private StringBuilder getPreparedStatementDatasetIDs( boolean setDelete, AbstractWhereBuilder builder ) {
+    private StringBuilder getPreparedStatementDatasetIDs( AbstractWhereBuilder builder ) {
 
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
         String orderByclause = null;
@@ -161,30 +161,15 @@ public class ExecuteStatements {
             orderByclause = builder.getOrderBy().getSQL().toString().substring( 0, length - 4 );
         }
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
-        getDatasetIDs.append( "SELECT " );
-
-        if ( setDelete ) {
-            getDatasetIDs.append( " DISTINCT " );
-            getDatasetIDs.append( rootTableAlias );
-            getDatasetIDs.append( '.' );
-            getDatasetIDs.append( id );
-            if ( orderByclause != null ) {
-                getDatasetIDs.append( ',' );
-                getDatasetIDs.append( orderByclause );
-            }
-        } else {
-            getDatasetIDs.append( " DISTINCT " );
-            getDatasetIDs.append( rootTableAlias );
-            getDatasetIDs.append( '.' );
-            getDatasetIDs.append( rf );
-            if ( orderByclause != null ) {
-                getDatasetIDs.append( ',' );
-                getDatasetIDs.append( orderByclause );
-            }
+        getDatasetIDs.append( "SELECT DISTINCT " );
+        getDatasetIDs.append( rootTableAlias );
+        getDatasetIDs.append( '.' );
+        getDatasetIDs.append( id );
+        if ( orderByclause != null ) {
+            getDatasetIDs.append( ',' );
+            getDatasetIDs.append( orderByclause );
         }
-
         return getDatasetIDs;
-
     }
 
     private void getPSBody( AbstractWhereBuilder builder, StringBuilder getDatasetIDs ) {
@@ -231,27 +216,44 @@ public class ExecuteStatements {
 
             LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecords-statement" ) );
 
-            StringBuilder header = getPreparedStatementDatasetIDs( false, builder );
+            StringBuilder sql = getPreparedStatementDatasetIDs( builder );
 
             if ( query != null && query.getStartPosition() != 1 && dbType == MSSQL ) {
-                String oldHeader = header.toString();
-                header = header.append( " from (" ).append( oldHeader );
-                header.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
+                String oldHeader = sql.toString();
+                sql = sql.append( " from (" ).append( oldHeader );
+                sql.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
             }
 
-            getPSBody( builder, header );
+            getPSBody( builder, sql );
             if ( builder.getOrderBy() != null ) {
-                header.append( " ORDER BY " );
-                header.append( builder.getOrderBy().getSQL() );
+                sql.append( " ORDER BY " );
+                sql.append( builder.getOrderBy().getSQL() );
             }
             if ( query != null && query.getStartPosition() != 1 && dbType == PostgreSQL ) {
-                header.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
+                sql.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
             if ( query != null && query.getStartPosition() != 1 && dbType == MSSQL ) {
-                header.append( ") as X1 where X1.rownum > " );
-                header.append( query.getStartPosition() - 1 );
+                sql.append( ") as X1 where X1.rownum > " );
+                sql.append( query.getStartPosition() - 1 );
             }
-            preparedStatement = conn.prepareStatement( header.toString() );
+
+            StringBuilder outerSelect = new StringBuilder ("SELECT ");
+            outerSelect.append( rf );
+            outerSelect.append( " FROM " );
+            if (dbType == PostgreSQL) {
+                outerSelect.append(  PostGISMappingsISODC.DatabaseTables.idxtb_main);    
+            } else if (dbType == MSSQL) {
+                outerSelect.append(  MSSQLMappingsISODC.DatabaseTables.idxtb_main);
+            } else {
+                throw new IllegalArgumentException();
+            }
+            outerSelect.append( " WHERE ");
+            outerSelect.append( id );
+            outerSelect.append( " IN (");
+            outerSelect.append( sql );
+            outerSelect.append (")");
+            
+            preparedStatement = conn.prepareStatement( outerSelect.toString() );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
@@ -328,7 +330,6 @@ public class ExecuteStatements {
                     }
                 }
             }
-
             LOG.debug( preparedStatement.toString() );
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
