@@ -22,6 +22,26 @@
         <choice>
           <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
           <sequence>
+            <element name="StorageCRS">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="srid" type="string" use="required" />
+                    <attribute name="dim" use="required">
+                      <annotation>
+                        <documentation>Dimensionality of the geometry coordinates</documentation>
+                      </annotation>
+                      <simpleType>
+                        <restriction base="NMTOKENS">
+                          <enumeration value="2D" />
+                          <enumeration value="3D" />
+                        </restriction>
+                      </simpleType>
+                    </attribute>
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
             <element name="GMLSchema" type="string" minOccurs="1" maxOccurs="unbounded" />
             <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
               <complexType>
@@ -32,7 +52,6 @@
             <element name="BLOBMapping" minOccurs="0">
               <complexType>
                 <sequence>
-                  <element name="StorageCRS" type="string" />
                   <element name="BlobTable" type="string" minOccurs="0" default="gml_objects" />
                   <element name="FeatureTypeTable" type="string" minOccurs="0" default="feature_types" />
                 </sequence>
@@ -45,21 +64,12 @@
       <attribute name="configVersion" use="required">
         <simpleType>
           <restriction base="string">
-            <enumeration value="3.0.0" />
             <enumeration value="3.1.0" />
           </restriction>
         </simpleType>
       </attribute>
     </complexType>
   </element>
-  <simpleType name="GMLVersionType">
-    <restriction base="string">
-      <enumeration value="GML_2" />
-      <enumeration value="GML_30" />
-      <enumeration value="GML_31" />
-      <enumeration value="GML_32" />
-    </restriction>
-  </simpleType>
   <!-- === Feature type definition === -->
   <element name="FeatureType">
     <complexType>
@@ -195,7 +205,6 @@
       </complexContent>
     </complexType>
   </element>
-
   <!-- === Geometry property declaration / mapping === -->
   <element name="GeometryProperty" substitutionGroup="postgisfs:AbstractProperty">
     <complexType>
@@ -239,174 +248,6 @@
           </attribute>
         </extension>
       </complexContent>
-    </complexType>
-  </element>
-  <!-- === Feature property declaration / mapping === -->
-  <!-- element name="FeatureProperty" substitutionGroup="postgisfs:AbstractProperty"> <complexType> <annotation> <documentation>Definition 
-    of a feature-valued property of a feature type.</documentation> <appinfo> <jaxb:class name="FeaturePropertyDecl" /> </appinfo> 
-    </annotation> <complexContent> <extension base="postgisfs:AbstractPropertyType"> <attribute name="type" type="QName" use="optional"> 
-    <annotation> <documentation>Allowed feature type.</documentation> </annotation> </attribute> </extension> </complexContent> 
-    </complexType> </element -->
-  <element name="FeatureTypeMapping">
-    <annotation>
-      <documentation>Defines the mapping of the feature type from the application schema</documentation>
-      <appinfo>
-        <jaxb:class name="FeatureTypeMappingJAXB" />
-      </appinfo>
-    </annotation>
-    <complexType>
-      <sequence>
-        <element ref="postgisfs:FIDMapping" />
-        <element ref="postgisfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
-      </sequence>
-      <attribute name="name" type="QName" use="required">
-        <annotation>
-          <documentation>Qualified name of the feature type</documentation>
-        </annotation>
-      </attribute>
-      <attribute name="table" type="string" use="required">
-        <annotation>
-          <documentation>(Root) table that the feature type is mapped to</documentation>
-        </annotation>
-      </attribute>
-    </complexType>
-  </element>
-  <element name="AbstractParticle" abstract="true" type="postgisfs:AbstractParticleType" />
-  <complexType name="AbstractParticleType">
-    <annotation>
-      <documentation>Defines the mapping for a particle of a feature type.</documentation>
-      <appinfo>
-        <jaxb:class name="AbstractParticleJAXB" />
-      </appinfo>
-    </annotation>
-    <sequence>
-      <element ref="postgisfs:JoinedTable" minOccurs="0" />
-    </sequence>
-    <attribute name="path" type="string" use="required">
-      <annotation>
-        <documentation>(Relative) XPath targeted by this mapping.</documentation>
-      </annotation>
-    </attribute>
-    <attribute name="mapping" type="string">
-      <annotation>
-        <documentation>Mapping expression.</documentation>
-      </annotation>
-    </attribute>
-    <attribute name="nilMapping" type="string" use="optional">
-      <annotation>
-        <documentation>Boolean column that stores whether the element is nilled</documentation>
-      </annotation>
-    </attribute>
-  </complexType>
-  <element name="Primitive" substitutionGroup="postgisfs:AbstractParticle">
-    <complexType>
-      <annotation>
-        <documentation>Defines the mapping for a primitive-valued particle.</documentation>
-        <appinfo>
-          <jaxb:class name="PrimitiveParticleJAXB" />
-        </appinfo>
-      </annotation>
-      <complexContent>
-        <extension base="postgisfs:AbstractParticleType">
-          <attribute name="type" type="postgisfs:PrimitiveType">
-            <annotation>
-              <documentation>Primitive type.</documentation>
-            </annotation>
-          </attribute>
-        </extension>
-      </complexContent>
-    </complexType>
-  </element>
-  <element name="Geometry" substitutionGroup="postgisfs:AbstractParticle">
-    <complexType>
-      <annotation>
-        <documentation>Defines the mapping for a geometry particle.</documentation>
-        <appinfo>
-          <jaxb:class name="GeometryParticleJAXB" />
-        </appinfo>
-      </annotation>
-      <complexContent>
-        <extension base="postgisfs:AbstractParticleType">
-          <attribute name="type" type="postgisfs:GeometryType" use="required">
-            <annotation>
-              <documentation>Geometry type</documentation>
-            </annotation>
-          </attribute>
-          <attribute name="crs" type="string" use="required">
-            <annotation>
-              <documentation>deegree CRS identifier used for the geometry property, e.g. 'EPSG:4326'</documentation>
-            </annotation>
-          </attribute>
-          <attribute name="srid" type="integer" use="required">
-            <annotation>
-              <documentation>PostGIS SRID of the column</documentation>
-            </annotation>
-          </attribute>
-          <attribute name="dim" use="required">
-            <annotation>
-              <documentation>Dimensionality of the geometry coordinates</documentation>
-            </annotation>
-            <simpleType>
-              <restriction base="NMTOKENS">
-                <enumeration value="2D" />
-                <enumeration value="3D" />
-              </restriction>
-            </simpleType>
-          </attribute>
-        </extension>
-      </complexContent>
-    </complexType>
-  </element>
-  <element name="Feature" substitutionGroup="postgisfs:AbstractParticle">
-    <complexType>
-      <annotation>
-        <documentation>Defines the mapping for a feature particle</documentation>
-        <appinfo>
-          <jaxb:class name="FeatureParticleJAXB" />
-        </appinfo>
-      </annotation>
-      <complexContent>
-        <extension base="postgisfs:AbstractParticleType">
-          <attribute name="type" type="QName" use="optional">
-            <annotation>
-              <documentation>Allowed feature type.</documentation>
-            </annotation>
-          </attribute>
-        </extension>
-      </complexContent>
-    </complexType>
-  </element>
-  <element name="Complex" substitutionGroup="postgisfs:AbstractParticle">
-    <complexType>
-      <annotation>
-        <documentation>Defines the mapping for a complex particle</documentation>
-        <appinfo>
-          <jaxb:class name="ComplexParticleJAXB" />
-        </appinfo>
-      </annotation>
-      <complexContent>
-        <extension base="postgisfs:AbstractParticleType">
-          <sequence>
-            <element ref="postgisfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
-          </sequence>
-        </extension>
-      </complexContent>
-    </complexType>
-  </element>
-  <element name="JoinedTable">
-    <complexType>
-      <annotation>
-        <documentation>Defines a 1:n mapping in the relational schema.</documentation>
-      </annotation>
-      <simpleContent>
-        <extension base="string">
-          <attribute name="indexColumn" type="string" use="optional">
-            <annotation>
-              <documentation>Name of the column that stores the index of the related object.</documentation>
-            </annotation>
-          </attribute>
-        </extension>
-      </simpleContent>
     </complexType>
   </element>
   <simpleType name="PrimitiveType">
@@ -488,4 +329,128 @@
       <enumeration value="MultiSolid" />
     </restriction>
   </simpleType>
+  <!-- === Feature property declaration / mapping === -->
+  <!-- element name="FeatureProperty" substitutionGroup="postgisfs:AbstractProperty"> <complexType> <annotation> <documentation>Definition 
+    of a feature-valued property of a feature type.</documentation> <appinfo> <jaxb:class name="FeaturePropertyDecl" /> </appinfo> 
+    </annotation> <complexContent> <extension base="postgisfs:AbstractPropertyType"> <attribute name="type" type="QName" use="optional"> 
+    <annotation> <documentation>Allowed feature type.</documentation> </annotation> </attribute> </extension> </complexContent> 
+    </complexType> </element -->
+  <element name="FeatureTypeMapping">
+    <annotation>
+      <documentation>Defines the mapping of the feature type from the application schema</documentation>
+      <appinfo>
+        <jaxb:class name="FeatureTypeMappingJAXB" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="postgisfs:FIDMapping" />
+        <element ref="postgisfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="QName" use="required">
+        <annotation>
+          <documentation>Qualified name of the feature type</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="table" type="string" use="required">
+        <annotation>
+          <documentation>(Root) table that the feature type is mapped to</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="AbstractParticle" abstract="true" type="postgisfs:AbstractParticleType" />
+  <complexType name="AbstractParticleType">
+    <annotation>
+      <documentation>Defines the mapping for a particle of a feature type.</documentation>
+      <appinfo>
+        <jaxb:class name="AbstractParticleJAXB" />
+      </appinfo>
+    </annotation>
+    <sequence>
+      <element ref="postgisfs:JoinedTable" minOccurs="0" />
+    </sequence>
+    <attribute name="path" type="string" use="required">
+      <annotation>
+        <documentation>(Relative) XPath targeted by this mapping.</documentation>
+      </annotation>
+    </attribute>
+    <attribute name="mapping" type="string">
+      <annotation>
+        <documentation>Mapping expression.</documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <element name="Primitive" substitutionGroup="postgisfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a primitive-valued particle.</documentation>
+        <appinfo>
+          <jaxb:class name="PrimitiveParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractParticleType" />
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Geometry" substitutionGroup="postgisfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a geometry particle.</documentation>
+        <appinfo>
+          <jaxb:class name="GeometryParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractParticleType" />
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Feature" substitutionGroup="postgisfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a feature particle</documentation>
+        <appinfo>
+          <jaxb:class name="FeatureParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractParticleType" />
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Complex" substitutionGroup="postgisfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a complex particle</documentation>
+        <appinfo>
+          <jaxb:class name="ComplexParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractParticleType">
+          <sequence>
+            <element ref="postgisfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="JoinedTable">
+    <complexType>
+      <annotation>
+        <documentation>Defines a 1:n mapping in the relational schema.</documentation>
+      </annotation>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="indexColumn" type="string" use="optional">
+            <annotation>
+              <documentation>Name of the column that stores the index of the related object.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
 </schema>

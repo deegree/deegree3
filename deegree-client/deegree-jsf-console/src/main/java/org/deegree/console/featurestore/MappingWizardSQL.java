@@ -71,10 +71,12 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.postgis.PostGISDDLCreator;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
+import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.config.PostGISFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,8 +260,10 @@ public class MappingWizardSQL {
             ICRS storageCrs = CRSManager.lookup( this.storageCrs );
             boolean createBlobMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "blob" );
             boolean createRelationalMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "relational" );
+            GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, storageSrid,
+                                                                              CoordinateDimension.DIM_2 );
             AppSchemaMapper mapper = new AppSchemaMapper( appSchema, createBlobMapping, createRelationalMapping,
-                                                          storageCrs, storageSrid );
+                                                          geometryParams );
             mappedSchema = mapper.getMappedSchema();
             PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
             File tmpConfigFile = File.createTempFile( "fsconfig", ".xml" );

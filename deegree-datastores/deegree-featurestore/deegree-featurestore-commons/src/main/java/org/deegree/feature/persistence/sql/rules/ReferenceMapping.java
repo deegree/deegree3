@@ -38,7 +38,6 @@ package org.deegree.feature.persistence.sql.rules;
 import org.deegree.commons.tom.Reference;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 
 /**
  * {@link Mapping} of {@link Reference} valued particles.
@@ -57,10 +56,8 @@ public class ReferenceMapping extends Mapping {
      *            relative xpath expression, must not be <code>null</code>
      * @param joinRule
      *            the table joins, can be <code>null</code> (no joins involved)
-     * @param nilMapping
-     *            name of (boolean) column that stores whether the element is nilled, can be <code>null</code>
      */
-    public ReferenceMapping( PropertyName path, JoinChain joinRule, DBField nilMapping ) {
-        super( path, joinRule, nilMapping );
+    public ReferenceMapping( PropertyName path, JoinChain joinRule ) {
+        super( path, joinRule );
     }
 }

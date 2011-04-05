@@ -71,6 +71,7 @@ import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyJAXB;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
@@ -148,7 +149,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         Map<FeatureType, FeatureType> ftToSuperFt = null;
         Map<String, String> prefixToNs = null;
         GMLSchemaInfoSet xsModel = null;
-        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null, null );
+        // TODO
+        GeometryStorageParams geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( "EPSG:4326" ), "-1",
+                                                                          CoordinateDimension.DIM_2 );
+        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null, null,
+                                            geometryParams );
     }
 
     private void process( FeatureTypeJAXB ftDecl )
@@ -202,19 +207,18 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, false, false, null );
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
-                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null, null );
+                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null );
                     mappings.add( mapping );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Skipping column with type code '" + md.sqlType + "' from list of properties:"
                               + e.getMessage() );
                 }
             } else {
-                PropertyType pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, md.geomType, md.dim,
-                                                            INLINE );
+                PropertyType pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, md.geomType,
+                                                            md.geometryParams.getDim(), INLINE );
                 pts.add( pt );
                 PropertyName path = new PropertyName( ptName );
-                GeometryMapping mapping = new GeometryMapping( path, dbField, md.geomType, md.dim, md.crs, md.srid,
-                                                               null, null );
+                GeometryMapping mapping = new GeometryMapping( path, dbField, md.geomType, md.geometryParams, null );
                 mappings.add( mapping );
             }
         }
@@ -285,7 +289,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 }
                 pt = new SimplePropertyType( propName, minOccurs, 1, primType, false, false, null );
             }
-            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), null, null );
+            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), null );
         } else if ( propDecl instanceof GeometryPropertyJAXB ) {
             MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
             if ( !( mapping instanceof DBField ) ) {
@@ -315,23 +319,23 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             if ( geomDecl.getCrs() != null ) {
                 crs = CRSManager.getCRSRef( geomDecl.getCrs() );
             } else {
-                crs = md.crs;
+                crs = md.geometryParams.getCrs();
             }
             String srid = null;
             if ( geomDecl.getSrid() != null ) {
                 srid = geomDecl.getSrid().toString();
             } else {
-                srid = md.srid;
+                srid = md.geometryParams.getSrid();
             }
             CoordinateDimension dim = null;
             if ( geomDecl.getDim() != null ) {
                 // TODO why does JAXB return a list here?
                 dim = DIM_2;
             } else {
-                dim = md.dim;
+                dim = md.geometryParams.getDim();
             }
             pt = new GeometryPropertyType( propName, minOccurs, 1, false, false, null, type, dim, INLINE );
-            m = new GeometryMapping( path, mapping, type, dim, crs, srid, null, null );
+            m = new GeometryMapping( path, mapping, type, new GeometryStorageParams( crs, srid, dim ), null );
         } else {
             LOG.warn( "Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it." );
         }
@@ -503,11 +507,7 @@ class ColumnMetadata {
 
     GeometryType geomType;
 
-    CoordinateDimension dim;
-
-    ICRS crs;
-
-    String srid;
+    GeometryStorageParams geometryParams;
 
     ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, boolean isAutoincrement ) {
         this.column = column;
@@ -524,8 +524,6 @@ class ColumnMetadata {
         this.sqlTypeName = sqlTypeName;
         this.isNullable = isNullable;
         this.geomType = geomType;
-        this.dim = dim;
-        this.crs = crs;
-        this.srid = srid;
+        this.geometryParams = new GeometryStorageParams( crs, srid, dim );
     }
 }

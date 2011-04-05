@@ -42,7 +42,6 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.id.IdAnalyzer;
@@ -78,7 +77,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
 
     private final Map<QName, DataTypeMapping> dtNameToDtMapping = new HashMap<QName, DataTypeMapping>();
 
-    private final ICRS storageCRS;
+    private final GeometryStorageParams geometryParams;
 
     private final IdAnalyzer idAnalyzer;
 
@@ -111,7 +110,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                                     Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel,
                                     FeatureTypeMapping[] ftMappings, DataTypeMapping[] dtMappings,
-                                    BBoxTableMapping bboxMapping, BlobMapping blobMapping ) {
+                                    BBoxTableMapping bboxMapping, BlobMapping blobMapping,
+                                    GeometryStorageParams geometryParams ) {
 
         super( fts, ftToSuperFt, prefixToNs, xsModel );
         if ( ftMappings != null ) {
@@ -124,7 +124,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
                 dtNameToDtMapping.put( dtMapping.getElementName(), dtMapping );
             }
         }
-        this.storageCRS = blobMapping == null ? null : blobMapping.getCRS();
+        this.geometryParams = geometryParams;
         this.idAnalyzer = new IdAnalyzer( this );
 
         // sort by QName first
@@ -220,12 +220,12 @@ public class MappedApplicationSchema extends ApplicationSchema {
     }
 
     /**
-     * Returns the CRS used for storing geometries in the backend.
+     * Returns the parameters used for storing geometries in the backend.
      * 
-     * @return the storage CRS, never <code>null</code>
+     * @return the storage parameters, never <code>null</code>
      */
-    public ICRS getStorageCRS() {
-        return storageCRS;
+    public GeometryStorageParams getGeometryParams() {
+        return geometryParams;
     }
 
     /**

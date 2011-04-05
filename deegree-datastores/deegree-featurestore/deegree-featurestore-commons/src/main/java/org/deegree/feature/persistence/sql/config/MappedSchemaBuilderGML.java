@@ -53,7 +53,6 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractParticleJAXB;
@@ -65,9 +64,11 @@ import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeMappingJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryParticleJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.NamespaceHint;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.StorageCRS;
 import org.deegree.feature.persistence.postgis.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
@@ -120,11 +121,15 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private final Map<QName, org.deegree.feature.persistence.sql.FeatureTypeMapping> ftNameToMapping = new HashMap<QName, org.deegree.feature.persistence.sql.FeatureTypeMapping>();
 
-    public MappedSchemaBuilderGML( String configURL, List<String> gmlSchemas, List<NamespaceHint> nsHints,
-                                   BLOBMapping blobConf, List<FeatureTypeMappingJAXB> ftMappingConfs )
-                            throws FeatureStoreException {
+    private final GeometryStorageParams geometryParams;
+
+    public MappedSchemaBuilderGML( String configURL, List<String> gmlSchemas, StorageCRS storageCRS,
+                                   List<NamespaceHint> nsHints, BLOBMapping blobConf,
+                                   List<FeatureTypeMappingJAXB> ftMappingConfs ) throws FeatureStoreException {
 
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
+        geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( storageCRS.getValue() ),
+                                                    storageCRS.getSrid(), CoordinateDimension.DIM_2 );
         nsBindings = buildNSBindings( gmlSchema.getNamespaceBindings(), nsHints );
         if ( blobConf != null ) {
             Pair<BlobMapping, BBoxTableMapping> pair = buildBlobMapping( blobConf, gmlSchema.getXSModel().getVersion() );
@@ -156,7 +161,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         GMLSchemaInfoSet xsModel = gmlSchema.getXSModel();
         return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, bboxMapping,
-                                            blobMapping );
+                                            blobMapping, geometryParams );
     }
 
     private ApplicationSchema buildGMLSchema( String configURL, List<String> gmlSchemas )
@@ -202,12 +207,11 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     }
 
     private Pair<BlobMapping, BBoxTableMapping> buildBlobMapping( BLOBMapping blobMappingConf, GMLVersion gmlVersion ) {
-        ICRS storageCRS = CRSManager.getCRSRef( blobMappingConf.getStorageCRS(), false );
         String ftTable = blobMappingConf.getFeatureTypeTable() == null ? FEATURE_TYPE_TABLE
                                                                       : blobMappingConf.getFeatureTypeTable();
-        BBoxTableMapping bboxMapping = new BBoxTableMapping( ftTable, storageCRS );
+        BBoxTableMapping bboxMapping = new BBoxTableMapping( ftTable, geometryParams.getCrs() );
         String blobTable = blobMappingConf.getBlobTable() == null ? GML_OBJECTS_TABLE : blobMappingConf.getBlobTable();
-        BlobMapping blobMapping = new BlobMapping( blobTable, storageCRS, new BlobCodec( gmlVersion, NONE ) );
+        BlobMapping blobMapping = new BlobMapping( blobTable, geometryParams.getCrs(), new BlobCodec( gmlVersion, NONE ) );
         return new Pair<BlobMapping, BBoxTableMapping>( blobMapping, bboxMapping );
     }
 
@@ -274,24 +278,20 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private PrimitiveMapping buildMapping( QTableName currentTable, PrimitiveParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
-        PrimitiveType pt = getPrimitiveType( config.getType() );
+        // TODO determine primitive type from schema
+        PrimitiveType pt = PrimitiveType.STRING;
         MappingExpression me = parseMappingExpression( config.getMapping() );
-        DBField nilMapping = buildNilMapping( config.getNilMapping() );
         JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
-        return new PrimitiveMapping( path, me, pt, joinedTable, nilMapping );
+        return new PrimitiveMapping( path, me, pt, joinedTable );
     }
 
     private GeometryMapping buildMapping( QTableName currentTable, GeometryParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
         MappingExpression me = parseMappingExpression( config.getMapping() );
         LOG.warn( "Build mappings from geometry particle configs is incomplete." );
-        GeometryType type = getGeometryType( config.getType().name() );
-        CoordinateDimension dim = CoordinateDimension.DIM_2;
-        ICRS crs = CRSManager.getCRSRef( config.getCrs() );
-        String srid = config.getSrid() + "";
+        GeometryType type = GeometryType.GEOMETRY;
         JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
-        DBField nilMapping = buildNilMapping( config.getNilMapping() );
-        return new GeometryMapping( path, me, type, dim, crs, srid, joinedTable, nilMapping );
+        return new GeometryMapping( path, me, type, geometryParams, joinedTable );
     }
 
     private FeatureMapping buildMapping( QTableName currentTable, FeatureParticleJAXB config ) {
@@ -310,8 +310,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
         JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
-        DBField nilMapping = buildNilMapping( config.getNilMapping() );
-        return new CompoundMapping( path, particles, joinedTable, nilMapping );
+        return new CompoundMapping( path, particles, joinedTable );
     }
 
     private DBField buildNilMapping( String nilMapping ) {

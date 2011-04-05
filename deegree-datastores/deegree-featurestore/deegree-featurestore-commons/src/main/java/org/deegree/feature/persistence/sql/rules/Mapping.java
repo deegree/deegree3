@@ -37,7 +37,6 @@ package org.deegree.feature.persistence.sql.rules;
 
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 
 /**
  * A {@link Mapping} describes how a particle of a feature type is mapped to a relational model (tables/columns).
@@ -57,8 +56,6 @@ public abstract class Mapping {
 
     private final JoinChain joinedTable;
 
-    private final DBField nilMapping;
-
     /**
      * Creates a new {@link Mapping} instance.
      * 
@@ -66,13 +63,10 @@ public abstract class Mapping {
      *            relative xpath expression, must not be <code>null</code>
      * @param joinRule
      *            table joins, can be <code>null</code> (no joins involved)
-     * @param nilMapping
-     *            name of (boolean) column that stores whether the element is nilled, can be <code>null</code>
      */
-    protected Mapping( PropertyName path, JoinChain joinRule, DBField nilMapping ) {
+    protected Mapping( PropertyName path, JoinChain joinRule ) {
         this.path = path;
         this.joinedTable = joinRule;
-        this.nilMapping = nilMapping;
     }
 
     /**
@@ -92,15 +86,6 @@ public abstract class Mapping {
      */
     public JoinChain getJoinedTable() {
         return joinedTable;
-    }
-
-    /**
-     * Returns the name of the boolean column that is used for storing whether the element is nilled.
-     * 
-     * @return name of the boolean column, can be <code>null</code>
-     */
-    public DBField getNilMapping() {
-        return nilMapping;
     }
 
     @Override

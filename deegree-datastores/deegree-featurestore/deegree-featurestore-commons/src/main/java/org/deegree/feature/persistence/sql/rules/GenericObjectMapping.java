@@ -38,7 +38,6 @@ package org.deegree.feature.persistence.sql.rules;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 public class GenericObjectMapping extends ReferenceMapping {
@@ -48,8 +47,8 @@ public class GenericObjectMapping extends ReferenceMapping {
     private XSElementDeclaration elDecl;
 
     public GenericObjectMapping( PropertyName path, MappingExpression mapping, XSElementDeclaration elDecl,
-                                 JoinChain joinedTable, DBField nilMapping ) {
-        super( path, joinedTable, nilMapping );
+                                 JoinChain joinedTable ) {
+        super( path, joinedTable );
         this.mapping = mapping;
         this.elDecl = elDecl;
     }

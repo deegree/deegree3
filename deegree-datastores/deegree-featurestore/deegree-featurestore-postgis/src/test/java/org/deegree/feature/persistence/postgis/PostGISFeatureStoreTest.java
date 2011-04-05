@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.File;
@@ -78,6 +79,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.config.PostGISFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
@@ -97,7 +99,6 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.junit.Assert;
@@ -129,7 +130,8 @@ public class PostGISFeatureStoreTest {
             return;
         }
 
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, CRSUtils.EPSG_4326, "-1" );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true,
+                                                      new GeometryStorageParams( CRSUtils.EPSG_4326, "-1", DIM_2 ) );
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
         PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
         File file = new File( "/tmp/inspire-ad.xml" );
@@ -597,10 +599,11 @@ public class PostGISFeatureStoreTest {
                             throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         return null;
-//        File addressesFile = new File(
-//                                       "/home/schneider/.deegree/deegree-workspace-inspire-3.1-pre4-SNAPSHOT/appschemas/inspire/annex1", "AdministrativeUnits.xsd" );
-//        URL url = addressesFile.toURI().toURL();
-//        ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GML_32, null, addressesFile );
-//        return decoder.extractFeatureTypeSchema();
+        // File addressesFile = new File(
+        // "/home/schneider/.deegree/deegree-workspace-inspire-3.1-pre4-SNAPSHOT/appschemas/inspire/annex1",
+        // "AdministrativeUnits.xsd" );
+        // URL url = addressesFile.toURI().toURL();
+        // ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GML_32, null, addressesFile );
+        // return decoder.extractFeatureTypeSchema();
     }
 }

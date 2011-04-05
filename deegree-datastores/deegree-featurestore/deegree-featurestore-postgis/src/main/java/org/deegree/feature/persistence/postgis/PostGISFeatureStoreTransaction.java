@@ -433,13 +433,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                                   InsertRowManager rowManager )
                             throws FeatureStoreException {
 
-        DBField nilMapping = mapping.getNilMapping();
-        if ( nilMapping != null ) {
-            currentRow.addPreparedArgument( nilMapping.getColumn(), isNilled );
-        } else if ( isNilled ) {
-            LOG.warn( "No nilMapping, but value is nilled." );
-        }
-
         if ( !isNilled ) {
             if ( mapping instanceof PrimitiveMapping ) {
                 String column = null;
@@ -494,8 +487,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 GenericXMLElement propNode = (GenericXMLElement) particle;
                 for ( Mapping particleMapping : cm.getParticles() ) {
                     try {
-                        insertParticle( particleMapping, particleMapping.getNilMapping(), propNode, currentRow,
-                                        rowManager );
+                        insertParticle( particleMapping, propNode, currentRow, rowManager );
                     } catch ( FilterEvaluationException e ) {
                         throw new FeatureStoreException( e.getMessage(), e );
                     }
@@ -506,7 +498,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
     }
 
-    private void insertParticle( Mapping mapping, DBField nilMapping, GenericXMLElement particle, InsertRow insertRow,
+    private void insertParticle( Mapping mapping, GenericXMLElement particle, InsertRow insertRow,
                                  InsertRowManager rowManager )
                             throws FilterEvaluationException, FeatureStoreException {
 
@@ -520,12 +512,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
 
         boolean isNilled = particle.isNilled();
-        if ( nilMapping != null ) {
-            insertRow.addPreparedArgument( nilMapping.getColumn(), isNilled );
-        } else if ( isNilled ) {
-            LOG.warn( "No nilMapping, but value is nilled." );
-        }
-
         if ( !isNilled ) {
             if ( mapping instanceof PrimitiveMapping ) {
                 MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
@@ -555,8 +541,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 for ( Mapping particleMapping : ( (CompoundMapping) mapping ).getParticles() ) {
                     for ( TypedObjectNode particleValue : particleValues ) {
                         if ( particleValue instanceof GenericXMLElement ) {
-                            insertParticle( particleMapping, mapping.getNilMapping(),
-                                            (GenericXMLElement) particleValue, insertRow, rowManager );
+                            insertParticle( particleMapping, (GenericXMLElement) particleValue, insertRow, rowManager );
                         } else {
                             LOG.warn( "Unexpected particle value type (=" + particleValue.getClass() + ")" );
                         }

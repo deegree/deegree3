@@ -63,6 +63,7 @@ import org.deegree.feature.persistence.postgis.jaxb.JoinedTable;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.NamespaceHint;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.StorageCRS;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
@@ -95,11 +96,12 @@ public class AbstractMappedSchemaBuilder {
             return builder.getMappedSchema();
         }
         List<String> gmlSchemas = config.getGMLSchema();
+        StorageCRS storageCRS = config.getStorageCRS();
         List<NamespaceHint> nsHints = config.getNamespaceHint();
         BLOBMapping blobConf = config.getBLOBMapping();
         List<FeatureTypeMappingJAXB> ftMappingConfs = config.getFeatureTypeMapping();
-        MappedSchemaBuilderGML builder = new MappedSchemaBuilderGML( configURL, gmlSchemas, nsHints, blobConf,
-                                                                     ftMappingConfs );
+        MappedSchemaBuilderGML builder = new MappedSchemaBuilderGML( configURL, gmlSchemas, storageCRS, nsHints,
+                                                                     blobConf, ftMappingConfs );
         return builder.getMappedSchema();
     }
 

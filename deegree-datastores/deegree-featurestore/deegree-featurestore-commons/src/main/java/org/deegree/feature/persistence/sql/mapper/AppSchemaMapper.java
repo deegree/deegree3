@@ -38,9 +38,10 @@ package org.deegree.feature.persistence.sql.mapper;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
+import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,10 +67,10 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.DataTypeMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
@@ -121,16 +122,13 @@ public class AppSchemaMapper {
 
     private final MappingContextManager mcManager;
 
-    private final ICRS storageCrs;
-
-    private final String storageSrid;
-
     private List<DataTypeMapping> dtMappings = new ArrayList<DataTypeMapping>();
 
-    // TODO
-    private final CoordinateDimension storageDim = DIM_2;
-
     private final MappedApplicationSchema mappedSchema;
+
+    private final HashMap<String, String> nsToPrefix;
+
+    private final GeometryStorageParams geometryParams;
 
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
@@ -141,17 +139,14 @@ public class AppSchemaMapper {
      *            true, if BLOB mapping should be performed, false otherwise
      * @param createRelationalMapping
      *            true, if relational mapping should be performed, false otherwise
-     * @param storageCrs
-     *            CRS to use for geometry properties, must not be <code>null</code>
-     * @param srid
-     *            native DB-SRS identifier, must not be <code>null</code>
+     * @param geometryParams
+     *            parameters for storing geometries, must not be <code>null</code>
      */
     public AppSchemaMapper( ApplicationSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
-                            ICRS storageCrs, String srid ) {
+                            GeometryStorageParams geometryParams ) {
 
         this.appSchema = appSchema;
-        this.storageCrs = storageCrs;
-        this.storageSrid = srid;
+        this.geometryParams = geometryParams;
 
         List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
         FeatureType[] fts = appSchema.getFeatureTypes( null, false, false ).toArray( new FeatureType[ftList.size()] );
@@ -161,7 +156,7 @@ public class AppSchemaMapper {
 
         FeatureTypeMapping[] ftMappings = null;
 
-        Map<String, String> nsToPrefix = new HashMap<String, String>();
+        nsToPrefix = new HashMap<String, String>();
         Iterator<String> nsIter = CommonNamespaces.getNamespaceContext().getNamespaceURIs();
         while ( nsIter.hasNext() ) {
             String ns = nsIter.next();
@@ -180,7 +175,7 @@ public class AppSchemaMapper {
         DataTypeMapping[] dtMappings = this.dtMappings.toArray( new DataTypeMapping[this.dtMappings.size()] );
 
         this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, dtMappings,
-                                                         bboxMapping, blobMapping );
+                                                         bboxMapping, blobMapping, geometryParams );
     }
 
     /**
@@ -197,13 +192,13 @@ public class AppSchemaMapper {
         String table = "GML_OBJECTS";
         // TODO
         BlobCodec codec = new BlobCodec( appSchema.getXSModel().getVersion(), NONE );
-        return new BlobMapping( table, storageCrs, codec );
+        return new BlobMapping( table, geometryParams.getCrs(), codec );
     }
 
     private BBoxTableMapping generateBBoxMapping() {
         // TODO
         String ftTable = "FEATURE_TYPES";
-        return new BBoxTableMapping( ftTable, storageCrs );
+        return new BBoxTableMapping( ftTable, geometryParams.getCrs() );
     }
 
     private FeatureTypeMapping[] generateFtMappings( FeatureType[] fts ) {
@@ -266,12 +261,7 @@ public class AppSchemaMapper {
             LOG.warn( "TODO: Build JoinChain" );
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
-
-        DBField nilMapping = null;
-        if ( pt.isNillable() ) {
-            nilMapping = getNilMapping( propMc );
-        }
-        return new PrimitiveMapping( path, mapping, pt.getPrimitiveType(), jc, nilMapping );
+        return new PrimitiveMapping( path, mapping, pt.getPrimitiveType(), jc );
     }
 
     private DBField getNilMapping( MappingContext ctx ) {
@@ -291,12 +281,7 @@ public class AppSchemaMapper {
             LOG.warn( "TODO: Build JoinChain" );
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
-        DBField nilMapping = null;
-        if ( pt.isNillable() ) {
-            nilMapping = getNilMapping( propMc );
-        }
-        return new GeometryMapping( path, mapping, pt.getGeometryType(), storageDim, storageCrs, storageSrid, jc,
-                                    nilMapping );
+        return new GeometryMapping( path, mapping, pt.getGeometryType(), geometryParams, jc );
     }
 
     private FeatureMapping generatePropMapping( FeaturePropertyType pt, MappingContext mc ) {
@@ -313,11 +298,7 @@ public class AppSchemaMapper {
             jc = generateJoinChain( mc, mc2 );
             mapping = new DBField( "ref" );
         }
-        DBField nilMapping = null;
-        if ( pt.isNillable() ) {
-            nilMapping = getNilMapping( mc2 );
-        }
-        return new FeatureMapping( path, mapping, pt.getFTName(), jc, nilMapping );
+        return new FeatureMapping( path, mapping, pt.getFTName(), jc );
     }
 
     private GenericObjectMapping generatePropMapping( GenericObjectPropertyType pt, MappingContext mc ) {
@@ -339,15 +320,10 @@ public class AppSchemaMapper {
         XSComplexTypeDefinition xsTypeDef = (XSComplexTypeDefinition) xsElementDecl.getTypeDefinition();
         QName name = new QName( xsElementDecl.getNamespace(), xsElementDecl.getName() );
         MappingContext newMc = mcManager.newContext( name, "id" );
-        List<Mapping> particles = generateMapping( xsTypeDef, newMc, new HashMap<QName, QName>() );
+        List<Mapping> particles = generateMapping( xsTypeDef, newMc, new HashMap<QName, QName>(), pt.isNillable() );
         DataTypeMapping dtMapping = new DataTypeMapping( xsElementDecl, table, particles );
         dtMappings.add( dtMapping );
-
-        DBField nilMapping = null;
-        if ( pt.isNillable() ) {
-            nilMapping = getNilMapping( mc2 );
-        }
-        return new GenericObjectMapping( path, mapping, xsElementDecl, jc, nilMapping );
+        return new GenericObjectMapping( path, mapping, xsElementDecl, jc );
     }
 
     private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
@@ -370,12 +346,9 @@ public class AppSchemaMapper {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
             jc = generateJoinChain( mc, propMc );
         }
-        List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>() );
-        DBField nilMapping = null;
-        if ( pt.isNillable() ) {
-            nilMapping = getNilMapping( propMc );
-        }
-        return new CompoundMapping( path, particles, jc, nilMapping );
+        List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>(),
+                                                   pt.isNillable() );
+        return new CompoundMapping( path, particles, jc );
     }
 
     private CodeMapping generatePropMapping( CodePropertyType pt, MappingContext mc ) {
@@ -396,11 +369,7 @@ public class AppSchemaMapper {
             mapping = new DBField( "value" );
         }
         MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
-        DBField nilMapping = null;
-        if ( pt.isNillable() ) {
-            nilMapping = getNilMapping( propMc );
-        }
-        return new CodeMapping( path, mapping, STRING, jc, csMapping, nilMapping );
+        return new CodeMapping( path, mapping, STRING, jc, csMapping );
     }
 
     private JoinChain generateJoinChain( MappingContext from, MappingContext to ) {
@@ -409,7 +378,7 @@ public class AppSchemaMapper {
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
-                                           Map<QName, QName> elements ) {
+                                           Map<QName, QName> elements, boolean isNillable ) {
 
         List<Mapping> particles = new ArrayList<Mapping>();
 
@@ -427,7 +396,7 @@ public class AppSchemaMapper {
             if ( typeDef.getSimpleType() != null ) {
                 pt = XMLValueMangler.getPrimitiveType( typeDef.getSimpleType() );
             }
-            particles.add( new PrimitiveMapping( path, dbField, pt, null, null ) );
+            particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
 
         // attributes
@@ -444,7 +413,16 @@ public class AppSchemaMapper {
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             PrimitiveType pt = XMLValueMangler.getPrimitiveType( attrDecl.getTypeDefinition() );
-            particles.add( new PrimitiveMapping( path, dbField, pt, null, null ) );
+            particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
+        }
+
+        // xsi:nil attribute
+        if ( isNillable ) {
+            QName attrName = new QName( XSINS, "nil", "xsi" );
+            MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
+            PropertyName path = new PropertyName( "@" + getName( attrName ), null );
+            DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
+            particles.add( new PrimitiveMapping( path, dbField, BOOLEAN, null ) );
         }
 
         // child elements
@@ -577,11 +555,7 @@ public class AppSchemaMapper {
                     } else {
                         mapping = new DBField( elMC.getColumn() );
                     }
-                    DBField nilMapping = null;
-                    if ( substitution.getNillable() ) {
-                        nilMapping = getNilMapping( elMC );
-                    }
-                    mappings.add( new FeatureMapping( path, mapping, valueFtName, jc, nilMapping ) );
+                    mappings.add( new FeatureMapping( path, mapping, valueFtName, jc ) );
                 } else if ( appSchema.getXSModel().getGeometryElement( elName ) != null ) {
                     JoinChain jc = null;
                     DBField mapping = null;
@@ -601,7 +575,7 @@ public class AppSchemaMapper {
                     if ( substitution.getNillable() ) {
                         nilMapping = getNilMapping( elMC );
                     }
-                    mappings.add( new GeometryMapping( path, mapping, gt, dim, storageCrs, srid, jc, nilMapping ) );
+                    mappings.add( new GeometryMapping( path, mapping, gt, geometryParams, jc ) );
                 } else {
                     XSTypeDefinition typeDef = substitution.getTypeDefinition();
                     QName complexTypeName = getQName( typeDef );
@@ -631,12 +605,13 @@ public class AppSchemaMapper {
                     }
 
                     if ( typeDef instanceof XSComplexTypeDefinition ) {
-                        List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2 );
-                        mappings.add( new CompoundMapping( path, particles, jc, nilMapping ) );
+                        List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2,
+                                                                   substitution.getNillable() );
+                        mappings.add( new CompoundMapping( path, particles, jc ) );
                     } else {
                         MappingExpression mapping = new DBField( elMC.getColumn() );
                         PrimitiveType pt = XMLValueMangler.getPrimitiveType( (XSSimpleTypeDefinition) typeDef );
-                        mappings.add( new PrimitiveMapping( path, mapping, pt, jc, nilMapping ) );
+                        mappings.add( new PrimitiveMapping( path, mapping, pt, jc ) );
                     }
                 }
             }
@@ -687,7 +662,7 @@ public class AppSchemaMapper {
 
     private String getName( QName name ) {
         if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
-            String prefix = appSchema.getXSModel().getNamespacePrefixes().get( name.getNamespaceURI() );
+            String prefix = nsToPrefix.get( name.getNamespaceURI() );
             return prefix + ":" + name.getLocalPart();
         }
         return name.getLocalPart();
@@ -697,7 +672,7 @@ public class AppSchemaMapper {
         if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
             String prefix = name.getPrefix();
             if ( prefix == null || prefix.isEmpty() ) {
-                prefix = appSchema.getXSModel().getNamespacePrefixes().get( name.getNamespaceURI() );
+                prefix = nsToPrefix.get( name.getNamespaceURI() );
             }
             name = new QName( name.getNamespaceURI(), name.getLocalPart(), prefix );
         }

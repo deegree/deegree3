@@ -210,12 +210,6 @@ public class PostGISDDLCreator {
             ddls.add( sql );
         }
 
-        if ( propMapping.getNilMapping() != null ) {
-            sql.append( ",\n    " );
-            sql.append( propMapping.getNilMapping().getColumn() );
-            sql.append( " boolean" );
-        }
-
         if ( propMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping primitiveMapping = (PrimitiveMapping) propMapping;
             MappingExpression me = primitiveMapping.getMapping();
@@ -277,13 +271,6 @@ public class PostGISDDLCreator {
 
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
         for ( Mapping mapping : cm.getParticles() ) {
-
-            if ( mapping.getNilMapping() != null ) {
-                sb.append( ",\n    " );
-                sb.append( mapping.getNilMapping().getColumn() );
-                sb.append( " boolean" );
-            }
-
             if ( mapping instanceof PrimitiveMapping ) {
                 PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
                 MappingExpression me = primitiveMapping.getMapping();

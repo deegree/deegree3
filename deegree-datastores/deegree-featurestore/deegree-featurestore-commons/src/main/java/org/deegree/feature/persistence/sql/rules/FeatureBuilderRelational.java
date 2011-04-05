@@ -151,9 +151,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         if ( handleJoin && jc != null ) {
             columns.add( jc.getFields().get( 0 ).getColumn() );
         } else {
-            if ( mapping.getNilMapping() != null ) {
-                columns.add( mapping.getNilMapping().getColumn() );
-            }
             if ( mapping instanceof PrimitiveMapping ) {
                 PrimitiveMapping pm = (PrimitiveMapping) mapping;
                 MappingExpression column = pm.getMapping();
@@ -260,12 +257,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
         List<Pair<TypedObjectNode, Boolean>> values = new ArrayList<Pair<TypedObjectNode, Boolean>>();
         boolean isNil = false;
-        if ( mapping.getNilMapping() != null ) {
-            Boolean b = rs.getBoolean( i++ );
-            if ( b != null ) {
-                isNil = b;
-            }
-        }
         if ( mapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();

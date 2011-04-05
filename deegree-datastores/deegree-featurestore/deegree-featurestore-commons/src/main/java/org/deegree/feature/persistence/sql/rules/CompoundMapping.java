@@ -53,8 +53,8 @@ public class CompoundMapping extends Mapping {
 
     private final List<Mapping> particles;
 
-    public CompoundMapping( PropertyName path, List<Mapping> particles, JoinChain joinedTable, DBField nilMapping ) {
-        super( path, joinedTable, nilMapping );
+    public CompoundMapping( PropertyName path, List<Mapping> particles, JoinChain joinedTable ) {
+        super( path, joinedTable );
         this.particles = particles;
     }
 

@@ -40,7 +40,6 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
@@ -57,9 +56,8 @@ public class FeatureMapping extends ReferenceMapping {
 
     private QName valueFtName;
 
-    public FeatureMapping( PropertyName path, MappingExpression mapping, QName valueFtName, JoinChain joinedTable,
-                           DBField nilMapping ) {
-        super( path, joinedTable, nilMapping );
+    public FeatureMapping( PropertyName path, MappingExpression mapping, QName valueFtName, JoinChain joinedTable ) {
+        super( path, joinedTable );
         this.mapping = mapping;
         this.valueFtName = valueFtName;
     }

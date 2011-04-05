@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,63 +33,67 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql.rules;
+package org.deegree.feature.persistence.sql;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.sql.GeometryStorageParams;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.MappingExpression;
-import org.deegree.geometry.Geometry;
 
 /**
- * {@link Mapping} of {@link Geometry} particles.
+ * Encapsulates the storage parameters for geometries.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GeometryMapping extends Mapping {
+public class GeometryStorageParams {
 
-    private final MappingExpression mapping;
+    private final ICRS crs;
 
-    private final GeometryType type;
+    private final String srid;
 
-    private final GeometryStorageParams geometryParams;
+    private final CoordinateDimension dim;
 
-    public GeometryMapping( PropertyName path, MappingExpression mapping, GeometryType type,
-                            GeometryStorageParams geometryParams, JoinChain joinedTable ) {
-        super( path, joinedTable );
-        this.mapping = mapping;
-        this.type = type;
-        this.geometryParams = geometryParams;
+    /**
+     * Creates a new {@link GeometryStorageParams} instance.
+     * 
+     * @param crs
+     *            coordinate reference system used for stored geometries, must not be <code>null</code>
+     * @param srid
+     *            spatial reference identifier (database code), must not be <code>null</code>
+     * @param dim
+     *            dimensionality of coordinates, must not be <code>null</code>
+     */
+    public GeometryStorageParams( ICRS crs, String srid, CoordinateDimension dim ) {
+        this.crs = crs;
+        this.srid = srid;
+        this.dim = dim;
     }
 
-    public MappingExpression getMapping() {
-        return mapping;
+    /**
+     * Returns the coordinate reference system for stored geometries.
+     * 
+     * @return coordinate reference system, never <code>null</code>
+     */
+    public ICRS getCrs() {
+        return crs;
     }
 
-    public GeometryType getType() {
-        return type;
-    }
-
-    public CoordinateDimension getDim() {
-        return geometryParams.getDim();
-    }
-
-    public ICRS getCRS() {
-        return geometryParams.getCrs();
-    }
-
+    /**
+     * Returns the spatial reference identifier (database code).
+     * 
+     * @return spatial reference identifier, never <code>null</code>
+     */
     public String getSrid() {
-        return geometryParams.getSrid();
+        return srid;
     }
 
-    @Override
-    public String toString() {
-        return super.toString() + ",{type=" + type + "}";
+    /**
+     * Returns the coordinate dimension.
+     * 
+     * @return coordinate dimension, never <code>null</code>
+     */
+    public CoordinateDimension getDim() {
+        return dim;
     }
 }

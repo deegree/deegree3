@@ -63,8 +63,6 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.slf4j.Logger;
@@ -132,6 +130,13 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeCharacters( connId );
         writer.writeEndElement();
 
+        writer.writeStartElement( CONFIG_NS, "StorageCRS" );
+        writer.writeAttribute( "srid", schema.getGeometryParams().getSrid() );
+        // TODO
+        writer.writeAttribute( "dim", "2D" );
+        writer.writeCharacters( schema.getGeometryParams().getCrs().getAlias() );
+        writer.writeEndElement();
+
         for ( String schemaUrl : schemaURLs ) {
             writer.writeStartElement( CONFIG_NS, "GMLSchema" );
             writer.writeCharacters( schemaUrl );
@@ -139,7 +144,7 @@ public class PostGISFeatureStoreConfigWriter {
         }
 
         if ( schema.getBlobMapping() != null ) {
-            writeBlobMapping( writer, schema.getBlobMapping(), schemaURLs );
+            writeBlobMapping( writer, schema.getBlobMapping() );
         }
 
         List<FeatureType> fts = schema.getFeatureTypes( null, false, false );
@@ -159,12 +164,9 @@ public class PostGISFeatureStoreConfigWriter {
         writer.writeEndElement();
     }
 
-    private void writeBlobMapping( XMLStreamWriter writer, BlobMapping blobMapping, List<String> schemaURLs )
+    private void writeBlobMapping( XMLStreamWriter writer, BlobMapping blobMapping )
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "BLOBMapping" );
-        writer.writeStartElement( CONFIG_NS, "StorageCRS" );
-        writer.writeCharacters( schema.getStorageCRS().getAlias() );
-        writer.writeEndElement();
         writer.writeEndElement();
     }
 
@@ -208,15 +210,11 @@ public class PostGISFeatureStoreConfigWriter {
             PrimitiveMapping pm = (PrimitiveMapping) particle;
             writer.writeStartElement( CONFIG_NS, "Primitive" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
-            writer.writeAttribute( "type", pm.getType().getXSTypeName() );
             MappingExpression mapping = pm.getMapping();
             if ( mapping instanceof DBField ) {
                 writer.writeAttribute( "mapping", ( (DBField) mapping ).getColumn() );
             } else {
                 writer.writeAttribute( "mapping", mapping.toString() );
-            }
-            if ( particle.getNilMapping() != null ) {
-                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );
             }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
@@ -227,66 +225,6 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeStartElement( CONFIG_NS, "Geometry" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
             writer.writeAttribute( "mapping", gm.getMapping().toString() );
-            if ( particle.getNilMapping() != null ) {
-                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );
-            }
-            GeometryType gt = gm.getType();
-            switch ( gt ) {
-            case POINT: {
-                writer.writeAttribute( "type", "Point" );
-                break;
-            }
-            case LINE_STRING:
-            case LINEAR_RING:
-            case CURVE: {
-                writer.writeAttribute( "type", "LineString" );
-                break;
-            }
-            case POLYGON:
-            case SURFACE: {
-                writer.writeAttribute( "type", "Polygon" );
-                break;
-            }
-            case MULTI_POINT: {
-                writer.writeAttribute( "type", "MultiPoint" );
-                break;
-            }
-            case MULTI_LINE_STRING:
-            case MULTI_CURVE: {
-                writer.writeAttribute( "type", "MultiLineString" );
-                break;
-            }
-            case MULTI_POLYGON:
-            case MULTI_SURFACE: {
-                writer.writeAttribute( "type", "MultiPolygon" );
-                break;
-            }
-            case MULTI_GEOMETRY: {
-                writer.writeAttribute( "type", "MultiGeometry" );
-                break;
-            }
-            default: {
-                writer.writeAttribute( "type", "Geometry" );
-            }
-            }
-            writer.writeAttribute( "crs", gm.getCRS().getAlias() );
-            writer.writeAttribute( "srid", gm.getSrid() );
-            CoordinateDimension dim = gm.getDim();
-            switch ( dim ) {
-            case DIM_2: {
-                writer.writeAttribute( "dim", "2D" );
-                break;
-            }
-            case DIM_3: {
-                writer.writeAttribute( "dim", "3D" );
-                break;
-            }
-            case DIM_2_OR_3: {
-                // TODO
-                writer.writeAttribute( "dim", "2D" );
-                break;
-            }
-            }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
             }
@@ -294,9 +232,6 @@ public class PostGISFeatureStoreConfigWriter {
         } else if ( particle instanceof FeatureMapping ) {
             writer.writeStartElement( CONFIG_NS, "Feature" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
-            if ( particle.getNilMapping() != null ) {
-                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );
-            }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
             }
@@ -304,9 +239,6 @@ public class PostGISFeatureStoreConfigWriter {
         } else if ( particle instanceof CompoundMapping ) {
             writer.writeStartElement( CONFIG_NS, "Complex" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
-            if ( particle.getNilMapping() != null ) {
-                writer.writeAttribute( "nilMapping", particle.getNilMapping().toString() );
-            }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
             }
