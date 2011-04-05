@@ -131,11 +131,11 @@ public class MSSQLMappingsISODC implements MSSQLServerMapping {
         addStringProp( DC_NS, "Format", DatabaseTables.idxtb_main, "formats", true );
         addStringProp( "", "Format", DatabaseTables.idxtb_main, "formats", true );
         addStringProp( CSW_202_NS, "Format", DatabaseTables.idxtb_main, "formats", true );
-        addStringProp( APISO_NS, "Subject", DatabaseTables.idxtb_keyword, "keyword", true );
-        addStringProp( APISO_NS, "subject", DatabaseTables.idxtb_keyword, "keyword", true );
-        addStringProp( DC_NS, "Subject", DatabaseTables.idxtb_keyword, "keyword", true );
-        addStringProp( "", "Subject", DatabaseTables.idxtb_keyword, "keyword", true );
-        addStringProp( CSW_202_NS, "Subject", DatabaseTables.idxtb_keyword, "keyword", true );
+        addStringProp( APISO_NS, "Subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( APISO_NS, "subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( DC_NS, "Subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( "", "Subject", DatabaseTables.idxtb_keyword, "keywords", true );
+        addStringProp( CSW_202_NS, "Subject", DatabaseTables.idxtb_keyword, "keywords", true );
         addStringProp( APISO_NS, "AnyText", DatabaseTables.idxtb_main, "anytext", false );
         addStringProp( APISO_NS, "anyText", DatabaseTables.idxtb_main, "anytext", false );
         addStringProp( CSW_202_NS, "AnyText", DatabaseTables.idxtb_main, "anytext", false );
@@ -179,7 +179,7 @@ public class MSSQLMappingsISODC implements MSSQLServerMapping {
         addStringProp( APISO_NS, "DistanceUOM", DatabaseTables.idxtb_main, "distanceuom", false );
         addDateProp( APISO_NS, "TempExtent_begin", DatabaseTables.idxtb_main, "tempextent_begin" );
         addDateProp( APISO_NS, "TempExtent_end", DatabaseTables.idxtb_main, "tempextent_end" );
-        addStringProp( APISO_NS, "ServiceType", DatabaseTables.idxtb_main, "servicetype", true );
+        addStringProp( APISO_NS, "ServiceType", DatabaseTables.idxtb_main, "servicetype", false );
         addStringProp( APISO_NS, "ServiceTypeVersion", DatabaseTables.idxtb_main, "servicetypeversion", true );
 
         addStringProp( APISO_NS, "Operation", DatabaseTables.idxtb_main, "operations", true );
@@ -195,15 +195,15 @@ public class MSSQLMappingsISODC implements MSSQLServerMapping {
         // ----------------------<additional queryable properties for INSPIRE>--------------------------
 
         addBooleanProp( APISO_NS, "Degree", DatabaseTables.idxtb_main, "degree" );
-        addStringProp( APISO_NS, "AccessConstraints", DatabaseTables.idxtb_constraint, "accessconstraint", true );
-        addStringProp( APISO_NS, "OtherConstraints", DatabaseTables.idxtb_constraint, "otherconstraint", true );
+        addStringProp( APISO_NS, "AccessConstraints", DatabaseTables.idxtb_constraint, "accessconstraints", true );
+        addStringProp( APISO_NS, "OtherConstraints", DatabaseTables.idxtb_constraint, "otherconstraints", true );
         addStringProp( APISO_NS, "Classification", DatabaseTables.idxtb_constraint, "classification", false );
         addStringProp( APISO_NS, "ConditionApplyingToAccessAndUse", DatabaseTables.idxtb_constraint,
                        "conditionapptoacc", true );
         addStringProp( APISO_NS, "Lineage", DatabaseTables.idxtb_main, "lineage", true );
-        addStringProp( APISO_NS, "SpecificationTitle", DatabaseTables.idxtb_main, "specificationtitle", false );
-        addStringProp( APISO_NS, "SpecificationDateType", DatabaseTables.idxtb_main, "specificationdatetype", false );
-        addDateProp( APISO_NS, "SpecificationDate", DatabaseTables.idxtb_main, "specificationdate" );
+        addStringProp( APISO_NS, "SpecificationTitle", DatabaseTables.idxtb_main, "spectitle", true );
+        addStringProp( APISO_NS, "SpecificationDateType", DatabaseTables.idxtb_main, "specdatetype", false );
+        addDateProp( APISO_NS, "SpecificationDate", DatabaseTables.idxtb_main, "specdate" );
 
         // ----------------------</additional queryable properties for INSPIRE>-------------------------
         // ----------------------------------------------------------------------------------------
