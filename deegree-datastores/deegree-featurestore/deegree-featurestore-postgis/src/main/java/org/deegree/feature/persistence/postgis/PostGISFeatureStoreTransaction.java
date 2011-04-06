@@ -365,14 +365,10 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     fids.add( insertFeatureRelational( feature, ftMapping, mode ) );
                 }
             }
-        } catch ( SQLException e ) {
-            String msg = "Error inserting feature '" + fid + "':" + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
-        } catch ( FilterEvaluationException e ) {
-            String msg = "Error inserting feature '" + fid + "':" + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
+        } catch ( Throwable t ) {
+            String msg = "Error inserting feature '" + fid + "':" + t.getMessage();
+            LOG.error( msg, t );
+            throw new FeatureStoreException( msg, t );
         }
 
         long elapsed = System.currentTimeMillis() - begin;

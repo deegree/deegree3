@@ -56,6 +56,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
@@ -101,6 +102,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final Connection conn;
 
+    private final NamespaceBindings nsBindings;
+
     private static final QName XSI_NIL = new QName( CommonNamespaces.XSINS, "nil", "xsi" );
 
     /**
@@ -121,6 +124,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         this.ft = ft;
         this.ftMapping = ftMapping;
         this.conn = conn;
+        this.nsBindings = new NamespaceBindings();
+        for ( String prefix : fs.getNamespaceContext().keySet() ) {
+            String ns = fs.getNamespaceContext().get( prefix );
+            nsBindings.addNamespace( prefix, ns );
+        }
     }
 
     @Override
@@ -322,18 +330,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         }
                     } else if ( step instanceof NameStep ) {
                         NameStep ns = (NameStep) step;
-                        String prefix = ns.getPrefix();
-                        QName name = null;
-                        if ( prefix == null || prefix.isEmpty() ) {
-                            name = new QName( ns.getLocalName() );
-                        } else {
-                            String nsUri = fs.getSchema().getNamespaceBindings().get( prefix );
-                            if ( nsUri == null ) {
-                                nsUri = "";
-                                throw new IllegalArgumentException( "No namespace for prefix " + prefix );
-                            }
-                            name = new QName( nsUri, ns.getLocalName(), prefix );
-                        }
+                        QName name = getQName( ns );
                         if ( step.getAxis() == Axis.ATTRIBUTE ) {
                             for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
                                 if ( particleValue.first instanceof PrimitiveValue ) {
@@ -418,5 +415,17 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             throw new SQLException( msg, t );
         }
         return rs;
+    }
+
+    private QName getQName( NameStep step ) {
+        String prefix = step.getPrefix();
+        QName qName;
+        if ( prefix.isEmpty() ) {
+            qName = new QName( step.getLocalName() );
+        } else {
+            String ns = nsBindings.translateNamespacePrefixToUri( prefix );
+            qName = new QName( ns, step.getLocalName(), prefix );
+        }
+        return qName;
     }
 }

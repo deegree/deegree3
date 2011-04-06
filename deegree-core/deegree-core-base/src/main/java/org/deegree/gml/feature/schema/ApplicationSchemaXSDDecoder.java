@@ -483,26 +483,27 @@ public class ApplicationSchemaXSDDecoder {
         // check for well known GML types first
         if ( typeDef.getName() != null ) {
             QName typeName = createQName( typeDef.getNamespace(), typeDef.getName() );
-            if ( typeName.equals( new QName( gmlVersion.getNamespace(), "CodeType" ) ) ) {
-                LOG.trace( "Identified a CodePropertyType." );
-                pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-                                           ptSubstitutions );
-            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "BoundingShapeType" ) ) ) {
+//            if ( typeName.equals( new QName( gmlVersion.getNamespace(), "CodeType" ) ) ) {
+//                LOG.trace( "Identified a CodePropertyType." );
+//                pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+//                                           ptSubstitutions );
+//            }
+            if ( typeName.equals( new QName( gmlVersion.getNamespace(), "BoundingShapeType" ) ) ) {
                 LOG.trace( "Identified an EnvelopePropertyType." );
                 pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
                                                ptSubstitutions );
-            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
-                LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
-                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-                                              ptSubstitutions );
-            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "LengthType" ) ) ) {
-                LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
-                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-                                              ptSubstitutions );
-            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "AngleType" ) ) ) {
-                LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
-                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-                                              ptSubstitutions );
+//            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
+//                LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
+//                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+//                                              ptSubstitutions );
+//            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "LengthType" ) ) ) {
+//                LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
+//                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+//                                              ptSubstitutions );
+//            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "AngleType" ) ) ) {
+//                LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
+//                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+//                                              ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "FeatureArrayPropertyType" ) ) ) {
                 LOG.trace( "Identified a FeatureArrayPropertyType" );
                 pt = new ArrayPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
