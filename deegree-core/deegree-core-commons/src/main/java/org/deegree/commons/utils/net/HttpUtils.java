@@ -282,11 +282,12 @@ public class HttpUtils {
      * @return some object from the url
      * @throws IOException
      */
-    public static <T> T post( Worker<T> worker, String url, Map<String, String> params, Map<String, String> headers )
+    public static <T> T post( Worker<T> worker, String url, Map<String, String> params, Map<String, String> headers, int readTimeout )
                             throws IOException {
         DURL u = new DURL( url );
         LOG.debug( "Sending HTTP POST against {}", url );
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+        HttpConnectionParams.setSoTimeout( client.getParams(), readTimeout );
         HttpPost post = new HttpPost( url );
         List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>( params.size() );
         for ( Entry<String, String> e : params.entrySet() ) {
