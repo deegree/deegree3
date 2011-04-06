@@ -219,7 +219,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     protected ResourceState<T> processResourceConfig( File configFile )
                             throws IOException {
 
-        LOG.debug( "Processing file '{}'" + configFile );
+        LOG.debug( "Processing file '{}'", configFile );
 
         ResourceState<T> state = null;
 
