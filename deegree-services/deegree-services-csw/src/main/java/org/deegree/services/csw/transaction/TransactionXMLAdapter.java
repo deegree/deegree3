@@ -215,15 +215,16 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                 handle = getNodeAsString( transChildElement, new XPath( "@handle", nsContext ), null );
                 typeName = getNodeAsQName( transChildElement, new XPath( "@typeName", nsContext ), null );
 
+                if ( constraintElement == null ) {
+                    String msg = "A constraint must be specified!";
+                    LOG.debug( msg );
+                    throw new InvalidParameterValueException( msg );
+                }
+
                 // The schema allows anytext or recordProperty with a constraint. To allow replacing of a metadata
-                // record with a changed fileIdentifier it should be possible to allow anyType (the MDRecord) in
-                // combination with a constaint! The metadata record is expected as first element!
+                // record with a changed fileIdentifier it is allowed to set anyType (the MDRecord) in
+                // combination with a constraint! The metadata record is expected as first element!
                 if ( recordPropertyElements != null && !recordPropertyElements.isEmpty() ) {
-                    if ( constraintElement == null ) {
-                        String msg = "A constraint shall be specified, if no complete MD Record is set!";
-                        LOG.debug( msg );
-                        throw new InvalidParameterValueException( msg );
-                    }
                     MetadataProperty recordProperty = null;
                     for ( OMElement recordPropertyElement : recordPropertyElements ) {
                         String name = getRequiredNodeAsString( recordPropertyElement, new XPath( "csw:Name", nsContext ) );
@@ -244,14 +245,12 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                         recordProperty = new MetadataProperty( new PropertyName( name.trim(), nsContext ), value );
                         recordProperties.add( recordProperty );
                     }
-                    // set record to update to null - is not longer relevant
-                    newRecord = null;
+                } else if ( newRecordEl != null ) {
+                    newRecord = MetadataRecordFactory.create( newRecordEl );
                 } else {
-                    if ( newRecord == null ) {
-                        String msg = "Either a RecordProperty or a record to update must be specified!";
-                        LOG.debug( msg );
-                        throw new InvalidParameterValueException( msg );
-                    }
+                    String msg = "Either a RecordProperty or a record to update must be specified!";
+                    LOG.debug( msg );
+                    throw new InvalidParameterValueException( msg );
                 }
                 operations.add( new UpdateOperation( handle, newRecord, typeName, parseConstraint( constraintElement ),
                                                      recordProperties ) );

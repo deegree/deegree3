@@ -112,8 +112,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final Version version;
 
-    private boolean isSoap;
-
     private final boolean isEnabledInspireExtension;
 
     private List<String> additionalQueryables = new ArrayList<String>();
@@ -130,14 +128,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     public GetCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
                                    DeegreeServiceControllerType mainConf, Set<Sections> sections,
                                    ServiceIdentificationType identification, Version version,
-                                   boolean isTransactionEnabled, boolean isEnabledInspireExtension, boolean isSoap ) {
+                                   boolean isTransactionEnabled, boolean isEnabledInspireExtension ) {
         this.writer = writer;
         this.mainControllerConf = mainControllerConf;
         this.mainConf = mainConf;
         this.sections = sections;
         this.identification = identification;
         this.version = version;
-        this.isSoap = isSoap;
         this.isTransactionEnabled = isTransactionEnabled;
         this.isEnabledInspireExtension = isEnabledInspireExtension;
 
@@ -231,7 +228,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                             throws XMLStreamException {
 
         if ( VERSION_202.equals( version ) ) {
-            export202( writer, sections, identification, mainControllerConf, mainConf, isSoap );
+            export202( writer, sections, identification, mainControllerConf, mainConf );
         } else {
             throw new InvalidParameterValueException( "Supported versions are: '" + VERSION_202 + "'. Version '"
                                                       + version + "' instead is not supported." );
@@ -239,8 +236,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     }
 
     private void export202( XMLStreamWriter writer, Set<Sections> sections, ServiceIdentificationType identification,
-                            DeegreeServicesMetadataType mainControllerConf, DeegreeServiceControllerType mainConf,
-                            boolean isSoap )
+                            DeegreeServicesMetadataType mainControllerConf, DeegreeServiceControllerType mainConf )
                             throws XMLStreamException {
 
         writer.writeStartElement( CSW_PREFIX, "Capabilities", CSW_202_NS );

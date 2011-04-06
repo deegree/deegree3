@@ -70,14 +70,13 @@ import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
-import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,16 +96,13 @@ public class GetRecordsHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetRecordsHandler.class );
 
-    private CSWService service;
-
     /**
      * Creates a new {@link GetRecordsHandler} instance that uses the given service to lookup the {@link MetadataStore}
      * s.
      * 
      * @param service
      */
-    public GetRecordsHandler( CSWService service ) {
-        this.service = service;
+    public GetRecordsHandler() {
 
     }
 
@@ -120,7 +116,7 @@ public class GetRecordsHandler {
      * @throws SQLException
      * @throws OWSException
      */
-    public void doGetRecords( GetRecords getRec, HttpResponseBuffer response, boolean isSoap )
+    public void doGetRecords( GetRecords getRec, HttpResponseBuffer response, MetadataStore<?> store )
                             throws XMLStreamException, IOException, OWSException {
 
         LOG.debug( "doGetRecords: " + getRec );
@@ -138,7 +134,7 @@ public class GetRecordsHandler {
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {
-            export( xmlWriter, getRec, version, isSoap );
+            export( xmlWriter, getRec, version, store );
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage() );
             throw new InvalidParameterValueException( e.getMessage() );
@@ -161,11 +157,11 @@ public class GetRecordsHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void export( XMLStreamWriter xmlWriter, GetRecords getRec, Version version, boolean isSoap )
+    private void export( XMLStreamWriter xmlWriter, GetRecords getRec, Version version, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
         if ( VERSION_202.equals( version ) ) {
-            export202( xmlWriter, getRec, isSoap );
+            export202( xmlWriter, getRec, store );
         } else {
             throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
         }
@@ -183,7 +179,7 @@ public class GetRecordsHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void export202( XMLStreamWriter writer, GetRecords getRec, boolean isSoap )
+    private void export202( XMLStreamWriter writer, GetRecords getRec, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
         Version version = new Version( 2, 0, 2 );
 
@@ -194,7 +190,7 @@ public class GetRecordsHandler {
             writer.writeNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
 
             searchStatus( writer, version );
-            searchResult( writer, getRec, version );
+            searchResult( writer, getRec, version, store );
 
         } else {
             if ( validate( getRec.getHoleRequest() ).size() != 0 ) {
@@ -252,7 +248,7 @@ public class GetRecordsHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version )
+    private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
         boolean isElementName = false;
         if ( getRec.getElementName().length != 0 ) {
@@ -276,16 +272,15 @@ public class GetRecordsHandler {
                 int countRows = 0;
                 int nextRecord = 0;
 
-                MetadataStore rec = service.getStore();
                 MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getSortBy(),
                                                          getRec.getStartPosition() );
 
                 try {
-                    countRows = rec.getRecordCount( query );
+                    countRows = store.getRecordCount( query );
                     returnedRecords = 0;
                     nextRecord = 1;
                     if ( !isResultTypeHits ) {
-                        storeSet = rec.getRecords( query );
+                        storeSet = store.getRecords( query );
                         returnedRecords = computeReturned( countRows, getRec.getMaxRecords(), getRec.getStartPosition() );
                         nextRecord = computeNext( countRows, getRec.getMaxRecords(), getRec.getStartPosition() );
                     }

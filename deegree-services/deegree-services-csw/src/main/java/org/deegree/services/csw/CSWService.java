@@ -129,7 +129,7 @@ public class CSWService {
      * 
      * @return Set of type <Code>RecordStore<Code>
      */
-    public Set<MetadataStore> getMetadataStore() {
+    public Set<MetadataStore> getMetadataStores() {
         return recordStore;
     }
 }

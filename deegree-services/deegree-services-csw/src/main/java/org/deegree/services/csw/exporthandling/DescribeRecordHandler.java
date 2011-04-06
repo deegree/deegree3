@@ -69,13 +69,12 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
-import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.describerecord.DescribeRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,17 +98,13 @@ public class DescribeRecordHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( DescribeRecordHandler.class );
 
-    private final CSWService service;
-
     /**
      * Creates a new {@link DescribeRecordHandler} instance that uses the given service to lookup the
      * {@link MetadataStore}s.
      * 
      * @param service
      */
-    public DescribeRecordHandler( CSWService service ) {
-        this.service = service;
-
+    public DescribeRecordHandler() {
     }
 
     /**
@@ -123,7 +118,7 @@ public class DescribeRecordHandler {
      * @throws IOException
      * @throws OWSException
      */
-    public void doDescribeRecord( DescribeRecord descRec, HttpResponseBuffer response, boolean isSoap )
+    public void doDescribeRecord( DescribeRecord descRec, HttpResponseBuffer response )
                             throws XMLStreamException, IOException, OWSException {
 
         QName[] typeNames = descRec.getTypeNames();
@@ -134,7 +129,7 @@ public class DescribeRecordHandler {
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
 
         try {
-            export( xmlWriter, typeNames, version, isSoap );
+            export( xmlWriter, typeNames, version );
         } catch ( MetadataStoreException e ) {
             LOG.debug( e.getMessage() );
             throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
@@ -154,11 +149,11 @@ public class DescribeRecordHandler {
      * @throws XMLStreamException
      * @throws MetadataStoreException
      */
-    private static void export( XMLStreamWriter writer, QName[] typeNames, Version version, boolean isSoap )
+    private static void export( XMLStreamWriter writer, QName[] typeNames, Version version )
                             throws XMLStreamException, MetadataStoreException {
 
         if ( VERSION_202.equals( version ) ) {
-            export202( writer, typeNames, isSoap );
+            export202( writer, typeNames );
         } else {
             throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
         }
@@ -174,7 +169,7 @@ public class DescribeRecordHandler {
      * @throws XMLStreamException
      * @throws MetadataStoreException
      */
-    private static void export202( XMLStreamWriter writer, QName[] typeNames, boolean isSoap )
+    private static void export202( XMLStreamWriter writer, QName[] typeNames )
                             throws XMLStreamException, MetadataStoreException {
 
         writer.setDefaultNamespace( CSW_202_NS );

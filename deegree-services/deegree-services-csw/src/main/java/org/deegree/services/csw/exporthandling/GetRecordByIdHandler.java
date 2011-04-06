@@ -43,6 +43,7 @@ import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -54,12 +55,11 @@ import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
 import org.deegree.services.i18n.Messages;
 import org.slf4j.Logger;
@@ -77,17 +77,13 @@ public class GetRecordByIdHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdHandler.class );
 
-    private CSWService service;
-
     /**
      * Creates a new {@link GetRecordByIdHandler} instance that uses the given service to lookup the
      * {@link MetadataStore} s.
      * 
      * @param service
      */
-    public GetRecordByIdHandler( CSWService service ) {
-        this.service = service;
-
+    public GetRecordByIdHandler() {
     }
 
     /**
@@ -103,7 +99,7 @@ public class GetRecordByIdHandler {
      * @throws InvalidParameterValueException
      * @throws OWSException
      */
-    public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, boolean isSoap )
+    public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, Set<MetadataStore> mdStores )
                             throws XMLStreamException, IOException, InvalidParameterValueException, OWSException {
 
         LOG.debug( "doGetRecordById: " + getRecBI );
@@ -120,7 +116,7 @@ public class GetRecordByIdHandler {
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {
-            export( xmlWriter, getRecBI, version, isSoap );
+            export( xmlWriter, getRecBI, version, mdStores );
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage() );
             throw new InvalidParameterValueException( e.getMessage() );
@@ -143,10 +139,10 @@ public class GetRecordByIdHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void export( XMLStreamWriter xmlWriter, GetRecordById getRecBI, Version version, boolean isSoap )
+    private void export( XMLStreamWriter xmlWriter, GetRecordById getRecBI, Version version, Set<MetadataStore> mdStores )
                             throws XMLStreamException, OWSException, MetadataStoreException {
         if ( VERSION_202.equals( version ) ) {
-            export202( xmlWriter, getRecBI, isSoap );
+            export202( xmlWriter, getRecBI, mdStores );
         } else {
             throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
         }
@@ -163,20 +159,20 @@ public class GetRecordByIdHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void export202( XMLStreamWriter writer, GetRecordById getRecBI, boolean isSoap )
+    private void export202( XMLStreamWriter writer, GetRecordById getRecBI, Set<MetadataStore> mdStores )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
         writer.writeStartElement( CSW_PREFIX, "GetRecordByIdResponse", CSW_202_NS );
 
-        MetadataResultSet resultSet = null;
+        MetadataResultSet<?> resultSet = null;
         int countIdList = 0;
         List<String> requestedIdList = getRecBI.getRequestedIds();
         int requestedIds = requestedIdList.size();
         MetadataRecord recordResponse = null;
         try {
-            if ( service.getMetadataStore() != null ) {
+            if ( mdStores != null && !mdStores.isEmpty() ) {
                 try {
-                    for ( MetadataStore rec : service.getMetadataStore() ) {
+                    for ( MetadataStore<?> rec : mdStores ) {
                         resultSet = rec.getRecordById( requestedIdList );
                     }
                 } catch ( MetadataStoreException e ) {

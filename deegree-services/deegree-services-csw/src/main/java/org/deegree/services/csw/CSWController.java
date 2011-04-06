@@ -154,7 +154,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
     private GetRecordByIdHandler getRecordByIdHandler;
 
-    protected CSWController( URL configURL, ImplementationMetadata serviceInfo ) {
+    protected CSWController( URL configURL, ImplementationMetadata<CSWRequestType> serviceInfo ) {
         super( configURL, serviceInfo );
     }
 
@@ -196,10 +196,10 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             enableInspireExtensions = false;
             LOG.info( "Inspire is de-activated" );
         }
-        describeRecordHandler = new DescribeRecordHandler( service );
-        getRecordsHandler = new GetRecordsHandler( service );
+        describeRecordHandler = new DescribeRecordHandler();
+        getRecordsHandler = new GetRecordsHandler();
         transactionHandler = new TransactionHandler( service );
-        getRecordByIdHandler = new GetRecordByIdHandler( service );
+        getRecordByIdHandler = new GetRecordByIdHandler();
     }
 
     @Override
@@ -221,45 +221,35 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             if ( requestType != CSWRequestType.GetCapabilities ) {
                 checkVersion( requestVersion );
             }
-
             switch ( requestType ) {
-
             case GetCapabilities:
-
                 GetCapabilities getCapabilities = securityManager == null ? GetCapabilities202KVPAdapter.parse( normalizedKVPParams )
-                                                                         : securityManager.preprocess( GetCapabilities202KVPAdapter.parse(
-
-                                                                                                       normalizedKVPParams ),
+                                                                         : securityManager.preprocess( GetCapabilities202KVPAdapter.parse( normalizedKVPParams ),
                                                                                                        OGCFrontController.getContext().getCredentials(),
                                                                                                        false );
                 doGetCapabilities( getCapabilities, request, response, false );
                 break;
             case DescribeRecord:
-
                 DescribeRecord descRec = securityManager == null ? DescribeRecordKVPAdapter.parse( normalizedKVPParams )
                                                                 : securityManager.preprocess( DescribeRecordKVPAdapter.parse( normalizedKVPParams ),
                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                               false );
-                // describeRecordResponse = new DescribeRecordResponseXMLAdapter(service);
-                describeRecordHandler.doDescribeRecord( descRec, response, false );
+                describeRecordHandler.doDescribeRecord( descRec, response );
                 break;
 
             case GetRecords:
-
                 GetRecords getRec = securityManager == null ? GetRecordsKVPAdapter.parse( normalizedKVPParams )
                                                            : securityManager.preprocess( GetRecordsKVPAdapter.parse( normalizedKVPParams ),
                                                                                          OGCFrontController.getContext().getCredentials(),
                                                                                          false );
-                getRecordsHandler.doGetRecords( getRec, response, false );
+                getRecordsHandler.doGetRecords( getRec, response, service.getStore() );
                 break;
             case GetRecordById:
-
                 GetRecordById getRecBI = securityManager == null ? GetRecordByIdKVPAdapter.parse( normalizedKVPParams )
                                                                 : securityManager.preprocess( GetRecordByIdKVPAdapter.parse( normalizedKVPParams ),
                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                               false );
-
-                getRecordByIdHandler.doGetRecordById( getRecBI, response, false );
+                getRecordByIdHandler.doGetRecordById( getRecBI, response, service.getMetadataStores() );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElement );
@@ -267,7 +257,6 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                            : securityManager.preprocess( TransactionKVPAdapter.parse( normalizedKVPParams ),
                                                                                          OGCFrontController.getContext().getCredentials(),
                                                                                          false );
-
                 transactionHandler.doTransaction( trans, response );
                 break;
             }
@@ -286,7 +275,6 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             String msg = t.getMessage();
             sendServiceException( new OWSException( msg, t, ControllerException.NO_APPLICABLE_CODE ), response );
         }
-
     }
 
     @Override
@@ -332,7 +320,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                  : securityManager.preprocess( describeRecordAdapter.parse( requestVersion ),
                                                                                                                                                                                OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                false );
-                describeRecordHandler.doDescribeRecord( cswDRRequest, response, false );
+                describeRecordHandler.doDescribeRecord( cswDRRequest, response );
                 break;
             case GetRecords:
                 GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
@@ -344,7 +332,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            false );
 
-                getRecordsHandler.doGetRecords( cswGRRequest, response, false );
+                getRecordsHandler.doGetRecords( cswGRRequest, response, service.getStore() );
 
                 break;
             case GetRecordById:
@@ -356,7 +344,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                   : securityManager.preprocess( getRecordByIdAdapter.parse( requestVersion ),
                                                                                                                                                                                 OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                 false );
-                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, false );
+                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, service.getMetadataStores() );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElementString );
@@ -431,7 +419,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                  : securityManager.preprocess( describeRecordAdapter.parse( requestVersion ),
                                                                                                                                                                                OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                true );
-                describeRecordHandler.doDescribeRecord( cswDRRequest, response, true );
+                describeRecordHandler.doDescribeRecord( cswDRRequest, response );
                 break;
             case GetRecords:
                 GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
@@ -442,7 +430,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                              : securityManager.preprocess( getRecordsAdapter.parse( requestVersion ),
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            true );
-                getRecordsHandler.doGetRecords( cswGRRequest, response, true );
+                getRecordsHandler.doGetRecords( cswGRRequest, response, service.getStore() );
                 break;
             case GetRecordById:
 
@@ -455,7 +443,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                                                 OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                 true );
 
-                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, true );
+                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, service.getMetadataStores() );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElement );
@@ -565,7 +553,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         GetCapabilitiesHandler gce = new GetCapabilitiesHandler( xmlWriter, mainMetadataConf, mainControllerConf,
                                                                  sections, mainMetadataConf.getServiceIdentification(),
                                                                  negotiatedVersion, enableTransactions,
-                                                                 enableInspireExtensions, isSoap );
+                                                                 enableInspireExtensions );
         gce.export();
         xmlWriter.flush();
 
