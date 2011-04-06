@@ -570,10 +570,6 @@ public class AppSchemaMapper {
                     } else {
                         mapping = new DBField( elMC.getColumn() );
                     }
-                    DBField nilMapping = null;
-                    if ( substitution.getNillable() ) {
-                        nilMapping = getNilMapping( elMC );
-                    }
                     mappings.add( new GeometryMapping( path, mapping, gt, geometryParams, jc ) );
                 } else {
                     XSTypeDefinition typeDef = substitution.getTypeDefinition();

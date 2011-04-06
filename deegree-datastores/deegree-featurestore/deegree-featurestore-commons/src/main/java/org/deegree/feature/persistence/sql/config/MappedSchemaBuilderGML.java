@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 
 import java.io.File;
@@ -48,6 +49,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
@@ -76,6 +78,7 @@ import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
+import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -86,7 +89,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -123,6 +125,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private final GeometryStorageParams geometryParams;
 
+    private final XPathSchemaWalker schemaWalker;
+
     public MappedSchemaBuilderGML( String configURL, List<String> gmlSchemas, StorageCRS storageCRS,
                                    List<NamespaceHint> nsHints, BLOBMapping blobConf,
                                    List<FeatureTypeMappingJAXB> ftMappingConfs ) throws FeatureStoreException {
@@ -131,6 +135,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( storageCRS.getValue() ),
                                                     storageCRS.getSrid(), CoordinateDimension.DIM_2 );
         nsBindings = buildNSBindings( gmlSchema.getNamespaceBindings(), nsHints );
+        schemaWalker = new XPathSchemaWalker( gmlSchema, nsBindings );
         if ( blobConf != null ) {
             Pair<BlobMapping, BBoxTableMapping> pair = buildBlobMapping( blobConf, gmlSchema.getXSModel().getVersion() );
             blobMapping = pair.first;
@@ -200,6 +205,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         for ( String prefix : schemaNSBindings.keySet() ) {
             nsBindings.addNamespace( prefix, schemaNSBindings.get( prefix ) );
         }
+        nsBindings.addNamespace( "xsi", XSINS );
         for ( NamespaceHint userHint : userHints ) {
             nsBindings.addNamespace( userHint.getPrefix(), userHint.getNamespaceURI() );
         }
@@ -222,8 +228,9 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         QTableName ftTable = new QTableName( ftMappingConf.getTable() );
         FIDMapping fidMapping = buildFIDMapping( ftTable, ftName, ftMappingConf.getFIDMapping() );
         List<Mapping> particleMappings = new ArrayList<Mapping>();
+        XSElementDeclaration elDecl = gmlSchema.getXSModel().getElementDecl( ftName );
         for ( JAXBElement<? extends AbstractParticleJAXB> particle : ftMappingConf.getAbstractParticle() ) {
-            particleMappings.add( buildMapping( ftTable, particle.getValue() ) );
+            particleMappings.add( buildMapping( ftTable, elDecl, particle.getValue() ) );
         }
         return new FeatureTypeMapping( ftName, ftTable, fidMapping, particleMappings );
     }
@@ -259,64 +266,64 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         return new FIDMapping( prefix, columnName, pt, generator );
     }
 
-    private Mapping buildMapping( QTableName currentTable, AbstractParticleJAXB value ) {
+    private Mapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl, AbstractParticleJAXB value ) {
+        LOG.debug( "Building mapping for path '{}' on element '{}'", value.getPath(), elDecl );
         if ( value instanceof PrimitiveParticleJAXB ) {
-            return buildMapping( currentTable, (PrimitiveParticleJAXB) value );
+            return buildMapping( currentTable, elDecl, (PrimitiveParticleJAXB) value );
         }
         if ( value instanceof GeometryParticleJAXB ) {
-            return buildMapping( currentTable, (GeometryParticleJAXB) value );
+            return buildMapping( currentTable, elDecl, (GeometryParticleJAXB) value );
         }
         if ( value instanceof FeatureParticleJAXB ) {
-            return buildMapping( currentTable, (FeatureParticleJAXB) value );
+            return buildMapping( currentTable, elDecl, (FeatureParticleJAXB) value );
         }
         if ( value instanceof ComplexParticleJAXB ) {
-            return buildMapping( currentTable, (ComplexParticleJAXB) value );
+            return buildMapping( currentTable, elDecl, (ComplexParticleJAXB) value );
         }
         throw new RuntimeException( "Internal error. Unhandled particle mapping JAXB bean '"
                                     + value.getClass().getName() + "'." );
     }
 
-    private PrimitiveMapping buildMapping( QTableName currentTable, PrimitiveParticleJAXB config ) {
+    private PrimitiveMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
+                                           PrimitiveParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
-        // TODO determine primitive type from schema
-        PrimitiveType pt = PrimitiveType.STRING;
+        PrimitiveType pt = schemaWalker.getTargetType( elDecl, path );
         MappingExpression me = parseMappingExpression( config.getMapping() );
         JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
+        LOG.debug( "Targeted primitive type: " + pt.name() );
         return new PrimitiveMapping( path, me, pt, joinedTable );
     }
 
-    private GeometryMapping buildMapping( QTableName currentTable, GeometryParticleJAXB config ) {
+    private GeometryMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
+                                          GeometryParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
         MappingExpression me = parseMappingExpression( config.getMapping() );
-        LOG.warn( "Build mappings from geometry particle configs is incomplete." );
+        elDecl = schemaWalker.getTargetElement( elDecl, path );
+        LOG.warn( "Determining geometry type from element decls is not implemented." );
         GeometryType type = GeometryType.GEOMETRY;
         JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
         return new GeometryMapping( path, me, type, geometryParams, joinedTable );
     }
 
-    private FeatureMapping buildMapping( QTableName currentTable, FeatureParticleJAXB config ) {
+    private FeatureMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
+                                         FeatureParticleJAXB config ) {
         LOG.warn( "Unhandled feature particle mapping" );
         return null;
     }
 
-    private CompoundMapping buildMapping( QTableName currentTable, ComplexParticleJAXB config ) {
+    private CompoundMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
+                                          ComplexParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
+        elDecl = schemaWalker.getTargetElement( elDecl, path );
         List<JAXBElement<? extends AbstractParticleJAXB>> children = config.getAbstractParticle();
         List<Mapping> particles = new ArrayList<Mapping>( children.size() );
         for ( JAXBElement<? extends AbstractParticleJAXB> child : children ) {
-            Mapping particle = buildMapping( currentTable, child.getValue() );
+            Mapping particle = buildMapping( currentTable, elDecl, child.getValue() );
             if ( particle != null ) {
                 particles.add( particle );
             }
         }
         JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
         return new CompoundMapping( path, particles, joinedTable );
-    }
-
-    private DBField buildNilMapping( String nilMapping ) {
-        if ( nilMapping != null ) {
-            return new DBField( nilMapping );
-        }
-        return null;
     }
 }
