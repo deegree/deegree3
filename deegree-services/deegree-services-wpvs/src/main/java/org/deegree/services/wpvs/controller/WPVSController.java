@@ -74,6 +74,7 @@ import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
@@ -87,8 +88,8 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
-import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -334,24 +335,12 @@ public class WPVSController extends AbstractOGCServiceController<WPVSRequestType
         GetCapabilities req = GetCapabilitiesKVPParser.parse( map );
 
         DCPType wpvsDCP = new DCPType();
-        DCPType dcps = mainControllerConf.getDCP();
-        String getUrl = request.getRequestURL().toString();
-        if ( dcps != null && dcps.getHTTPGet() != null && !"".equals( dcps.getHTTPGet().trim() ) ) {
-            getUrl = dcps.getHTTPGet();
-        }
-        if ( !getUrl.endsWith( "?" ) ) {
-            getUrl += "?";
-        }
-        wpvsDCP.setHTTPGet( getUrl );
+        wpvsDCP.setHTTPGet( OGCFrontController.getHttpGetURL() );
 
         /*
          * post is currently not supported
          */
-        // String postUrl = request.getRequestURL().toString();
-        // if ( dcps != null && dcps.getHTTPPost() != null && !"".equals( dcps.getHTTPPost().trim() ) ) {
-        // postUrl = dcps.getHTTPPost();
-        // }
-        // wpvsDCP.setHTTPPost( postUrl );
+        // wpvsDCP.setHTTPPost( OGCFrontController.getHttpPostURL() );
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( IS_REPAIRING_NAMESPACES, true );
         try {

@@ -223,7 +223,7 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
             // ows:Operation
             writer.writeStartElement( OWS_NS, "Operation" );
             writer.writeAttribute( "name", operation.getName() );
-            exportDCP( writer, operation.getDcp(), OWS_NS );
+            exportDCP( writer, operation.getDcp().getHTTPGet(), operation.getDcp().getHTTPPost(), OWS_NS );
             for ( Pair<String, List<String>> param : operation.getParams() ) {
                 writer.writeStartElement( OWS_NS, "Parameter" );
                 writer.writeAttribute( "name", param.first );
@@ -267,7 +267,7 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
             // ows:Operation
             writer.writeStartElement( OWS110_NS, "Operation" );
             writer.writeAttribute( "name", operation.getName() );
-            exportDCP( writer, operation.getDcp(), OWS110_NS );
+            exportDCP( writer, operation.getDcp().getHTTPGet(), operation.getDcp().getHTTPPost(), OWS110_NS );
             for ( Pair<String, List<String>> param : operation.getParams() ) {
                 writer.writeStartElement( OWS110_NS, "Parameter" );
                 writer.writeAttribute( "name", param.first );
@@ -298,34 +298,6 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         }
 
         writer.writeEndElement();
-    }
-
-    /**
-     * Exports a {@link DCPType} as an OWS 1.0.0 <code>DCP</code> element.
-     * 
-     * @param writer
-     *            writer to append the xml
-     * @param dcp
-     *            <code>DCPType</code> to export
-     * @throws XMLStreamException
-     */
-    public static void exportDCP100( XMLStreamWriter writer, DCPType dcp )
-                            throws XMLStreamException {
-        exportDCP( writer, dcp, OWS_NS );
-    }
-
-    /**
-     * Exports a {@link DCPType} as an OWS 1.1.0 <code>DCP</code> element.
-     * 
-     * @param writer
-     *            writer to append the xml
-     * @param dcp
-     *            <code>DCPType</code> to export
-     * @throws XMLStreamException
-     */
-    public static void exportDCP110( XMLStreamWriter writer, DCPType dcp )
-                            throws XMLStreamException {
-        exportDCP( writer, dcp, OWS110_NS );
     }
 
     /**
@@ -556,23 +528,23 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            namespace for the generated elements
      * @throws XMLStreamException
      */
-    public static void exportDCP( XMLStreamWriter writer, DCPType dcp, String owsNS )
+    public static void exportDCP( XMLStreamWriter writer, String get, String post, String owsNS )
                             throws XMLStreamException {
 
         writer.writeStartElement( owsNS, "DCP" );
         writer.writeStartElement( owsNS, "HTTP" );
 
         // ows:Get (type="ows:RequestMethodType")
-        if ( dcp.getHTTPGet() != null ) {
+        if ( get != null ) {
             writer.writeStartElement( owsNS, "Get" );
-            writer.writeAttribute( XLN_NS, "href", dcp.getHTTPGet() );
+            writer.writeAttribute( XLN_NS, "href", get );
             writer.writeEndElement();
         }
 
         // ows:Post (type="ows:RequestMethodType")
-        if ( dcp.getHTTPPost() != null ) {
+        if ( post != null ) {
             writer.writeStartElement( owsNS, "Post" );
-            writer.writeAttribute( XLN_NS, "href", dcp.getHTTPPost() );
+            writer.writeAttribute( XLN_NS, "href", post );
             writer.writeEndElement();
         }
 

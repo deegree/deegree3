@@ -166,17 +166,12 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
         operations.add( "DescribeSensor" );
         operations.add( "GetObservation" );
 
-        // TODO use the configured one to override
-        DCPType dcp = new DCPType();
-        dcp.setHTTPGet( OGCFrontController.getHttpGetURL() );
-        dcp.setHTTPPost( OGCFrontController.getHttpPostURL() );
-
         writer.writeStartElement( OWS110_NS, "OperationsMetadata" );
 
         for ( String operation : operations ) {
             writer.writeStartElement( OWS110_NS, "Operation" );
             writer.writeAttribute( "name", operation );
-            exportDCP( writer, dcp, OWS110_NS );
+            exportDCP( writer, OGCFrontController.getHttpGetURL(), OGCFrontController.getHttpPostURL(), OWS110_NS );
             if ( operation.equals( "DescribeSensor" ) ) {
                 writer.writeStartElement( OWS110_NS, "Parameter" );
                 writer.writeAttribute( "name", "outputFormat" );

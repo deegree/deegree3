@@ -71,7 +71,6 @@ import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.KeywordsType;
@@ -260,7 +259,8 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         // ows:OperationsMetadata
         if ( sections.isEmpty() || sections.contains( Sections.OperationsMetadata ) ) {
 
-            exportOperationsMetadata( writer, mainConf.getDCP(), OWS_NS );
+            exportOperationsMetadata( writer, OGCFrontController.getHttpGetURL(), OGCFrontController.getHttpPostURL(),
+                                      OWS_NS );
         }
 
         // mandatory
@@ -270,7 +270,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndDocument();
     }
 
-    private void exportOperationsMetadata( XMLStreamWriter writer, DCPType dcp, String owsNS )
+    private void exportOperationsMetadata( XMLStreamWriter writer, String get, String post, String owsNS )
                             throws XMLStreamException {
         writer.writeStartElement( owsNS, "OperationsMetadata" );
 
@@ -281,7 +281,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         for ( String name : supportedOperations ) {
             writer.writeStartElement( owsNS, "Operation" );
             writer.writeAttribute( "name", name );
-            exportDCP( writer, dcp, owsNS );
+            exportDCP( writer, get, post, owsNS );
 
             if ( name.equals( CSWRequestType.GetCapabilities.name() ) ) {
 

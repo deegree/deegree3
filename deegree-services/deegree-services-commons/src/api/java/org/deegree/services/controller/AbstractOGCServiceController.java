@@ -84,7 +84,6 @@ import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
@@ -737,76 +736,6 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
             LOG.info( "Using main controller's value:" + controllerValue );
         }
         return useController ? controllerValue : localValue;
-    }
-
-    /**
-     * Check if the main controller configuration defines a dcp 'POST' url if not, set it with the values gotten from
-     * the request.
-     * 
-     * @param requestWrapper
-     */
-    public void checkOrCreateDCPPostURL( HttpServletRequest requestWrapper ) {
-        DCPType dcps = getControllerDCP();
-        if ( dcps.getHTTPPost() == null || "".equals( dcps.getHTTPPost() ) ) {
-            String reqUrl = getRequestURL( requestWrapper );
-            dcps.setHTTPPost( reqUrl );
-        }
-    }
-
-    /**
-     * Check if the main controller configuration defines a dcp 'GET' url if not, set it with the values gotten from the
-     * request.
-     * 
-     * @param requestWrapper
-     *            to get the requested url from.
-     */
-    public void checkOrCreateDCPGetURL( HttpServletRequest requestWrapper ) {
-        DCPType dcps = getControllerDCP();
-        if ( dcps.getHTTPGet() != null && !"".equals( dcps.getHTTPGet() ) ) {
-            String getUrl = dcps.getHTTPGet();
-            if ( !getUrl.endsWith( "?" ) ) {
-                getUrl += "?";
-                LOG.info( "Setting dcp getURL with: " + getUrl );
-                dcps.setHTTPGet( getUrl );
-            }
-        } else {
-            String reqUrl = getRequestURL( requestWrapper );
-            reqUrl = appendMissingQuestionMark( reqUrl );
-            dcps.setHTTPGet( reqUrl );
-        }
-    }
-
-    /**
-     * Checks if the request url ends with a ? and if failing appends
-     * 
-     * @param request
-     * @return the request url with a <code>?</code> at the end
-     */
-    private String appendMissingQuestionMark( String request ) {
-        if ( !request.endsWith( "?" ) ) {
-            return request + '?';
-        }
-        return request;
-    }
-
-    /**
-     * @return the maincontrollers dcptype or if not defined set a new one.
-     */
-    private DCPType getControllerDCP() {
-        DCPType dcps = mainControllerConf.getDCP();
-        if ( dcps == null ) {
-            mainControllerConf.setDCP( new DCPType() );
-            dcps = mainControllerConf.getDCP();
-        }
-        return dcps;
-    }
-
-    /**
-     * @param request
-     * @return url to which the request was sent against.
-     */
-    private String getRequestURL( HttpServletRequest request ) {
-        return request.getRequestURL().toString();
     }
 
     /**

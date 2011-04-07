@@ -534,9 +534,6 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
     private void doGetCapabilities( GetCapabilities getCapabilitiesRequest, HttpServletRequest requestWrapper,
                                     HttpResponseBuffer response, boolean isSoap )
                             throws XMLStreamException, IOException, OWSException {
-
-        checkOrCreateDCPGetURL( requestWrapper );
-        checkOrCreateDCPPostURL( requestWrapper );
         String acceptFormat = getAcceptsFormats( getCapabilitiesRequest );
         Set<Sections> sections = getSections( getCapabilitiesRequest );
         Version negotiatedVersion = null;

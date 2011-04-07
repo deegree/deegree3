@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.AddressType;
@@ -203,14 +204,14 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
             writer.writeStartElement( WCS_100_NS, operation );
             writer.writeStartElement( WCS_100_NS, "DCPType" );
             writer.writeStartElement( WCS_100_NS, "HTTP" );
-            if ( !isEmpty( dcp.getHTTPGet() ) ) {
+            if ( !isEmpty( OGCFrontController.getHttpGetURL() ) ) {
                 writer.writeStartElement( WCS_100_NS, "Get" );
-                writeElement( writer, WCS_100_NS, "OnlineResource", XLN_NS, "href", dcp.getHTTPGet() );
+                writeElement( writer, WCS_100_NS, "OnlineResource", XLN_NS, "href", OGCFrontController.getHttpGetURL() );
                 writer.writeEndElement(); // Get
             }
-            if ( !isEmpty( dcp.getHTTPPost() ) ) {
+            if ( !isEmpty( OGCFrontController.getHttpPostURL() ) ) {
                 writer.writeStartElement( WCS_100_NS, "Post" );
-                writeElement( writer, WCS_100_NS, "OnlineResource", XLN_NS, "href", dcp.getHTTPPost() );
+                writeElement( writer, WCS_100_NS, "OnlineResource", XLN_NS, "href", OGCFrontController.getHttpPostURL() );
                 writer.writeEndElement(); // Post
             }
             writer.writeEndElement(); // HTTP

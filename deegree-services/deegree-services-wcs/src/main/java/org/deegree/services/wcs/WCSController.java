@@ -450,9 +450,6 @@ public class WCSController extends AbstractOGCServiceController<WCSRequestType> 
 
         Set<Sections> sections = getSections( request );
 
-        checkOrCreateDCPGetURL( requestWrapper );
-        checkOrCreateDCPPostURL( requestWrapper );
-
         Version negotiateVersion = negotiateVersion( request );
         // if update sequence is given and matches the given update sequence an error should occur
         // http://cite.opengeospatial.org/OGCTestData/wcs/1.0.0/specs/03-065r6.html#7.2.1_Key-value_pair_encoding
