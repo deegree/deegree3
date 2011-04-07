@@ -48,6 +48,7 @@ body {
 	width:860px;
 	height:550px;
 	margin-left:60px;
+	
 }
 
 #left {
@@ -57,9 +58,10 @@ body {
 }
 
 #center {
-	padding-right:55px;
+	padding-right:20px;
+	margin-right: 10px;
 	float: right;
-	width: 550px;
+	width: 600px;
 	height: 485px;
 	font-size: small;
 	text-align: left;
