@@ -224,12 +224,16 @@ public class CurveLinearizer {
         } else if ( crit instanceof MaxErrorCriterion ) {
 
             double error = ( (MaxErrorCriterion) crit ).getMaxError();
+            int numPoints = calcNumPoints( arc.getPoint1(), arc.getPoint2(), arc.getPoint3(), arc instanceof Circle,
+                                           error );
             int maxNumPoints = ( (MaxErrorCriterion) crit ).getMaxNumPoints();
-            lineSegment = geomFac.createLineStringSegment( interpolateWithErrorCriterion( arc.getPoint1(),
-                                                                                          arc.getPoint2(),
-                                                                                          arc.getPoint3(),
-                                                                                          arc instanceof Circle, error,
-                                                                                          maxNumPoints ) );
+            if ( maxNumPoints > 0 && maxNumPoints < numPoints ) {
+                numPoints = maxNumPoints;
+            }
+            LOG.debug( "Using " + numPoints + " for segment linearization." );
+            lineSegment = geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(),
+                                                                        arc.getPoint3(), numPoints,
+                                                                        arc instanceof Circle ) );
         } else {
             String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
             throw new IllegalArgumentException( msg );
@@ -537,8 +541,7 @@ public class CurveLinearizer {
         return new PointsList( realPoints );
     }
 
-    private Points interpolateWithErrorCriterion( Point p0, Point p1, Point p2, boolean isCircle, double error,
-                                                  int maxNumPoints ) {
+    private int calcNumPoints( Point p0, Point p1, Point p2, boolean isCircle, double error ) {
 
         // shift the points down (to reduce the occurrence of floating point errors), independently on the x and y axes
         double minOrd0 = CurveLinearizer.findShiftOrd0( p0, p1, p2 );
@@ -563,14 +566,13 @@ public class CurveLinearizer {
         double ey = p2Shifted.get1() - centerY;
 
         double startAngle = Math.atan2( dy, dx );
-        double endAngle = Math.atan2( ey, ex );
+        double endAngle = isCircle ? startAngle : Math.atan2( ey, ex );
         double radius = Math.sqrt( dx * dx + dy * dy );
 
         double angleStep = 2 * Math.acos( 1 - error / radius );
         int numPoints;
         if ( isCircle ) {
             numPoints = (int) Math.round( 2 * Math.PI / angleStep );
-
         } else {
             if ( !isClockwise( p0Shifted, p1Shifted, p2Shifted ) ) {
                 if ( endAngle < startAngle ) {
@@ -584,35 +586,7 @@ public class CurveLinearizer {
                 numPoints = (int) Math.round( ( startAngle - endAngle ) / angleStep );
             }
         }
-
-        if ( numPoints > maxNumPoints ) {
-            return interpolate( p0, p1, p2, maxNumPoints, isCircle );
-        }
-
-        ICRS crs = p0Shifted.getCoordinateSystem();
-        List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
-        // ensure numerical stability for start point (= use original circle start point)
-        interpolationPoints.add( p0Shifted );
-
-        // calculate intermediate (=interpolated) points on arc
-        for ( int i = 1; i < numPoints - 1; i++ ) {
-            double angle = startAngle + i * angleStep;
-            double x = centerX + Math.cos( angle ) * radius;
-            double y = centerY + Math.sin( angle ) * radius;
-            interpolationPoints.add( geomFac.createPoint( null, new double[] { x, y }, crs ) );
-        }
-        // ensure numerical stability for end point (= use original circle start point)
-        interpolationPoints.add( isCircle ? p0Shifted : p2Shifted );
-
-        // shift the points back up
-        List<Point> realPoints = new ArrayList<Point>( interpolationPoints.size() );
-        for ( Point p : interpolationPoints ) {
-            realPoints.add( new DefaultPoint( null, p.getCoordinateSystem(), p.getPrecision(),
-                                              new double[] { p.get0() + minOrd0, p.get1() + minOrd1 } ) );
-        }
-
-        return new PointsList( realPoints );
-
+        return numPoints;
     }
 
     /**
