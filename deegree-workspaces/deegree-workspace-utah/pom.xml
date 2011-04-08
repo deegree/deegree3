@@ -3,14 +3,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-utah</artifactId>
   <packaging>deegree-workspace</packaging>
-  <version>3.1-pre4-SNAPSHOT</version>
+  <version>3.1-pre4</version>
   <name>deegree 3 Utah Demo</name>
   <url>http://maven.apache.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspace-parent</artifactId>
-    <version>3.1-pre4-SNAPSHOT</version>
+    <version>3.1-pre4</version>
   </parent>
 
   <repositories>
@@ -54,7 +54,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre4-SNAPSHOT</version>
+      <version>3.1-pre4</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
@@ -66,7 +66,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1-pre4-SNAPSHOT</version>
+      <version>3.1-pre4</version>
     </dependency>
   </dependencies>
 

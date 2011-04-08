@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-core-base</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre4-SNAPSHOT</version>
+  <version>3.1-pre4</version>
   <name>deegree-core-base</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-base</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-base</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4/deegree-core/deegree-core-base</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4/deegree-core/deegree-core-base</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre4-SNAPSHOT</version>
+    <version>3.1-pre4</version>
   </parent>
 
   <repositories>
@@ -68,7 +68,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-cs</artifactId>
-      <version>3.1-pre4-SNAPSHOT</version>
+      <version>3.1-pre4</version>
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>
