@@ -535,7 +535,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
                     }
                 }
             }
-            // response.setStatus( httpStatusCode );
+            response.setStatus( httpStatusCode );
 
             try {
                 serializer.serializeException( response.getOutputStream(), exception, encoding );

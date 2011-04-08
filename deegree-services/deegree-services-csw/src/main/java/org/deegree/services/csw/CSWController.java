@@ -580,7 +580,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                             throws ServletException {
 
         // TODO correct status code?
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 300, new OWSException120XMLAdapter(), ex, response );
+        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new OWSException120XMLAdapter(), ex, response );
     }
 
     /**

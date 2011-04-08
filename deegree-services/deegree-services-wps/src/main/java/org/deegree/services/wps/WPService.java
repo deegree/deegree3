@@ -513,7 +513,7 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        // TODO use correct exception code here (400)
-        sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), ex, response );
+        // use HTTP status code 400 (according to OGC 06-121r3, A.4.1.5)
+        sendException( "text/xml", "UTF-8", null, 400, new OWSException110XMLAdapter(), ex, response );
     }
 }
