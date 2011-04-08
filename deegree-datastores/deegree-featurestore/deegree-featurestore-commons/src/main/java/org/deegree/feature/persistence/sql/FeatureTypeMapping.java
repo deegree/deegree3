@@ -131,6 +131,7 @@ public class FeatureTypeMapping {
      *            name of the property, must not be <code>null</code>
      * @return mapping, may be <code>null</code> (if the property is not mapped)
      */
+    @Deprecated
     public Mapping getMapping( QName propName ) {
         return propToMapping.get( propName );
     }

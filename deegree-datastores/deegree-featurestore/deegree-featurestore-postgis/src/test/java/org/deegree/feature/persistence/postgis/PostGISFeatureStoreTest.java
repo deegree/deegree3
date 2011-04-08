@@ -337,9 +337,6 @@ public class PostGISFeatureStoreTest {
             Assert.assertEquals( 13, ft.getPropertyDeclarations().size() );
             FeatureTypeMapping mapping = schema.getFtMapping( ft.getName() );
             Assert.assertNotNull( mapping );
-
-            Mapping propMapping = mapping.getMapping( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}inspireId" ) );
-            System.out.println( propMapping );
         }
     }
 

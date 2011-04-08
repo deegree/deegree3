@@ -66,10 +66,12 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBReader;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
@@ -104,6 +106,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final NamespaceBindings nsBindings;
 
+    private final GMLVersion gmlVersion;
+
     private static final QName XSI_NIL = new QName( CommonNamespaces.XSINS, "nil", "xsi" );
 
     /**
@@ -129,19 +133,19 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             String ns = fs.getNamespaceContext().get( prefix );
             nsBindings.addNamespace( prefix, ns );
         }
+        if ( ft.getSchema().getXSModel() != null ) {
+            this.gmlVersion = ft.getSchema().getXSModel().getVersion();
+        } else {
+            this.gmlVersion = GMLVersion.GML_32;
+        }
     }
 
     @Override
     public List<String> getSelectColumns() {
         List<String> columns = new ArrayList<String>();
         columns.add( ftMapping.getFidMapping().getColumn() );
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            Mapping mapping = ftMapping.getMapping( pt.getName() );
-            if ( mapping == null ) {
-                LOG.warn( "No mapping for property '" + pt.getName() + "' -- omitting from SELECT list." );
-            } else {
-                addSelectColumns( mapping, columns, true );
-            }
+        for ( Mapping mapping : ftMapping.getMappings() ) {
+            addSelectColumns( mapping, columns, true );
         }
         return columns;
     }
@@ -198,10 +202,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
             List<Property> props = new ArrayList<Property>();
             int i = 2;
-            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                Mapping propMapping = ftMapping.getMapping( pt.getName() );
-                if ( propMapping != null ) {
-                    i = addProperties( props, pt, propMapping, rs, i, gmlId );
+            for ( Mapping mapping : ftMapping.getMappings() ) {
+                PropertyName propName = mapping.getPath();
+                if ( propName.getAsQName() != null ) {
+                    PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName(), gmlVersion );
+                    i = addProperties( props, pt, mapping, rs, i, gmlId );
+                } else {
+                    // TODO more complex mappings, e.g. "propname[1]"
+                    LOG.warn( "Omitting mapping. Not a simple property name." );
                 }
             }
             feature = ft.newFeature( gmlId, props, null, null );
@@ -396,7 +404,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         sql.append( " WHERE " );
         sql.append( jc.getFields().get( 1 ).getColumn() );
         sql.append( " = ?" );
-        LOG.warn( "SQL: {}", sql );
+        LOG.debug( "SQL: {}", sql );
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
