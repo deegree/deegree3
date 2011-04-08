@@ -273,7 +273,7 @@ public class GetRecordsHandler {
                 int nextRecord = 0;
 
                 MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getSortBy(),
-                                                         getRec.getStartPosition() );
+                                                         getRec.getStartPosition(), getRec.getMaxRecords() );
 
                 try {
                     countRows = store.getRecordCount( query );

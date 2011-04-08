@@ -236,23 +236,26 @@ public class ExecuteStatements {
                 sql.append( ") as X1 where X1.rownum > " );
                 sql.append( query.getStartPosition() - 1 );
             }
-
-            StringBuilder outerSelect = new StringBuilder ("SELECT ");
+            // take a look in the wiki before changing this! 
+            if ( dbType == PostgreSQL && query != null ) {
+                sql.append( " LIMIT " ).append( query.getMaxRecords() );
+            }
+            StringBuilder outerSelect = new StringBuilder( "SELECT " );
             outerSelect.append( rf );
             outerSelect.append( " FROM " );
-            if (dbType == PostgreSQL) {
-                outerSelect.append(  PostGISMappingsISODC.DatabaseTables.idxtb_main);    
-            } else if (dbType == MSSQL) {
-                outerSelect.append(  MSSQLMappingsISODC.DatabaseTables.idxtb_main);
+            if ( dbType == PostgreSQL ) {
+                outerSelect.append( PostGISMappingsISODC.DatabaseTables.idxtb_main );
+            } else if ( dbType == MSSQL ) {
+                outerSelect.append( MSSQLMappingsISODC.DatabaseTables.idxtb_main );
             } else {
                 throw new IllegalArgumentException();
             }
-            outerSelect.append( " WHERE ");
+            outerSelect.append( " WHERE " );
             outerSelect.append( id );
-            outerSelect.append( " IN (");
+            outerSelect.append( " IN (" );
             outerSelect.append( sql );
-            outerSelect.append (")");
-            
+            outerSelect.append( ")" );
+
             preparedStatement = conn.prepareStatement( outerSelect.toString() );
 
             int i = 1;
@@ -280,7 +283,7 @@ public class ExecuteStatements {
                     preparedStatement.setObject( i++, o.getValue() );
                 }
             }
-
+System.out.println(preparedStatement.toString());
             LOG.debug( preparedStatement.toString() );
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );

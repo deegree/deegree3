@@ -58,6 +58,8 @@ public class MetadataQuery {
 
     private final SortProperty[] sorting;
 
+    private int maxRecords;
+
     /**
      * Creates a new {@link MetadataQuery} instance with all attributes that can be declared.
      * 
@@ -68,12 +70,11 @@ public class MetadataQuery {
      * @param startPosition
      *            at which record position should start the response}
      */
-    public MetadataQuery( Filter filter, SortProperty[] sorting, int startPosition ) {
-
+    public MetadataQuery( Filter filter, SortProperty[] sorting, int startPosition, int maxRecords ) {
         this.filter = filter;
         this.sorting = sorting;
         this.startPosition = startPosition;
-
+        this.maxRecords = maxRecords;
     }
 
     /**
@@ -92,6 +93,10 @@ public class MetadataQuery {
 
     public SortProperty[] getSorting() {
         return sorting;
+    }
+
+    public int getMaxRecords() {
+        return maxRecords;
     }
 
 }
