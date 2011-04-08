@@ -108,8 +108,8 @@ public class InsertRow {
     }
 
     public Object get( String column ) {
-        if (columnToObject.containsKey( column )) {
-            return columnToObject.get( column.toLowerCase() );    
+        if ( columnToObject.containsKey( column ) ) {
+            return columnToObject.get( column.toLowerCase() );
         }
         return columnToAutoKey.get( column.toLowerCase() );
     }
@@ -164,10 +164,10 @@ public class InsertRow {
         int columnId = 1;
         for ( Entry<String, Object> entry : columnToObject.entrySet() ) {
             if ( entry.getValue() != null ) {
-                LOG.debug( "- Argument " + columnId + " = " + entry.getValue() + " (" + entry.getValue().getClass()
-                           + ")" );
+                LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
+                          + entry.getValue().getClass() + ")" );
             } else {
-                LOG.debug( "- Argument " + columnId + " = NULL" );
+                LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
             }
             stmt.setObject( columnId++, entry.getValue() );
         }

@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.filter.FilterEvaluationException;
@@ -83,6 +84,23 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
      */
     public FeatureXPathEvaluator( GMLVersion version ) {
         this.version = version;
+    }
+
+    public TypedObjectNode[] eval( TypedObjectNode particle, PropertyName path )
+                            throws FilterEvaluationException {
+        if ( particle instanceof Feature ) {
+            return eval( (Feature) particle, path );
+        }
+        if ( particle instanceof GenericXMLElement ) {
+            return eval( (GenericXMLElement) particle, path );
+        }
+        if ( particle instanceof GenericXMLElementContent ) {
+            // TODO do this in a clean manner
+            GenericXMLElement el = new GenericXMLElement( new QName( "value" ), (GenericXMLElementContent) particle );
+            return eval( el, path );
+        }
+        throw new FilterEvaluationException( "Evaluation of XPath expressions on '" + particle.getClass()
+                                             + "' is not supported." );
     }
 
     @Override

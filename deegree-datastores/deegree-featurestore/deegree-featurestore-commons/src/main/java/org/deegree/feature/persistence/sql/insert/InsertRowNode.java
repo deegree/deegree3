@@ -39,6 +39,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
@@ -82,12 +83,19 @@ public class InsertRowNode {
     public void performInsert( Connection conn )
                             throws SQLException {
 
-        // TODO
-        int id = (Integer) row.performInsert( conn ).get( "id" );
+        Map<String, Object> keys = row.performInsert( conn );
 
         for ( InsertRowNode relatedRow : relatedRows ) {
-            DBField to = relatedRow.parentRelation.getFields().get( 1 );
-            relatedRow.getRow().addPreparedArgument( to.getColumn(), id );
+            // propagate value of foreign key
+            DBField from = relatedRow.parentRelation.getFields().get( 0 );
+            Object fkValue = row.get( from.getColumn() );
+            if ( fkValue == null ) {
+                fkValue = keys.get( from.getColumn() );
+            }
+            if ( fkValue != null ) {
+                DBField to = relatedRow.parentRelation.getFields().get( 1 );
+                relatedRow.getRow().addPreparedArgument( to.getColumn(), fkValue );
+            }
             relatedRow.performInsert( conn );
         }
     }
