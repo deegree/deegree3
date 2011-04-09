@@ -64,7 +64,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.xerces.impl.dv.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -87,8 +87,8 @@ import org.deegree.rendering.r2d.styling.components.Font;
 import org.deegree.rendering.r2d.styling.components.Graphic;
 import org.deegree.rendering.r2d.styling.components.Halo;
 import org.deegree.rendering.r2d.styling.components.LinePlacement;
-import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.Mark.SimpleMark;
+import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineCap;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineJoin;
 import org.slf4j.Logger;
@@ -208,7 +208,7 @@ public class PostgreSQLReader {
                 }
                 String base64raster = rs.getString( "base64raster" );
                 if ( base64raster != null ) {
-                    ByteArrayInputStream bis = new ByteArrayInputStream( Base64.decode( base64raster ) );
+                    ByteArrayInputStream bis = new ByteArrayInputStream( Base64.decodeBase64( base64raster ) );
                     try {
                         res.image = ImageIO.read( bis );
                     } catch ( IOException e ) {
