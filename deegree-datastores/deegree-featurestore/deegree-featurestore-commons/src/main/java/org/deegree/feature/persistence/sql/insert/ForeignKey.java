@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
+import org.deegree.commons.jdbc.InsertRow;
+
 /**
  * Represents (the propagation of) a key column of an {@link InsertRow} to an {@link InsertRow} that references the
  * first one.

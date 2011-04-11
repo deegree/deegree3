@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql.insert;
+package org.deegree.commons.jdbc;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -47,7 +47,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.deegree.commons.jdbc.QTableName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

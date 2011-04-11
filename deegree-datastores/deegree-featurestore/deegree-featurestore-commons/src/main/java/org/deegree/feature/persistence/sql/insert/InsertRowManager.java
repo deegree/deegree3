@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.utils.PostRelation;
 import org.deegree.commons.utils.SortUtils;
