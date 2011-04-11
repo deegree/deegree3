@@ -37,6 +37,7 @@ package org.deegree.feature.types.property;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.feature.types.FeatureType;
 
 /**
@@ -82,8 +83,8 @@ public interface PropertyType {
     /**
      * Returns the possible substitutions that are defined for this {@link PropertyType}.
      * 
-     * NOTE: This is needed for a number of GML application schemas (e.g. CityGML) that define properties using
-     * abstract element declarations and provide multiple concrete substitutable elements.
+     * NOTE: This is needed for a number of GML application schemas (e.g. CityGML) that define properties using abstract
+     * element declarations and provide multiple concrete substitutable elements.
      * 
      * @return the possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at
      *         least one entry
@@ -97,4 +98,11 @@ public interface PropertyType {
      * @return true, if code>xsi:nil="true"</code> is permitted, false otherwise
      */
     public boolean isNillable();
+
+    /**
+     * Returns the XML schema element declaration for this property type.
+     * 
+     * @return element declaration, or <code>null</code> (if the property type was not generated from XML schema)
+     */
+    public XSElementDeclaration getElementDecl();
 }

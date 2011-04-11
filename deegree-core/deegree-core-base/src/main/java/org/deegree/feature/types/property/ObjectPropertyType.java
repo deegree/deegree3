@@ -40,6 +40,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
+
 /**
  * {@link PropertyType} that defines a property with an {@link Object} value.
  * 
@@ -63,9 +65,9 @@ public abstract class ObjectPropertyType extends AbstractPropertyType {
      * @param substitutions
      * @param representation
      */
-    protected ObjectPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+    protected ObjectPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                   List<PropertyType> substitutions, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
+        super( name, minOccurs, maxOccurs, elDecl, substitutions );
         this.representation = representation;
     }
 

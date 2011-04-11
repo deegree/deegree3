@@ -113,14 +113,13 @@ public class StatisticsLayer extends FeatureLayer {
     private static final GenericFeatureType featureType;
 
     private static final SimplePropertyType queryProp = new SimplePropertyType( new QName( ns, "query_string" ), 1, 1,
-                                                                                STRING, false, false, null );
+                                                                                STRING, null, null );
 
     private static final SimplePropertyType timeProp = new SimplePropertyType( new QName( ns, "time" ), 1, 1, DATE,
-                                                                               false, false, null );
+                                                                               null, null );
 
     private static final GeometryPropertyType boxProp = new GeometryPropertyType( new QName( ns, "boundingbox" ), 1, 1,
-                                                                                  false, false, null, GEOMETRY, DIM_2,
-                                                                                  BOTH );
+                                                                                  null, null, GEOMETRY, DIM_2, BOTH );
     static {
         List<PropertyType> props = new ArrayList<PropertyType>();
         props.add( queryProp );
@@ -140,8 +139,9 @@ public class StatisticsLayer extends FeatureLayer {
         List<Object> defaultVals = new ArrayList<Object>();
         date = new Date( System.currentTimeMillis() );
         defaultVals.add( new DimensionInterval<Date, String, Integer>( date, "current", 0 ) );
-        dimensions.put( "time", new Dimension<Object>( "time", defaultVals, true, true, true, "ISO8601", null,
-                                                       timeProp.getName(), extent ) );
+        dimensions.put( "time",
+                        new Dimension<Object>( "time", defaultVals, true, true, true, "ISO8601", null,
+                                               timeProp.getName(), extent ) );
     }
 
     @Override

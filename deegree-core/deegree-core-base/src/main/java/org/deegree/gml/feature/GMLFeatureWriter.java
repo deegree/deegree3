@@ -50,8 +50,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -434,9 +434,16 @@ public class GMLFeatureWriter {
             }
         }
 
+        TypedObjectNode value = property.getValue();
+        if ( value instanceof GenericXMLElementContent ) {
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            export( property.getValue(), currentLevel, maxInlineLevels );
+            writer.writeEndElement();
+            return;
+        }
+
         // TODO check for GML 2 properties (gml:pointProperty, ...) and export
         // as "app:gml2PointProperty" for GML 3
-        TypedObjectNode value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
             if ( property.isNilled() ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -556,17 +563,9 @@ public class GMLFeatureWriter {
                 writer.writeEndElement();
             }
         } else if ( propertyType instanceof CustomPropertyType ) {
-            if ( property.isNilled() ) {
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                // TODO make sure that only attributes are exported and nothing else
-                export( property.getValue(), currentLevel, maxInlineLevels );
-                writer.writeEndElement();
-            } else {
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                export( property.getValue(), currentLevel, maxInlineLevels );
-                writer.writeEndElement();
-            }
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            export( property.getValue(), currentLevel, maxInlineLevels );
+            writer.writeEndElement();
         } else if ( propertyType instanceof GenericObjectPropertyType ) {
             if ( property.isNilled() ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -716,6 +715,8 @@ public class GMLFeatureWriter {
             for ( TypedObjectNode elem : ( (TypedObjectNodeArray<?>) node ).getElements() ) {
                 export( elem, currentLevel, maxInlineLevels );
             }
+        } else if ( node == null ) {
+            LOG.warn( "Null node encountered!?" );
         } else {
             throw new RuntimeException( "Unhandled node type '" + node.getClass() + "'" );
         }

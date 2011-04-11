@@ -421,7 +421,9 @@ public class VectorLayerAdapter {
 
         // default deegree geometry to create a deegree geometry from JTS geometry
         GeometryFactory gFactory = new GeometryFactory();
-        AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( null, 0, 0,
+        AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( null,
+                                                                                           0,
+                                                                                           0,
                                                                                            CRSManager.getCRSRef( crsName ) );
 
         Geometry g = gDefault.createFromJTS( gJTS, CRSManager.getCRSRef( crsName ) );
@@ -477,15 +479,15 @@ public class VectorLayerAdapter {
 
             // create property type
             SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
-                                                             PrimitiveType.determinePrimitiveType( value ), false,
-                                                             false, new LinkedList<PropertyType>() );
+                                                             PrimitiveType.determinePrimitiveType( value ), null,
+                                                             new LinkedList<PropertyType>() );
 
             propDecls.add( spt );
         }
 
         // create simple geometry
-        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "the_geom", APP_PREFIX ), 1, 1, false,
-                                                             false, new LinkedList<PropertyType>(),
+        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "the_geom", APP_PREFIX ), 1, 1, null,
+                                                             new LinkedList<PropertyType>(),
                                                              GeometryType.MULTI_GEOMETRY, CoordinateDimension.DIM_2,
                                                              ValueRepresentation.INLINE );
         propDecls.add( gpt );

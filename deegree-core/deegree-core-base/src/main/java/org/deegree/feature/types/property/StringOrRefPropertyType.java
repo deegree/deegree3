@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ows.StringOrRef;
 
 /**
@@ -51,9 +52,9 @@ import org.deegree.commons.tom.ows.StringOrRef;
  */
 public class StringOrRefPropertyType extends AbstractPropertyType {
 
-    public StringOrRefPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                    boolean isNillable, List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
+    public StringOrRefPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+                                    List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, elDecl, substitutions );
     }
 
     @Override

@@ -134,8 +134,7 @@ public class RasterLayer extends Layer {
      */
     public RasterLayer( MapService service, AbstractLayerType lay, Layer parent ) {
         super( service, lay, parent );
-        AbstractCoverage cov = getServiceWorkspace().getSubsystemManager( CoverageBuilderManager.class ).get(
-                                                                                                              lay.getCoverageStoreId() );
+        AbstractCoverage cov = getServiceWorkspace().getSubsystemManager( CoverageBuilderManager.class ).get( lay.getCoverageStoreId() );
         this.raster = (AbstractRaster) ( cov instanceof AbstractRaster ? cov : null );
         this.multiraster = (MultiResolutionRaster) ( cov instanceof MultiResolutionRaster ? cov : null );
 
@@ -156,7 +155,7 @@ public class RasterLayer extends Layer {
         }
 
         List<PropertyType> pts = new LinkedList<PropertyType>();
-        pts.add( new SimplePropertyType( new QName( "value" ), 0, -1, DECIMAL, false, false, null ) );
+        pts.add( new SimplePropertyType( new QName( "value" ), 0, -1, DECIMAL, null, null ) );
         featureType = new GenericFeatureType( new QName( "data" ), pts, false );
     }
 
@@ -277,8 +276,9 @@ public class RasterLayer extends Layer {
                 break;
             }
 
-            raster = CoverageTransform.transform( raster, bbox, Grid.fromSize( gm.getWidth(), gm.getHeight(),
-                                                                               MAX_VALUE, bbox ), interpol.toString() );
+            raster = CoverageTransform.transform( raster, bbox,
+                                                  Grid.fromSize( gm.getWidth(), gm.getHeight(), MAX_VALUE, bbox ),
+                                                  interpol.toString() );
 
             if ( p != null && p.first != null ) {
                 RangeSet cbr = createBandRangeSetFromRaster( null, null, raster );

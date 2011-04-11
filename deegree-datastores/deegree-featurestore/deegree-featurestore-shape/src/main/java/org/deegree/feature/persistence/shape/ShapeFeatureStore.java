@@ -284,9 +284,8 @@ public class ShapeFeatureStore implements FeatureStore {
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", shpName );
             GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry",
-                                                                                 ftName.getPrefix() ), 0, 1, false,
-                                                                      false, null, shp.getGeometryType(), DIM_2_OR_3,
-                                                                      BOTH );
+                                                                                 ftName.getPrefix() ), 0, 1, null,
+                                                                      null, shp.getGeometryType(), DIM_2_OR_3, BOTH );
             ft = new GenericFeatureType( ftName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );

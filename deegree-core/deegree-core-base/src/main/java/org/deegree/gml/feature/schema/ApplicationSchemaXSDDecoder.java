@@ -47,8 +47,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -74,11 +74,9 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.ArrayPropertyType;
-import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
@@ -457,8 +455,7 @@ public class ApplicationSchemaXSDDecoder {
             switch ( typeDef.getTypeCategory() ) {
             case XSTypeDefinition.SIMPLE_TYPE: {
                 pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, getPrimitiveType( (XSSimpleType) typeDef ),
-                                             elementDecl.getAbstract(), elementDecl.getNillable(), ptSubstitutions,
-                                             (XSSimpleTypeDefinition) typeDef );
+                                             elementDecl, ptSubstitutions, (XSSimpleTypeDefinition) typeDef );
                 ( (SimplePropertyType) pt ).setCodeList( getCodeListId( elementDecl ) );
                 break;
             }
@@ -483,31 +480,29 @@ public class ApplicationSchemaXSDDecoder {
         // check for well known GML types first
         if ( typeDef.getName() != null ) {
             QName typeName = createQName( typeDef.getNamespace(), typeDef.getName() );
-//            if ( typeName.equals( new QName( gmlVersion.getNamespace(), "CodeType" ) ) ) {
-//                LOG.trace( "Identified a CodePropertyType." );
-//                pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-//                                           ptSubstitutions );
-//            }
+            // if ( typeName.equals( new QName( gmlVersion.getNamespace(), "CodeType" ) ) ) {
+            // LOG.trace( "Identified a CodePropertyType." );
+            // pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+            // ptSubstitutions );
+            // }
             if ( typeName.equals( new QName( gmlVersion.getNamespace(), "BoundingShapeType" ) ) ) {
                 LOG.trace( "Identified an EnvelopePropertyType." );
-                pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-                                               ptSubstitutions );
-//            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
-//                LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
-//                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-//                                              ptSubstitutions );
-//            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "LengthType" ) ) ) {
-//                LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
-//                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-//                                              ptSubstitutions );
-//            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "AngleType" ) ) ) {
-//                LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
-//                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-//                                              ptSubstitutions );
+                pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions );
+                // } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
+                // LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
+                // pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                // ptSubstitutions );
+                // } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "LengthType" ) ) ) {
+                // LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
+                // pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                // ptSubstitutions );
+                // } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "AngleType" ) ) ) {
+                // LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
+                // pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                // ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "FeatureArrayPropertyType" ) ) ) {
                 LOG.trace( "Identified a FeatureArrayPropertyType" );
-                pt = new ArrayPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
-                                            ptSubstitutions );
+                pt = new ArrayPropertyType( ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions );
             }
         }
 
@@ -521,8 +516,7 @@ public class ApplicationSchemaXSDDecoder {
 
         // no success -> build custom property declaration
         if ( pt == null ) {
-            pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeDef, elementDecl.getAbstract(),
-                                         elementDecl.getNillable(), ptSubstitutions );
+            pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions );
         }
         return pt;
     }

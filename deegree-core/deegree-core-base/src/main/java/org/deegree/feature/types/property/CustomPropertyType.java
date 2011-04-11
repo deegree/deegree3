@@ -40,6 +40,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
 
 /**
  * {@link PropertyType} that defines a property with a user-defined value type.
@@ -53,10 +54,10 @@ public class CustomPropertyType extends AbstractPropertyType {
 
     private XSComplexTypeDefinition xsdType;
 
-    public CustomPropertyType( QName name, int minOccurs, int maxOccurs, XSComplexTypeDefinition xsdType,
-                               boolean isAbstract, boolean isNillable, List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
-        this.xsdType = xsdType;
+    public CustomPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+                               List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, elDecl, substitutions );
+        this.xsdType = elDecl != null ? (XSComplexTypeDefinition) elDecl.getTypeDefinition() : null;
     }
 
     public XSComplexTypeDefinition getXSDValueType() {

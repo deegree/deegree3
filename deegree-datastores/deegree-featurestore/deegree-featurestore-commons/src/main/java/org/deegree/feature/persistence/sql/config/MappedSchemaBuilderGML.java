@@ -86,6 +86,7 @@ import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
@@ -307,8 +308,15 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private FeatureMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
                                          FeatureParticleJAXB config ) {
-        LOG.warn( "Unhandled feature particle mapping" );
-        return null;
+        PropertyName path = new PropertyName( config.getPath(), nsBindings );
+        MappingExpression me = parseMappingExpression( config.getMapping() );
+        elDecl = schemaWalker.getTargetElement( elDecl, path );
+        QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
+        // TODO rework this
+        FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl, ptName, 0, 1,
+                                                                                                  null );
+        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
+        return new FeatureMapping( path, me, pt.getFTName(), joinedTable );
     }
 
     private CompoundMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,

@@ -78,6 +78,7 @@ import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.insert.InsertRowNode;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
+import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -504,9 +505,18 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                     insertNode.getRow().addPreparedArgument( column, sqlValue, fs.getWKBParamTemplate( srid ) );
                 }
+            } else if ( mapping instanceof FeatureMapping ) {
+                MappingExpression me = ( (FeatureMapping) mapping ).getMapping();
+                if ( !( me instanceof DBField ) ) {
+                    LOG.debug( "Skipping feature mapping. Not mapped to database column." );
+                } else {
+                    Feature feature = (Feature) getPropValue( value );
+                    String column = ( (DBField) me ).getColumn();
+                    // TODO
+                }
             } else if ( mapping instanceof CompoundMapping ) {
                 for ( Mapping child : ( (CompoundMapping) mapping ).getParticles() ) {
-                    buildInsertRows( getPropValue( value ), child, insertNode );
+                    buildInsertRows( value, child, insertNode );
                 }
             } else {
                 LOG.warn( "Unhandled mapping type '" + mapping.getClass() + "'." );

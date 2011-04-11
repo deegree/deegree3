@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.uom.Measure;
 
 /**
@@ -51,9 +52,9 @@ import org.deegree.commons.uom.Measure;
  */
 public class MeasurePropertyType extends AbstractPropertyType {
 
-    public MeasurePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                boolean isNillable, List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
+    public MeasurePropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+                                List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, elDecl, substitutions );
     }
 
     @Override

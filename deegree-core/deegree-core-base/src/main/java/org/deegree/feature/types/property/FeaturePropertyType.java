@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.FeatureType;
 import org.slf4j.Logger;
@@ -63,9 +64,9 @@ public class FeaturePropertyType extends ObjectPropertyType {
 
     // private final ValueRepresentation representation;
 
-    public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+    public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                 List<PropertyType> substitutions, QName valueFtName, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
+        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation );
         this.valueFtName = valueFtName;
         // this.representation = representation;
     }

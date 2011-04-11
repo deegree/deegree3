@@ -72,11 +72,11 @@ public class GenericObjectPropertyType extends ObjectPropertyType {
      * @param substitutions
      * @param representation
      */
-    public GenericObjectPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+    public GenericObjectPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                       List<PropertyType> substitutions, ValueRepresentation representation,
                                       XSComplexTypeDefinition xsdType ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
-        this.xsdType = xsdType;
+        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation );
+        this.xsdType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
     }
 
     public XSComplexTypeDefinition getXSDValueType() {

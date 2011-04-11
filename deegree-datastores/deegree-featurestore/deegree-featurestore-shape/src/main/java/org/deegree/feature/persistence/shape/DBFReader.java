@@ -68,9 +68,9 @@ import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.slf4j.Logger;
 
 /**
@@ -200,28 +200,28 @@ public class DBFReader {
                     fieldLength += fieldPrecision << 8;
                     LOG.trace( "Field length is changed to " + fieldLength + " for text field." );
                 }
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.STRING, false, false, null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.STRING, null, null );
                 break;
             case 'N':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DECIMAL, false, false, null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DECIMAL, null, null );
                 break;
             case 'L':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.BOOLEAN, false, false, null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.BOOLEAN, null, null );
                 break;
             case 'D':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DATE, false, false, null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DATE, null, null );
                 break;
             case 'F':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DECIMAL, false, false, null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DECIMAL, null, null );
                 break;
             case 'T':
                 LOG.warn( "Date/Time fields are not supported. Please send the file to the devs, so they can implement it." );
                 break;
             case 'I':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.INTEGER, false, false, null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.INTEGER, null, null );
                 break;
             case '@':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DATE_TIME, false, false, null );
+                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DATE_TIME, null, null );
                 break;
             case 'O':
                 LOG.warn( "Double fields are not supported. Please send the file to the devs, so they can implement it." );
@@ -244,8 +244,8 @@ public class DBFReader {
             }
         }
 
-        types.add( new GeometryPropertyType( new QName( namespace, "geometry", prefix ), 0, 1, false, false, null,
-                                             geomType, DIM_2_OR_3, BOTH ) ); // TODO
+        types.add( new GeometryPropertyType( new QName( namespace, "geometry", prefix ), 0, 1, null, null, geomType,
+                                             DIM_2_OR_3, BOTH ) ); // TODO
         // properly
         // determine the
         // dimension from SHP type

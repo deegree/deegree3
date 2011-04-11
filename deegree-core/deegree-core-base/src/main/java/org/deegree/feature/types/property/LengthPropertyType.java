@@ -39,11 +39,13 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
+
 public class LengthPropertyType extends MeasurePropertyType {
 
-    public LengthPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                               boolean isNillable, List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
+    public LengthPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+                               List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, elDecl, substitutions );
     }
 
     @Override

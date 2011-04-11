@@ -121,26 +121,26 @@ public class DBUtils {
                 switch ( colType ) {
                 case VARCHAR:
                 case CHAR:
-                    pt = new SimplePropertyType( ptName, 0, 1, STRING, false, false, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, STRING, null, null );
                     break;
                 case INTEGER:
                 case SMALLINT:
-                    pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.INTEGER, false, false, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.INTEGER, null, null );
                     break;
                 case BIT:
-                    pt = new SimplePropertyType( ptName, 0, 1, BOOLEAN, false, false, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, BOOLEAN, null, null );
                     break;
                 case NUMERIC:
                 case DOUBLE:
                 case BIGINT:
                 case Types.DECIMAL:
-                    pt = new SimplePropertyType( ptName, 0, 1, DECIMAL, false, false, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, DECIMAL, null, null );
                     break;
                 case OTHER:
                 case BINARY:
                 case BLOB:
                 case LONGVARBINARY:
-                    pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, GEOMETRY, DIM_2_OR_3, null );
+                    pt = new GeometryPropertyType( ptName, 0, 1, null, null, GEOMETRY, DIM_2_OR_3, null );
                     break;
                 default:
                     LOG.error( "Unsupported data type '{}'.", colType );

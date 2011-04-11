@@ -204,7 +204,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             if ( md.geomType == null ) {
                 try {
                     PrimitiveType type = PrimitiveType.determinePrimitiveType( md.sqlType );
-                    PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, false, false, null );
+                    PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, null, null );
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
                     PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null );
@@ -214,7 +214,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                               + e.getMessage() );
                 }
             } else {
-                PropertyType pt = new GeometryPropertyType( ptName, 0, 1, false, false, null, md.geomType,
+                PropertyType pt = new GeometryPropertyType( ptName, 0, 1, null, null, md.geomType,
                                                             md.geometryParams.getDim(), INLINE );
                 pts.add( pt );
                 PropertyName path = new PropertyName( ptName );
@@ -287,7 +287,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 } else {
                     primType = determinePrimitiveType( md.sqlType );
                 }
-                pt = new SimplePropertyType( propName, minOccurs, 1, primType, false, false, null );
+                pt = new SimplePropertyType( propName, minOccurs, 1, primType, null, null );
             }
             m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), null );
         } else if ( propDecl instanceof GeometryPropertyJAXB ) {
@@ -334,7 +334,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             } else {
                 dim = md.geometryParams.getDim();
             }
-            pt = new GeometryPropertyType( propName, minOccurs, 1, false, false, null, type, dim, INLINE );
+            pt = new GeometryPropertyType( propName, minOccurs, 1, null, null, type, dim, INLINE );
             m = new GeometryMapping( path, mapping, type, new GeometryStorageParams( crs, srid, dim ), null );
         } else {
             LOG.warn( "Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it." );

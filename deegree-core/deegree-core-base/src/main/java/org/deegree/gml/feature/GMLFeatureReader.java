@@ -108,12 +108,12 @@ import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -306,7 +306,7 @@ public class GMLFeatureReader extends XMLAdapter {
                     extraPropertyList = new ArrayList<Property>();
                 }
                 LOG.debug( "Parsing extra property: " + propName );
-                SimplePropertyType pt = new SimplePropertyType( propName, 1, 1, STRING, false, false, null );
+                SimplePropertyType pt = new SimplePropertyType( propName, 1, 1, STRING, null, null );
                 Property prop = parseProperty( xmlStream, pt, activeCRS, 0 );
                 extraPropertyList.add( prop );
                 xmlStream.nextTag();
@@ -736,9 +736,7 @@ public class GMLFeatureReader extends XMLAdapter {
         QName propName = xmlStream.getName();
         GenericXMLElement xmlEl = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
         // unwrap the element -> we just want a node that represents the element's value
-        Map<QName, PrimitiveValue> attrs = xmlEl.getAttributes();
-        attrs.remove( new QName( XSINS, "nil" ) );
-        GenericXMLElementContent propValue = new GenericXMLElementContent( xmlEl.getXSType(), attrs,
+        GenericXMLElementContent propValue = new GenericXMLElementContent( xmlEl.getXSType(), xmlEl.getAttributes(),
                                                                            xmlEl.getChildren() );
         return new GenericProperty( propDecl, propName, propValue, isNilled );
     }

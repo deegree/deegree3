@@ -230,8 +230,10 @@ public class PostGISFeatureStoreConfigWriter {
             }
             writer.writeEndElement();
         } else if ( particle instanceof FeatureMapping ) {
+            FeatureMapping gm = (FeatureMapping) particle;
             writer.writeStartElement( CONFIG_NS, "Feature" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
+            writer.writeAttribute( "mapping", gm.getMapping().toString() );            
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
             }

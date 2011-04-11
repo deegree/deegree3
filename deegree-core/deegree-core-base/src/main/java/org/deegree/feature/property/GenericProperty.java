@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.property;
 
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -51,6 +54,8 @@ import org.deegree.feature.types.property.SimplePropertyType;
  * @version $Revision:$, $Date:$
  */
 public class GenericProperty implements Property {
+
+    private static final QName XSI_NIL = new QName( XSINS, "nil" );
 
     private PropertyType declaration;
 
@@ -126,6 +131,12 @@ public class GenericProperty implements Property {
 
     @Override
     public boolean isNilled() {
+        if ( value instanceof GenericXMLElementContent ) {
+            PrimitiveValue nilAttr = ( (GenericXMLElementContent) value ).getAttributes().get( XSI_NIL );
+            if ( nilAttr != null ) {
+                return (Boolean) nilAttr.getValue();
+            }
+        }
         return nilled;
     }
 

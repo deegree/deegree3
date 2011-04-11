@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 
@@ -61,16 +62,17 @@ public class SimplePropertyType extends AbstractPropertyType {
 
     private String codeList;
 
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
-                               boolean isNillable, List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type,
+                               XSElementDeclaration elDecl, List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, elDecl, substitutions );
         this.primitiveType = type;
         this.xsdType = null;
     }
 
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
-                               boolean isNillable, List<PropertyType> substitutions, XSSimpleTypeDefinition xsdType ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type,
+                               XSElementDeclaration elDecl, List<PropertyType> substitutions,
+                               XSSimpleTypeDefinition xsdType ) {
+        super( name, minOccurs, maxOccurs, elDecl, substitutions );
         this.primitiveType = type;
         this.xsdType = xsdType;
     }

@@ -209,7 +209,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     i = addProperties( props, pt, mapping, rs, i, gmlId );
                 } else {
                     // TODO more complex mappings, e.g. "propname[1]"
-                    LOG.warn( "Omitting mapping. Not a simple property name." );
+                    LOG.warn( "Omitting mapping '" + mapping + "'. Not a simple property name." );
                 }
             }
             feature = ft.newFeature( gmlId, props, null, null );
@@ -226,10 +226,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
         Pair<List<Pair<TypedObjectNode, Boolean>>, Integer> pair = buildParticles( propMapping, rs, i, pk );
         for ( Pair<TypedObjectNode, Boolean> value : pair.first ) {
-            if ( value.first instanceof GenericXMLElementContent ) {
-                GenericXMLElementContent ec = (GenericXMLElementContent) value.first;
-                ec.getAttributes().remove( XSI_NIL );
-            }
             props.add( new GenericProperty( pt, pt.getName(), value.first, value.second ) );
         }
         return pair.second;
@@ -360,13 +356,18 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                 }
                             }
                         } else {
-                            LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
+                            LOG.warn( "Unhandled axis type '" + step.getAxis() + "' for path: '"
+                                      + particleMapping.getPath() + "'" );
                         }
                     } else {
-                        LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
+                        // TODO handle other steps as self()
+                        for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
+                            children.add( particleValue.first );
+                        }                                                
                     }
                 } else {
-                    LOG.warn( "Unhandled path: '" + particleMapping.getPath() + "'" );
+                    LOG.warn( "Unhandled mapping type '" + particleMapping.getClass() + "' for path: '"
+                              + particleMapping.getPath() + "'" );
                 }
             }
 

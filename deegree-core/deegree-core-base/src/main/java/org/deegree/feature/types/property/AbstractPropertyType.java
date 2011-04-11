@@ -39,6 +39,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
+
 /**
  * Abstract base class for {@link PropertyType}s that defines common fields and methods.
  * <p>
@@ -72,9 +74,7 @@ public abstract class AbstractPropertyType implements PropertyType {
      */
     protected final PropertyType[] substitutions;
 
-    private final boolean isAbstract;
-
-    private final boolean isNillable;
+    private final XSElementDeclaration elDecl;
 
     /**
      * Creates a new <code>AbstractPropertyType</code> instance.
@@ -85,26 +85,23 @@ public abstract class AbstractPropertyType implements PropertyType {
      *            minimum number of times that this property must be present
      * @param maxOccurs
      *            maximum number of times that this property must be present, or -1 (=unbounded)
-     * @param isAbstract
-     *            true, if it is abstract, false otherwise
-     * @param isNillable
-     *            true, if the property may be nilled, false otherwise
+     * @param elDecls
+     *            corresponding XML schema element declaration, can be <code>null</code>
      * @param substitutions
      *            the possible concrete substitutions, can be <code>null</code>
      */
-    protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+    protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                     List<PropertyType> substitutions ) {
         this.name = name;
         this.minOccurs = minOccurs;
         this.maxOccurs = maxOccurs;
-        this.isAbstract = isAbstract;
+        this.elDecl = elDecl;
         if ( substitutions != null ) {
             substitutions.add( this );
             this.substitutions = substitutions.toArray( new PropertyType[substitutions.size()] );
         } else {
             this.substitutions = new PropertyType[] { this };
         }
-        this.isNillable = isNillable;
     }
 
     @Override
@@ -124,7 +121,7 @@ public abstract class AbstractPropertyType implements PropertyType {
 
     @Override
     public boolean isAbstract() {
-        return isAbstract;
+        return elDecl == null ? false : elDecl.getAbstract();
     }
 
     @Override
@@ -134,6 +131,11 @@ public abstract class AbstractPropertyType implements PropertyType {
 
     @Override
     public boolean isNillable() {
-        return isNillable;
+        return elDecl == null ? false : elDecl.getNillable();
+    }
+
+    @Override
+    public XSElementDeclaration getElementDecl() {
+        return elDecl;
     }
 }

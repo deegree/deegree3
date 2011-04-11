@@ -42,6 +42,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeCurve;
@@ -337,10 +338,10 @@ public class GeometryPropertyType extends ObjectPropertyType {
 
     private final Set<GeometryType> allowedGeometryTypes;
 
-    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                  List<PropertyType> substitutions, GeometryType geomType, CoordinateDimension dim,
                                  ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
+        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation );
         this.geomType = geomType;
         this.allowedGeometryTypes = new HashSet<GeometryType>();
         this.allowedGeometryTypes.add( this.geomType );
@@ -359,10 +360,10 @@ public class GeometryPropertyType extends ObjectPropertyType {
      * @param dim
      * @param representation
      */
-    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                  List<PropertyType> substitutions, Set<GeometryType> geomTypes,
                                  CoordinateDimension dim, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions, representation );
+        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation );
         this.allowedGeometryTypes = geomTypes;
         this.geomType = GeometryType.determineMinimalBaseGeometry( geomTypes );
         this.dim = dim;

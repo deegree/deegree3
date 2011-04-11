@@ -55,6 +55,7 @@ import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.expression.PropertyName;
+import org.jaxen.expr.AllNodeStep;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -108,6 +109,8 @@ public class XPathSchemaWalker {
                                                                                 + propName
                                                                                 + "'to application schema. Only child element steps are supported." );
                 }
+            } else if ( o instanceof AllNodeStep ) {
+                // self()
             } else {
                 throw new IllegalArgumentException( "Unable to infer type for XPath '" + propName
                                                     + "'. Expression may only contain name steps." );
@@ -173,6 +176,8 @@ public class XPathSchemaWalker {
                                                                                 + propName
                                                                                 + "'to application schema. Only child and attribute axis steps are supported." );
                 }
+            } else if ( o instanceof AllNodeStep ) {
+                // self()
             } else if ( o instanceof TextNodeStep ) {
                 // nothing to do
             } else {

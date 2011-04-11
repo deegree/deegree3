@@ -52,7 +52,6 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.slf4j.Logger;
@@ -187,12 +186,8 @@ public class PostGISDDLCreator {
             sql.append( fidColumn );
             sql.append( " text PRIMARY KEY" );
         }
-
-        for ( PropertyType pt : ft.getPropertyDeclarations( ft.getSchema().getXSModel().getVersion() ) ) {
-            Mapping propMapping = ftMapping.getMapping( pt.getName() );
-            if ( propMapping != null ) {
-                ddls.addAll( process( sql, ftMapping.getFtTable(), propMapping ) );
-            }
+        for ( Mapping mapping : ftMapping.getMappings() ) {
+            ddls.addAll( process( sql, ftMapping.getFtTable(), mapping ) );
         }
         sql.append( "\n)" );
         return ddls;
@@ -237,7 +232,9 @@ public class PostGISDDLCreator {
             }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping compoundMapping = (CompoundMapping) mapping;
-            ddls.addAll( process( sql, table, compoundMapping ) );
+            for ( Mapping childMapping : compoundMapping.getParticles() ) {
+                ddls.addAll( process( sql, table, childMapping ) );
+            }
         } else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
         }
@@ -248,47 +245,47 @@ public class PostGISDDLCreator {
         return ddls;
     }
 
-    private List<StringBuffer> process( StringBuffer sb, QTableName table, CompoundMapping cm ) {
-
-        List<StringBuffer> ddls = new ArrayList<StringBuffer>();
-        for ( Mapping mapping : cm.getParticles() ) {
-            if ( mapping instanceof PrimitiveMapping ) {
-                PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
-                MappingExpression me = primitiveMapping.getMapping();
-                if ( me instanceof DBField ) {
-                    DBField dbField = (DBField) me;
-                    sb.append( ",\n    " );
-                    sb.append( dbField.getColumn() );
-                    sb.append( " " );
-                    sb.append( getPostgreSQLType( primitiveMapping.getType() ) );
-                }
-            } else if ( mapping instanceof GeometryMapping ) {
-                LOG.warn( "TODO: geometry mapping" );
-            } else if ( mapping instanceof FeatureMapping ) {
-                LOG.warn( "TODO: feature mapping" );
-            } else if ( mapping instanceof CompoundMapping ) {
-                CompoundMapping compoundMapping = (CompoundMapping) mapping;
-                JoinChain jc = compoundMapping.getJoinedTable();
-                if ( jc != null ) {
-                    StringBuffer newSb = createJoinedTable( table, jc );
-                    ddls.add( newSb );
-                    for ( Mapping particle : compoundMapping.getParticles() ) {
-                        ddls.addAll( process( newSb, new QTableName( jc.getFields().get( 1 ).getTable() ), particle ) );
-                    }
-                } else {
-                    for ( Mapping particle : compoundMapping.getParticles() ) {
-                        // TODO get rid of null check
-                        if ( particle != null ) {
-                            ddls.addAll( process( sb, table, particle ) );
-                        }
-                    }
-                }
-            } else {
-                throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
-            }
-        }
-        return ddls;
-    }
+//    private List<StringBuffer> process( StringBuffer sb, QTableName table, CompoundMapping cm ) {
+//
+//        List<StringBuffer> ddls = new ArrayList<StringBuffer>();
+//        for ( Mapping mapping : cm.getParticles() ) {
+//            if ( mapping instanceof PrimitiveMapping ) {
+//                PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
+//                MappingExpression me = primitiveMapping.getMapping();
+//                if ( me instanceof DBField ) {
+//                    DBField dbField = (DBField) me;
+//                    sb.append( ",\n    " );
+//                    sb.append( dbField.getColumn() );
+//                    sb.append( " " );
+//                    sb.append( getPostgreSQLType( primitiveMapping.getType() ) );
+//                }
+//            } else if ( mapping instanceof GeometryMapping ) {
+//                LOG.warn( "TODO: geometry mapping" );
+//            } else if ( mapping instanceof FeatureMapping ) {
+//                LOG.warn( "TODO: feature mapping" );
+//            } else if ( mapping instanceof CompoundMapping ) {
+//                CompoundMapping compoundMapping = (CompoundMapping) mapping;
+//                JoinChain jc = compoundMapping.getJoinedTable();
+//                if ( jc != null ) {
+//                    StringBuffer newSb = createJoinedTable( table, jc );
+//                    ddls.add( newSb );
+//                    for ( Mapping particle : compoundMapping.getParticles() ) {
+//                        ddls.addAll( process( newSb, new QTableName( jc.getFields().get( 1 ).getTable() ), particle ) );
+//                    }
+//                } else {
+//                    for ( Mapping particle : compoundMapping.getParticles() ) {
+//                        // TODO get rid of null check
+//                        if ( particle != null ) {
+//                            ddls.addAll( process( sb, table, particle ) );
+//                        }
+//                    }
+//                }
+//            } else {
+//                throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
+//            }
+//        }
+//        return ddls;
+//    }
 
     private StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc ) {
         DBField to = jc.getFields().get( 1 );

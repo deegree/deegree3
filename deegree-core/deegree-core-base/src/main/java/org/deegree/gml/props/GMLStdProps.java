@@ -166,28 +166,25 @@ public class GMLStdProps {
     public static final CodePropertyType PT_NAME_GML32;
 
     static {
-        PT_DESCRIPTION_GML2 = new SimplePropertyType( new QName( GMLNS, "description" ), 0, 1, STRING, false, false,
-                                                      null );
-        PT_NAME_GML2 = new SimplePropertyType( new QName( GMLNS, "name" ), 0, 1, STRING, false, false, null );
+        PT_DESCRIPTION_GML2 = new SimplePropertyType( new QName( GMLNS, "description" ), 0, 1, STRING, null, null );
+        PT_NAME_GML2 = new SimplePropertyType( new QName( GMLNS, "name" ), 0, 1, STRING, null, null );
 
         // TODO correct this (should be a MetaDataPropertyType)
-        PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null,
-                                                              false, false, null );
+        PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null, null );
         // TODO correct this (should be a StringOrRefType)
-        PT_DESCRIPTION_GML31 = new StringOrRefPropertyType( new QName( GMLNS, "description" ), 0, 1, false, false, null );
-        PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1, false, false, null );
+        PT_DESCRIPTION_GML31 = new StringOrRefPropertyType( new QName( GMLNS, "description" ), 0, 1, null, null );
+        PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1, null, null );
 
         // TODO correct this (should be a MetaDataPropertyType)
         PT_META_DATA_PROPERTY_GML32 = new CustomPropertyType( new QName( GML3_2_NS, "metaDataProperty" ), 0, -1, null,
-                                                              false, false, null );
+                                                              null );
         // TODO correct this (should be a StringOrRefType)
-        PT_DESCRIPTION_GML32 = new StringOrRefPropertyType( new QName( GML3_2_NS, "description" ), 0, 1, false, false,
-                                                            null );
+        PT_DESCRIPTION_GML32 = new StringOrRefPropertyType( new QName( GML3_2_NS, "description" ), 0, 1, null, null );
         // TODO correct this (should be a ReferenceType)
         PT_DESCRIPTION_REFERENCE_GML32 = new StringOrRefPropertyType( new QName( GML3_2_NS, "descriptionReference" ),
-                                                                      0, 1, false, false, null );
-        PT_IDENTIFIER_GML32 = new CodePropertyType( new QName( GML3_2_NS, "identifier" ), 0, 1, false, false, null );
-        PT_NAME_GML32 = new CodePropertyType( new QName( GML3_2_NS, "name" ), 0, -1, false, false, null );
+                                                                      0, 1, null, null );
+        PT_IDENTIFIER_GML32 = new CodePropertyType( new QName( GML3_2_NS, "identifier" ), 0, 1, null, null );
+        PT_NAME_GML32 = new CodePropertyType( new QName( GML3_2_NS, "name" ), 0, -1, null, null );
     }
 
     protected TypedObjectNode[] metadata;

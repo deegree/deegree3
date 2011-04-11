@@ -573,7 +573,7 @@ public class WMSClient111 {
                 String name = reader.getAttributeLocalName( i );
                 name = name.substring( name.lastIndexOf( "." ) + 1 );
                 String value = reader.getAttributeValue( i );
-                SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, false, false, null );
+                SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
                 propValues.add( new SimpleProperty( tp, value, STRING ) );
                 props.add( tp );
             }
@@ -605,7 +605,7 @@ public class WMSClient111 {
                 while ( !( reader.isEndElement() && reader.getLocalName().equals( "object" ) ) ) {
                     String name = reader.getLocalName();
                     String value = reader.getElementText();
-                    SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, false, false, null );
+                    SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
                     propValues.add( new SimpleProperty( tp, value, STRING ) );
                     props.add( tp );
                     nextElement( reader );

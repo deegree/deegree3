@@ -77,11 +77,11 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.XMLSchemaInfoSet;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -634,8 +634,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                          elementDecl.getNillable(), ptSubstitutions, null, ValueRepresentation.REMOTE );
+            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions, null,
+                                          ValueRepresentation.REMOTE );
             return pt;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
@@ -668,23 +668,19 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                             pt = null;
                             if ( version.getNamespace().equals( elementName.getNamespaceURI() ) ) {
                                 if ( allowsXLink ) {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
-                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl,
                                                                   ptSubstitutions, null, ValueRepresentation.BOTH );
                                 } else {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
-                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl,
                                                                   ptSubstitutions, null, ValueRepresentation.INLINE );
                                 }
                             } else {
                                 if ( allowsXLink ) {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
-                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl,
                                                                   ptSubstitutions, elementName,
                                                                   ValueRepresentation.BOTH );
                                 } else {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs,
-                                                                  elementDecl.getAbstract(), elementDecl.getNillable(),
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl,
                                                                   ptSubstitutions, null, ValueRepresentation.INLINE );
                                 }
                             }
@@ -745,9 +741,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                                                                     nsContext ), null );
         if ( refElement != null ) {
             LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
-            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                              elementDecl.getNillable(), ptSubstitutions, refElement,
-                                                              ValueRepresentation.BOTH );
+            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl,
+                                                              ptSubstitutions, refElement, ValueRepresentation.BOTH );
             return pt;
         }
         return null;
@@ -768,9 +763,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                                                                     nsContext ), null );
         if ( refElement != null ) {
             LOG.trace( "Identified a feature property (adv style)." );
-            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                              elementDecl.getNillable(), ptSubstitutions, refElement,
-                                                              ValueRepresentation.BOTH );
+            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl,
+                                                              ptSubstitutions, refElement, ValueRepresentation.BOTH );
             return pt;
         }
         return null;
@@ -791,9 +785,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             LOG.trace( "Identified a feature property (GML 3.2 style)." );
             // TODO determine this properly
             ValueRepresentation vp = ValueRepresentation.REMOTE;
-            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                              elementDecl.getNillable(), ptSubstitutions, refElement,
-                                                              vp );
+            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl,
+                                                              ptSubstitutions, refElement, vp );
             return pt;
         }
         return null;
@@ -860,9 +853,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                         }
                     }
                     if ( !allowedTypes.isEmpty() ) {
-                        return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                         elementDecl.getNillable(), ptSubstitutions, allowedTypes,
-                                                         CoordinateDimension.DIM_2_OR_3, BOTH );
+                        return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions,
+                                                         allowedTypes, CoordinateDimension.DIM_2_OR_3, BOTH );
                     }
                     break;
                 }
@@ -888,8 +880,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                         if ( geomElementNames.contains( elementName ) ) {
                             LOG.trace( "Identified a geometry property." );
                             GeometryType geometryType = getGeometryType( elementName );
-                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                             elementDecl.getNillable(), ptSubstitutions, geometryType,
+                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl,
+                                                             ptSubstitutions, geometryType,
                                                              CoordinateDimension.DIM_2_OR_3, BOTH );
                         }
                     }
@@ -938,8 +930,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                                 }
                             }
                             if ( !allowedTypes.isEmpty() ) {
-                                return new GeometryPropertyType( ptName, minOccurs, maxOccurs,
-                                                                 elementDecl.getAbstract(), elementDecl.getNillable(),
+                                return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl,
                                                                  ptSubstitutions, allowedTypes,
                                                                  CoordinateDimension.DIM_2_OR_3, BOTH );
                             }
