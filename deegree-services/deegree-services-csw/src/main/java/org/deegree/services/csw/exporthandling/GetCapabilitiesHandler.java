@@ -41,10 +41,14 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
+import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.InputStream;
@@ -73,8 +77,6 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.metadata.KeywordsType;
-import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,15 +93,9 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static Logger LOG = LoggerFactory.getLogger( GetCapabilitiesHandler.class );
 
-    private static final String OGC_NS = "http://www.opengis.net/ogc";
-
-    private static final String OGC_PREFIX = "ogc";
-
-    private LinkedList<String> parameterValues;
+    private final XMLStreamWriter writer;
 
     private final boolean isTransactionEnabled;
-
-    private final XMLStreamWriter writer;
 
     private final DeegreeServicesMetadataType mainControllerConf;
 
@@ -123,6 +119,16 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     private LinkedList<String> supportedOperations = new LinkedList<String>();
 
     private final Map<String, String> varToValue;
+
+    private static final String[] outputFormats = new String[] { "text/xml", "application/xml" };
+
+    private static final String[] outputSchemas = new String[] { CSW_202_NS, GMD_NS };
+
+    private static final String[] typeNames = new String[] { CSW_PREFIX + ":Record", GMD_PREFIX + ":MD_Metadata" };
+
+    private static final String[] elementSetNames = new String[] { "brief", "summary", "full" };
+
+    private final GetCapabilitiesHelper gcHelper = new GetCapabilitiesHelper();
 
     public GetCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
                                    DeegreeServiceControllerType mainConf, Set<Sections> sections,
@@ -240,14 +246,14 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeStartElement( CSW_PREFIX, "Capabilities", CSW_202_NS );
         writer.writeNamespace( "ows", OWS_NS );
-        writer.writeNamespace( OGC_PREFIX, OGC_NS );
+        writer.writeNamespace( OGC_PREFIX, OGCNS );
         writer.writeNamespace( "xlink", XLN_NS );
         writer.writeAttribute( "version", "2.0.2" );
         writer.writeAttribute( "xsi", XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
 
         // ows:ServiceIdentification
         if ( sections.isEmpty() || sections.contains( Sections.ServiceIdentification ) ) {
-            exportServiceIdentification( writer, identification );
+            gcHelper.exportServiceIdentification( writer, identification, "CSW", "2.0.2", null );
 
         }
 
@@ -285,31 +291,32 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
             if ( name.equals( CSWRequestType.GetCapabilities.name() ) ) {
 
-                writeGetCapabilities( writer, owsNS );
+                gcHelper.writeGetCapabilities( writer, owsNS );
 
                 writer.writeEndElement();// Operation
                 continue;
             } else if ( name.equals( CSWRequestType.DescribeRecord.name() ) ) {
 
-                writeDescribeRecord( writer, owsNS );
+                gcHelper.writeDescribeRecord( writer, owsNS, typeNames, outputFormats, "XMLSCHEMA" );
 
                 writer.writeEndElement();// Operation
                 continue;
             } else if ( name.equals( CSWRequestType.GetRecords.name() ) ) {
 
-                writeGetRecords( writer, owsNS );
+                gcHelper.writeGetRecords( writer, owsNS, typeNames, outputFormats, outputSchemas, elementSetNames );
+                writeGetRecordsConstraints( writer, owsNS );
 
                 writer.writeEndElement();// Operation
                 continue;
             } else if ( name.equals( CSWRequestType.GetRecordById.name() ) ) {
 
-                writeGetRecordById( writer, owsNS );
+                gcHelper.writeGetRecordById( writer, owsNS, outputFormats, outputSchemas );
 
                 writer.writeEndElement();// Operation
                 continue;
             } else if ( name.equals( CSWRequestType.Transaction.name() ) ) {
                 // because there is the same output like for GetRecordById
-                writeGetRecordById( writer, owsNS );
+                gcHelper.writeGetRecordById( writer, owsNS, outputFormats, outputSchemas );
 
                 writer.writeEndElement();// Operation
                 continue;
@@ -449,297 +456,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
     }
 
-    /*
-     * private static void writeVersionAndUpdateSequence( XMLStreamWriter writer, int updateSequence ) throws
-     * XMLStreamException { writer.writeAttribute( "version", VERSION_202.toString() ); writer.writeAttribute(
-     * "updateSequence", Integer.toString( updateSequence ) ); }
-     */
-
-    private void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType identification )
+    private void writeGetRecordsConstraints( XMLStreamWriter writer, String owsNS )
                             throws XMLStreamException {
-        writer.writeStartElement( "http://www.opengis.net/ows", Sections.ServiceIdentification.toString() );
-
-        for ( String oneTitle : identification.getTitle() ) {
-            writeElement( writer, "http://www.opengis.net/ows", "Title", oneTitle );
-        }
-
-        for ( String oneAbstract : identification.getAbstract() ) {
-            writeElement( writer, "http://www.opengis.net/ows", "Abstract", oneAbstract );
-        }
-        String fees = "NONE";
-
-        // keywords [0,n]
-        exportKeywords( writer, identification.getKeywords() );
-
-        writeElement( writer, "http://www.opengis.net/ows", "ServiceType", "CSW" );
-        writeElement( writer, "http://www.opengis.net/ows", "ServiceTypeVersion", "2.0.2" );
-
-        // fees [1]
-        fees = identification.getFees();
-        if ( isEmpty( fees ) ) {
-            identification.setFees( "NONE" );
-        }
-        fees = identification.getFees();
-
-        // fees = fees.replaceAll( "\\W", " " );
-        writeElement( writer, "http://www.opengis.net/ows", "Fees", fees );
-
-        // accessConstraints [0,n]
-        exportAccessConstraints( writer, identification );
-
-        writer.writeEndElement();
-    }
-
-    private final boolean isEmpty( String value ) {
-        return value == null || "".equals( value );
-    }
-
-    /**
-     * write a list of keywords in csw 2.0.2 style.
-     * 
-     * @param writer
-     * @param keywords
-     * @throws XMLStreamException
-     */
-    private void exportKeywords( XMLStreamWriter writer, List<KeywordsType> keywords )
-                            throws XMLStreamException {
-        if ( !keywords.isEmpty() ) {
-            for ( KeywordsType kwt : keywords ) {
-                if ( kwt != null ) {
-                    writer.writeStartElement( "http://www.opengis.net/ows", "Keywords" );
-                    List<LanguageStringType> keyword = kwt.getKeyword();
-                    for ( LanguageStringType lst : keyword ) {
-                        exportKeyword( writer, lst );
-                        // -> keyword [1, n]
-                    }
-                    // -> type [0,1]
-                    // exportCodeType( writer, kwt.getType() );
-                    writer.writeEndElement();// WCS_100_NS, "keywords" );
-                }
-            }
-        }
-    }
-
-    /**
-     * @param writer
-     * @param lst
-     * @throws XMLStreamException
-     */
-    private void exportKeyword( XMLStreamWriter writer, LanguageStringType lst )
-                            throws XMLStreamException {
-        if ( lst != null ) {
-            writeElement( writer, "http://www.opengis.net/ows", "Keyword", lst.getValue() );
-        }
-    }
-
-    private void exportAccessConstraints( XMLStreamWriter writer, ServiceIdentificationType identification )
-                            throws XMLStreamException {
-        List<String> accessConstraints = identification.getAccessConstraints();
-
-        if ( accessConstraints.isEmpty() ) {
-            accessConstraints.add( "NONE" );
-
-        } else {
-            for ( String ac : accessConstraints ) {
-                if ( !ac.isEmpty() ) {
-                    writeElement( writer, "http://www.opengis.net/ows", "AccessConstraints", ac );
-                }
-            }
-        }
-    }
-
-    /**
-     * Writes the parameter and attributes for the mandatory GetCapabilities operation to the output.
-     * 
-     * @param writer
-     *            to write the output
-     * @param owsNS
-     *            the OWS namespace
-     * @throws XMLStreamException
-     */
-    private void writeGetCapabilities( XMLStreamWriter writer, String owsNS )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "sections" );
-
-        parameterValues = new LinkedList<String>();
-
-        parameterValues.add( "ServiceIdentification" );
-        parameterValues.add( "ServiceProvider" );
-        parameterValues.add( "OperationsMetadata" );
-        parameterValues.add( "Filter_Capabilities" );
-
-        for ( String value : parameterValues ) {
-            writer.writeStartElement( owsNS, "Value" );
-            writer.writeCharacters( value );
-            writer.writeEndElement();// Value
-        }
-        writer.writeEndElement();// Parameter
-
-        // Constraints...
-    }
-
-    /**
-     * Writes the parameter and attributes for the mandatory DescribeRecord operation to the output.
-     * 
-     * @param writer
-     *            to write the output
-     * @param owsNS
-     *            the OWS namespace
-     * @throws XMLStreamException
-     */
-    private void writeDescribeRecord( XMLStreamWriter writer, String owsNS )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "typeName" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( CSW_PREFIX + ":Record" );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "gmd" + ":MD_Metadata" );
-        writer.writeEndElement();// Value
-
-        // writer.writeStartElement( owsNS, "Value" );
-        // writer.writeCharacters( CSW_PREFIX + ":Service" );
-        // writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Parameter
-
-        writeOutputFormat( writer, owsNS );
-
-        // writer.writeStartElement( owsNS, "Parameter" );
-        // writer.writeAttribute( "name", "schemaLocation" );
-        // writer.writeStartElement( owsNS, "Value" );
-        // writer.writeCharacters( "http://www.w3.org/TR/xmlschema-1/" );
-        // writer.writeEndElement();// Value
-        // writer.writeEndElement();// Parameter
-
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "schemaLanguage" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "XMLSCHEMA" );
-        writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Constraint
-
-        // Constraints...[0..*]
-    }
-
-    private void writeOutputFormat( XMLStreamWriter writer, String owsNS )
-                            throws XMLStreamException {
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "outputFormat" );
-
-        // writer.writeStartElement( owsNS, "Value" );
-        // writer.writeCharacters( acceptFormat );
-        // writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "text/xml" );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "application/xml" );
-        writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Parameter
-
-    }
-
-    /**
-     * Writes the parameter and attributes for the mandatory GetRecords operation to the output.
-     * 
-     * @param writer
-     *            to write the output
-     * @param owsNS
-     *            the OWS namespace
-     * @throws XMLStreamException
-     */
-    private void writeGetRecords( XMLStreamWriter writer, String owsNS )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "typeNames" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( CSW_PREFIX + ":Record" );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( CSWConstants.GMD_PREFIX + ":MD_Metadata" );
-        writer.writeEndElement();// Value
-
-        // writer.writeStartElement( owsNS, "Value" );
-        // writer.writeCharacters( CSW_PREFIX + ":Service" );
-        // writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Parameter
-
-        writeOutputFormat( writer, owsNS );
-
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "outputSchema" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( CSWConstants.CSW_202_NS );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( CSWConstants.GMD_NS );
-        writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Parameter
-
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "resultType" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "hits" );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "results" );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "validate" );
-        writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Parameter
-
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "ElementSetName" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "brief" );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "summary" );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "full" );
-        writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Parameter
-
         writer.writeStartElement( owsNS, "Parameter" );
         writer.writeAttribute( "name", "CONSTRAINTLANGUAGE" );
-
         writer.writeStartElement( owsNS, "Value" );
         writer.writeCharacters( "Filter" );
         writer.writeEndElement();// Value
-
-        // writer.writeStartElement( owsNS, "Value" );
-        // writer.writeCharacters( "CQL_Text" );
-        // writer.writeEndElement();// Value
-
         writer.writeEndElement();// Parameter
 
         writer.writeStartElement( owsNS, "Constraint" );
@@ -757,37 +480,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             writeElement( writer, owsNS, "Value", val );
         }
         writer.writeEndElement();// Constraint
-
-    }
-
-    /**
-     * Writes the parameter and attributes for the mandatory GetRecordById operation to the output.<br>
-     * In this case the optional transaction operation uses this writing to the output, as well.
-     * 
-     * @param writer
-     *            to write the output
-     * @param owsNS
-     *            the OWS namespace
-     * @throws XMLStreamException
-     */
-    private void writeGetRecordById( XMLStreamWriter writer, String owsNS )
-                            throws XMLStreamException {
-
-        writeOutputFormat( writer, owsNS );
-
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "outputSchema" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( CSW_202_NS );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( CSWConstants.GMD_NS );
-        writer.writeEndElement();// Value
-
-        writer.writeEndElement(); // Parameter
-
     }
 
 }
