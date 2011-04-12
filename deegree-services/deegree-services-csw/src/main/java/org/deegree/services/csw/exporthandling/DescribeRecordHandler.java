@@ -49,7 +49,6 @@ import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 import static org.deegree.services.i18n.Messages.get;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,16 +57,11 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
-import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -98,14 +92,7 @@ public class DescribeRecordHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( DescribeRecordHandler.class );
 
-    /**
-     * Creates a new {@link DescribeRecordHandler} instance that uses the given service to lookup the
-     * {@link MetadataStore}s.
-     * 
-     * @param service
-     */
-    public DescribeRecordHandler() {
-    }
+    private DescribeRecordHelper dcHelper = new DescribeRecordHelper();
 
     /**
      * Preprocessing for the export of a {@link DescribeRecord} request to determine which recordstore is requested.
@@ -126,7 +113,7 @@ public class DescribeRecordHandler {
         Version version = descRec.getVersion();
         response.setContentType( descRec.getOutputFormat() );
 
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
+        XMLStreamWriter xmlWriter = dcHelper.getXMLResponseWriter( response, null );
 
         try {
             export( xmlWriter, typeNames, version );
@@ -149,7 +136,7 @@ public class DescribeRecordHandler {
      * @throws XMLStreamException
      * @throws MetadataStoreException
      */
-    private static void export( XMLStreamWriter writer, QName[] typeNames, Version version )
+    private void export( XMLStreamWriter writer, QName[] typeNames, Version version )
                             throws XMLStreamException, MetadataStoreException {
 
         if ( VERSION_202.equals( version ) ) {
@@ -169,7 +156,7 @@ public class DescribeRecordHandler {
      * @throws XMLStreamException
      * @throws MetadataStoreException
      */
-    private static void export202( XMLStreamWriter writer, QName[] typeNames )
+    private void export202( XMLStreamWriter writer, QName[] typeNames )
                             throws XMLStreamException, MetadataStoreException {
 
         writer.setDefaultNamespace( CSW_202_NS );
@@ -182,7 +169,7 @@ public class DescribeRecordHandler {
         try {
             if ( typeNames.length == 0 ) {
                 urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
-                exportSchemaFile( writer, new QName( DC_NS, DC_LOCAL_PART, DC_PREFIX ), urlConn );
+                dcHelper.exportSchemaFile( writer, new QName( DC_NS, DC_LOCAL_PART, DC_PREFIX ), urlConn );
                 exportISO( writer );
             }
             for ( QName typeName : typeNames ) {
@@ -193,7 +180,7 @@ public class DescribeRecordHandler {
                 if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
 
                     urlConn = new URL( CSW_202_RECORD ).openConnection();
-                    exportSchemaFile( writer, typeName, urlConn );
+                    dcHelper.exportSchemaFile( writer, typeName, urlConn );
 
                 }
 
@@ -226,7 +213,7 @@ public class DescribeRecordHandler {
         writer.writeEndDocument();
     }
 
-    private static void exportISO( XMLStreamWriter writer )
+    private void exportISO( XMLStreamWriter writer )
                             throws XMLStreamException, UnsupportedEncodingException {
         InputStream in_data = DescribeRecordHandler.class.getResourceAsStream( "iso_data.xml" );
         InputStream in_service = DescribeRecordHandler.class.getResourceAsStream( "iso_service.xml" );
@@ -234,7 +221,7 @@ public class DescribeRecordHandler {
 
         if ( in_data != null ) {
             isr = new InputStreamReader( in_data, "UTF-8" );
-            exportSchemaComponent( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), isr );
+            dcHelper.exportSchemaComponent( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), isr );
         } else {
             String msg = get( "CSW_NO_FILE", "iso_data.xml" );
             LOG.debug( msg );
@@ -242,80 +229,13 @@ public class DescribeRecordHandler {
 
         if ( in_service != null ) {
             isr = new InputStreamReader( in_service, "UTF-8" );
-            exportSchemaComponent( writer, new QName( CSWConstants.SRV_NS, CSWConstants.SRV_LOCAL_PART,
-                                                      CSWConstants.SRV_PREFIX ), isr );
+            dcHelper.exportSchemaComponent( writer, new QName( CSWConstants.SRV_NS, CSWConstants.SRV_LOCAL_PART,
+                                                               CSWConstants.SRV_PREFIX ), isr );
         } else {
             String msg = get( "CSW_NO_FILE", "iso_service.xml" );
             LOG.debug( msg );
         }
 
-    }
-
-    private static void exportSchemaFile( XMLStreamWriter writer, QName typeName, URLConnection urlConn )
-                            throws IOException, XMLStreamException {
-        // urlConn.setDoInput( true );
-        BufferedInputStream bais = new BufferedInputStream( urlConn.getInputStream() );
-
-        // Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
-        InputStreamReader isr = new InputStreamReader( bais, "UTF-8" );
-
-        exportSchemaComponent( writer, typeName, isr );
-    }
-
-    /**
-     * SchemaCompontent which encapsulates the requested xml schema.
-     * 
-     * @param writer
-     * @param record
-     * @param typeName
-     *            that corresponds to the requested {@link MetadataStore}
-     * @throws XMLStreamException
-     */
-    private static void exportSchemaComponent( XMLStreamWriter writer, QName typeName, InputStreamReader isr )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( CSW_202_NS, "SchemaComponent" );
-
-        // required, by default XMLSCHEMA
-        writer.writeAttribute( "schemaLanguage", "XMLSCHEMA" );
-        // required
-        writer.writeAttribute( "targetNamespace", typeName.getNamespaceURI() );
-
-        /*
-         * optional parentSchema. This is handled in the recordStore in the describeRecord operation because it is a
-         * record profile specific value.
-         */
-        // writer.writeAttribute( "parentSchema", "" );
-
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
-        xmlReader.nextTag();
-        XMLAdapter.writeElement( writer, xmlReader );
-
-        xmlReader.close();
-
-        writer.writeEndElement();// SchemaComponent
-
-    }
-
-    /**
-     * Returns an <code>XMLStreamWriter</code> for writing an XML response document.
-     * 
-     * @param writer
-     *            writer to write the XML to, must not be null
-     * @param schemaLocation
-     *            allows to specify a value for the 'xsi:schemaLocation' attribute in the root element, must not be null
-     * 
-     * @return {@link XMLStreamWriter}
-     * @throws XMLStreamException
-     * @throws IOException
-     */
-    static XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String schemaLocation )
-                            throws XMLStreamException, IOException {
-
-        if ( schemaLocation == null ) {
-            return writer.getXMLWriter();
-        }
-        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
     }
 
 }
