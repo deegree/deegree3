@@ -69,10 +69,12 @@ import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB.Column;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyJAXB;
+import org.deegree.feature.persistence.postgis.jaxb.JoinedTable;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyJAXB;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
@@ -165,8 +167,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         }
 
         QTableName table = new QTableName( ftDecl.getTable() );
-
         LOG.debug( "Processing feature type mapping for table '" + table + "'." );
+        if ( getColumns( table ).isEmpty() ) {
+            throw new FeatureStoreException( "No table with name '" + table + "' exists (or no columns defined)." );
+        }
+
         QName ftName = ftDecl.getName();
         if ( ftName == null ) {
             LOG.debug( "Using table name for feature type." );
@@ -260,54 +265,44 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
         }
 
+        MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
+        if ( !( mapping instanceof DBField ) ) {
+            throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
+                                             + "'. Currently, only DBFields are supported." );
+        }
+        String columnName = ( (DBField) mapping ).getColumn();
+        if ( propName == null ) {
+            LOG.debug( "Using column name for property name." );
+            propName = new QName( columnName );
+            propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
+        }
+
+        JoinedTable joinConfig = propDecl.getJoinedTable();
+        JoinChain jc = null;
+        QTableName valueTable = table;
+        if ( joinConfig != null ) {
+            jc = buildJoinTable( table, joinConfig );
+            DBField dbField = jc.getFields().get( 1 );
+            valueTable = new QTableName( dbField.getTable(), dbField.getSchema() );
+        }
+        int maxOccurs = joinConfig != null ? -1 : 1;
+
+        PropertyName path = new PropertyName( propName );
+        ColumnMetadata md = getColumn( valueTable, columnName.toLowerCase() );
+        int minOccurs = joinConfig != null ? 0 : md.isNullable ? 0 : 1;
+
         Mapping m = null;
         if ( propDecl instanceof SimplePropertyJAXB ) {
-            MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
-            if ( !( mapping instanceof DBField ) ) {
-                throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
-                                                 + "'. Currently, only DBFields are supported." );
+            SimplePropertyJAXB simpleDecl = (SimplePropertyJAXB) propDecl;
+            PrimitiveType primType = null;
+            if ( simpleDecl.getType() != null ) {
+                primType = getPrimitiveType( simpleDecl.getType() );
+            } else {
+                primType = determinePrimitiveType( md.sqlType );
             }
-
-            String columnName = ( (DBField) mapping ).getColumn();
-            if ( propName == null ) {
-                LOG.debug( "Using column name for feature type." );
-                propName = new QName( columnName );
-                propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
-            }
-
-            PropertyName path = new PropertyName( propName );
-            if ( pt == null ) {
-                ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
-                int minOccurs = md.isNullable ? 0 : 1;
-
-                SimplePropertyJAXB simpleDecl = (SimplePropertyJAXB) propDecl;
-                PrimitiveType primType = null;
-                if ( simpleDecl.getType() != null ) {
-                    primType = getPrimitiveType( simpleDecl.getType() );
-                } else {
-                    primType = determinePrimitiveType( md.sqlType );
-                }
-                pt = new SimplePropertyType( propName, minOccurs, 1, primType, null, null );
-            }
-            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), null );
+            pt = new SimplePropertyType( propName, minOccurs, maxOccurs, primType, null, null );
+            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc );
         } else if ( propDecl instanceof GeometryPropertyJAXB ) {
-            MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
-            if ( !( mapping instanceof DBField ) ) {
-                throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
-                                                 + "'. Currently, only DBFields are supported." );
-            }
-
-            String columnName = ( (DBField) mapping ).getColumn();
-            if ( propName == null ) {
-                LOG.debug( "Using column name for feature type." );
-                propName = new QName( columnName );
-                propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
-            }
-
-            PropertyName path = new PropertyName( propName );
-            ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
-            int minOccurs = md.isNullable ? 0 : 1;
-
             GeometryPropertyJAXB geomDecl = (GeometryPropertyJAXB) propDecl;
             GeometryType type = null;
             if ( geomDecl.getType() != null ) {
@@ -334,8 +329,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             } else {
                 dim = md.geometryParams.getDim();
             }
-            pt = new GeometryPropertyType( propName, minOccurs, 1, null, null, type, dim, INLINE );
-            m = new GeometryMapping( path, mapping, type, new GeometryStorageParams( crs, srid, dim ), null );
+            pt = new GeometryPropertyType( propName, minOccurs, maxOccurs, null, null, type, dim, INLINE );
+            m = new GeometryMapping( path, mapping, type, new GeometryStorageParams( crs, srid, dim ), jc );
         } else {
             LOG.warn( "Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it." );
         }
@@ -366,7 +361,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 }
                 if ( columnName == null ) {
                     throw new FeatureStoreException( "No autoincrement column in table '" + table
-                                                     + "' found. Please specify in FIDMapping." );
+                                                     + "' found. Please specify column in FIDMapping manually." );
                 }
             }
         } else {

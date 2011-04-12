@@ -98,18 +98,21 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider, SQLFea
                                                                                           workspace );
             ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
             Type connType = mgr.getType( cfg.getJDBCConnId() );
+            if ( connType == null ) {
+                throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId() + "' defined." );
+            }
             LOG.debug( "Connection type is {}.", connType );
             SQLFeatureStoreProvider<? extends SQLFeatureStore> provider = providers.get( connType );
             if ( provider != null ) {
                 LOG.debug( "Found SQL provider {}", provider.getClass().getSimpleName() );
                 return provider.create( cfg, configURL, workspace );
             }
-            throw new ResourceInitException( "No provider found for " + connType.name() + " SQL feature stores." );
+            throw new ResourceInitException( "No SQL feature store provider for connection type '" + connType
+                                             + "' available." );
         } catch ( JAXBException e ) {
             LOG.trace( "Stack trace: ", e );
             throw new ResourceInitException( "Error when parsing configuration: " + e.getLocalizedMessage(), e );
         }
-
     }
 
     public void init( DeegreeWorkspace workspace ) {

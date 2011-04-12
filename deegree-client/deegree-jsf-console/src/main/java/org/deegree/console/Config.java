@@ -249,7 +249,7 @@ public class Config implements Comparable<Config> {
         } else {
             msg += ".";
         }
-        msg += " The application server log main contain additional information.";
+        msg += " (The application server log may contain additional information.)";
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
     }

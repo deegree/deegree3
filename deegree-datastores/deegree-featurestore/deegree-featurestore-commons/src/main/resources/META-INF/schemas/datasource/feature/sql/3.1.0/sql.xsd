@@ -152,31 +152,14 @@
         <jaxb:class name="AbstractPropertyJAXB" />
       </appinfo>
     </annotation>
-    <sequence />
+    <sequence>
+      <element ref="postgisfs:JoinedTable" minOccurs="0"/>
+    </sequence>
     <attribute name="name" type="QName">
       <annotation>
         <documentation>Qualified name of the property (if omitted, it is derived from the mapping column)
         </documentation>
       </annotation>
-    </attribute>
-    <attribute name="minOccurs" type="nonNegativeInteger">
-      <annotation>
-        <documentation>The minimum number of times that this property is required in feature instances</documentation>
-      </annotation>
-    </attribute>
-    <attribute name="maxOccurs">
-      <annotation>
-        <documentation>The maximum number of times that this property is permitted in feature instances</documentation>
-      </annotation>
-      <simpleType>
-        <union memberTypes="positiveInteger">
-          <simpleType>
-            <restriction base="token">
-              <enumeration value="unbounded" />
-            </restriction>
-          </simpleType>
-        </union>
-      </simpleType>
     </attribute>
     <attribute name="mapping" type="string" use="optional">
       <annotation>

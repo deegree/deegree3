@@ -834,7 +834,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                 sql.append( wb.getOrderBy().getSQL() );
             }
 
-            LOG.info( "SQL: {}", sql );
+            LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
             LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );

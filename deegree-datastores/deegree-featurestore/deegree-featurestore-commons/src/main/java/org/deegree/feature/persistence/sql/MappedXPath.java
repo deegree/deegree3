@@ -243,6 +243,13 @@ public class MappedXPath {
             throw new UnmappableException( msg );
         }
 
+        if ( mapping.getJoinedTable() != null ) {
+            JoinChain jc = mapping.getJoinedTable();
+            DBField from = new DBField( getCurrentTable().getTable(), jc.getFields().get( 0 ).getColumn() );
+            DBField to = new DBField( jc.getFields().get( 1 ).getTable(), jc.getFields().get( 1 ).getColumn() );
+            joins.add( new Join( from, to, null, -1 ) );
+        }
+
         if ( mapping instanceof GeometryMapping ) {
             crs = ( (GeometryMapping) mapping ).getCRS();
             srid = ( (GeometryMapping) mapping ).getSrid();
@@ -254,14 +261,11 @@ public class MappedXPath {
         } else if ( mapping instanceof GeometryMapping ) {
             propMapping = ( (GeometryMapping) mapping ).getMapping();
         } else {
-            String msg = "Unhandled mapping type '" + propMapping.getClass() + "'.";
+            String msg = "Unhandled mapping type '" + mapping.getClass() + "'.";
             throw new UnmappableException( msg );
         }
         if ( propMapping instanceof DBField ) {
-            QTableName table = rootFt.getFtTable();
-            if ( !joins.isEmpty() ) {
-                table = new QTableName( joins.get( joins.size() - 1 ).getTo().getTable() );
-            }
+            QTableName table = getCurrentTable();
             valueField = new DBField( table.toString(), ( (DBField) propMapping ).getColumn() );
         } else if ( propMapping instanceof JoinChain ) {
             JoinChain chain = (JoinChain) propMapping;

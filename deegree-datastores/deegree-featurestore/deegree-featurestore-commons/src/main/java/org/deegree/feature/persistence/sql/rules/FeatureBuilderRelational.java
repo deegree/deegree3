@@ -196,7 +196,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
 
-        String gmlId = "" + rs.getObject( 1 );
+        Object pk = rs.getObject( 1 );
+        String gmlId = ftMapping.getFidMapping().getPrefix() + pk;
         Feature feature = (Feature) fs.getCache().get( gmlId );
         if ( feature == null ) {
             LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
@@ -206,7 +207,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 PropertyName propName = mapping.getPath();
                 if ( propName.getAsQName() != null ) {
                     PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName(), gmlVersion );
-                    i = addProperties( props, pt, mapping, rs, i, gmlId );
+                    i = addProperties( props, pt, mapping, rs, i, pk );
                 } else {
                     // TODO more complex mappings, e.g. "propname[1]"
                     LOG.warn( "Omitting mapping '" + mapping + "'. Not a simple property name." );
@@ -363,7 +364,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         // TODO handle other steps as self()
                         for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
                             children.add( particleValue.first );
-                        }                                                
+                        }
                     }
                 } else {
                     LOG.warn( "Unhandled mapping type '" + particleMapping.getClass() + "' for path: '"
@@ -394,8 +395,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         List<String> columns = getSelectColumns( mapping );
 
         StringBuilder sql = new StringBuilder( "SELECT " );
-        // TODO
-        sql.append( "id" );
+        sql.append( jc.getFields().get( 1 ).getColumn() );
         for ( String column : columns ) {
             sql.append( ',' );
             sql.append( column );
