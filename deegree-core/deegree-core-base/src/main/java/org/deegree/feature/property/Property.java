@@ -37,6 +37,7 @@ package org.deegree.feature.property;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.PropertyType;
@@ -54,7 +55,7 @@ import org.deegree.feature.types.property.PropertyType;
  * 
  * @version $Revision$, $Date$
  */
-public interface Property extends TypedObjectNode {
+public interface Property extends ElementNode {
 
     /**
      * Returns the name of the property.

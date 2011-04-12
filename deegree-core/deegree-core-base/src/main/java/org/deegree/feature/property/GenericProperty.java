@@ -35,10 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.property;
 
+import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -63,7 +70,11 @@ public class GenericProperty implements Property {
 
     private TypedObjectNode value;
 
-    private boolean nilled;
+    private Map<QName, PrimitiveValue> attrs = Collections.emptyMap();
+
+    private List<TypedObjectNode> children = Collections.emptyList();
+
+    private XSTypeDefinition xsType;
 
     /**
      * Creates a new {@link GenericProperty} instance.
@@ -94,6 +105,7 @@ public class GenericProperty implements Property {
             this.name = declaration.getName();
         }
         this.value = value;
+        this.children = Collections.singletonList( value );
 
         if ( declaration instanceof SimplePropertyType ) {
             if ( value != null && !( value instanceof PrimitiveValue ) ) {
@@ -115,13 +127,22 @@ public class GenericProperty implements Property {
      * @param name
      *            name of the property (does not necessarily match the name in the type information)
      * @param value
-     *            property value, can be <code>null</code>
-     * @param isNilled
-     *            true, if the property is explicitly nilled, false otherwise
+     *            primary property value, can be <code>null</code>
      */
+    public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value,
+                            Map<QName, PrimitiveValue> attrs, List<TypedObjectNode> children ) {
+        this( declaration, name, value );
+        this.attrs = attrs;
+        this.children = children;
+    }
+
     public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value, boolean isNilled ) {
         this( declaration, name, value );
-        this.nilled = isNilled;
+        if ( isNilled ) {
+            this.attrs = new HashMap<QName, PrimitiveValue>();
+            this.attrs.put( XSI_NIL, new PrimitiveValue( TRUE ) );
+        }
+        this.children = Collections.singletonList( value );
     }
 
     @Override
@@ -136,8 +157,13 @@ public class GenericProperty implements Property {
             if ( nilAttr != null ) {
                 return (Boolean) nilAttr.getValue();
             }
+        } else {
+            PrimitiveValue nilAttr = attrs.get( XSI_NIL );
+            if ( nilAttr != null ) {
+                return (Boolean) nilAttr.getValue();
+            }
         }
-        return nilled;
+        return false;
     }
 
     @Override
@@ -158,5 +184,20 @@ public class GenericProperty implements Property {
     @Override
     public String toString() {
         return value == null ? "null" : value.toString();
+    }
+
+    @Override
+    public Map<QName, PrimitiveValue> getAttributes() {
+        return attrs;
+    }
+
+    @Override
+    public List<TypedObjectNode> getChildren() {
+        return children;
+    }
+
+    @Override
+    public XSTypeDefinition getXSType() {
+        return xsType;
     }
 }

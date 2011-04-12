@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
+<?xml version='1.0' encoding='UTF-8'?><web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
   <display-name>deegree 3 OGC services console + generic client</display-name>
 
   <context-param>
     <param-name>javax.faces.PROJECT_STAGE</param-name>
     <param-value>Development</param-value>
-  </context-param>
+  </context-param><servlet><servlet-name>SOS webclient</servlet-name><servlet-class>org.deegree.client.sos.SOSClient</servlet-class><load-on-startup>1</load-on-startup></servlet><servlet-mapping><servlet-name>SOS webclient</servlet-name><url-pattern>/SOSClient</url-pattern></servlet-mapping>
 
   <filter>
     <filter-name>Upload Filter</filter-name>
@@ -132,14 +130,11 @@
   </security-role>
 
 
-  <!-- http basic auth enable -->
-  <!-- Define a security constraint on this application -->
-  <!-- User and role must be added to tomcat-users.xml -->
-  <!-- <security-constraint> <web-resource-collection> <web-resource-name>Entire Application</web-resource-name> <url-pattern>/*</url-pattern> 
-    </web-resource-collection> <auth-constraint> <role-name>demoadmin</role-name> </auth-constraint> </security-constraint> <login-config> 
-    <auth-method>BASIC</auth-method> <realm-name>Tomcat Manager Application</realm-name> </login-config> <security-role> <description>The 
-    role that is required to log in to the Manager Application</description> <role-name>demoadmin</role-name> </security-role> -->
-  <!-- end -->
+  
+  
+  
+  
+  
 
 
 </web-app>

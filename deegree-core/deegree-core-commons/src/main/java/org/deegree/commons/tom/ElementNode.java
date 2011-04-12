@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.tom.genericxml;
+package org.deegree.commons.tom;
 
 import java.util.List;
 import java.util.Map;
@@ -41,34 +41,50 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.commons.tom.ElementNode;
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
- * {@link TypedObjectNode} that represents a generic XML element with associated XML schema type information.
+ * {@link TypedObjectNode} with an (XML) element semantic.
+ * <p>
+ * Chararacteristics:
+ * <ul>
+ * <li>(Element) name</li>
+ * <li>Attributes</li>
+ * <li>Child nodes</li>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GenericXMLElement extends GenericXMLElementContent implements ElementNode {
+public interface ElementNode extends TypedObjectNode {
 
-    private QName name;
+    /**
+     * Returns the element's name.
+     * 
+     * @return element name, never <code>null</code>
+     */
+    public QName getName();
 
-    public GenericXMLElement( QName name, GenericXMLElementContent value ) {
-        super( value.type, value.attrs, value.children );
-        this.name = name;
-    }
+    /**
+     * Returns the attributes of the node.
+     * 
+     * @return attributes of the node, never <code>null</code>
+     */
+    public Map<QName, PrimitiveValue> getAttributes();
 
-    public GenericXMLElement( QName name, XSTypeDefinition type, Map<QName, PrimitiveValue> attrs,
-                              List<TypedObjectNode> children ) {
-        super( type, attrs, children );
-        this.name = name;
-    }
+    /**
+     * Returns the children of the node.
+     * 
+     * @return children of the node, never <code>null</code>
+     */
+    public List<TypedObjectNode> getChildren();
 
-    public QName getName() {
-        return name;
-    }
+    /**
+     * Returns the XML schema declaration of the element.
+     * 
+     * @return XML schema element declaration, can be <code>null</code>
+     */
+    public XSTypeDefinition getXSType();
 }

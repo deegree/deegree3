@@ -35,9 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.property;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -95,5 +100,20 @@ public class SimpleProperty implements Property {
     @Override
     public String toString() {
         return value == null ? "null" : value.toString();
+    }
+
+    @Override
+    public Map<QName, PrimitiveValue> getAttributes() {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public List<TypedObjectNode> getChildren() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public XSTypeDefinition getXSType() {
+        return null;
     }
 }
