@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -126,7 +125,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     TransactionHelper generateQP = new TransactionHelper( connectionType, anyTextConfig );
                     int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
                     generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
-                    identifierList.addAll( Arrays.asList( rec.getIdentifier() ) );
+                    identifierList.add( rec.getIdentifier() );
                 }
             } catch ( XMLStreamException e ) {
                 throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
