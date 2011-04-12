@@ -101,7 +101,6 @@ import org.deegree.services.csw.getrecordbyid.GetRecordByIdXMLAdapter;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.GetRecordsKVPAdapter;
 import org.deegree.services.csw.getrecords.GetRecordsXMLAdapter;
-import org.deegree.services.csw.security.CSWSecurityManager;
 import org.deegree.services.csw.transaction.Transaction;
 import org.deegree.services.csw.transaction.TransactionKVPAdapter;
 import org.deegree.services.csw.transaction.TransactionXMLAdapter;
@@ -145,8 +144,6 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
     private boolean enableTransactions;
 
     private boolean enableInspireExtensions;
-
-    private CSWSecurityManager securityManager;
 
     private DescribeRecordHandler describeRecordHandler;
 
@@ -231,40 +228,25 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             }
             switch ( requestType ) {
             case GetCapabilities:
-                GetCapabilities getCapabilities = securityManager == null ? GetCapabilities202KVPAdapter.parse( normalizedKVPParams )
-                                                                         : securityManager.preprocess( GetCapabilities202KVPAdapter.parse( normalizedKVPParams ),
-                                                                                                       OGCFrontController.getContext().getCredentials(),
-                                                                                                       false );
+                GetCapabilities getCapabilities = GetCapabilities202KVPAdapter.parse( normalizedKVPParams );
                 doGetCapabilities( getCapabilities, request, response, false );
                 break;
             case DescribeRecord:
-                DescribeRecord descRec = securityManager == null ? DescribeRecordKVPAdapter.parse( normalizedKVPParams )
-                                                                : securityManager.preprocess( DescribeRecordKVPAdapter.parse( normalizedKVPParams ),
-                                                                                              OGCFrontController.getContext().getCredentials(),
-                                                                                              false );
+                DescribeRecord descRec = DescribeRecordKVPAdapter.parse( normalizedKVPParams );
                 describeRecordHandler.doDescribeRecord( descRec, response );
                 break;
 
             case GetRecords:
-                GetRecords getRec = securityManager == null ? GetRecordsKVPAdapter.parse( normalizedKVPParams )
-                                                           : securityManager.preprocess( GetRecordsKVPAdapter.parse( normalizedKVPParams ),
-                                                                                         OGCFrontController.getContext().getCredentials(),
-                                                                                         false );
+                GetRecords getRec = GetRecordsKVPAdapter.parse( normalizedKVPParams );
                 getRecordsHandler.doGetRecords( getRec, response, store );
                 break;
             case GetRecordById:
-                GetRecordById getRecBI = securityManager == null ? GetRecordByIdKVPAdapter.parse( normalizedKVPParams )
-                                                                : securityManager.preprocess( GetRecordByIdKVPAdapter.parse( normalizedKVPParams ),
-                                                                                              OGCFrontController.getContext().getCredentials(),
-                                                                                              false );
+                GetRecordById getRecBI = GetRecordByIdKVPAdapter.parse( normalizedKVPParams );
                 getRecordByIdHandler.doGetRecordById( getRecBI, response, store );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElement );
-                Transaction trans = securityManager == null ? TransactionKVPAdapter.parse( normalizedKVPParams )
-                                                           : securityManager.preprocess( TransactionKVPAdapter.parse( normalizedKVPParams ),
-                                                                                         OGCFrontController.getContext().getCredentials(),
-                                                                                         false );
+                Transaction trans = TransactionKVPAdapter.parse( normalizedKVPParams );
                 transactionHandler.doTransaction( trans, response, store );
                 break;
             }
@@ -309,61 +291,33 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case GetCapabilities:
                 GetCapabilitiesVersionXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesVersionXMLAdapter();
                 getCapabilitiesAdapter.setRootElement( rootElement );
-                // if the securityManager is null don't care about anything. Even if here is the authorization in the
-                // header.
-                GetCapabilities cswRequest = securityManager == null
-                                             && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getCapabilitiesAdapter.parse()
-                                                                                                                                                : securityManager.preprocess( getCapabilitiesAdapter.parse(),
-                                                                                                                                                                              OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                              false );
+                GetCapabilities cswRequest = getCapabilitiesAdapter.parse();
 
                 doGetCapabilities( cswRequest, request, response, false );
                 break;
             case DescribeRecord:
                 DescribeRecordXMLAdapter describeRecordAdapter = new DescribeRecordXMLAdapter();
                 describeRecordAdapter.setRootElement( requestDoc.getRootElement() );
-
-                DescribeRecord cswDRRequest = securityManager == null
-                                              && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? describeRecordAdapter.parse( requestVersion )
-                                                                                                                                                 : securityManager.preprocess( describeRecordAdapter.parse( requestVersion ),
-                                                                                                                                                                               OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                               false );
+                DescribeRecord cswDRRequest = describeRecordAdapter.parse( requestVersion );
                 describeRecordHandler.doDescribeRecord( cswDRRequest, response );
                 break;
             case GetRecords:
                 GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
                 getRecordsAdapter.setRootElement( requestDoc.getRootElement() );
-
-                GetRecords cswGRRequest = securityManager == null
-                                          && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getRecordsAdapter.parse( requestVersion )
-                                                                                                                                             : securityManager.preprocess( getRecordsAdapter.parse( requestVersion ),
-                                                                                                                                                                           OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                           false );
-
+                GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion );
                 getRecordsHandler.doGetRecords( cswGRRequest, response, store );
-
                 break;
             case GetRecordById:
                 GetRecordByIdXMLAdapter getRecordByIdAdapter = new GetRecordByIdXMLAdapter();
                 getRecordByIdAdapter.setRootElement( requestDoc.getRootElement() );
-
-                GetRecordById cswGRBIRequest = securityManager == null
-                                               && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getRecordByIdAdapter.parse( requestVersion )
-                                                                                                                                                  : securityManager.preprocess( getRecordByIdAdapter.parse( requestVersion ),
-                                                                                                                                                                                OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                                false );
+                GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion );
                 getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElementString );
                 TransactionXMLAdapter transAdapter = new TransactionXMLAdapter();
                 transAdapter.setRootElement( requestDoc.getRootElement() );
-
-                Transaction cswTRequest = securityManager == null
-                                          && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? transAdapter.parse( requestVersion )
-                                                                                                                                             : securityManager.preprocess( transAdapter.parse( requestVersion ),
-                                                                                                                                                                           OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                           false );
+                Transaction cswTRequest = transAdapter.parse( requestVersion );
                 transactionHandler.doTransaction( cswTRequest, response, store );
                 break;
             }
@@ -410,65 +364,35 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case GetCapabilities:
                 GetCapabilitiesVersionXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesVersionXMLAdapter();
                 getCapabilitiesAdapter.setRootElement( requestElement );
-
-                GetCapabilities cswRequest = securityManager == null
-                                             && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getCapabilitiesAdapter.parse()
-                                                                                                                                                : securityManager.preprocess( getCapabilitiesAdapter.parse(),
-                                                                                                                                                                              OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                              true );
+                GetCapabilities cswRequest = getCapabilitiesAdapter.parse();
                 doGetCapabilities( cswRequest, request, response, true );
                 break;
             case DescribeRecord:
                 DescribeRecordXMLAdapter describeRecordAdapter = new DescribeRecordXMLAdapter();
                 describeRecordAdapter.setRootElement( requestElement );
-
-                DescribeRecord cswDRRequest = securityManager == null
-                                              && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? describeRecordAdapter.parse( requestVersion )
-                                                                                                                                                 : securityManager.preprocess( describeRecordAdapter.parse( requestVersion ),
-                                                                                                                                                                               OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                               true );
+                DescribeRecord cswDRRequest = describeRecordAdapter.parse( requestVersion );
                 describeRecordHandler.doDescribeRecord( cswDRRequest, response );
                 break;
             case GetRecords:
                 GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
                 getRecordsAdapter.setRootElement( requestElement );
-
-                GetRecords cswGRRequest = securityManager == null
-                                          && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getRecordsAdapter.parse( requestVersion )
-                                                                                                                                             : securityManager.preprocess( getRecordsAdapter.parse( requestVersion ),
-                                                                                                                                                                           OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                           true );
+                GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion );
                 getRecordsHandler.doGetRecords( cswGRRequest, response, store );
                 break;
             case GetRecordById:
-
                 GetRecordByIdXMLAdapter getRecordByIdAdapter = new GetRecordByIdXMLAdapter();
                 getRecordByIdAdapter.setRootElement( requestElement );
-
-                GetRecordById cswGRBIRequest = securityManager == null
-                                               && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? getRecordByIdAdapter.parse( requestVersion )
-                                                                                                                                                  : securityManager.preprocess( getRecordByIdAdapter.parse( requestVersion ),
-                                                                                                                                                                                OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                                true );
-
+                GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion );
                 getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElement );
                 TransactionXMLAdapter transAdapter = new TransactionXMLAdapter();
                 transAdapter.setRootElement( requestElement );
-
-                Transaction cswTRequest = securityManager == null
-                                          && ( request.getHeader( "authorization" ) != null || request.getHeader( "authorization" ) == null ) ? transAdapter.parse( requestVersion )
-                                                                                                                                             : securityManager.preprocess( transAdapter.parse( requestVersion ),
-                                                                                                                                                                           OGCFrontController.getContext().getCredentials(),
-                                                                                                                                                                           true );
-
+                Transaction cswTRequest = transAdapter.parse( requestVersion );
                 transactionHandler.doTransaction( cswTRequest, response, store );
                 break;
-
             }
-
             // endSOAPResponse( response );
         } catch ( OWSException e ) {
             sendSOAPException( soapDoc.getHeader(), factory, response, e, new OWSException120XMLAdapter(), null, null,
