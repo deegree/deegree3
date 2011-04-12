@@ -35,21 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
-import java.io.BufferedInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
-import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.metadata.persistence.XMLMetadataResultSet;
 
 /**
  * {@link MetadataResultSet} for the {@link ISOMetadataStore}.
@@ -59,49 +53,14 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class ISOMetadataResultSet implements MetadataResultSet<ISORecord> {
+class ISOMetadataResultSet extends XMLMetadataResultSet<ISORecord> {
 
-    private static Logger LOG = LoggerFactory.getLogger( ISOMetadataResultSet.class );
-
-    private final ResultSet rs;
-
-    private final Connection conn;
-
-    private final PreparedStatement stmt;
-
-    ISOMetadataResultSet( ResultSet rs, Connection conn, PreparedStatement stmt ) {
-        this.rs = rs;
-        this.conn = conn;
-        this.stmt = stmt;
+    public ISOMetadataResultSet( ResultSet rs, Connection conn, PreparedStatement stmt ) {
+        super( rs, conn, stmt );
     }
 
     @Override
-    public void close()
-                            throws MetadataStoreException {
-        JDBCUtils.close( rs, stmt, conn, LOG );
-    }
-
-    @Override
-    public ISORecord getRecord()
-                            throws MetadataStoreException {
-        ISORecord record = null;
-        try {
-            BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( bais );
-            record = new ISORecord( xmlReader );
-        } catch ( Exception e ) {
-            throw new MetadataStoreException( "Error re-creating MetadataRecord from result set: " + e.getMessage() );
-        }
-        return record;
-    }
-
-    @Override
-    public boolean next()
-                            throws MetadataStoreException {
-        try {
-            return rs.next();
-        } catch ( SQLException e ) {
-            throw new MetadataStoreException( e.getMessage(), e );
-        }
+    protected ISORecord getRecord( XMLStreamReader xmlReader ) {
+        return new ISORecord( xmlReader );
     }
 }
