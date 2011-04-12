@@ -43,7 +43,6 @@ import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -99,7 +98,7 @@ public class GetRecordByIdHandler {
      * @throws InvalidParameterValueException
      * @throws OWSException
      */
-    public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, Set<MetadataStore> mdStores )
+    public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, MetadataStore<?> store )
                             throws XMLStreamException, IOException, InvalidParameterValueException, OWSException {
 
         LOG.debug( "doGetRecordById: " + getRecBI );
@@ -116,7 +115,7 @@ public class GetRecordByIdHandler {
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {
-            export( xmlWriter, getRecBI, version, mdStores );
+            export( xmlWriter, getRecBI, version, store );
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage() );
             throw new InvalidParameterValueException( e.getMessage() );
@@ -139,10 +138,10 @@ public class GetRecordByIdHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void export( XMLStreamWriter xmlWriter, GetRecordById getRecBI, Version version, Set<MetadataStore> mdStores )
+    private void export( XMLStreamWriter xmlWriter, GetRecordById getRecBI, Version version, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
         if ( VERSION_202.equals( version ) ) {
-            export202( xmlWriter, getRecBI, mdStores );
+            export202( xmlWriter, getRecBI, store );
         } else {
             throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
         }
@@ -159,7 +158,7 @@ public class GetRecordByIdHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void export202( XMLStreamWriter writer, GetRecordById getRecBI, Set<MetadataStore> mdStores )
+    private void export202( XMLStreamWriter writer, GetRecordById getRecBI, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
         writer.writeStartElement( CSW_PREFIX, "GetRecordByIdResponse", CSW_202_NS );
@@ -170,11 +169,9 @@ public class GetRecordByIdHandler {
         int requestedIds = requestedIdList.size();
         MetadataRecord recordResponse = null;
         try {
-            if ( mdStores != null && !mdStores.isEmpty() ) {
+            if ( store != null ) {
                 try {
-                    for ( MetadataStore<?> rec : mdStores ) {
-                        resultSet = rec.getRecordById( requestedIdList );
-                    }
+                    resultSet = store.getRecordById( requestedIdList );
                 } catch ( MetadataStoreException e ) {
                     throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
                 }

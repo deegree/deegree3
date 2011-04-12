@@ -60,6 +60,7 @@ import org.apache.axiom.soap.SOAPFault;
 import org.apache.axiom.soap.SOAPFaultCode;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -67,10 +68,11 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
+import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.authentication.soapauthentication.FailedAuthentication;
@@ -138,7 +140,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/csw/3.0.0/csw_configuration.xsd";
 
-    private CSWService service;
+    private MetadataStore<?> store;
 
     private boolean enableTransactions;
 
@@ -162,18 +164,25 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<CSWRequestType> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
-
         LOG.info( "Initializing CSW controller." );
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
-
         DeegreeCSW jaxbConfig = (DeegreeCSW) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
-        try {
-            service = new CSWService( workspace );
-        } catch ( MetadataStoreException e ) {
-            LOG.error( "Could not instantiate CSWService: '{}' " + e.getMessage() );
-            throw new ResourceInitException( "Could not instantiate CSWService: " + e.getMessage(), e );
+        LOG.info( "Initializing/looking up configured record stores." );
+        MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
+        List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
+        for ( ResourceState<MetadataStore<?>> state : mgr.getStates() ) {
+            if ( state.getResource() != null ) {
+                availableStores.add( state.getResource() );
+            }
         }
+        if ( availableStores.size() == 0 )
+            throw new IllegalArgumentException(
+                                                "There is no MetadataStore configured, ensure that exactly one store is available!" );
+        if ( availableStores.size() > 1 )
+            throw new IllegalArgumentException( "Number of MetadataStores must be one: configured are "
+                                                + availableStores.size() + " stores!" );
+        store = availableStores.get( 0 );
         if ( jaxbConfig.getSupportedVersions() == null ) {
             List<String> defaultVersion = new ArrayList<String>();
             defaultVersion.add( CSWConstants.VERSION_202_STRING );
@@ -198,7 +207,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         }
         describeRecordHandler = new DescribeRecordHandler();
         getRecordsHandler = new GetRecordsHandler();
-        transactionHandler = new TransactionHandler( service );
+        transactionHandler = new TransactionHandler();
         getRecordByIdHandler = new GetRecordByIdHandler();
     }
 
@@ -206,7 +215,6 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
     public void doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest request,
                        HttpResponseBuffer response, List<FileItem> multiParts )
                             throws ServletException, IOException {
-
         try {
             String rootElement = KVPUtils.getRequired( normalizedKVPParams, "REQUEST" );
             CSWRequestType requestType = getRequestType( rootElement );
@@ -242,14 +250,14 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                            : securityManager.preprocess( GetRecordsKVPAdapter.parse( normalizedKVPParams ),
                                                                                          OGCFrontController.getContext().getCredentials(),
                                                                                          false );
-                getRecordsHandler.doGetRecords( getRec, response, service.getStore() );
+                getRecordsHandler.doGetRecords( getRec, response, store );
                 break;
             case GetRecordById:
                 GetRecordById getRecBI = securityManager == null ? GetRecordByIdKVPAdapter.parse( normalizedKVPParams )
                                                                 : securityManager.preprocess( GetRecordByIdKVPAdapter.parse( normalizedKVPParams ),
                                                                                               OGCFrontController.getContext().getCredentials(),
                                                                                               false );
-                getRecordByIdHandler.doGetRecordById( getRecBI, response, service.getMetadataStores() );
+                getRecordByIdHandler.doGetRecordById( getRecBI, response, store );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElement );
@@ -257,7 +265,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                            : securityManager.preprocess( TransactionKVPAdapter.parse( normalizedKVPParams ),
                                                                                          OGCFrontController.getContext().getCredentials(),
                                                                                          false );
-                transactionHandler.doTransaction( trans, response );
+                transactionHandler.doTransaction( trans, response, store );
                 break;
             }
 
@@ -332,7 +340,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            false );
 
-                getRecordsHandler.doGetRecords( cswGRRequest, response, service.getStore() );
+                getRecordsHandler.doGetRecords( cswGRRequest, response, store );
 
                 break;
             case GetRecordById:
@@ -344,7 +352,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                   : securityManager.preprocess( getRecordByIdAdapter.parse( requestVersion ),
                                                                                                                                                                                 OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                 false );
-                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, service.getMetadataStores() );
+                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElementString );
@@ -356,7 +364,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                              : securityManager.preprocess( transAdapter.parse( requestVersion ),
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            false );
-                transactionHandler.doTransaction( cswTRequest, response );
+                transactionHandler.doTransaction( cswTRequest, response, store );
                 break;
             }
 
@@ -430,7 +438,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                              : securityManager.preprocess( getRecordsAdapter.parse( requestVersion ),
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            true );
-                getRecordsHandler.doGetRecords( cswGRRequest, response, service.getStore() );
+                getRecordsHandler.doGetRecords( cswGRRequest, response, store );
                 break;
             case GetRecordById:
 
@@ -443,7 +451,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                                                 OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                                 true );
 
-                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, service.getMetadataStores() );
+                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElement );
@@ -456,7 +464,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            true );
 
-                transactionHandler.doTransaction( cswTRequest, response );
+                transactionHandler.doTransaction( cswTRequest, response, store );
                 break;
 
             }

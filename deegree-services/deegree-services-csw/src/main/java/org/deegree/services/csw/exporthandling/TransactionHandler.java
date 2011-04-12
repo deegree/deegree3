@@ -57,11 +57,10 @@ import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.TransactionOperation;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,18 +77,6 @@ public class TransactionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
 
-    private CSWService service;
-
-    /**
-     * Creates a new {@link TransactionHandler} instance that uses the given service to lookup the {@link MetadataStore}
-     * s.
-     * 
-     * @param service
-     */
-    public TransactionHandler( CSWService service ) {
-        this.service = service;
-    }
-
     /**
      * 
      * Preprocessing for the export of a {@link Transaction} request
@@ -100,7 +87,7 @@ public class TransactionHandler {
      * @throws OWSException
      * @throws IOException
      */
-    public void doTransaction( Transaction trans, HttpResponseBuffer response )
+    public void doTransaction( Transaction trans, HttpResponseBuffer response, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, IOException {
 
         LOG.debug( "doTransaction: " + trans );
@@ -118,7 +105,7 @@ public class TransactionHandler {
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {
-            doTransaction( xmlWriter, trans, version );
+            doTransaction( xmlWriter, trans, version, store );
         } catch ( MetadataStoreException e ) {
             throw new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
         }
@@ -136,11 +123,12 @@ public class TransactionHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void doTransaction( XMLStreamWriter xmlWriter, Transaction transaction, Version version )
+    private void doTransaction( XMLStreamWriter xmlWriter, Transaction transaction, Version version,
+                                MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
         if ( VERSION_202.equals( version ) ) {
-            export202( xmlWriter, transaction );
+            export202( xmlWriter, transaction, store );
         } else {
             throw new OWSException( "Version '" + version + "' is not supported.", OWSException.INVALID_PARAMETER_VALUE );
         }
@@ -159,7 +147,7 @@ public class TransactionHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void export202( XMLStreamWriter writer, Transaction transaction )
+    private void export202( XMLStreamWriter writer, Transaction transaction, MetadataStore<?> store )
                             throws OWSException, XMLStreamException, MetadataStoreException {
         Version version = new Version( 2, 0, 2 );
 
@@ -177,7 +165,7 @@ public class TransactionHandler {
             writer.writeAttribute( "requestId", transaction.getRequestId() );
         }
 
-        MetadataStoreTransaction ta = service.getStore().acquireTransaction();
+        MetadataStoreTransaction ta = store.acquireTransaction();
 
         List<String> insertHandles = new ArrayList<String>();
         List<List<String>> insertIds = new ArrayList<List<String>>();
@@ -234,7 +222,7 @@ public class TransactionHandler {
                 if ( handle != null ) {
                     writer.writeAttribute( "handleRef", handle );
                 }
-                MetadataResultSet rs = service.getStore().getRecordById( ids );
+                MetadataResultSet<?> rs = store.getRecordById( ids );
                 try {
                     while ( rs.next() ) {
                         DCRecord dc = rs.getRecord().toDublinCore();
