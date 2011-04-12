@@ -42,7 +42,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,14 +183,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             Connection conn = null;
             try {
                 conn = getConnection();
-                String version = determinePostGISVersion( conn );
-                if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
-                     || version.startsWith( "1.2" ) ) {
-                    LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_LEGACY", version ) );
-                    useLegacyPredicates = true;
-                } else {
-                    LOG.debug( Messages.getMessage( "DET_POSTGIS_PREDICATES_MODERN", version ) );
-                }
+                useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
             } catch ( Throwable e ) {
                 LOG.debug( e.getMessage(), e );
                 throw new ResourceInitException( e.getMessage(), e );
@@ -199,28 +191,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                 close( conn );
             }
         }
-    }
-
-    private String determinePostGISVersion( Connection conn ) {
-        String version = "1.0";
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT postgis_version()" );
-            rs.next();
-            String postGISVersion = rs.getString( 1 );
-            version = postGISVersion.split( " " )[0];
-            LOG.debug( "PostGIS version: {}", version );
-
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "DET_POSTGIS_VERSION", e.getMessage() );
-            LOG.warn( msg );
-        } finally {
-            close( rs );
-            close( stmt );
-        }
-        return version;
     }
 
     private AbstractWhereBuilder getWhereBuilder( MetadataQuery query )
