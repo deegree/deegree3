@@ -39,8 +39,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
@@ -53,19 +53,19 @@ import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Curve.CurveType;
 import org.deegree.geometry.primitive.GeometricPrimitive;
+import org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Solid;
-import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.Tin;
-import org.deegree.geometry.primitive.Curve.CurveType;
-import org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType;
 import org.deegree.geometry.primitive.Solid.SolidType;
+import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Surface.SurfaceType;
+import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
@@ -151,8 +151,8 @@ public class GMLObjectWalker {
     private void traverseTypedObjectNode( TypedObjectNode node ) {
         if ( node instanceof GMLObject ) {
             traverse( (GMLObject) node );
-        } else if ( node instanceof GenericXMLElementContent ) {
-            GenericXMLElementContent generic = (GenericXMLElementContent) node;
+        } else if ( node instanceof ElementNode ) {
+            ElementNode generic = (ElementNode) node;
             for ( TypedObjectNode child : generic.getChildren() ) {
                 traverseTypedObjectNode( child );
             }

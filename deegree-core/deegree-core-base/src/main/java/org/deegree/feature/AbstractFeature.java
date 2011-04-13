@@ -43,9 +43,9 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
@@ -189,9 +189,9 @@ public abstract class AbstractFeature implements Feature {
             } else {
                 LOG.warn( "Encountered one-dimensional bbox. Ignoring for feature envelope." );
             }
-        } else if ( node instanceof GenericXMLElementContent ) {
+        } else if ( node instanceof ElementNode ) {
             // e.g. INSPIRE Address geometry
-            GenericXMLElementContent xml = (GenericXMLElementContent) node;
+            ElementNode xml = (ElementNode) node;
             for ( TypedObjectNode child : xml.getChildren() ) {
                 env = mergeEnvelope( child, env );
             }

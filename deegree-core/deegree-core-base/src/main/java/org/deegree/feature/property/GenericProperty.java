@@ -47,10 +47,15 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.feature.Feature;
+import org.deegree.feature.types.property.CustomPropertyType;
+import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
@@ -136,6 +141,14 @@ public class GenericProperty implements Property {
         this.children = children;
     }
 
+    public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value,
+                            Map<QName, PrimitiveValue> attrs, List<TypedObjectNode> children, XSTypeDefinition xsType ) {
+        this( declaration, name, value );
+        this.attrs = attrs;
+        this.children = children;
+        this.xsType = xsType;
+    }
+
     public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value, boolean isNilled ) {
         this( declaration, name, value );
         if ( isNilled ) {
@@ -152,23 +165,37 @@ public class GenericProperty implements Property {
 
     @Override
     public boolean isNilled() {
-        if ( value instanceof GenericXMLElementContent ) {
-            PrimitiveValue nilAttr = ( (GenericXMLElementContent) value ).getAttributes().get( XSI_NIL );
-            if ( nilAttr != null ) {
-                return (Boolean) nilAttr.getValue();
-            }
-        } else {
-            PrimitiveValue nilAttr = attrs.get( XSI_NIL );
-            if ( nilAttr != null ) {
-                return (Boolean) nilAttr.getValue();
-            }
+        PrimitiveValue nilAttr = attrs.get( XSI_NIL );
+        if ( nilAttr != null ) {
+            return (Boolean) nilAttr.getValue();
         }
         return false;
     }
 
     @Override
     public TypedObjectNode getValue() {
-        return value;
+        if ( value != null ) {
+            return value;
+        }
+
+//        // TODO
+        if ( declaration instanceof CustomPropertyType ) {
+            return new GenericXMLElement( name, xsType, attrs, children );
+        }
+
+
+        for ( TypedObjectNode child : children ) {
+            if ( declaration instanceof GeometryPropertyType && child instanceof Geometry ) {
+                return child;
+            }
+            if ( declaration instanceof FeaturePropertyType && child instanceof Feature ) {
+                return child;
+            }
+            if ( declaration instanceof SimplePropertyType && child instanceof PrimitiveValue ) {
+                return child;
+            }
+        }
+        return null;
     }
 
     @Override

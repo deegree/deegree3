@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.genericxml;
 
+import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +48,7 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
 
 /**
  * {@link TypedObjectNode} that represents a generic XML element with associated XML schema type information.
@@ -53,22 +58,86 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  * 
  * @version $Revision$, $Date$
  */
-public class GenericXMLElement extends GenericXMLElementContent implements ElementNode {
+public class GenericXMLElement implements ElementNode {
 
-    private QName name;
+    private final QName name;
 
-    public GenericXMLElement( QName name, GenericXMLElementContent value ) {
-        super( value.type, value.attrs, value.children );
-        this.name = name;
-    }
+    private final XSTypeDefinition type;
+
+    private Map<QName, PrimitiveValue> attrs;
+
+    private List<TypedObjectNode> children;
 
     public GenericXMLElement( QName name, XSTypeDefinition type, Map<QName, PrimitiveValue> attrs,
                               List<TypedObjectNode> children ) {
-        super( type, attrs, children );
         this.name = name;
+        this.type = type;
+        this.attrs = attrs;
+        this.children = children;
     }
 
     public QName getName() {
         return name;
     }
+
+    public boolean isNilled() {
+        if ( attrs != null ) {
+            PrimitiveValue pv = attrs.get( new QName( CommonNamespaces.XSINS, "nil" ) );
+            if ( pv != null && pv.getType() == BOOLEAN && pv.getValue() != null ) {
+                return (Boolean) pv.getValue();
+            }
+        }
+        return false;
+    }
+
+    public Map<QName, PrimitiveValue> getAttributes() {
+        return attrs;
+    }
+
+    public List<TypedObjectNode> getChildren() {
+        return children;
+    }
+
+    public XSTypeDefinition getXSType() {
+        return type;
+    }
+
+    public PrimitiveValue getValue() {
+        for ( TypedObjectNode child : children ) {
+            if ( child instanceof PrimitiveValue ) {
+                return (PrimitiveValue) child;
+            }
+        }
+        return null;
+    }
+
+    public void setAttribute( QName name, PrimitiveValue value ) {
+        if ( attrs == null ) {
+            attrs = new LinkedHashMap<QName, PrimitiveValue>();
+        }
+        attrs.put( name, value );
+    }
+
+    public void addChild( TypedObjectNode node ) {
+        if ( children == null ) {
+            children = new ArrayList<TypedObjectNode>();
+        }
+        children.add( node );
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        if ( children != null ) {
+            for ( TypedObjectNode child : children ) {
+                s.append( child.toString() );
+            }
+        }
+        return s.toString();
+    }
+
+    public void setChildren( List<TypedObjectNode> newChildren ) {
+        this.children = newChildren;
+    }
+
 }

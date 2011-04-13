@@ -52,8 +52,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.datetime.Date;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
@@ -293,8 +293,7 @@ public class DBFIndex {
                     Object o = lit.getValue();
                     if ( o instanceof PrimitiveValue ) {
                         o = ( (PrimitiveValue) o ).getValue();
-                    }
-                    if ( o instanceof GenericXMLElementContent ) {
+                    } else if ( o instanceof ElementNode ) {
                         stmt.setString( i++, o.toString() );
                     } else {
                         stmt.setObject( i++, o );

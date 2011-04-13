@@ -53,10 +53,8 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
@@ -70,7 +68,6 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
-import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
@@ -110,8 +107,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     private final GMLVersion gmlVersion;
 
     private final LinkedHashMap<String, Integer> colToRsIdx = new LinkedHashMap<String, Integer>();
-
-    private static final QName XSI_NIL = new QName( CommonNamespaces.XSINS, "nil", "xsi" );
 
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
@@ -235,25 +230,33 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs )
                             throws SQLException {
 
-        List<Pair<TypedObjectNode, Boolean>> pair = buildParticles( propMapping, rs, colToRsIdx );
-        for ( Pair<TypedObjectNode, Boolean> value : pair ) {
-            props.add( new GenericProperty( pt, pt.getName(), value.first, value.second ) );
+        List<TypedObjectNode> particles = buildParticles( propMapping, rs, colToRsIdx );
+        for ( TypedObjectNode particle : particles ) {
+            if ( particle instanceof GenericXMLElement ) {
+                GenericXMLElement xmlEl = (GenericXMLElement) particle;
+                props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(), xmlEl.getChildren() ) );
+            } else {
+                props.add( new GenericProperty( pt, pt.getName(), particle ) );
+            }
         }
     }
 
-    private List<Pair<TypedObjectNode, Boolean>> buildParticles( Mapping mapping, ResultSet rs,
-                                                                 LinkedHashMap<String, Integer> colToRsIdx )
+    private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
+                                                  LinkedHashMap<String, Integer> colToRsIdx )
                             throws SQLException {
 
         if ( mapping.getJoinedTable() != null ) {
-            List<Pair<TypedObjectNode, Boolean>> values = new ArrayList<Pair<TypedObjectNode, Boolean>>();
+            List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
             ResultSet rs2 = null;
             try {
                 Pair<ResultSet, LinkedHashMap<String, Integer>> p = getJoinedResultSet( mapping.getJoinedTable(),
                                                                                         mapping, rs, colToRsIdx );
                 rs2 = p.first;
                 while ( rs2.next() ) {
-                    values.addAll( buildParticle( mapping, rs2, p.second ) );
+                    TypedObjectNode particle = buildParticle( mapping, rs2, p.second );
+                    if ( particle != null ) {
+                        values.add( buildParticle( mapping, rs2, p.second ) );
+                    }
                 }
             } finally {
                 if ( rs2 != null ) {
@@ -262,22 +265,24 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
             return values;
         }
-        return buildParticle( mapping, rs, colToRsIdx );
+        TypedObjectNode particle = buildParticle( mapping, rs, colToRsIdx );
+        if ( particle != null ) {
+            return Collections.singletonList( buildParticle( mapping, rs, colToRsIdx ) );
+        }
+        return Collections.emptyList();
     }
 
-    private List<Pair<TypedObjectNode, Boolean>> buildParticle( Mapping mapping, ResultSet rs,
-                                                                LinkedHashMap<String, Integer> colToRsIdx )
+    private TypedObjectNode buildParticle( Mapping mapping, ResultSet rs, LinkedHashMap<String, Integer> colToRsIdx )
                             throws SQLException {
 
-        List<Pair<TypedObjectNode, Boolean>> values = new ArrayList<Pair<TypedObjectNode, Boolean>>();
-        boolean isNil = false;
+        TypedObjectNode particle = null;
         if ( mapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
                 Object value = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
                 if ( value != null ) {
-                    values.add( new Pair<TypedObjectNode, Boolean>( new PrimitiveValue( value, pm.getType() ), isNil ) );
+                    particle = new PrimitiveValue( value, pm.getType() );
                 }
             }
         } else if ( mapping instanceof GeometryMapping ) {
@@ -288,8 +293,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 byte[] wkb = rs.getBytes( colToRsIdx.get( "AsBinary(" + ( (DBField) me ).getColumn() + ")" ) );
                 if ( wkb != null ) {
                     try {
-                        Geometry geom = WKBReader.read( wkb, pm.getCRS() );
-                        values.add( new Pair<TypedObjectNode, Boolean>( geom, isNil ) );
+                        particle = WKBReader.read( wkb, pm.getCRS() );
                     } catch ( ParseException e ) {
                         throw new SQLException( "Error parsing WKB from database: " + e.getMessage(), e );
                     }
@@ -303,26 +307,18 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 if ( value != null ) {
                     // TODO
                     String ref = "#" + value;
-                    values.add( new Pair<TypedObjectNode, Boolean>(
-                                                                    new FeatureReference( fs.getResolver(), ref, null ),
-                                                                    isNil ) );
-                } else {
-                    values.add( new Pair<TypedObjectNode, Boolean>( null, isNil ) );
+                    particle = new FeatureReference( fs.getResolver(), ref, null );
                 }
             }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
 
             Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
-            if ( isNil ) {
-                attrs.put( XSI_NIL, new PrimitiveValue( isNil ) );
-            }
-
             List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
 
             for ( Mapping particleMapping : cm.getParticles() ) {
 
-                List<Pair<TypedObjectNode, Boolean>> particleValues = buildParticles( particleMapping, rs, colToRsIdx );
+                List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx );
 
                 Expr xpath = particleMapping.getPath().getAsXPath();
                 if ( xpath instanceof LocationPath ) {
@@ -344,30 +340,32 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         continue;
                     }
                     if ( step instanceof TextNodeStep ) {
-                        for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues ) {
-                            children.add( particleValue.first );
+                        for ( TypedObjectNode particleValue : particleValues ) {
+                            children.add( particleValue );
                         }
                     } else if ( step instanceof NameStep ) {
                         NameStep ns = (NameStep) step;
                         QName name = getQName( ns );
                         if ( step.getAxis() == Axis.ATTRIBUTE ) {
-                            for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues ) {
-                                if ( particleValue.first instanceof PrimitiveValue ) {
-                                    attrs.put( name, (PrimitiveValue) particleValue.first );
+                            for ( TypedObjectNode particleValue : particleValues ) {
+                                if ( particleValue instanceof PrimitiveValue ) {
+                                    attrs.put( name, (PrimitiveValue) particleValue );
                                 } else {
                                     LOG.warn( "Value not suitable for attribute." );
                                 }
                             }
                         } else if ( step.getAxis() == Axis.CHILD ) {
-                            for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues ) {
-                                if ( particleValue.first != null ) {
+                            for ( TypedObjectNode particleValue : particleValues ) {
+                                if ( particleValue instanceof PrimitiveValue ) {
                                     XSTypeDefinition childType = null;
                                     GenericXMLElement child = new GenericXMLElement(
                                                                                      name,
                                                                                      childType,
                                                                                      Collections.<QName, PrimitiveValue> emptyMap(),
-                                                                                     Collections.singletonList( particleValue.first ) );
+                                                                                     Collections.singletonList( particleValue ) );
                                     children.add( child );
+                                } else if ( particleValue != null ) {
+                                    children.add( particleValue );
                                 }
                             }
                         } else {
@@ -376,8 +374,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         }
                     } else {
                         // TODO handle other steps as self()
-                        for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues ) {
-                            children.add( particleValue.first );
+                        for ( TypedObjectNode particleValue : particleValues ) {
+                            children.add( particleValue );
                         }
                     }
                 } else {
@@ -389,18 +387,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             // TODO
             XSTypeDefinition xsType = null;
             if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
-                values.add( new Pair<TypedObjectNode, Boolean>(
-                                                                new GenericXMLElementContent( xsType, attrs, children ),
-                                                                isNil ) );
-            } else if ( isNil ) {
-                values.add( new Pair<TypedObjectNode, Boolean>(
-                                                                new GenericXMLElementContent( xsType, attrs, children ),
-                                                                isNil ) );
+                particle = new GenericXMLElement( cm.getPath().getAsQName(), xsType, attrs, children );
             }
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
         }
-        return values;
+        return particle;
     }
 
     private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( JoinChain jc,

@@ -80,7 +80,6 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -108,7 +107,6 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
@@ -120,8 +118,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -498,8 +494,6 @@ public class GMLFeatureReader extends XMLAdapter {
             property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
         } else if ( propDecl instanceof FeaturePropertyType ) {
             property = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
-        } else if ( propDecl instanceof GenericObjectPropertyType ) {
-            property = parseGenericGMLObjectProperty( xmlStream, (GenericObjectPropertyType) propDecl, crs );
         } else if ( propDecl instanceof CustomPropertyType ) {
             property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs );
         } else if ( propDecl instanceof EnvelopePropertyType ) {
@@ -536,38 +530,6 @@ public class GMLFeatureReader extends XMLAdapter {
         } else {
             property = createSimpleProperty( xmlStream, propDecl, xmlStream.getElementText().trim() );
         }
-        return property;
-    }
-
-    private Property parseGenericGMLObjectProperty( XMLStreamReaderWrapper xmlStream,
-                                                    GenericObjectPropertyType propDecl, ICRS crs )
-                            throws XMLStreamException, XMLParsingException, NoSuchElementException, UnknownCRSException {
-
-        Property property = null;
-        QName propName = xmlStream.getName();
-
-        GenericXMLElement xmlEl = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
-
-        Map<QName, PrimitiveValue> attrs = xmlEl.getAttributes();
-        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
-        PrimitiveValue href = attrs.get( new QName( XLNNS, "href" ) );
-        if ( href != null ) {
-            GMLReference<?> ref = null;
-            if ( specialResolver != null ) {
-                ref = new GMLReference<GMLObject>( specialResolver, href.getAsText(), xmlStream.getSystemId() );
-            } else {
-                ref = new GMLReference<GMLObject>( idContext, href.getAsText(), xmlStream.getSystemId() );
-            }
-            idContext.addReference( ref );
-            property = new GenericProperty( propDecl, propName, ref, isNilled );
-        } else {
-            // unwrap the element -> we just want a node that represents the element's value
-            attrs.remove( new QName( XSINS, "nil" ) );
-            GenericXMLElementContent propValue = new GenericXMLElementContent( xmlEl.getXSType(), attrs,
-                                                                               xmlEl.getChildren() );
-            property = new GenericProperty( propDecl, propName, propValue, isNilled );
-        }
-        xmlStream.require( END_ELEMENT, propName.getNamespaceURI(), propName.getLocalPart() );
         return property;
     }
 
@@ -746,10 +708,8 @@ public class GMLFeatureReader extends XMLAdapter {
         QName propName = xmlStream.getName();
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
         GenericXMLElement xmlEl = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
-        // unwrap the element -> we just want a node that represents the element's value
-        GenericXMLElementContent propValue = new GenericXMLElementContent( xmlEl.getXSType(), xmlEl.getAttributes(),
-                                                                           xmlEl.getChildren() );
-        return new GenericProperty( propDecl, propName, propValue, attrs, xmlEl.getChildren() );
+        // TODO should the property value actually be null?
+        return new GenericProperty( propDecl, propName, null, attrs, xmlEl.getChildren(), xmlEl.getXSType() );
     }
 
     /**
@@ -775,8 +735,6 @@ public class GMLFeatureReader extends XMLAdapter {
                     node = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
                 } else if ( propDecl instanceof FeaturePropertyType ) {
                     node = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
-                } else if ( propDecl instanceof GenericObjectPropertyType ) {
-                    node = parseGenericGMLObjectProperty( xmlStream, (GenericObjectPropertyType) propDecl, crs );
                 } else {
                     throw new RuntimeException( "Internal error. Unhandled GML object property type "
                                                 + propDecl.getClass().getName() );

@@ -89,7 +89,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GenericObjectPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -264,8 +263,6 @@ public class AppSchemaMapper {
             mapping = generatePropMapping( (CustomPropertyType) pt, mc );
         } else if ( pt instanceof CodePropertyType ) {
             mapping = generatePropMapping( (CodePropertyType) pt, mc );
-        } else if ( pt instanceof GenericObjectPropertyType ) {
-            mapping = generatePropMapping( (GenericObjectPropertyType) pt, mc );
         } else {
             LOG.warn( "Unhandled property type '" + pt.getName() + "': " + pt.getClass().getName() );
         }
@@ -322,28 +319,6 @@ public class AppSchemaMapper {
             mapping = new DBField( "ref" );
         }
         return new FeatureMapping( path, mapping, pt.getFTName(), jc );
-    }
-
-    private CompoundMapping generatePropMapping( GenericObjectPropertyType pt, MappingContext mc ) {
-        XSComplexTypeDefinition xsTypeDef = pt.getXSDValueType();
-        if ( xsTypeDef == null ) {
-            LOG.warn( "No XSD type definition available for custom property '" + pt.getName() + "'. Skipping it." );
-            return null;
-        }
-
-        PropertyName path = getPropName( pt.getName() );
-
-        MappingContext propMc = null;
-        JoinChain jc = null;
-        if ( pt.getMaxOccurs() == 1 ) {
-            propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
-        } else {
-            propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
-            jc = generateJoinChain( mc, propMc );
-        }
-        List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>(),
-                                                   pt.isNillable() );
-        return new CompoundMapping( path, particles, jc );
     }
 
     private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
@@ -602,11 +577,6 @@ public class AppSchemaMapper {
 
         for ( XSElementDeclaration substitution : substitutions ) {
             ObjectPropertyType opt = appSchema.getCustomElDecl( substitution );
-            if ( opt instanceof GenericObjectPropertyType ) {
-                LOG.warn( "Found generic object property type: " + opt
-                          + ". Not implemented, treating as CustomPropertyType." );
-                opt = null;
-            }
             if ( opt != null ) {
                 mappings.add( generatePropMapping( opt, mc ) );
             } else {

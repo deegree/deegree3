@@ -56,7 +56,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
@@ -528,8 +528,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         if ( value instanceof Property ) {
             value = ( (Property) value ).getValue();
         }
-        if ( value instanceof GenericXMLElementContent ) {
-            value = ( (GenericXMLElementContent) value ).getValue();
+        if ( value instanceof GenericXMLElement ) {
+            value = ( (GenericXMLElement) value ).getValue();
         }
         return (PrimitiveValue) value;
     }

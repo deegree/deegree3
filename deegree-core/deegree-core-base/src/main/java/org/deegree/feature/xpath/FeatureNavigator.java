@@ -47,7 +47,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
@@ -118,16 +117,7 @@ class FeatureNavigator extends DefaultNavigator {
             }
         } else if ( node instanceof PropertyNode ) {
             Object value = ( (PropertyNode) node ).getValue().getValue();
-            if ( value instanceof GenericXMLElementContent ) {
-                GenericXMLElementContent genericValue = (GenericXMLElementContent) value;
-                Map<QName, PrimitiveValue> attributes = genericValue.getAttributes();
-                List<AttributeNode<?>> attrNodes = new ArrayList<AttributeNode<?>>( attributes.size() );
-                for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
-                    attrNodes.add( new AttributeNode<Property>( (PropertyNode) node, attribute.getKey(),
-                                                                attribute.getValue() ) );
-                }
-                return attrNodes.iterator();
-            } else if ( value instanceof Measure && ( (Measure) value ).getUomUri() != null ) {
+            if ( value instanceof Measure && ( (Measure) value ).getUomUri() != null ) {
                 PrimitiveValue uom = new PrimitiveValue( ( (Measure) value ).getUomUri() );
                 return new SingleObjectIterator( new AttributeNode<Property>( (PropertyNode) node, new QName( "uom" ),
                                                                               uom ) );
@@ -247,19 +237,6 @@ class FeatureNavigator extends DefaultNavigator {
             if ( propValue instanceof GMLObject ) {
                 GMLObject castNode = (GMLObject) propValue;
                 iter = new SingleObjectIterator( new GMLObjectNode<GMLObject, Property>( propNode, castNode, version ) );
-            } else if ( propValue instanceof GenericXMLElementContent ) {
-                List<TypedObjectNode> xmlNodes = ( (GenericXMLElementContent) propValue ).getChildren();
-                List<XPathNode<?>> xpathNodes = new ArrayList<XPathNode<?>>( xmlNodes.size() );
-                for ( TypedObjectNode xmlNode : xmlNodes ) {
-                    if ( xmlNode instanceof GenericXMLElement ) {
-                        xpathNodes.add( new XMLElementNode<Property>( propNode, (GenericXMLElement) xmlNode ) );
-                    } else if ( xmlNode instanceof GMLObject ) {
-                        xpathNodes.add( new GMLObjectNode<GMLObject, Property>( propNode, (GMLObject) xmlNode, version ) );
-                    } else if ( xmlNode instanceof PrimitiveValue ) {
-                        xpathNodes.add( new TextNode<Property>( (PropertyNode) node, (PrimitiveValue) xmlNode ) );
-                    }
-                }
-                iter = xpathNodes.iterator();
             } else if ( propValue instanceof PrimitiveValue ) {
                 iter = new SingleObjectIterator( new TextNode<Property>( (PropertyNode) node,
                                                                          (PrimitiveValue) propValue ) );

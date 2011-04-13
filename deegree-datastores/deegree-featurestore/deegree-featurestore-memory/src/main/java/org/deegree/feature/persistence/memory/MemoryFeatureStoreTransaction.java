@@ -45,7 +45,7 @@ import java.util.UUID;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.cs.exceptions.TransformationException;
@@ -399,8 +399,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private TypedObjectNode transformGeometries( TypedObjectNode value, GeometryTransformer transformer )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
-        if ( value instanceof GenericXMLElementContent ) {
-            GenericXMLElementContent generic = (GenericXMLElementContent) value;
+        if ( value instanceof GenericXMLElement ) {
+            GenericXMLElement generic = (GenericXMLElement) value;
             List<TypedObjectNode> newChildren = new ArrayList<TypedObjectNode>( generic.getChildren().size() );
             for ( int i = 0; i < generic.getChildren().size(); i++ ) {
                 TypedObjectNode child = generic.getChildren().get( i );
