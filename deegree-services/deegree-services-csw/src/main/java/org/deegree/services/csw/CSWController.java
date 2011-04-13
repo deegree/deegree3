@@ -306,13 +306,15 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case GetRecords:
                 GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
                 getRecordsAdapter.setRootElement( requestDoc.getRootElement() );
-                GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion );
+                GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion, "application/xml",
+                                                                   "http://www.opengis.net/cat/csw/2.0.2" );
                 getRecordsHandler.doGetRecords( cswGRRequest, response, store );
                 break;
             case GetRecordById:
                 GetRecordByIdXMLAdapter getRecordByIdAdapter = new GetRecordByIdXMLAdapter();
                 getRecordByIdAdapter.setRootElement( requestDoc.getRootElement() );
-                GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion );
+                GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion, "application/xml",
+                                                                           "http://www.opengis.net/cat/csw/2.0.2" );
                 getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
                 break;
             case Transaction:
@@ -378,13 +380,15 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case GetRecords:
                 GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
                 getRecordsAdapter.setRootElement( requestElement );
-                GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion );
+                GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion, "application/xml",
+                                                                   "http://www.opengis.net/cat/csw/2.0.2" );
                 getRecordsHandler.doGetRecords( cswGRRequest, response, store );
                 break;
             case GetRecordById:
                 GetRecordByIdXMLAdapter getRecordByIdAdapter = new GetRecordByIdXMLAdapter();
                 getRecordByIdAdapter.setRootElement( requestElement );
-                GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion );
+                GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion, "application/xml",
+                                                                           "http://www.opengis.net/cat/csw/2.0.2" );
                 getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
                 break;
             case Transaction:

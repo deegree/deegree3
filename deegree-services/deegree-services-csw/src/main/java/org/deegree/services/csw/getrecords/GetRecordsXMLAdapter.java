@@ -91,7 +91,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
      * @param version
      * @return {@Link GetRecords}
      */
-    public GetRecords parse( Version version ) {
+    public GetRecords parse( Version version, String defaultOutputFormat, String defaultOutputSchema ) {
 
         if ( version == null ) {
             version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
@@ -100,7 +100,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
         GetRecords result = null;
 
         if ( VERSION_202.equals( version ) ) {
-            result = parse202();
+            result = parse202( defaultOutputFormat, defaultOutputSchema );
         } else {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
             throw new InvalidParameterValueException( msg );
@@ -116,7 +116,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
      *            that is requested, 2.0.2
      * @return {@link GetRecords}
      */
-    private GetRecords parse202() {
+    private GetRecords parse202( String defaultOutputFormat, String defaultOutputSchema ) {
         LOG.debug( rootElement.toString() );
 
         String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ),
@@ -129,12 +129,13 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
         int startPosition = getNodeAsInt( rootElement, new XPath( "@startPosition", nsContext ), 1 );
 
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), "application/xml" );
+        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ),
+                                               defaultOutputFormat );
 
         String requestId = getNodeAsString( rootElement, new XPath( "@requestId", nsContext ), null );
 
         String outputSchemaString = getNodeAsString( rootElement, new XPath( "@outputSchema", nsContext ),
-                                                     "http://www.opengis.net/cat/csw/2.0.2" );
+                                                     defaultOutputSchema );
 
         URI outputSchema = URI.create( outputSchemaString );
 
