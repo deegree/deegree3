@@ -63,6 +63,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.expression.SQLExpression;
@@ -254,12 +255,18 @@ public class DBFIndex {
             return new Pair<Filter, SortProperty[]>();
         }
 
-        // TODO handle filter == null
-        H2WhereBuilder where = new H2WhereBuilder( (OperatorFilter) filter, sort );
-        SQLExpression generated = where.getWhere();
-
-        if ( generated == null ) {
+        if ( filter == null ) {
             return null;
+        }
+
+        H2WhereBuilder where = null;
+        SQLExpression generated = null;
+        if ( filter instanceof OperatorFilter ) {
+            where = new H2WhereBuilder( (OperatorFilter) filter, sort );
+            generated = where.getWhere();
+            if ( generated == null ) {
+                return null;
+            }
         }
 
         Connection conn = null;
@@ -267,21 +274,33 @@ public class DBFIndex {
         ResultSet set = null;
         try {
             conn = ConnectionManager.getConnection( connid );
-            String clause = generated.getSQL().toString();
-            stmt = conn.prepareStatement( "select record_number,file_index from dbf_index where " + clause );
-
-            int i = 1;
-            for ( SQLLiteral lit : generated.getLiterals() ) {
-                Object o = lit.getValue();
-                if ( o instanceof PrimitiveValue ) {
-                    o = ( (PrimitiveValue) o ).getValue();
+            if ( generated == null ) {
+                StringBuilder sb = new StringBuilder();
+                for ( String id : ( (IdFilter) filter ).getMatchingIds() ) {
+                    sb.append( id.substring( id.lastIndexOf( "_" ) + 1 ) );
+                    sb.append( "," );
                 }
-                if ( o instanceof GenericXMLElementContent ) {
-                    stmt.setString( i++, o.toString() );
-                } else {
-                    stmt.setObject( i++, o );
-                }
+                sb.deleteCharAt( sb.length() - 1 );
+                stmt = conn.prepareStatement( "select record_number,file_index from dbf_index where record_number in ("
+                                              + sb + ")" );
+            } else {
+                String clause = generated.getSQL().toString();
 
+                stmt = conn.prepareStatement( "select record_number,file_index from dbf_index where " + clause );
+
+                int i = 1;
+                for ( SQLLiteral lit : generated.getLiterals() ) {
+                    Object o = lit.getValue();
+                    if ( o instanceof PrimitiveValue ) {
+                        o = ( (PrimitiveValue) o ).getValue();
+                    }
+                    if ( o instanceof GenericXMLElementContent ) {
+                        stmt.setString( i++, o.toString() );
+                    } else {
+                        stmt.setObject( i++, o );
+                    }
+
+                }
             }
 
             set = stmt.executeQuery();
@@ -290,6 +309,9 @@ public class DBFIndex {
                 available.add( new Pair<Integer, Long>( set.getInt( "record_number" ), set.getLong( "file_index" ) ) );
             }
 
+            if ( where == null ) {
+                return new Pair<Filter, SortProperty[]>( null, sort );
+            }
             return new Pair<Filter, SortProperty[]>( where.getPostFilter(), where.getPostSortCriteria() );
         } catch ( SQLException e ) {
             e.printStackTrace();
