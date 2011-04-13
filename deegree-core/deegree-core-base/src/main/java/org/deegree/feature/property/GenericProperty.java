@@ -45,7 +45,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -79,7 +79,7 @@ public class GenericProperty implements Property {
 
     private List<TypedObjectNode> children = Collections.emptyList();
 
-    private XSTypeDefinition xsType;
+    private XSElementDeclaration xsType;
 
     /**
      * Creates a new {@link GenericProperty} instance.
@@ -142,7 +142,8 @@ public class GenericProperty implements Property {
     }
 
     public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value,
-                            Map<QName, PrimitiveValue> attrs, List<TypedObjectNode> children, XSTypeDefinition xsType ) {
+                            Map<QName, PrimitiveValue> attrs, List<TypedObjectNode> children,
+                            XSElementDeclaration xsType ) {
         this( declaration, name, value );
         this.attrs = attrs;
         this.children = children;
@@ -178,11 +179,10 @@ public class GenericProperty implements Property {
             return value;
         }
 
-//        // TODO
+        // // TODO
         if ( declaration instanceof CustomPropertyType ) {
             return new GenericXMLElement( name, xsType, attrs, children );
         }
-
 
         for ( TypedObjectNode child : children ) {
             if ( declaration instanceof GeometryPropertyType && child instanceof Geometry ) {
@@ -224,7 +224,7 @@ public class GenericProperty implements Property {
     }
 
     @Override
-    public XSTypeDefinition getXSType() {
+    public XSElementDeclaration getXSType() {
         return xsType;
     }
 }

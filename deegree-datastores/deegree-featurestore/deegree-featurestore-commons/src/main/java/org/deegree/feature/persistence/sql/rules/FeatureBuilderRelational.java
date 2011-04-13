@@ -50,7 +50,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -357,7 +357,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         } else if ( step.getAxis() == Axis.CHILD ) {
                             for ( TypedObjectNode particleValue : particleValues ) {
                                 if ( particleValue instanceof PrimitiveValue ) {
-                                    XSTypeDefinition childType = null;
+                                    // TODO
+                                    XSElementDeclaration childType = null;
                                     GenericXMLElement child = new GenericXMLElement(
                                                                                      name,
                                                                                      childType,
@@ -385,7 +386,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
 
             // TODO
-            XSTypeDefinition xsType = null;
+            XSElementDeclaration xsType = null;
             if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
                 particle = new GenericXMLElement( cm.getPath().getAsQName(), xsType, attrs, children );
             }

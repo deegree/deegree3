@@ -707,7 +707,7 @@ public class GMLFeatureReader extends XMLAdapter {
 
         QName propName = xmlStream.getName();
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        GenericXMLElement xmlEl = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
+        GenericXMLElement xmlEl = parseComplexXMLElement( xmlStream, propDecl.getElementDecl(), crs );
         // TODO should the property value actually be null?
         return new GenericProperty( propDecl, propName, null, attrs, xmlEl.getChildren(), xmlEl.getXSType() );
     }
@@ -727,7 +727,7 @@ public class GMLFeatureReader extends XMLAdapter {
         TypedObjectNode node = null;
         XSTypeDefinition xsdValueType = elDecl.getTypeDefinition();
         if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
-            node = parseGenericXMLElement( xmlStream, (XSSimpleTypeDefinition) xsdValueType );
+            node = parseSimpleXMLElement( xmlStream, elDecl );
         } else {
             ObjectPropertyType propDecl = schema.getCustomElDecl( elDecl );
             if ( propDecl != null ) {
@@ -740,26 +740,27 @@ public class GMLFeatureReader extends XMLAdapter {
                                                 + propDecl.getClass().getName() );
                 }
             } else {
-                node = parseGenericXMLElement( xmlStream, (XSComplexTypeDefinition) xsdValueType, crs );
+                node = parseComplexXMLElement( xmlStream, elDecl, crs );
             }
         }
         xmlStream.require( END_ELEMENT, startElName.getNamespaceURI(), startElName.getLocalPart() );
         return node;
     }
 
-    private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream,
-                                                      XSSimpleTypeDefinition xsdValueType )
+    private GenericXMLElement parseSimpleXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl )
                             throws XMLStreamException {
-        // TODO element has simple type information and primitive type as well?
-        TypedObjectNode child = new PrimitiveValue( xmlStream.getElementText(), xsdValueType );
-        return new GenericXMLElement( xmlStream.getName(), xsdValueType, null, Collections.singletonList( child ) );
+        XSSimpleTypeDefinition xsType = (XSSimpleTypeDefinition) elDecl.getTypeDefinition();
+        TypedObjectNode child = new PrimitiveValue( xmlStream.getElementText(), xsType );
+        return new GenericXMLElement( xmlStream.getName(), elDecl, null, Collections.singletonList( child ) );
     }
 
-    private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream,
-                                                      XSComplexTypeDefinition xsdValueType, ICRS crs )
+    private GenericXMLElement parseComplexXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl,
+                                                      ICRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
         LOG.debug( "Parsing generic XML element " + xmlStream.getName() );
+
+        XSComplexTypeDefinition xsdValueType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
 
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, xsdValueType );
         List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
@@ -832,7 +833,7 @@ public class GMLFeatureReader extends XMLAdapter {
         }
         }
 
-        return new GenericXMLElement( xmlStream.getName(), xsdValueType, attrs, children );
+        return new GenericXMLElement( xmlStream.getName(), elDecl, attrs, children );
     }
 
     @Deprecated

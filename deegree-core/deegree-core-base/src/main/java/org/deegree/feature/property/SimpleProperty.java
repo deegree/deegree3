@@ -41,8 +41,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -78,6 +78,11 @@ public class SimpleProperty implements Property {
     }
 
     @Override
+    public XSElementDeclaration getXSType() {
+        return null;
+    }
+
+    @Override
     public boolean isNilled() {
         return value == null;
     }
@@ -110,10 +115,5 @@ public class SimpleProperty implements Property {
     @Override
     public List<TypedObjectNode> getChildren() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public XSTypeDefinition getXSType() {
-        return null;
     }
 }

@@ -44,7 +44,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -62,22 +62,28 @@ public class GenericXMLElement implements ElementNode {
 
     private final QName name;
 
-    private final XSTypeDefinition type;
+    private final XSElementDeclaration xsType;
 
     private Map<QName, PrimitiveValue> attrs;
 
     private List<TypedObjectNode> children;
 
-    public GenericXMLElement( QName name, XSTypeDefinition type, Map<QName, PrimitiveValue> attrs,
+    public GenericXMLElement( QName name, XSElementDeclaration xsType, Map<QName, PrimitiveValue> attrs,
                               List<TypedObjectNode> children ) {
         this.name = name;
-        this.type = type;
+        this.xsType = xsType;
         this.attrs = attrs;
         this.children = children;
     }
 
+    @Override
     public QName getName() {
         return name;
+    }
+
+    @Override
+    public XSElementDeclaration getXSType() {
+        return xsType;
     }
 
     public boolean isNilled() {
@@ -96,10 +102,6 @@ public class GenericXMLElement implements ElementNode {
 
     public List<TypedObjectNode> getChildren() {
         return children;
-    }
-
-    public XSTypeDefinition getXSType() {
-        return type;
     }
 
     public PrimitiveValue getValue() {
@@ -139,5 +141,4 @@ public class GenericXMLElement implements ElementNode {
     public void setChildren( List<TypedObjectNode> newChildren ) {
         this.children = newChildren;
     }
-
 }

@@ -40,7 +40,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
@@ -48,7 +48,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  * <p>
  * Chararacteristics:
  * <ul>
- * <li>(Element) name</li>
+ * <li>Element name</li>
  * <li>Attributes</li>
  * <li>Child nodes</li>
  * </p>
@@ -86,5 +86,5 @@ public interface ElementNode extends TypedObjectNode {
      * 
      * @return XML schema element declaration, can be <code>null</code>
      */
-    public XSTypeDefinition getXSType();
+    public XSElementDeclaration getXSType();
 }
