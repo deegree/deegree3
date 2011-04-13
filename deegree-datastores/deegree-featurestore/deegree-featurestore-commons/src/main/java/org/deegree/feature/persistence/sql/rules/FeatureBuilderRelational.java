@@ -44,6 +44,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -108,6 +109,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final GMLVersion gmlVersion;
 
+    private final LinkedHashMap<String, Integer> colToRsIdx = new LinkedHashMap<String, Integer>();
+
     private static final QName XSI_NIL = new QName( CommonNamespaces.XSINS, "nil", "xsi" );
 
     /**
@@ -141,50 +144,58 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     @Override
-    public List<String> getSelectColumns() {
-        List<String> columns = new ArrayList<String>();
-        columns.add( ftMapping.getFidMapping().getColumn() );
+    public List<String> getInitialSelectColumns() {
+        addColumn( colToRsIdx, ftMapping.getFidMapping().getColumn() );
         for ( Mapping mapping : ftMapping.getMappings() ) {
-            addSelectColumns( mapping, columns, true );
+            addSelectColumns( mapping, colToRsIdx, true );
         }
-        return columns;
+        LOG.debug( "Initial select columns: " + colToRsIdx );
+        return new ArrayList<String>( colToRsIdx.keySet() );
     }
 
-    private List<String> getSelectColumns( Mapping mapping ) {
-        List<String> columns = new ArrayList<String>();
-        addSelectColumns( mapping, columns, false );
-        return columns;
+    private void addColumn( LinkedHashMap<String, Integer> colToRsIdx, String column ) {
+        if ( !colToRsIdx.containsKey( column ) ) {
+            colToRsIdx.put( column, colToRsIdx.size() + 1 );
+        }
     }
 
-    private void addSelectColumns( Mapping mapping, List<String> columns, boolean handleJoin ) {
+    private LinkedHashMap<String, Integer> getSubsequentSelectColumns( Mapping mapping ) {
+        LinkedHashMap<String, Integer> colToRsIdx = new LinkedHashMap<String, Integer>();
+        addSelectColumns( mapping, colToRsIdx, false );
+        return colToRsIdx;
+    }
+
+    private void addSelectColumns( Mapping mapping, LinkedHashMap<String, Integer> colToRsIdx, boolean initial ) {
 
         JoinChain jc = mapping.getJoinedTable();
-        if ( handleJoin && jc != null ) {
-            columns.add( jc.getFields().get( 0 ).getColumn() );
+        if ( jc != null && initial ) {
+            if ( initial ) {
+                addColumn( colToRsIdx, jc.getFields().get( 0 ).getColumn() );
+            }
         } else {
             if ( mapping instanceof PrimitiveMapping ) {
                 PrimitiveMapping pm = (PrimitiveMapping) mapping;
                 MappingExpression column = pm.getMapping();
                 if ( column instanceof DBField ) {
-                    columns.add( ( (DBField) column ).getColumn() );
+                    addColumn( colToRsIdx, ( (DBField) column ).getColumn() );
                 }
             } else if ( mapping instanceof GeometryMapping ) {
                 GeometryMapping gm = (GeometryMapping) mapping;
                 MappingExpression column = gm.getMapping();
                 if ( column instanceof DBField ) {
                     // TODO
-                    columns.add( "AsBinary(" + ( (DBField) column ).getColumn() + ")" );
+                    addColumn( colToRsIdx, "AsBinary(" + ( (DBField) column ).getColumn() + ")" );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
                 FeatureMapping fm = (FeatureMapping) mapping;
                 MappingExpression column = fm.getMapping();
                 if ( column instanceof DBField ) {
-                    columns.add( ( (DBField) column ).getColumn() );
+                    addColumn( colToRsIdx, ( (DBField) column ).getColumn() );
                 }
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
                 for ( Mapping particle : cm.getParticles() ) {
-                    addSelectColumns( particle, columns, true );
+                    addSelectColumns( particle, colToRsIdx, true );
                 }
             } else {
                 LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
@@ -196,21 +207,21 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
 
-        Object pk = rs.getObject( 1 );
+        Object pk = rs.getObject( colToRsIdx.get( ftMapping.getFidMapping().getColumn() ) );
         String gmlId = ftMapping.getFidMapping().getPrefix() + pk;
         Feature feature = (Feature) fs.getCache().get( gmlId );
         if ( feature == null ) {
             LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
             List<Property> props = new ArrayList<Property>();
-            int i = 2;
             for ( Mapping mapping : ftMapping.getMappings() ) {
                 PropertyName propName = mapping.getPath();
                 if ( propName.getAsQName() != null ) {
                     PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName(), gmlVersion );
-                    i = addProperties( props, pt, mapping, rs, i, pk );
+                    addProperties( props, pt, mapping, rs );
                 } else {
                     // TODO more complex mappings, e.g. "propname[1]"
-                    LOG.warn( "Omitting mapping '" + mapping + "'. Not a simple property name." );
+                    LOG.warn( "Omitting mapping '" + mapping
+                              + "'. Only simple property names (QNames) are currently supported here." );
                 }
             }
             feature = ft.newFeature( gmlId, props, null, null );
@@ -221,42 +232,41 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return feature;
     }
 
-    private int addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs, int i,
-                               Object pk )
+    private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs )
                             throws SQLException {
 
-        Pair<List<Pair<TypedObjectNode, Boolean>>, Integer> pair = buildParticles( propMapping, rs, i, pk );
-        for ( Pair<TypedObjectNode, Boolean> value : pair.first ) {
+        List<Pair<TypedObjectNode, Boolean>> pair = buildParticles( propMapping, rs, colToRsIdx );
+        for ( Pair<TypedObjectNode, Boolean> value : pair ) {
             props.add( new GenericProperty( pt, pt.getName(), value.first, value.second ) );
         }
-        return pair.second;
     }
 
-    private Pair<List<Pair<TypedObjectNode, Boolean>>, Integer> buildParticles( Mapping mapping, ResultSet rs, int i,
-                                                                                Object pk )
+    private List<Pair<TypedObjectNode, Boolean>> buildParticles( Mapping mapping, ResultSet rs,
+                                                                 LinkedHashMap<String, Integer> colToRsIdx )
                             throws SQLException {
 
         if ( mapping.getJoinedTable() != null ) {
             List<Pair<TypedObjectNode, Boolean>> values = new ArrayList<Pair<TypedObjectNode, Boolean>>();
             ResultSet rs2 = null;
             try {
-                rs2 = getJoinedResultSet( mapping.getJoinedTable(), mapping, pk );
+                Pair<ResultSet, LinkedHashMap<String, Integer>> p = getJoinedResultSet( mapping.getJoinedTable(),
+                                                                                        mapping, rs, colToRsIdx );
+                rs2 = p.first;
                 while ( rs2.next() ) {
-                    Object newPk = rs2.getObject( 1 );
-                    values.addAll( buildParticle( mapping, rs2, 2, newPk ).first );
+                    values.addAll( buildParticle( mapping, rs2, p.second ) );
                 }
             } finally {
                 if ( rs2 != null ) {
                     rs2.close();
                 }
             }
-            return new Pair<List<Pair<TypedObjectNode, Boolean>>, Integer>( values, ++i );
+            return values;
         }
-        return buildParticle( mapping, rs, i, pk );
+        return buildParticle( mapping, rs, colToRsIdx );
     }
 
-    private Pair<List<Pair<TypedObjectNode, Boolean>>, Integer> buildParticle( Mapping mapping, ResultSet rs, int i,
-                                                                               Object pk )
+    private List<Pair<TypedObjectNode, Boolean>> buildParticle( Mapping mapping, ResultSet rs,
+                                                                LinkedHashMap<String, Integer> colToRsIdx )
                             throws SQLException {
 
         List<Pair<TypedObjectNode, Boolean>> values = new ArrayList<Pair<TypedObjectNode, Boolean>>();
@@ -265,7 +275,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                Object value = rs.getObject( i++ );
+                Object value = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
                 if ( value != null ) {
                     values.add( new Pair<TypedObjectNode, Boolean>( new PrimitiveValue( value, pm.getType() ), isNil ) );
                 }
@@ -274,7 +284,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                byte[] wkb = rs.getBytes( i++ );
+                // TODO
+                byte[] wkb = rs.getBytes( colToRsIdx.get( "AsBinary(" + ( (DBField) me ).getColumn() + ")" ) );
                 if ( wkb != null ) {
                     try {
                         Geometry geom = WKBReader.read( wkb, pm.getCRS() );
@@ -285,14 +296,19 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 }
             }
         } else if ( mapping instanceof FeatureMapping ) {
-            Object value = rs.getObject( i++ );
-            if ( value != null ) {
-                // TODO
-                String ref = "#" + value;
-                values.add( new Pair<TypedObjectNode, Boolean>( new FeatureReference( fs.getResolver(), ref, null ),
-                                                                isNil ) );
-            } else {
-                values.add( new Pair<TypedObjectNode, Boolean>( null, isNil ) );
+            FeatureMapping fm = (FeatureMapping) mapping;
+            MappingExpression me = fm.getMapping();
+            if ( me instanceof DBField ) {
+                Object value = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
+                if ( value != null ) {
+                    // TODO
+                    String ref = "#" + value;
+                    values.add( new Pair<TypedObjectNode, Boolean>(
+                                                                    new FeatureReference( fs.getResolver(), ref, null ),
+                                                                    isNil ) );
+                } else {
+                    values.add( new Pair<TypedObjectNode, Boolean>( null, isNil ) );
+                }
             }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
@@ -306,9 +322,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
             for ( Mapping particleMapping : cm.getParticles() ) {
 
-                Pair<List<Pair<TypedObjectNode, Boolean>>, Integer> particleValues = buildParticles( particleMapping,
-                                                                                                     rs, i, pk );
-                i = particleValues.second;
+                List<Pair<TypedObjectNode, Boolean>> particleValues = buildParticles( particleMapping, rs, colToRsIdx );
 
                 Expr xpath = particleMapping.getPath().getAsXPath();
                 if ( xpath instanceof LocationPath ) {
@@ -330,14 +344,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         continue;
                     }
                     if ( step instanceof TextNodeStep ) {
-                        for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
+                        for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues ) {
                             children.add( particleValue.first );
                         }
                     } else if ( step instanceof NameStep ) {
                         NameStep ns = (NameStep) step;
                         QName name = getQName( ns );
                         if ( step.getAxis() == Axis.ATTRIBUTE ) {
-                            for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
+                            for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues ) {
                                 if ( particleValue.first instanceof PrimitiveValue ) {
                                     attrs.put( name, (PrimitiveValue) particleValue.first );
                                 } else {
@@ -345,7 +359,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                 }
                             }
                         } else if ( step.getAxis() == Axis.CHILD ) {
-                            for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
+                            for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues ) {
                                 if ( particleValue.first != null ) {
                                     XSTypeDefinition childType = null;
                                     GenericXMLElement child = new GenericXMLElement(
@@ -362,7 +376,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         }
                     } else {
                         // TODO handle other steps as self()
-                        for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues.first ) {
+                        for ( Pair<TypedObjectNode, Boolean> particleValue : particleValues ) {
                             children.add( particleValue.first );
                         }
                     }
@@ -386,19 +400,25 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
         }
-        return new Pair<List<Pair<TypedObjectNode, Boolean>>, Integer>( values, i );
+        return values;
     }
 
-    private ResultSet getJoinedResultSet( JoinChain jc, Mapping mapping, Object pk )
+    private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( JoinChain jc,
+                                                                                Mapping mapping,
+                                                                                ResultSet rs,
+                                                                                LinkedHashMap<String, Integer> colToRsIdx )
                             throws SQLException {
 
-        List<String> columns = getSelectColumns( mapping );
+        LinkedHashMap<String, Integer> rsToIdx = getSubsequentSelectColumns( mapping );
 
         StringBuilder sql = new StringBuilder( "SELECT " );
-        sql.append( jc.getFields().get( 1 ).getColumn() );
-        for ( String column : columns ) {
-            sql.append( ',' );
+        boolean first = true;
+        for ( String column : rsToIdx.keySet() ) {
+            if ( !first ) {
+                sql.append( ',' );
+            }
             sql.append( column );
+            first = false;
         }
         sql.append( " FROM " );
         sql.append( jc.getFields().get( 1 ).getTable() );
@@ -408,22 +428,24 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         LOG.debug( "SQL: {}", sql );
 
         PreparedStatement stmt = null;
-        ResultSet rs = null;
+        ResultSet rs2 = null;
         try {
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
             LOG.debug( "Preparing subsequent SELECT took {} [ms] ", System.currentTimeMillis() - begin );
-            stmt.setObject( 1, pk );
+            Object key = rs.getObject( colToRsIdx.get( jc.getFields().get( 0 ).getColumn() ) );
+            LOG.debug( "? = '{}' ({})", key, jc.getFields().get( 0 ) );
+            stmt.setObject( 1, key );
             begin = System.currentTimeMillis();
-            rs = stmt.executeQuery();
+            rs2 = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
         } catch ( Throwable t ) {
-            close( rs, stmt, null, LOG );
+            close( rs2, stmt, null, LOG );
             String msg = "Error performing subsequent SELECT: " + t.getMessage();
             LOG.error( msg, t );
             throw new SQLException( msg, t );
         }
-        return rs;
+        return new Pair<ResultSet, LinkedHashMap<String, Integer>>( rs2, rsToIdx );
     }
 
     private QName getQName( NameStep step ) {

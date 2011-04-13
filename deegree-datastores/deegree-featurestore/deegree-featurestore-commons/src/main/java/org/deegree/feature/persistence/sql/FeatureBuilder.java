@@ -56,7 +56,7 @@ public interface FeatureBuilder {
      * 
      * @return list of columns, never <code>null</code>
      */
-    public List<String> getSelectColumns();
+    public List<String> getInitialSelectColumns();
 
     /**
      * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.

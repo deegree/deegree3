@@ -83,7 +83,7 @@ public class FeatureBuilderBlob implements FeatureBuilder {
     }
 
     @Override
-    public List<String> getSelectColumns() {
+    public List<String> getInitialSelectColumns() {
         List<String> columns = new ArrayList<String>();
         columns.add( blobMapping.getGMLIdColumn() );
         columns.add( blobMapping.getDataColumn() );
