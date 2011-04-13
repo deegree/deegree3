@@ -45,8 +45,8 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,12 +71,13 @@ public class GetRecordByIdKVPAdapter {
      * @return {@link GetRecordById}
      * @throws MetadataStoreException
      */
-    public static GetRecordById parse( Map<String, String> normalizedKVPParams ) {
+    public static GetRecordById parse( Map<String, String> normalizedKVPParams, String defaultOutputFormat,
+                                       String defaultOuputSchema ) {
         Version version = Version.parseVersion( KVPUtils.getRequired( normalizedKVPParams, "VERSION" ) );
         GetRecordById result = null;
 
         if ( VERSION_202.equals( version ) ) {
-            result = parse202( VERSION_202, normalizedKVPParams );
+            result = parse202( VERSION_202, normalizedKVPParams, defaultOutputFormat, defaultOuputSchema );
 
         } else {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
@@ -96,10 +97,11 @@ public class GetRecordByIdKVPAdapter {
      * @return {@link GetRecordById}
      * @throws MetadataStoreException
      */
-    private static GetRecordById parse202( Version version202, Map<String, String> normalizedKVPParams ) {
+    private static GetRecordById parse202( Version version202, Map<String, String> normalizedKVPParams,
+                                           String defaultOutputFormat, String defaultOuputSchema ) {
 
         // outputFormat (optional)
-        String outputFormat = KVPUtils.getDefault( normalizedKVPParams, "outputFormat", "application/xml" );
+        String outputFormat = KVPUtils.getDefault( normalizedKVPParams, "outputFormat", defaultOutputFormat );
 
         String elementSetNameString = KVPUtils.getDefault( normalizedKVPParams, "ELEMENTSETNAME",
                                                            ReturnableElement.summary.name() );
@@ -107,8 +109,7 @@ public class GetRecordByIdKVPAdapter {
         ReturnableElement elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
 
         // outputSchema String
-        String outputSchemaString = KVPUtils.getDefault( normalizedKVPParams, "OUTPUTSCHEMA",
-                                                         "http://www.opengis.net/cat/csw/2.0.2" );
+        String outputSchemaString = KVPUtils.getDefault( normalizedKVPParams, "OUTPUTSCHEMA", defaultOuputSchema );
         URI outputSchema = URI.create( outputSchemaString );
 
         // elementName List<String>
