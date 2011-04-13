@@ -68,6 +68,7 @@ public interface Property extends ElementNode {
      * 
      * @return the name of the property, never <code>null</code>
      */
+    @Override
     public QName getName();
 
     /**
@@ -76,13 +77,6 @@ public interface Property extends ElementNode {
      * @return the type information, never <code>null</code>
      */
     public PropertyType getType();
-
-    /**
-     * Returns whether the property is nilled (corresponds to xsi:nil in an XML representation of the property element).
-     * 
-     * @return true, if the property is nilled, false otherwise
-     */
-    public boolean isNilled();
 
     /**
      * Returns the value of this property.

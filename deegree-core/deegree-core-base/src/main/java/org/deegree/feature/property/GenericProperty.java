@@ -165,15 +165,6 @@ public class GenericProperty implements Property {
     }
 
     @Override
-    public boolean isNilled() {
-        PrimitiveValue nilAttr = attrs.get( XSI_NIL );
-        if ( nilAttr != null ) {
-            return (Boolean) nilAttr.getValue();
-        }
-        return false;
-    }
-
-    @Override
     public TypedObjectNode getValue() {
         if ( value != null ) {
             return value;

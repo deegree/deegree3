@@ -83,11 +83,6 @@ public class SimpleProperty implements Property {
     }
 
     @Override
-    public boolean isNilled() {
-        return value == null;
-    }
-
-    @Override
     public PrimitiveValue getValue() {
         return value;
     }

@@ -60,7 +60,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
-import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -151,6 +150,8 @@ public class GMLFeatureWriter {
     private final GMLForwardReferenceHandler additionalObjectHandler;
 
     private final boolean exportExtraProps;
+
+    private static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
     /**
      * Creates a new {@link GMLFeatureWriter} instance.
@@ -435,17 +436,22 @@ public class GMLFeatureWriter {
 
         TypedObjectNode value = property.getValue();
 
-//        if ( value instanceof GenericXMLElement ) {
-//            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-//            export( value, currentLevel, maxInlineLevels );
-//            writer.writeEndElement();
-//            return;
-//        }
+        // if ( value instanceof GenericXMLElement ) {
+        // writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+        // export( value, currentLevel, maxInlineLevels );
+        // writer.writeEndElement();
+        // return;
+        // }
 
         // TODO check for GML 2 properties (gml:pointProperty, ...) and export
         // as "app:gml2PointProperty" for GML 3
+        boolean nilled = false;
+        TypedObjectNode nil = property.getAttributes().get( XSI_NIL );
+        if ( nil instanceof PrimitiveValue ) {
+            nilled = Boolean.TRUE.equals( ( (PrimitiveValue) nil ).getValue() );
+        }
         if ( propertyType instanceof FeaturePropertyType ) {
-            if ( property.isNilled() ) {
+            if ( nilled ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
             } else {
@@ -453,7 +459,7 @@ public class GMLFeatureWriter {
                                        maxInlineLevels );
             }
         } else if ( propertyType instanceof SimplePropertyType ) {
-            if ( property.isNilled() ) {
+            if ( nilled ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
             } else {
@@ -471,7 +477,7 @@ public class GMLFeatureWriter {
                 writer.writeEndElement();
             }
         } else if ( propertyType instanceof GeometryPropertyType ) {
-            if ( property.isNilled() ) {
+            if ( nilled ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
             } else {
@@ -491,7 +497,7 @@ public class GMLFeatureWriter {
             }
         } else if ( propertyType instanceof CodePropertyType ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            if ( property.isNilled() ) {
+            if ( nilled ) {
                 writeAttributeWithNS( XSINS, "nil", "true" );
             }
             CodeType codeType = (CodeType) value;
@@ -503,7 +509,7 @@ public class GMLFeatureWriter {
             writer.writeCharacters( codeType.getCode() );
             writer.writeEndElement();
         } else if ( propertyType instanceof EnvelopePropertyType ) {
-            if ( property.isNilled() ) {
+            if ( nilled ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
             } else {
@@ -521,12 +527,12 @@ public class GMLFeatureWriter {
             Length length = (Length) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             if ( GML_2 != version ) {
-                if ( property.isNilled() ) {
+                if ( nilled ) {
                     writeAttributeWithNS( XSINS, "nil", "true" );
                 }
                 writer.writeAttribute( "uom", length.getUomUri() );
             }
-            if ( !property.isNilled() ) {
+            if ( !nilled ) {
                 writer.writeCharacters( String.valueOf( length.getValue() ) );
             }
             writer.writeEndElement();
@@ -545,19 +551,19 @@ public class GMLFeatureWriter {
                 if ( stringOrRef.getRef() != null ) {
                     writeAttributeWithNS( XLNNS, "href", stringOrRef.getRef() );
                 }
-                if ( property.isNilled() ) {
+                if ( nilled ) {
                     writeAttributeWithNS( XSINS, "nil", "true" );
                 }
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                if ( property.isNilled() ) {
+                if ( nilled ) {
                     writeAttributeWithNS( XSINS, "nil", "true" );
                 }
 
                 if ( stringOrRef.getRef() != null ) {
                     writeAttributeWithNS( XLNNS, "href", stringOrRef.getRef() );
                 }
-                if ( !property.isNilled() && stringOrRef.getString() != null ) {
+                if ( !nilled && stringOrRef.getString() != null ) {
                     writer.writeCharacters( stringOrRef.getString() );
                 }
                 writer.writeEndElement();
@@ -576,7 +582,7 @@ public class GMLFeatureWriter {
             }
             writer.writeEndElement();
         } else if ( propertyType instanceof ArrayPropertyType ) {
-            if ( property.isNilled() ) {
+            if ( nilled ) {
                 writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
             } else {

@@ -76,7 +76,7 @@ public interface PropertyType {
     /**
      * Returns whether this {@link PropertyType} declaration is abstract.
      * 
-     * @return true, if is abstract, false otherwise
+     * @return true, if it is abstract, false otherwise
      */
     public boolean isAbstract();
 
