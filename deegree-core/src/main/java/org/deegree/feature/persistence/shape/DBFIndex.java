@@ -291,12 +291,12 @@ public class DBFIndex {
             if ( generated == null ) {
                 StringBuilder sb = new StringBuilder();
                 for ( String id : ( (IdFilter) filter ).getMatchingIds() ) {
-                    sb.append( id.substring( sb.lastIndexOf( "_" ) + 1 ) );
+                    sb.append( id.substring( id.lastIndexOf( "_" ) + 1 ) );
                     sb.append( "," );
                 }
                 sb.deleteCharAt( sb.length() - 1 );
-                stmt = conn.prepareStatement( "select record_number,file_index from dbf_index where record_number in ["
-                                              + sb + "]" );
+                stmt = conn.prepareStatement( "select record_number,file_index from dbf_index where record_number in ("
+                                              + sb + ")" );
             } else {
                 String clause = generated.getSQL().toString();
 
