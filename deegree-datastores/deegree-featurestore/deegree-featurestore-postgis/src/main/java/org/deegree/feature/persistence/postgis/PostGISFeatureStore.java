@@ -727,7 +727,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             } else {
                 builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
             }
-            List<String> columns = builder.getSelectColumns();
+            List<String> columns = builder.getInitialSelectColumns();
 
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( getSchema(), ft, ftMapping, this );
             wb = new PostGISWhereBuilder( pgMapping, filter, query.getSortProperties(), useLegacyPredicates );
