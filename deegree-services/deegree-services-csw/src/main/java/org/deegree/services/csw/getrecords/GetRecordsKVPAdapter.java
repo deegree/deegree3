@@ -88,11 +88,12 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
      *            that are requested as key to a value.
      * @return {@link GetRecords}
      */
-    public static GetRecords parse( Map<String, String> normalizedKVPParams ) {
+    public static GetRecords parse( Map<String, String> normalizedKVPParams, String defaultOutputFormat,
+                                    String defaultOutputSchema ) {
         Version version = Version.parseVersion( KVPUtils.getRequired( normalizedKVPParams, "VERSION" ) );
         GetRecords result = null;
         if ( VERSION_202.equals( version ) ) {
-            result = parse202( VERSION_202, normalizedKVPParams );
+            result = parse202( VERSION_202, normalizedKVPParams, defaultOutputFormat, defaultOutputSchema );
 
         } else {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
@@ -112,7 +113,8 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
      *            that are requested containing all mandatory and optional parts regarding CSW spec
      * @return {@link GetRecords}
      */
-    private static GetRecords parse202( Version version, Map<String, String> normalizedKVPParams ) {
+    private static GetRecords parse202( Version version, Map<String, String> normalizedKVPParams,
+                                        String defaultOutputFormat, String defaultOutputSchema ) {
 
         // optional: 'NAMESPACE'
         Map<String, String> nsBindings = extractNamespaceBindings( normalizedKVPParams );
@@ -136,7 +138,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         }
 
         // outputFormat (optional)
-        String outputFormat = KVPUtils.getDefault( normalizedKVPParams, "outputFormat", "application/xml" );
+        String outputFormat = KVPUtils.getDefault( normalizedKVPParams, "outputFormat", defaultOutputFormat );
 
         // resultTpye (optional)
         String resultTypeStr = KVPUtils.getDefault( normalizedKVPParams, "RESULTTYPE", ResultType.hits.name() );
@@ -146,8 +148,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         String requestId = normalizedKVPParams.get( "REQUESTID" );
 
         // outputSchema String
-        String outputSchemaString = KVPUtils.getDefault( normalizedKVPParams, "OUTPUTSCHEMA",
-                                                         "http://www.opengis.net/cat/csw/2.0.2" );
+        String outputSchemaString = KVPUtils.getDefault( normalizedKVPParams, "OUTPUTSCHEMA", defaultOutputSchema );
 
         URI outputSchema = URI.create( outputSchemaString );
 

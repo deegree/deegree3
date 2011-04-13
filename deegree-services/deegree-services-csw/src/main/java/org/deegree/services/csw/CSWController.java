@@ -237,7 +237,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                 break;
 
             case GetRecords:
-                GetRecords getRec = GetRecordsKVPAdapter.parse( normalizedKVPParams );
+                GetRecords getRec = GetRecordsKVPAdapter.parse( normalizedKVPParams, "application/xml",
+                                                                "http://www.opengis.net/cat/csw/2.0.2" );
                 getRecordsHandler.doGetRecords( getRec, response, store );
                 break;
             case GetRecordById:
