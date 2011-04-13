@@ -745,12 +745,11 @@ public class GMLFeatureReader extends XMLAdapter {
 
         QName propName = xmlStream.getName();
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
         GenericXMLElement xmlEl = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
         // unwrap the element -> we just want a node that represents the element's value
         GenericXMLElementContent propValue = new GenericXMLElementContent( xmlEl.getXSType(), xmlEl.getAttributes(),
                                                                            xmlEl.getChildren() );
-        return new GenericProperty( propDecl, propName, propValue, isNilled );
+        return new GenericProperty( propDecl, propName, propValue, attrs, xmlEl.getChildren() );
     }
 
     /**

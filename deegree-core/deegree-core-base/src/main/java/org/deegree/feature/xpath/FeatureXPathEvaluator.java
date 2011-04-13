@@ -43,6 +43,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
@@ -92,11 +93,8 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
         if ( particle instanceof Feature ) {
             return eval( (Feature) particle, path );
         }
-        if ( particle instanceof Property ) {
-            return eval( (Property) particle, path );
-        }
-        if ( particle instanceof GenericXMLElement ) {
-            return eval( (GenericXMLElement) particle, path );
+        if ( particle instanceof ElementNode ) {
+            return eval( (ElementNode) particle, path );
         }
         if ( particle instanceof GenericXMLElementContent ) {
             // TODO do this in a clean manner
@@ -189,7 +187,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
     // return resultValues;
     // }
 
-    public TypedObjectNode[] eval( GenericXMLElement element, PropertyName propName )
+    public TypedObjectNode[] eval( ElementNode element, PropertyName propName )
                             throws FilterEvaluationException {
 
         TypedObjectNode[] resultValues = null;
@@ -197,7 +195,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
             XPath xpath = new FeatureXPath( propName.getAsText(), null, version );
             xpath.setNamespaceContext( propName.getNsContext() );
             List<?> selectedNodes;
-            selectedNodes = xpath.selectNodes( new XMLElementNode<Feature>( null, element ) );
+            selectedNodes = xpath.selectNodes( new XMLElementNode( null, element ) );
             resultValues = new TypedObjectNode[selectedNodes.size()];
             int i = 0;
             for ( Object node : selectedNodes ) {

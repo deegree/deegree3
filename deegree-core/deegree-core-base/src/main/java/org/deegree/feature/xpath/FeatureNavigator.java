@@ -137,13 +137,14 @@ class FeatureNavigator extends DefaultNavigator {
                                                                               new QName( "codeSpace" ), codeSpace ) );
             }
         } else if ( node instanceof XMLElementNode<?> ) {
-            GenericXMLElement value = ( (XMLElementNode<?>) node ).getValue();
+            org.deegree.commons.tom.ElementNode value = ( (XMLElementNode<?>) node ).getValue();
             Map<QName, PrimitiveValue> attributes = value.getAttributes();
             if ( attributes != null ) {
                 List<AttributeNode<?>> attrNodes = new ArrayList<AttributeNode<?>>( attributes.size() );
                 for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
-                    attrNodes.add( new AttributeNode<GenericXMLElement>( (XMLElementNode<?>) node, attribute.getKey(),
-                                                                         attribute.getValue() ) );
+                    attrNodes.add( new AttributeNode<org.deegree.commons.tom.ElementNode>( (XMLElementNode<?>) node,
+                                                                                           attribute.getKey(),
+                                                                                           attribute.getValue() ) );
                 }
                 return attrNodes.iterator();
             }
@@ -272,13 +273,18 @@ class FeatureNavigator extends DefaultNavigator {
             List<TypedObjectNode> xmlNodes = xmlElementNode.getValue().getChildren();
             List<XPathNode<?>> xpathNodes = new ArrayList<XPathNode<?>>( xmlNodes.size() );
             for ( TypedObjectNode xmlNode : xmlNodes ) {
-                if ( xmlNode instanceof GenericXMLElement ) {
-                    xpathNodes.add( new XMLElementNode<GenericXMLElement>( xmlElementNode, (GenericXMLElement) xmlNode ) );
+                if ( xmlNode instanceof org.deegree.commons.tom.ElementNode ) {
+                    xpathNodes.add( new XMLElementNode<org.deegree.commons.tom.ElementNode>(
+                                                                                             xmlElementNode,
+                                                                                             (GenericXMLElement) xmlNode ) );
                 } else if ( xmlNode instanceof GMLObject ) {
-                    xpathNodes.add( new GMLObjectNode<GMLObject, GenericXMLElement>( xmlElementNode,
-                                                                                     (GMLObject) xmlNode, version ) );
+                    xpathNodes.add( new GMLObjectNode<GMLObject, org.deegree.commons.tom.ElementNode>(
+                                                                                                       xmlElementNode,
+                                                                                                       (GMLObject) xmlNode,
+                                                                                                       version ) );
                 } else if ( xmlNode instanceof PrimitiveValue ) {
-                    xpathNodes.add( new TextNode<GenericXMLElement>( xmlElementNode, (PrimitiveValue) xmlNode ) );
+                    xpathNodes.add( new TextNode<org.deegree.commons.tom.ElementNode>( xmlElementNode,
+                                                                                       (PrimitiveValue) xmlNode ) );
                 }
             }
             iter = xpathNodes.iterator();

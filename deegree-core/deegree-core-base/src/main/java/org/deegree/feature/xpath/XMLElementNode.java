@@ -36,7 +36,6 @@
 package org.deegree.feature.xpath;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElement;
 
 /**
  * {@link ElementNode} that wraps an {@link ElementNode}.
@@ -46,13 +45,13 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
  * 
  * @version $Revision$, $Date$
  */
-public class XMLElementNode<P extends TypedObjectNode> extends ElementNode<GenericXMLElement> {
+public class XMLElementNode<P extends TypedObjectNode> extends ElementNode<org.deegree.commons.tom.ElementNode> {
 
     private XPathNode<P> parentNode;
 
-    private GenericXMLElement element;
+    private org.deegree.commons.tom.ElementNode element;
 
-    public XMLElementNode( XPathNode<P> parentNode, GenericXMLElement element ) {
+    public XMLElementNode( XPathNode<P> parentNode, org.deegree.commons.tom.ElementNode element ) {
         super( element.getName() );
         this.parentNode = parentNode;
         this.element = element;
@@ -63,7 +62,7 @@ public class XMLElementNode<P extends TypedObjectNode> extends ElementNode<Gener
         return parentNode;
     }
 
-    public GenericXMLElement getValue() {
+    public org.deegree.commons.tom.ElementNode getValue() {
         return element;
     }
 }
