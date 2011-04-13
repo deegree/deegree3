@@ -389,6 +389,10 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public String toString() {
-        return WKTWriter.write( this );
+        String wkt = WKTWriter.write( this );
+        if ( wkt.length() > 1000 ) {
+            return wkt.substring( 0, 1000 ) + " [...]";
+        }
+        return wkt;
     }
 }

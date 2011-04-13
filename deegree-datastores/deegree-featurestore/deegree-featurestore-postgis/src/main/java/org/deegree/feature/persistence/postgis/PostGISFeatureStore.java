@@ -188,8 +188,12 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         if ( pt == null ) {
             return null;
         }
-        GeometryMapping propMapping = (GeometryMapping) ftMapping.getMapping( pt.getName() );
-        MappingExpression me = propMapping.getMapping();
+        Mapping propMapping = ftMapping.getMapping( pt.getName() );
+        GeometryMapping mapping = Mappings.getGeometryMapping( propMapping );
+        if ( mapping == null ) {
+            return null;
+        }
+        MappingExpression me = mapping.getMapping();
         if ( me == null || !( me instanceof DBField ) ) {
             String msg = "Cannot determine BBOX for feature type '" + ft.getName() + "' (relational mode).";
             LOG.warn( msg );
@@ -219,7 +223,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             rs.next();
             PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
             if ( pgBox != null ) {
-                ICRS crs = propMapping.getCRS();
+                ICRS crs = mapping.getCRS();
                 org.deegree.geometry.primitive.Point min = buildPoint( pgBox.getLLB(), crs );
                 org.deegree.geometry.primitive.Point max = buildPoint( pgBox.getURT(), crs );
                 env = new DefaultEnvelope( null, crs, null, min, max );

@@ -50,6 +50,22 @@ import org.deegree.filter.sql.MappingExpression;
  */
 public class Mappings {
 
+    public static GeometryMapping getGeometryMapping( Mapping mapping ) {
+        if ( mapping instanceof GeometryMapping ) {
+            return (GeometryMapping) mapping;
+        }
+        if ( mapping instanceof CompoundMapping ) {
+            CompoundMapping cm = (CompoundMapping) mapping;
+            for ( Mapping child : cm.getParticles() ) {
+                GeometryMapping gm = getGeometryMapping( child );
+                if ( gm != null ) {
+                    return gm;
+                }
+            }
+        }
+        return null;
+    }
+
     public static DBField getDBField( Mapping mapping )
                             throws UnsupportedOperationException, IllegalArgumentException {
         MappingExpression me = getMappingExpression( mapping );
