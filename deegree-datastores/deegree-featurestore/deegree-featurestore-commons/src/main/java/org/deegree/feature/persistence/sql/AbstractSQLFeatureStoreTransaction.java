@@ -95,8 +95,6 @@ import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.io.ParseException;
-
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -511,13 +509,38 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
                     insertNode.getRow().addPreparedArgument( column, sqlValue, sb.toString() );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
-                MappingExpression me = ( (FeatureMapping) mapping ).getMapping();
-                if ( !( me instanceof DBField ) ) {
-                    LOG.debug( "Skipping feature mapping. Not mapped to database column." );
-                } else {
-                    Feature feature = (Feature) getPropValue( value );
-                    String column = ( (DBField) me ).getColumn();
-                    // TODO
+                String fid = null;
+                String href = null;
+                Feature feature = (Feature) getPropValue( value );
+                if ( feature instanceof FeatureReference ) {
+                    if ( ( (FeatureReference) feature ).isLocal() ) {
+                        fid = feature.getId();
+                    } else {
+                        href = ( (FeatureReference) feature ).getURI();
+                    }
+                } else if ( feature != null ) {
+                    fid = feature.getId();
+                }
+
+                if ( fid != null ) {
+                    MappingExpression me = ( (FeatureMapping) mapping ).getMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        LOG.debug( "Skipping feature mapping (fk). Not mapped to database column." );
+                    } else {
+                        String column = ( (DBField) me ).getColumn();
+                        Object sqlValue = SQLValueMangler.internalToSQL( fid );
+                        insertNode.getRow().addPreparedArgument( column, sqlValue );
+                    }
+                }
+                if ( href != null ) {
+                    MappingExpression me = ( (FeatureMapping) mapping ).getMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        LOG.debug( "Skipping feature mapping (href). Not mapped to database column." );
+                    } else {
+                        String column = ( (DBField) me ).getColumn();
+                        Object sqlValue = SQLValueMangler.internalToSQL( href );
+                        insertNode.getRow().addPreparedArgument( column, sqlValue );
+                    }
                 }
             } else if ( mapping instanceof CompoundMapping ) {
                 for ( Mapping child : ( (CompoundMapping) mapping ).getParticles() ) {

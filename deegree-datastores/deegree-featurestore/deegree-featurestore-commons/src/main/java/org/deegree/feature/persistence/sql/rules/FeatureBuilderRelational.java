@@ -187,6 +187,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 if ( column instanceof DBField ) {
                     addColumn( colToRsIdx, ( (DBField) column ).getColumn() );
                 }
+                column = fm.getHrefMapping();
+                if ( column instanceof DBField ) {
+                    addColumn( colToRsIdx, ( (DBField) column ).getColumn() );
+                }
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
                 for ( Mapping particle : cm.getParticles() ) {
@@ -308,6 +312,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     // TODO
                     String ref = "#" + value;
                     particle = new FeatureReference( fs.getResolver(), ref, null );
+                }
+            }
+            me = fm.getHrefMapping();
+            if ( me instanceof DBField ) {
+                String value = rs.getString( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
+                if ( value != null ) {
+                    particle = new FeatureReference( fs.getResolver(), value, null );
                 }
             }
         } else if ( mapping instanceof CompoundMapping ) {
