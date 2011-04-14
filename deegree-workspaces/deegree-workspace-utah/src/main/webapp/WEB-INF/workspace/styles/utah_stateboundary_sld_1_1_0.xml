@@ -35,12 +35,10 @@
         </se:Description>
       <se:FeatureTypeName>app:SGID024_StateBoundary</se:FeatureTypeName>
         <se:Rule>
-        
           <se:Name>SGID024_StateBoundary</se:Name>
           <se:Description>
             <se:Title>State of Utah</se:Title>
           </se:Description>
-
           <se:PolygonSymbolizer>
             <se:Stroke>
               <se:SvgParameter name="stroke">#c53e3e</se:SvgParameter>
