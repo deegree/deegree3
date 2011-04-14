@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -140,6 +141,11 @@ public class ConfigManager {
         }
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         nextView = md.getConfigWizardView();
+
+        Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        map.put( "newConfigId", newConfigId );
+        map.put( "configManager", this );
+        map.put( "resourceManagerMetadata", currentResourceManager );
         if ( "/console/jsf/wizard".equals( nextView ) ) {
             if ( md.getExamples().size() == 1 ) {
                 setNewConfigTypeTemplate( md.getExamples().keySet().iterator().next() );

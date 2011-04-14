@@ -70,4 +70,18 @@ public class ConnectionTester {
             FacesContext.getCurrentInstance().addMessage( null, fm );
         }
     }
+    
+    public String testAndSave() {
+        String id = (String) getParam1();
+        try {
+            ConnectionManager.getConnection( id ).close();
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + id + "' ok", null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+        } catch ( Throwable t ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Connection '" + id + "' unavailable: "
+                                                                + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+        }
+        return "/console/jdbc/index.xhtml";
+    }
 }

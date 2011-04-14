@@ -1,2 +1,2 @@
 name=jdbc connections
-start_view=/console/jdbc/buttons
+start_view=/console/jdbc/index
