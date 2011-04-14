@@ -83,6 +83,8 @@ import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.SQLValueMapper;
+import org.deegree.feature.persistence.sql.TransactionManager;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
@@ -114,6 +116,7 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.gml.GMLObject;
@@ -125,6 +128,8 @@ import org.postgis.Point;
 import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link FeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
@@ -145,7 +150,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     private TransactionManager taManager;
 
     // if true, use old-style for spatial predicates (e.g "intersects" instead of "ST_Intersects")
-    private boolean useLegacyPredicates;
+    boolean useLegacyPredicates;
 
     private Map<String, String> nsContext;
 
@@ -1100,10 +1105,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         return transformedLiteral;
     }
 
-    short getFtId( QName ftName ) {
-        return getSchema().getFtId( ftName );
-    }
-
     PGgeometry toPGPolygon( Envelope envelope, int srid ) {
         PGgeometry pgGeometry = null;
         if ( envelope != null ) {
@@ -1134,18 +1135,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         return pgGeometry;
     }
 
-    String getWKBParamTemplate( String srid ) {
-        StringBuilder sb = new StringBuilder();
-        if ( useLegacyPredicates ) {
-            sb.append( "SetSRID(GeomFromWKB(?)," );
-        } else {
-            sb.append( "SetSRID(ST_GeomFromWKB(?)," );
-        }
-        sb.append( srid );
-        sb.append( ")" );
-        return sb.toString();
-    }
-
     private class PostGISResultSetIterator extends ResultSetIterator<Feature> {
 
         private final FeatureBuilder builder;
@@ -1161,4 +1150,29 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             return builder.buildFeature( rs );
         }
     }
+
+    @Override
+    public SQLValueMapper getSQLValueMapper() {
+        return new SQLValueMapper() {
+
+            @Override
+            public Object convertGeometry( Geometry g, ICRS crs )
+                                    throws FilterEvaluationException, ParseException {
+                Geometry compatible = getCompatibleGeometry( g, crs );
+                return WKBWriter.write( compatible );
+            }
+
+            @Override
+            public void insertGeometry( StringBuilder sb, String srid ) {
+                if ( useLegacyPredicates ) {
+                    sb.append( "SetSRID(GeomFromWKB(?)," );
+                } else {
+                    sb.append( "SetSRID(ST_GeomFromWKB(?)," );
+                }
+                sb.append( srid );
+                sb.append( ")" );
+            }
+        };
+    }
+
 }
