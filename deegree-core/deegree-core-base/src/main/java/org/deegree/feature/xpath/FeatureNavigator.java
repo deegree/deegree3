@@ -46,7 +46,6 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
@@ -253,7 +252,7 @@ class FeatureNavigator extends DefaultNavigator {
                 if ( xmlNode instanceof org.deegree.commons.tom.ElementNode ) {
                     xpathNodes.add( new XMLElementNode<org.deegree.commons.tom.ElementNode>(
                                                                                              xmlElementNode,
-                                                                                             (GenericXMLElement) xmlNode ) );
+                                                                                             (org.deegree.commons.tom.ElementNode) xmlNode ) );
                 } else if ( xmlNode instanceof GMLObject ) {
                     xpathNodes.add( new GMLObjectNode<GMLObject, org.deegree.commons.tom.ElementNode>(
                                                                                                        xmlElementNode,
