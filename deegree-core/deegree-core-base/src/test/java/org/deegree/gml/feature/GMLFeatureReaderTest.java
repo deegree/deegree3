@@ -52,7 +52,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.Assert;
 
-import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -328,7 +328,7 @@ public class GMLFeatureReaderTest {
         Property custom1Prop = feature.getProperty( new QName( "http://www.deegree.org/app", "custom1" ) );
         assertTrue( custom1Prop != null );
         assertNotNull( custom1Prop.getXSType() );
-        assertTrue( custom1Prop.getXSType() instanceof XSComplexTypeDefinition );
+        assertTrue( custom1Prop.getXSType() instanceof XSElementDeclaration );
         Assert.assertEquals( 2, custom1Prop.getAttributes().size() );
         PrimitiveValue mimeTypeAttr = custom1Prop.getAttributes().get( new QName( "mimeType" ) );
         Assert.assertEquals( "img/gif", mimeTypeAttr.getAsText() );

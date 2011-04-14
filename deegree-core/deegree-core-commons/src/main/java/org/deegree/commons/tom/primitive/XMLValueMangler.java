@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
+import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
+import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOTime;
+import static org.deegree.commons.utils.time.DateUtils.formatISO8601Time;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -132,23 +136,52 @@ public class XMLValueMangler {
         return value;
     }
 
-    public static String internalToXML( Object o ) {
+    public static String internalToXML( Object o, PrimitiveType pt ) {
         String xml = null;
         if ( o != null ) {
-            // PrimitiveType pt = PrimitiveType.determinePrimitiveType( o );
-            // switch ( pt ) {
-            // case BOOLEAN:
-            // case DATE:
-            // case DATE_TIME:
-            // case DECIMAL:
-            // case DOUBLE:
-            // case INTEGER:
-            // case STRING:
-            // case TIME:
-            // TODO is this always sufficient?
-            xml = o.toString();
-            // break;
-            // }
+            if ( pt != null ) {
+                switch ( pt ) {
+                case DATE:
+                    if ( o instanceof java.util.Date ) {
+                        xml = formatISO8601DateWOTime( (java.util.Date) o );
+                    } else {
+                        LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
+                        xml = "" + o;
+                    }
+                    break;
+                case DATE_TIME:
+                    if ( o instanceof java.util.Date ) {
+                        xml = formatISO8601DateWOMS( (java.util.Date) o );
+                    } else {
+                        LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
+                        xml = "" + o;
+                    }
+                    break;
+                case TIME: {
+                    if ( o instanceof java.util.Date ) {
+                        xml = formatISO8601Time( (java.util.Date) o );
+                    } else {
+                        LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
+                        xml = "" + o;
+                    }
+                    break;
+
+                }
+                case STRING:
+                    xml = "" + o;
+                    break;
+                case BOOLEAN:
+                case DECIMAL:
+                case DOUBLE:
+                case INTEGER:
+                default: {
+                    LOG.warn( "Unhandled primitive type " + pt + " -- treating as string value." );
+                    xml = "" + o;
+                }
+                }
+            } else {
+                xml = "" + o;
+            }
         }
         return xml;
     }

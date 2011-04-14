@@ -71,7 +71,7 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
     private final PrimitiveType type;
 
     public PrimitiveValue( Object value, PrimitiveType type ) throws IllegalArgumentException {
-        this.textValue = XMLValueMangler.internalToXML( value );
+        this.textValue = XMLValueMangler.internalToXML( value, type );
         this.xsdType = null;
         this.type = type;
         this.value = value;
@@ -106,9 +106,9 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
      * @throws IllegalArgumentException
      */
     public PrimitiveValue( Object value ) throws IllegalArgumentException {
-        this.textValue = XMLValueMangler.internalToXML( value );
-        this.xsdType = null;
         this.type = PrimitiveType.determinePrimitiveType( value );
+        this.textValue = XMLValueMangler.internalToXML( value, type );
+        this.xsdType = null;
         this.value = value;
     }
 
