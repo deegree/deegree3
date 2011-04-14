@@ -19,7 +19,7 @@
               <f:selectItem itemValue="mssql" itemLabel="MSSQL" />
               <f:selectItem itemValue="oracle" itemLabel="Oracle" />
               <f:selectItem itemValue="postgis" itemLabel="PostGIS" />
-              <f:ajax render="dbConn" />
+              <f:ajax render="dbConn dbPort" />
             </h:selectOneMenu></td>
           </tr>
           <tr>
@@ -45,9 +45,9 @@
           </tr>
           <tr>
             <td><h:outputText value="Password: " /></td>
-            <td><h:inputSecret id="dbPwd" size="10" redisplay="false" value="#{jdbcBean.dbPwd}">
+            <td><h:inputText id="dbPwd" size="10" value="#{jdbcBean.dbPwd}">
               <f:ajax render="dbConn" />
-            </h:inputSecret></td>
+            </h:inputText></td>
           </tr>
           <tr>
             <td><h:outputText value="jdbc URL: " /></td>

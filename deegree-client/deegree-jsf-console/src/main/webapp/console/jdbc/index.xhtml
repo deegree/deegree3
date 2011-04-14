@@ -24,6 +24,7 @@
               <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state!='deactivated'}" value="Deactivate" action="#{config.deactivate}" /> <h:commandButton styleClass="buttonInfo" rendered="#{config.state=='deactivated'}" value="Activate" action="#{config.activate}" /></td>
               <td><h:commandButton styleClass="buttonEdit" value="#{labels.featureStores_edit}" action="#{config.edit}" /></td>
               <td><h:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}" action="#{config.delete}" onclick="return confirmDelete();" /></td>
+              <td><h:commandButton styleClass="buttonInfo" value="Test" action="#{connectionTester.test}"><f:setPropertyActionListener target="#{actionParams.param1}" value="#{config.id}" /></h:commandButton></td>
               <td><h:commandButton styleClass="buttonError" rendered="#{config.state=='init_error'}" value="Show errors" action="#{config.showErrors}" /></td>
             </tr>
           </ui:repeat>

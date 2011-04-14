@@ -32,7 +32,7 @@ public class JdbcBean {
     private String dbType = "mssql";
 
     @Getter
-    private String dbPort;
+    private String dbPort = "1433";
 
     @Getter
     private String dbHost;
@@ -47,13 +47,27 @@ public class JdbcBean {
     private String dbUser;
 
     @Getter
-    private String dbPwd = null;
+    private String dbPwd;
 
     private Config config;
 
     public void setDbType( String dbType ) {
         this.dbType = dbType;
-        update();
+        if ( dbType.equals( "mssql" ) ) {
+            dbPort = "1433";
+            dbConn = "jdbc:sqlserver://" + dbHost + ":" + dbPort + ";databaseName=" + dbName;
+            return;
+        }
+        if ( dbType.equals( "oracle" ) ) {
+            dbPort = "1521";
+            dbConn = "jdbc:oracle:thin:@" + dbHost + ":" + dbPort + ":" + dbName;
+            return;
+        }
+        if ( dbType.equals( "postgis" ) ) {
+            dbPort = "5432";
+            dbConn = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+            return;
+        }
     }
 
     public void setDbPort( String dbPort ) {
@@ -150,7 +164,7 @@ public class JdbcBean {
 
     private void clearFields() {
         dbType = "mssql";
-        dbPort = null;
+        dbPort = "1433";
         dbHost = null;
         dbName = null;
         dbConn = null;
