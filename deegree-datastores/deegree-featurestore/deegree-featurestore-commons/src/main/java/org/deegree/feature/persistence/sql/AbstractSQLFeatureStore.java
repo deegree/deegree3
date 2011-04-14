@@ -229,4 +229,10 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         }
         return nsContext;
     }
+
+    public abstract SQLValueMapper getSQLValueMapper();
+
+    protected short getFtId( QName ftName ) {
+        return getSchema().getFtId( ftName );
+    }
 }
