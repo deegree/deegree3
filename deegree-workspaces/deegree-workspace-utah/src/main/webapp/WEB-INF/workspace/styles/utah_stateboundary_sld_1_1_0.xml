@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:se="http://www.opengis.net/se" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:app="http://www.deegree.org/app" xmlns:fo="http://www.w3.org/1999/XSL/Format"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.1.0"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd">
+  <sld:NamedLayer>
+    <!--  This styling file shows the use of SLD styling -->
+    <se:Name>StateBoundary</se:Name>
+
+
+    <sld:LayerFeatureConstraints>
+      <sld:FeatureTypeConstraint>
+        <se:FeatureTypeName>app:SGID024_StateBoundary</se:FeatureTypeName>
+
+        <ogc:Filter>
+          <ogc:PropertyIsLessThanOrEqualTo>
+            <ogc:PropertyName>app:OBJECTID</ogc:PropertyName>
+            <ogc:Literal>322</ogc:Literal>
+          </ogc:PropertyIsLessThanOrEqualTo>
+        </ogc:Filter>
+        
+      </sld:FeatureTypeConstraint>
+    </sld:LayerFeatureConstraints>
+
+    <sld:UserStyle>
+      <se:Name>default:SGID024_StateBoundary</se:Name>
+      <se:Description>
+        <se:Title>State of Utah</se:Title>
+      </se:Description>
+      
+      <se:FeatureTypeStyle>
+      <se:Name>SGID024_StateBoundary</se:Name>
+        <se:Description>
+          <se:Title>State of Utah</se:Title>
+        </se:Description>
+      <se:FeatureTypeName>app:SGID024_StateBoundary</se:FeatureTypeName>
+        <se:Rule>
+        
+          <se:Name>SGID024_StateBoundary</se:Name>
+          <se:Description>
+            <se:Title>State of Utah</se:Title>
+          </se:Description>
+
+          <se:PolygonSymbolizer>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#c53e3e</se:SvgParameter>
+              <se:SvgParameter name="stroke-opacity">1.0</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">3</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+          <se:PolygonSymbolizer>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#000000</se:SvgParameter>
+              <se:SvgParameter name="stroke-opacity">1.0</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">1.5</se:SvgParameter>
+            </se:Stroke>
+            <se:PerpendicularOffset>-1.5</se:PerpendicularOffset>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+      </se:FeatureTypeStyle>
+
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>                    
