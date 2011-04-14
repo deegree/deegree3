@@ -86,129 +86,98 @@ public class OSMFeatureStore implements FeatureStore {
 
         QName ftNameWay = new QName( OSM_NS, "Way", "osm" );
         List<PropertyType> ptsway = new ArrayList<PropertyType>();
-        wayGeomPt = new GeometryPropertyType( new QName( OSM_NS, "geometry", "osm" ), 1, 1, false, false, null,
-                                              LINE_STRING, DIM_2, BOTH );
+        wayGeomPt = new GeometryPropertyType( new QName( OSM_NS, "geometry", "osm" ), 1, 1, null, null, LINE_STRING,
+                                              DIM_2, BOTH );
         ptsway.add( wayGeomPt );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "highway", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "amenity", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "name", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "abutters", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "aerialway", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "aeroway", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "boundary", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "bridge", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "building", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "construction", "osm" ), 0, 1, STRING, false, false,
-                                            null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "cutting", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "cycleway", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "disused", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "embankment", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "enforcement", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "generator:force", "osm" ), 0, 1, STRING, false, false,
-                                            null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "healthcare", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "historic", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "landuse", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "leisure", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "lit", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "man_made", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "military", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "natural", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "place", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "power", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "proposed", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "railway", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "route", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "shop", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "smoothness", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "source", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "sport", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "start_date", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "surface", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "tourism", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "tracktype", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "type", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "waterway", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "wikipedia", "osm" ), 0, 1, STRING, false, false, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "highway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "amenity", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "name", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "abutters", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "aerialway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "aeroway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "boundary", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "bridge", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "building", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "construction", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "cutting", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "cycleway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "disused", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "embankment", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "enforcement", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "generator:force", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "healthcare", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "historic", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "landuse", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "leisure", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "lit", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "man_made", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "military", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "natural", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "place", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "power", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "proposed", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "railway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "route", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "shop", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "smoothness", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "source", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "sport", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "start_date", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "surface", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "tourism", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "tracktype", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "type", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "waterway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsway.add( new SimplePropertyType( new QName( OSM_NS, "wikipedia", "osm" ), 0, 1, STRING, null, null ) );
 
         wayFt = new GenericFeatureType( ftNameWay, ptsway, false );
 
         QName ftNameRelation = new QName( OSM_NS, "Relation", "osm" );
         List<PropertyType> ptsrelation = new ArrayList<PropertyType>();
 
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "member", "osm" ), 1, 1, STRING, false, false, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "member", "osm" ), 1, 1, STRING, null, null ) );
 
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "highway", "osm" ), 0, 1, STRING, false, false,
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "highway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "amenity", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "name", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "abutters", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "aerialway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "aeroway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "boundary", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "bridge", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "building", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "construction", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "cutting", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "cycleway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "disused", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "embankment", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "enforcement", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "generator:force", "osm" ), 0, 1, STRING, null,
                                                  null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "amenity", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "name", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "abutters", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "aerialway", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "aeroway", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "boundary", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "bridge", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "building", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "construction", "osm" ), 0, 1, STRING, false,
-                                                 false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "cutting", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "cycleway", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "disused", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "embankment", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "enforcement", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "generator:force", "osm" ), 0, 1, STRING, false,
-                                                 false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "healthcare", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "historic", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "landuse", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "leisure", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "lit", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "man_made", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "military", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "natural", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "place", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "power", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "proposed", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "railway", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "route", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "shop", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "smoothness", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "source", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "sport", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "start_date", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "surface", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "tourism", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "tracktype", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "type", "osm" ), 0, 1, STRING, false, false, null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "waterway", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
-        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "wikipedia", "osm" ), 0, 1, STRING, false, false,
-                                                 null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "healthcare", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "historic", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "landuse", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "leisure", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "lit", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "man_made", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "military", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "natural", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "place", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "power", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "proposed", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "railway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "route", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "shop", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "smoothness", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "source", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "sport", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "start_date", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "surface", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "tourism", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "tracktype", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "type", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "waterway", "osm" ), 0, 1, STRING, null, null ) );
+        ptsrelation.add( new SimplePropertyType( new QName( OSM_NS, "wikipedia", "osm" ), 0, 1, STRING, null, null ) );
 
         relationFt = new GenericFeatureType( ftNameRelation, ptsrelation, false );
 

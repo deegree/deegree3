@@ -45,12 +45,12 @@ public class OSMToFeature {
     String relationref = "";
 
     String firstndref = "";
-    
+
     private static final String OSM_NS = "http://www.deegree.org/osm";
 
     private ArrayList<Point> nds = new ArrayList<Point>();
 
-    public  FeatureType nodeFt;
+    public FeatureType nodeFt;
 
     private static FeatureType wayFt;
 
@@ -66,180 +66,179 @@ public class OSMToFeature {
 
     OSMToFeature() throws FileNotFoundException, XMLStreamException {
 
-        
         QName ftName = new QName( OSM_NS, "Node", "osm" );
         List<PropertyType> pts = new ArrayList<PropertyType>();
-        nodeGeomPt = new GeometryPropertyType( new QName( OSM_NS, "geometry", "osm" ), 1, 1, false, false, null, POINT,
-                                               DIM_2, BOTH );
+        nodeGeomPt = new GeometryPropertyType( new QName( OSM_NS, "geometry", "osm" ), 1, 1, null, null, POINT, DIM_2,
+                                               BOTH );
         pts.add( nodeGeomPt );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "highway", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "amenity", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "name", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "abutters", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "aerialway", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "aeroway", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "boundary", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "bridge", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "building", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "construction", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "cutting", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "cycleway", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "disused", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "embankment", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "enforcement", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "generator:force", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "healthcare", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "historic", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "landuse", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "leisure", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "lit", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "man_made", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "military", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "natural", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "place", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "power", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "proposed", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "railway", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "route", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "shop", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "smoothness", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "source", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "sport", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "start_date", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "surface", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "tourism", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "tracktype", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "type", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "waterway", "osm" ), 0, 1, STRING, false, false, null ) );
-        pts.add( new SimplePropertyType( new QName( OSM_NS, "wikipedia", "osm" ), 0, 1, STRING, false, false, null ) );
-        
-        
-        /*  pts.add( new SimplePropertyType( new QName( OSM_NS, "cables", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "wires", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "voltage", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "tunnel", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "office", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "craft", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "emergency", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "geological", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "border_type", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "fenced", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "internet_access", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "area", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "motorroad", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "crossing", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "mountain_pass", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "lanes", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "layer", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "ele", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "width", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "est_width", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "incline", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "end_date", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "operator", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "opening_hours", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "wheelchair", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "tactile_paving", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "narrow", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "sac_scale", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "trail_visibility", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "mtb:scale", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "mtb:scale:uphill", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "mtb:description", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "TMC:LocationCode", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "wood", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "admin_level", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "covered", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "drive_thru", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "ford", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "access", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "vehicle", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "bicycle", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "foot", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "goods", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "hgv", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "access:lhv", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "access:bdouble", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "access:roadtrain", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "hazmat", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "agricultural", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "horse", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "motorcycle", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "atv", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "motorcar", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "motor_vehicle", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "psv", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "4wd_only", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "motorboat", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "boat", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "oneway", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "noexit", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "date_on", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "date_off", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "day_on", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "day_off", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "hour_on", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "hour_off", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "maxweight", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "maxheight", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "maxwidth", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "maxlength", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "maxspeed", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "minspeed", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "traffic_sign", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "maxstay", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "toll", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "charge", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "alt_name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "official_name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "int_name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "nat_name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "reg_name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "loc_name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "old_name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "int_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "nat_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "reg_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "loc_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "old_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "ncn_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "rcn_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "lcn_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "source_ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "icao", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "iata", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "place_name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "place_number", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "postal_code", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "is_in", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "population", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:housenumber", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:housename", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:street", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:postcode", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:city", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:country", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:hamlet", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:subdistrict", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:district", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:province", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:interpolation", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:inclusion", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "note", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "fixme", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "description", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "image", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "source:name", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "source:ref", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "attribution", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "phone", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "fax", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "email", "osm" ), 0, 1, STRING, false, false, null ) );
-          pts.add( new SimplePropertyType( new QName( OSM_NS, "website", "osm" ), 0, 1, STRING, false, false, null ) );
-          */
-          nodeFt = new GenericFeatureType( ftName, pts, false );
-        
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "highway", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "amenity", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "name", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "abutters", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "aerialway", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "aeroway", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "boundary", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "bridge", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "building", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "construction", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "cutting", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "cycleway", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "disused", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "embankment", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "enforcement", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "generator:force", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "healthcare", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "historic", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "landuse", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "leisure", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "lit", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "man_made", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "military", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "natural", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "place", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "power", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "proposed", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "railway", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "route", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "shop", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "smoothness", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "source", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "sport", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "start_date", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "surface", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "tourism", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "tracktype", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "type", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "waterway", "osm" ), 0, 1, STRING, null, null ) );
+        pts.add( new SimplePropertyType( new QName( OSM_NS, "wikipedia", "osm" ), 0, 1, STRING, null, null ) );
+
+        /*
+         * pts.add( new SimplePropertyType( new QName( OSM_NS, "cables", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "wires", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "voltage", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "tunnel", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "office", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "craft", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "emergency", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "geological", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "border_type", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "fenced", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "internet_access", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "area", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "motorroad", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "crossing", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "mountain_pass", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "lanes", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "layer", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "ele", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "width", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "est_width", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "incline", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "end_date", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "operator", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "opening_hours", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "wheelchair", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "tactile_paving", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "narrow", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "sac_scale", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "trail_visibility", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "mtb:scale", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "mtb:scale:uphill", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "mtb:description", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "TMC:LocationCode", "osm" ), 0, 1, STRING, null, null ) );
+         * pts.add( new SimplePropertyType( new QName( OSM_NS, "wood", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "admin_level", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "covered", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "drive_thru", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "ford", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "access", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "vehicle", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "bicycle", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "foot", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "goods", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "hgv", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "access:lhv", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "access:bdouble", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "access:roadtrain", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "hazmat", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "agricultural", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "horse", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "motorcycle", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "atv", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "motorcar", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "motor_vehicle", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "psv", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "4wd_only", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "motorboat", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "boat", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "oneway", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "noexit", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "date_on", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "date_off", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "day_on", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "day_off", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "hour_on", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "hour_off", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "maxweight", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "maxheight", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "maxwidth", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "maxlength", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "maxspeed", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "minspeed", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "traffic_sign", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "maxstay", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "toll", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "charge", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "alt_name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "official_name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "int_name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "nat_name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "reg_name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "loc_name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "old_name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "int_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "nat_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "reg_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "loc_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "old_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "ncn_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "rcn_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "lcn_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "source_ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "icao", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "iata", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "place_name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "place_number", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "postal_code", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "is_in", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "population", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "addr:housenumber", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "addr:housename", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "addr:street", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "addr:postcode", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "addr:city", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "addr:country", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "addr:hamlet", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "addr:subdistrict", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "addr:district", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "addr:province", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "addr:interpolation", "osm" ), 0, 1, STRING, null, null ) );
+         * pts.add( new SimplePropertyType( new QName( OSM_NS, "addr:inclusion", "osm" ), 0, 1, STRING, null, null ) );
+         * pts.add( new SimplePropertyType( new QName( OSM_NS, "note", "osm" ), 0, 1, STRING, null, null ) ); pts.add(
+         * new SimplePropertyType( new QName( OSM_NS, "fixme", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "description", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "image", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "source:name", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "source:ref", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "attribution", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "phone", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "fax", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "email", "osm" ), 0, 1, STRING, null, null ) ); pts.add( new
+         * SimplePropertyType( new QName( OSM_NS, "website", "osm" ), 0, 1, STRING, null, null ) );
+         */
+        nodeFt = new GenericFeatureType( ftName, pts, false );
+
     }
 
     public FeatureCollection getNodes()
@@ -271,7 +270,7 @@ public class OSMToFeature {
                 parser.next();
                 parser.next();
                 parser.next();
-                //this.getTags();
+                // this.getTags();
                 Feature node = nodeFt.newFeature( fid, pointProps, null, null );
                 nodes.add( node );
                 pointProps.clear();
@@ -387,7 +386,7 @@ public class OSMToFeature {
 
                 }
                 this.getTags();
-                Feature relation = relationFt.newFeature( fid, props, null,null );
+                Feature relation = relationFt.newFeature( fid, props, null, null );
 
             }
         }
