@@ -236,7 +236,7 @@ public class XPathSchemaWalker {
                                                                                                false ) ) {
                 QName elDeclName = getQName( substitution );
                 if ( elName.equals( elDeclName ) ) {
-                    return elDecl;
+                    return substitution;
                 }
             }
         } else if ( term instanceof XSModelGroup ) {
