@@ -308,17 +308,22 @@ public class AppSchemaMapper {
         LOG.debug( "Mapping feature property '" + pt.getName() + "'" );
         PropertyName path = getPropName( pt.getName() );
         JoinChain jc = null;
-        MappingContext mc2 = null;
-        MappingExpression mapping = null;
+        MappingContext fkMC = null;
+        MappingContext hrefMC = null;
         if ( pt.getMaxOccurs() == 1 ) {
-            mc2 = mcManager.mapOneToOneElement( mc, pt.getName() );
-            mapping = new DBField( mc2.getColumn() );
+            fkMC = mcManager.mapOneToOneElement( mc, pt.getName() );
+            String ns = pt.getName().getNamespaceURI();
+            String prefix = pt.getName().getPrefix();
+            String localName = pt.getName().getLocalPart() + "_href";
+            hrefMC = mcManager.mapOneToOneElement( mc, new QName( ns, localName, prefix ) );
         } else {
-            mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
+            MappingContext mc2 = mcManager.mapOneToManyElements( mc, pt.getName() );
             jc = generateJoinChain( mc, mc2 );
-            mapping = new DBField( "ref" );
+            fkMC = mcManager.mapOneToOneElement( mc, new QName( "fk" ) );
+            hrefMC = mcManager.mapOneToOneElement( mc, new QName( "href" ) );
         }
-        return new FeatureMapping( path, mapping, pt.getFTName(), jc );
+        return new FeatureMapping( path, new DBField( fkMC.getColumn() ), new DBField( hrefMC.getColumn() ),
+                                   pt.getFTName(), jc );
     }
 
     private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
@@ -468,8 +473,6 @@ public class AppSchemaMapper {
             particles.add( new PrimitiveMapping( path, dbField, BOOLEAN, null ) );
         }
 
-        MappingContext elMC = mcManager.mapOneToOneElement( mc, new QName( "value" ) );
-
         PropertyName path = new PropertyName( ".", null );
         if ( opt instanceof GeometryPropertyType ) {
             GeometryType gt = GeometryType.GEOMETRY;
@@ -477,10 +480,14 @@ public class AppSchemaMapper {
             CoordinateDimension dim = CoordinateDimension.DIM_2;
             // TODO
             String srid = "-1";
+            MappingContext elMC = mcManager.mapOneToOneElement( mc, new QName( "value" ) );
             particles.add( new GeometryMapping( path, new DBField( elMC.getColumn() ), gt, geometryParams, null ) );
         } else if ( opt instanceof FeaturePropertyType ) {
             QName valueFtName = ( (FeaturePropertyType) opt ).getFTName();
-            particles.add( new FeatureMapping( path, new DBField( elMC.getColumn() ), valueFtName, null ) );
+            MappingContext fkMC = mcManager.mapOneToOneElement( mc, new QName( "fk" ) );
+            MappingContext hrefMC = mcManager.mapOneToOneElement( mc, new QName( "href" ) );
+            particles.add( new FeatureMapping( path, new DBField( fkMC.getColumn() ),
+                                               new DBField( hrefMC.getColumn() ), valueFtName, null ) );
         } else {
             LOG.warn( "Unhandled object property type '" + opt.getClass() + "'." );
         }

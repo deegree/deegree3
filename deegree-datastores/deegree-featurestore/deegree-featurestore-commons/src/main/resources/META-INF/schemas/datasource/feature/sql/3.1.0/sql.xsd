@@ -153,7 +153,7 @@
       </appinfo>
     </annotation>
     <sequence>
-      <element ref="postgisfs:JoinedTable" minOccurs="0"/>
+      <element ref="postgisfs:JoinedTable" minOccurs="0" />
     </sequence>
     <attribute name="name" type="QName">
       <annotation>
@@ -399,7 +399,13 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="postgisfs:AbstractParticleType" />
+        <extension base="postgisfs:AbstractParticleType">
+          <attribute name="hrefMapping" type="string" use="optional">
+            <annotation>
+              <documentation>Mapping expression.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
       </complexContent>
     </complexType>
   </element>

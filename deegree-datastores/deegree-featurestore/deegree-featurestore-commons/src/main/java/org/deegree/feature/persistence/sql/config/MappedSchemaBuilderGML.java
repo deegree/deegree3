@@ -310,13 +310,17 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                          FeatureParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
         MappingExpression me = parseMappingExpression( config.getMapping() );
+        MappingExpression hrefMe = null;
+        if ( config.getHrefMapping() != null ) {
+            hrefMe = parseMappingExpression( config.getHrefMapping() );
+        }
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
         // TODO rework this
         FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl, ptName, 0, 1,
                                                                                                   null );
         JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
-        return new FeatureMapping( path, me, pt.getFTName(), joinedTable );
+        return new FeatureMapping( path, me, hrefMe, pt.getFTName(), joinedTable );
     }
 
     private CompoundMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,

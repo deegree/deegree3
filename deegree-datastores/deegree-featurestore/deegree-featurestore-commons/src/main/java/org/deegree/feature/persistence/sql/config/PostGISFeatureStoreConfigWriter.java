@@ -233,7 +233,10 @@ public class PostGISFeatureStoreConfigWriter {
             FeatureMapping gm = (FeatureMapping) particle;
             writer.writeStartElement( CONFIG_NS, "Feature" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
-            writer.writeAttribute( "mapping", gm.getMapping().toString() );            
+            writer.writeAttribute( "mapping", gm.getMapping().toString() );
+            if (gm.getHrefMapping() != null) {
+                writer.writeAttribute( "hrefMapping", gm.getHrefMapping().toString() );    
+            }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
             }

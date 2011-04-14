@@ -54,16 +54,24 @@ public class FeatureMapping extends Mapping {
 
     private MappingExpression mapping;
 
+    private MappingExpression hrefMapping;
+
     private QName valueFtName;
 
-    public FeatureMapping( PropertyName path, MappingExpression mapping, QName valueFtName, JoinChain joinedTable ) {
+    public FeatureMapping( PropertyName path, MappingExpression mapping, MappingExpression hrefMapping,
+                           QName valueFtName, JoinChain joinedTable ) {
         super( path, joinedTable );
         this.mapping = mapping;
+        this.hrefMapping = hrefMapping;
         this.valueFtName = valueFtName;
     }
 
     public MappingExpression getMapping() {
         return mapping;
+    }
+
+    public MappingExpression getHrefMapping() {
+        return hrefMapping;
     }
 
     public QName getValueFtName() {
