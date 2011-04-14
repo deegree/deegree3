@@ -16,6 +16,7 @@
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tomcat-parent</artifactId>
     <version>3.1-pre5-SNAPSHOT</version>
+    <relativePath />
   </parent>
 
   <repositories>
@@ -101,6 +102,18 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-simplesql</artifactId>
       <version>3.1-pre5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
