@@ -330,8 +330,8 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
                 sql.append( ") VALUES(?,?,?," );
                 valueMapper.insertGeometry( sql, null );
                 sql.append( ")" );
-System.out.println(sql);
-                blobInsertStmt = conn.prepareStatement( sql.toString(), RETURN_GENERATED_KEYS );
+                System.out.println( sql );
+                blobInsertStmt = conn.prepareStatement( sql.toString(), new String[] { "ID" } );
                 for ( Feature feature : features ) {
                     fid = feature.getId();
                     int internalId = -1;
