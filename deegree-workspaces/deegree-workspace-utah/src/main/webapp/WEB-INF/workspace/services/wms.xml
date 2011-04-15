@@ -32,7 +32,12 @@
             <Title>Counties of Utah</Title>
             <FeatureStoreId>utah_counties</FeatureStoreId>
             <DirectStyle>
-              <File>../styles/utah_counties.xml</File>
+              <File>../styles/utah_counties_1.xml</File>
+              <Name>1</Name>
+            </DirectStyle>
+            <DirectStyle>
+              <File>../styles/utah_counties_2.xml</File>
+              <Name>2</Name>
             </DirectStyle>
           </RequestableLayer>
           <RequestableLayer queryable="0">
