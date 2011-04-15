@@ -84,7 +84,11 @@ public class SQLExecution implements Serializable {
     }
 
     public void setStatements( String sql ) {
-        sqlStatements = sql.split( ";\\s*" );
+        sqlStatements = sql.split( "\n" );
+        for ( int i = 0; i < sqlStatements.length; ++i ) {
+            while ( sqlStatements[i].trim().endsWith( ";" ) )
+                sqlStatements[i] = sqlStatements[i].trim().substring( 0, sqlStatements[i].length() - 1 );
+        }
     }
 
     public void execute() {
