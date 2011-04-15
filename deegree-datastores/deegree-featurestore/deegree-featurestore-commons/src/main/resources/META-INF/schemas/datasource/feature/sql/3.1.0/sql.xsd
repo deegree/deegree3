@@ -106,16 +106,23 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="Column">
+        <element name="Column" maxOccurs="unbounded">
           <complexType>
+            <annotation>
+              <appinfo>
+                <jaxb:class name="ColumnJAXB" />
+              </appinfo>
+            </annotation>
             <attribute name="name" type="string" use="required" />
             <attribute name="type" type="postgisfs:PrimitiveType" />
           </complexType>
         </element>
         <element ref="postgisfs:AbstractIDGenerator" />
       </sequence>
+      <attribute name="prefix" type="string" use="optional" />
     </complexType>
   </element>
+
   <element name="AbstractIDGenerator" abstract="true" type="postgisfs:AbstractIDGeneratorType" />
   <complexType name="AbstractIDGeneratorType" abstract="true">
     <sequence />
@@ -153,7 +160,7 @@
       </appinfo>
     </annotation>
     <sequence>
-      <element ref="postgisfs:JoinedTable" minOccurs="0" />
+      <element ref="postgisfs:Join" minOccurs="0" />
     </sequence>
     <attribute name="name" type="QName">
       <annotation>
@@ -351,7 +358,7 @@
       </appinfo>
     </annotation>
     <sequence>
-      <element ref="postgisfs:JoinedTable" minOccurs="0" />
+      <element ref="postgisfs:Join" minOccurs="0" />
     </sequence>
     <attribute name="path" type="string" use="required">
       <annotation>
@@ -426,20 +433,40 @@
       </complexContent>
     </complexType>
   </element>
-  <element name="JoinedTable">
+  <element name="Join">
     <complexType>
       <annotation>
-        <documentation>Defines a 1:n mapping in the relational schema.</documentation>
+        <documentation>Defines a change in the table context.</documentation>
       </annotation>
-      <simpleContent>
-        <extension base="string">
-          <attribute name="indexColumn" type="string" use="optional">
-            <annotation>
-              <documentation>Name of the column that stores the index of the related object.</documentation>
-            </annotation>
-          </attribute>
-        </extension>
-      </simpleContent>
+      <attribute name="table" type="string" use="required">
+        <annotation>
+          <documentation>Name of the table to change to.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="fromColumns" type="postgisfs:columnList" use="required">
+        <annotation>
+          <documentation>Join columns (current table).</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="toColumns" type="postgisfs:columnList" use="required">
+        <annotation>
+          <documentation>Join columns (target table).</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="orderColumns" type="postgisfs:columnList" use="optional">
+        <annotation>
+          <documentation>Columns in the target table used for sorting.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="numbered" type="boolean" use="optional">
+        <annotation>
+          <documentation>Set to true, if orderColumns references a single column that contains natural numbers
+            [1,2,3,...].</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
+  <simpleType name="columnList">
+    <list itemType="string" />
+  </simpleType>
 </schema>

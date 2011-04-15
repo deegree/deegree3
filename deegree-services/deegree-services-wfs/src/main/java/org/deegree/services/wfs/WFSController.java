@@ -446,7 +446,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
     private void sendServiceException100( OWSException e, HttpResponseBuffer response )
                             throws ServletException {
         LOG.debug( "Sending WFS 1.0.0 service exception " + e );
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 400, new OGCExceptionXMLAdapter(), e, response );
+        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new OGCExceptionXMLAdapter(), e, response );
     }
 
     @Override
@@ -772,7 +772,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
                             throws ServletException {
 
         LOG.debug( "Sending WFS 1.1.0 service exception " + ex );
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 400, new OWSException100XMLAdapter(), ex, response );
+        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new OWSException100XMLAdapter(), ex, response );
     }
 
     @Override

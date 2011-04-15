@@ -48,6 +48,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
@@ -182,10 +184,15 @@ public class PostGISFeatureStoreConfigWriter {
 
         FIDMapping fidMapping = ftMapping.getFidMapping();
         writer.writeStartElement( CONFIG_NS, "FIDMapping" );
-        writer.writeStartElement( CONFIG_NS, "Column" );
-        writer.writeAttribute( "name", fidMapping.getColumn() );
-        writer.writeAttribute( "type", fidMapping.getColumnType().getXSTypeName() );
-        writer.writeEndElement();
+        if ( fidMapping.getPrefix() != null && !fidMapping.getPrefix().isEmpty() ) {
+            writer.writeAttribute( "prefix", fidMapping.getPrefix() );
+        }
+        for ( Pair<String, PrimitiveType> column : fidMapping.getColumns() ) {
+            writer.writeStartElement( CONFIG_NS, "Column" );
+            writer.writeAttribute( "name", column.getFirst() );
+            writer.writeAttribute( "type", column.getSecond().getXSTypeName() );
+            writer.writeEndElement();
+        }
         IDGenerator generator = fidMapping.getIdGenerator();
         if ( generator instanceof AutoIDGenerator ) {
             writer.writeEmptyElement( CONFIG_NS, "AutoIdGenerator" );
@@ -234,8 +241,8 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeStartElement( CONFIG_NS, "Feature" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
             writer.writeAttribute( "mapping", gm.getMapping().toString() );
-            if (gm.getHrefMapping() != null) {
-                writer.writeAttribute( "hrefMapping", gm.getHrefMapping().toString() );    
+            if ( gm.getHrefMapping() != null ) {
+                writer.writeAttribute( "hrefMapping", gm.getHrefMapping().toString() );
             }
             if ( particle.getJoinedTable() != null ) {
                 writeJoinedTable( writer, particle.getJoinedTable() );
@@ -259,10 +266,12 @@ public class PostGISFeatureStoreConfigWriter {
 
     private void writeJoinedTable( XMLStreamWriter writer, JoinChain jc )
                             throws XMLStreamException {
-        writer.writeStartElement( CONFIG_NS, "JoinedTable" );
-        writer.writeAttribute( "indexColumn", "idx" );
-        writer.writeCharacters( jc.getFields().get( 0 ).getColumn() + "=" + jc.getFields().get( 1 ).getTable()
-                                + ".parentfk" );
+        writer.writeStartElement( CONFIG_NS, "Join" );
+        writer.writeAttribute( "table", jc.getFields().get( 1 ).getTable() );
+        writer.writeAttribute( "fromColumns", jc.getFields().get( 0 ).getColumn() );
+        writer.writeAttribute( "toColumns", jc.getFields().get( 1 ).getColumn() );
+        writer.writeAttribute( "orderColumns", "num" );
+        writer.writeAttribute( "numbered", "true" );
         writer.writeEndElement();
     }
 

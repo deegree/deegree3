@@ -171,9 +171,17 @@ public class XMLValueMangler {
                     xml = "" + o;
                     break;
                 case BOOLEAN:
+                    xml = "" + o;
+                    break;
                 case DECIMAL:
+                    xml = "" + o;
+                    break;
                 case DOUBLE:
+                    xml = "" + o;
+                    break;
                 case INTEGER:
+                    xml = "" + o;
+                    break;
                 default: {
                     LOG.warn( "Unhandled primitive type " + pt + " -- treating as string value." );
                     xml = "" + o;

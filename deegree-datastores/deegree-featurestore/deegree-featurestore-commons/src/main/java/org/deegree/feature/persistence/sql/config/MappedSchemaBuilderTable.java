@@ -49,9 +49,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -66,10 +68,10 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB;
-import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB.Column;
+import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB.ColumnJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyJAXB;
-import org.deegree.feature.persistence.postgis.jaxb.JoinedTable;
+import org.deegree.feature.persistence.postgis.jaxb.Join;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyJAXB;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
@@ -198,8 +200,13 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         List<PropertyType> pts = new ArrayList<PropertyType>();
         List<Mapping> mappings = new ArrayList<Mapping>();
 
+        Set<String> fidColumnNames = new HashSet<String>();
+        for ( Pair<String, PrimitiveType> column : fidMapping.getColumns() ) {
+            fidColumnNames.add( column.first.toLowerCase() );
+        }
+
         for ( ColumnMetadata md : getColumns( table ).values() ) {
-            if ( md.column.equalsIgnoreCase( fidMapping.getColumn() ) ) {
+            if ( fidColumnNames.contains( md.column.toLowerCase() ) ) {
                 LOG.debug( "Omitting column '" + md.column + "' from properties. Used in FIDMapping." );
                 continue;
             }
@@ -277,7 +284,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
         }
 
-        JoinedTable joinConfig = propDecl.getJoinedTable();
+        Join joinConfig = propDecl.getJoin();
         JoinChain jc = null;
         QTableName valueTable = table;
         if ( joinConfig != null ) {
@@ -340,47 +347,50 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     private FIDMapping buildFIDMapping( QTableName table, QName ftName, FIDMappingJAXB config )
                             throws FeatureStoreException, SQLException {
 
-        String prefix = ftName.getPrefix().toUpperCase() + "_" + ftName.getLocalPart().toUpperCase() + "_";
-        Column column = null;
-        if ( config != null ) {
-            column = config.getColumn();
+        String prefix = config != null ? config.getPrefix() : null;
+        if ( prefix == null ) {
+            prefix = ftName.getPrefix().toUpperCase() + "_" + ftName.getLocalPart().toUpperCase() + "_";
         }
 
-        String columnName = null;
+        // build FID columns / types from configuration
+        List<Pair<String, PrimitiveType>> columns = new ArrayList<Pair<String, PrimitiveType>>();
+        if ( config != null && config.getColumn() != null ) {
+            for ( ColumnJAXB configColumn : config.getColumn() ) {
+                String columnName = configColumn.getName();
+                PrimitiveType columnType = configColumn.getType() != null ? getPrimitiveType( configColumn.getType() )
+                                                                         : null;
+                if ( columnType == null ) {
+                    ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
+                    columnType = PrimitiveType.determinePrimitiveType( md.sqlType );
+                }
+                columns.add( new Pair<String, PrimitiveType>( columnName, columnType ) );
+            }
+        }
+
         IDGenerator generator = buildGenerator( config );
         if ( generator instanceof AutoIDGenerator ) {
-            if ( column != null && column.getName() != null ) {
-                columnName = column.getName();
-            } else {
+            if ( columns.isEmpty() ) {
                 // determine autoincrement column automatically
                 for ( ColumnMetadata md : getColumns( table ).values() ) {
                     if ( md.isAutoincrement ) {
-                        columnName = md.column;
+                        PrimitiveType columnType = PrimitiveType.determinePrimitiveType( md.sqlType );
+                        columns.add( new Pair<String, PrimitiveType>( md.column, columnType ) );
                         break;
                     }
                 }
-                if ( columnName == null ) {
+                if ( columns.isEmpty() ) {
                     throw new FeatureStoreException( "No autoincrement column in table '" + table
                                                      + "' found. Please specify column in FIDMapping manually." );
                 }
             }
         } else {
-            if ( column == null || column.getName() == null ) {
-                throw new FeatureStoreException( "No FIDMapping column for table '" + table
+            if ( columns.isEmpty() ) {
+                throw new FeatureStoreException( "No FIDMapping columns for table '" + table
                                                  + "' specified. This is only possible for AutoIDGenerator." );
             }
-            columnName = column.getName();
         }
 
-        PrimitiveType pt = null;
-        if ( config != null && config.getColumn().getType() != null ) {
-            pt = getPrimitiveType( config.getColumn().getType() );
-            columnName = config.getColumn().getName();
-        } else {
-            ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
-            pt = PrimitiveType.determinePrimitiveType( md.sqlType );
-        }
-        return new FIDMapping( prefix, columnName, pt, generator );
+        return new FIDMapping( prefix, columns, generator );
     }
 
     private QName makeFullyQualified( QName qName, String defaultPrefix, String defaultNamespace ) {

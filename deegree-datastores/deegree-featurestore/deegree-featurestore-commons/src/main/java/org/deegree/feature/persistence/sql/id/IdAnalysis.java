@@ -51,11 +51,12 @@ public class IdAnalysis {
 
     private final boolean isFid;
 
-    private String idKernel;
+    private String[] idKernels;
 
     IdAnalysis( FeatureType ft, String idKernel, boolean isFid ) {
         this.ft = ft;
-        this.idKernel = idKernel;
+        // TODO
+        this.idKernels = new String[] { idKernel };
         this.isFid = isFid;
     }
 
@@ -66,8 +67,13 @@ public class IdAnalysis {
         return ft;
     }
 
+    @Deprecated
     public String getIdKernel() {
-        return idKernel;
+        return idKernels[0];
+    }
+
+    public String[] getIdKernels() {
+        return idKernels;
     }
 
     /**
@@ -79,6 +85,6 @@ public class IdAnalysis {
 
     @Override
     public String toString() {
-        return "ft=" + ft.getName() + ",idKernel=" + idKernel;
+        return "ft=" + ft.getName() + ",idKernels=" + idKernels;
     }
 }

@@ -45,6 +45,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -67,6 +68,7 @@ import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.DataTypeMapping;
@@ -215,11 +217,11 @@ public class AppSchemaMapper {
         QTableName table = new QTableName( mc.getTable() );
         // TODO
         IDGenerator generator = new UUIDGenerator();
-        // TODO
-        FIDMapping fidMapping = new FIDMapping( "", "attr_gml_id", STRING, generator );
+        String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
+        Pair<String, PrimitiveType> fidColumn = new Pair<String, PrimitiveType>( "attr_gml_id", STRING );
+        FIDMapping fidMapping = new FIDMapping( prefix, Collections.singletonList( fidColumn ), generator );
 
         List<Mapping> mappings = new ArrayList<Mapping>();
-
         for ( PropertyType pt : ft.getPropertyDeclarations( appSchema.getXSModel().getVersion() ) ) {
             mappings.add( generatePropMapping( pt, mc ) );
         }

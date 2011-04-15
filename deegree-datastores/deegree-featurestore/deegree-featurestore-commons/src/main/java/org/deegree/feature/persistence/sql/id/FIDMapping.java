@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.id;
 
+import java.util.List;
+
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 
 /**
@@ -52,9 +55,7 @@ public class FIDMapping {
 
     private final String prefix;
 
-    private final String column;
-
-    private final PrimitiveType pt;
+    private final List<Pair<String, PrimitiveType>> columns;
 
     private final IDGenerator generator;
 
@@ -63,17 +64,15 @@ public class FIDMapping {
      * 
      * @param prefix
      *            static prefix for all feature ids, must not be <code>null</code> (but can be empty)
-     * @param column
-     *            database column that the feature ids are mapped to, must not be <code>null</code>
-     * @param pt
-     *            type of the database column, must not be <code>null</code>
+     * @param columns
+     *            database columns that the feature ids are mapped to, must not be <code>null</code> (and contain at
+     *            least one entry)
      * @param generator
      *            generator for determining new ids, must not be <code>null</code>
      */
-    public FIDMapping( String prefix, String column, PrimitiveType pt, IDGenerator generator ) {
+    public FIDMapping( String prefix, List<Pair<String, PrimitiveType>> columns, IDGenerator generator ) {
         this.prefix = prefix;
-        this.column = column;
-        this.pt = pt;
+        this.columns = columns;
         this.generator = generator;
     }
 
@@ -81,15 +80,27 @@ public class FIDMapping {
         return prefix;
     }
 
-    public String getColumn() {
-        return column;
-    }
-
-    public PrimitiveType getColumnType() {
-        return pt;
+    public List<Pair<String, PrimitiveType>> getColumns() {
+        return columns;
     }
 
     public IDGenerator getIdGenerator() {
         return generator;
+    }
+
+    @Deprecated
+    public String getColumn() {
+        if ( columns.size() != 1 ) {
+            throw new IllegalArgumentException();
+        }
+        return columns.get( 0 ).first;
+    }
+
+    @Deprecated
+    public PrimitiveType getColumnType() {
+        if ( columns.size() != 1 ) {
+            throw new IllegalArgumentException();
+        }
+        return columns.get( 0 ).second;
     }
 }

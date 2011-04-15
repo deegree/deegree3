@@ -60,7 +60,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractParticleJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.ComplexParticleJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB;
-import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB.Column;
+import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB.ColumnJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureParticleJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeMappingJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryParticleJAXB;
@@ -239,32 +239,31 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     private FIDMapping buildFIDMapping( QTableName table, QName ftName, FIDMappingJAXB config )
                             throws FeatureStoreException {
 
-        String prefix = ftName.getPrefix().toUpperCase() + "_" + ftName.getLocalPart().toUpperCase() + "_";
-        Column column = null;
-        if ( config != null ) {
-            column = config.getColumn();
+        String prefix = config != null ? config.getPrefix() : null;
+        if ( prefix == null ) {
+            prefix = ftName.getPrefix().toUpperCase() + "_" + ftName.getLocalPart().toUpperCase() + "_";
         }
 
-        String columnName = null;
-        IDGenerator generator = buildGenerator( config );
-        if ( generator instanceof AutoIDGenerator ) {
-            if ( column != null && column.getName() != null ) {
-                columnName = column.getName();
+        List<Pair<String, PrimitiveType>> columns = new ArrayList<Pair<String, PrimitiveType>>();
+        if ( config != null && config.getColumn() != null ) {
+            for ( ColumnJAXB configColumn : config.getColumn() ) {
+                String column = configColumn.getName();
+                PrimitiveType pt = null;
+                if ( configColumn.getType() != null ) {
+                    pt = getPrimitiveType( configColumn.getType() );
+                }
+                columns.add( new Pair<String, PrimitiveType>( column, pt ) );
             }
-        } else {
-            if ( column == null || column.getName() == null ) {
+        }
+
+        IDGenerator generator = buildGenerator( config );
+        if ( !( generator instanceof AutoIDGenerator ) ) {
+            if ( columns.isEmpty() ) {
                 throw new FeatureStoreException( "No FIDMapping column for table '" + table
                                                  + "' specified. This is only possible for AutoIDGenerator." );
             }
-            columnName = column.getName();
         }
-
-        PrimitiveType pt = null;
-        if ( config != null && config.getColumn().getType() != null ) {
-            pt = getPrimitiveType( config.getColumn().getType() );
-            columnName = config.getColumn().getName();
-        }
-        return new FIDMapping( prefix, columnName, pt, generator );
+        return new FIDMapping( prefix, columns, generator );
     }
 
     private Mapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl, AbstractParticleJAXB value ) {
@@ -290,7 +289,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
         PrimitiveType pt = schemaWalker.getTargetType( elDecl, path );
         MappingExpression me = parseMappingExpression( config.getMapping() );
-        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
+        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
         LOG.debug( "Targeted primitive type: " + pt.name() );
         return new PrimitiveMapping( path, me, pt, joinedTable );
     }
@@ -302,7 +301,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         LOG.warn( "Determining geometry type from element decls is not implemented." );
         GeometryType type = GeometryType.GEOMETRY;
-        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
+        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new GeometryMapping( path, me, type, geometryParams, joinedTable );
     }
 
@@ -319,7 +318,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         // TODO rework this
         FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl, ptName, 0, 1,
                                                                                                   null );
-        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
+        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new FeatureMapping( path, me, hrefMe, pt.getFTName(), joinedTable );
     }
 
@@ -335,7 +334,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 particles.add( particle );
             }
         }
-        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoinedTable() );
+        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new CompoundMapping( path, particles, joinedTable );
     }
 }

@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
@@ -177,19 +178,36 @@ public class PostGISDDLCreator {
         StringBuffer sql = new StringBuffer( "CREATE TABLE " );
         ddls.add( sql );
         sql.append( ftMapping.getFtTable() );
-        sql.append( " (\n    " );
+        sql.append( " (" );
+        List<String> pkColumns = new ArrayList<String>();
         if ( hasBlobTable ) {
-            sql.append( "id integer PRIMARY KEY REFERENCES gml_objects" );
+            sql.append( "\n    id integer REFERENCES gml_objects" );
+            pkColumns.add( "id" );
         } else {
             FIDMapping fidMapping = ftMapping.getFidMapping();
-            String fidColumn = fidMapping.getColumn();
-            sql.append( fidColumn );
-            sql.append( " text PRIMARY KEY" );
+            for ( Pair<String, PrimitiveType> fidColumn : fidMapping.getColumns() ) {
+                sql.append( "\n    " );
+                sql.append( fidColumn.first );
+                sql.append( " " );
+                sql.append( getPostgreSQLType( fidColumn.second ) );
+                pkColumns.add( fidColumn.first );
+            }
         }
         for ( Mapping mapping : ftMapping.getMappings() ) {
             ddls.addAll( process( sql, ftMapping.getFtTable(), mapping ) );
         }
-        sql.append( "\n)" );
+        sql.append( ",\n    CONSTRAINT " );
+        sql.append( ftMapping.getFtTable() );
+        sql.append( "_pkey PRIMARY KEY (" );
+        boolean first = true;
+        for ( String pkColumn : pkColumns ) {
+            if ( !first ) {
+                sql.append( "," );
+            }
+            sql.append( pkColumn );
+            first = false;
+        }
+        sql.append( ")\n)" );
         return ddls;
     }
 

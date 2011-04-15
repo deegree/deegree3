@@ -59,7 +59,7 @@ import org.deegree.feature.persistence.postgis.jaxb.AbstractIDGeneratorType;
 import org.deegree.feature.persistence.postgis.jaxb.AutoIdGenerator;
 import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeMappingJAXB;
-import org.deegree.feature.persistence.postgis.jaxb.JoinedTable;
+import org.deegree.feature.persistence.postgis.jaxb.Join;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.NamespaceHint;
@@ -182,15 +182,21 @@ public class AbstractMappedSchemaBuilder {
         return mapping;
     }
 
-    protected JoinChain buildJoinTable( QTableName from, JoinedTable joinedTable ) {
-        if ( joinedTable != null ) {
-            MappingExpression me = parseMappingExpression( joinedTable.getValue() );
-            if ( me instanceof JoinChain ) {
-                JoinChain jc = (JoinChain) me;
-                DBField dbf1 = new DBField( from.getTable(), jc.getFields().get( 0 ).getColumn() );
-                DBField dbf2 = new DBField( jc.getFields().get( 1 ).getTable(), jc.getFields().get( 1 ).getColumn() );
-                return new JoinChain( dbf1, dbf2 );
+    protected JoinChain buildJoinTable( QTableName from, Join join ) {
+        if ( join != null ) {
+            QTableName target = new QTableName( join.getTable() );
+            if ( join.getFromColumns().size() != join.getToColumns().size() ) {
+                throw new UnsupportedOperationException( "Joins must use same number of from and to columns." );
             }
+            if ( join.getFromColumns().size() != 1 ) {
+                throw new UnsupportedOperationException( "Joins with multiple columns are not supported yet." );
+            }
+            String fromColumn = join.getFromColumns().get( 0 );
+            String toColumn = join.getToColumns().get( 0 );
+
+            DBField dbf1 = new DBField( from.getTable(), fromColumn );
+            DBField dbf2 = new DBField( target.getTable(), toColumn );
+            return new JoinChain( dbf1, dbf2 );
         }
         return null;
     }
