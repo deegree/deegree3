@@ -35,11 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.geometry.Geometry;
+import java.sql.Connection;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.Geometry;
 
 /**
  * 
@@ -50,7 +49,8 @@ import com.vividsolutions.jts.io.ParseException;
  */
 public interface SQLValueMapper {
 
-    Object convertGeometry( Geometry g, ICRS crs ) throws FilterEvaluationException, ParseException;
+    Object convertGeometry( Geometry g, ICRS crs, Connection conn )
+                            throws Exception;
 
     void insertGeometry( StringBuilder sb, String srid );
 

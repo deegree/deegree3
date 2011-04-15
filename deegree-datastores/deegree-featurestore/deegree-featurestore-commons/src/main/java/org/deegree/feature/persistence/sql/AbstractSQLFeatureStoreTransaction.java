@@ -327,7 +327,10 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
                 sql.append( blobMapping.getDataColumn() );
                 sql.append( "," );
                 sql.append( blobMapping.getBBoxColumn() );
-                sql.append( ") VALUES(?,?,?,?)" );
+                sql.append( ") VALUES(?,?,?," );
+                valueMapper.insertGeometry( sql, null );
+                sql.append( ")" );
+System.out.println(sql);
                 blobInsertStmt = conn.prepareStatement( sql.toString(), RETURN_GENERATED_KEYS );
                 for ( Feature feature : features ) {
                     fid = feature.getId();
@@ -414,7 +417,7 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
             }
         }
         try {
-            stmt.setObject( 4, valueMapper.convertGeometry( bbox, null ) );
+            stmt.setObject( 4, valueMapper.convertGeometry( bbox, null, conn ) );
         } catch ( Throwable e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e );
@@ -500,7 +503,7 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
                     String srid = ( (GeometryMapping) mapping ).getSrid();
                     ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
                     try {
-                        sqlValue = valueMapper.convertGeometry( geom, storageCRS );
+                        sqlValue = valueMapper.convertGeometry( geom, storageCRS, conn );
                     } catch ( Throwable e ) {
                         throw new FeatureStoreException( e.getMessage(), e );
                     }
@@ -698,7 +701,7 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
                     ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
                     Geometry value = (Geometry) replacementProp.getValue();
                     try {
-                        sqlObjects.add( valueMapper.convertGeometry( value, storageCRS ) );
+                        sqlObjects.add( valueMapper.convertGeometry( value, storageCRS, conn ) );
                     } catch ( Exception e ) {
                         throw new FeatureStoreException( e.getMessage(), e );
                     }

@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.sql;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
@@ -56,8 +58,11 @@ import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReferenceResolver;
+import org.slf4j.Logger;
 
 /**
  * Provides common base functionality for {@link FeatureStore} implementations that use {@link MappedApplicationSchema}
@@ -69,6 +74,7 @@ import org.deegree.gml.GMLReferenceResolver;
  * @version $Revision$, $Date$
  */
 public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
+    private static final Logger LOG = getLogger( AbstractSQLFeatureStore.class );
 
     private MappedApplicationSchema schema;
 
@@ -228,6 +234,38 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             nsContext.put( "ogc", OGCNS );
         }
         return nsContext;
+    }
+
+    /**
+     * Returns a transformed version of the given {@link Geometry} in the specified CRS.
+     * 
+     * @param literal
+     * @param crs
+     * @return transformed version of the geometry, never <code>null</code>
+     * @throws FilterEvaluationException
+     */
+    protected Geometry getCompatibleGeometry( Geometry literal, ICRS crs )
+                            throws FilterEvaluationException {
+
+        if ( crs == null ) {
+            return literal;
+        }
+
+        Geometry transformedLiteral = literal;
+        if ( literal != null ) {
+            ICRS literalCRS = literal.getCoordinateSystem();
+            if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
+                LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
+                           + crs.getAlias() );
+                try {
+                    GeometryTransformer transformer = new GeometryTransformer( crs );
+                    transformedLiteral = transformer.transform( literal );
+                } catch ( Exception e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+            }
+        }
+        return transformedLiteral;
     }
 
     public abstract SQLValueMapper getSQLValueMapper();
