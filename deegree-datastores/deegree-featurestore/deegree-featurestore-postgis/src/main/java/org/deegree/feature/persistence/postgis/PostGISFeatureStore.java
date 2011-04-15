@@ -1077,34 +1077,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         return new PostGISDDLCreator( getSchema() ).getDDL();
     }
 
-    /**
-     * Returns a transformed version of the given {@link Geometry} in the specified CRS.
-     * 
-     * @param literal
-     * @param crs
-     * @return transformed version of the geometry, never <code>null</code>
-     * @throws FilterEvaluationException
-     */
-    Geometry getCompatibleGeometry( Geometry literal, ICRS crs )
-                            throws FilterEvaluationException {
-
-        Geometry transformedLiteral = literal;
-        if ( literal != null ) {
-            ICRS literalCRS = literal.getCoordinateSystem();
-            if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
-                LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
-                           + crs.getAlias() );
-                try {
-                    GeometryTransformer transformer = new GeometryTransformer( crs );
-                    transformedLiteral = transformer.transform( literal );
-                } catch ( Exception e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            }
-        }
-        return transformedLiteral;
-    }
-
     PGgeometry toPGPolygon( Envelope envelope, int srid ) {
         PGgeometry pgGeometry = null;
         if ( envelope != null ) {
@@ -1156,8 +1128,8 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         return new SQLValueMapper() {
 
             @Override
-            public Object convertGeometry( Geometry g, ICRS crs )
-                                    throws FilterEvaluationException, ParseException {
+            public Object convertGeometry( Geometry g, ICRS crs, Connection conn )
+                                    throws Exception {
                 Geometry compatible = getCompatibleGeometry( g, crs );
                 return WKBWriter.write( compatible );
             }
@@ -1169,7 +1141,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                 } else {
                     sb.append( "SetSRID(ST_GeomFromWKB(?)," );
                 }
-                sb.append( srid );
+                sb.append( srid == null ? "-1" : srid );
                 sb.append( ")" );
             }
         };
