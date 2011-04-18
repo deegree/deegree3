@@ -36,6 +36,8 @@
 
 package org.deegree.commons.jdbc;
 
+import static java.sql.DriverManager.deregisterDriver;
+import static java.sql.DriverManager.getDrivers;
 import static java.sql.DriverManager.registerDriver;
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.deegree.commons.config.ResourceState.StateType.init_error;
@@ -52,6 +54,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -306,6 +309,17 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
             }
         }
         idToPools.clear();
+        try {
+            Enumeration<Driver> enumer = getDrivers();
+            while ( enumer.hasMoreElements() ) {
+                Driver d = enumer.nextElement();
+                if ( d instanceof DriverWrapper ) {
+                    deregisterDriver( d );
+                }
+            }
+        } catch ( SQLException e ) {
+            LOG.debug( "Unable to deregister driver: {}", e.getLocalizedMessage() );
+        }
     }
 
     public void startup( DeegreeWorkspace workspace ) {
@@ -316,7 +330,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
                 LOG.info( "Found and loaded {}", d.getClass().getName() );
             }
         } catch ( SQLException e ) {
-            LOG.debug( "Unable to load MSSQL driver: {}", e.getLocalizedMessage() );
+            LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
         }
         dir = new File( workspace.getLocation(), "jdbc" );
         init( dir, workspace );
