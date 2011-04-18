@@ -75,7 +75,7 @@ public class SQLExecution implements Serializable {
         StringBuffer sql = new StringBuffer();
         for ( int i = 0; i < sqlStatements.length; i++ ) {
             sql.append( sqlStatements[i] );
-            if ( !sqlStatements[i].trim().isEmpty() && !sqlStatements[i].endsWith( ";" ) ) {
+            if ( !sqlStatements[i].trim().isEmpty() ) {
                 sql.append( ";" );
             }
             sql.append( "\n" );
@@ -84,12 +84,11 @@ public class SQLExecution implements Serializable {
     }
 
     public void setStatements( String sql ) {
-        sqlStatements = sql.split( "\n" );
+        sqlStatements = sql.split( ";\\s*\\n" );
         for ( int i = 0; i < sqlStatements.length; ++i ) {
-            sqlStatements[i] = sqlStatements[i].trim();
-            while ( sqlStatements[i].trim().endsWith( ";" )
-                    && ( !sqlStatements[i].trim().toLowerCase().endsWith( "end;" ) ) )
-                sqlStatements[i] = sqlStatements[i].trim().substring( 0, sqlStatements[i].length() - 1 );
+            if ( sqlStatements[i].endsWith( "end" ) ) {
+                sqlStatements[i] = sqlStatements[i] + ";";
+            }
         }
     }
 
@@ -101,7 +100,7 @@ public class SQLExecution implements Serializable {
             conn.setAutoCommit( false );
             stmt = conn.createStatement();
             for ( String sql : sqlStatements ) {
-                LOG.debug( "Executing: '{}'", sql );
+                LOG.debug( "Executing: {}", sql );
                 stmt.execute( sql );
             }
             conn.commit();
