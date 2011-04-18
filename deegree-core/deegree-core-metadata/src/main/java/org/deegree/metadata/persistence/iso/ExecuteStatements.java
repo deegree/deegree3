@@ -240,6 +240,11 @@ public class ExecuteStatements {
             if ( dbType == PostgreSQL && query != null ) {
                 sql.append( " LIMIT " ).append( query.getMaxRecords() );
             }
+            
+            StringBuilder innerSelect = new StringBuilder( "SELECT in1.id FROM (" );
+            innerSelect.append( sql );
+            innerSelect.append( " ) as in1" );
+            
             StringBuilder outerSelect = new StringBuilder( "SELECT " );
             outerSelect.append( rf );
             outerSelect.append( " FROM " );
@@ -253,7 +258,7 @@ public class ExecuteStatements {
             outerSelect.append( " WHERE " );
             outerSelect.append( id );
             outerSelect.append( " IN (" );
-            outerSelect.append( sql );
+            outerSelect.append( innerSelect );
             outerSelect.append( ")" );
 
             preparedStatement = conn.prepareStatement( outerSelect.toString() );
