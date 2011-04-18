@@ -11,7 +11,7 @@
     </appinfo>
   </annotation>
 
-  <!--  copied from commons: -->
+  <!-- copied from commons: -->
   <!-- =========================================================== -->
   <element name="ScaleDenominators" type="wms:ScaleDenominatorsType" />
   <!-- =========================================================== -->
@@ -367,7 +367,15 @@
         <extension base="wms:BaseAbstractLayerType">
           <choice>
             <element name="ShapefileDirectory" type="string" />
-            <element name="PostGIS" type="string" />
+            <element name="PostGIS">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="schema" use="optional" type="string" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
           </choice>
         </extension>
       </complexContent>
