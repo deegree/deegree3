@@ -48,14 +48,15 @@ public class MappingContextManager {
 
     private static Logger LOG = LoggerFactory.getLogger( MappingContextManager.class );
 
-    private int maxLength = 64;
+    private int maxLength;
 
     private int id = 0;
 
     private final Map<String, String> nsToPrefix;
 
-    public MappingContextManager( Map<String, String> nsToPrefix ) {
+    public MappingContextManager( Map<String, String> nsToPrefix, int maxLength ) {
         this.nsToPrefix = nsToPrefix;
+        this.maxLength = maxLength == -1 ? 64 : maxLength;
     }
 
     public MappingContext newContext( QName name, String idColumn ) {

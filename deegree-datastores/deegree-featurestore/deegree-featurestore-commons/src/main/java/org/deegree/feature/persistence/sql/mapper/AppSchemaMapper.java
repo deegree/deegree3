@@ -143,7 +143,7 @@ public class AppSchemaMapper {
      *            parameters for storing geometries, must not be <code>null</code>
      */
     public AppSchemaMapper( ApplicationSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
-                            GeometryStorageParams geometryParams ) {
+                            GeometryStorageParams geometryParams, int maxLength ) {
 
         this.appSchema = appSchema;
         this.geometryParams = geometryParams;
@@ -164,7 +164,7 @@ public class AppSchemaMapper {
         }
         nsToPrefix.putAll( xsModel.getNamespacePrefixes() );
 
-        mcManager = new MappingContextManager( nsToPrefix );
+        mcManager = new MappingContextManager( nsToPrefix, maxLength );
         if ( createRelationalMapping ) {
             ftMappings = generateFtMappings( fts );
         }
