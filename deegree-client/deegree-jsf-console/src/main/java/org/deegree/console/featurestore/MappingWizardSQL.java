@@ -69,9 +69,7 @@ import org.deegree.console.ConfigManager;
 import org.deegree.console.WorkspaceBean;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.persistence.postgis.PostGISDDLCreator;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
@@ -272,7 +270,7 @@ public class MappingWizardSQL {
             GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, storageSrid,
                                                                               CoordinateDimension.DIM_2 );
             AppSchemaMapper mapper = new AppSchemaMapper( appSchema, createBlobMapping, createRelationalMapping,
-                                                          geometryParams );
+                                                          geometryParams, Math.min( tableNameLength, columnNameLength ) );
             mappedSchema = mapper.getMappedSchema();
             PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
             File tmpConfigFile = File.createTempFile( "fsconfig", ".xml" );
