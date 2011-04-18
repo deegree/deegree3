@@ -445,7 +445,8 @@ public class MapService {
                 }
             }
             if ( dyn.getPostGIS() != null ) {
-                dynamics.add( new PostGISUpdater( dyn.getPostGIS(), parent, this, adapter.getSystemId() ) );
+                dynamics.add( new PostGISUpdater( dyn.getPostGIS().getValue(), dyn.getPostGIS().getSchema(), parent,
+                                                  this, adapter.getSystemId(), workspace ) );
             }
         }
 

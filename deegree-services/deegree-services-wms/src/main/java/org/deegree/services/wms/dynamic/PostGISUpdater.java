@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
@@ -87,6 +88,10 @@ public class PostGISUpdater extends LayerUpdater {
 
     private PostgreSQLReader styles;
 
+    private final String schema;
+
+    private final DeegreeWorkspace workspace;
+
     /**
      * @param connId
      * @param parent
@@ -94,11 +99,14 @@ public class PostGISUpdater extends LayerUpdater {
      * @param baseSystemId
      *            to resolve relative references in sld blobs
      */
-    public PostGISUpdater( String connId, Layer parent, MapService service, String baseSystemId ) {
+    public PostGISUpdater( String connId, String schema, Layer parent, MapService service, String baseSystemId,
+                           DeegreeWorkspace workspace ) {
         this.connId = connId;
+        this.workspace = workspace;
+        this.schema = schema == null ? "public" : schema;
         this.parent = parent;
         this.service = service;
-        this.styles = new PostgreSQLReader( connId, baseSystemId );
+        this.styles = new PostgreSQLReader( connId, schema, baseSystemId );
     }
 
     /**
@@ -115,15 +123,13 @@ public class PostGISUpdater extends LayerUpdater {
         try {
             conn = getConnection( connid );
             String tableName = sourcetable;
-            String tableSchema = "public";
             if ( tableName.indexOf( "." ) != -1 ) {
-                tableSchema = tableName.substring( 0, tableName.indexOf( "." ) );
                 tableName = tableName.substring( tableName.indexOf( "." ) + 1 );
             }
 
-            int srid = findSrid( connid, tableName, tableSchema );
+            int srid = findSrid( connid, tableName, schema );
 
-            rs = conn.getMetaData().getColumns( null, tableSchema, tableName, null );
+            rs = conn.getMetaData().getColumns( null, schema, tableName, null );
             StringBuilder sb = new StringBuilder( "select " );
             String geom = null;
             while ( rs.next() ) {
@@ -139,12 +145,12 @@ public class PostGISUpdater extends LayerUpdater {
                 }
             }
             sb.delete( sb.length() - 2, sb.length() );
-            sb.append( " from " ).append( sourcetable ).append( " where \"" ).append( geom );
+            sb.append( " from " ).append( schema ).append( "." ).append( sourcetable ).append( " where \"" ).append( geom );
             sb.append( "\" && st_geomfromtext(?, " ).append( srid ).append( ")" );
 
             String sourcequery = sb.toString();
 
-            String bbox = "select astext(ST_Estimated_Extent('" + tableSchema + "', '" + tableName + "', '" + geom
+            String bbox = "select astext(ST_Estimated_Extent('" + schema + "', '" + tableName + "', '" + geom
                           + "')) as bbox";
             return new StringPair( sourcequery, bbox );
         } finally {
@@ -175,7 +181,8 @@ public class PostGISUpdater extends LayerUpdater {
         try {
             conn = getConnection( connId );
 
-            stmt = conn.prepareStatement( "select name, title, connectionid, sourcetable, sourcequery, symbolcodes, symbolfield, crs, namespace, bboxquery from layers" );
+            stmt = conn.prepareStatement( "select name, title, connectionid, sourcetable, sourcequery, symbolcodes, symbolfield, crs, namespace, bboxquery from "
+                                          + schema + ".layers" );
             rs = stmt.executeQuery();
             while ( rs.next() ) {
                 String name = rs.getString( "name" );
@@ -226,7 +233,7 @@ public class PostGISUpdater extends LayerUpdater {
                                                     namespace, "app", bbox,
                                                     Collections.<Pair<Integer, String>> emptyList() );
                     try {
-                        ds.init( null );
+                        ds.init( workspace );
                     } catch ( ResourceInitException e ) {
                         LOG.info( "Data source of layer '{}' could not be initialized: '{}'.", title,
                                   e.getLocalizedMessage() );
