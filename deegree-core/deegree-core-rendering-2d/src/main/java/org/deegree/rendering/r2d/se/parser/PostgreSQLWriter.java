@@ -93,11 +93,14 @@ public class PostgreSQLWriter {
 
     private final String connId;
 
+    private final String schema;
+
     /**
      * @param connId
      */
-    public PostgreSQLWriter( String connId ) {
+    public PostgreSQLWriter( String connId, String schema ) {
         this.connId = connId;
+        this.schema = schema;
     }
 
     private int write( Connection conn, Graphic graphic )
@@ -105,7 +108,9 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into graphics (size, rotation, anchorx, anchory, displacementx, displacementy, wellknownname, svg, base64raster, fill_id, stroke_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into "
+                                          + schema
+                                          + ".graphics (size, rotation, anchorx, anchory, displacementx, displacementy, wellknownname, svg, base64raster, fill_id, stroke_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id" );
             stmt.setDouble( 1, graphic.size );
             stmt.setDouble( 2, graphic.rotation );
             stmt.setDouble( 3, graphic.anchorPointX );
@@ -164,7 +169,8 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into fills (color, graphic_id) values (?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into " + schema
+                                          + ".fills (color, graphic_id) values (?, ?) returning id" );
             String hex = Integer.toHexString( fill.color.getRGB() & 0xffffff );
             while ( hex.length() < 6 ) {
                 hex = "0" + hex;
@@ -205,7 +211,9 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into strokes (color, width, linejoin, linecap, dasharray, dashoffset, stroke_graphic_id, fill_graphic_id, strokegap, strokeinitialgap, positionpercentage) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into "
+                                          + schema
+                                          + ".strokes (color, width, linejoin, linecap, dasharray, dashoffset, stroke_graphic_id, fill_graphic_id, strokegap, strokeinitialgap, positionpercentage) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id" );
             String hex = Integer.toHexString( stroke.color.getRGB() & 0xffffff );
             while ( hex.length() < 6 ) {
                 hex = "0" + hex;
@@ -275,7 +283,8 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into fonts (family, style, bold, size) values (?, ?, ?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into " + schema
+                                          + ".fonts (family, style, bold, size) values (?, ?, ?, ?) returning id" );
 
             stmt.setString( 1, join( ",", font.fontFamily ) );
             stmt.setString( 2, font.fontStyle.toString() );
@@ -312,7 +321,9 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into lineplacements (perpendicularoffset, repeat, initialgap, gap, isaligned, generalizeline) values (?, ?, ?, ?, ?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into "
+                                          + schema
+                                          + ".lineplacements (perpendicularoffset, repeat, initialgap, gap, isaligned, generalizeline) values (?, ?, ?, ?, ?, ?) returning id" );
 
             stmt.setDouble( 1, lineplacement.perpendicularOffset );
             stmt.setBoolean( 2, lineplacement.repeat );
@@ -351,7 +362,8 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into halos (fill_id, radius) values (?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into " + schema
+                                          + ".halos (fill_id, radius) values (?, ?) returning id" );
 
             if ( halo.fill == null ) {
                 stmt.setNull( 1, INTEGER );
@@ -390,7 +402,8 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into points (uom, graphic_id) values (?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into " + schema
+                                          + ".points (uom, graphic_id) values (?, ?) returning id" );
 
             stmt.setString( 1, styling.uom.toString() );
             if ( styling.graphic != null ) {
@@ -429,7 +442,9 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into lines (uom, stroke_id, perpendicularoffset) values (?, ?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into "
+                                          + schema
+                                          + ".lines (uom, stroke_id, perpendicularoffset) values (?, ?, ?) returning id" );
 
             stmt.setString( 1, styling.uom.toString() );
             if ( styling.stroke != null ) {
@@ -469,7 +484,9 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into polygons (uom, fill_id, stroke_id, displacementx, displacementy, perpendicularoffset) values (?, ?, ?, ?, ?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into "
+                                          + schema
+                                          + ".polygons (uom, fill_id, stroke_id, displacementx, displacementy, perpendicularoffset) values (?, ?, ?, ?, ?, ?) returning id" );
 
             stmt.setString( 1, styling.uom.toString() );
             if ( styling.fill != null ) {
@@ -516,7 +533,9 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "insert into texts (labelexpr, uom, font_id, fill_id, rotation, displacementx, displacementy, anchorx, anchory, lineplacement_id, halo_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id" );
+            stmt = conn.prepareStatement( "insert into "
+                                          + schema
+                                          + ".texts (labelexpr, uom, font_id, fill_id, rotation, displacementx, displacementy, anchorx, anchory, lineplacement_id, halo_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id" );
 
             stmt.setString( 1, labelexpr );
             stmt.setString( 2, styling.uom.toString() );
@@ -577,7 +596,8 @@ public class PostgreSQLWriter {
         try {
             conn = getConnection( connId );
             conn.setAutoCommit( false );
-            stmt = conn.prepareStatement( "insert into styles (type, fk, minscale, maxscale, name) values (?, ?, ?, ?, ?)" );
+            stmt = conn.prepareStatement( "insert into " + schema
+                                          + ".styles (type, fk, minscale, maxscale, name) values (?, ?, ?, ?, ?)" );
             if ( styling instanceof PointStyling ) {
                 stmt.setString( 1, "POINT" );
                 stmt.setInt( 2, write( conn, (PointStyling) styling ) );
@@ -715,14 +735,13 @@ public class PostgreSQLWriter {
      */
     public static void main( String[] args )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Style style = new SymbologyParser( true ).parse( XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                                              new FileInputStream(
+        Style style = new SymbologyParser( true ).parse( XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream(
                                                                                                                                    args[0] ) ) );
         ConnectionManager.addConnection( "configtool", "jdbc:postgresql://localhost/configtool", "postgres", "", 5, 20 );
         if ( style.isSimple() ) {
-            new PostgreSQLWriter( "configtool" ).write( style, null );
+            new PostgreSQLWriter( "configtool", "schematest" ).write( style, null );
         } else {
-            new PostgreSQLWriter( "configtool" ).write( new FileInputStream( args[0] ), style.getName() );
+            new PostgreSQLWriter( "configtool", "schematest" ).write( new FileInputStream( args[0] ), style.getName() );
         }
     }
 

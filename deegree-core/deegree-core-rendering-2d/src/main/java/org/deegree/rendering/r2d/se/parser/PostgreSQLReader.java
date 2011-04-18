@@ -138,13 +138,16 @@ public class PostgreSQLReader {
 
     private final String baseSystemId;
 
+    private final String schema;
+
     /**
      * @param connid
      * @param baseSystemId
      *            to resolve relative references in sld files
      */
-    public PostgreSQLReader( String connid, String baseSystemId ) {
+    public PostgreSQLReader( String connid, String schema, String baseSystemId ) {
         this.connid = connid;
+        this.schema = schema;
         this.baseSystemId = baseSystemId;
     }
 
@@ -158,7 +161,8 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select size, rotation, anchorx, anchory, displacementx, displacementy, wellknownname, svg, base64raster, fill_id, stroke_id from graphics where id = ?" );
+            stmt = conn.prepareStatement( "select size, rotation, anchorx, anchory, displacementx, displacementy, wellknownname, svg, base64raster, fill_id, stroke_id from "
+                                          + schema + ".graphics where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -251,7 +255,8 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select color, width, linejoin, linecap, dasharray, dashoffset, stroke_graphic_id, fill_graphic_id, strokegap, strokeinitialgap, positionpercentage from strokes where id = ?" );
+            stmt = conn.prepareStatement( "select color, width, linejoin, linecap, dasharray, dashoffset, stroke_graphic_id, fill_graphic_id, strokegap, strokeinitialgap, positionpercentage from "
+                                          + schema + ".strokes where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -335,7 +340,7 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select color, graphic_id from fills where id = ?" );
+            stmt = conn.prepareStatement( "select color, graphic_id from " + schema + ".fills where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -375,7 +380,7 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select family, style, bold, size from fonts where id = ?" );
+            stmt = conn.prepareStatement( "select family, style, bold, size from " + schema + ".fonts where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -428,7 +433,8 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select perpendicularoffset, repeat, initialgap, gap, isaligned, generalizeline from lineplacements where id = ?" );
+            stmt = conn.prepareStatement( "select perpendicularoffset, repeat, initialgap, gap, isaligned, generalizeline from "
+                                          + schema + ".lineplacements where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -484,7 +490,7 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select fill_id, radius from halos where id = ?" );
+            stmt = conn.prepareStatement( "select fill_id, radius from " + schema + ".halos where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -524,7 +530,7 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select uom, graphic_id from points where id = ?" );
+            stmt = conn.prepareStatement( "select uom, graphic_id from " + schema + ".points where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -562,7 +568,8 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select uom, stroke_id, perpendicularoffset from lines where id = ?" );
+            stmt = conn.prepareStatement( "select uom, stroke_id, perpendicularoffset from " + schema
+                                          + ".lines where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -604,7 +611,8 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select uom, fill_id, stroke_id, displacementx, displacementy, perpendicularoffset from polygons where id = ?" );
+            stmt = conn.prepareStatement( "select uom, fill_id, stroke_id, displacementx, displacementy, perpendicularoffset from "
+                                          + schema + ".polygons where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -658,7 +666,8 @@ public class PostgreSQLReader {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select labelexpr, uom, font_id, fill_id, rotation, displacementx, displacementy, anchorx, anchory, lineplacement_id, halo_id from texts where id = ?" );
+            stmt = conn.prepareStatement( "select labelexpr, uom, font_id, fill_id, rotation, displacementx, displacementy, anchorx, anchory, lineplacement_id, halo_id from "
+                                          + schema + ".texts where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -736,7 +745,8 @@ public class PostgreSQLReader {
         Connection conn = null;
         try {
             conn = getConnection( connid );
-            stmt = conn.prepareStatement( "select type, fk, minscale, maxscale, sld, name from styles where id = ?" );
+            stmt = conn.prepareStatement( "select type, fk, minscale, maxscale, sld, name from " + schema
+                                          + ".styles where id = ?" );
             stmt.setInt( 1, id );
             LOG.debug( "Fetching styles using query '{}'.", stmt );
             rs = stmt.executeQuery();
@@ -810,7 +820,8 @@ public class PostgreSQLReader {
                 String sld = rs.getString( "sld" );
                 if ( sld != null ) {
                     try {
-                        Style res = new SymbologyParser().parse( fac.createXMLStreamReader( baseSystemId, new StringReader( sld ) ) );
+                        Style res = new SymbologyParser().parse( fac.createXMLStreamReader( baseSystemId,
+                                                                                            new StringReader( sld ) ) );
                         if ( name != null ) {
                             res.setName( name );
                         }
