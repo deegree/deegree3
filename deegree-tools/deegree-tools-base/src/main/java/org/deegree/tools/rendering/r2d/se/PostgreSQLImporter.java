@@ -83,6 +83,10 @@ public class PostgreSQLImporter {
         opt.setRequired( false );
         opts.addOption( opt );
 
+        opt = new Option( "s", "schema", true, "table schema, if left off, public will be used" );
+        opt.setRequired( false );
+        opts.addOption( opt );
+
         CommandUtils.addDefaultOptions( opts );
 
         return opts;
@@ -115,14 +119,18 @@ public class PostgreSQLImporter {
             if ( pass == null ) {
                 pass = "";
             }
+            String schema = options.getOption( "schema" ).getValue();
+            if ( schema == null ) {
+                schema = "public";
+            }
 
             XMLInputFactory fac = XMLInputFactory.newInstance();
             Style style = new SymbologyParser( true ).parse( fac.createXMLStreamReader( new FileInputStream( inputFile ) ) );
             ConnectionManager.addConnection( "style", url, user, pass, 5, 20 );
             if ( style.isSimple() ) {
-                new PostgreSQLWriter( "style" ).write( style, null );
+                new PostgreSQLWriter( "style", schema ).write( style, null );
             } else {
-                new PostgreSQLWriter( "style" ).write( new FileInputStream( inputFile ), style.getName() );
+                new PostgreSQLWriter( "style", schema ).write( new FileInputStream( inputFile ), style.getName() );
             }
 
         } catch ( ParseException exp ) {

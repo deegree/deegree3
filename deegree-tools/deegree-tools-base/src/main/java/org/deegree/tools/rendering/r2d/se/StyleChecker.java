@@ -89,6 +89,10 @@ public class StyleChecker {
         opt.setRequired( false );
         opts.addOption( opt );
 
+        opt = new Option( "s", "schema", true, "table schema, if left off, public will be used" );
+        opt.setRequired( false );
+        opts.addOption( opt );
+
         opt = new Option( "c", "clean", false,
                           "if set, faulty styles will be deleted (currently only in the styles table)" );
         opt.setRequired( false );
@@ -100,8 +104,8 @@ public class StyleChecker {
 
     }
 
-    private static void check() {
-        PostgreSQLReader reader = new PostgreSQLReader( "style", null );
+    private static void check( String schema ) {
+        PostgreSQLReader reader = new PostgreSQLReader( "style", schema, null );
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -109,7 +113,7 @@ public class StyleChecker {
         boolean bad = false;
         try {
             conn = ConnectionManager.getConnection( "style" );
-            stmt = conn.prepareStatement( "select id from styles" );
+            stmt = conn.prepareStatement( "select id from " + schema + ".styles" );
             rs = stmt.executeQuery();
             while ( rs.next() ) {
                 int id = rs.getInt( "id" );
@@ -159,7 +163,7 @@ public class StyleChecker {
     /**
      * 
      */
-    public static void clean() {
+    public static void clean( String schema ) {
         if ( faultyStyles.isEmpty() ) {
             return;
         }
@@ -168,7 +172,7 @@ public class StyleChecker {
         PreparedStatement stmt = null;
         try {
             conn = ConnectionManager.getConnection( "style" );
-            StringBuilder sql = new StringBuilder( "delete from styles where id in (" );
+            StringBuilder sql = new StringBuilder( "delete from " + schema + ".styles where id in (" );
             for ( int i = 0; i < faultyStyles.size() - 1; ++i ) {
                 sql.append( "?, " );
             }
@@ -230,12 +234,16 @@ public class StyleChecker {
             if ( pass == null ) {
                 pass = "";
             }
+            String schema = options.getOption( "schema" ).getValue();
+            if ( schema == null ) {
+                schema = "public";
+            }
 
             ConnectionManager.addConnection( "style", url, user, pass, 5, 20 );
 
-            check();
+            check( schema );
             if ( line.hasOption( "clean" ) ) {
-                clean();
+                clean( schema );
             }
         } catch ( ParseException exp ) {
             System.err.println( Messages.getMessage( "TOOL_COMMANDLINE_ERROR", exp.getMessage() ) );
