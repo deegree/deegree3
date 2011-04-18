@@ -131,7 +131,7 @@ public class PostGISFeatureStoreTest {
         }
 
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true,
-                                                      new GeometryStorageParams( CRSUtils.EPSG_4326, "-1", DIM_2 ) );
+                                                      new GeometryStorageParams( CRSUtils.EPSG_4326, "-1", DIM_2 ), -1 );
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
         PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
         File file = new File( "/tmp/inspire-ad.xml" );
