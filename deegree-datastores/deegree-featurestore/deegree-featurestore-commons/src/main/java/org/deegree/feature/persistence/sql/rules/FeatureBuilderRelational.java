@@ -53,6 +53,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -140,7 +141,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     @Override
     public List<String> getInitialSelectColumns() {
-        addColumn( colToRsIdx, ftMapping.getFidMapping().getColumn() );
+        for ( Pair<String, PrimitiveType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
+            addColumn( colToRsIdx, fidColumn.first );
+        }
         for ( Mapping mapping : ftMapping.getMappings() ) {
             addSelectColumns( mapping, colToRsIdx, true );
         }
@@ -206,8 +209,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
 
-        Object pk = rs.getObject( colToRsIdx.get( ftMapping.getFidMapping().getColumn() ) );
-        String gmlId = ftMapping.getFidMapping().getPrefix() + pk;
+        String gmlId = ftMapping.getFidMapping().getPrefix();
+        for ( Pair<String, PrimitiveType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
+            gmlId += rs.getObject( colToRsIdx.get( fidColumn.first ) );
+        }
         Feature feature = (Feature) fs.getCache().get( gmlId );
         if ( feature == null ) {
             LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
