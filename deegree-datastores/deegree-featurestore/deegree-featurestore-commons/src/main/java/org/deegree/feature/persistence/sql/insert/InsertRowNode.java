@@ -56,7 +56,7 @@ public class InsertRowNode {
 
     public InsertRowNode( QTableName table, TableJoin parentRelation ) {
         // TODO
-        this.row = new InsertRow( table, "id" );
+        this.row = new InsertRow( table, parentRelation == null ? null : "id" );
         this.parentRelation = parentRelation;
     }
 
