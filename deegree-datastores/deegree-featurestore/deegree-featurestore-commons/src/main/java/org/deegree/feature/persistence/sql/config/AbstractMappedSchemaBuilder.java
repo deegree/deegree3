@@ -188,8 +188,8 @@ public class AbstractMappedSchemaBuilder {
             if ( join.getFromColumns().size() != join.getToColumns().size() ) {
                 throw new UnsupportedOperationException( "Joins must use same number of from and to columns." );
             }
-            if ( join.getFromColumns().size() != 1 ) {
-                throw new UnsupportedOperationException( "Joins with multiple columns are not supported yet." );
+            if ( join.getFromColumns().isEmpty()) {
+                throw new UnsupportedOperationException( "Joins must use at least a single column." );
             }
             boolean isNumbered = join.isNumbered() == null ? false : join.isNumbered();
             TableJoin tj = new TableJoin( from, target, join.getFromColumns(), join.getToColumns(),

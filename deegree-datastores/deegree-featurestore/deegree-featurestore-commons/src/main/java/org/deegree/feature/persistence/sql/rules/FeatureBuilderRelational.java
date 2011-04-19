@@ -443,7 +443,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         first = true;
         for ( String keyColumn : jc.getToColumns() ) {
             if ( !first ) {
-                sql.append( " AND" );
+                sql.append( " AND " );
             }
             sql.append( keyColumn );
             sql.append( " = ?" );
