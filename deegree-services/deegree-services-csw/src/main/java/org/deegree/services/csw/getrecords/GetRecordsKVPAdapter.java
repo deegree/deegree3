@@ -132,7 +132,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         // typeName (mandatory)
         QName[] typeNames = extractTypeNames( normalizedKVPParams, null );
         if ( typeNames == null ) {
-            String msg = Messages.get( "no TYPENAME parameter specified" );
+            String msg = Messages.get( "CSW_MISSING_PARAMETER_TYPENAMES" );
 
             throw new MissingParameterException( msg );
         }
@@ -182,59 +182,59 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         ConstraintLanguage constraintLanguage = null;
         // constraint String Languagequery is specified
         String constraintString = normalizedKVPParams.get( "CONSTRAINT" );
-        String constraintStringVersion = normalizedKVPParams.get( "CONSTRAINT_LANGUAGE_VERSION" );
-
-        // "Filterexpression" -> Filterexpression
-        // TODO what if no begin and end tag?? -> <....>
-        constraintString = constraintString.substring( 1, constraintString.length() - 1 );
-
         Filter constraint = null;
 
-        XMLStreamReader xmlStream = null;
-        Version versionConstraint = Version.parseVersion( constraintStringVersion );
+        if ( constraintString != null ) {
+            // "Filterexpression" -> Filterexpression
+            // TODO what if no begin and end tag?? -> <....>
+            constraintString = constraintString.substring( 1, constraintString.length() - 1 );
 
-        try {
-            // TODO remove usage of wrapper (necessary at the moment to work around problems
-            // with AXIOM's
+            XMLStreamReader xmlStream = null;
+            String constraintStringVersion = normalizedKVPParams.get( "CONSTRAINT_LANGUAGE_VERSION" );
+            Version versionConstraint = Version.parseVersion( constraintStringVersion );
 
-            xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( constraintString ) );
-            // skip START_DOCUMENT
-            xmlStream.nextTag();
+            try {
+                // TODO remove usage of wrapper (necessary at the moment to work around problems
+                // with AXIOM's
 
-            if ( versionConstraint.equals( new Version( 1, 1, 0 ) ) ) {
+                xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( constraintString ) );
+                // skip START_DOCUMENT
+                xmlStream.nextTag();
 
-                constraint = Filter110XMLDecoder.parse( xmlStream );
+                if ( versionConstraint.equals( new Version( 1, 1, 0 ) ) ) {
 
-            } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
-                constraint = Filter100XMLDecoder.parse( xmlStream );
-            } else {
-                String msg = Messages.get( "CSW_FILTER_VERSION_NOT_SPECIFIED", versionConstraint,
-                                           Version.getVersionsString( new Version( 1, 1, 0 ) ),
-                                           Version.getVersionsString( new Version( 1, 0, 0 ) ) );
-                LOG.info( msg );
-                throw new InvalidParameterValueException( msg );
+                    constraint = Filter110XMLDecoder.parse( xmlStream );
+
+                } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
+                    constraint = Filter100XMLDecoder.parse( xmlStream );
+                } else {
+                    String msg = Messages.get( "CSW_FILTER_VERSION_NOT_SPECIFIED", versionConstraint,
+                                               Version.getVersionsString( new Version( 1, 1, 0 ) ),
+                                               Version.getVersionsString( new Version( 1, 0, 0 ) ) );
+                    LOG.info( msg );
+                    throw new InvalidParameterValueException( msg );
+                }
+            } catch ( XMLStreamException e ) {
+                String msg = "FilterParsingException: There went something wrong while parsing the filter expression, so please check this!";
+                LOG.debug( msg );
+                throw new XMLParsingException( xmlStream, e.getMessage() );
             }
-        } catch ( XMLStreamException e ) {
-            String msg = "FilterParsingException: There went something wrong while parsing the filter expression, so please check this!";
-            LOG.debug( msg );
-            throw new XMLParsingException( xmlStream, e.getMessage() );
-        }
+            // If one is specified the other one has to be specified, as well.
+            if ( constraint == null && constraintLanguageString == null ) {
+                // TODO there is no filter expression available
+            } else if ( constraint != null && constraintLanguageString == null ) {
+                throw new MissingParameterException(
+                                                     "If there is a Constraint denoted then there should be a ConstraintLanguage provided" );
+            } else if ( constraint == null && constraintLanguageString != null ) {
+                throw new MissingParameterException(
+                                                     "If there is a ConstraintLanguage denoted then there should be a Constraint provided" );
+            } else {
+                if ( constraintLanguageString.equalsIgnoreCase( FILTER.name() ) ) {
 
-        // If one is specified the other one has to be specified, as well.
-        if ( constraint == null && constraintLanguageString == null ) {
-            // TODO there is no filter expression available
-        } else if ( constraint != null && constraintLanguageString == null ) {
-            throw new MissingParameterException(
-                                                 "If there is a Constraint denoted then there should be a ConstraintLanguage provided" );
-        } else if ( constraint == null && constraintLanguageString != null ) {
-            throw new MissingParameterException(
-                                                 "If there is a ConstraintLanguage denoted then there should be a Constraint provided" );
-        } else {
-            if ( constraintLanguageString.equalsIgnoreCase( FILTER.name() ) ) {
-
-                constraintLanguage = FILTER;
-            } else if ( constraintLanguageString.equalsIgnoreCase( CQLTEXT.name() ) ) {
-                constraintLanguage = CQLTEXT;
+                    constraintLanguage = FILTER;
+                } else if ( constraintLanguageString.equalsIgnoreCase( CQLTEXT.name() ) ) {
+                    constraintLanguage = CQLTEXT;
+                }
             }
         }
 
