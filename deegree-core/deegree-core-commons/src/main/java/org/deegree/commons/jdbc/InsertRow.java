@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.jdbc;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -158,13 +156,13 @@ public class InsertRow {
         if ( autogenColumn == null ) {
             stmt = conn.prepareStatement( sql );
         } else {
-            stmt = conn.prepareStatement( sql, RETURN_GENERATED_KEYS );
+            stmt = conn.prepareStatement( sql, new String[] { autogenColumn.toUpperCase() } );
         }
         int columnId = 1;
         for ( Entry<String, Object> entry : columnToObject.entrySet() ) {
             if ( entry.getValue() != null ) {
                 LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
-                          + entry.getValue().getClass() + ")" );
+                           + entry.getValue().getClass() + ")" );
             } else {
                 LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
             }
