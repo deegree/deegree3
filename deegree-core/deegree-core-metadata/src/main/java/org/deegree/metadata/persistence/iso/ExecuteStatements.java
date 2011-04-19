@@ -216,30 +216,35 @@ public class ExecuteStatements {
 
             LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecords-statement" ) );
 
-            StringBuilder sql = getPreparedStatementDatasetIDs( builder );
+            StringBuilder mainSelect = getPreparedStatementDatasetIDs( builder );
 
             if ( query != null && query.getStartPosition() != 1 && dbType == MSSQL ) {
-                String oldHeader = sql.toString();
-                sql = sql.append( " from (" ).append( oldHeader );
-                sql.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
+                String oldHeader = mainSelect.toString();
+                mainSelect = mainSelect.append( " from (" ).append( oldHeader );
+                mainSelect.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
             }
 
-            getPSBody( builder, sql );
+            getPSBody( builder, mainSelect );
             if ( builder.getOrderBy() != null ) {
-                sql.append( " ORDER BY " );
-                sql.append( builder.getOrderBy().getSQL() );
+                mainSelect.append( " ORDER BY " );
+                mainSelect.append( builder.getOrderBy().getSQL() );
             }
             if ( query != null && query.getStartPosition() != 1 && dbType == PostgreSQL ) {
-                sql.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
+                mainSelect.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
             if ( query != null && query.getStartPosition() != 1 && dbType == MSSQL ) {
-                sql.append( ") as X1 where X1.rownum > " );
-                sql.append( query.getStartPosition() - 1 );
+                mainSelect.append( ") as X1 where X1.rownum > " );
+                mainSelect.append( query.getStartPosition() - 1 );
             }
             // take a look in the wiki before changing this! 
             if ( dbType == PostgreSQL && query != null ) {
-                sql.append( " LIMIT " ).append( query.getMaxRecords() );
+                mainSelect.append( " LIMIT " ).append( query.getMaxRecords() );
             }
+            
+            StringBuilder innerSelect = new StringBuilder( "SELECT in1.id FROM (" );
+            innerSelect.append( mainSelect );
+            innerSelect.append( " ) as in1" );
+            
             StringBuilder outerSelect = new StringBuilder( "SELECT " );
             outerSelect.append( rf );
             outerSelect.append( " FROM " );
@@ -253,7 +258,7 @@ public class ExecuteStatements {
             outerSelect.append( " WHERE " );
             outerSelect.append( id );
             outerSelect.append( " IN (" );
-            outerSelect.append( sql );
+            outerSelect.append( innerSelect );
             outerSelect.append( ")" );
 
             preparedStatement = conn.prepareStatement( outerSelect.toString() );
