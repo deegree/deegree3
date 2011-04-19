@@ -109,11 +109,11 @@ public class PostGISMappingsISODC implements PostGISMapping {
         addStringProp( "", "Title", DatabaseTables.idxtb_main, "title", true );
         addStringProp( DC_NS, "Title", DatabaseTables.idxtb_main, "title", true );
         addStringProp( CSW_202_NS, "Title", DatabaseTables.idxtb_main, "title", true );
-        addStringProp( APISO_NS, "abstract", DatabaseTables.idxtb_main, "_abstract", true );
-        addStringProp( APISO_NS, "Abstract", DatabaseTables.idxtb_main, "_abstract", true );
-        addStringProp( DCT_NS, "Abstract", DatabaseTables.idxtb_main, "_abstract", true );
-        addStringProp( "", "Abstract", DatabaseTables.idxtb_main, "_abstract", true );
-        addStringProp( CSW_202_NS, "Abstract", DatabaseTables.idxtb_main, "_abstract", true );
+        addStringProp( APISO_NS, "abstract", DatabaseTables.idxtb_main, "abstract", true );
+        addStringProp( APISO_NS, "Abstract", DatabaseTables.idxtb_main, "abstract", true );
+        addStringProp( DCT_NS, "Abstract", DatabaseTables.idxtb_main, "abstract", true );
+        addStringProp( "", "Abstract", DatabaseTables.idxtb_main, "abstract", true );
+        addStringProp( CSW_202_NS, "Abstract", DatabaseTables.idxtb_main, "abstract", true );
         addStringProp( APISO_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
         addStringProp( DC_NS, "coverage", DatabaseTables.idxtb_main, "bbox", false );
         addStringProp( OWS_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
@@ -162,7 +162,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
         addStringProp( APISO_NS, "language", DatabaseTables.idxtb_main, "language", false );
         addDateProp( APISO_NS, "RevisionDate", DatabaseTables.idxtb_main, "revisiondate" );
         addDateProp( APISO_NS, "CreationDate", DatabaseTables.idxtb_main, "creationdate" );
-        addStringProp( APISO_NS, "AlternateTitle", DatabaseTables.idxtb_main, "alternatetitle", true );
+        addStringProp( APISO_NS, "AlternateTitle", DatabaseTables.idxtb_main, "alternatetitles", true );
         addDateProp( APISO_NS, "PublicationDate", DatabaseTables.idxtb_main, "publicationdate" );
         addStringProp( APISO_NS, "OrganisationName", DatabaseTables.idxtb_main, "organisationname", false );
         addBooleanProp( APISO_NS, "HasSecurityConstraints", DatabaseTables.idxtb_main, "hassecurityconstraint" );
