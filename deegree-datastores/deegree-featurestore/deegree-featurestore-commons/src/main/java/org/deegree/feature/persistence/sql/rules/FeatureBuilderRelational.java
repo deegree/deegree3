@@ -176,6 +176,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 MappingExpression column = pm.getMapping();
                 if ( column instanceof DBField ) {
                     addColumn( colToRsIdx, ( (DBField) column ).getColumn() );
+                } else {
+                    LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else if ( mapping instanceof GeometryMapping ) {
                 GeometryMapping gm = (GeometryMapping) mapping;
@@ -199,6 +201,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 for ( Mapping particle : cm.getParticles() ) {
                     addSelectColumns( particle, colToRsIdx, true );
                 }
+            } else if ( mapping instanceof ConstantMapping<?> ) {
+                // nothing to do
             } else {
                 LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
             }
@@ -326,6 +330,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     particle = new FeatureReference( fs.getResolver(), value, null );
                 }
             }
+        } else if ( mapping instanceof ConstantMapping<?> ) {
+            particle = ( (ConstantMapping<?>) mapping ).getValue();
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
 

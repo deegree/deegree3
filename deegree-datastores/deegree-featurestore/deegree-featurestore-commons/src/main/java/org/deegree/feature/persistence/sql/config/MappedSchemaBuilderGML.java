@@ -52,6 +52,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -75,11 +76,13 @@ import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.StringConst;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
+import org.deegree.feature.persistence.sql.rules.ConstantMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
@@ -90,6 +93,7 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -284,14 +288,24 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                     + value.getClass().getName() + "'." );
     }
 
-    private PrimitiveMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
-                                           PrimitiveParticleJAXB config ) {
+    private Mapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl, PrimitiveParticleJAXB config ) {
+
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
         PrimitiveType pt = schemaWalker.getTargetType( elDecl, path );
         MappingExpression me = parseMappingExpression( config.getMapping() );
-        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        LOG.debug( "Targeted primitive type: " + pt.name() );
-        return new PrimitiveMapping( path, me, pt, joinedTable );
+
+        if ( me instanceof DBField ) {
+            JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
+            LOG.debug( "Targeted primitive type: " + pt.name() );
+            return new PrimitiveMapping( path, me, pt, joinedTable );
+        } else if ( me instanceof StringConst ) {
+            String s = me.toString();
+            s = s.substring( 1, s.length() - 1 );
+            PrimitiveValue value = new PrimitiveValue( s, pt );
+            return new ConstantMapping<PrimitiveValue>( path, value );
+        }
+        throw new IllegalArgumentException( "Mapping expressions of type '" + me.getClass()
+                                            + "' are not supported yet." );
     }
 
     private GeometryMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
