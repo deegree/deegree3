@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.ByteArrayOutputStream;
@@ -458,6 +457,7 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
         for ( Mapping particleMapping : ftMapping.getMappings() ) {
             buildInsertRows( feature, particleMapping, node );
         }
+        LOG.debug( "Built row {}", node );
         node.performInsert( conn );
         return fid;
     }
