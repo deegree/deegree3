@@ -42,17 +42,12 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.utils.Pair;
-import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.AbstractDDLCreator;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.JoinChain;
-import org.deegree.feature.persistence.sql.id.FIDMapping;
-import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
-import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
-import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.slf4j.Logger;
@@ -66,15 +61,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISDDLCreator {
+public class PostGISDDLCreator extends AbstractDDLCreator {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDDLCreator.class );
-
-    private final MappedApplicationSchema schema;
-
-    private final boolean hasBlobTable;
-
-    private QTableName currentFtTable;
 
     /**
      * Creates a new {@link PostGISDDLCreator} instance for the given {@link MappedApplicationSchema}.
@@ -83,30 +72,11 @@ public class PostGISDDLCreator {
      *            mapped application schema, must not be <code>null</code>
      */
     public PostGISDDLCreator( MappedApplicationSchema schema ) {
-        this.schema = schema;
-        hasBlobTable = schema.getBlobMapping() != null;
+        super( schema );
     }
 
-    /**
-     * Returns the DDL statements for creating the relational schema required by the {@link MappedApplicationSchema}.
-     * 
-     * @return the DDL statements, never <code>null</code>
-     */
-    public String[] getDDL() {
-
-        List<String> ddl = new ArrayList<String>();
-        if ( hasBlobTable ) {
-            ddl.addAll( getBLOBCreates() );
-        }
-        for ( StringBuffer sb : getRelationalCreates() ) {
-            ddl.add( sb.toString() );
-        }
-
-        return ddl.toArray( new String[ddl.size()] );
-    }
-
-    private List<String> getBLOBCreates() {
-
+    @Override
+    protected List<String> getBLOBCreates() {
         List<String> ddl = new ArrayList<String>();
 
         // create feature_type table
@@ -138,21 +108,6 @@ public class PostGISDDLCreator {
         return ddl;
     }
 
-    private List<StringBuffer> getRelationalCreates() {
-
-        List<StringBuffer> ddl = new ArrayList<StringBuffer>();
-
-        for ( short ftId = 0; ftId < schema.getFts(); ftId++ ) {
-            QName ftName = schema.getFtName( ftId );
-            FeatureType ft = schema.getFeatureType( ftName );
-            FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
-            if ( ftMapping != null ) {
-                ddl.addAll( process( ft, ftMapping ) );
-            }
-        }
-        return ddl;
-    }
-
     private List<StringBuffer> getGeometryCreate( GeometryMapping mapping, DBField dbField, QTableName table ) {
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
         StringBuffer sql = new StringBuffer();
@@ -169,149 +124,47 @@ public class PostGISDDLCreator {
         return ddls;
     }
 
-    private List<StringBuffer> process( FeatureType ft, FeatureTypeMapping ftMapping ) {
-
-        List<StringBuffer> ddls = new ArrayList<StringBuffer>();
-
-        currentFtTable = ftMapping.getFtTable();
-
-        StringBuffer sql = new StringBuffer( "CREATE TABLE " );
-        ddls.add( sql );
-        sql.append( ftMapping.getFtTable() );
-        sql.append( " (" );
-        List<String> pkColumns = new ArrayList<String>();
-        if ( hasBlobTable ) {
-            sql.append( "\n    id integer REFERENCES gml_objects" );
-            pkColumns.add( "id" );
-        } else {
-            FIDMapping fidMapping = ftMapping.getFidMapping();
-            for ( Pair<String, PrimitiveType> fidColumn : fidMapping.getColumns() ) {
-                sql.append( "\n    " );
-                sql.append( fidColumn.first );
-                sql.append( " " );
-                sql.append( getPostgreSQLType( fidColumn.second ) );
-                pkColumns.add( fidColumn.first );
-            }
+    @Override
+    protected void primitiveMappingSnippet( StringBuffer sql, PrimitiveMapping mapping ) {
+        MappingExpression me = mapping.getMapping();
+        if ( me instanceof DBField ) {
+            DBField dbField = (DBField) me;
+            sql.append( ",\n    " );
+            sql.append( dbField.getColumn() );
+            sql.append( " " );
+            sql.append( getDBType( mapping.getType() ) );
         }
-        for ( Mapping mapping : ftMapping.getMappings() ) {
-            ddls.addAll( process( sql, ftMapping.getFtTable(), mapping ) );
-        }
-        sql.append( ",\n    CONSTRAINT " );
-        sql.append( ftMapping.getFtTable() );
-        sql.append( "_pkey PRIMARY KEY (" );
-        boolean first = true;
-        for ( String pkColumn : pkColumns ) {
-            if ( !first ) {
-                sql.append( "," );
-            }
-            sql.append( pkColumn );
-            first = false;
-        }
-        sql.append( ")\n)" );
-        return ddls;
     }
 
-    private List<StringBuffer> process( StringBuffer sql, QTableName table, Mapping mapping ) {
-
-        List<StringBuffer> ddls = new ArrayList<StringBuffer>();
-
-        JoinChain jc = mapping.getJoinedTable();
-        if ( jc != null ) {
-            sql = createJoinedTable( table, jc );
-            table = new QTableName( jc.getFields().get( 1 ).getTable() );
-            ddls.add( sql );
-        }
-
-        if ( mapping instanceof PrimitiveMapping ) {
-            PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
-            MappingExpression me = primitiveMapping.getMapping();
-            if ( me instanceof DBField ) {
-                DBField dbField = (DBField) me;
-                sql.append( ",\n    " );
-                sql.append( dbField.getColumn() );
-                sql.append( " " );
-                sql.append( getPostgreSQLType( primitiveMapping.getType() ) );
-            }
-        } else if ( mapping instanceof GeometryMapping ) {
-            GeometryMapping geometryMapping = (GeometryMapping) mapping;
-            MappingExpression me = geometryMapping.getMapping();
-            if ( me instanceof DBField ) {
-                ddls.addAll( getGeometryCreate( geometryMapping, (DBField) me, table ) );
-            } else {
-                LOG.info( "Skipping geometry mapping -- not mapped to a db field. " );
-            }
-        } else if ( mapping instanceof FeatureMapping ) {
-            FeatureMapping featureMapping = (FeatureMapping) mapping;
-            MappingExpression me = featureMapping.getMapping();
-            if ( me instanceof DBField ) {
-                sql.append( ",\n    " );
-                sql.append( ( (DBField) me ).getColumn() );
-                sql.append( " text" );
-            }
-            MappingExpression hrefMe = featureMapping.getHrefMapping();
-            if ( hrefMe instanceof DBField ) {
-                sql.append( ",\n    " );
-                sql.append( ( (DBField) hrefMe ).getColumn() );
-                sql.append( " text" );
-            }
-        } else if ( mapping instanceof CompoundMapping ) {
-            CompoundMapping compoundMapping = (CompoundMapping) mapping;
-            for ( Mapping childMapping : compoundMapping.getParticles() ) {
-                ddls.addAll( process( sql, table, childMapping ) );
-            }
+    @Override
+    protected void geometryMappingSnippet( StringBuffer sql, GeometryMapping mapping, List<StringBuffer> ddls,
+                                           QTableName table ) {
+        MappingExpression me = mapping.getMapping();
+        if ( me instanceof DBField ) {
+            ddls.addAll( getGeometryCreate( mapping, (DBField) me, table ) );
         } else {
-            throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
+            LOG.info( "Skipping geometry mapping -- not mapped to a db field. " );
         }
-
-        if ( jc != null ) {
-            sql.append( "\n)" );
-        }
-        return ddls;
     }
 
-    // private List<StringBuffer> process( StringBuffer sb, QTableName table, CompoundMapping cm ) {
-    //
-    // List<StringBuffer> ddls = new ArrayList<StringBuffer>();
-    // for ( Mapping mapping : cm.getParticles() ) {
-    // if ( mapping instanceof PrimitiveMapping ) {
-    // PrimitiveMapping primitiveMapping = (PrimitiveMapping) mapping;
-    // MappingExpression me = primitiveMapping.getMapping();
-    // if ( me instanceof DBField ) {
-    // DBField dbField = (DBField) me;
-    // sb.append( ",\n    " );
-    // sb.append( dbField.getColumn() );
-    // sb.append( " " );
-    // sb.append( getPostgreSQLType( primitiveMapping.getType() ) );
-    // }
-    // } else if ( mapping instanceof GeometryMapping ) {
-    // LOG.warn( "TODO: geometry mapping" );
-    // } else if ( mapping instanceof FeatureMapping ) {
-    // LOG.warn( "TODO: feature mapping" );
-    // } else if ( mapping instanceof CompoundMapping ) {
-    // CompoundMapping compoundMapping = (CompoundMapping) mapping;
-    // JoinChain jc = compoundMapping.getJoinedTable();
-    // if ( jc != null ) {
-    // StringBuffer newSb = createJoinedTable( table, jc );
-    // ddls.add( newSb );
-    // for ( Mapping particle : compoundMapping.getParticles() ) {
-    // ddls.addAll( process( newSb, new QTableName( jc.getFields().get( 1 ).getTable() ), particle ) );
-    // }
-    // } else {
-    // for ( Mapping particle : compoundMapping.getParticles() ) {
-    // // TODO get rid of null check
-    // if ( particle != null ) {
-    // ddls.addAll( process( sb, table, particle ) );
-    // }
-    // }
-    // }
-    // } else {
-    // throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
-    // }
-    // }
-    // return ddls;
-    // }
+    @Override
+    protected void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping ) {
+        MappingExpression me = mapping.getMapping();
+        if ( me instanceof DBField ) {
+            sql.append( ",\n    " );
+            sql.append( ( (DBField) me ).getColumn() );
+            sql.append( " text" );
+        }
+        MappingExpression hrefMe = mapping.getHrefMapping();
+        if ( hrefMe instanceof DBField ) {
+            sql.append( ",\n    " );
+            sql.append( ( (DBField) hrefMe ).getColumn() );
+            sql.append( " text" );
+        }
+    }
 
-    private StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc ) {
+    @Override
+    protected StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc ) {
         DBField to = jc.getFields().get( 1 );
         StringBuffer sb = new StringBuffer( "CREATE TABLE " );
         sb.append( to.getTable() );
@@ -329,7 +182,8 @@ public class PostGISDDLCreator {
         return sb;
     }
 
-    private String getPostgreSQLType( PrimitiveType type ) {
+    @Override
+    protected String getDBType( PrimitiveType type ) {
         String postgresqlType = null;
         switch ( type ) {
         case BOOLEAN:
