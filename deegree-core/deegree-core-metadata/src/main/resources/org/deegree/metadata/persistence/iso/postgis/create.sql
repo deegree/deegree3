@@ -32,7 +32,7 @@ CREATE TABLE IDXTB_MAIN (
 	Operations varchar(2000),
 	degree boolean,
 	lineage text,
-	RespPartyRole varchar(20),
+	RespPartyRole varchar(25),
 	SpecDate timestamp,
 	SpecDateType varchar(15),
 	SpecTitle varchar(500),
