@@ -167,7 +167,9 @@ public abstract class AbstractDDLCreator {
         if ( jc != null ) {
             sql = createJoinedTable( table, jc, ddls );
             table = new QTableName( jc.getFields().get( 1 ).getTable() );
-            ddls.add( sql );
+            if ( !ddls.contains( sql ) ) {
+                ddls.add( sql );
+            }
         }
 
         if ( mapping instanceof PrimitiveMapping ) {
