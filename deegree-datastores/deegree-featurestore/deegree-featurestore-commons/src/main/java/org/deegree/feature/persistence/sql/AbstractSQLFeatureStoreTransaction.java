@@ -52,7 +52,6 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -69,7 +68,7 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.insert.InsertRowNode;
@@ -465,11 +464,10 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
     private void buildInsertRows( TypedObjectNode particle, Mapping mapping, InsertRowNode node )
                             throws FilterEvaluationException, FeatureStoreException {
 
-        JoinChain jc = mapping.getJoinedTable();
+        List<TableJoin> jc = mapping.getJoinedTable();
         if ( jc != null ) {
-            if ( jc.getFields().size() != 2 ) {
-                throw new FeatureStoreException( "Handling of joins with " + jc.getFields().size()
-                                                 + " steps is not implemented." );
+            if ( jc.size() != 1 ) {
+                throw new FeatureStoreException( "Handling of joins with " + jc.size() + " steps is not implemented." );
             }
         }
 
@@ -478,8 +476,7 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
         for ( TypedObjectNode value : values ) {
             InsertRowNode insertNode = node;
             if ( jc != null ) {
-                QTableName tableName = new QTableName( jc.getFields().get( 1 ).getTable() );
-                insertNode = new InsertRowNode( tableName, jc );
+                insertNode = new InsertRowNode( jc.get( 0 ).getToTable(), jc.get( 0 ) );
                 node.getRelatedRows().add( insertNode );
             }
             if ( mapping instanceof PrimitiveMapping ) {

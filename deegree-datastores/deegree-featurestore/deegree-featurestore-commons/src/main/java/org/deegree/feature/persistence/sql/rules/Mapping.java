@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import java.util.List;
+
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.filter.expression.PropertyName;
 
 /**
@@ -54,19 +56,19 @@ public abstract class Mapping {
 
     private final PropertyName path;
 
-    private final JoinChain joinedTable;
+    private final List<TableJoin> tableChange;
 
     /**
      * Creates a new {@link Mapping} instance.
      * 
      * @param path
      *            relative xpath expression, must not be <code>null</code>
-     * @param joinRule
+     * @param tableChange
      *            table joins, can be <code>null</code> (no joins involved)
      */
-    protected Mapping( PropertyName path, JoinChain joinRule ) {
+    protected Mapping( PropertyName path, List<TableJoin> tableChange ) {
         this.path = path;
-        this.joinedTable = joinRule;
+        this.tableChange = tableChange;
     }
 
     /**
@@ -84,12 +86,12 @@ public abstract class Mapping {
      * 
      * @return the table joins, can be <code>null</code> (no joins involved)
      */
-    public JoinChain getJoinedTable() {
-        return joinedTable;
+    public List<TableJoin> getJoinedTable() {
+        return tableChange;
     }
 
     @Override
     public String toString() {
-        return "{path=" + path + ",joinChain=" + joinedTable + "}";
+        return "{path=" + path + ",joinChain=" + tableChange + "}";
     }
 }

@@ -89,7 +89,6 @@ import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.config.MappedSchemaBuilderGML;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
@@ -115,7 +114,6 @@ import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -128,8 +126,6 @@ import org.postgis.Point;
 import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link FeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
@@ -368,26 +364,21 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                 MappingExpression column = mapping2 == null ? null : Mappings.getMappingExpression( mapping2 );
                 if ( column != null ) {
                     sql.append( ',' );
-                    if ( column instanceof JoinChain ) {
-                        JoinChain jc = (JoinChain) column;
-                        sql.append( jc.getFields().get( 0 ) );
-                    } else {
-                        if ( pt instanceof SimplePropertyType ) {
-                            sql.append( column );
-                        } else if ( pt instanceof GeometryPropertyType ) {
-                            if ( useLegacyPredicates ) {
-                                sql.append( "AsBinary(" );
-                            } else {
-                                sql.append( "ST_AsBinary(" );
-                            }
-                            sql.append( column );
-                            sql.append( ')' );
-                        } else if ( pt instanceof FeaturePropertyType ) {
-                            sql.append( column );
+                    if ( pt instanceof SimplePropertyType ) {
+                        sql.append( column );
+                    } else if ( pt instanceof GeometryPropertyType ) {
+                        if ( useLegacyPredicates ) {
+                            sql.append( "AsBinary(" );
                         } else {
-                            LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                                      + "' not handled in PostGISFeatureStore#getObjectByIdRelational()." );
+                            sql.append( "ST_AsBinary(" );
                         }
+                        sql.append( column );
+                        sql.append( ')' );
+                    } else if ( pt instanceof FeaturePropertyType ) {
+                        sql.append( column );
+                    } else {
+                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                                  + "' not handled in PostGISFeatureStore#getObjectByIdRelational()." );
                     }
                 }
             }
@@ -636,26 +627,21 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             MappingExpression column = mapping == null ? null : Mappings.getMappingExpression( mapping );
             if ( column != null ) {
                 sql.append( ',' );
-                if ( column instanceof JoinChain ) {
-                    JoinChain jc = (JoinChain) column;
-                    sql.append( jc.getFields().get( 0 ) );
-                } else {
-                    if ( pt instanceof SimplePropertyType ) {
-                        sql.append( column );
-                    } else if ( pt instanceof GeometryPropertyType ) {
-                        if ( useLegacyPredicates ) {
-                            sql.append( "AsBinary(" );
-                        } else {
-                            sql.append( "ST_AsBinary(" );
-                        }
-                        sql.append( column );
-                        sql.append( ')' );
-                    } else if ( pt instanceof FeaturePropertyType ) {
-                        sql.append( column );
+                if ( pt instanceof SimplePropertyType ) {
+                    sql.append( column );
+                } else if ( pt instanceof GeometryPropertyType ) {
+                    if ( useLegacyPredicates ) {
+                        sql.append( "AsBinary(" );
                     } else {
-                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                                  + "' not handled in PostGISFeatureStore." );
+                        sql.append( "ST_AsBinary(" );
                     }
+                    sql.append( column );
+                    sql.append( ')' );
+                } else if ( pt instanceof FeaturePropertyType ) {
+                    sql.append( column );
+                } else {
+                    LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                              + "' not handled in PostGISFeatureStore." );
                 }
             }
         }

@@ -61,7 +61,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
@@ -165,10 +165,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private void addSelectColumns( Mapping mapping, LinkedHashMap<String, Integer> colToRsIdx, boolean initial ) {
 
-        JoinChain jc = mapping.getJoinedTable();
+        List<TableJoin> jc = mapping.getJoinedTable();
         if ( jc != null && initial ) {
             if ( initial ) {
-                addColumn( colToRsIdx, jc.getFields().get( 0 ).getColumn() );
+                for ( String column : jc.get( 0 ).getFromColumns() ) {
+                    addColumn( colToRsIdx, column );
+                }
             }
         } else {
             if ( mapping instanceof PrimitiveMapping ) {
@@ -262,7 +264,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
             ResultSet rs2 = null;
             try {
-                Pair<ResultSet, LinkedHashMap<String, Integer>> p = getJoinedResultSet( mapping.getJoinedTable(),
+                Pair<ResultSet, LinkedHashMap<String, Integer>> p = getJoinedResultSet( mapping.getJoinedTable().get( 0 ),
                                                                                         mapping, rs, colToRsIdx );
                 rs2 = p.first;
                 while ( rs2.next() ) {
@@ -418,7 +420,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return particle;
     }
 
-    private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( JoinChain jc,
+    private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( TableJoin jc,
                                                                                 Mapping mapping,
                                                                                 ResultSet rs,
                                                                                 LinkedHashMap<String, Integer> colToRsIdx )
@@ -436,10 +438,17 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             first = false;
         }
         sql.append( " FROM " );
-        sql.append( jc.getFields().get( 1 ).getTable() );
+        sql.append( jc.getToTable() );
         sql.append( " WHERE " );
-        sql.append( jc.getFields().get( 1 ).getColumn() );
-        sql.append( " = ?" );
+        first = true;
+        for ( String keyColumn : jc.getToColumns() ) {
+            if ( !first ) {
+                sql.append( " AND" );
+            }
+            sql.append( keyColumn );
+            sql.append( " = ?" );
+            first = false;
+        }
         LOG.debug( "SQL: {}", sql );
 
         PreparedStatement stmt = null;
@@ -448,9 +457,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
             LOG.debug( "Preparing subsequent SELECT took {} [ms] ", System.currentTimeMillis() - begin );
-            Object key = rs.getObject( colToRsIdx.get( jc.getFields().get( 0 ).getColumn() ) );
-            LOG.debug( "? = '{}' ({})", key, jc.getFields().get( 0 ) );
-            stmt.setObject( 1, key );
+            int i = 1;
+            for ( String keyColumn : jc.getFromColumns() ) {
+                Object key = rs.getObject( colToRsIdx.get( keyColumn ) );
+                LOG.debug( "? = '{}' ({})", key, keyColumn );
+                stmt.setObject( i++, key );
+            }
             begin = System.currentTimeMillis();
             rs2 = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );

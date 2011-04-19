@@ -43,7 +43,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -158,15 +158,15 @@ public abstract class AbstractDDLCreator {
 
     protected abstract void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping );
 
-    protected abstract StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc, List<StringBuffer> ddls );
+    protected abstract StringBuffer createJoinedTable( QTableName fromTable, TableJoin jc, List<StringBuffer> ddls );
 
     private List<StringBuffer> process( StringBuffer sql, QTableName table, Mapping mapping ) {
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
-        JoinChain jc = mapping.getJoinedTable();
+        List<TableJoin> jc = mapping.getJoinedTable();
         if ( jc != null ) {
-            sql = createJoinedTable( table, jc, ddls );
-            table = new QTableName( jc.getFields().get( 1 ).getTable() );
+            sql = createJoinedTable( table, jc.get( 0 ), ddls );
+            table = jc.get( 0 ).getToTable();
             if ( !ddls.contains( sql ) ) {
                 ddls.add( sql );
             }

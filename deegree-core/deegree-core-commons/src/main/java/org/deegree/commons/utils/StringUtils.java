@@ -308,4 +308,15 @@ public class StringUtils {
         return result;
     }
 
+    public static String concat( List<String> parts, String separator ) {
+        StringBuilder sb = new StringBuilder();
+        if ( !parts.isEmpty() ) {
+            sb.append( parts.get( 0 ) );
+        }
+        for ( int i = 1; i < parts.size(); i++ ) {
+            sb.append( separator );
+            sb.append( parts.get( i ) );
+        }
+        return sb.toString();
+    }
 }

@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
@@ -59,8 +61,8 @@ public class FeatureMapping extends Mapping {
     private QName valueFtName;
 
     public FeatureMapping( PropertyName path, MappingExpression mapping, MappingExpression hrefMapping,
-                           QName valueFtName, JoinChain joinedTable ) {
-        super( path, joinedTable );
+                           QName valueFtName, List<TableJoin> tableChange ) {
+        super( path, tableChange );
         this.mapping = mapping;
         this.hrefMapping = hrefMapping;
         this.valueFtName = valueFtName;

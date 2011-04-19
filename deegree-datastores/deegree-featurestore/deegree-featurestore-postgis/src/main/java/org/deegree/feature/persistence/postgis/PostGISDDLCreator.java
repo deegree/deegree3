@@ -44,7 +44,7 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.feature.persistence.sql.AbstractDDLCreator;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -164,13 +164,13 @@ public class PostGISDDLCreator extends AbstractDDLCreator {
     }
 
     @Override
-    protected StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc, List<StringBuffer> ddls ) {
-        DBField to = jc.getFields().get( 1 );
+    protected StringBuffer createJoinedTable( QTableName fromTable, TableJoin jc, List<StringBuffer> ddls ) {
         StringBuffer sb = new StringBuffer( "CREATE TABLE " );
-        sb.append( to.getTable() );
+        sb.append( jc.getToTable() );
         sb.append( " (\n    " );
         sb.append( "id serial PRIMARY KEY,\n    " );
-        sb.append( to.getColumn() );
+        // TODO
+        sb.append( jc.getToColumns().get( 0 ) );
         // TODO implement this correctly
         if ( !fromTable.equals( currentFtTable ) ) {
             sb.append( " integer NOT NULL REFERENCES" );

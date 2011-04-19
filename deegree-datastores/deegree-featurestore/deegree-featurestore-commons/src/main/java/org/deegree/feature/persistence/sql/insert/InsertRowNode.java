@@ -43,18 +43,18 @@ import java.util.Map;
 
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.filter.sql.DBField;
 
 public class InsertRowNode {
 
     private final InsertRow row;
 
-    private final JoinChain parentRelation;
+    private final TableJoin parentRelation;
 
     private final List<InsertRowNode> relatedRows = new ArrayList<InsertRowNode>();
 
-    public InsertRowNode( QTableName table, JoinChain parentRelation ) {
+    public InsertRowNode( QTableName table, TableJoin parentRelation ) {
         // TODO
         this.row = new InsertRow( table, "id" );
         this.parentRelation = parentRelation;
@@ -70,7 +70,7 @@ public class InsertRowNode {
     /**
      * @return the parentRelation
      */
-    public JoinChain getParentRelation() {
+    public TableJoin getParentRelation() {
         return parentRelation;
     }
 
@@ -88,13 +88,17 @@ public class InsertRowNode {
 
         for ( InsertRowNode relatedRow : relatedRows ) {
             // propagate value of foreign key
-            DBField from = relatedRow.parentRelation.getFields().get( 0 );
+            // TODO multi column joins
+            DBField from = new DBField( relatedRow.parentRelation.getFromTable().getTable(),
+                                        relatedRow.parentRelation.getFromColumns().get( 0 ) );
             Object fkValue = row.get( from.getColumn() );
             if ( fkValue == null ) {
                 fkValue = keys.get( from.getColumn() );
             }
             if ( fkValue != null ) {
-                DBField to = relatedRow.parentRelation.getFields().get( 1 );
+                // TODO multi column joins                
+                DBField to = new DBField( relatedRow.parentRelation.getToTable().getTable(),
+                                          relatedRow.parentRelation.getToColumns().get( 0 ) );
                 relatedRow.getRow().addPreparedArgument( to.getColumn(), fkValue );
             }
             relatedRow.performInsert( conn );

@@ -50,10 +50,11 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
@@ -224,7 +225,7 @@ public class PostGISFeatureStoreConfigWriter {
                 writer.writeAttribute( "mapping", mapping.toString() );
             }
             if ( particle.getJoinedTable() != null ) {
-                writeJoinedTable( writer, particle.getJoinedTable() );
+                writeJoinedTable( writer, particle.getJoinedTable().get( 0 ) );
             }
             writer.writeEndElement();
         } else if ( particle instanceof GeometryMapping ) {
@@ -233,7 +234,7 @@ public class PostGISFeatureStoreConfigWriter {
             writer.writeAttribute( "path", particle.getPath().getAsText() );
             writer.writeAttribute( "mapping", gm.getMapping().toString() );
             if ( particle.getJoinedTable() != null ) {
-                writeJoinedTable( writer, particle.getJoinedTable() );
+                writeJoinedTable( writer, particle.getJoinedTable().get( 0 ) );
             }
             writer.writeEndElement();
         } else if ( particle instanceof FeatureMapping ) {
@@ -245,14 +246,14 @@ public class PostGISFeatureStoreConfigWriter {
                 writer.writeAttribute( "hrefMapping", gm.getHrefMapping().toString() );
             }
             if ( particle.getJoinedTable() != null ) {
-                writeJoinedTable( writer, particle.getJoinedTable() );
+                writeJoinedTable( writer, particle.getJoinedTable().get( 0 ) );
             }
             writer.writeEndElement();
         } else if ( particle instanceof CompoundMapping ) {
             writer.writeStartElement( CONFIG_NS, "Complex" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
             if ( particle.getJoinedTable() != null ) {
-                writeJoinedTable( writer, particle.getJoinedTable() );
+                writeJoinedTable( writer, particle.getJoinedTable().get( 0 ) );
             }
             CompoundMapping compound = (CompoundMapping) particle;
             for ( Mapping childMapping : compound.getParticles() ) {
@@ -264,14 +265,18 @@ public class PostGISFeatureStoreConfigWriter {
         }
     }
 
-    private void writeJoinedTable( XMLStreamWriter writer, JoinChain jc )
+    private void writeJoinedTable( XMLStreamWriter writer, TableJoin jc )
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "Join" );
-        writer.writeAttribute( "table", jc.getFields().get( 1 ).getTable() );
-        writer.writeAttribute( "fromColumns", jc.getFields().get( 0 ).getColumn() );
-        writer.writeAttribute( "toColumns", jc.getFields().get( 1 ).getColumn() );
-        writer.writeAttribute( "orderColumns", "num" );
-        writer.writeAttribute( "numbered", "true" );
+        writer.writeAttribute( "table", jc.getToTable().toString() );
+        writer.writeAttribute( "fromColumns", StringUtils.concat( jc.getFromColumns(), "," ) );
+        writer.writeAttribute( "toColumns", StringUtils.concat( jc.getToColumns(), "," ) );
+        if ( jc.getOrderColumns() != null ) {
+            writer.writeAttribute( "orderColumns", StringUtils.concat( jc.getOrderColumns(), "," ) );
+        }
+        if ( jc.isNumberedOrder() ) {
+            writer.writeAttribute( "numbered", "true" );
+        }
         writer.writeEndElement();
     }
 

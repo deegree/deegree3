@@ -76,7 +76,7 @@ import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyJAXB;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
@@ -285,11 +285,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         }
 
         Join joinConfig = propDecl.getJoin();
-        JoinChain jc = null;
+        List<TableJoin> jc = null;
         QTableName valueTable = table;
         if ( joinConfig != null ) {
             jc = buildJoinTable( table, joinConfig );
-            DBField dbField = jc.getFields().get( 1 );
+            DBField dbField = new DBField( jc.get( 0 ).getToTable().getTable(), jc.get( 0 ).getToColumns().get( 0 ) );
             valueTable = new QTableName( dbField.getTable(), dbField.getSchema() );
         }
         int maxOccurs = joinConfig != null ? -1 : 1;

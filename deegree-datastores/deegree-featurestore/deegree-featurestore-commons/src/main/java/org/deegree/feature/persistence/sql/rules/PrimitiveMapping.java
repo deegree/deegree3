@@ -35,9 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
+import java.util.List;
+
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
@@ -60,10 +62,11 @@ public class PrimitiveMapping extends Mapping {
      * @param path
      * @param mapping
      * @param pt
-     * @param joinedTable
+     * @param tableChange
+     *            table joins, can be <code>null</code> (no joins involved)
      */
-    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, JoinChain joinedTable ) {
-        super( path, joinedTable );
+    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, List<TableJoin> tableChange ) {
+        super( path, tableChange );
         this.pt = pt;
         this.mapping = mapping;
     }

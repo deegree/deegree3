@@ -37,9 +37,8 @@ package org.deegree.feature.persistence.sql.rules;
 
 import java.util.List;
 
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 
 /**
  * Composite {@link Mapping} of complex particles.
@@ -53,8 +52,8 @@ public class CompoundMapping extends Mapping {
 
     private final List<Mapping> particles;
 
-    public CompoundMapping( PropertyName path, List<Mapping> particles, JoinChain joinedTable ) {
-        super( path, joinedTable );
+    public CompoundMapping( PropertyName path, List<Mapping> particles, List<TableJoin> tableChange ) {
+        super( path, tableChange );
         this.particles = particles;
     }
 

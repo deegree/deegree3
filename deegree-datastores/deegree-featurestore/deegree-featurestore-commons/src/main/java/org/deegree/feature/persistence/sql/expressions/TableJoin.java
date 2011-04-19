@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,47 +35,64 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.expressions;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.filter.sql.DBField;
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Defines a join between two tables with optional ordering.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class JoinChain implements MappingExpression {
+public class TableJoin implements MappingExpression {
 
-    private List<DBField> dbFields;
+    private final QTableName fromTable;
 
-    public JoinChain( DBField dbf1, DBField dbf2 ) {
-        dbFields = new ArrayList<DBField>( 2 );
-        dbFields.add( dbf1 );
-        dbFields.add( dbf2 );
+    private final QTableName toTable;
+
+    private final List<String> fromColumns;
+
+    private final List<String> toColumns;
+
+    private final List<String> orderColumns;
+
+    private final boolean numberedOrder;
+
+    public TableJoin( QTableName fromTable, QTableName toTable, List<String> fromColumns, List<String> toColumns,
+                      List<String> orderColumns, boolean numberedOrder ) {
+        this.fromTable = fromTable;
+        this.toTable = toTable;
+        this.fromColumns = fromColumns;
+        this.toColumns = toColumns;
+        this.orderColumns = orderColumns;
+        this.numberedOrder = numberedOrder;
     }
 
-    public JoinChain( DBField dbf, JoinChain jc ) {
-        dbFields = new ArrayList<DBField>( jc.dbFields.size() + 1 );
-        dbFields.add( dbf );
-        dbFields.addAll( jc.dbFields );        
+    public QTableName getFromTable() {
+        return fromTable;
     }
 
-    public List<DBField> getFields() {
-        return dbFields;
+    public QTableName getToTable() {
+        return toTable;
     }
-    
-    @Override
-    public String toString() {
-        String s = dbFields.get( 0 ).toString();
-        for ( int i = 1; i < dbFields.size(); i++ ) {
-            s += "->";
-            s += dbFields.get( i );
-        }
-        return s;
+
+    public List<String> getFromColumns() {
+        return fromColumns;
+    }
+
+    public List<String> getToColumns() {
+        return toColumns;
+    }
+
+    public List<String> getOrderColumns() {
+        return orderColumns;
+    }
+
+    public boolean isNumberedOrder() {
+        return numberedOrder;
     }
 }

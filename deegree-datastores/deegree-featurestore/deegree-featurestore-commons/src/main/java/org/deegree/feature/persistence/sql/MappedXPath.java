@@ -42,7 +42,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -244,9 +244,10 @@ public class MappedXPath {
         }
 
         if ( mapping.getJoinedTable() != null ) {
-            JoinChain jc = mapping.getJoinedTable();
-            DBField from = new DBField( getCurrentTable().getTable(), jc.getFields().get( 0 ).getColumn() );
-            DBField to = new DBField( jc.getFields().get( 1 ).getTable(), jc.getFields().get( 1 ).getColumn() );
+            // TODO multi column capability
+            TableJoin jc = mapping.getJoinedTable().get( 0 );
+            DBField from = new DBField( getCurrentTable().getTable(), jc.getFromColumns().get( 0 ) );
+            DBField to = new DBField( jc.getToTable().toString(), jc.getToColumns().get( 0 ) );
             joins.add( new Join( from, to, null, -1 ) );
         }
 
@@ -267,12 +268,6 @@ public class MappedXPath {
         if ( propMapping instanceof DBField ) {
             QTableName table = getCurrentTable();
             valueField = new DBField( table.toString(), ( (DBField) propMapping ).getColumn() );
-        } else if ( propMapping instanceof JoinChain ) {
-            JoinChain chain = (JoinChain) propMapping;
-            add( chain );
-            QTableName table = getCurrentTable();
-            valueField = new DBField( table.toString(),
-                                      chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
         } else {
             throw new UnmappableException( "Unhandled mapping expression: " + propMapping.getClass() );
         }
@@ -287,28 +282,8 @@ public class MappedXPath {
             // TODO
             DBField to = new DBField( target.getFtTable().toString(), target.getFidMapping().getColumn() );
             joins.add( new Join( from, to, null, -1 ) );
-        } else if ( prop instanceof JoinChain ) {
-            JoinChain chain = (JoinChain) prop;
-            add( chain );
-            QTableName table = getCurrentTable();
-            DBField from = new DBField( table.toString(),
-                                        chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
-            // TODO
-            DBField to = new DBField( target.getFtTable().toString(), target.getFidMapping().getColumn() );
-            joins.add( new Join( from, to, null, -1 ) );
         } else {
             throw new UnmappableException( "Unhandled mapping expression: " + prop.getClass() );
-        }
-    }
-
-    private void add( JoinChain chain ) {
-        QTableName table = getCurrentTable();
-        for ( int i = 0; i < chain.getFields().size() - 2; i += 2 ) {
-            DBField from = new DBField( table.toString(), chain.getFields().get( i ).getColumn() );
-            DBField to = new DBField( chain.getFields().get( i + 1 ).getTable(),
-                                      chain.getFields().get( i + 1 ).getColumn() );
-            joins.add( new Join( from, to, null, -1 ) );
-            table = new QTableName( chain.getFields().get( i + 1 ).getTable() );
         }
     }
 

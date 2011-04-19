@@ -77,7 +77,7 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
@@ -236,7 +236,7 @@ public class AppSchemaMapper {
             PropertyName path = getPropName( pt.getName() );
 
             MappingContext propMc = null;
-            JoinChain jc = null;
+            List<TableJoin> jc = null;
             if ( pt.getMaxOccurs() == 1 ) {
                 propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
             } else {
@@ -275,7 +275,7 @@ public class AppSchemaMapper {
         LOG.debug( "Mapping simple property '" + pt.getName() + "'" );
         PropertyName path = getPropName( pt.getName() );
         MappingContext propMc = null;
-        JoinChain jc = null;
+        List<TableJoin> jc = null;
         if ( pt.getMaxOccurs() == 1 ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
         } else {
@@ -295,7 +295,7 @@ public class AppSchemaMapper {
         LOG.debug( "Mapping geometry property '" + pt.getName() + "'" );
         PropertyName path = getPropName( pt.getName() );
         MappingContext propMc = null;
-        JoinChain jc = null;
+        List<TableJoin> jc = null;
         if ( pt.getMaxOccurs() == 1 ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
         } else {
@@ -309,7 +309,7 @@ public class AppSchemaMapper {
     private Mapping generatePropMapping( FeaturePropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping feature property '" + pt.getName() + "'" );
         PropertyName path = getPropName( pt.getName() );
-        JoinChain jc = null;
+        List<TableJoin> jc = null;
         MappingContext fkMC = null;
         MappingContext hrefMC = null;
         if ( pt.getMaxOccurs() == 1 ) {
@@ -341,7 +341,7 @@ public class AppSchemaMapper {
         PropertyName path = getPropName( pt.getName() );
 
         MappingContext propMc = null;
-        JoinChain jc = null;
+        List<TableJoin> jc = null;
         if ( pt.getMaxOccurs() == 1 ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
         } else {
@@ -358,7 +358,7 @@ public class AppSchemaMapper {
         PropertyName path = getPropName( pt.getName() );
         MappingContext propMc = null;
         MappingContext codeSpaceMc = null;
-        JoinChain jc = null;
+        List<TableJoin> jc = null;
         MappingExpression mapping = null;
         if ( pt.getMaxOccurs() == 1 ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
@@ -378,9 +378,14 @@ public class AppSchemaMapper {
         return new CompoundMapping( path, particles, jc );
     }
 
-    private JoinChain generateJoinChain( MappingContext from, MappingContext to ) {
-        return new JoinChain( new DBField( from.getTable(), from.getIdColumn() ), new DBField( to.getTable(),
-                                                                                               "parentfk" ) );
+    private List<TableJoin> generateJoinChain( MappingContext from, MappingContext to ) {
+        QTableName fromTable = new QTableName( from.getTable() );
+        QTableName toTable = new QTableName( to.getTable() );
+        List<String> fromColumns = Collections.singletonList( from.getIdColumn() );
+        List<String> toColumns = Collections.singletonList( "parentfk" );
+        List<String> orderColumns = Collections.singletonList( "num" );
+        TableJoin join = new TableJoin( fromTable, toTable, fromColumns, toColumns, orderColumns, true );
+        return Collections.singletonList( join );
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
@@ -620,7 +625,7 @@ public class AppSchemaMapper {
                 }
                 elements2.put( elName, getQName( typeDef ) );
 
-                JoinChain jc = null;
+                List<TableJoin> jc = null;
                 if ( occurence == -1 ) {
                     jc = generateJoinChain( mc, elMC );
                 }

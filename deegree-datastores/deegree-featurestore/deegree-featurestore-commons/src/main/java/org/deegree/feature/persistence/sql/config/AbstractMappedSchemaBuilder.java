@@ -45,6 +45,7 @@ import static org.deegree.feature.types.property.GeometryPropertyType.GeometryTy
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POLYGON;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import org.antlr.runtime.ANTLRStringStream;
@@ -65,13 +66,12 @@ import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.BLOB
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.NamespaceHint;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.StorageCRS;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,7 +182,7 @@ public class AbstractMappedSchemaBuilder {
         return mapping;
     }
 
-    protected JoinChain buildJoinTable( QTableName from, Join join ) {
+    protected List<TableJoin> buildJoinTable( QTableName from, Join join ) {
         if ( join != null ) {
             QTableName target = new QTableName( join.getTable() );
             if ( join.getFromColumns().size() != join.getToColumns().size() ) {
@@ -191,12 +191,10 @@ public class AbstractMappedSchemaBuilder {
             if ( join.getFromColumns().size() != 1 ) {
                 throw new UnsupportedOperationException( "Joins with multiple columns are not supported yet." );
             }
-            String fromColumn = join.getFromColumns().get( 0 );
-            String toColumn = join.getToColumns().get( 0 );
-
-            DBField dbf1 = new DBField( from.getTable(), fromColumn );
-            DBField dbf2 = new DBField( target.getTable(), toColumn );
-            return new JoinChain( dbf1, dbf2 );
+            boolean isNumbered = join.isNumbered() == null ? false : join.isNumbered();
+            TableJoin tj = new TableJoin( from, target, join.getFromColumns(), join.getToColumns(),
+                                          join.getOrderColumns(), isNumbered );
+            return Collections.singletonList( tj );
         }
         return null;
     }

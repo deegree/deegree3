@@ -75,8 +75,8 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
 import org.deegree.feature.persistence.sql.expressions.StringConst;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
@@ -295,7 +295,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         MappingExpression me = parseMappingExpression( config.getMapping() );
 
         if ( me instanceof DBField ) {
-            JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
+            List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
             LOG.debug( "Targeted primitive type: " + pt.name() );
             return new PrimitiveMapping( path, me, pt, joinedTable );
         } else if ( me instanceof StringConst ) {
@@ -315,7 +315,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         LOG.warn( "Determining geometry type from element decls is not implemented." );
         GeometryType type = GeometryType.GEOMETRY;
-        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
+        List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new GeometryMapping( path, me, type, geometryParams, joinedTable );
     }
 
@@ -332,7 +332,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         // TODO rework this
         FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl, ptName, 0, 1,
                                                                                                   null );
-        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
+        List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new FeatureMapping( path, me, hrefMe, pt.getFTName(), joinedTable );
     }
 
@@ -348,7 +348,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 particles.add( particle );
             }
         }
-        JoinChain joinedTable = buildJoinTable( currentTable, config.getJoin() );
+        List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new CompoundMapping( path, particles, joinedTable );
     }
 }

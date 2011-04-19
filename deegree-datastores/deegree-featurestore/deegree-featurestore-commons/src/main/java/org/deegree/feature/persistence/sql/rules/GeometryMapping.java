@@ -35,9 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
+import java.util.List;
+
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
-import org.deegree.feature.persistence.sql.expressions.JoinChain;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
@@ -61,8 +63,8 @@ public class GeometryMapping extends Mapping {
     private final GeometryStorageParams geometryParams;
 
     public GeometryMapping( PropertyName path, MappingExpression mapping, GeometryType type,
-                            GeometryStorageParams geometryParams, JoinChain joinedTable ) {
-        super( path, joinedTable );
+                            GeometryStorageParams geometryParams, List<TableJoin> tableChange ) {
+        super( path, tableChange );
         this.mapping = mapping;
         this.type = type;
         this.geometryParams = geometryParams;

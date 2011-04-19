@@ -9,7 +9,6 @@ options {
   package org.deegree.feature.persistence.mapping.antlr;
   import java.util.Collections;
   import org.deegree.filter.sql.MappingExpression;
-  import org.deegree.feature.persistence.sql.expressions.JoinChain;
   import org.deegree.filter.sql.DBField;
   import org.deegree.feature.persistence.sql.expressions.Function;
   import org.deegree.feature.persistence.sql.expressions.StringConst;
@@ -28,7 +27,6 @@ expr
 
 mappingExpr returns [MappingExpression value]
     :    dbField {$value=$dbField.value;}
-    |    joinChain {$value=$joinChain.value;}
     |    function {$value=$function.value;}
     |    stringConst {$value=$stringConst.value;}
     ;
@@ -48,14 +46,6 @@ catch [RecognitionException re] {
     throw re;
 }
 
-joinChain returns [JoinChain value]
-    :    dbf1=dbField '=' dbf2=dbField {$value=new JoinChain($dbf1.value,$dbf2.value);}
-    |    dbf1=dbField '=' jc1=joinChain {$value=new JoinChain($dbf1.value, $jc1.value);}
-    ;
-catch [RecognitionException re] {
-    throw re;
-}
-    
 dbField returns [DBField value]
     :    i1=Identifier {$value=new DBField ($i1.text);}
     |    i1=Identifier '.' i2=Identifier {$value=new DBField ($i1.text,$i2.text);}
