@@ -77,4 +77,8 @@ public class WKTReader {
                             throws ParseException {
         return defaultGeom.createFromJTS( jtsReader.read( wkt ), crs );
     }
+
+    public static void main( String[] args ) throws ParseException {
+        System.out.println( new WKTReader( null ).read( "POINT(1 2 3)" ) );
+    }
 }

@@ -63,7 +63,7 @@ public class WKBReader {
 
     public static Geometry read( byte[] wkb, ICRS crs )
                             throws ParseException {
-        // com.vividsolutions.jts.io.WKBReader() is not thread safe
+        // com.vividsolutions.jts.io.WKBReader() is not thread safe        
         return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( wkb ), crs );
     }
 

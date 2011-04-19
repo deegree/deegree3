@@ -182,7 +182,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 MappingExpression column = gm.getMapping();
                 if ( column instanceof DBField ) {
                     // TODO
-                    addColumn( colToRsIdx, "AsBinary(" + ( (DBField) column ).getColumn() + ")" );
+                    addColumn( colToRsIdx, "ST_AsEWKB(" + ( (DBField) column ).getColumn() + ")" );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
                 FeatureMapping fm = (FeatureMapping) mapping;
@@ -299,7 +299,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
                 // TODO
-                byte[] wkb = rs.getBytes( colToRsIdx.get( "AsBinary(" + ( (DBField) me ).getColumn() + ")" ) );
+                byte[] wkb = rs.getBytes( colToRsIdx.get( "ST_AsEWKB(" + ( (DBField) me ).getColumn() + ")" ) );
                 if ( wkb != null ) {
                     try {
                         particle = WKBReader.read( wkb, pm.getCRS() );

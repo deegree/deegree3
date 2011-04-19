@@ -309,7 +309,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         AbstractDefaultGeometry geom = null;
         if ( jtsGeom instanceof com.vividsolutions.jts.geom.Point ) {
             com.vividsolutions.jts.geom.Point jtsPoint = (com.vividsolutions.jts.geom.Point) jtsGeom;
-            geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY() } );
+            if ( Double.isNaN( jtsPoint.getCoordinate().z ) ) {
+                geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY() } );
+            } else {
+                geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY(),
+                                                                      jtsPoint.getCoordinate().z } );
+            }
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.LinearRing ) {
             com.vividsolutions.jts.geom.LinearRing jtsLinearRing = (com.vividsolutions.jts.geom.LinearRing) jtsGeom;
             geom = new DefaultLinearRing( null, crs, pm, getAsPoints( jtsLinearRing.getCoordinateSequence(), crs ) );
