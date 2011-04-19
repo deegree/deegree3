@@ -164,7 +164,7 @@ public class PostGISDDLCreator extends AbstractDDLCreator {
     }
 
     @Override
-    protected StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc ) {
+    protected StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc, List<StringBuffer> ddls ) {
         DBField to = jc.getFields().get( 1 );
         StringBuffer sb = new StringBuffer( "CREATE TABLE " );
         sb.append( to.getTable() );

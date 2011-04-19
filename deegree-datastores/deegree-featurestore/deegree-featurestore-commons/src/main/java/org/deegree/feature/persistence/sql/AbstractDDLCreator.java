@@ -158,14 +158,14 @@ public abstract class AbstractDDLCreator {
 
     protected abstract void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping );
 
-    protected abstract StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc );
+    protected abstract StringBuffer createJoinedTable( QTableName fromTable, JoinChain jc, List<StringBuffer> ddls );
 
     private List<StringBuffer> process( StringBuffer sql, QTableName table, Mapping mapping ) {
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
         JoinChain jc = mapping.getJoinedTable();
         if ( jc != null ) {
-            sql = createJoinedTable( table, jc );
+            sql = createJoinedTable( table, jc, ddls );
             table = new QTableName( jc.getFields().get( 1 ).getTable() );
             ddls.add( sql );
         }
