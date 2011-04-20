@@ -72,7 +72,7 @@ public abstract class AbstractCSWKVPAdapter {
                             throws InvalidParameterValueException {
 
         QName[] typeNames = null;
-        String typeNameString = kvpParam.get( "TYPENAME" );
+        String typeNameString = kvpParam.get( "TYPENAMES" );
         if ( typeNameString != null ) {
             String[] typeNameStrings = typeNameString.split( "," );
             typeNames = new QName[typeNameStrings.length];
