@@ -274,6 +274,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 }
             } finally {
                 if ( rs2 != null ) {
+                    rs2.getStatement().close();
                     rs2.close();
                 }
             }
