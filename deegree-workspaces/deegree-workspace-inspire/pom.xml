@@ -3,14 +3,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-inspire</artifactId>
   <packaging>deegree-workspace</packaging>
-  <version>3.1-pre4</version>
+  <version>3.1-pre4-SNAPSHOT</version>
   <name>deegree 3 workspace for inspireNode</name>
   <url>http://maven.apache.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspace-parent</artifactId>
-    <version>3.1-pre4</version>
+    <version>3.1-pre4-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -30,18 +30,18 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre4</version>
+      <version>3.1-pre4-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1-pre4</version>
+      <version>3.1-pre4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
-      <version>3.1-pre4</version>
+      <version>3.1-pre4-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
