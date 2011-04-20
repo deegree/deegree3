@@ -69,17 +69,17 @@ public class GetRecordsHandler extends AbstractGetRecordsHandler {
                             throws MetadataStoreException, XMLStreamException {
         if ( isElementName == false ) {
             if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
-                m.serialize( writer, getRec.getElementSetName() );
+                m.serialize( writer, getRec.getQuery().getElementSetName() );
             } else {
                 DCRecord dc = m.toDublinCore();
-                dc.serialize( writer, getRec.getElementSetName() );
+                dc.serialize( writer, getRec.getQuery().getElementSetName() );
             }
         } else {
             if ( getRec.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
-                m.serialize( writer, getRec.getElementName() );
+                m.serialize( writer, getRec.getQuery().getElementName() );
             } else {
                 DCRecord dc = m.toDublinCore();
-                dc.serialize( writer, getRec.getElementName() );
+                dc.serialize( writer, getRec.getQuery().getElementName() );
             }
         }
     }

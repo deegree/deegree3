@@ -42,11 +42,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.filter.Filter;
-import org.deegree.filter.sort.SortProperty;
-import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
@@ -67,14 +63,6 @@ public class GetRecords extends AbstractCSWRequest {
 
     private final int maxRecords;
 
-    private final String[] elementName;
-
-    private final ReturnableElement elementSetName;
-
-    private final Filter constraint;
-
-    private final SortProperty[] sortBy;
-
     private final boolean distributedSearch;
 
     private final int hopCount;
@@ -83,7 +71,7 @@ public class GetRecords extends AbstractCSWRequest {
 
     private final ResultType resultType;
 
-    private final ConstraintLanguage constraintLanguage;
+    private final Query query;
 
     private final OMElement holeRequest;
 
@@ -93,8 +81,6 @@ public class GetRecords extends AbstractCSWRequest {
      * @param version
      *            protocol version
      * @param namespaces
-     * @param typeNames
-     *            one or more names of queryable entities
      * @param outputFormat
      *            controls the format of the output regarding to a MIME-type (default: application/xml)
      * @param resultType
@@ -107,34 +93,28 @@ public class GetRecords extends AbstractCSWRequest {
      *            used to specify at which position should be started
      * @param maxRecords
      *            defines the maximum number of records that should be returned
-     * @param elementName
-     * @param elementSetName
-     * @param constraintLanguage
-     * @param constraint
-     * @param sortBy
+     * 
      * @param distributedSearch
      * @param hopCount
      * @param responseHandler
+     * @param query
+     *            thhe query of the GetRecords request, never <code>null</code>
+     * @param holeRequest
      */
-    public GetRecords( Version version, NamespaceBindings namespaces, QName[] typeNames, String outputFormat,
-                       ResultType resultType, String requestId, URI outputSchema, int startPosition, int maxRecords,
-                       String[] elementName, ReturnableElement elementSetName, ConstraintLanguage constraintLanguage,
-                       Filter constraint, SortProperty[] sortBy, boolean distributedSearch, int hopCount,
-                       String responseHandler, OMElement holeRequest ) {
-        super( version, namespaces, typeNames, outputFormat );
+    public GetRecords( Version version, NamespaceBindings namespaces, String outputFormat, ResultType resultType,
+                       String requestId, URI outputSchema, int startPosition, int maxRecords,
+                       boolean distributedSearch, int hopCount, String responseHandler, Query query,
+                       OMElement holeRequest ) {
+        super( version, namespaces, query != null ? query.getTypeNames(): new QName[0], outputFormat );
         this.resultType = resultType;
         this.requestId = requestId;
         this.outputSchema = outputSchema;
         this.startPosition = startPosition;
         this.maxRecords = maxRecords;
-        this.elementName = elementName;
-        this.elementSetName = elementSetName;
-        this.constraintLanguage = constraintLanguage;
-        this.constraint = constraint;
-        this.sortBy = sortBy;
         this.distributedSearch = distributedSearch;
         this.hopCount = hopCount;
         this.responseHandler = responseHandler;
+        this.query = query;
         this.holeRequest = holeRequest;
     }
 
@@ -164,34 +144,6 @@ public class GetRecords extends AbstractCSWRequest {
      */
     public int getMaxRecords() {
         return maxRecords;
-    }
-
-    /**
-     * @return the elementName
-     */
-    public String[] getElementName() {
-        return elementName;
-    }
-
-    /**
-     * @return the elementSetName
-     */
-    public ReturnableElement getElementSetName() {
-        return elementSetName;
-    }
-
-    /**
-     * @return the constraint
-     */
-    public Filter getConstraint() {
-        return constraint;
-    }
-
-    /**
-     * @return the sortBy
-     */
-    public SortProperty[] getSortBy() {
-        return sortBy;
     }
 
     /**
@@ -225,8 +177,8 @@ public class GetRecords extends AbstractCSWRequest {
     /**
      * @return the constraintLanguage
      */
-    public ConstraintLanguage getConstraintLanguage() {
-        return constraintLanguage;
+    public Query getQuery() {
+        return query;
     }
 
     /**

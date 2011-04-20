@@ -253,9 +253,10 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         // TODO
         String responseHandler = normalizedKVPParams.get( "RESPONSEHANDLER" );
 
-        return new GetRecords( version, nsContext, typeNames, outputFormat, resultType, requestId, outputSchema,
-                               startPosition, maxRecords, elementName, elementSetName, constraintLanguage, constraint,
-                               sortBy, distributedSearch, hopCount, responseHandler, null );
+        Query query = new Query( elementSetName, elementName, constraint, constraintLanguage, sortBy, typeNames );
+
+        return new GetRecords( version, nsContext, outputFormat, resultType, requestId, outputSchema, startPosition,
+                               maxRecords, distributedSearch, hopCount, responseHandler, query, null );
     }
 
     /**

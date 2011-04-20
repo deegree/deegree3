@@ -62,6 +62,8 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
+import org.deegree.filter.Filter;
+import org.deegree.filter.sort.SortProperty;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
@@ -226,13 +228,14 @@ public abstract class AbstractGetRecordsHandler {
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version, MetadataStore<?> store )
+    protected void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
         boolean isElementName = false;
-        if ( getRec.getElementName().length != 0 ) {
+        if ( getRec.getQuery() != null && getRec.getQuery().getElementName().length != 0 ) {
             isElementName = true;
         }
-        String elementSetValue = getRec.getElementSetName() != null ? getRec.getElementSetName().name() : "custom";
+        String elementSetValue = getRec.getQuery() != null && getRec.getQuery().getElementSetName() != null ? getRec.getQuery().getElementSetName().name()
+                                                                                                           : "custom";
 
         int returnedRecords = 0;
         int counter = 0;
@@ -250,8 +253,7 @@ public abstract class AbstractGetRecordsHandler {
                 int countRows = 0;
                 int nextRecord = 0;
 
-                MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getSortBy(),
-                                                         getRec.getStartPosition(), getRec.getMaxRecords() );
+                MetadataQuery query = getQuery( getRec );
 
                 try {
                     countRows = store.getRecordCount( query );
@@ -304,6 +306,16 @@ public abstract class AbstractGetRecordsHandler {
                             throws MetadataStoreException, XMLStreamException;
 
     protected abstract String getSchemaLocation( Version version );
+
+    protected MetadataQuery getQuery( GetRecords getRec ) {
+        Filter constraints = null;
+        SortProperty[] sortProps = null;
+        if ( getRec.getQuery() != null ) {
+            constraints = getRec.getQuery().getConstraint();
+            sortProps = getRec.getQuery().getSortProps();
+        }
+        return new MetadataQuery( constraints, sortProps, getRec.getStartPosition(), getRec.getMaxRecords() );
+    }
 
     /**
      * Computes the header-attribute <i>nextRecord</i>
