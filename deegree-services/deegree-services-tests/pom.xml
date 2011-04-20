@@ -34,6 +34,7 @@
 
   <modules>
     <module>deegree-test-parent</module>
+    <module>deegree-workspace-tests</module>
     <module>deegree-wms-cite</module>
     <module>deegree-wms-similarity-tests</module>
     <module>deegree-wcs-cite100</module>
