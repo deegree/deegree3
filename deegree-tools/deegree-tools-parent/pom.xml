@@ -4,14 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-tools-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre4-SNAPSHOT</version>
+  <version>3.1-pre4-1</version>
   <name>deegree-tools-parent</name>
   <url>http://www.deegree.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre4-SNAPSHOT</version>
+    <version>3.1-pre4-1</version>
   </parent>
 
   <repositories>

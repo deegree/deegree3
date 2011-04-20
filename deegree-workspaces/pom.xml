@@ -3,19 +3,19 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspaces</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre4-SNAPSHOT</version>
+  <version>3.1-pre4-1</version>
   <name>deegree workspaces</name>
   <url>http://maven.apache.org</url>
 
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/trunk</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/trunk</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-1/trunk</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-1/trunk</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre4-SNAPSHOT</version>
+    <version>3.1-pre4-1</version>
   </parent>
 
   <repositories>
