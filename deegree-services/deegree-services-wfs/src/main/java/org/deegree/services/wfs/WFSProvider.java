@@ -67,7 +67,7 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
             handledNamespaces = new String[] { WFS_NS };
             handledRequests = WFSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
-            serviceName = "WFS";
+            serviceName = new String[]{ "WFS" };
         }
     };
 

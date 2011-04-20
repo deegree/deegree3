@@ -65,7 +65,7 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
             handledNamespaces = new String[] { WCS_100_NS };
             handledRequests = WCSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = "WCS";
+            serviceName = new String[]{ "WCS" };
         }
     };
 

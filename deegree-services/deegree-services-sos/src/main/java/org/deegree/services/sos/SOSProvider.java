@@ -64,7 +64,7 @@ public class SOSProvider implements OWSProvider<SOSRequestType> {
             handledNamespaces = new String[] { SOS_100_NS };
             handledRequests = SOSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = "SOS";
+            serviceName = new String[]{ "SOS"} ;
         }
     };
 

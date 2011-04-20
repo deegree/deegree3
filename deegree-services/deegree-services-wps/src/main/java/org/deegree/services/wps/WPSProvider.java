@@ -64,7 +64,7 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
             handledNamespaces = new String[] { WPS_100_NS };
             handledRequests = WPSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = "WPS";
+            serviceName = new String[]{ "WPS" };
         }
     };
 

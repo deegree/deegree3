@@ -66,7 +66,7 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
             handledNamespaces = new String[] { "" }; // WMS uses null namespace for SLD GetMap Post requests
             handledRequests = WMSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
-            serviceName = "WMS";
+            serviceName = new String[]{ "WMS" };
         }
     };
 

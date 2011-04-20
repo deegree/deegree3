@@ -64,7 +64,7 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
             handledNamespaces = new String[] { CSW_202_NS };
             handledRequests = CSWRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = "CSW";
+            serviceName = new String[] { "CSW" };
         }
     };
 
@@ -96,6 +96,6 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
 
     @Override
     public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub        
+        // TODO Auto-generated method stub
     }
 }

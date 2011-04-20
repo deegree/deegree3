@@ -65,7 +65,7 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
             handledNamespaces = new String[] { WPVS_NS };
             handledRequests = WPVSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = "WPVS";
+            serviceName = new String[]{ "WPVS" };
         }
     };
 

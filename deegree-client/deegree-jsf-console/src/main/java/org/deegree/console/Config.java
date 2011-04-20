@@ -168,7 +168,7 @@ public class Config implements Comparable<Config> {
 
     public String getCapabilitiesURL() {
         OWS<?> ows = ( (WebServicesConfiguration) resourceManager ).get( id );
-        String type = ows.getImplementationMetadata().getImplementedServiceName();
+        String type = ows.getImplementationMetadata().getImplementedServiceName()[0];
 
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         StringBuffer sb = req.getRequestURL();

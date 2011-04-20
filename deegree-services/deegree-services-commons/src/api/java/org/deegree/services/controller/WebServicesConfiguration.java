@@ -193,7 +193,9 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
         Map<String, OWSProvider<? extends Enum<?>>> providers = new HashMap<String, OWSProvider<? extends Enum<?>>>();
         while ( iter.hasNext() ) {
             OWSProvider<?> p = iter.next();
-            providers.put( p.getImplementationMetadata().getImplementedServiceName().toUpperCase(), p );
+            for ( String serviceName : p.getImplementationMetadata().getImplementedServiceName() ) {
+                providers.put( serviceName.toUpperCase(), p );
+            }
         }
 
         this.workspace = workspace;
@@ -433,8 +435,10 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     @Override
     protected void add( OWS ows ) {
         ImplementationMetadata<?> md = ows.getImplementationMetadata();
-        LOG.debug( "Service name '" + md.getImplementedServiceName() + "' -> '" + ows.getClass().getSimpleName() + "'" );
-        serviceNameToController.put( md.getImplementedServiceName().toUpperCase(), ows );
+        for ( String serviceName : md.getImplementedServiceName() ) {
+            LOG.debug( "Service name '" + serviceName + "' -> '" + ows.getClass().getSimpleName() + "'" );
+            serviceNameToController.put( serviceName.toUpperCase(), ows );
+        }
 
         // associate request types with controller instance
         for ( String request : md.getHandledRequests() ) {
@@ -455,8 +459,10 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     @Override
     protected void remove( OWS ows ) {
         ImplementationMetadata<?> md = ows.getImplementationMetadata();
-        LOG.debug( "Service name '" + md.getImplementedServiceName() + "' -> '" + ows.getClass().getSimpleName() + "'" );
-        serviceNameToController.remove( md.getImplementedServiceName().toUpperCase() );
+        for ( String serviceName : md.getImplementedServiceName() ) {
+            LOG.debug( "Service name '" + serviceName + "' -> '" + ows.getClass().getSimpleName() + "'" );
+            serviceNameToController.remove( serviceName.toUpperCase() );
+        }
 
         for ( String request : md.getHandledRequests() ) {
             // skip GetCapabilities requests

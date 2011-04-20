@@ -81,7 +81,7 @@ public abstract class ImplementationMetadata<T extends Enum<T>> {
     /**
      * The abbreviated name of the service.
      */
-    protected String serviceName;
+    protected String[] serviceName;
 
     /**
      * should the cite test mode be enabled, meaning, that requests should be in the same case as they were defined in
@@ -193,7 +193,7 @@ public abstract class ImplementationMetadata<T extends Enum<T>> {
     /**
      * @return the service name
      */
-    public String getImplementedServiceName() {
+    public String[] getImplementedServiceName() {
         return serviceName;
     }
 
