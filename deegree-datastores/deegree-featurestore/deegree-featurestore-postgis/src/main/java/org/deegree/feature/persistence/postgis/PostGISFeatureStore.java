@@ -1130,6 +1130,11 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                 sb.append( srid == null ? "-1" : srid );
                 sb.append( ")" );
             }
+
+            @Override
+            public String selectGeometry( String geometry ) {
+                return "ST_AsEWKB(" + geometry + ")";
+            }
         };
     }
 
