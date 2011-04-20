@@ -8,8 +8,8 @@
   <name>deegree-jsf-core</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-client/deegree-jsf-core</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-client/deegree-jsf-core</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-client/deegree-jsf-core</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-client/deegree-jsf-core</url>
   </scm>
 
   <parent>

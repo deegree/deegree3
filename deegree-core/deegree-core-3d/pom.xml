@@ -8,8 +8,8 @@
   <name>deegree-core-3d</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-core/deegree-core-3d</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-core/deegree-core-3d</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-core/deegree-core-3d</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-core/deegree-core-3d</url>
   </scm>
 
   <parent>

@@ -8,8 +8,8 @@
   <name>deegree-tools-base</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-tools/deegree-tools-base</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-tools/deegree-tools-base</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-tools/deegree-tools-base</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-tools/deegree-tools-base</url>
   </scm>
 
   <parent>

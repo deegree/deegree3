@@ -8,8 +8,8 @@
   <name>deegree-featurestore-memory</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-datastores/deegree-featurestore/deegree-featurestore-memory</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-datastores/deegree-featurestore/deegree-featurestore-memory</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-datastores/deegree-featurestore/deegree-featurestore-memory</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-datastores/deegree-featurestore/deegree-featurestore-memory</url>
   </scm>
 
   <parent>

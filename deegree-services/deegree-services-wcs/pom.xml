@@ -8,8 +8,8 @@
   <name>deegree-services-wcs</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-services/deegree-services-wcs</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre4-SNAPSHOT/deegree-services/deegree-services-wcs</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-services/deegree-services-wcs</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.1-pre4/deegree-services/deegree-services-wcs</url>
   </scm>
 
   <parent>
