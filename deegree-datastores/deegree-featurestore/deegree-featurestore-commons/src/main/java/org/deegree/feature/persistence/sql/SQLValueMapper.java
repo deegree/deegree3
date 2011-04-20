@@ -54,4 +54,6 @@ public interface SQLValueMapper {
 
     void insertGeometry( StringBuilder sb, String srid );
 
+    String selectGeometry( String geometry );
+
 }

@@ -185,8 +185,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 GeometryMapping gm = (GeometryMapping) mapping;
                 MappingExpression column = gm.getMapping();
                 if ( column instanceof DBField ) {
-                    // TODO
-                    addColumn( colToRsIdx, "ST_AsEWKB(" + ( (DBField) column ).getColumn() + ")" );
+                    addColumn( colToRsIdx, fs.getSQLValueMapper().selectGeometry( ( (DBField) column ).getColumn() ) );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
                 FeatureMapping fm = (FeatureMapping) mapping;
@@ -304,8 +303,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                // TODO
-                byte[] wkb = rs.getBytes( colToRsIdx.get( "ST_AsEWKB(" + ( (DBField) me ).getColumn() + ")" ) );
+                byte[] wkb = rs.getBytes( colToRsIdx.get( fs.getSQLValueMapper().selectGeometry( ( (DBField) me ).getColumn() ) ) );
                 if ( wkb != null ) {
                     try {
                         particle = WKBReader.read( wkb, pm.getCRS() );
