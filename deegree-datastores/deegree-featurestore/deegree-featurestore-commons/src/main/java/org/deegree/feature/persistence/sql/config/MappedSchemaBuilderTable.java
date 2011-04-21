@@ -390,7 +390,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             }
         }
 
-        return new FIDMapping( prefix, columns, generator );
+        return new FIDMapping( prefix, "_", columns, generator );
     }
 
     private QName makeFullyQualified( QName qName, String defaultPrefix, String defaultNamespace ) {

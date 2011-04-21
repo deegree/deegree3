@@ -89,7 +89,7 @@ public abstract class Mapping {
     public List<TableJoin> getJoinedTable() {
         return tableChange;
     }
-
+    
     @Override
     public String toString() {
         return "{path=" + path + ",joinChain=" + tableChange + "}";

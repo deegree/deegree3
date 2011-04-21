@@ -55,6 +55,8 @@ public class FIDMapping {
 
     private final String prefix;
 
+    private final String delimiter;
+
     private final List<Pair<String, PrimitiveType>> columns;
 
     private final IDGenerator generator;
@@ -64,20 +66,28 @@ public class FIDMapping {
      * 
      * @param prefix
      *            static prefix for all feature ids, must not be <code>null</code> (but can be empty)
+     * @param delimiter
+     *            delimiter that separates the values of the individual columns, must not be <code>null</code> (but
+     *            can be empty)
      * @param columns
      *            database columns that the feature ids are mapped to, must not be <code>null</code> (and contain at
      *            least one entry)
      * @param generator
      *            generator for determining new ids, must not be <code>null</code>
      */
-    public FIDMapping( String prefix, List<Pair<String, PrimitiveType>> columns, IDGenerator generator ) {
+    public FIDMapping( String prefix, String delimiter, List<Pair<String, PrimitiveType>> columns, IDGenerator generator ) {
         this.prefix = prefix;
+        this.delimiter = delimiter;
         this.columns = columns;
         this.generator = generator;
     }
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public String getDelimiter() {
+        return delimiter;
     }
 
     public List<Pair<String, PrimitiveType>> getColumns() {

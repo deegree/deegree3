@@ -267,7 +267,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                                  + "' specified. This is only possible for AutoIDGenerator." );
             }
         }
-        return new FIDMapping( prefix, columns, generator );
+        return new FIDMapping( prefix, "_", columns, generator );
     }
 
     private Mapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl, AbstractParticleJAXB value ) {

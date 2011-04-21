@@ -215,8 +215,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
 
         String gmlId = ftMapping.getFidMapping().getPrefix();
-        for ( Pair<String, PrimitiveType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
-            gmlId += rs.getObject( colToRsIdx.get( fidColumn.first ) );
+        List<Pair<String, PrimitiveType>> fidColumns = ftMapping.getFidMapping().getColumns();
+        gmlId += rs.getObject( colToRsIdx.get( fidColumns.get( 0 ).first ) );
+        for ( int i = 1; i < fidColumns.size(); i++ ) {
+            gmlId += ftMapping.getFidMapping().getDelimiter() + rs.getObject( colToRsIdx.get( fidColumns.get( i ).first ) );
         }
         Feature feature = (Feature) fs.getCache().get( gmlId );
         if ( feature == null ) {

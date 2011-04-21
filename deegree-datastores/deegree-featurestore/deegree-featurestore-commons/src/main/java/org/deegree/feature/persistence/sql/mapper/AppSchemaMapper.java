@@ -219,7 +219,7 @@ public class AppSchemaMapper {
         IDGenerator generator = new UUIDGenerator();
         String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
         Pair<String, PrimitiveType> fidColumn = new Pair<String, PrimitiveType>( "attr_gml_id", STRING );
-        FIDMapping fidMapping = new FIDMapping( prefix, Collections.singletonList( fidColumn ), generator );
+        FIDMapping fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
 
         List<Mapping> mappings = new ArrayList<Mapping>();
         for ( PropertyType pt : ft.getPropertyDeclarations( appSchema.getXSModel().getVersion() ) ) {
