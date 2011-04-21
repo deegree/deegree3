@@ -36,17 +36,22 @@
 package org.deegree.tools.jdbc;
 
 import java.text.DecimalFormat;
-
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryException;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLVersion;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -66,11 +71,6 @@ public class MappingUtils {
 
     private static final NumberFormat nf = new DecimalFormat( "#.####", dfs );
 
-    private static final com.vividsolutions.jts.io.WKTReader jtsReader = new com.vividsolutions.jts.io.WKTReader();
-
-    private static final AbstractDefaultGeometry defGeom = new DefaultPoint( null, null, null,
-                                                                             new double[] { 0.0, 0.0 } );
-
     /**
      * 
      * @param node
@@ -78,15 +78,11 @@ public class MappingUtils {
      * @throws ParseException
      * @throws GeometryException
      */
-    public static String getXMax( Node node )
-                            throws ParseException {
+    public static String getXMax( Node node ) {
         if ( node == null ) {
             return "";
         }
-        Envelope envelope = getAsEnvelope( node );
-        if ( envelope == null )
-            return "";
-        return nf.format( envelope.getMax().get( 0 ) );
+        return nf.format( getAsEnvelope( node ).getMax().get0() );
     }
 
     /**
@@ -96,23 +92,11 @@ public class MappingUtils {
      * @throws ParseException
      * @throws GeometryException
      */
-    public static String getXMin( Node node )
-                            throws ParseException {
+    public static String getXMin( Node node ) {
         if ( node == null ) {
             return "";
         }
-        Envelope envelope = getAsEnvelope( node );
-        if ( envelope == null )
-            return "";
-        return nf.format( envelope.getMin().get0() );
-    }
-
-    private static Envelope getAsEnvelope( Node node )
-                            throws ParseException {
-        String textContent = getStringValue( node );
-        com.vividsolutions.jts.geom.Geometry read = jtsReader.read( textContent );
-        AbstractDefaultGeometry createFromJTS = defGeom.createFromJTS( read, null );
-        return createFromJTS.getEnvelope();
+        return nf.format( getAsEnvelope( node ).getMin().get0() );
     }
 
     /**
@@ -127,10 +111,7 @@ public class MappingUtils {
         if ( node == null ) {
             return "";
         }
-        Envelope envelope = getAsEnvelope( node );
-        if ( envelope == null )
-            return "";
-        return nf.format( envelope.getMax().get1() );
+        return nf.format( getAsEnvelope( node ).getMax().get1() );
     }
 
     /**
@@ -144,10 +125,20 @@ public class MappingUtils {
         if ( node == null ) {
             return "";
         }
-        Envelope envelope = getAsEnvelope( node );
-        if ( envelope == null )
-            return "";
-        return nf.format( envelope.getMin().get1() );
+        return nf.format( getAsEnvelope( node ).getMin().get1() );
+    }
+
+    private static Envelope getAsEnvelope( Node node ) {
+        try {
+            Source source = new DOMSource( node );
+            XMLStreamReader stream = XMLInputFactory.newInstance().createXMLStreamReader( source );
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, stream );
+            org.deegree.geometry.Geometry geometry = gmlReader.readGeometry();
+            return geometry.getEnvelope();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            throw new IllegalArgumentException( "could not read as GMLGeometry: " + node.getNodeName(), e );
+        }
     }
 
     /**

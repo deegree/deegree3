@@ -64,6 +64,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.impl.jaxp.OMResult;
 import org.apache.axiom.om.impl.jaxp.OMSource;
+import org.apache.axiom.om.util.AXIOMUtil;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
@@ -104,8 +105,8 @@ public class DatabaseXMLMapping {
     protected Table mainTable;
 
     private String jdbcId;
-    
-    private Source xslSource; 
+
+    private Source xslSource;
 
     static {
         nsc.addNamespace( "dxm", namespace );
@@ -190,13 +191,13 @@ public class DatabaseXMLMapping {
     public void run()
                             throws Exception {
         Connection conn = ConnectionManager.getConnection( jdbcId );
-        conn.setAutoCommit( false ); 
+        conn.setAutoCommit( false );
         Statement stmt = null;
         ResultSet rs = null;
 
         try {
             String sql = mainTable.getSelect();
-            stmt = conn.createStatement();            
+            stmt = conn.createStatement();
             stmt.setFetchSize( 1000 );
             rs = stmt.executeQuery( sql );
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -269,13 +270,13 @@ public class DatabaseXMLMapping {
             List<String> variables = subTable.getVariables();
             // replace variables with real values
             for ( String variable : variables ) {
-                Object value = targetRow.get( variable.substring( 1, variable.length() ).toLowerCase() );                
+                Object value = targetRow.get( variable.substring( 1, variable.length() ).toLowerCase() );
                 if ( value instanceof String ) {
                     sql = StringUtils.replaceAll( sql, variable, "'" + value.toString() + "'" );
                 } else if ( value != null ) {
                     sql = StringUtils.replaceAll( sql, variable, value.toString() );
                 } else {
-                    sql = StringUtils.replaceAll( sql, variable,  "'XXXXXXXdummyXXXXXXX'");
+                    sql = StringUtils.replaceAll( sql, variable, "'XXXXXXXdummyXXXXXXX'" );
                 }
             }
 
@@ -337,14 +338,19 @@ public class DatabaseXMLMapping {
             Geometry geom = WKBReader.read( wkb, p.second );
 
             StringWriter sw = new StringWriter();
-            XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( sw );
-            GMLStreamWriter gmlSw  = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, writer );
+            XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
+            // repairng namespace and setting the default namespace should be done by the GMLWriter!
+            outFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
+
+            XMLStreamWriter writer = outFactory.createXMLStreamWriter( sw );
+            writer.setDefaultNamespace( CommonNamespaces.GML3_2_NS );
+            GMLStreamWriter gmlSw = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, writer );
             gmlSw.write( geom );
             writer.close();
 
             OMElement geomElement = omFactory.createOMElement( new QName( p.first ) );
-            geomElement.addChild( omFactory.createOMText( sw.toString() ) );
-            
+            geomElement.addChild( AXIOMUtil.stringToOM( sw.toString() ) );
+
             tableElement.addChild( geomElement );
         } catch ( ParseException e ) {
             LOG.info( "WKB from the DB could not be parsed: '{}'.", e.getLocalizedMessage() );
@@ -365,9 +371,9 @@ public class DatabaseXMLMapping {
 
     protected OMDocument transform( OMDocument xml, Properties outputProperties, Map<String, String> params )
                             throws Exception {
+        System.out.println(xml.getOMDocumentElement());
         LOG.debug( "transform: " + xml.getOMDocumentElement() );
         Source xmlSource = new OMSource( xml.getOMDocumentElement() );
-        
 
         OMResult sr = new OMResult();
         try {
