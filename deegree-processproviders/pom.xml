@@ -7,41 +7,35 @@
   <version>3.1-pre5-SNAPSHOT</version>
   <name>deegree-wps</name>
   <url>http://www.deegree.org</url>
-  
+
   <scm>
     <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-processproviders</developerConnection>
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-processproviders</url>
   </scm>
-  
-  <modules>
-    <module>deegree-processprovider-example</module>
-    <module>deegree-processprovider-sextante</module>
-  </modules>
-  
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-  </properties>
-  
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-pre5-SNAPSHOT</version>
+    <relativePath />
+  </parent>
+
   <repositories>
     <repository>
       <id>deegree-repo</id>
       <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
-  
-  <distributionManagement>
-    <repository>
-      <id>deegree-releases</id>
-      <url>http://artefacts.deegree.org/libs-releases-local</url>
-    </repository>  
-    <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
-  
+
+  <modules>
+    <module>deegree-processprovider-example</module>
+    <module>deegree-processprovider-sextante</module>
+  </modules>
+
 </project>
