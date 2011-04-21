@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.jdbc;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -43,8 +46,11 @@ import java.util.Locale;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.Source;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.geometry.Envelope;
@@ -130,13 +136,32 @@ public class MappingUtils {
 
     private static Envelope getAsEnvelope( Node node ) {
         try {
-            Source source = new DOMSource( node );
-            XMLStreamReader stream = XMLInputFactory.newInstance().createXMLStreamReader( source );
+
+            // TODO: this is a really dirty hack!!!!
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
+            StringWriter sw = new StringWriter();
+            t.transform( new DOMSource( node ), new StreamResult( sw ) );
+
+            String nodeAsString = sw.toString();
+            // where is the namespace binding???
+            nodeAsString = nodeAsString.replace( "<gml:Polygon ",
+                                                 "<gml:Polygon xmlns:gml=\"http://www.opengis.net/gml/3.2\" " );
+            InputStream in = new ByteArrayInputStream( nodeAsString.getBytes() );
+            XMLStreamReader stream = XMLInputFactory.newInstance().createXMLStreamReader( in );
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, stream );
             org.deegree.geometry.Geometry geometry = gmlReader.readGeometry();
             return geometry.getEnvelope();
+            // Source source = new DOMSource( node );
+            // XMLStreamReader stream = XMLInputFactory.newInstance().createXMLStreamReader( source );
+            // System.out.println(StAXParsingHelper.getEventTypeString( stream.getEventType() ));
+            // if(stream.getEventType() == XMLStreamConstants.START_DOCUMENT)
+            // stream.nextTag();
+            // System.out.println(StAXParsingHelper.getEventTypeString( stream.getEventType() ));
+            // GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, stream );
+            // org.deegree.geometry.Geometry geometry = gmlReader.readGeometry();
+            // return geometry.getEnvelope();
         } catch ( Exception e ) {
-            e.printStackTrace();
             throw new IllegalArgumentException( "could not read as GMLGeometry: " + node.getNodeName(), e );
         }
     }
