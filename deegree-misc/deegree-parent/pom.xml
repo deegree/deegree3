@@ -58,7 +58,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.0-beta-4</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -67,6 +67,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <revisionOnScmFailure>${buildTimestamp}</revisionOnScmFailure>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.deegree</groupId>
