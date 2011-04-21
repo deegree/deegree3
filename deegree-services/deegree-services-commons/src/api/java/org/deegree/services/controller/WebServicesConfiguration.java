@@ -242,7 +242,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
      * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
      */
     public OWS<? extends Enum<?>> determineResponsibleControllerByServiceName( String serviceType ) {
-        return serviceNameToController.get( serviceType );
+        return serviceNameToController.get( serviceType.toUpperCase() );
     }
 
     /**
