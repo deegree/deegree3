@@ -40,8 +40,6 @@ import java.util.Map;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates the method for parsing a kvp request via Http-GET. Due to the fact that the GetCapabilities operation is
@@ -54,7 +52,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class GetCapabilities202KVPAdapter {
-    private static Logger LOG = LoggerFactory.getLogger( GetCapabilities202KVPAdapter.class );
 
     /**
      * Parses an incoming KVP request via Http-GET
@@ -68,34 +65,7 @@ public class GetCapabilities202KVPAdapter {
      *             if VERSION parameter contains a syntactical error
      */
     public static GetCapabilities parse( Map<String, String> kvpParams ) {
-
-        // Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "ACCEPTVERSIONS" ) );
-
-        GetCapabilities request = null;
-
-        // if ( VERSION_202.equals( version ) ) {
-        // request = parse202( kvpParams );
-        //
-        // } else {
-        // LOG.debug( "No AcceptVersions provided, so the request is for CSW {}.", VERSION_202 );
-        // else treat as OWS 1.0.0
-        request = GetCapabilitiesKVPParser.parse( kvpParams );
-        // }
-
-        return request;
-        // if ( version != null ) {
-        // // @version present -> treat as CSW [version] request
-        // request = new GetCapabilities( version );
-        // } else {
-        // // else treat as OWS 1.0.0
-        // request = GetCapabilitiesKVPParser.parse( kvpParams );
-        // }
-        // return request;
+        return GetCapabilitiesKVPParser.parse( kvpParams );
     }
-
-    // public static GetCapabilities parse202( Map<String, String> kvpParams ) {
-    //
-    // return new GetCapabilities();
-    // }
 
 }

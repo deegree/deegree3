@@ -73,7 +73,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * Abstract base class encapsulating the parsing an {@Link GetRecords} XML request.
  * 
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
