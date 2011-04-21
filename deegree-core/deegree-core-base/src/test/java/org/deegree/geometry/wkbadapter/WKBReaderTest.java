@@ -47,9 +47,9 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.Geometry;
 import org.deegree.geometry.Geometry.GeometryType;
 import org.deegree.geometry.io.WKBReader;
+import org.deegree.geometry.primitive.Polygon;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
@@ -75,8 +75,7 @@ public class WKBReaderTest {
         InputStream is = WKBReaderTest.class.getResourceAsStream( BASE_DIR + "Polygon.wkb" );
         byte[] wkb = IOUtils.toByteArray( is );
 
-        Geometry geom = WKBReader.read( wkb, crs );
-
+        Polygon geom = (Polygon) WKBReader.read( wkb, crs );
         assertTrue( geom.getGeometryType() == GeometryType.PRIMITIVE_GEOMETRY );
 
         StringWriter sw = new StringWriter();
@@ -90,8 +89,6 @@ public class WKBReaderTest {
         writer.close();
 
         String s = "<gml:posList>5.148530 59.951879 5.134692 59.736522 5.561175 59.728897 5.577771 59.944188 5.148530 59.951879</gml:posList>";
-        System.out.println( sw.toString() );
         assertTrue( sw.toString().contains( s ) );
-
     }
 }

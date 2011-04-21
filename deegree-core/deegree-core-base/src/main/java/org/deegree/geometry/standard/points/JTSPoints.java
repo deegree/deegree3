@@ -64,14 +64,25 @@ public class JTSPoints implements Points {
 
     private final CoordinateSequence seq;
 
+    private int dim = 0;
+
     public JTSPoints( ICRS crs, CoordinateSequence seq ) {
         this.crs = crs;
         this.seq = seq;
+        // TODO is this really necessary? Why does seq.getDimension() always return 3?
+        if ( seq.size() > 0 ) {
+            for ( int i = 0; i < seq.getDimension(); i++ ) {
+                if ( Double.isNaN( seq.getOrdinate( 0, i ) ) ) {
+                    break;
+                }
+                dim++;
+            }
+        }
     }
 
     @Override
     public int getDimension() {
-        return seq.getDimension();
+        return dim;
     }
 
     @Override
