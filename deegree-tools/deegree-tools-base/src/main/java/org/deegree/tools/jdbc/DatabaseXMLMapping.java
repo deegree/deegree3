@@ -37,7 +37,6 @@ package org.deegree.tools.jdbc;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URL;
@@ -75,8 +74,9 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBReader;
+import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.slf4j.Logger;
 
 import com.vividsolutions.jts.io.ParseException;
@@ -335,14 +335,16 @@ public class DatabaseXMLMapping {
                             throws Exception {
         try {
             Geometry geom = WKBReader.read( wkb, p.second );
+
             StringWriter sw = new StringWriter();
             XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( sw );
-            GML3GeometryWriter geomWriter = new GML3GeometryWriter( GMLVersion.GML_32, writer );
-            geomWriter.export( geom );
+            GMLStreamWriter gmlSw  = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, writer );
+            gmlSw.write( geom );
             writer.close();
 
             OMElement geomElement = omFactory.createOMElement( new QName( p.first ) );
             geomElement.addChild( omFactory.createOMText( sw.toString() ) );
+            
             tableElement.addChild( geomElement );
         } catch ( ParseException e ) {
             LOG.info( "WKB from the DB could not be parsed: '{}'.", e.getLocalizedMessage() );
