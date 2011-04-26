@@ -619,21 +619,21 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             if ( blobMapping == null ) {
                 // pure relational query
                 sql.append( ftMapping.getFtTable() );
-                sql.append( " AS " );
+                sql.append( getAsClause() );
                 sql.append( ftTableAlias );
             } else if ( wb.getWhere() == null && wb.getOrderBy() == null ) {
                 // pure BLOB query
                 sql.append( blobMapping.getTable() );
-                sql.append( " AS " );
+                sql.append( getAsClause() );
                 sql.append( blobTableAlias );
             } else {
                 // hybrid query
                 sql.append( blobMapping.getTable() );
-                sql.append( " AS " );
+                sql.append( getAsClause() );
                 sql.append( blobTableAlias );
                 sql.append( " LEFT OUTER JOIN " );
                 sql.append( ftMapping.getFtTable() );
-                sql.append( " AS " );
+                sql.append( getAsClause() );
                 sql.append( ftTableAlias );
                 sql.append( " ON " );
                 sql.append( blobTableAlias );
@@ -652,7 +652,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                     DBField to = join.getTo();
                     sql.append( " LEFT OUTER JOIN " );
                     sql.append( to.getTable() );
-                    sql.append( " AS " );
+                    sql.append( getAsClause() );
                     sql.append( to.getAlias() );
                     sql.append( " ON " );
                     sql.append( currentAlias );
@@ -747,6 +747,10 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
         }
         return result;
+    }
+
+    protected String getAsClause() {
+        return " AS ";
     }
 
     private FeatureResultSet queryMultipleFts( Query[] queries, Envelope looseBBox )
