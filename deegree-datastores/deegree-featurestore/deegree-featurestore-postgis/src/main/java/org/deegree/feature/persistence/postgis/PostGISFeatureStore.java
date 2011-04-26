@@ -36,8 +36,6 @@
 package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.feature.persistence.postgis.PostGISFeatureStoreProvider.CONFIG_JAXB_PACKAGE;
-import static org.deegree.feature.persistence.postgis.PostGISFeatureStoreProvider.CONFIG_SCHEMA;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -46,27 +44,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
-import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
-import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.SQLValueMapper;
-import org.deegree.feature.persistence.sql.TransactionManager;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.config.MappedSchemaBuilderGML;
@@ -101,23 +92,18 @@ import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.gml.GMLObject;
-import org.postgis.LineString;
-import org.postgis.LinearRing;
 import org.postgis.PGboxbase;
-import org.postgis.PGgeometry;
-import org.postgis.Point;
-import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * {@link FeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
+ * {@link AbstractSQLFeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
  * 
  * TODO always ensure that autocommit is false and fetch size is set for (possibly) large SELECTS
  * 
- * @see FeatureStore
+ * @see AbstractSQLFeatureStore
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -128,12 +114,8 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
     static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
-    private TransactionManager taManager;
-
     // if true, use old-style for spatial predicates (e.g "intersects" instead of "ST_Intersects")
     boolean useLegacyPredicates;
-
-    private final DeegreeWorkspace workspace;
 
     private PostGISFeatureStoreJAXB config;
 
@@ -152,13 +134,38 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     protected PostGISFeatureStore( PostGISFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace ) {
         this.config = config;
         this.configURL = configURL;
-        this.workspace = workspace;
     }
 
     @Override
-    public FeatureStoreTransaction acquireTransaction()
-                            throws FeatureStoreException {
-        return taManager.acquireTransaction();
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+    
+        LOG.debug( "init" );
+    
+        MappedApplicationSchema schema;
+        try {
+            schema = MappedSchemaBuilderGML.build( configURL.toString(), config );
+        } catch ( Throwable t ) {
+            LOG.error( t.getMessage(), t );
+            throw new ResourceInitException( t.getMessage(), t );
+        }
+        String jdbcConnId = config.getJDBCConnId();
+        init( schema, jdbcConnId );
+    
+        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
+    
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( getConnId() );
+            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new ResourceInitException( e.getMessage(), e );
+        } finally {
+            close( rs, stmt, conn, LOG );
+        }
     }
 
     protected Envelope getEnvelope( FeatureTypeMapping ftMapping )
@@ -211,46 +218,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                 org.deegree.geometry.primitive.Point min = buildPoint( pgBox.getLLB(), crs );
                 org.deegree.geometry.primitive.Point max = buildPoint( pgBox.getURT(), crs );
                 env = new DefaultEnvelope( null, crs, null, min, max );
-            }
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new FeatureStoreException( e.getMessage(), e );
-        } finally {
-            close( rs, stmt, conn, LOG );
-        }
-        return env;
-    }
-
-    private Envelope getEnvelope( QName ftName, BBoxTableMapping bboxMapping )
-                            throws FeatureStoreException {
-
-        LOG.trace( "Determining BBOX for feature type '{}' (BBOX table mode)", ftName );
-
-        Envelope env = null;
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = ConnectionManager.getConnection( getConnId() );
-            stmt = conn.createStatement();
-            StringBuilder sql = new StringBuilder( "SELECT Box2D(" );
-            sql.append( bboxMapping.getBBoxColumn() );
-            sql.append( ") FROM " );
-            sql.append( bboxMapping.getTable() );
-            sql.append( " WHERE " );
-            sql.append( bboxMapping.getFTNameColumn() );
-            sql.append( "='" );
-            sql.append( ftName.toString() );
-            sql.append( "'" );
-            rs = stmt.executeQuery( sql.toString() );
-            if ( rs.next() ) {
-                PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
-                if ( pgBox != null ) {
-                    ICRS crs = bboxMapping.getCRS();
-                    org.deegree.geometry.primitive.Point min = buildPoint( pgBox.getLLB(), crs );
-                    org.deegree.geometry.primitive.Point max = buildPoint( pgBox.getURT(), crs );
-                    env = new DefaultEnvelope( null, bboxMapping.getCRS(), null, min, max );
-                }
             }
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
@@ -439,149 +406,8 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-
-        LOG.debug( "init" );
-
-        MappedApplicationSchema schema;
-        try {
-            schema = MappedSchemaBuilderGML.build( configURL.toString(), config );
-        } catch ( Throwable t ) {
-            LOG.error( t.getMessage(), t );
-            throw new ResourceInitException( t.getMessage(), t );
-        }
-        String jdbcConnId = config.getJDBCConnId();
-        init( schema, jdbcConnId );
-
-        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
-
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = ConnectionManager.getConnection( getConnId() );
-            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new ResourceInitException( e.getMessage(), e );
-        } finally {
-            close( rs, stmt, conn, LOG );
-        }
-
-        taManager = new TransactionManager( this, getConnId() );
-    }
-
-    private PostGISFeatureStoreJAXB parseConfig( URL configURL )
-                            throws ResourceInitException {
-        try {
-            return (PostGISFeatureStoreJAXB) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
-                                                                   workspace );
-        } catch ( JAXBException e ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            throw new ResourceInitException( msg, e );
-        }
-    }
-
-    // private FeatureResultSet queryMultipleFts2( Query[] queries, Envelope looseBBox )
-    // throws FeatureStoreException {
-    //
-    // FeatureResultSet result = null;
-    //
-    // short[] ftId = new short[queries.length];
-    // for ( int i = 0; i < ftId.length; i++ ) {
-    // Query query = queries[i];
-    // if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-    // String msg = "Join queries between multiple feature types are currently not supported.";
-    // throw new UnsupportedOperationException( msg );
-    // }
-    // ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
-    // }
-    //
-    // Connection conn = null;
-    // PreparedStatement stmt = null;
-    // ResultSet rs = null;
-    // try {
-    // conn = ConnectionManager.getConnection( jdbcConnId );
-    // StringBuffer sql = new StringBuffer();
-    //
-    // if ( queries.length == 1 ) {
-    // sql.append( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE " );
-    // if ( looseBBox != null ) {
-    // sql.append( "gml_bounded_by && ? AND " );
-    // }
-    // sql.append( "ft_type=?" );
-    // } else {
-    // sql.append( "(SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE " );
-    // if ( looseBBox != null ) {
-    // sql.append( "gml_bounded_by && ? AND " );
-    // }
-    // sql.append( "ft_type=?)" );
-    // for ( int i = 1; i < queries.length; i++ ) {
-    // sql.append( "UNION (SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-    // + " WHERE " );
-    // if ( looseBBox != null ) {
-    // sql.append( "gml_bounded_by && ? AND " );
-    // }
-    // sql.append( "ft_type=?)" );
-    // }
-    // }
-    // stmt = conn.prepareStatement( sql.toString() );
-    // int i = 1;
-    // for ( Query query : queries ) {
-    // if ( looseBBox != null ) {
-    // stmt.setObject( i++, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
-    // }
-    // stmt.setShort( i++, getFtId( query.getTypeNames()[0].getFeatureTypeName() ) );
-    // StringBuffer orderString = new StringBuffer();
-    // stmt.setString( ftId.length + 2, orderString.toString() );
-    // }
-    // LOG.info( "Query {}", stmt );
-    // rs = stmt.executeQuery();
-    // result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
-    // new FeatureStoreGMLIdResolver( this ) ) );
-    // } catch ( Exception e ) {
-    // closeSafely( conn, stmt, rs );
-    // String msg = "Error performing query: " + e.getMessage();
-    // LOG.debug( msg, e );
-    // throw new FeatureStoreException( msg, e );
-    // }
-    // return result;
-    // }
-
-    @Override
     public String[] getDDL() {
         return new PostGISDDLCreator( getSchema() ).getDDL();
-    }
-
-    PGgeometry toPGPolygon( Envelope envelope, int srid ) {
-        PGgeometry pgGeometry = null;
-        if ( envelope != null ) {
-            double minX = envelope.getMin().get0();
-            double minY = envelope.getMin().get1();
-            double maxX = envelope.getMax().get0();
-            double maxY = envelope.getMax().get1();
-            if ( envelope.getMin().equals( envelope.getMax() ) ) {
-                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1() );
-                // TODO
-                point.setSrid( srid );
-                pgGeometry = new PGgeometry( point );
-            } else if ( minX == maxX || minY == maxY ) {
-                LineString line = new LineString( new Point[] { new Point( minX, minY ), new Point( maxX, maxY ) } );
-                // TODO
-                line.setSrid( srid );
-                pgGeometry = new PGgeometry( line );
-            } else {
-                Point[] points = new Point[] { new Point( minX, minY ), new Point( maxX, minY ),
-                                              new Point( maxX, maxY ), new Point( minX, maxY ), new Point( minX, minY ) };
-                LinearRing outer = new LinearRing( points );
-                Polygon polygon = new Polygon( new LinearRing[] { outer } );
-                // TODO
-                polygon.setSrid( srid );
-                pgGeometry = new PGgeometry( polygon );
-            }
-        }
-        return pgGeometry;
     }
 
     @Override

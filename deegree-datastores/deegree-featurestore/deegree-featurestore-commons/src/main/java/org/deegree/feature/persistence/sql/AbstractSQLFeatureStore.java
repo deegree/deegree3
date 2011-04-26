@@ -66,9 +66,9 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
-import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
@@ -103,8 +103,7 @@ import org.deegree.gml.GMLReferenceResolver;
 import org.slf4j.Logger;
 
 /**
- * Provides common base functionality for {@link FeatureStore} implementations that use {@link MappedApplicationSchema}
- * as mapping configuration and use JDBC for connecting to the backend.
+ * Provides vendor-independent base functionality for {@link SQLFeatureStore} implementations.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -116,6 +115,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     private static final Logger LOG = getLogger( AbstractSQLFeatureStore.class );
 
     private MappedApplicationSchema schema;
+
+    private TransactionManager taManager;
 
     protected BlobMapping blobMapping;
 
@@ -135,6 +136,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
         this.jdbcConnId = jdbcConnId;
+        taManager = new TransactionManager( this, getConnId() );
     }
 
     @Override
@@ -223,6 +225,12 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         return null;
     }
 
+    @Override
+    public FeatureStoreTransaction acquireTransaction()
+                            throws FeatureStoreException {
+        return taManager.acquireTransaction();
+    }
+
     /**
      * Returns the {@link FeatureStoreCache}.
      * 
@@ -283,7 +291,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
      * @return transformed version of the geometry, never <code>null</code>
      * @throws FilterEvaluationException
      */
-    public Geometry getCompatibleGeometry( Geometry literal, ICRS crs )
+    protected Geometry getCompatibleGeometry( Geometry literal, ICRS crs )
                             throws FilterEvaluationException {
         if ( crs == null ) {
             return literal;

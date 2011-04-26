@@ -44,7 +44,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 
 /**
- * Manages transactions for the {@link AbstractSQLFeatureStore}.
+ * Manages transactions for {@link AbstractSQLFeatureStore} implementations.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -57,7 +57,7 @@ public class TransactionManager {
 
     private final String jdbcConnId;
 
-    private AbstractSQLFeatureStoreTransaction activeTransaction;
+    private SQLFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
 
@@ -71,7 +71,7 @@ public class TransactionManager {
      * @return a new transaction
      * @throws FeatureStoreException
      */
-    public AbstractSQLFeatureStoreTransaction acquireTransaction( Connection conn )
+    public SQLFeatureStoreTransaction acquireTransaction( Connection conn )
                             throws FeatureStoreException {
 
         while ( this.activeTransaction != null ) {
@@ -96,7 +96,7 @@ public class TransactionManager {
 
         try {
             conn.setAutoCommit( false );
-            this.activeTransaction = new AbstractSQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
+            this.activeTransaction = new SQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to disable auto commit on JDBC connection for transaction: "
                                              + e.getMessage(), e );
@@ -133,7 +133,7 @@ public class TransactionManager {
         try {
             Connection conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
-            this.activeTransaction = new AbstractSQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
+            this.activeTransaction = new SQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
         }
@@ -151,7 +151,7 @@ public class TransactionManager {
      *            the PostGISFeatureStoreTransaction to be returned
      * @throws FeatureStoreException
      */
-    void releaseTransaction( AbstractSQLFeatureStoreTransaction ta )
+    void releaseTransaction( SQLFeatureStoreTransaction ta )
                             throws FeatureStoreException {
 
         if ( ta != this.activeTransaction ) {

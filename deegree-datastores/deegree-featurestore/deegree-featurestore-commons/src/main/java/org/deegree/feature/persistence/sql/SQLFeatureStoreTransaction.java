@@ -100,9 +100,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransaction {
+public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractSQLFeatureStoreTransaction.class );
+    private static final Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreTransaction.class );
 
     private final AbstractSQLFeatureStore fs;
 
@@ -117,7 +117,7 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
     private final SQLValueMapper valueMapper;
 
     /**
-     * Creates a new {@link AbstractSQLFeatureStoreTransaction} instance.
+     * Creates a new {@link SQLFeatureStoreTransaction} instance.
      * 
      * @param store
      *            invoking feature store instance, never <code>null</code>
@@ -127,7 +127,7 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
      *            <code>autocommit</code> set to <code>false</code>
      * @param schema
      */
-    AbstractSQLFeatureStoreTransaction( AbstractSQLFeatureStore store, TransactionManager taManager, Connection conn,
+    SQLFeatureStoreTransaction( AbstractSQLFeatureStore store, TransactionManager taManager, Connection conn,
                                         MappedApplicationSchema schema ) {
         this.fs = store;
         this.taManager = taManager;
