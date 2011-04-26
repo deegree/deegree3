@@ -75,6 +75,8 @@ import org.deegree.gml.feature.FeatureReference;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
+import org.jaxen.expr.NumberExpr;
+import org.jaxen.expr.Predicate;
 import org.jaxen.expr.Step;
 import org.jaxen.expr.TextNodeStep;
 import org.jaxen.saxpath.Axis;
@@ -218,7 +220,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         List<Pair<String, PrimitiveType>> fidColumns = ftMapping.getFidMapping().getColumns();
         gmlId += rs.getObject( colToRsIdx.get( fidColumns.get( 0 ).first ) );
         for ( int i = 1; i < fidColumns.size(); i++ ) {
-            gmlId += ftMapping.getFidMapping().getDelimiter() + rs.getObject( colToRsIdx.get( fidColumns.get( i ).first ) );
+            gmlId += ftMapping.getFidMapping().getDelimiter()
+                     + rs.getObject( colToRsIdx.get( fidColumns.get( i ).first ) );
         }
         Feature feature = (Feature) fs.getCache().get( gmlId );
         if ( feature == null ) {
@@ -360,9 +363,19 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     }
                     Step step = (Step) lp.getSteps().get( 0 );
                     if ( !step.getPredicates().isEmpty() ) {
-                        LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
-                                  + "'. Only unpredicated steps are handled." );
-                        continue;
+                        List<?> predicates = step.getPredicates();
+                        if ( predicates.size() == 1 ) {
+                            Expr predicate = ( (Predicate) predicates.get( 0 ) ).getExpr();
+                            if ( predicate instanceof NumberExpr ) {
+                                LOG.warn( "Number predicate. Assuming natural ordering." );
+                            } else {
+                                continue;
+                            }
+                        } else {
+                            LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                                      + "'. Only unpredicated steps are handled." );
+                            continue;
+                        }
                     }
                     if ( step instanceof TextNodeStep ) {
                         for ( TypedObjectNode particleValue : particleValues ) {
@@ -413,12 +426,30 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             // TODO
             XSElementDeclaration xsType = null;
             if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
-                particle = new GenericXMLElement( cm.getPath().getAsQName(), xsType, attrs, children );
+                QName elName = getName( mapping.getPath() );
+                particle = new GenericXMLElement( elName, xsType, attrs, children );
             }
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
         }
         return particle;
+    }
+
+    private QName getName( PropertyName path ) {
+        if ( path.getAsQName() != null ) {
+            return path.getAsQName();
+        }
+        Expr xpath = path.getAsXPath();
+        if ( xpath instanceof LocationPath ) {
+            LocationPath lp = (LocationPath) xpath;
+            if ( lp.getSteps().size() == 1 && !lp.isAbsolute() ) {
+                Step step = (Step) lp.getSteps().get( 0 );
+                if ( step instanceof NameStep ) {
+                    return getQName( (NameStep) step );
+                }
+            }
+        }
+        return null;
     }
 
     private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( TableJoin jc,
