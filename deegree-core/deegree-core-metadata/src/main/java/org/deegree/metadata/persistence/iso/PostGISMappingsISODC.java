@@ -64,9 +64,9 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
+import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
-import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.metadata.i18n.Messages;
@@ -78,7 +78,7 @@ import org.slf4j.Logger;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Implementation of the {@link PostGISMapping}. It's the base class for access to the backend. Is there any change in
+ * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change in
  * the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
  * <p>
  * TODO denominator, distanceUOM, distanceValue put a type in
@@ -88,7 +88,7 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISMappingsISODC implements PostGISMapping {
+public class PostGISMappingsISODC implements PropertyNameMapper {
 
     private static final Logger LOG = getLogger( PostGISMappingsISODC.class );
 
@@ -359,7 +359,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
     }
 
     @Override
-    public Object getPostGISValue( Literal<?> literal, PropertyName propName )
+    public Object getSQLValue( Literal<?> literal, PropertyName propName )
                             throws FilterEvaluationException {
 
         Object pgValue = null;
@@ -426,7 +426,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
     }
 
     @Override
-    public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+    public byte[] getSQLValue( Geometry literal, PropertyName propName )
                             throws FilterEvaluationException {
         byte[] pgValue = null;
 

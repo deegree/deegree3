@@ -590,7 +590,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             }
             List<String> columns = builder.getInitialSelectColumns();
 
-            wb = getWhereBuilder( ft, filter, query.getSortProperties() );
+            wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
 
@@ -704,7 +704,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                 stmt.setShort( i++, getSchema().getFtId( ftName ) );
                 if ( query.getPrefilterBBox() != null ) {
                     OperatorFilter bboxFilter = new OperatorFilter( new BBOX( query.getPrefilterBBox() ) );
-                    AbstractWhereBuilder blobWb = getWhereBuilderBlob( bboxFilter );
+                    AbstractWhereBuilder blobWb = getWhereBuilderBlob( bboxFilter, conn );
                     if ( blobWb.getWhere() != null ) {
                         for ( SQLLiteral o : blobWb.getWhere().getLiterals() ) {
                             stmt.setObject( i++, o.getValue() );
@@ -771,7 +771,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         try {
             if ( looseBBox != null ) {
                 OperatorFilter bboxFilter = new OperatorFilter( new BBOX( looseBBox ) );
-                blobWb = getWhereBuilderBlob( bboxFilter );
+                blobWb = getWhereBuilderBlob( bboxFilter, conn );
             }
 
             conn = ConnectionManager.getConnection( getConnId() );
@@ -790,7 +790,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             if ( blobWb != null && blobWb.getWhere() != null ) {
                 for ( SQLLiteral o : blobWb.getWhere().getLiterals() ) {
                     stmt.setObject( firstFtArg++, o.getValue() );
-                }                
+                }
             }
             StringBuffer orderString = new StringBuffer();
             for ( int i = 0; i < ftId.length; i++ ) {

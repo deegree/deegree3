@@ -47,23 +47,23 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
+import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
-import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link PostGISMapping} for the {@link PostGISFeatureStore} that's based on {@link FeatureTypeMapping} objects.
+ * {@link PropertyNameMapper} for the {@link PostGISFeatureStore} that's based on {@link FeatureTypeMapping} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class PostGISFeatureMapping implements PostGISMapping {
+class PostGISFeatureMapping implements PropertyNameMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureMapping.class );
 
@@ -113,7 +113,7 @@ class PostGISFeatureMapping implements PostGISMapping {
     }
 
     @Override
-    public Object getPostGISValue( Literal literal, PropertyName propName )
+    public Object getSQLValue( Literal literal, PropertyName propName )
                             throws FilterEvaluationException {
 
         Object pgValue = null;
@@ -142,7 +142,7 @@ class PostGISFeatureMapping implements PostGISMapping {
     }
 
     @Override
-    public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+    public byte[] getSQLValue( Geometry literal, PropertyName propName )
                             throws FilterEvaluationException {
 
         byte[] pgValue = null;

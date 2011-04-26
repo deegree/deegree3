@@ -89,10 +89,10 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
+import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
-import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -624,9 +624,9 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     @Override
     protected AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
                             throws FilterEvaluationException {
-        PostGISMapping pgMapping = new PostGISMapping() {
+        PropertyNameMapper pgMapping = new PropertyNameMapper() {
             @Override
-            public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+            public byte[] getSQLValue( Geometry literal, PropertyName propName )
                                     throws FilterEvaluationException {
 
                 Envelope env = (Envelope) getCompatibleGeometry( literal, blobMapping.getCRS() );
@@ -641,7 +641,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             }
 
             @Override
-            public Object getPostGISValue( Literal<?> literal, PropertyName propName )
+            public Object getSQLValue( Literal<?> literal, PropertyName propName )
                                     throws FilterEvaluationException {
                 throw new UnsupportedOperationException();
             }

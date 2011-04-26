@@ -48,6 +48,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
@@ -148,7 +149,7 @@ public class PostGISWhereBuilderTest {
         return (OperatorFilter) Filter110XMLDecoder.parse( xmlStream );
     }
 
-    static class DummyPostGISMapping implements PostGISMapping {
+    static class DummyPostGISMapping implements PropertyNameMapper {
 
         @Override
         public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
@@ -178,13 +179,13 @@ public class PostGISWhereBuilderTest {
         }
 
         @Override
-        public Object getPostGISValue( Literal<?> literal, PropertyName propName )
+        public Object getSQLValue( Literal<?> literal, PropertyName propName )
                                 throws FilterEvaluationException {
             return null;
         }
 
         @Override
-        public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+        public byte[] getSQLValue( Geometry literal, PropertyName propName )
                                 throws FilterEvaluationException {
             return null;
         }

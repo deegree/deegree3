@@ -33,25 +33,23 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
+package org.deegree.filter.sql;
 
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.PropertyNameMapping;
-import org.deegree.filter.sql.TableAliasManager;
-import org.deegree.filter.sql.UnmappableException;
 import org.deegree.geometry.Geometry;
 
 /**
- * Implementations provide {@link PropertyName} to table/column mappings for the {@link PostGISWhereBuilder}.
+ * Implementations provide {@link PropertyName} to table/column mappings for {@link AbstractWhereBuilder}
+ * implementations.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface PostGISMapping {
+public interface PropertyNameMapper {
 
     /**
      * Returns the {@link PropertyNameMapping} for the given {@link PropertyName}.
@@ -80,7 +78,7 @@ public interface PostGISMapping {
      * @return value object for the column in the database, may be <code>null</code>
      * @throws FilterEvaluationException
      */
-    public Object getPostGISValue( Literal<?> literal, PropertyName propName )
+    public Object getSQLValue( Literal<?> literal, PropertyName propName )
                             throws FilterEvaluationException;
 
     /**
@@ -95,6 +93,6 @@ public interface PostGISMapping {
      * @return value object for the column in the database, may be <code>null</code>
      * @throws FilterEvaluationException
      */
-    public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+    public byte[] getSQLValue( Geometry literal, PropertyName propName )
                             throws FilterEvaluationException;
 }

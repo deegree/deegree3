@@ -58,6 +58,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLColumn;
@@ -80,7 +81,7 @@ import org.deegree.geometry.io.WKTWriter;
  */
 public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
-    private final PostGISMapping mapping;
+    private final PropertyNameMapper mapping;
 
     private final boolean useLegacyPredicates;
 
@@ -99,7 +100,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the expression contains invalid {@link PropertyName}s
      */
-    public PostGISWhereBuilder( PostGISMapping mapping, OperatorFilter filter, SortProperty[] sortCrit,
+    public PostGISWhereBuilder( PropertyNameMapper mapping, OperatorFilter filter, SortProperty[] sortCrit,
                                 boolean useLegacyPredicates ) throws FilterEvaluationException {
         super( filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
