@@ -18,7 +18,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.mssql.MSSQLServerWhereBuilder;
+import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataRecord;
@@ -90,7 +90,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         }
         if ( connectionType == Type.MSSQL ) {
             MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
-            return new MSSQLServerWhereBuilder( mapping, filter, null );
+            return new MSSQLWhereBuilder( mapping, filter, null );
         }
         return null;
     }

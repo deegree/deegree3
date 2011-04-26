@@ -53,7 +53,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.mssql.MSSQLServerWhereBuilder;
+import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.i18n.Messages;
@@ -202,7 +202,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         }
         if ( getDBType() == Type.MSSQL ) {
             MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
-            return new MSSQLServerWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting() );
+            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting() );
         }
         return null;
     }

@@ -79,12 +79,12 @@ import org.deegree.geometry.io.WKTWriter;
  * 
  * @version $Revision$, $Date$
  */
-public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
+public class MSSQLWhereBuilder extends AbstractWhereBuilder {
 
     private final PropertyNameMapper mapper;
 
     /**
-     * Creates a new {@link MSSQLServerWhereBuilder} instance.
+     * Creates a new {@link MSSQLWhereBuilder} instance.
      * 
      * @param mapper
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
@@ -95,7 +95,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the expression contains invalid {@link PropertyName}s
      */
-    public MSSQLServerWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit )
+    public MSSQLWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit )
                             throws FilterEvaluationException {
         super( filter, sortCrit );
         this.mapper = mapper;
