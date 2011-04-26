@@ -67,7 +67,6 @@ import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
-import org.deegree.filter.sql.mssql.MSSQLServerMapping;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.metadata.i18n.Messages;
@@ -79,8 +78,8 @@ import org.slf4j.Logger;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change in
- * the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
+ * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change
+ * in the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
  * <p>
  * TODO denominator, distanceUOM, distanceValue put a type in
  * 
@@ -89,7 +88,7 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision$, $Date$
  */
-public class MSSQLMappingsISODC implements MSSQLServerMapping {
+public class MSSQLMappingsISODC implements PropertyNameMapper {
 
     private static final Logger LOG = getLogger( MSSQLMappingsISODC.class );
 
@@ -359,7 +358,7 @@ public class MSSQLMappingsISODC implements MSSQLServerMapping {
     }
 
     @Override
-    public Object getDBValue( Literal<?> literal, PropertyName propName )
+    public Object getSQLValue( Literal<?> literal, PropertyName propName )
                             throws FilterEvaluationException {
 
         Object pgValue = null;
@@ -426,7 +425,7 @@ public class MSSQLMappingsISODC implements MSSQLServerMapping {
     }
 
     @Override
-    public byte[] getDBValue( Geometry literal, PropertyName propName )
+    public byte[] getSQLValue( Geometry literal, PropertyName propName )
                             throws FilterEvaluationException {
         byte[] pgValue = null;
 
