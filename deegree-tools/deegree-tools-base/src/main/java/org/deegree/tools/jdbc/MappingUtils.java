@@ -167,49 +167,6 @@ public class MappingUtils {
         }
     }
 
-    /**
-     * 
-     * @param date
-     *            ISO 8601 formated date
-     * @param offset
-     *            days; could be a positive or a negative value
-     * @return date plus/minus offset
-     * @throws java.text.ParseException
-     */
-    public static String addDateOffeset( Node date, int offset )
-                            throws java.text.ParseException {
-        long off = ( (long) offset ) * 24 * 60 * 60 * 1000;
-        long t = createDate( getStringValue( date ) ).getTime();
-        return DateUtils.formatISO8601DateWOMS( new Date( t + off ) );
-    }
-
-    /**
-     * Returns the text contained in the specified element.
-     * 
-     * @param node
-     *            current element
-     * @return the textual contents of the element
-     */
-    private static String getStringValue( Node node ) {
-        NodeList children = node.getChildNodes();
-        if ( children != null ) {
-            StringBuffer sb = new StringBuffer( children.getLength() * 500 );
-            if ( node.getNodeValue() != null ) {
-                sb.append( node.getNodeValue().trim() );
-            }
-            if ( node.getNodeType() != Node.ATTRIBUTE_NODE ) {
-                for ( int i = 0; i < children.getLength(); i++ ) {
-                    if ( children.item( i ).getNodeType() == Node.TEXT_NODE
-                         || children.item( i ).getNodeType() == Node.CDATA_SECTION_NODE ) {
-                        sb.append( children.item( i ).getNodeValue() );
-                    }
-                }
-            }
-            return sb.toString();
-        } else {
-            return "";
-        }
-    }
 
     public static Date createDate( String isoDate )
                             throws java.text.ParseException {
