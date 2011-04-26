@@ -230,11 +230,22 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
                 FIDMapping fidMapping = ftMapping.getFidMapping();
                 PreparedStatement stmt = null;
                 try {
-                    stmt = conn.prepareStatement( "DELETE FROM " + ftMapping.getFtTable() + " WHERE "
-                                                  + fidMapping.getColumn() + "=?" );
-                    PrimitiveValue value = new PrimitiveValue( analysis.getIdKernel(), fidMapping.getColumnType() );
-                    Object sqlValue = SQLValueMangler.internalToSQL( value );
-                    stmt.setObject( 1, sqlValue );
+                    StringBuilder sql = new StringBuilder( "DELETE FROM " + ftMapping.getFtTable() + " WHERE " );
+                    sql.append( fidMapping.getColumns().get( 0 ) );
+                    sql.append( "=?" );
+                    for ( int i = 1; i < fidMapping.getColumns().size(); i++ ) {
+                        sql.append( " AND " );
+                        sql.append( fidMapping.getColumns().get( i ) );
+                        sql.append( "=?" );
+                    }
+                    stmt = conn.prepareStatement( sql.toString() );
+
+                    int i = 1;
+                    for ( String fidKernel : analysis.getIdKernels() ) {
+                        PrimitiveValue value = new PrimitiveValue( fidKernel, fidMapping.getColumnType() );
+                        Object sqlValue = SQLValueMangler.internalToSQL( value );
+                        stmt.setObject( i++, sqlValue );
+                    }
                     deleted += stmt.executeUpdate();
                 } catch ( SQLException e ) {
                     LOG.debug( e.getMessage(), e );
@@ -721,8 +732,13 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
             }
         }
         sql.append( " WHERE " );
-        sql.append( fidMapping.getColumn() );
+        sql.append( fidMapping.getColumns().get( 0 ) );
         sql.append( "=?" );
+        for ( int i = 1; i < fidMapping.getColumns().size(); i++ ) {
+            sql.append( " AND " );
+            sql.append( fidMapping.getColumns().get( i ) );
+            sql.append( "=?" );
+        }
 
         LOG.debug( "Update: " + sql );
 
@@ -736,9 +752,12 @@ public class AbstractSQLFeatureStoreTransaction implements FeatureStoreTransacti
             }
             for ( String id : filter.getMatchingIds() ) {
                 IdAnalysis analysis = schema.analyzeId( id );
-                PrimitiveValue value = new PrimitiveValue( analysis.getIdKernel(), fidMapping.getColumnType() );
-                Object sqlValue = SQLValueMangler.internalToSQL( value );
-                stmt.setObject( i, sqlValue );
+                int j = i;
+                for ( String fidKernel : analysis.getIdKernels() ) {
+                    PrimitiveValue value = new PrimitiveValue( fidKernel, fidMapping.getColumnType() );
+                    Object sqlValue = SQLValueMangler.internalToSQL( value );
+                    stmt.setObject( j++, sqlValue );
+                }
                 stmt.addBatch();
             }
             int[] updates = stmt.executeBatch();

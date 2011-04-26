@@ -45,12 +45,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -58,38 +52,24 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ResultSetIterator;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.Feature;
-import org.deegree.feature.Features;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
-import org.deegree.feature.persistence.query.CombinedResultSet;
-import org.deegree.feature.persistence.query.FeatureResultSet;
-import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
-import org.deegree.feature.persistence.query.IteratorResultSet;
-import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
-import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
-import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.SQLValueMapper;
 import org.deegree.feature.persistence.sql.TransactionManager;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.config.MappedSchemaBuilderGML;
-import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -101,22 +81,25 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.filter.sql.PropertyNameMapping;
-import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.TableAliasManager;
+import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.gml.GMLObject;
 import org.postgis.LineString;
 import org.postgis.LinearRing;
@@ -126,6 +109,8 @@ import org.postgis.Point;
 import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link FeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
@@ -147,8 +132,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
     // if true, use old-style for spatial predicates (e.g "intersects" instead of "ST_Intersects")
     boolean useLegacyPredicates;
-
-    private Map<String, String> nsContext;
 
     private final DeegreeWorkspace workspace;
 
@@ -385,8 +368,13 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             sql.append( " FROM " );
             sql.append( mapping.getFtTable() );
             sql.append( " WHERE " );
-            sql.append( mapping.getFidMapping().getColumn() );
+            sql.append( mapping.getFidMapping().getColumns().get( 0 ).first );
             sql.append( "=?" );
+            for ( int i = 1; i < mapping.getFidMapping().getColumns().size(); i++ ) {
+                sql.append( " AND " );
+                sql.append( mapping.getFidMapping().getColumns().get( i ).first );
+                sql.append( "=?" );
+            }
 
             LOG.debug( "Preparing SELECT: " + sql );
 
@@ -394,7 +382,9 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             stmt = conn.prepareStatement( sql.toString() );
 
             // TODO proper SQL type handling
-            stmt.setInt( 1, Integer.parseInt( idAnalysis.getIdKernel() ) );
+            for ( int i = 0; i < idAnalysis.getIdKernels().length; i++ ) {
+                stmt.setInt( 1, Integer.parseInt( idAnalysis.getIdKernels()[i] ) );
+            }
 
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -493,451 +483,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         }
     }
 
-    @Override
-    public FeatureResultSet query( Query query )
-                            throws FeatureStoreException, FilterEvaluationException {
-
-        if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-            String msg = "Join queries between multiple feature types are currently not supported by the PostGISFeatureStore.";
-            throw new UnsupportedOperationException( msg );
-        }
-
-        FeatureResultSet result = null;
-        Filter filter = query.getFilter();
-
-        if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
-            QName ftName = query.getTypeNames()[0].getFeatureTypeName();
-            FeatureType ft = getSchema().getFeatureType( ftName );
-            if ( ft == null ) {
-                String msg = "Feature type '" + ftName + "' is not served by this feature store.";
-                throw new FeatureStoreException( msg );
-            }
-            result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
-        } else {
-            // must be an id filter based query
-            if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
-                String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
-                throw new FilterEvaluationException( msg );
-            }
-            result = queryByIdFilter( (IdFilter) filter, query.getSortProperties() );
-        }
-        return result;
-    }
-
-    private FeatureResultSet queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
-                            throws FeatureStoreException {
-        if ( blobMapping != null ) {
-            return queryByIdFilterBlob( filter, sortCrit );
-        }
-        return queryByIdFilterRelational( filter, sortCrit );
-    }
-
-    private FeatureResultSet queryByIdFilterBlob( IdFilter filter, SortProperty[] sortCrit )
-                            throws FeatureStoreException {
-
-        FeatureResultSet result = null;
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = ConnectionManager.getConnection( getConnId() );
-
-            // create temp table with ids
-            stmt = conn.createStatement();
-            stmt.executeUpdate( "CREATE TEMP TABLE temp_ids (fid TEXT)" );
-            stmt.close();
-
-            // fill temp table
-            PreparedStatement insertFid = conn.prepareStatement( "INSERT INTO temp_ids (fid) VALUES (?)" );
-            for ( String fid : filter.getMatchingIds() ) {
-                insertFid.setString( 1, fid );
-                insertFid.addBatch();
-            }
-            insertFid.executeBatch();
-
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
-                                    + " A, temp_ids B WHERE A.gml_id=b.fid" );
-
-            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
-            result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
-        } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
-            String msg = "Error performing id query: " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
-        } finally {
-            if ( conn != null ) {
-                try {
-                    // drop temp table
-                    stmt = conn.createStatement();
-                    stmt.executeUpdate( "DROP TABLE temp_ids " );
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    String msg = "Error dropping temp table.";
-                    LOG.debug( msg, e );
-                }
-            }
-        }
-
-        // sort features
-        if ( sortCrit.length > 0 ) {
-            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
-        }
-        return result;
-    }
-
-    private FeatureResultSet queryByIdFilterRelational( IdFilter filter, SortProperty[] sortCrit )
-                            throws FeatureStoreException {
-
-        LinkedHashMap<QName, List<String>> ftNameToIdKernels = new LinkedHashMap<QName, List<String>>();
-        try {
-            for ( String fid : filter.getMatchingIds() ) {
-                IdAnalysis analysis = getSchema().analyzeId( fid );
-                FeatureType ft = analysis.getFeatureType();
-                String idKernel = analysis.getIdKernel();
-                List<String> idKernels = ftNameToIdKernels.get( ft.getName() );
-                if ( idKernels == null ) {
-                    idKernels = new ArrayList<String>();
-                    ftNameToIdKernels.put( ft.getName(), idKernels );
-                }
-                idKernels.add( idKernel );
-            }
-        } catch ( IllegalArgumentException e ) {
-            throw new FeatureStoreException( e.getMessage(), e );
-        }
-
-        if ( ftNameToIdKernels.size() != 1 ) {
-            throw new FeatureStoreException(
-                                             "Currently, only relational id queries are supported that target single feature types." );
-        }
-
-        QName ftName = ftNameToIdKernels.keySet().iterator().next();
-        FeatureType ft = getSchema().getFeatureType( ftName );
-        FeatureTypeMapping ftMapping = getSchema().getFtMapping( ftName );
-        FIDMapping fidMapping = ftMapping.getFidMapping();
-        List<String> idKernels = ftNameToIdKernels.get( ftName );
-
-        StringBuilder sql = new StringBuilder( "SELECT " );
-        sql.append( fidMapping.getColumn() );
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            // append every (mapped) property to SELECT list
-            // TODO columns in related tables
-            Mapping mapping = ftMapping.getMapping( pt.getName() );
-            MappingExpression column = mapping == null ? null : Mappings.getMappingExpression( mapping );
-            if ( column != null ) {
-                sql.append( ',' );
-                if ( pt instanceof SimplePropertyType ) {
-                    sql.append( column );
-                } else if ( pt instanceof GeometryPropertyType ) {
-                    if ( useLegacyPredicates ) {
-                        sql.append( "AsBinary(" );
-                    } else {
-                        sql.append( "ST_AsBinary(" );
-                    }
-                    sql.append( column );
-                    sql.append( ')' );
-                } else if ( pt instanceof FeaturePropertyType ) {
-                    sql.append( column );
-                } else {
-                    LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                              + "' not handled in PostGISFeatureStore." );
-                }
-            }
-        }
-
-        sql.append( " FROM " );
-        sql.append( ftMapping.getFtTable() );
-        sql.append( " WHERE " );
-        sql.append( fidMapping.getColumn() );
-        sql.append( " IN (?" );
-        for ( int i = 1; i < idKernels.size(); i++ ) {
-            sql.append( ",?" );
-        }
-        sql.append( ")" );
-
-        LOG.debug( "SQL: {}", sql );
-
-        FeatureResultSet result = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Connection conn = null;
-        try {
-            long begin = System.currentTimeMillis();
-            conn = ConnectionManager.getConnection( getConnId() );
-            stmt = conn.prepareStatement( sql.toString() );
-            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
-
-            int i = 1;
-            for ( String idKernel : idKernels ) {
-                PrimitiveValue value = new PrimitiveValue( idKernel, fidMapping.getColumnType() );
-                Object sqlValue = SQLValueMangler.internalToSQL( value );
-                stmt.setObject( i++, sqlValue );
-            }
-
-            begin = System.currentTimeMillis();
-            rs = stmt.executeQuery();
-            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
-            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
-            result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
-        } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
-            String msg = "Error performing query by id filter (relational mode): " + e.getMessage();
-            LOG.error( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
-        return result;
-    }
-
-    /**
-     * @param conn
-     * @param query
-     * @param ftName
-     * @param filter
-     * @return
-     * @throws FeatureStoreException
-     */
-    FeatureResultSet queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
-                            throws FeatureStoreException {
-
-        LOG.debug( "Performing query by operator filter" );
-
-        PostGISWhereBuilder wb = null;
-        Connection conn = null;
-        FeatureResultSet result = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = ConnectionManager.getConnection( getConnId() );
-            // TODO where to put this?
-            conn.setAutoCommit( false );
-
-            FeatureType ft = getSchema().getFeatureType( ftName );
-            FeatureTypeMapping ftMapping = getMapping( ftName );
-
-            FeatureBuilder builder = null;
-            if ( getSchema().getBlobMapping() != null ) {
-                builder = new FeatureBuilderBlob( this, getSchema().getBlobMapping() );
-            } else {
-                builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
-            }
-            List<String> columns = builder.getInitialSelectColumns();
-
-            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( getSchema(), ft, ftMapping, this );
-            wb = new PostGISWhereBuilder( pgMapping, filter, query.getSortProperties(), useLegacyPredicates );
-            LOG.debug( "WHERE clause: " + wb.getWhere() );
-            LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
-
-            BlobMapping blobMapping = getSchema().getBlobMapping();
-            String ftTableAlias = wb.getAliasManager().getRootTableAlias();
-            String blobTableAlias = wb.getAliasManager().generateNew();
-            String tableAlias = ftTableAlias;
-            if ( blobMapping != null ) {
-                tableAlias = blobTableAlias;
-            }
-
-            StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( tableAlias );
-            sql.append( '.' );
-            sql.append( columns.get( 0 ) );
-            for ( int i = 1; i < columns.size(); i++ ) {
-                sql.append( ',' );
-                // TODO
-                if ( !columns.get( i ).contains( "(" ) ) {
-                    sql.append( tableAlias );
-                    sql.append( '.' );
-                }
-                sql.append( columns.get( i ) );
-            }
-            sql.append( " FROM " );
-            if ( blobMapping == null ) {
-                // pure relational query
-                sql.append( ftMapping.getFtTable() );
-                sql.append( " AS " );
-                sql.append( ftTableAlias );
-            } else if ( wb.getWhere() == null && wb.getOrderBy() == null ) {
-                // pure BLOB query
-                sql.append( blobMapping.getTable() );
-                sql.append( " AS " );
-                sql.append( blobTableAlias );
-            } else {
-                // hybrid query
-                sql.append( blobMapping.getTable() );
-                sql.append( " AS " );
-                sql.append( blobTableAlias );
-                sql.append( " LEFT OUTER JOIN " );
-                sql.append( ftMapping.getFtTable() );
-                sql.append( " AS " );
-                sql.append( ftTableAlias );
-                sql.append( " ON " );
-                sql.append( blobTableAlias );
-                sql.append( "." );
-                sql.append( blobMapping.getInternalIdColumn() );
-                sql.append( "=" );
-                sql.append( ftTableAlias );
-                sql.append( "." );
-                sql.append( ftMapping.getFidMapping().getColumn() );
-            }
-
-            for ( PropertyNameMapping mappedPropName : wb.getMappedPropertyNames() ) {
-                String currentAlias = ftTableAlias;
-                for ( Join join : mappedPropName.getJoins() ) {
-                    DBField from = join.getFrom();
-                    DBField to = join.getTo();
-                    sql.append( " LEFT OUTER JOIN " );
-                    sql.append( to.getTable() );
-                    sql.append( " AS " );
-                    sql.append( to.getAlias() );
-                    sql.append( " ON " );
-                    sql.append( currentAlias );
-                    sql.append( "." );
-                    sql.append( from.getColumn() );
-                    sql.append( "=" );
-                    currentAlias = to.getAlias();
-                    sql.append( currentAlias );
-                    sql.append( "." );
-                    sql.append( to.getColumn() );
-                }
-            }
-
-            if ( blobMapping != null ) {
-                sql.append( " WHERE " );
-                sql.append( blobTableAlias );
-                sql.append( "." );
-                sql.append( blobMapping.getTypeColumn() );
-                sql.append( "=?" );
-                if ( query.getPrefilterBBox() != null ) {
-                    sql.append( " AND " );
-                    sql.append( blobTableAlias );
-                    sql.append( "." );
-                    sql.append( blobMapping.getBBoxColumn() );
-                    sql.append( " && ?" );
-                }
-            }
-
-            if ( wb.getWhere() != null ) {
-                if ( blobMapping != null ) {
-                    sql.append( " AND " );
-                } else {
-                    sql.append( " WHERE " );
-                }
-                sql.append( wb.getWhere().getSQL() );
-            }
-            if ( wb.getOrderBy() != null ) {
-                sql.append( " ORDER BY " );
-                sql.append( wb.getOrderBy().getSQL() );
-            }
-
-            LOG.debug( "SQL: {}", sql );
-            long begin = System.currentTimeMillis();
-            stmt = conn.prepareStatement( sql.toString() );
-            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
-
-            int i = 1;
-            if ( blobMapping != null ) {
-                stmt.setShort( i++, getSchema().getFtId( ftName ) );
-                if ( query.getPrefilterBBox() != null ) {
-                    Envelope env = (Envelope) getCompatibleGeometry( query.getPrefilterBBox(), blobMapping.getCRS() );
-                    stmt.setObject( i++, toPGPolygon( env, -1 ) );
-                }
-            }
-            if ( wb.getWhere() != null ) {
-                for ( SQLLiteral o : wb.getWhere().getLiterals() ) {
-                    stmt.setObject( i++, o.getValue() );
-                }
-            }
-            if ( wb.getOrderBy() != null ) {
-                for ( SQLLiteral o : wb.getOrderBy().getLiterals() ) {
-                    stmt.setObject( i++, o.getValue() );
-                }
-            }
-
-            begin = System.currentTimeMillis();
-
-            // TODO make this configurable?
-            stmt.setFetchSize( 1 );
-            rs = stmt.executeQuery();
-            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
-
-            result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
-        } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
-            String msg = "Error performing query by operator filter: " + e.getMessage();
-            LOG.error( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
-
-        if ( wb.getPostFilter() != null ) {
-            LOG.debug( "Applying in-memory post-filtering." );
-            result = new FilteredFeatureResultSet( result, wb.getPostFilter() );
-        }
-        if ( wb.getPostSortCriteria() != null ) {
-            LOG.debug( "Applying in-memory post-sorting." );
-            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
-        }
-        return result;
-    }
-
-    private FeatureResultSet queryMultipleFts( Query[] queries, Envelope looseBBox )
-                            throws FeatureStoreException {
-
-        FeatureResultSet result = null;
-
-        short[] ftId = new short[queries.length];
-        for ( int i = 0; i < ftId.length; i++ ) {
-            Query query = queries[i];
-            if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-                String msg = "Join queries between multiple feature types are currently not supported.";
-                throw new UnsupportedOperationException( msg );
-            }
-            ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
-        }
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = ConnectionManager.getConnection( getConnId() );
-            StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
-                                                 + " WHERE " );
-            if ( looseBBox != null ) {
-                sql.append( "gml_bounded_by && ? AND " );
-            }
-            sql.append( "ft_type IN(?" );
-            for ( int i = 1; i < ftId.length; i++ ) {
-                sql.append( ",?" );
-            }
-            sql.append( ") ORDER BY position('['||ft_type||']' IN ?)" );
-            stmt = conn.prepareStatement( sql.toString() );
-            int firstFtArg = 1;
-            if ( looseBBox != null ) {
-                stmt.setObject( 1,
-                                toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, blobMapping.getCRS() ), -1 ) );
-                firstFtArg++;
-            }
-            StringBuffer orderString = new StringBuffer();
-            for ( int i = 0; i < ftId.length; i++ ) {
-                stmt.setShort( i + firstFtArg, ftId[i] );
-                orderString.append( "[" );
-                orderString.append( "" + ftId[i] );
-                orderString.append( "]" );
-            }
-            stmt.setString( ftId.length + firstFtArg, orderString.toString() );
-            LOG.debug( "Query {}", stmt );
-
-            rs = stmt.executeQuery();
-            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
-            result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
-        } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
-            String msg = "Error performing query: " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
-        return result;
-    }
-
     // private FeatureResultSet queryMultipleFts2( Query[] queries, Envelope looseBBox )
     // throws FeatureStoreException {
     //
@@ -1005,60 +550,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     // }
 
     @Override
-    public FeatureResultSet query( final Query[] queries )
-                            throws FeatureStoreException, FilterEvaluationException {
-
-        // check for most common case: multiple featuretypes, same bbox (WMS), no filter
-        boolean wmsStyleQuery = false;
-        Envelope env = (Envelope) queries[0].getPrefilterBBox();
-        if ( getSchema().getBlobMapping() != null && queries[0].getFilter() == null
-             && queries[0].getSortProperties().length == 0 ) {
-            wmsStyleQuery = true;
-            for ( int i = 1; i < queries.length; i++ ) {
-                Envelope queryBBox = (Envelope) queries[i].getPrefilterBBox();
-                if ( queryBBox != env && queries[i].getFilter() != null && queries[i].getSortProperties() != null ) {
-                    wmsStyleQuery = false;
-                    break;
-                }
-            }
-        }
-
-        if ( wmsStyleQuery ) {
-            return queryMultipleFts( queries, env );
-        }
-
-        Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
-            int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < queries.length;
-            }
-
-            @Override
-            public FeatureResultSet next() {
-                if ( !hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                FeatureResultSet rs;
-                try {
-                    rs = query( queries[i++] );
-                } catch ( Exception e ) {
-                    LOG.debug( e.getMessage(), e );
-                    throw new RuntimeException( e.getMessage(), e );
-                }
-                return rs;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-        return new CombinedResultSet( rsIter );
-    }
-
-    @Override
     public String[] getDDL() {
         return new PostGISDDLCreator( getSchema() ).getDDL();
     }
@@ -1093,22 +584,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         return pgGeometry;
     }
 
-    private class PostGISResultSetIterator extends ResultSetIterator<Feature> {
-
-        private final FeatureBuilder builder;
-
-        public PostGISResultSetIterator( FeatureBuilder builder, ResultSet rs, Connection conn, Statement stmt ) {
-            super( rs, conn, stmt );
-            this.builder = builder;
-        }
-
-        @Override
-        protected Feature createElement( ResultSet rs )
-                                throws SQLException {
-            return builder.buildFeature( rs );
-        }
-    }
-
     @Override
     public SQLValueMapper getSQLValueMapper() {
         return new SQLValueMapper() {
@@ -1138,4 +613,45 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         };
     }
 
+    @Override
+    protected AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit )
+                            throws FilterEvaluationException {
+        return new PostGISWhereBuilder( new PostGISFeatureMapping( getSchema(), ft, getMapping( ft.getName() ), this ),
+                                        filter, sortCrit, useLegacyPredicates );
+    }
+
+    @Override
+    protected AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter )
+                            throws FilterEvaluationException {
+        PostGISMapping pgMapping = new PostGISMapping() {
+            @Override
+            public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+                                    throws FilterEvaluationException {
+
+                Envelope env = (Envelope) getCompatibleGeometry( literal, blobMapping.getCRS() );
+                org.deegree.geometry.primitive.Polygon polygon = GeometryUtils.envelopeToPolygon( env );
+                byte[] wkb = null;
+                try {
+                    wkb = WKBWriter.write( polygon );
+                } catch ( ParseException e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+                return wkb;
+            }
+
+            @Override
+            public Object getPostGISValue( Literal<?> literal, PropertyName propName )
+                                    throws FilterEvaluationException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
+                                    throws FilterEvaluationException, UnmappableException {
+                return new PropertyNameMapping( blobMapping.getTable().getTable(), blobMapping.getBBoxColumn(),
+                                                blobMapping.getCRS(), "-1" );
+            }
+        };
+        return new PostGISWhereBuilder( pgMapping, filter, null, useLegacyPredicates );
+    }
 }

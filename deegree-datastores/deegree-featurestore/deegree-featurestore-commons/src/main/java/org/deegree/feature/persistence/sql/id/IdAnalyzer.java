@@ -58,6 +58,8 @@ public class IdAnalyzer {
 
     private final Map<String, FeatureType> prefixToFt = new HashMap<String, FeatureType>();
 
+    private final MappedApplicationSchema schema;
+
     /**
      * Creates a new {@link IdAnalyzer} instance for the given {@link MappedApplicationSchema}.
      * 
@@ -65,6 +67,7 @@ public class IdAnalyzer {
      *            application schema with mapping information, must not be <code>null</code>
      */
     public IdAnalyzer( MappedApplicationSchema schema ) {
+        this.schema = schema;
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             if ( !ft.isAbstract() ) {
                 FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
@@ -81,26 +84,21 @@ public class IdAnalyzer {
 
     public IdAnalysis analyze( String featureOrGeomId ) {
 
-        int delimPos = featureOrGeomId.indexOf( '_' );
-        if ( delimPos == -1 ) {
-            throw new IllegalArgumentException( "Cannot determine feature type for id '" + featureOrGeomId
-                                                + "': contains no underscore." );
+        FeatureType ft = null;
+        // TODO implement this more efficiently
+        for ( String prefix : prefixToFt.keySet() ) {
+            if ( featureOrGeomId.startsWith( prefix ) ) {
+                ft = prefixToFt.get( prefix );
+                break;
+            }
         }
-        delimPos = featureOrGeomId.indexOf( '_', delimPos + 1 );
-        if ( delimPos == -1 ) {
-            throw new IllegalArgumentException( "Cannot determine feature type for id '" + featureOrGeomId
-                                                + "': must contain two underscores." );
-        }        
-        String prefix = featureOrGeomId.substring( 0, delimPos + 1 );
-        FeatureType ft = prefixToFt.get( prefix );
         if ( ft == null ) {
-            throw new IllegalArgumentException();
+            String msg = "Unable to determine feature type for id '" + featureOrGeomId + "'.";
+            throw new IllegalArgumentException( msg );
         }
 
-        String idRemainder = featureOrGeomId.substring( delimPos + 1 );
-
-        // TODO geometry ids (e.g. PLACE_GEOM_1)
-
-        return new IdAnalysis( ft, idRemainder, true );
+        FIDMapping fidMapping = schema.getFtMapping( ft.getName() ).getFidMapping();
+        String idRemainder = featureOrGeomId.substring( fidMapping.getPrefix().length() );
+        return new IdAnalysis( ft, idRemainder, fidMapping );
     }
 }

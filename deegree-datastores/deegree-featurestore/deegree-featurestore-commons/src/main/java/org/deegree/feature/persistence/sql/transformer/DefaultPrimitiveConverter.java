@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,62 +33,47 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql.id;
+package org.deegree.feature.persistence.sql.transformer;
 
-import org.deegree.commons.utils.StringUtils;
-import org.deegree.feature.types.FeatureType;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.deegree.commons.jdbc.StatementBuilder;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.primitive.SQLValueMangler;
 
 /**
- * Analysis of an incoming feature / geometry id.
+ * Implementations convert between {@link TypedObjectNode} particles and SQL column values.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class IdAnalysis {
+public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveValue> {
 
-    private final FeatureType ft;
+    private final PrimitiveType pt;
 
-    // TODO: geometries
-    private final boolean isFid = true;
-
-    private String[] idKernels;
-
-    IdAnalysis( FeatureType ft, String idRemainder, FIDMapping fidMapping ) throws IllegalArgumentException {
-        this.ft = ft;
-        if ( fidMapping.getColumns().size() == 1 ) {
-            idKernels = new String[] { idRemainder };
-        } else {
-            idKernels = StringUtils.split( idRemainder, fidMapping.getDelimiter() );
-        }
-    }
-
-    /**
-     * @return
-     */
-    public FeatureType getFeatureType() {
-        return ft;
-    }
-
-    /**
-     * Returns the values for the feature id columns from the {@link FIDMapping}.
-     * 
-     * @return values for feature id columns, never <code>null</code>
-     */
-    public String[] getIdKernels() {
-        return idKernels;
-    }
-
-    /**
-     * @return
-     */
-    public boolean isFid() {
-        return isFid;
+    public DefaultPrimitiveConverter( PrimitiveType pt ) {
+        this.pt = pt;
     }
 
     @Override
-    public String toString() {
-        return "ft=" + ft.getName() + ",idKernels=" + idKernels;
+    public String getRetrieveSQLSnippet() {
+        return "?";
+    }
+
+    @Override
+    public PrimitiveValue retrieveValue( ResultSet rs, int columnIdx )
+                            throws SQLException {
+        return (PrimitiveValue) SQLValueMangler.sqlToInternal( rs, columnIdx, pt );
+    }
+
+    @Override
+    public void appendArgument( StatementBuilder stmt, PrimitiveValue particle ) {
+        Object o = SQLValueMangler.internalToSQL( particle );
+        stmt.appendArgument( "?", o );
     }
 }

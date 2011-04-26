@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,62 +33,32 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql.id;
+package org.deegree.commons.jdbc;
 
-import org.deegree.commons.utils.StringUtils;
-import org.deegree.feature.types.FeatureType;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Analysis of an incoming feature / geometry id.
+ * Helper class for building {@link PreparedStatement}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class IdAnalysis {
+public class StatementBuilder {
 
-    private final FeatureType ft;
+    private final StringBuilder sql = new StringBuilder();
 
-    // TODO: geometries
-    private final boolean isFid = true;
+    private final List<Object> args = new ArrayList<Object>();
 
-    private String[] idKernels;
-
-    IdAnalysis( FeatureType ft, String idRemainder, FIDMapping fidMapping ) throws IllegalArgumentException {
-        this.ft = ft;
-        if ( fidMapping.getColumns().size() == 1 ) {
-            idKernels = new String[] { idRemainder };
-        } else {
-            idKernels = StringUtils.split( idRemainder, fidMapping.getDelimiter() );
-        }
+    public void appendSQL( String sql ) {
+        this.sql.append( sql );
     }
 
-    /**
-     * @return
-     */
-    public FeatureType getFeatureType() {
-        return ft;
-    }
-
-    /**
-     * Returns the values for the feature id columns from the {@link FIDMapping}.
-     * 
-     * @return values for feature id columns, never <code>null</code>
-     */
-    public String[] getIdKernels() {
-        return idKernels;
-    }
-
-    /**
-     * @return
-     */
-    public boolean isFid() {
-        return isFid;
-    }
-
-    @Override
-    public String toString() {
-        return "ft=" + ft.getName() + ",idKernels=" + idKernels;
+    public void appendArgument( String sql, Object arg ) {
+        this.sql.append( sql );
+        args.add( arg );
     }
 }

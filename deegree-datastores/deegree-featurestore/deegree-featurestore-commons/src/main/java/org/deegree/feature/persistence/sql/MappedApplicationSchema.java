@@ -242,7 +242,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * Returns an analysis of the given feature or geometry id.
      * 
      * @param featureOrGeomId
-     * @return
+     *            id to be analyzed, must not be <code>null</code>
+     * @return id analysis, never <code>null</code>
      * @throws IllegalArgumentException
      *             if the id does not denote a feature or geometry id
      */

@@ -69,6 +69,8 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.geometry.standard.points.PointsList;
+import org.postgis.LineString;
+import org.postgis.PGgeometry;
 
 /**
  * <code>GeometryUtils</code>
@@ -95,6 +97,36 @@ public class GeometryUtils {
         LinearRing ring = fac.createLinearRing( null, env.getCoordinateSystem(), new PointsArray( a, b, c, d, a ) );
         return fac.createPolygon( null, env.getCoordinateSystem(), ring, null );
     }
+
+//    public static Geometry envelopeToGeometry( Envelope env ) {
+//        Geometry geom = null;
+//        if ( env != null ) {
+//            double minX = envelope.getMin().get0();
+//            double minY = envelope.getMin().get1();
+//            double maxX = envelope.getMax().get0();
+//            double maxY = envelope.getMax().get1();
+//            if ( envelope.getMin().equals( envelope.getMax() ) ) {
+//                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1() );
+//                // TODO
+//                point.setSrid( srid );
+//                pgGeometry = new PGgeometry( point );
+//            } else if ( minX == maxX || minY == maxY ) {
+//                LineString line = new LineString( new Point[] { new Point( minX, minY ), new Point( maxX, maxY ) } );
+//                // TODO
+//                line.setSrid( srid );
+//                pgGeometry = new PGgeometry( line );
+//            } else {
+//                Point[] points = new Point[] { new Point( minX, minY ), new Point( maxX, minY ),
+//                                              new Point( maxX, maxY ), new Point( minX, maxY ), new Point( minX, minY ) };
+//                LinearRing outer = new LinearRing( points );
+//                Polygon polygon = new Polygon( new LinearRing[] { outer } );
+//                // TODO
+//                polygon.setSrid( srid );
+//                pgGeometry = new PGgeometry( polygon );
+//            }
+//        }
+//        return pgGeometry;
+//    }
 
     /**
      * Moves the coordinates of a geometry.
