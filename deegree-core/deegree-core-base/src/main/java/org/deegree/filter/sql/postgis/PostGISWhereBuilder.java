@@ -81,14 +81,14 @@ import org.deegree.geometry.io.WKTWriter;
  */
 public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
-    private final PropertyNameMapper mapping;
+    private final PropertyNameMapper mapper;
 
     private final boolean useLegacyPredicates;
 
     /**
      * Creates a new {@link PostGISWhereBuilder} instance.
      * 
-     * @param mapping
+     * @param mapper
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
@@ -100,11 +100,11 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the expression contains invalid {@link PropertyName}s
      */
-    public PostGISWhereBuilder( PropertyNameMapper mapping, OperatorFilter filter, SortProperty[] sortCrit,
+    public PostGISWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
                                 boolean useLegacyPredicates ) throws FilterEvaluationException {
         super( filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
-        this.mapping = mapping;
+        this.mapper = mapper;
         build();
     }
 
@@ -325,7 +325,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     protected SQLExpression toProtoSQL( PropertyName propName )
                             throws UnmappableException, FilterEvaluationException {
         SQLExpression sql = null;
-        PropertyNameMapping propMapping = mapping.getMapping( propName, aliasManager );
+        PropertyNameMapping propMapping = mapper.getMapping( propName, aliasManager );
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
             // TODO

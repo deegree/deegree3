@@ -58,6 +58,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLColumn;
@@ -80,12 +81,12 @@ import org.deegree.geometry.io.WKTWriter;
  */
 public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
 
-    private final MSSQLServerMapping mapping;
+    private final PropertyNameMapper mapper;
 
     /**
      * Creates a new {@link MSSQLServerWhereBuilder} instance.
      * 
-     * @param mapping
+     * @param mapper
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
      *            filter to use for generating the WHERE clause, can be <code>null</code>
@@ -94,10 +95,10 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the expression contains invalid {@link PropertyName}s
      */
-    public MSSQLServerWhereBuilder( MSSQLServerMapping mapping, OperatorFilter filter, SortProperty[] sortCrit )
+    public MSSQLServerWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit )
                             throws FilterEvaluationException {
         super( filter, sortCrit );
-        this.mapping = mapping;
+        this.mapper = mapper;
         build();
     }
 
@@ -251,7 +252,7 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
     protected SQLExpression toProtoSQL( PropertyName propName )
                             throws UnmappableException, FilterEvaluationException {
         SQLExpression sql = null;
-        PropertyNameMapping propMapping = mapping.getMapping( propName, aliasManager );
+        PropertyNameMapping propMapping = mapper.getMapping( propName, aliasManager );
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
             // TODO
@@ -298,5 +299,4 @@ public class MSSQLServerWhereBuilder extends AbstractWhereBuilder {
         // return new SQLLiteral( wkb, Types.BINARY );
         return builder.toOperation();
     }
-
 }
