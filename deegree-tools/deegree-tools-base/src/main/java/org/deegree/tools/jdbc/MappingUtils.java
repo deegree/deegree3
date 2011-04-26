@@ -53,6 +53,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryException;
 import org.deegree.gml.GMLInputFactory;
@@ -145,10 +146,11 @@ public class MappingUtils {
 
             String nodeAsString = sw.toString();
             // where is the namespace binding???
-            nodeAsString = nodeAsString.replaceFirst( " ", " xmlns:gml=\"http://www.opengis.net/gml/3.2\" " );
+            nodeAsString = nodeAsString.replaceFirst( " ", " xmlns:" + CommonNamespaces.GML_PREFIX + "=\""
+                                                           + CommonNamespaces.GMLNS + "\" " );
             InputStream in = new ByteArrayInputStream( nodeAsString.getBytes() );
             XMLStreamReader stream = XMLInputFactory.newInstance().createXMLStreamReader( in );
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, stream );
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, stream );
             org.deegree.geometry.Geometry geometry = gmlReader.readGeometry();
             return geometry.getEnvelope();
             // Source source = new DOMSource( node );

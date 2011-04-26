@@ -343,8 +343,8 @@ public class DatabaseXMLMapping {
             outFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
 
             XMLStreamWriter writer = outFactory.createXMLStreamWriter( sw );
-            writer.setDefaultNamespace( CommonNamespaces.GML3_2_NS );
-            GMLStreamWriter gmlSw = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, writer );
+            writer.setDefaultNamespace( CommonNamespaces.GMLNS );
+            GMLStreamWriter gmlSw = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );
             gmlSw.write( geom );
             writer.close();
 
