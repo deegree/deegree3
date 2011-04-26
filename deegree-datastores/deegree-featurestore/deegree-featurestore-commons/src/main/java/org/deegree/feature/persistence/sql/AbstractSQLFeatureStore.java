@@ -504,6 +504,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         Connection conn = null;
         try {
             long begin = System.currentTimeMillis();
+            conn = ConnectionManager.getConnection( getConnId() );            
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
             List<String> columns = builder.getInitialSelectColumns();
@@ -536,7 +537,6 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             }
             LOG.debug( "SQL: {}", sql );
 
-            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.prepareStatement( sql.toString() );
             LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
