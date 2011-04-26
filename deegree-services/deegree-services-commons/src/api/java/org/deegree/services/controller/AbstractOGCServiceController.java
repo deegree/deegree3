@@ -392,7 +392,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
     protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter )
                             throws ResourceInitException {
         try {
-            return JAXBUtils.unmarshall( jaxbPackage, schemaLocation, xmlAdapter );
+            return JAXBUtils.unmarshall( jaxbPackage, schemaLocation, xmlAdapter, workspace );
         } catch ( JAXBException e ) {
             LOG.error( "Could not load service configuration: '{}'", e.getLinkedException().getMessage() );
             throw new ResourceInitException( "Error parsing service configuration: "
