@@ -827,10 +827,10 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
      * @throws FilterEvaluationException
      */
     protected abstract AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter,
-                                                             SortProperty[] sortCrit )
+                                                             SortProperty[] sortCrit, Connection conn )
                             throws FilterEvaluationException;
 
-    protected abstract AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter )
+    protected abstract AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
                             throws FilterEvaluationException;
 
     private class PostGISResultSetIterator extends ResultSetIterator<Feature> {

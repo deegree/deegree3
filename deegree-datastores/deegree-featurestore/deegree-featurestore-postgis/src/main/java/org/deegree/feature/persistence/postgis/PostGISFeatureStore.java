@@ -614,14 +614,15 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     }
 
     @Override
-    protected AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit )
+    protected AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
+                                                    Connection conn )
                             throws FilterEvaluationException {
         return new PostGISWhereBuilder( new PostGISFeatureMapping( getSchema(), ft, getMapping( ft.getName() ), this ),
                                         filter, sortCrit, useLegacyPredicates );
     }
 
     @Override
-    protected AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter )
+    protected AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
                             throws FilterEvaluationException {
         PostGISMapping pgMapping = new PostGISMapping() {
             @Override
