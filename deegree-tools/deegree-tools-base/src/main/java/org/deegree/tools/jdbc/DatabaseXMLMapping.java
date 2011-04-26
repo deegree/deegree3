@@ -224,7 +224,7 @@ public class DatabaseXMLMapping {
                     if ( value != null ) {
                         Pair<String, ICRS> p = mainTable.getGeometryColumn( cName );
                         if ( p != null ) {
-                            handleGeometry( tableElement, p, (byte[]) value );
+                            handleGeometry( cNameElement, p, (byte[]) value );
                         } else {
                             cNameElement.addChild( omFactory.createOMText( value.toString() ) );
                         }
@@ -302,7 +302,7 @@ public class DatabaseXMLMapping {
                         OMElement cNameElement = omFactory.createOMElement( new QName( cName ) );
                         subTableElement.addChild( cNameElement );
                         if ( p != null ) {
-                            handleGeometry( subTableElement, p, (byte[]) value );
+                            handleGeometry( cNameElement, p, (byte[]) value );
                         } else {
                             cNameElement.addChild( omFactory.createOMText( value.toString() ) );
                         }
@@ -348,10 +348,7 @@ public class DatabaseXMLMapping {
             gmlSw.write( geom );
             writer.close();
 
-            OMElement geomElement = omFactory.createOMElement( new QName( p.first ) );
-            geomElement.addChild( AXIOMUtil.stringToOM( sw.toString() ) );
-
-            tableElement.addChild( geomElement );
+            tableElement.addChild( AXIOMUtil.stringToOM( sw.toString() ) );
         } catch ( ParseException e ) {
             LOG.info( "WKB from the DB could not be parsed: '{}'.", e.getLocalizedMessage() );
             LOG.info( "For PostGIS users: you have to select the geometry field 'asbinary(geometry)'." );
@@ -371,7 +368,6 @@ public class DatabaseXMLMapping {
 
     protected OMDocument transform( OMDocument xml, Properties outputProperties, Map<String, String> params )
                             throws Exception {
-        System.out.println(xml.getOMDocumentElement());
         LOG.debug( "transform: " + xml.getOMDocumentElement() );
         Source xmlSource = new OMSource( xml.getOMDocumentElement() );
 
