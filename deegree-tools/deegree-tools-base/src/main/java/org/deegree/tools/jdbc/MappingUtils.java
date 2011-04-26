@@ -145,8 +145,7 @@ public class MappingUtils {
 
             String nodeAsString = sw.toString();
             // where is the namespace binding???
-            nodeAsString = nodeAsString.replace( "<gml:Polygon ",
-                                                 "<gml:Polygon xmlns:gml=\"http://www.opengis.net/gml/3.2\" " );
+            nodeAsString = nodeAsString.replaceFirst( " ", " xmlns:gml=\"http://www.opengis.net/gml/3.2\" " );
             InputStream in = new ByteArrayInputStream( nodeAsString.getBytes() );
             XMLStreamReader stream = XMLInputFactory.newInstance().createXMLStreamReader( in );
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, stream );
