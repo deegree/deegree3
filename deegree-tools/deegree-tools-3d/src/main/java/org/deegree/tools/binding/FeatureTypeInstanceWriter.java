@@ -269,7 +269,7 @@ public class FeatureTypeInstanceWriter {
                                                StringBuilder result, Writer out ) {
         // TODO Auto-generated method stub
 
-        String pt = PrimitiveType.class.getSimpleName() + "." + prop.getPrimitiveType().name();
+        String pt = PrimitiveType.class.getSimpleName() + "." + prop.getPrimitiveType().getBaseType().name();
         result.append( pt ).append( ", " );
         result.append( prop.isAbstract() ).append( ", " );
         result.append( subVar );

@@ -51,6 +51,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.ApplicationSchema;
@@ -60,13 +61,13 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
@@ -262,8 +263,8 @@ public class FeatureClass extends ModelClass {
      */
     private Field getFromProperty( SimplePropertyType pd ) {
         String fieldName = createFieldName( createBetterMethodName( pd.getName().getLocalPart() ) );
-        final BaseType primitiveType = pd.getPrimitiveType();
-        String fieldType = primitiveType.getValueClass().getCanonicalName();
+        final PrimitiveType primitiveType = pd.getPrimitiveType();
+        String fieldType = primitiveType.getBaseType().getValueClass().getCanonicalName();
 
         return new Field( fieldName, fieldType, pd.isAbstract(), pd.getName() );
     }
