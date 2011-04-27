@@ -37,7 +37,6 @@ package org.deegree.feature.persistence.sql.rules;
 
 import java.util.List;
 
-import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
@@ -72,6 +71,11 @@ public class PrimitiveMapping extends Mapping {
         this.mapping = mapping;
     }
 
+    /**
+     * Returns the primitive type for the mapped particles.
+     * 
+     * @return primitive type for the mapped particles
+     */
     public PrimitiveType getType() {
         return pt;
     }

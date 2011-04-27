@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.transformer;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import org.deegree.commons.jdbc.StatementBuilder;
 import org.deegree.commons.tom.TypedObjectNode;
 
 /**
@@ -52,35 +47,7 @@ import org.deegree.commons.tom.TypedObjectNode;
  */
 public interface ParticleConverter<T extends TypedObjectNode> {
 
-    /**
-     * Appends the given particle as an argument to the given {@link StatementBuilder}.
-     * 
-     * @param stmt
-     *            statement builder, must not be <code>null</code>
-     * @param particle
-     *            particle to convert and append, can be <code>null</code>
-     */
-    public void appendArgument( StatementBuilder stmt, T particle );
+    public String getSelectSQLSnippet(String tableAlias);
 
-    /**
-     * Returns the SQL snippet for building a {@link Statement} to retrieve the SQL values needed for building the
-     * particle.
-     * 
-     * @return SQL snippet, never <code>null</code>
-     */
-    public String getRetrieveSQLSnippet();
-
-    /**
-     * Retrieves the particle value from the given {@link ResultSet}.
-     * 
-     * @param rs
-     *            result set, must not be <code>null</code>
-     * @param columnIdx
-     *            column index for accessing the SQL value
-     * @return particle, can be <code>null</code>
-     * @throws SQLException
-     *             if rebuilding the particle fails
-     */
-    public T retrieveValue( ResultSet rs, int columnIdx )
-                            throws SQLException;
+    public TypedObjectNode getParticle( Object sqlObjects );
 }

@@ -66,10 +66,11 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
     private final Map<String, String> nsToPrefix = new HashMap<String, String>();
 
     /**
-     * Creates a new instance of {@link NamespaceContext} with only the prefix 'xmlns:' being bound.
+     * Creates a new instance of {@link NamespaceContext} with no bindings.
      */
     public NamespaceBindings() {
-        prefixToNs.put( CommonNamespaces.XMLNS_PREFIX, CommonNamespaces.XMLNS );
+        // nothing to do
+        // prefixToNs.put( CommonNamespaces.XMLNS_PREFIX, CommonNamespaces.XMLNS );
     }
 
     /**

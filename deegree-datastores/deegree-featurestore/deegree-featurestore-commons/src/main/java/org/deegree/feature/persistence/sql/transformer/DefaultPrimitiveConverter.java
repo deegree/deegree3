@@ -35,17 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.transformer;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.deegree.commons.jdbc.StatementBuilder;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.primitive.SQLValueMangler;
+import org.deegree.commons.utils.Pair;
 
 /**
- * Implementations convert between {@link TypedObjectNode} particles and SQL column values.
+ * Implementations convert between {@link PrimitiveValue} particles and SQL column values.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -54,26 +50,35 @@ import org.deegree.commons.tom.primitive.SQLValueMangler;
  */
 public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveValue> {
 
-    private final BaseType pt;
+    private final PrimitiveType pt;
 
-    public DefaultPrimitiveConverter( BaseType pt ) {
+    private final Pair<String, String[]> selectSnippet;
+
+    public DefaultPrimitiveConverter( PrimitiveType pt, String column ) {
         this.pt = pt;
+        selectSnippet = new Pair<String, String[]>( "{}", new String[] { column } );
+    }
+//
+//    @Override
+//    public Pair<String, String[]> getSelectSQLSnippet() {
+//        return selectSnippet;
+//    }
+//
+//    @Override
+//    public List<PrimitiveValue> getParticles( Object... sqlValues ) {
+//        Object sqlValue = sqlValues[0];
+//        if 
+//    }
+
+    @Override
+    public String getSelectSQLSnippet( String tableAlias ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public String getRetrieveSQLSnippet() {
-        return "?";
-    }
-
-    @Override
-    public PrimitiveValue retrieveValue( ResultSet rs, int columnIdx )
-                            throws SQLException {
-        return (PrimitiveValue) SQLValueMangler.sqlToInternal( rs, columnIdx, pt );
-    }
-
-    @Override
-    public void appendArgument( StatementBuilder stmt, PrimitiveValue particle ) {
-        Object o = SQLValueMangler.internalToSQL( particle );
-        stmt.appendArgument( "?", o );
+    public TypedObjectNode getParticle( Object sqlObjects ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
