@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql.transformer;
+package org.deegree.commons.tom.sql;
 
 import java.sql.Connection;
 

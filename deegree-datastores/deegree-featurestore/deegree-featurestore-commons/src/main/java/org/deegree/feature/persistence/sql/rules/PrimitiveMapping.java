@@ -39,9 +39,9 @@ import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.transformer.DefaultPrimitiveConverter;
-import org.deegree.feature.persistence.sql.transformer.ParticleConverter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
