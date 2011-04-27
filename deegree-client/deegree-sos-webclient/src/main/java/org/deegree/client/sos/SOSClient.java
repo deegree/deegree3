@@ -151,7 +151,7 @@ public class SOSClient extends HttpServlet {
     }
 
     private void doDescribeSensor( HttpServletRequest request, HttpServletResponse response ) {
-        String path = "client/sos/DescribeSensorTemplate.xml";
+        String path = "client/sos/DescribeSensorTemplate.template";
         path = getServletContext().getRealPath( path );
 
         String host = request.getParameter( "host" );
@@ -186,7 +186,7 @@ public class SOSClient extends HttpServlet {
     private void doGetObservation( HttpServletRequest request, HttpServletResponse response ) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        String path = "client/sos/GetObservationTemplate.xml";
+        String path = "client/sos/GetObservationTemplate.template";
 
         parameters.put( "path", getServletContext().getRealPath( path ) );
         parameters.put( "host", request.getParameter( "host" ) );
