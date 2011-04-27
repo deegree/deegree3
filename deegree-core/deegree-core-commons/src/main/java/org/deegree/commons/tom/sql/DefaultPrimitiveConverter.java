@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql.transformer;
+package org.deegree.commons.tom.sql;
 
 import static org.deegree.commons.tom.primitive.BaseType.DATE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
@@ -52,7 +52,6 @@ import org.deegree.commons.tom.datetime.Time;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
