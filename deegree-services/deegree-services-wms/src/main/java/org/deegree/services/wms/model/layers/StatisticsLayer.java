@@ -173,8 +173,8 @@ public class StatisticsLayer extends FeatureLayer {
                         continue;
                     }
                     List<Property> props = new ArrayList<Property>();
-                    props.add( new SimpleProperty( queryProp, req.second, STRING ) );
-                    props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ), DATE ) );
+                    props.add( new SimpleProperty( queryProp, req.second ) );
+                    props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ) ) );
                     props.add( new GenericProperty( boxProp, box ) );
 
                     GenericFeature f = new GenericFeature( featureType, null, props, null, null );
@@ -233,8 +233,8 @@ public class StatisticsLayer extends FeatureLayer {
                         continue;
                     }
                     List<Property> props = new ArrayList<Property>();
-                    props.add( new SimpleProperty( queryProp, req.second, STRING ) );
-                    props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ), DATE ) );
+                    props.add( new SimpleProperty( queryProp, req.second ) );
+                    props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ) ) );
                     props.add( new GenericProperty( boxProp, box ) );
 
                     GenericFeature f = new GenericFeature( featureType, null, props, null, null );
