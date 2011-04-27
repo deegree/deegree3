@@ -85,6 +85,11 @@ import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.transformer.DefaultPrimitiveConverter;
+import org.deegree.feature.persistence.sql.transformer.ParticleConverter;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -161,6 +166,26 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     public FeatureTypeMapping getMapping( QName ftName ) {
         return schema.getFtMapping( ftName );
     }
+
+    /**
+     * Returns the {@link ParticleConverter} for the given {@link Mapping} instance.
+     * 
+     * @param mapping
+     *            particle mapping, must not be <code>null</code>
+     * @return particle converter, never <code>null</code>
+     */
+    public ParticleConverter<?> getConverter( Mapping mapping ) {
+        if ( mapping instanceof PrimitiveMapping ) {
+            PrimitiveMapping pm = (PrimitiveMapping) mapping;
+            return new DefaultPrimitiveConverter( pm.getType(), ( (DBField) pm.getMapping() ).getColumn() );
+        } else if ( mapping instanceof GeometryMapping ) {
+            GeometryMapping gm = (GeometryMapping) mapping;
+            return getGeometryConverter( gm );
+        }
+        return null;
+    }
+
+    public abstract ParticleConverter<Geometry> getGeometryConverter( GeometryMapping gm );
 
     @Override
     public Envelope getEnvelope( QName ftName )
@@ -315,8 +340,6 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         }
         return transformedLiteral;
     }
-
-    public abstract SQLValueMapper getSQLValueMapper();
 
     protected short getFtId( QName ftName ) {
         return getSchema().getFtId( ftName );
@@ -506,7 +529,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         Connection conn = null;
         try {
             long begin = System.currentTimeMillis();
-            conn = ConnectionManager.getConnection( getConnId() );            
+            conn = ConnectionManager.getConnection( getConnId() );
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
             List<String> columns = builder.getInitialSelectColumns();
@@ -546,7 +569,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             for ( IdAnalysis idKernel : idKernels ) {
                 for ( Object o : idKernel.getIdKernels() ) {
                     // TODO
-                    PrimitiveValue value = new PrimitiveValue( o, new PrimitiveType (STRING) );
+                    PrimitiveValue value = new PrimitiveValue( o, new PrimitiveType( STRING ) );
                     Object sqlValue = SQLValueMangler.internalToSQL( value );
                     stmt.setObject( i++, sqlValue );
                 }

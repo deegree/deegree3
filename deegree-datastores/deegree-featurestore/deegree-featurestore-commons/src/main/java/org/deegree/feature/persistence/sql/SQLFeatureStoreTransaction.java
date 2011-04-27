@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.ByteArrayOutputStream;
@@ -78,7 +79,9 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.transformer.ParticleConverter;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -88,7 +91,6 @@ import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.slf4j.Logger;
@@ -115,7 +117,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final Connection conn;
 
-    private final SQLValueMapper valueMapper;
+    // TODO
+    private ParticleConverter<Geometry> blobGeomConverter;
 
     /**
      * Creates a new {@link SQLFeatureStoreTransaction} instance.
@@ -134,8 +137,14 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         this.taManager = taManager;
         this.conn = conn;
         this.schema = schema;
-        this.valueMapper = fs.getSQLValueMapper();
         blobMapping = schema.getBlobMapping();
+        if ( blobMapping != null ) {
+            DBField bboxColumn = new DBField( blobMapping.getBBoxColumn() );
+            GeometryStorageParams geometryParams = new GeometryStorageParams( blobMapping.getCRS(), null, DIM_2 );
+            GeometryMapping blobGeomMapping = new GeometryMapping( null, bboxColumn, GeometryType.GEOMETRY,
+                                                                   geometryParams, null );
+            blobGeomConverter = fs.getGeometryConverter( blobGeomMapping );
+        }
     }
 
     @Override
@@ -339,7 +348,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( "," );
                 sql.append( blobMapping.getBBoxColumn() );
                 sql.append( ") VALUES(?,?,?," );
-                valueMapper.insertGeometry( sql, null );
+                blobGeomConverter.getSetSnippet();
                 sql.append( ")" );
                 System.out.println( sql );
                 blobInsertStmt = conn.prepareStatement( sql.toString(), new String[] { "ID" } );
@@ -419,16 +428,16 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         stmt.setBytes( 3, bytes );
         LOG.debug( "Feature blob size: " + bytes.length );
         Envelope bbox = feature.getEnvelope();
-        if ( bbox != null ) {
-            try {
-                GeometryTransformer bboxTransformer = new GeometryTransformer( crs );
-                bbox = bboxTransformer.transform( bbox );
-            } catch ( Exception e ) {
-                throw new SQLException( e.getMessage(), e );
-            }
-        }
+        // if ( bbox != null ) {
+        // try {
+        // GeometryTransformer bboxTransformer = new GeometryTransformer( crs );
+        // bbox = bboxTransformer.transform( bbox );
+        // } catch ( Exception e ) {
+        // throw new SQLException( e.getMessage(), e );
+        // }
+        // }
         try {
-            stmt.setObject( 4, valueMapper.convertGeometry( bbox, null, conn ) );
+            stmt.setObject( 4, blobGeomConverter.toSQLArgument( bbox, conn ) );
         } catch ( Throwable e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e );
@@ -508,18 +517,10 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     LOG.debug( "Skipping geometry mapping. Not mapped to database column." );
                 } else {
                     Geometry geom = (Geometry) getPropValue( value );
+                    ParticleConverter<Geometry> converter = (ParticleConverter<Geometry>) fs.getConverter( mapping );
+                    Object sqlValue = converter.toSQLArgument( geom, conn );
                     String column = ( (DBField) me ).getColumn();
-                    Object sqlValue = null;
-                    String srid = ( (GeometryMapping) mapping ).getSrid();
-                    ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
-                    try {
-                        sqlValue = valueMapper.convertGeometry( geom, storageCRS, conn );
-                    } catch ( Throwable e ) {
-                        throw new FeatureStoreException( e.getMessage(), e );
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    valueMapper.insertGeometry( sb, srid );
-                    insertNode.getRow().addPreparedArgument( column, sqlValue, sb.toString() );
+                    insertNode.getRow().addPreparedArgument( column, sqlValue, converter.getSetSnippet() );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
                 String fid = null;
@@ -706,14 +707,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     if ( !( me instanceof DBField ) ) {
                         continue;
                     }
+                    ParticleConverter<Geometry> geomConverter = (ParticleConverter<Geometry>) fs.getConverter( mapping );
                     column = ( (DBField) me ).getColumn();
-                    String srid = ( (GeometryMapping) mapping ).getSrid();
-                    ICRS storageCRS = ( (GeometryMapping) mapping ).getCRS();
                     Geometry value = (Geometry) replacementProp.getValue();
                     try {
-                        sqlObjects.add( valueMapper.convertGeometry( value, storageCRS, conn ) );
-                    } catch ( Exception e ) {
-                        throw new FeatureStoreException( e.getMessage(), e );
+                        sqlObjects.add( geomConverter.toSQLArgument( value, conn ) );
+                    } catch ( Throwable t ) {
+                        throw new FeatureStoreException( t.getMessage(), t );
                     }
                     if ( !first ) {
                         sql.append( "," );
@@ -723,8 +723,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     sql.append( column );
                     sql.append( "=" );
                     StringBuilder sb = new StringBuilder();
-                    valueMapper.insertGeometry( sb, srid );
-                    sql.append( sb.toString() );
+                    sql.append( geomConverter.getSetSnippet() );
                 } else {
                     LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
                     continue;

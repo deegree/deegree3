@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.transformer;
 
+import java.sql.Connection;
+
 import org.deegree.commons.tom.TypedObjectNode;
 
 /**
- * Implementations convert particles between JDBC argument objects and {@link TypedObjectNode} instances.
+ * Implementations convert particles between {@link TypedObjectNode} instances and SQL argument objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -47,7 +49,11 @@ import org.deegree.commons.tom.TypedObjectNode;
  */
 public interface ParticleConverter<T extends TypedObjectNode> {
 
-    public String getSelectSQLSnippet( String tableAlias );
+    public String getSelectSnippet( String tableAlias );
 
-    public TypedObjectNode getParticle( Object sqlValue );
+    public String getSetSnippet();
+
+    public T toParticle( Object sqlValue );
+
+    public Object toSQLArgument( T particle, Connection conn );
 }

@@ -69,7 +69,6 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
-import org.deegree.geometry.io.WKBReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 import org.jaxen.expr.Expr;
@@ -82,8 +81,6 @@ import org.jaxen.expr.TextNodeStep;
 import org.jaxen.saxpath.Axis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Builds {@link Feature} instances from SQL result set rows (relational mode).
@@ -187,7 +184,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 GeometryMapping gm = (GeometryMapping) mapping;
                 MappingExpression column = gm.getMapping();
                 if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, fs.getSQLValueMapper().selectGeometry( ( (DBField) column ).getColumn() ) );
+                    addColumn( colToRsIdx, fs.getGeometryConverter( gm ).getSelectSnippet( null ) );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
                 FeatureMapping fm = (FeatureMapping) mapping;
@@ -301,20 +298,15 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
                 Object sqlValue = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
-                particle = pm.getConverter().getParticle( sqlValue );
+                particle = pm.getConverter().toParticle( sqlValue );
             }
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                byte[] wkb = rs.getBytes( colToRsIdx.get( fs.getSQLValueMapper().selectGeometry( ( (DBField) me ).getColumn() ) ) );
-                if ( wkb != null ) {
-                    try {
-                        particle = WKBReader.read( wkb, pm.getCRS() );
-                    } catch ( ParseException e ) {
-                        throw new SQLException( "Error parsing WKB from database: " + e.getMessage(), e );
-                    }
-                }
+                String col = fs.getGeometryConverter( pm ).getSelectSnippet( null );
+                Object sqlValue = rs.getObject( colToRsIdx.get( col ) );
+                particle = fs.getConverter( mapping ).toParticle( sqlValue );
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;

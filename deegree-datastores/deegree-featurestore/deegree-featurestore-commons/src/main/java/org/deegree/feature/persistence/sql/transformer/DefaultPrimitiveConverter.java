@@ -40,6 +40,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Connection;
 import java.text.ParseException;
 
 import javax.xml.namespace.QName;
@@ -90,40 +91,44 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
     }
 
     @Override
-    public String getSelectSQLSnippet( String tableAlias ) {
+    public String getSelectSnippet( String tableAlias ) {
         if ( tableAlias == null ) {
             return tableAlias + "." + column;
         }
         return null;
     }
 
+    public String getSetSnippet() {
+        return "?";
+    }
+
     @Override
-    public PrimitiveValue getParticle( Object sqlValue ) {
+    public PrimitiveValue toParticle( Object sqlValue ) {
         if ( sqlValue == null ) {
             return null;
         }
         switch ( bt ) {
         case BOOLEAN:
-            return getBooleanParticle( sqlValue );
+            return toBooleanParticle( sqlValue );
         case DATE:
-            return getDateParticle( sqlValue );
+            return toDateParticle( sqlValue );
         case DATE_TIME:
-            return getDateTimeParticle( sqlValue );
+            return toDateTimeParticle( sqlValue );
         case DECIMAL:
-            return getDecimalParticle( sqlValue );
+            return toDecimalParticle( sqlValue );
         case DOUBLE:
-            return getDoubleParticle( sqlValue );
+            return toDoubleParticle( sqlValue );
         case INTEGER:
-            return getIntegerParticle( sqlValue );
+            return toIntegerParticle( sqlValue );
         case STRING:
-            return getStringParticle( sqlValue );
+            return toStringParticle( sqlValue );
         case TIME:
-            return getTimeParticle( sqlValue );
+            return toTimeParticle( sqlValue );
         }
         throw new UnsupportedOperationException();
     }
 
-    protected PrimitiveValue getBooleanParticle( Object sqlValue ) {
+    protected PrimitiveValue toBooleanParticle( Object sqlValue ) {
         Boolean value = null;
         if ( sqlValue instanceof Boolean ) {
             value = (Boolean) sqlValue;
@@ -141,7 +146,7 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
         return new PrimitiveValue( value, pt );
     }
 
-    protected PrimitiveValue getDateParticle( Object sqlValue ) {
+    protected PrimitiveValue toDateParticle( Object sqlValue ) {
         Date value = null;
         if ( sqlValue instanceof java.util.Date ) {
             try {
@@ -156,7 +161,7 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
         return new PrimitiveValue( value, pt );
     }
 
-    protected PrimitiveValue getDateTimeParticle( Object sqlValue ) {
+    protected PrimitiveValue toDateTimeParticle( Object sqlValue ) {
         DateTime value = null;
         if ( sqlValue instanceof java.util.Date ) {
             try {
@@ -172,7 +177,7 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
         return new PrimitiveValue( value, pt );
     }
 
-    protected PrimitiveValue getDecimalParticle( Object sqlValue )
+    protected PrimitiveValue toDecimalParticle( Object sqlValue )
                             throws NumberFormatException {
         BigDecimal value = null;
         if ( sqlValue instanceof BigDecimal ) {
@@ -183,7 +188,7 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
         return new PrimitiveValue( value, pt );
     }
 
-    protected PrimitiveValue getDoubleParticle( Object sqlValue )
+    protected PrimitiveValue toDoubleParticle( Object sqlValue )
                             throws NumberFormatException {
         Double value = null;
         if ( sqlValue instanceof Double ) {
@@ -194,7 +199,7 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
         return new PrimitiveValue( value, pt );
     }
 
-    protected PrimitiveValue getIntegerParticle( Object sqlValue )
+    protected PrimitiveValue toIntegerParticle( Object sqlValue )
                             throws NumberFormatException {
         BigInteger value = null;
         if ( sqlValue instanceof BigInteger ) {
@@ -205,11 +210,11 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
         return new PrimitiveValue( value, pt );
     }
 
-    protected PrimitiveValue getStringParticle( Object sqlValue ) {
+    protected PrimitiveValue toStringParticle( Object sqlValue ) {
         return new PrimitiveValue( "" + sqlValue, pt );
     }
 
-    protected PrimitiveValue getTimeParticle( Object sqlValue ) {
+    protected PrimitiveValue toTimeParticle( Object sqlValue ) {
         Time value = null;
         if ( sqlValue instanceof Time ) {
             value = (Time) sqlValue;
@@ -224,5 +229,11 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
                                                 + "' to Time object." );
         }
         return new PrimitiveValue( value, pt );
+    }
+
+    @Override
+    public Object toSQLArgument( PrimitiveValue particle, Connection conn ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

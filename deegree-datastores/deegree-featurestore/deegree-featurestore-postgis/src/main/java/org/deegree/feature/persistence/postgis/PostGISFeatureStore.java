@@ -57,7 +57,6 @@ import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
-import org.deegree.feature.persistence.sql.SQLValueMapper;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.config.MappedSchemaBuilderGML;
@@ -66,6 +65,7 @@ import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.Mappings;
+import org.deegree.feature.persistence.sql.transformer.ParticleConverter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -87,6 +87,7 @@ import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -139,9 +140,9 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-    
+
         LOG.debug( "init" );
-    
+
         MappedApplicationSchema schema;
         try {
             schema = MappedSchemaBuilderGML.build( configURL.toString(), config );
@@ -151,9 +152,9 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         }
         String jdbcConnId = config.getJDBCConnId();
         init( schema, jdbcConnId );
-    
+
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
-    
+
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -411,30 +412,55 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     }
 
     @Override
-    public SQLValueMapper getSQLValueMapper() {
-        return new SQLValueMapper() {
+    public ParticleConverter<Geometry> getGeometryConverter( final GeometryMapping gm ) {
 
+        final String column = ( (DBField) gm.getMapping() ).getColumn();
+
+        return new ParticleConverter<Geometry>() {
             @Override
-            public Object convertGeometry( Geometry g, ICRS crs, Connection conn )
-                                    throws Exception {
-                Geometry compatible = getCompatibleGeometry( g, crs );
-                return WKBWriter.write( compatible );
+            public String getSelectSnippet( String tableAlias ) {
+                if ( tableAlias != null ) {
+                    return "ST_AsEWKB(" + tableAlias + "." + column + ")";
+                }
+                return "ST_AsEWKB(" + column + ")";
             }
 
             @Override
-            public void insertGeometry( StringBuilder sb, String srid ) {
+            public String getSetSnippet() {
+                StringBuilder sb = new StringBuilder();
                 if ( useLegacyPredicates ) {
                     sb.append( "SetSRID(GeomFromWKB(?)," );
                 } else {
                     sb.append( "SetSRID(ST_GeomFromWKB(?)," );
                 }
-                sb.append( srid == null ? "-1" : srid );
+                sb.append( gm.getSrid() == null ? "-1" : gm.getSrid() );
                 sb.append( ")" );
+                return sb.toString();
             }
 
             @Override
-            public String selectGeometry( String geometry ) {
-                return "ST_AsEWKB(" + geometry + ")";
+            public Geometry toParticle( Object sqlValue ) {
+                if ( sqlValue == null ) {
+                    return null;
+                }
+                try {
+                    return WKBReader.read( (byte[]) sqlValue, gm.getCRS() );
+                } catch ( Throwable t ) {
+                    throw new IllegalArgumentException(t.getMessage(), t);
+                }
+            }
+
+            @Override
+            public Object toSQLArgument( Geometry particle, Connection conn ) {
+                if ( particle == null ) {
+                    return null;
+                }
+                try {
+                    Geometry compatible = getCompatibleGeometry( particle, gm.getCRS() );
+                    return WKBWriter.write( compatible );
+                } catch ( Throwable t ) {
+                    throw new IllegalArgumentException();
+                }
             }
         };
     }
