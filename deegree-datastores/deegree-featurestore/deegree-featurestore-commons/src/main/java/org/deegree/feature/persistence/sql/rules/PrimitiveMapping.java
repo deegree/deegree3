@@ -40,7 +40,10 @@ import java.util.List;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.transformer.DefaultPrimitiveConverter;
+import org.deegree.feature.persistence.sql.transformer.ParticleConverter;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
@@ -57,6 +60,8 @@ public class PrimitiveMapping extends Mapping {
 
     private final MappingExpression mapping;
 
+    private final ParticleConverter converter;
+
     /**
      * 
      * @param path
@@ -65,10 +70,16 @@ public class PrimitiveMapping extends Mapping {
      * @param tableChange
      *            table joins, can be <code>null</code> (no joins involved)
      */
-    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, List<TableJoin> tableChange ) {
+    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt,
+                             List<TableJoin> tableChange, ParticleConverter<PrimitiveValue> converter ) {
         super( path, tableChange );
         this.pt = pt;
         this.mapping = mapping;
+        this.converter = converter;
+    }
+
+    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, List<TableJoin> tableChange ) {
+        this( path, mapping, pt, tableChange, new DefaultPrimitiveConverter( pt, ( (DBField) mapping ).getColumn() ) );
     }
 
     /**
@@ -82,5 +93,9 @@ public class PrimitiveMapping extends Mapping {
 
     public MappingExpression getMapping() {
         return mapping;
+    }
+
+    public ParticleConverter<PrimitiveValue> getConverter() {
+        return converter;
     }
 }

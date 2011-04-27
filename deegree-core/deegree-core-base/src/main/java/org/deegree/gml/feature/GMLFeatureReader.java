@@ -82,7 +82,7 @@ import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -750,7 +750,7 @@ public class GMLFeatureReader extends XMLAdapter {
     private GenericXMLElement parseSimpleXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl )
                             throws XMLStreamException {
         XSSimpleTypeDefinition xsType = (XSSimpleTypeDefinition) elDecl.getTypeDefinition();
-        TypedObjectNode child = new PrimitiveValue( xmlStream.getElementText(), xsType );
+        TypedObjectNode child = new PrimitiveValue( xmlStream.getElementText(), new PrimitiveType( xsType ) );
         return new GenericXMLElement( xmlStream.getName(), elDecl, null, Collections.singletonList( child ) );
     }
 
@@ -790,7 +790,8 @@ public class GMLFeatureReader extends XMLAdapter {
             int eventType = 0;
             while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
                 if ( eventType == CDATA || eventType == CHARACTERS ) {
-                    PrimitiveValue pb = new PrimitiveValue( xmlStream.getText(), xsdValueType.getSimpleType() );
+                    PrimitiveValue pb = new PrimitiveValue( xmlStream.getText(),
+                                                            new PrimitiveType( xsdValueType.getSimpleType() ) );
                     children.add( pb );
                 } else if ( eventType == START_ELEMENT ) {
                     QName childElName = xmlStream.getName();
@@ -857,7 +858,7 @@ public class GMLFeatureReader extends XMLAdapter {
             if ( attrDecl != null && !XSINS.equals( name.getNamespaceURI() ) ) {
                 String value = xmlStream.getAttributeValue( i );
                 // TODO evaluate and check primitive type information
-                PrimitiveValue xmlValue = new PrimitiveValue( value, attrDecl.getTypeDefinition() );
+                PrimitiveValue xmlValue = new PrimitiveValue( value, new PrimitiveType( attrDecl.getTypeDefinition() ) );
                 attrs.put( name, xmlValue );
             }
         }
@@ -877,7 +878,7 @@ public class GMLFeatureReader extends XMLAdapter {
         // TODO check if element actually is nillable
         String nilled = xmlStream.getAttributeValue( XSINS, "nil" );
         if ( nilled != null ) {
-            PrimitiveValue xmlValue = new PrimitiveValue( nilled, BaseType.BOOLEAN );
+            PrimitiveValue xmlValue = new PrimitiveValue( nilled, new PrimitiveType( BOOLEAN ) );
             attrs.put( new QName( XSINS, "nil", "xsi" ), xmlValue );
         }
         return attrs;
@@ -914,7 +915,7 @@ public class GMLFeatureReader extends XMLAdapter {
                     String msg = "Attribute '" + name + "' is not allowed at this position.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                attrs.put( XSI_NIL, new PrimitiveValue( value, BOOLEAN ) );
+                attrs.put( XSI_NIL, new PrimitiveValue( value, new PrimitiveType( BOOLEAN ) ) );
             } else if ( attrDecls != null ) {
                 XSAttributeDeclaration attrDecl = attrDecls.get( name );
                 if ( attrDecl == null ) {
@@ -923,7 +924,8 @@ public class GMLFeatureReader extends XMLAdapter {
                 }
                 if ( attrDecl != null ) {
                     // TODO evaluate and check primitive type information
-                    PrimitiveValue xmlValue = new PrimitiveValue( value, attrDecl.getTypeDefinition() );
+                    PrimitiveValue xmlValue = new PrimitiveValue( value,
+                                                                  new PrimitiveType( attrDecl.getTypeDefinition() ) );
                     attrs.put( name, xmlValue );
                 }
             } else {

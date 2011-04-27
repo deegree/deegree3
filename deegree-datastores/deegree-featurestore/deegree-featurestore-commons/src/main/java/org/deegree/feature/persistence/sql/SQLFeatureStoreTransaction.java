@@ -54,6 +54,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
@@ -128,7 +129,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
      * @param schema
      */
     SQLFeatureStoreTransaction( AbstractSQLFeatureStore store, TransactionManager taManager, Connection conn,
-                                        MappedApplicationSchema schema ) {
+                                MappedApplicationSchema schema ) {
         this.fs = store;
         this.taManager = taManager;
         this.conn = conn;
@@ -242,7 +243,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
                     int i = 1;
                     for ( String fidKernel : analysis.getIdKernels() ) {
-                        PrimitiveValue value = new PrimitiveValue( fidKernel, fidMapping.getColumnType() );
+                        PrimitiveValue value = new PrimitiveValue( fidKernel,
+                                                                   new PrimitiveType( fidMapping.getColumnType() ) );
                         Object sqlValue = SQLValueMangler.internalToSQL( value );
                         stmt.setObject( i++, sqlValue );
                     }
@@ -754,7 +756,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 IdAnalysis analysis = schema.analyzeId( id );
                 int j = i;
                 for ( String fidKernel : analysis.getIdKernels() ) {
-                    PrimitiveValue value = new PrimitiveValue( fidKernel, fidMapping.getColumnType() );
+                    PrimitiveValue value = new PrimitiveValue( fidKernel,
+                                                               new PrimitiveType( fidMapping.getColumnType() ) );
                     Object sqlValue = SQLValueMangler.internalToSQL( value );
                     stmt.setObject( j++, sqlValue );
                 }

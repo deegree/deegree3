@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
@@ -60,6 +61,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.Pair;
@@ -544,7 +546,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             for ( IdAnalysis idKernel : idKernels ) {
                 for ( Object o : idKernel.getIdKernels() ) {
                     // TODO
-                    PrimitiveValue value = new PrimitiveValue( o, BaseType.STRING );
+                    PrimitiveValue value = new PrimitiveValue( o, new PrimitiveType (STRING) );
                     Object sqlValue = SQLValueMangler.internalToSQL( value );
                     stmt.setObject( i++, sqlValue );
                 }

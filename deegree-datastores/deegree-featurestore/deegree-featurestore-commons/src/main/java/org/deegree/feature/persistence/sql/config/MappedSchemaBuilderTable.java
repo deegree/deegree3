@@ -84,6 +84,7 @@ import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.transformer.DefaultPrimitiveConverter;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -220,7 +221,14 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, null, null );
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
-                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, new PrimitiveType( type ), null );
+                    PrimitiveType primType = new PrimitiveType( type );
+                    PrimitiveMapping mapping = new PrimitiveMapping(
+                                                                     path,
+                                                                     dbField,
+                                                                     primType,
+                                                                     null,
+                                                                     new DefaultPrimitiveConverter( primType,
+                                                                                                    dbField.getColumn() ) );
                     mappings.add( mapping );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Skipping column with type code '" + md.sqlType + "' from list of properties:"
@@ -309,7 +317,9 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 primType = valueOf( md.sqlType );
             }
             pt = new SimplePropertyType( propName, minOccurs, maxOccurs, primType, null, null );
-            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc );
+            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc,
+                                      new DefaultPrimitiveConverter( ( (SimplePropertyType) pt ).getPrimitiveType(),
+                                                                     md.column ) );
         } else if ( propDecl instanceof GeometryPropertyJAXB ) {
             GeometryPropertyJAXB geomDecl = (GeometryPropertyJAXB) propDecl;
             GeometryType type = null;

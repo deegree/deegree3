@@ -47,7 +47,7 @@ import org.deegree.commons.tom.TypedObjectNode;
  */
 public interface ParticleConverter<T extends TypedObjectNode> {
 
-    public String getSelectSQLSnippet(String tableAlias);
+    public String getSelectSQLSnippet( String tableAlias );
 
-    public TypedObjectNode getParticle( Object sqlObjects );
+    public TypedObjectNode getParticle( Object sqlValue );
 }

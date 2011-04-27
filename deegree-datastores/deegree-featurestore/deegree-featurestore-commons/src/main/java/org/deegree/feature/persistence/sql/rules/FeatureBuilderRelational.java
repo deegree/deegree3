@@ -300,10 +300,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                Object value = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
-                if ( value != null ) {
-                    particle = new PrimitiveValue( value, pm.getType().getBaseType() );
-                }
+                Object sqlValue = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
+                particle = pm.getConverter().getParticle( sqlValue );
             }
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;

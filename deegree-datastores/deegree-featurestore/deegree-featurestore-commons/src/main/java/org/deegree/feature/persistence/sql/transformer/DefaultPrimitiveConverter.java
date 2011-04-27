@@ -35,10 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.transformer;
 
-import org.deegree.commons.tom.TypedObjectNode;
+import static org.deegree.commons.tom.primitive.BaseType.DATE;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.ParseException;
+
+import javax.xml.namespace.QName;
+
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.Time;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementations convert between {@link PrimitiveValue} particles and SQL column values.
@@ -50,35 +65,164 @@ import org.deegree.commons.utils.Pair;
  */
 public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveValue> {
 
+    private static Logger LOG = LoggerFactory.getLogger( DefaultPrimitiveConverter.class );
+
     private final PrimitiveType pt;
 
-    private final Pair<String, String[]> selectSnippet;
+    private BaseType bt;
+
+    private final String column;
+
+    private static final QName GML32_TIME_UNION = new QName( GML3_2_NS, "TimePositionUnion" );
 
     public DefaultPrimitiveConverter( PrimitiveType pt, String column ) {
         this.pt = pt;
-        selectSnippet = new Pair<String, String[]>( "{}", new String[] { column } );
+        this.bt = pt.getBaseType();
+        this.column = column;
+        XSSimpleTypeDefinition xsTypeDef = pt.getXSType();
+        if ( xsTypeDef != null && !( xsTypeDef.getAnonymous() ) ) {
+            QName typeName = new QName( xsTypeDef.getNamespace(), xsTypeDef.getName() );
+            if ( GML32_TIME_UNION.equals( typeName ) ) {
+                LOG.info( "Detected " + GML32_TIME_UNION + " simple type. Treating as date." );
+                bt = DATE;
+            }
+        }
     }
-//
-//    @Override
-//    public Pair<String, String[]> getSelectSQLSnippet() {
-//        return selectSnippet;
-//    }
-//
-//    @Override
-//    public List<PrimitiveValue> getParticles( Object... sqlValues ) {
-//        Object sqlValue = sqlValues[0];
-//        if 
-//    }
 
     @Override
     public String getSelectSQLSnippet( String tableAlias ) {
-        // TODO Auto-generated method stub
+        if ( tableAlias == null ) {
+            return tableAlias + "." + column;
+        }
         return null;
     }
 
     @Override
-    public TypedObjectNode getParticle( Object sqlObjects ) {
-        // TODO Auto-generated method stub
-        return null;
+    public PrimitiveValue getParticle( Object sqlValue ) {
+        if ( sqlValue == null ) {
+            return null;
+        }
+        switch ( bt ) {
+        case BOOLEAN:
+            return getBooleanParticle( sqlValue );
+        case DATE:
+            return getDateParticle( sqlValue );
+        case DATE_TIME:
+            return getDateTimeParticle( sqlValue );
+        case DECIMAL:
+            return getDecimalParticle( sqlValue );
+        case DOUBLE:
+            return getDoubleParticle( sqlValue );
+        case INTEGER:
+            return getIntegerParticle( sqlValue );
+        case STRING:
+            return getStringParticle( sqlValue );
+        case TIME:
+            return getTimeParticle( sqlValue );
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    protected PrimitiveValue getBooleanParticle( Object sqlValue ) {
+        Boolean value = null;
+        if ( sqlValue instanceof Boolean ) {
+            value = (Boolean) sqlValue;
+        } else {
+            String s = "" + sqlValue;
+            if ( "1".equals( s ) || "true".equalsIgnoreCase( s ) ) {
+                value = Boolean.TRUE;
+            } else if ( "0".equals( s ) || "false".equalsIgnoreCase( s ) ) {
+                value = Boolean.FALSE;
+            } else {
+                throw new IllegalArgumentException( "Unable to convert sql result value of type '"
+                                                    + sqlValue.getClass() + "' to Boolean object." );
+            }
+        }
+        return new PrimitiveValue( value, pt );
+    }
+
+    protected PrimitiveValue getDateParticle( Object sqlValue ) {
+        Date value = null;
+        if ( sqlValue instanceof java.util.Date ) {
+            try {
+                value = new Date( DateUtils.formatISO8601DateWOTime( (java.util.Date) sqlValue ) );
+            } catch ( ParseException e ) {
+                throw new IllegalArgumentException( e.getMessage(), e );
+            }
+        } else {
+            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
+                                                + "' to Date object." );
+        }
+        return new PrimitiveValue( value, pt );
+    }
+
+    protected PrimitiveValue getDateTimeParticle( Object sqlValue ) {
+        DateTime value = null;
+        if ( sqlValue instanceof java.util.Date ) {
+            try {
+                value = new DateTime( DateUtils.formatISO8601DateWOMS( (java.util.Date) sqlValue ) );
+            } catch ( ParseException e ) {
+                throw new IllegalArgumentException( "Unable to convert sql result value of type '"
+                                                    + sqlValue.getClass() + "' to DateTime object." );
+            }
+        } else {
+            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
+                                                + "' to DateTime object." );
+        }
+        return new PrimitiveValue( value, pt );
+    }
+
+    protected PrimitiveValue getDecimalParticle( Object sqlValue )
+                            throws NumberFormatException {
+        BigDecimal value = null;
+        if ( sqlValue instanceof BigDecimal ) {
+            value = (BigDecimal) sqlValue;
+        } else {
+            value = new BigDecimal( sqlValue.toString() );
+        }
+        return new PrimitiveValue( value, pt );
+    }
+
+    protected PrimitiveValue getDoubleParticle( Object sqlValue )
+                            throws NumberFormatException {
+        Double value = null;
+        if ( sqlValue instanceof Double ) {
+            value = (Double) sqlValue;
+        } else {
+            value = new Double( sqlValue.toString() );
+        }
+        return new PrimitiveValue( value, pt );
+    }
+
+    protected PrimitiveValue getIntegerParticle( Object sqlValue )
+                            throws NumberFormatException {
+        BigInteger value = null;
+        if ( sqlValue instanceof BigInteger ) {
+            value = (BigInteger) sqlValue;
+        } else {
+            value = new BigInteger( sqlValue.toString() );
+        }
+        return new PrimitiveValue( value, pt );
+    }
+
+    protected PrimitiveValue getStringParticle( Object sqlValue ) {
+        return new PrimitiveValue( "" + sqlValue, pt );
+    }
+
+    protected PrimitiveValue getTimeParticle( Object sqlValue ) {
+        Time value = null;
+        if ( sqlValue instanceof Time ) {
+            value = (Time) sqlValue;
+        } else if ( sqlValue instanceof Date ) {
+            try {
+                value = new Time( DateUtils.formatISO8601Time( (java.util.Date) sqlValue ) );
+            } catch ( ParseException e ) {
+                throw new IllegalArgumentException( e.getMessage(), e );
+            }
+        } else {
+            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
+                                                + "' to Time object." );
+        }
+        return new PrimitiveValue( value, pt );
     }
 }

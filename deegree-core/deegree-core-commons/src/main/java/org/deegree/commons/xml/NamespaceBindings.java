@@ -100,7 +100,7 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
     }
 
     /**
-     * registers a new prefix with an assigned namespace URI
+     * Registers a new prefix with an assigned namespace URI.
      * 
      * @param prefix
      *            prefix, must not be <code>null</code>
