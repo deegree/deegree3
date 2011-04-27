@@ -101,7 +101,7 @@ public class DBFIndex {
                 create.append( ", " );
                 SimplePropertyType spt = (SimplePropertyType) pt;
                 String sqlType = null;
-                switch ( spt.getPrimitiveType() ) {
+                switch ( spt.getPrimitiveType().getBaseType() ) {
                 case BOOLEAN:
                     sqlType = "boolean";
                     break;
@@ -178,7 +178,7 @@ public class DBFIndex {
                 for ( SimplePropertyType spt : entry.keySet() ) {
                     PrimitiveValue primVal = ( (SimpleProperty) entry.get( spt ) ).getValue();
                     if ( primVal.getValue() == null ) {
-                        switch ( spt.getPrimitiveType() ) {
+                        switch ( spt.getPrimitiveType().getBaseType() ) {
                         case BOOLEAN:
                             stmt.setNull( ++idx, Types.BOOLEAN );
                             break;
@@ -200,7 +200,7 @@ public class DBFIndex {
                         }
                         continue;
                     }
-                    switch ( spt.getPrimitiveType() ) {
+                    switch ( spt.getPrimitiveType().getBaseType() ) {
                     case BOOLEAN:
                         stmt.setBoolean( ++idx, (Boolean) primVal.getValue() );
                         break;

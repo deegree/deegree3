@@ -116,8 +116,9 @@ public class GenericProperty implements Property {
             if ( value != null && !( value instanceof PrimitiveValue ) ) {
                 // TODO do more fine grained type checks
                 String msg = "Invalid simple property (PrimitiveType="
-                             + ( (SimplePropertyType) declaration ).getPrimitiveType().name() + "): required class="
-                             + ( (SimplePropertyType) declaration ).getPrimitiveType().getValueClass()
+                             + ( (SimplePropertyType) declaration ).getPrimitiveType().getBaseType().name()
+                             + "): required class="
+                             + ( (SimplePropertyType) declaration ).getPrimitiveType().getBaseType().getValueClass()
                              + ", but given '" + value.getClass() + ".";
                 throw new IllegalArgumentException( msg );
             }

@@ -52,6 +52,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -291,12 +292,12 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     private Mapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl, PrimitiveParticleJAXB config ) {
 
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
-        BaseType pt = schemaWalker.getTargetType( elDecl, path );
+        PrimitiveType pt = schemaWalker.getTargetType( elDecl, path );
         MappingExpression me = parseMappingExpression( config.getMapping() );
 
         if ( me instanceof DBField ) {
             List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-            LOG.debug( "Targeted primitive type: " + pt.name() );
+            LOG.debug( "Targeted primitive type: " + pt );
             return new PrimitiveMapping( path, me, pt, joinedTable );
         } else if ( me instanceof StringConst ) {
             String s = me.toString();

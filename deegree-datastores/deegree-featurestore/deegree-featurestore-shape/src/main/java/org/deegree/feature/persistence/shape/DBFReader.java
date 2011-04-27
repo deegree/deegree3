@@ -38,10 +38,6 @@ package org.deegree.feature.persistence.shape;
 
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MILLISECOND;
-import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BaseType.DATE;
-import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.EncodingGuesser.guess;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
@@ -291,7 +287,7 @@ public class DBFReader {
             switch ( field.type ) {
             case 'C': {
                 buffer.get( bs );
-                property = new SimpleProperty( field.propertyType, getString( bs, encoding ).trim(), STRING );
+                property = new SimpleProperty( field.propertyType, getString( bs, encoding ).trim() );
                 break;
             }
             case 'N':
@@ -301,7 +297,7 @@ public class DBFReader {
                 if ( str.isEmpty() || str.startsWith( "*" ) ) {
                     continue;
                 }
-                property = new SimpleProperty( field.propertyType, str, field.propertyType.getPrimitiveType() );
+                property = new SimpleProperty( field.propertyType, str );
                 break;
             }
             case 'L': {
@@ -314,7 +310,7 @@ public class DBFReader {
                     b = false;
                 }
                 // TODO avoid string conversion
-                property = new SimpleProperty( field.propertyType, "" + b, BOOLEAN );
+                property = new SimpleProperty( field.propertyType, "" + b );
                 break;
             }
             case 'D': {
@@ -327,13 +323,13 @@ public class DBFReader {
                 int month = Integer.valueOf( new String( bs, 4, 2 ) );
                 int day = Integer.valueOf( new String( bs, 6, 2 ) );
                 Calendar cal = new GregorianCalendar( year, month, day );
-                property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ), DATE );
+                property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ) );
                 break;
             }
             case 'I': {
                 int ival = buffer.getInt();
                 // TODO avoid string conversion
-                property = new SimpleProperty( field.propertyType, "" + ival, INTEGER );
+                property = new SimpleProperty( field.propertyType, "" + ival );
                 break;
             }
             case '@': {
@@ -343,7 +339,7 @@ public class DBFReader {
                 cal.add( DAY_OF_MONTH, days ); // it's lenient by default
                 cal.add( MILLISECOND, millis );
                 // TODO check this
-                property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ), DATE );
+                property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ) );
                 break;
             }
             case 'T':

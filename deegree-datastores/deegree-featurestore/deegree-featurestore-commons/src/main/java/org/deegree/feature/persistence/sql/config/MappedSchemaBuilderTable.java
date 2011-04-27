@@ -61,6 +61,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -219,7 +220,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, null, null );
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
-                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, type, null );
+                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, new PrimitiveType( type ), null );
                     mappings.add( mapping );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Skipping column with type code '" + md.sqlType + "' from list of properties:"
@@ -358,7 +359,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             for ( ColumnJAXB configColumn : config.getColumn() ) {
                 String columnName = configColumn.getName();
                 BaseType columnType = configColumn.getType() != null ? getPrimitiveType( configColumn.getType() )
-                                                                         : null;
+                                                                    : null;
                 if ( columnType == null ) {
                     ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
                     columnType = BaseType.valueOf( md.sqlType );

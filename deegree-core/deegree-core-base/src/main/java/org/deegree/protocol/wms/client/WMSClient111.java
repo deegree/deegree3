@@ -574,7 +574,7 @@ public class WMSClient111 {
                 name = name.substring( name.lastIndexOf( "." ) + 1 );
                 String value = reader.getAttributeValue( i );
                 SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
-                propValues.add( new SimpleProperty( tp, value, STRING ) );
+                propValues.add( new SimpleProperty( tp, value ) );
                 props.add( tp );
             }
             GenericFeatureType ft = new GenericFeatureType( new QName( "feature" ), props, false );
@@ -606,7 +606,7 @@ public class WMSClient111 {
                     String name = reader.getLocalName();
                     String value = reader.getElementText();
                     SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
-                    propValues.add( new SimpleProperty( tp, value, STRING ) );
+                    propValues.add( new SimpleProperty( tp, value ) );
                     props.add( tp );
                     nextElement( reader );
                 }

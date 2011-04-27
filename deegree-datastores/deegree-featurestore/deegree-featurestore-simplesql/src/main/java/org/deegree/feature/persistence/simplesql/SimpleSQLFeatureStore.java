@@ -53,8 +53,8 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -378,7 +378,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                                 Object obj = rs.getObject( pt.getName().getLocalPart() );
                                 if ( obj != null ) {
                                     SimplePropertyType spt = (SimplePropertyType) pt;
-                                    props.add( new SimpleProperty( spt, "" + obj, spt.getPrimitiveType() ) );
+                                    props.add( new SimpleProperty( spt, "" + obj ) );
                                 }
                             }
                         }

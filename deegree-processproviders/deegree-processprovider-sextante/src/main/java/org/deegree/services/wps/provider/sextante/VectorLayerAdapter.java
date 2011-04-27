@@ -478,8 +478,7 @@ public class VectorLayerAdapter {
             }
 
             // create property type
-            SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
-                                                             BaseType.valueOf( value ), null,
+            SimplePropertyType spt = new SimplePropertyType( probName, 1, 1, BaseType.valueOf( value ), null,
                                                              new LinkedList<PropertyType>() );
 
             propDecls.add( spt );
@@ -513,8 +512,7 @@ public class VectorLayerAdapter {
                 }
 
                 // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
-                SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), value.toString(),
-                                                        BaseType.valueOf( value ) );
+                SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), value.toString() );
 
                 props.add( sp );
             }
@@ -584,7 +582,7 @@ public class VectorLayerAdapter {
                 QName pName = spt.getName();
 
                 // class
-                Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                Class<?> pClass = spt.getPrimitiveType().getBaseType().getValueClass();
                 // Class<?> pClass = String.class;
 
                 // notice name and class as field
@@ -640,7 +638,7 @@ public class VectorLayerAdapter {
                         QName pName = spt.getName();
 
                         // class
-                        Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                        Class<?> pClass = spt.getPrimitiveType().getBaseType().getValueClass();
                         // Class<?> pClass = String.class;
 
                         // notice name and field

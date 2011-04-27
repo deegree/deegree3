@@ -42,9 +42,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.types.property.SimplePropertyType;
 
@@ -62,14 +60,9 @@ public class SimpleProperty implements Property {
 
     private PrimitiveValue value;
 
-    public SimpleProperty( SimplePropertyType pt, String value, BaseType type ) {
+    public SimpleProperty( SimplePropertyType pt, String value ) {
         this.pt = pt;
-        this.value = new PrimitiveValue( value, type );
-    }
-
-    public SimpleProperty( SimplePropertyType pt, String value, XSSimpleTypeDefinition xsdType ) {
-        this.pt = pt;
-        this.value = new PrimitiveValue( value, xsdType );
+        this.value = new PrimitiveValue( value, pt.getPrimitiveType() );
     }
 
     @Override

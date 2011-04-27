@@ -954,7 +954,7 @@ public class GMLFeatureReader extends XMLAdapter {
 
         SimpleProperty prop = null;
         try {
-            prop = new SimpleProperty( pt, s, pt.getPrimitiveType() );
+            prop = new SimpleProperty( pt, s );
         } catch ( IllegalArgumentException e ) {
             String msg = "Property '" + pt.getName() + "' is not valid: " + e.getMessage();
             throw new XMLParsingException( xmlStream, msg );

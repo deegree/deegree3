@@ -115,10 +115,10 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
@@ -609,10 +609,10 @@ public class ApplicationSchemaXSDEncoder {
     private void export( XMLStreamWriter writer, SimplePropertyType pt )
                             throws XMLStreamException {
 
-        XSSimpleTypeDefinition xsdType = pt.getXSDType();
+        XSSimpleTypeDefinition xsdType = pt.getPrimitiveType().getXSType();
         if ( xsdType == null ) {
             // export without XML schema information
-            BaseType type = pt.getPrimitiveType();
+            BaseType type = pt.getPrimitiveType().getBaseType();
             writer.writeAttribute( "type", getSimpleType( type ) );
         } else {
             // reconstruct XML schema type definition
@@ -625,9 +625,9 @@ public class ApplicationSchemaXSDEncoder {
                 // unnamed simple property
                 writer.writeStartElement( "simpleType" );
                 writer.writeStartElement( "restriction" );
-                writer.writeAttribute( "base", getSimpleType( pt.getPrimitiveType() ) );
+                writer.writeAttribute( "base", getSimpleType( pt.getPrimitiveType().getBaseType() ) );
 
-                XSObjectList facets = pt.getXSDType().getFacets();
+                XSObjectList facets = pt.getPrimitiveType().getXSType().getFacets();
                 for ( int i = 0; i < facets.getLength(); i++ ) {
                     XSFacet facet = (XSFacet) facets.item( i );
                     writer.writeEmptyElement( getFacetName( facet.getFacetKind() ) );

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.mapper;
 
+import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import javax.xml.namespace.QName;
@@ -50,7 +51,7 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
-import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.expression.PropertyName;
@@ -118,7 +119,7 @@ public class XPathSchemaWalker {
         return currentEl;
     }
 
-    public BaseType getTargetType( XSElementDeclaration context, PropertyName propName ) {
+    public PrimitiveType getTargetType( XSElementDeclaration context, PropertyName propName ) {
 
         Expr path = propName.getAsXPath();
         if ( !( path instanceof LocationPath ) ) {
@@ -154,7 +155,7 @@ public class XPathSchemaWalker {
                                                                                         + propName
                                                                                         + "' to application schema. Referenced element is not nillable." );
                         }
-                        return BaseType.BOOLEAN;
+                        return new PrimitiveType( BOOLEAN );
                     }
                     XSComplexTypeDefinition complexTypeDef = (XSComplexTypeDefinition) typeDef;
                     XSObjectList attrUses = complexTypeDef.getAttributeUses();
@@ -162,7 +163,7 @@ public class XPathSchemaWalker {
                         XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
                         QName attrName = getQName( attrUse.getAttrDeclaration() );
                         if ( qName.equals( attrName ) ) {
-                            return BaseType.valueOf( attrUse.getAttrDeclaration().getTypeDefinition() );
+                            return new PrimitiveType( attrUse.getAttrDeclaration().getTypeDefinition() );
                         }
                     }
                     throw new IllegalArgumentException(
@@ -192,9 +193,9 @@ public class XPathSchemaWalker {
                 throw new IllegalArgumentException( "XPath '" + propName
                                                     + "' refers to a complex type with complex content." );
             }
-            return BaseType.valueOf( complexType.getSimpleType() );
+            return new PrimitiveType( complexType.getSimpleType() );
         }
-        return BaseType.valueOf( (XSSimpleTypeDefinition) typeDef );
+        return new PrimitiveType( (XSSimpleTypeDefinition) typeDef );
     }
 
     private QName getQName( NameStep step ) {

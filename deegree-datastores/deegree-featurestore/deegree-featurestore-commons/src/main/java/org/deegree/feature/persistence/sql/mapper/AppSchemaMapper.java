@@ -67,7 +67,7 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
-import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
@@ -372,8 +372,10 @@ public class AppSchemaMapper {
         }
         MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
         List<Mapping> particles = new ArrayList<Mapping>();
-        particles.add( new PrimitiveMapping( new PropertyName( "text()", null ), mapping, STRING, null ) );
-        particles.add( new PrimitiveMapping( new PropertyName( "@codeSpace", null ), csMapping, BaseType.STRING, null ) );
+        particles.add( new PrimitiveMapping( new PropertyName( "text()", null ), mapping, new PrimitiveType( STRING ),
+                                             null ) );
+        particles.add( new PrimitiveMapping( new PropertyName( "@codeSpace", null ), csMapping,
+                                             new PrimitiveType( STRING ), null ) );
         return new CompoundMapping( path, particles, jc );
     }
 
@@ -402,9 +404,9 @@ public class AppSchemaMapper {
                 column = "value";
             }
             DBField dbField = new DBField( mc.getTable(), column );
-            BaseType pt = BaseType.STRING;
+            PrimitiveType pt = new PrimitiveType( BaseType.STRING );
             if ( typeDef.getSimpleType() != null ) {
-                pt = BaseType.valueOf( typeDef.getSimpleType() );
+                pt = new PrimitiveType( typeDef.getSimpleType() );
             }
             particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
@@ -422,7 +424,7 @@ public class AppSchemaMapper {
             NamespaceContext nsContext = null;
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            BaseType pt = BaseType.valueOf( attrDecl.getTypeDefinition() );
+            PrimitiveType pt = new PrimitiveType( attrDecl.getTypeDefinition() );
             particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
 
@@ -432,7 +434,7 @@ public class AppSchemaMapper {
             MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
             PropertyName path = new PropertyName( "@" + getName( attrName ), null );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            particles.add( new PrimitiveMapping( path, dbField, BOOLEAN, null ) );
+            particles.add( new PrimitiveMapping( path, dbField, new PrimitiveType( BOOLEAN ), null ) );
         }
 
         // child elements
@@ -466,7 +468,7 @@ public class AppSchemaMapper {
             NamespaceContext nsContext = null;
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            BaseType pt = BaseType.valueOf( attrDecl.getTypeDefinition() );
+            PrimitiveType pt = new PrimitiveType( attrDecl.getTypeDefinition() );
             particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
 
@@ -476,7 +478,7 @@ public class AppSchemaMapper {
             MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
             PropertyName path = new PropertyName( "@" + getName( attrName ), null );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            particles.add( new PrimitiveMapping( path, dbField, BOOLEAN, null ) );
+            particles.add( new PrimitiveMapping( path, dbField, new PrimitiveType( BOOLEAN ), null ) );
         }
 
         PropertyName path = new PropertyName( ".", null );
@@ -636,7 +638,7 @@ public class AppSchemaMapper {
                     mappings.add( new CompoundMapping( path, particles, jc ) );
                 } else {
                     MappingExpression mapping = new DBField( elMC.getColumn() );
-                    BaseType pt = BaseType.valueOf( (XSSimpleTypeDefinition) typeDef );
+                    PrimitiveType pt = new PrimitiveType( (XSSimpleTypeDefinition) typeDef );
                     mappings.add( new PrimitiveMapping( path, mapping, pt, jc ) );
                 }
             }

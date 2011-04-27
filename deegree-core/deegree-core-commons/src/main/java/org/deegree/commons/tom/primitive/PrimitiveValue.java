@@ -106,6 +106,12 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
         this.value = value;
     }
 
+    public PrimitiveValue( String value, PrimitiveType pt ) {
+        this.value = XMLValueMangler.xmlToInternal( value, pt.getBaseType() );
+        this.textValue = value;
+        this.type = pt;
+    }
+
     /**
      * Returns the canonical object representation of the value.
      * 

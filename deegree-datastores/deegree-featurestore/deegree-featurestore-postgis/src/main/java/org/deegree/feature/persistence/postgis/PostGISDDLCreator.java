@@ -132,7 +132,7 @@ public class PostGISDDLCreator extends AbstractDDLCreator {
             sql.append( ",\n    " );
             sql.append( dbField.getColumn() );
             sql.append( " " );
-            sql.append( getDBType( mapping.getType() ) );
+            sql.append( getDBType( mapping.getType().getBaseType() ) );
         }
     }
 

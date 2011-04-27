@@ -302,7 +302,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             if ( me instanceof DBField ) {
                 Object value = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
                 if ( value != null ) {
-                    particle = new PrimitiveValue( value, pm.getType() );
+                    particle = new PrimitiveValue( value, pm.getType().getBaseType() );
                 }
             }
         } else if ( mapping instanceof GeometryMapping ) {

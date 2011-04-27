@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 
 /**
  * A {@link PropertyType} that defines a property with a primitive value, i.e. a value that can be represented as a
@@ -56,25 +57,20 @@ import org.deegree.commons.tom.primitive.BaseType;
  */
 public class SimplePropertyType extends AbstractPropertyType {
 
-    private final BaseType primitiveType;
-
-    private final XSSimpleTypeDefinition xsdType;
+    private final PrimitiveType pt;
 
     private String codeList;
 
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BaseType type,
-                               XSElementDeclaration elDecl, List<PropertyType> substitutions ) {
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BaseType type, XSElementDeclaration elDecl,
+                               List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, elDecl, substitutions );
-        this.primitiveType = type;
-        this.xsdType = null;
+        this.pt = new PrimitiveType( type );
     }
 
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BaseType type,
-                               XSElementDeclaration elDecl, List<PropertyType> substitutions,
-                               XSSimpleTypeDefinition xsdType ) {
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BaseType type, XSElementDeclaration elDecl,
+                               List<PropertyType> substitutions, XSSimpleTypeDefinition xsdType ) {
         super( name, minOccurs, maxOccurs, elDecl, substitutions );
-        this.primitiveType = type;
-        this.xsdType = xsdType;
+        this.pt = new PrimitiveType( xsdType );
     }
 
     public void setCodeList( String codeList ) {
@@ -90,23 +86,14 @@ public class SimplePropertyType extends AbstractPropertyType {
      * 
      * @return the primitive type, never <code>null</code>
      */
-    public BaseType getPrimitiveType() {
-        return primitiveType;
-    }
-
-    /**
-     * Returns the optional XML schema type definition.
-     * 
-     * @return the XML schema type definition, can be <code>null</code>
-     */
-    public XSSimpleTypeDefinition getXSDType() {
-        return xsdType;
+    public PrimitiveType getPrimitiveType() {
+        return pt;
     }
 
     @Override
     public String toString() {
         String s = "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", type: " + primitiveType;
+                   + ", type: " + pt;
         return s;
     }
 }

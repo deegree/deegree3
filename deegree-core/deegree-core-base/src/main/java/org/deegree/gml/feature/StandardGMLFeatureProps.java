@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
@@ -172,10 +171,10 @@ public class StandardGMLFeatureProps extends GMLStdProps {
         switch ( version ) {
         case GML_2:
             if ( description != null ) {
-                props.add( new SimpleProperty( PT_DESCRIPTION_GML2, description.getString(), STRING ) );
+                props.add( new SimpleProperty( PT_DESCRIPTION_GML2, description.getString() ) );
             }
             if ( names.length > 0 ) {
-                props.add( new SimpleProperty( PT_NAME_GML2, names[0].getCode(), STRING ) );
+                props.add( new SimpleProperty( PT_NAME_GML2, names[0].getCode() ) );
             }
             if ( boundedBy != null ) {
                 props.add( new GenericProperty( PT_BOUNDED_BY_GML2, boundedBy ) );
