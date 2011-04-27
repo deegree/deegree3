@@ -48,9 +48,9 @@ import static java.sql.Types.OTHER;
 import static java.sql.Types.SMALLINT;
 import static java.sql.Types.VARCHAR;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
-import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.PrimitiveType.DECIMAL;
-import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.BasicType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BasicType.DECIMAL;
+import static org.deegree.commons.tom.primitive.BasicType.STRING;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -66,7 +66,7 @@ import java.util.LinkedList;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -125,7 +125,7 @@ public class DBUtils {
                     break;
                 case INTEGER:
                 case SMALLINT:
-                    pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.INTEGER, null, null );
+                    pt = new SimplePropertyType( ptName, 0, 1, BasicType.INTEGER, null, null );
                     break;
                 case BIT:
                     pt = new SimplePropertyType( ptName, 0, 1, BOOLEAN, null, null );

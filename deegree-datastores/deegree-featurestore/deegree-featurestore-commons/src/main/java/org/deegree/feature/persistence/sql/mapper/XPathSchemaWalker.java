@@ -50,7 +50,7 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.ApplicationSchema;
@@ -119,7 +119,7 @@ public class XPathSchemaWalker {
         return currentEl;
     }
 
-    public PrimitiveType getTargetType( XSElementDeclaration context, PropertyName propName ) {
+    public BasicType getTargetType( XSElementDeclaration context, PropertyName propName ) {
 
         Expr path = propName.getAsXPath();
         if ( !( path instanceof LocationPath ) ) {
@@ -155,7 +155,7 @@ public class XPathSchemaWalker {
                                                                                         + propName
                                                                                         + "' to application schema. Referenced element is not nillable." );
                         }
-                        return PrimitiveType.BOOLEAN;
+                        return BasicType.BOOLEAN;
                     }
                     XSComplexTypeDefinition complexTypeDef = (XSComplexTypeDefinition) typeDef;
                     XSObjectList attrUses = complexTypeDef.getAttributeUses();

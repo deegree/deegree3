@@ -51,7 +51,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -248,15 +248,15 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             prefix = ftName.getPrefix().toUpperCase() + "_" + ftName.getLocalPart().toUpperCase() + "_";
         }
 
-        List<Pair<String, PrimitiveType>> columns = new ArrayList<Pair<String, PrimitiveType>>();
+        List<Pair<String, BasicType>> columns = new ArrayList<Pair<String, BasicType>>();
         if ( config != null && config.getColumn() != null ) {
             for ( ColumnJAXB configColumn : config.getColumn() ) {
                 String column = configColumn.getName();
-                PrimitiveType pt = null;
+                BasicType pt = null;
                 if ( configColumn.getType() != null ) {
                     pt = getPrimitiveType( configColumn.getType() );
                 }
-                columns.add( new Pair<String, PrimitiveType>( column, pt ) );
+                columns.add( new Pair<String, BasicType>( column, pt ) );
             }
         }
 
@@ -291,7 +291,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     private Mapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl, PrimitiveParticleJAXB config ) {
 
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
-        PrimitiveType pt = schemaWalker.getTargetType( elDecl, path );
+        BasicType pt = schemaWalker.getTargetType( elDecl, path );
         MappingExpression me = parseMappingExpression( config.getMapping() );
 
         if ( me instanceof DBField ) {

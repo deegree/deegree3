@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.model.layers;
 
-import static org.deegree.commons.tom.primitive.PrimitiveType.DATE;
-import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.BasicType.DATE;
+import static org.deegree.commons.tom.primitive.BasicType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;

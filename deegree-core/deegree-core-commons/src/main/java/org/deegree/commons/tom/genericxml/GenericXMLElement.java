@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.genericxml;
 
-import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BasicType.BOOLEAN;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

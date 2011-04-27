@@ -70,7 +70,7 @@ public class SQLValueMangler {
     public static Object internalToSQL( Object value ) {
         Object sqlValue = null;
         if ( value != null ) {
-            PrimitiveType pt = PrimitiveType.determinePrimitiveType( value );
+            BasicType pt = BasicType.determinePrimitiveType( value );
             switch ( pt ) {
             case BOOLEAN:
                 sqlValue = value;
@@ -110,7 +110,7 @@ public class SQLValueMangler {
         Object sqlValue = null;
         Object value = pv.getValue();
         if ( value != null ) {
-            PrimitiveType pt = pv.getType();
+            BasicType pt = pv.getType();
             switch ( pt ) {
             case BOOLEAN:
                 sqlValue = value;
@@ -151,7 +151,7 @@ public class SQLValueMangler {
      * @return corresponding primitive value, can be <code>null</code>
      * @throws SQLException
      */
-    public static PrimitiveValue sqlToInternal( ResultSet rs, int columnIndex, PrimitiveType pt )
+    public static PrimitiveValue sqlToInternal( ResultSet rs, int columnIndex, BasicType pt )
                             throws SQLException {
         Object o = null;
         switch ( pt ) {

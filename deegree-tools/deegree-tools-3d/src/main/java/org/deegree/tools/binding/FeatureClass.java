@@ -50,7 +50,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.ApplicationSchema;
@@ -234,7 +234,7 @@ public class FeatureClass extends ModelClass {
         } else if ( pd instanceof MeasurePropertyType ) {
             return getFromProperty( (MeasurePropertyType) pd );
         } else if ( pd instanceof SimplePropertyType ) {
-            imports.add( PrimitiveType.class.getCanonicalName() );
+            imports.add( BasicType.class.getCanonicalName() );
             return getFromProperty( (SimplePropertyType) pd );
         } else if ( pd instanceof StringOrRefPropertyType ) {
             return getFromProperty( (StringOrRefPropertyType) pd );
@@ -262,7 +262,7 @@ public class FeatureClass extends ModelClass {
      */
     private Field getFromProperty( SimplePropertyType pd ) {
         String fieldName = createFieldName( createBetterMethodName( pd.getName().getLocalPart() ) );
-        final PrimitiveType primitiveType = pd.getPrimitiveType();
+        final BasicType primitiveType = pd.getPrimitiveType();
         String fieldType = primitiveType.getValueClass().getCanonicalName();
 
         return new Field( fieldName, fieldType, pd.isAbstract(), pd.getName() );

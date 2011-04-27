@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public enum PrimitiveType {
+public enum BasicType {
 
     /** Property value is of class <code>String</code>. */
     STRING( "string", String.class ),
@@ -79,13 +79,13 @@ public enum PrimitiveType {
     /** Property value is of class {@link Time}. */
     TIME( "time", Time.class );
 
-    private static final Logger LOG = LoggerFactory.getLogger( PrimitiveType.class );
+    private static final Logger LOG = LoggerFactory.getLogger( BasicType.class );
 
     private String xsTypeName;
 
     private Class<?> valueClass;
 
-    private PrimitiveType( String xsTypeName, Class<?> valueClass ) {
+    private BasicType( String xsTypeName, Class<?> valueClass ) {
         this.xsTypeName = xsTypeName;
         this.valueClass = valueClass;
     }
@@ -107,16 +107,16 @@ public enum PrimitiveType {
     }
 
     /**
-     * Returns the {@link PrimitiveType} for the given value.
+     * Returns the {@link BasicType} for the given value.
      * 
      * @param value
-     * @return corresponding {@link PrimitiveType}, never <code>null</code>
+     * @return corresponding {@link BasicType}, never <code>null</code>
      * @throws IllegalArgumentException
      */
-    public static PrimitiveType determinePrimitiveType( Object value )
+    public static BasicType determinePrimitiveType( Object value )
                             throws IllegalArgumentException {
         Class<?> oClass = value.getClass();
-        for ( PrimitiveType pt : values() ) {
+        for ( BasicType pt : values() ) {
             if ( pt.getValueClass() == oClass ) {
                 return pt;
             }
@@ -126,18 +126,18 @@ public enum PrimitiveType {
     }
 
     /**
-     * Returns the {@link PrimitiveType} for the given SQL type (from {@link Types}).
+     * Returns the {@link BasicType} for the given SQL type (from {@link Types}).
      * 
      * @see Types
      * 
      * @param sqlType
-     * @return corresponding {@link PrimitiveType}, never <code>null</code>
+     * @return corresponding {@link BasicType}, never <code>null</code>
      * @throws IllegalArgumentException
-     *             if the SQL type can not be mapped to a {@link PrimitiveType}
+     *             if the SQL type can not be mapped to a {@link BasicType}
      */
-    public static PrimitiveType determinePrimitiveType( int sqlType ) {
+    public static BasicType determinePrimitiveType( int sqlType ) {
 
-        PrimitiveType pt = null;
+        BasicType pt = null;
 
         switch ( sqlType ) {
         case Types.BIGINT:

@@ -64,14 +64,14 @@ public class XMLValueMangler {
     private static final Logger LOG = LoggerFactory.getLogger( XMLValueMangler.class );
 
     /**
-     * Returns the internal representation for the given XML string and {@link PrimitiveType}.
+     * Returns the internal representation for the given XML string and {@link BasicType}.
      * 
      * @param s
      * @param pt
      * @return
      * @throws IllegalArgumentException
      */
-    public static Object xmlToInternal( String s, PrimitiveType pt )
+    public static Object xmlToInternal( String s, BasicType pt )
                             throws IllegalArgumentException {
         Object value = s;
         switch ( pt ) {
@@ -136,7 +136,7 @@ public class XMLValueMangler {
         return value;
     }
 
-    public static String internalToXML( Object o, PrimitiveType pt ) {
+    public static String internalToXML( Object o, BasicType pt ) {
         String xml = null;
         if ( o != null ) {
             if ( pt != null ) {
@@ -195,24 +195,24 @@ public class XMLValueMangler {
     }
 
     /**
-     * Returns the best matching {@link PrimitiveType} for the given XSD simple type definition.
+     * Returns the best matching {@link BasicType} for the given XSD simple type definition.
      * 
      * @param xsdTypeDef
-     * @return best matching {@link PrimitiveType}, never <code>null</code>
+     * @return best matching {@link BasicType}, never <code>null</code>
      */
-    public static PrimitiveType getPrimitiveType( XSSimpleTypeDefinition xsdTypeDef ) {
+    public static BasicType getPrimitiveType( XSSimpleTypeDefinition xsdTypeDef ) {
 
         switch ( xsdTypeDef.getBuiltInKind() ) {
 
         // date and time types
         case XSConstants.DATE_DT: {
-            return PrimitiveType.DATE;
+            return BasicType.DATE;
         }
         case XSConstants.DATETIME_DT: {
-            return PrimitiveType.DATE_TIME;
+            return BasicType.DATE_TIME;
         }
         case XSConstants.TIME_DT: {
-            return PrimitiveType.TIME;
+            return BasicType.TIME;
         }
 
             // numeric types
@@ -222,7 +222,7 @@ public class XMLValueMangler {
         case XSConstants.DOUBLE_DT:
             // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (single-precision 32-bit floating point)
         case XSConstants.FLOAT_DT: {
-            return PrimitiveType.DECIMAL;
+            return BasicType.DECIMAL;
         }
 
             // integer types
@@ -253,12 +253,12 @@ public class XMLValueMangler {
         case XSConstants.BYTE_DT:
             // 0, 1, ... 255
         case XSConstants.UNSIGNEDBYTE_DT: {
-            return PrimitiveType.INTEGER;
+            return BasicType.INTEGER;
         }
 
             // true, false
         case XSConstants.BOOLEAN_DT: {
-            return PrimitiveType.BOOLEAN;
+            return BasicType.BOOLEAN;
         }
 
             // other types
@@ -287,7 +287,7 @@ public class XMLValueMangler {
         case XSConstants.STRING_DT:
         case XSConstants.TOKEN_DT:
         case XSConstants.UNAVAILABLE_DT: {
-            return PrimitiveType.STRING;
+            return BasicType.STRING;
         }
         }
         throw new IllegalArgumentException( "Unexpected simple type: " + xsdTypeDef );

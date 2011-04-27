@@ -36,9 +36,9 @@
 package org.deegree.feature.xpath;
 
 import static java.lang.Boolean.TRUE;
-import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.PrimitiveType.DOUBLE;
-import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.BasicType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BasicType.DOUBLE;
+import static org.deegree.commons.tom.primitive.BasicType.STRING;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

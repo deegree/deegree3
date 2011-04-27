@@ -59,7 +59,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.Pair;
@@ -524,7 +524,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                 }
                 sql.append( "(" );
                 boolean firstCol = true;
-                for ( Pair<String, PrimitiveType> fidColumn : fidMapping.getColumns() ) {
+                for ( Pair<String, BasicType> fidColumn : fidMapping.getColumns() ) {
                     if ( !firstCol ) {
                         sql.append( " AND " );
                     }
@@ -544,7 +544,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             for ( IdAnalysis idKernel : idKernels ) {
                 for ( Object o : idKernel.getIdKernels() ) {
                     // TODO
-                    PrimitiveValue value = new PrimitiveValue( o, PrimitiveType.STRING );
+                    PrimitiveValue value = new PrimitiveValue( o, BasicType.STRING );
                     Object sqlValue = SQLValueMangler.internalToSQL( value );
                     stmt.setObject( i++, sqlValue );
                 }

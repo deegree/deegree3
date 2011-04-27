@@ -41,7 +41,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.feature.persistence.sql.AbstractDDLCreator;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
@@ -183,7 +183,7 @@ public class PostGISDDLCreator extends AbstractDDLCreator {
     }
 
     @Override
-    protected String getDBType( PrimitiveType type ) {
+    protected String getDBType( BasicType type ) {
         String postgresqlType = null;
         switch ( type ) {
         case BOOLEAN:

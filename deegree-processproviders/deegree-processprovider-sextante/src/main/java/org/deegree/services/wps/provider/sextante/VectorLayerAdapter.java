@@ -46,7 +46,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.Feature;
@@ -479,7 +479,7 @@ public class VectorLayerAdapter {
 
             // create property type
             SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
-                                                             PrimitiveType.determinePrimitiveType( value ), null,
+                                                             BasicType.determinePrimitiveType( value ), null,
                                                              new LinkedList<PropertyType>() );
 
             propDecls.add( spt );
@@ -514,7 +514,7 @@ public class VectorLayerAdapter {
 
                 // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
                 SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), value.toString(),
-                                                        PrimitiveType.determinePrimitiveType( value ) );
+                                                        BasicType.determinePrimitiveType( value ) );
 
                 props.add( sp );
             }
@@ -754,12 +754,12 @@ public class VectorLayerAdapter {
     }
 
     /**
-     * This method modifies a property value of a {@link IVectorLayer} if it is not compatible to {@link PrimitiveType}.
+     * This method modifies a property value of a {@link IVectorLayer} if it is not compatible to {@link BasicType}.
      * 
      * @param value
      *            Property value of a {@link IVectorLayer}.
      * 
-     * @return Modified property value. It's compatible to {@link PrimitiveType}.
+     * @return Modified property value. It's compatible to {@link BasicType}.
      */
     private static Object modifyPropertyValue( Object value ) {
         Object newValue = value;

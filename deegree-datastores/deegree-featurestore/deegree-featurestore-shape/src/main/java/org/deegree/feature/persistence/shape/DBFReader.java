@@ -38,10 +38,10 @@ package org.deegree.feature.persistence.shape;
 
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MILLISECOND;
-import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.PrimitiveType.DATE;
-import static org.deegree.commons.tom.primitive.PrimitiveType.INTEGER;
-import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.BasicType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BasicType.DATE;
+import static org.deegree.commons.tom.primitive.BasicType.INTEGER;
+import static org.deegree.commons.tom.primitive.BasicType.STRING;
 import static org.deegree.commons.utils.EncodingGuesser.guess;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
@@ -62,7 +62,7 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
@@ -200,28 +200,28 @@ public class DBFReader {
                     fieldLength += fieldPrecision << 8;
                     LOG.trace( "Field length is changed to " + fieldLength + " for text field." );
                 }
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.STRING, null, null );
+                pt = new SimplePropertyType( ptName, 0, 1, BasicType.STRING, null, null );
                 break;
             case 'N':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DECIMAL, null, null );
+                pt = new SimplePropertyType( ptName, 0, 1, BasicType.DECIMAL, null, null );
                 break;
             case 'L':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.BOOLEAN, null, null );
+                pt = new SimplePropertyType( ptName, 0, 1, BasicType.BOOLEAN, null, null );
                 break;
             case 'D':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DATE, null, null );
+                pt = new SimplePropertyType( ptName, 0, 1, BasicType.DATE, null, null );
                 break;
             case 'F':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DECIMAL, null, null );
+                pt = new SimplePropertyType( ptName, 0, 1, BasicType.DECIMAL, null, null );
                 break;
             case 'T':
                 LOG.warn( "Date/Time fields are not supported. Please send the file to the devs, so they can implement it." );
                 break;
             case 'I':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.INTEGER, null, null );
+                pt = new SimplePropertyType( ptName, 0, 1, BasicType.INTEGER, null, null );
                 break;
             case '@':
-                pt = new SimplePropertyType( ptName, 0, 1, PrimitiveType.DATE_TIME, null, null );
+                pt = new SimplePropertyType( ptName, 0, 1, BasicType.DATE_TIME, null, null );
                 break;
             case 'O':
                 LOG.warn( "Double fields are not supported. Please send the file to the devs, so they can implement it." );

@@ -105,7 +105,7 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.URITranslator;
 import org.deegree.feature.types.ApplicationSchema;
@@ -612,7 +612,7 @@ public class ApplicationSchemaXSDEncoder {
         XSSimpleTypeDefinition xsdType = pt.getXSDType();
         if ( xsdType == null ) {
             // export without XML schema information
-            PrimitiveType type = pt.getPrimitiveType();
+            BasicType type = pt.getPrimitiveType();
             writer.writeAttribute( "type", getSimpleType( type ) );
         } else {
             // reconstruct XML schema type definition
@@ -1109,7 +1109,7 @@ public class ApplicationSchemaXSDEncoder {
         return facetName;
     }
 
-    private String getSimpleType( PrimitiveType type ) {
+    private String getSimpleType( BasicType type ) {
         String typeFound = null;
         switch ( type ) {
         case BOOLEAN:

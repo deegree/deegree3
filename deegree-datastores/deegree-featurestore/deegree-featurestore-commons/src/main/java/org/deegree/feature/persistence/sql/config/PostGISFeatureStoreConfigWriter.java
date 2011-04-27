@@ -48,7 +48,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.BasicType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -188,7 +188,7 @@ public class PostGISFeatureStoreConfigWriter {
         if ( fidMapping.getPrefix() != null && !fidMapping.getPrefix().isEmpty() ) {
             writer.writeAttribute( "prefix", fidMapping.getPrefix() );
         }
-        for ( Pair<String, PrimitiveType> column : fidMapping.getColumns() ) {
+        for ( Pair<String, BasicType> column : fidMapping.getColumns() ) {
             writer.writeStartElement( CONFIG_NS, "Column" );
             writer.writeAttribute( "name", column.getFirst() );
             writer.writeAttribute( "type", column.getSecond().getXSTypeName() );
