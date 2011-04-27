@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter;
+package org.deegree.filter.xml;
 
 import static org.junit.Assert.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -51,6 +51,11 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.filter.Filter;
+import org.deegree.filter.IdFilter;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.Operator.Type;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.logical.And;
@@ -72,9 +77,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision:$, $Date:$
  */
-public class Filter110XMLAdapterTest {
+public class Filter110XMLDecoderTest {
 
-    private static final Logger LOG = getLogger( Filter110XMLAdapterTest.class );
+    private static final Logger LOG = getLogger( Filter110XMLDecoderTest.class );
 
     @Before
     public void setUp()
@@ -151,7 +156,7 @@ public class Filter110XMLAdapterTest {
 
     private Filter parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL url = Filter110XMLAdapterTest.class.getResource( "testdata/v110/" + resourceName );
+        URL url = Filter110XMLDecoderTest.class.getResource( "testdata/v110/" + resourceName );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         xmlStream.nextTag();

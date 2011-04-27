@@ -43,7 +43,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.filter.Filter110XMLAdapterTest;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
@@ -53,6 +52,7 @@ import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLExpression;
+import org.deegree.filter.xml.Filter110XMLDecoderTest;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Geometry;
 import org.junit.Test;
@@ -141,7 +141,7 @@ public class PostGISWhereBuilderTest {
 
     private OperatorFilter parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL url = Filter110XMLAdapterTest.class.getResource( "testdata/v110/" + resourceName );
+        URL url = Filter110XMLDecoderTest.class.getResource( "testdata/v110/" + resourceName );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         xmlStream.nextTag();

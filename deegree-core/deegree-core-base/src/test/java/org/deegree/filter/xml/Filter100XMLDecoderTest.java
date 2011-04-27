@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter;
+package org.deegree.filter.xml;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,6 +48,10 @@ import junit.framework.TestCase;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.filter.Expression;
+import org.deegree.filter.Filter;
+import org.deegree.filter.IdFilter;
+import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsGreaterThan;
@@ -84,7 +88,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  * 
  */
-public class Filter100XMLAdapterTest extends TestCase {
+public class Filter100XMLDecoderTest extends TestCase {
 
     @Override
     @Before
@@ -169,7 +173,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    @SuppressWarnings( { "unchecked", "boxing" })
+    @SuppressWarnings({ "unchecked", "boxing" })
     @Test
     public void testFilter5()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -457,7 +461,7 @@ public class Filter100XMLAdapterTest extends TestCase {
 
     private Filter parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL url = Filter100XMLAdapterTest.class.getResource( resourceName );
+        URL url = Filter100XMLDecoderTest.class.getResource( resourceName );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         xmlStream.nextTag();
