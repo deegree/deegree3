@@ -41,7 +41,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
@@ -121,11 +121,11 @@ public abstract class AbstractDDLCreator {
         sql.append( " (" );
         List<String> pkColumns = new ArrayList<String>();
         if ( hasBlobTable ) {
-            sql.append( "\n    id " ).append( getDBType( BasicType.INTEGER ) ).append( " REFERENCES gml_objects" );
+            sql.append( "\n    id " ).append( getDBType( BaseType.INTEGER ) ).append( " REFERENCES gml_objects" );
             pkColumns.add( "id" );
         } else {
             FIDMapping fidMapping = ftMapping.getFidMapping();
-            for ( Pair<String, BasicType> fidColumn : fidMapping.getColumns() ) {
+            for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
                 sql.append( "\n    " );
                 sql.append( fidColumn.first );
                 sql.append( " " );
@@ -193,6 +193,6 @@ public abstract class AbstractDDLCreator {
         return ddls;
     }
 
-    protected abstract String getDBType( BasicType type );
+    protected abstract String getDBType( BaseType type );
 
 }

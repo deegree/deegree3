@@ -36,7 +36,7 @@
 package org.deegree.services.wms.model.layers;
 
 import static java.lang.Integer.MAX_VALUE;
-import static org.deegree.commons.tom.primitive.BasicType.DECIMAL;
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.coverage.rangeset.Interval.Closure.open;
 import static org.deegree.coverage.rangeset.RangeSetBuilder.createBandRangeSetFromRaster;
 import static org.deegree.coverage.rangeset.ValueType.Void;

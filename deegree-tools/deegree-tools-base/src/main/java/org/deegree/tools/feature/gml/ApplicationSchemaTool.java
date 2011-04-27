@@ -67,7 +67,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
@@ -307,7 +307,7 @@ public class ApplicationSchemaTool {
     // return hints;
     // }
 
-    private static String getPostGISType( BasicType primitiveType ) {
+    private static String getPostGISType( BaseType primitiveType ) {
         String postgisType = null;
         switch ( primitiveType ) {
         case BOOLEAN: {

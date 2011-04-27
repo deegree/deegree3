@@ -37,7 +37,7 @@ package org.deegree.feature.persistence.sql.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
-import static org.deegree.commons.tom.primitive.BasicType.determinePrimitiveType;
+import static org.deegree.commons.tom.primitive.BaseType.valueOf;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
@@ -60,7 +60,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -201,7 +201,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         List<Mapping> mappings = new ArrayList<Mapping>();
 
         Set<String> fidColumnNames = new HashSet<String>();
-        for ( Pair<String, BasicType> column : fidMapping.getColumns() ) {
+        for ( Pair<String, BaseType> column : fidMapping.getColumns() ) {
             fidColumnNames.add( column.first.toLowerCase() );
         }
 
@@ -215,7 +215,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             QName ptName = makeFullyQualified( new QName( md.column ), ftName.getPrefix(), ftName.getNamespaceURI() );
             if ( md.geomType == null ) {
                 try {
-                    BasicType type = BasicType.determinePrimitiveType( md.sqlType );
+                    BaseType type = BaseType.valueOf( md.sqlType );
                     PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, null, null );
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
@@ -301,11 +301,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         Mapping m = null;
         if ( propDecl instanceof SimplePropertyJAXB ) {
             SimplePropertyJAXB simpleDecl = (SimplePropertyJAXB) propDecl;
-            BasicType primType = null;
+            BaseType primType = null;
             if ( simpleDecl.getType() != null ) {
                 primType = getPrimitiveType( simpleDecl.getType() );
             } else {
-                primType = determinePrimitiveType( md.sqlType );
+                primType = valueOf( md.sqlType );
             }
             pt = new SimplePropertyType( propName, minOccurs, maxOccurs, primType, null, null );
             m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc );
@@ -353,17 +353,17 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         }
 
         // build FID columns / types from configuration
-        List<Pair<String, BasicType>> columns = new ArrayList<Pair<String, BasicType>>();
+        List<Pair<String, BaseType>> columns = new ArrayList<Pair<String, BaseType>>();
         if ( config != null && config.getColumn() != null ) {
             for ( ColumnJAXB configColumn : config.getColumn() ) {
                 String columnName = configColumn.getName();
-                BasicType columnType = configColumn.getType() != null ? getPrimitiveType( configColumn.getType() )
+                BaseType columnType = configColumn.getType() != null ? getPrimitiveType( configColumn.getType() )
                                                                          : null;
                 if ( columnType == null ) {
                     ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
-                    columnType = BasicType.determinePrimitiveType( md.sqlType );
+                    columnType = BaseType.valueOf( md.sqlType );
                 }
-                columns.add( new Pair<String, BasicType>( columnName, columnType ) );
+                columns.add( new Pair<String, BaseType>( columnName, columnType ) );
             }
         }
 
@@ -373,8 +373,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 // determine autoincrement column automatically
                 for ( ColumnMetadata md : getColumns( table ).values() ) {
                     if ( md.isAutoincrement ) {
-                        BasicType columnType = BasicType.determinePrimitiveType( md.sqlType );
-                        columns.add( new Pair<String, BasicType>( md.column, columnType ) );
+                        BaseType columnType = BaseType.valueOf( md.sqlType );
+                        columns.add( new Pair<String, BaseType>( md.column, columnType ) );
                         break;
                     }
                 }

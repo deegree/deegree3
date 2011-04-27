@@ -63,8 +63,7 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.commons.tom.primitive.BasicType;
-import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -543,13 +542,13 @@ public class ApplicationSchemaXSDDecoder {
         return codeListId;
     }
 
-    private BasicType getPrimitiveType( XSSimpleType typeDef ) {
+    private BaseType getPrimitiveType( XSSimpleType typeDef ) {
 
-        BasicType pt = null;
+        BaseType pt = null;
         if ( typeDef.getName() != null ) {
             encounteredTypes.add( createQName( typeDef.getNamespace(), typeDef.getName() ) );
         }
-        pt = XMLValueMangler.getPrimitiveType( typeDef );
+        pt = BaseType.valueOf( typeDef );
         LOG.trace( "Mapped '" + typeDef.getName() + "' (base type: '" + typeDef.getBaseType() + "') -> '" + pt + "'" );
         return pt;
     }

@@ -64,14 +64,14 @@ public class XMLValueMangler {
     private static final Logger LOG = LoggerFactory.getLogger( XMLValueMangler.class );
 
     /**
-     * Returns the internal representation for the given XML string and {@link BasicType}.
+     * Returns the internal representation for the given XML string and {@link BaseType}.
      * 
      * @param s
      * @param pt
      * @return
      * @throws IllegalArgumentException
      */
-    public static Object xmlToInternal( String s, BasicType pt )
+    public static Object xmlToInternal( String s, BaseType pt )
                             throws IllegalArgumentException {
         Object value = s;
         switch ( pt ) {
@@ -136,7 +136,7 @@ public class XMLValueMangler {
         return value;
     }
 
-    public static String internalToXML( Object o, BasicType pt ) {
+    public static String internalToXML( Object o, BaseType pt ) {
         String xml = null;
         if ( o != null ) {
             if ( pt != null ) {
@@ -194,102 +194,5 @@ public class XMLValueMangler {
         return xml;
     }
 
-    /**
-     * Returns the best matching {@link BasicType} for the given XSD simple type definition.
-     * 
-     * @param xsdTypeDef
-     * @return best matching {@link BasicType}, never <code>null</code>
-     */
-    public static BasicType getPrimitiveType( XSSimpleTypeDefinition xsdTypeDef ) {
 
-        switch ( xsdTypeDef.getBuiltInKind() ) {
-
-        // date and time types
-        case XSConstants.DATE_DT: {
-            return BasicType.DATE;
-        }
-        case XSConstants.DATETIME_DT: {
-            return BasicType.DATE_TIME;
-        }
-        case XSConstants.TIME_DT: {
-            return BasicType.TIME;
-        }
-
-            // numeric types
-            // -1.23, 0, 123.4, 1000.00
-        case XSConstants.DECIMAL_DT:
-            // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (equivalent to double-precision 64-bit floating point)
-        case XSConstants.DOUBLE_DT:
-            // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (single-precision 32-bit floating point)
-        case XSConstants.FLOAT_DT: {
-            return BasicType.DECIMAL;
-        }
-
-            // integer types
-
-            // ...-1, 0, 1, ...
-        case XSConstants.INTEGER_DT:
-            // 1, 2, ...
-        case XSConstants.POSITIVEINTEGER_DT:
-            // ... -2, -1
-        case XSConstants.NEGATIVEINTEGER_DT:
-            // 0, 1, 2, ...
-        case XSConstants.NONNEGATIVEINTEGER_DT:
-            // ... -2, -1, 0
-        case XSConstants.NONPOSITIVEINTEGER_DT:
-            // -9223372036854775808, ... -1, 0, 1, ... 9223372036854775807
-        case XSConstants.LONG_DT:
-            // 0, 1, ... 18446744073709551615
-        case XSConstants.UNSIGNEDLONG_DT:
-            // -2147483648, ... -1, 0, 1, ... 2147483647
-        case XSConstants.INT_DT:
-            // 0, 1, ...4294967295
-        case XSConstants.UNSIGNEDINT_DT:
-            // -32768, ... -1, 0, 1, ... 32767
-        case XSConstants.SHORT_DT:
-            // 0, 1, ... 65535
-        case XSConstants.UNSIGNEDSHORT_DT:
-            // -128, ...-1, 0, 1, ... 127
-        case XSConstants.BYTE_DT:
-            // 0, 1, ... 255
-        case XSConstants.UNSIGNEDBYTE_DT: {
-            return BasicType.INTEGER;
-        }
-
-            // true, false
-        case XSConstants.BOOLEAN_DT: {
-            return BasicType.BOOLEAN;
-        }
-
-            // other types
-        case XSConstants.ANYSIMPLETYPE_DT:
-        case XSConstants.ANYURI_DT:
-        case XSConstants.BASE64BINARY_DT:
-        case XSConstants.DURATION_DT:
-        case XSConstants.ENTITY_DT:
-        case XSConstants.GDAY_DT:
-        case XSConstants.GMONTH_DT:
-        case XSConstants.GMONTHDAY_DT:
-        case XSConstants.GYEAR_DT:
-        case XSConstants.GYEARMONTH_DT:
-        case XSConstants.HEXBINARY_DT:
-        case XSConstants.ID_DT:
-        case XSConstants.IDREF_DT:
-        case XSConstants.LANGUAGE_DT:
-        case XSConstants.LIST_DT:
-        case XSConstants.LISTOFUNION_DT:
-        case XSConstants.NAME_DT:
-        case XSConstants.NCNAME_DT:
-        case XSConstants.NMTOKEN_DT:
-        case XSConstants.NORMALIZEDSTRING_DT:
-        case XSConstants.NOTATION_DT:
-        case XSConstants.QNAME_DT:
-        case XSConstants.STRING_DT:
-        case XSConstants.TOKEN_DT:
-        case XSConstants.UNAVAILABLE_DT: {
-            return BasicType.STRING;
-        }
-        }
-        throw new IllegalArgumentException( "Unexpected simple type: " + xsdTypeDef );
-    }
 }

@@ -50,8 +50,7 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
-import org.deegree.commons.tom.primitive.BasicType;
-import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.expression.PropertyName;
@@ -119,7 +118,7 @@ public class XPathSchemaWalker {
         return currentEl;
     }
 
-    public BasicType getTargetType( XSElementDeclaration context, PropertyName propName ) {
+    public BaseType getTargetType( XSElementDeclaration context, PropertyName propName ) {
 
         Expr path = propName.getAsXPath();
         if ( !( path instanceof LocationPath ) ) {
@@ -155,7 +154,7 @@ public class XPathSchemaWalker {
                                                                                         + propName
                                                                                         + "' to application schema. Referenced element is not nillable." );
                         }
-                        return BasicType.BOOLEAN;
+                        return BaseType.BOOLEAN;
                     }
                     XSComplexTypeDefinition complexTypeDef = (XSComplexTypeDefinition) typeDef;
                     XSObjectList attrUses = complexTypeDef.getAttributeUses();
@@ -163,7 +162,7 @@ public class XPathSchemaWalker {
                         XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
                         QName attrName = getQName( attrUse.getAttrDeclaration() );
                         if ( qName.equals( attrName ) ) {
-                            return XMLValueMangler.getPrimitiveType( attrUse.getAttrDeclaration().getTypeDefinition() );
+                            return BaseType.valueOf( attrUse.getAttrDeclaration().getTypeDefinition() );
                         }
                     }
                     throw new IllegalArgumentException(
@@ -193,9 +192,9 @@ public class XPathSchemaWalker {
                 throw new IllegalArgumentException( "XPath '" + propName
                                                     + "' refers to a complex type with complex content." );
             }
-            return XMLValueMangler.getPrimitiveType( complexType.getSimpleType() );
+            return BaseType.valueOf( complexType.getSimpleType() );
         }
-        return XMLValueMangler.getPrimitiveType( (XSSimpleTypeDefinition) typeDef );
+        return BaseType.valueOf( (XSSimpleTypeDefinition) typeDef );
     }
 
     private QName getQName( NameStep step ) {

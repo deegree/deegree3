@@ -45,8 +45,8 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
 import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
-import static org.deegree.commons.tom.primitive.BasicType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BasicType.STRING;
+import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
@@ -82,7 +82,7 @@ import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -877,7 +877,7 @@ public class GMLFeatureReader extends XMLAdapter {
         // TODO check if element actually is nillable
         String nilled = xmlStream.getAttributeValue( XSINS, "nil" );
         if ( nilled != null ) {
-            PrimitiveValue xmlValue = new PrimitiveValue( nilled, BasicType.BOOLEAN );
+            PrimitiveValue xmlValue = new PrimitiveValue( nilled, BaseType.BOOLEAN );
             attrs.put( new QName( XSINS, "nil", "xsi" ), xmlValue );
         }
         return attrs;

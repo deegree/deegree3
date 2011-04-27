@@ -37,7 +37,7 @@
 package org.deegree.protocol.wms.client;
 
 import static java.util.Arrays.asList;
-import static org.deegree.commons.tom.primitive.BasicType.STRING;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyPassword;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyUser;

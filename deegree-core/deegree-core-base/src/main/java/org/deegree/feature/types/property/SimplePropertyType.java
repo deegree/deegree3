@@ -41,13 +41,13 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 
 /**
  * A {@link PropertyType} that defines a property with a primitive value, i.e. a value that can be represented as a
  * single {@link String}.
  * 
- * @see BasicType
+ * @see BaseType
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -56,20 +56,20 @@ import org.deegree.commons.tom.primitive.BasicType;
  */
 public class SimplePropertyType extends AbstractPropertyType {
 
-    private final BasicType primitiveType;
+    private final BaseType primitiveType;
 
     private final XSSimpleTypeDefinition xsdType;
 
     private String codeList;
 
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BasicType type,
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BaseType type,
                                XSElementDeclaration elDecl, List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, elDecl, substitutions );
         this.primitiveType = type;
         this.xsdType = null;
     }
 
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BasicType type,
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BaseType type,
                                XSElementDeclaration elDecl, List<PropertyType> substitutions,
                                XSSimpleTypeDefinition xsdType ) {
         super( name, minOccurs, maxOccurs, elDecl, substitutions );
@@ -90,7 +90,7 @@ public class SimplePropertyType extends AbstractPropertyType {
      * 
      * @return the primitive type, never <code>null</code>
      */
-    public BasicType getPrimitiveType() {
+    public BaseType getPrimitiveType() {
         return primitiveType;
     }
 

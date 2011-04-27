@@ -40,7 +40,7 @@ import java.sql.SQLException;
 
 import org.deegree.commons.jdbc.StatementBuilder;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 
@@ -54,9 +54,9 @@ import org.deegree.commons.tom.primitive.SQLValueMangler;
  */
 public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveValue> {
 
-    private final BasicType pt;
+    private final BaseType pt;
 
-    public DefaultPrimitiveConverter( BasicType pt ) {
+    public DefaultPrimitiveConverter( BaseType pt ) {
         this.pt = pt;
     }
 

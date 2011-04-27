@@ -53,7 +53,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -143,7 +143,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     @Override
     public List<String> getInitialSelectColumns() {
-        for ( Pair<String, BasicType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
+        for ( Pair<String, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
             addColumn( colToRsIdx, fidColumn.first );
         }
         for ( Mapping mapping : ftMapping.getMappings() ) {
@@ -217,7 +217,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
 
         String gmlId = ftMapping.getFidMapping().getPrefix();
-        List<Pair<String, BasicType>> fidColumns = ftMapping.getFidMapping().getColumns();
+        List<Pair<String, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
         gmlId += rs.getObject( colToRsIdx.get( fidColumns.get( 0 ).first ) );
         for ( int i = 1; i < fidColumns.size(); i++ ) {
             gmlId += ftMapping.getFidMapping().getDelimiter()

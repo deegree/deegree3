@@ -38,8 +38,8 @@ package org.deegree.feature.persistence.sql.mapper;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
-import static org.deegree.commons.tom.primitive.BasicType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BasicType.STRING;
+import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
@@ -66,7 +66,7 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -218,7 +218,7 @@ public class AppSchemaMapper {
         // TODO
         IDGenerator generator = new UUIDGenerator();
         String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
-        Pair<String, BasicType> fidColumn = new Pair<String, BasicType>( "attr_gml_id", STRING );
+        Pair<String, BaseType> fidColumn = new Pair<String, BaseType>( "attr_gml_id", STRING );
         FIDMapping fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
 
         List<Mapping> mappings = new ArrayList<Mapping>();
@@ -373,8 +373,7 @@ public class AppSchemaMapper {
         MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
         List<Mapping> particles = new ArrayList<Mapping>();
         particles.add( new PrimitiveMapping( new PropertyName( "text()", null ), mapping, STRING, null ) );
-        particles.add( new PrimitiveMapping( new PropertyName( "@codeSpace", null ), csMapping, BasicType.STRING,
-                                             null ) );
+        particles.add( new PrimitiveMapping( new PropertyName( "@codeSpace", null ), csMapping, BaseType.STRING, null ) );
         return new CompoundMapping( path, particles, jc );
     }
 
@@ -403,9 +402,9 @@ public class AppSchemaMapper {
                 column = "value";
             }
             DBField dbField = new DBField( mc.getTable(), column );
-            BasicType pt = BasicType.STRING;
+            BaseType pt = BaseType.STRING;
             if ( typeDef.getSimpleType() != null ) {
-                pt = XMLValueMangler.getPrimitiveType( typeDef.getSimpleType() );
+                pt = BaseType.valueOf( typeDef.getSimpleType() );
             }
             particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
@@ -423,7 +422,7 @@ public class AppSchemaMapper {
             NamespaceContext nsContext = null;
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            BasicType pt = XMLValueMangler.getPrimitiveType( attrDecl.getTypeDefinition() );
+            BaseType pt = BaseType.valueOf( attrDecl.getTypeDefinition() );
             particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
 
@@ -467,7 +466,7 @@ public class AppSchemaMapper {
             NamespaceContext nsContext = null;
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            BasicType pt = XMLValueMangler.getPrimitiveType( attrDecl.getTypeDefinition() );
+            BaseType pt = BaseType.valueOf( attrDecl.getTypeDefinition() );
             particles.add( new PrimitiveMapping( path, dbField, pt, null ) );
         }
 
@@ -637,7 +636,7 @@ public class AppSchemaMapper {
                     mappings.add( new CompoundMapping( path, particles, jc ) );
                 } else {
                     MappingExpression mapping = new DBField( elMC.getColumn() );
-                    BasicType pt = XMLValueMangler.getPrimitiveType( (XSSimpleTypeDefinition) typeDef );
+                    BaseType pt = BaseType.valueOf( (XSSimpleTypeDefinition) typeDef );
                     mappings.add( new PrimitiveMapping( path, mapping, pt, jc ) );
                 }
             }

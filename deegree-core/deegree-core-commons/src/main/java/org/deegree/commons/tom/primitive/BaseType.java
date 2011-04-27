@@ -40,13 +40,15 @@ import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Types;
 
+import org.apache.xerces.xs.XSConstants;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Primitive type system for object properties (e.g. for Feature instances).
+ * Base primitive type system.
  * <p>
  * Based on XML schema types, but stripped down to leave out any distinctions that are not strictly necessary in the
  * feature model.
@@ -57,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public enum BasicType {
+public enum BaseType {
 
     /** Property value is of class <code>String</code>. */
     STRING( "string", String.class ),
@@ -79,13 +81,13 @@ public enum BasicType {
     /** Property value is of class {@link Time}. */
     TIME( "time", Time.class );
 
-    private static final Logger LOG = LoggerFactory.getLogger( BasicType.class );
+    private static final Logger LOG = LoggerFactory.getLogger( BaseType.class );
 
     private String xsTypeName;
 
     private Class<?> valueClass;
 
-    private BasicType( String xsTypeName, Class<?> valueClass ) {
+    private BaseType( String xsTypeName, Class<?> valueClass ) {
         this.xsTypeName = xsTypeName;
         this.valueClass = valueClass;
     }
@@ -107,16 +109,16 @@ public enum BasicType {
     }
 
     /**
-     * Returns the {@link BasicType} for the given value.
+     * Returns the {@link BaseType} for the given value.
      * 
      * @param value
-     * @return corresponding {@link BasicType}, never <code>null</code>
+     * @return corresponding {@link BaseType}, never <code>null</code>
      * @throws IllegalArgumentException
      */
-    public static BasicType determinePrimitiveType( Object value )
+    public static BaseType valueOf( Object value )
                             throws IllegalArgumentException {
         Class<?> oClass = value.getClass();
-        for ( BasicType pt : values() ) {
+        for ( BaseType pt : values() ) {
             if ( pt.getValueClass() == oClass ) {
                 return pt;
             }
@@ -126,18 +128,18 @@ public enum BasicType {
     }
 
     /**
-     * Returns the {@link BasicType} for the given SQL type (from {@link Types}).
+     * Returns the {@link BaseType} for the given SQL type (from {@link Types}).
      * 
      * @see Types
      * 
      * @param sqlType
-     * @return corresponding {@link BasicType}, never <code>null</code>
+     * @return corresponding {@link BaseType}, never <code>null</code>
      * @throws IllegalArgumentException
-     *             if the SQL type can not be mapped to a {@link BasicType}
+     *             if the SQL type can not be mapped to a {@link BaseType}
      */
-    public static BasicType determinePrimitiveType( int sqlType ) {
+    public static BaseType valueOf( int sqlType ) {
 
-        BasicType pt = null;
+        BaseType pt = null;
 
         switch ( sqlType ) {
         case Types.BIGINT:
@@ -205,5 +207,105 @@ public enum BasicType {
         }
         }
         return pt;
+    }
+
+    /**
+     * Returns the {@link BaseType} for the given XSD simple type definition.
+     * 
+     * @param xsdTypeDef
+     *            XSD simple type definition, must not be <code>null</code>
+     * @return corresponding {@link BaseType}, never <code>null</code>
+     */
+    public static BaseType valueOf( XSSimpleTypeDefinition xsdTypeDef ) {
+
+        switch ( xsdTypeDef.getBuiltInKind() ) {
+
+        // date and time types
+        case XSConstants.DATE_DT: {
+            return BaseType.DATE;
+        }
+        case XSConstants.DATETIME_DT: {
+            return BaseType.DATE_TIME;
+        }
+        case XSConstants.TIME_DT: {
+            return BaseType.TIME;
+        }
+
+            // numeric types
+            // -1.23, 0, 123.4, 1000.00
+        case XSConstants.DECIMAL_DT:
+            // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (equivalent to double-precision 64-bit floating point)
+        case XSConstants.DOUBLE_DT:
+            // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (single-precision 32-bit floating point)
+        case XSConstants.FLOAT_DT: {
+            return BaseType.DECIMAL;
+        }
+
+            // integer types
+
+            // ...-1, 0, 1, ...
+        case XSConstants.INTEGER_DT:
+            // 1, 2, ...
+        case XSConstants.POSITIVEINTEGER_DT:
+            // ... -2, -1
+        case XSConstants.NEGATIVEINTEGER_DT:
+            // 0, 1, 2, ...
+        case XSConstants.NONNEGATIVEINTEGER_DT:
+            // ... -2, -1, 0
+        case XSConstants.NONPOSITIVEINTEGER_DT:
+            // -9223372036854775808, ... -1, 0, 1, ... 9223372036854775807
+        case XSConstants.LONG_DT:
+            // 0, 1, ... 18446744073709551615
+        case XSConstants.UNSIGNEDLONG_DT:
+            // -2147483648, ... -1, 0, 1, ... 2147483647
+        case XSConstants.INT_DT:
+            // 0, 1, ...4294967295
+        case XSConstants.UNSIGNEDINT_DT:
+            // -32768, ... -1, 0, 1, ... 32767
+        case XSConstants.SHORT_DT:
+            // 0, 1, ... 65535
+        case XSConstants.UNSIGNEDSHORT_DT:
+            // -128, ...-1, 0, 1, ... 127
+        case XSConstants.BYTE_DT:
+            // 0, 1, ... 255
+        case XSConstants.UNSIGNEDBYTE_DT: {
+            return BaseType.INTEGER;
+        }
+
+            // true, false
+        case XSConstants.BOOLEAN_DT: {
+            return BaseType.BOOLEAN;
+        }
+
+            // other types
+        case XSConstants.ANYSIMPLETYPE_DT:
+        case XSConstants.ANYURI_DT:
+        case XSConstants.BASE64BINARY_DT:
+        case XSConstants.DURATION_DT:
+        case XSConstants.ENTITY_DT:
+        case XSConstants.GDAY_DT:
+        case XSConstants.GMONTH_DT:
+        case XSConstants.GMONTHDAY_DT:
+        case XSConstants.GYEAR_DT:
+        case XSConstants.GYEARMONTH_DT:
+        case XSConstants.HEXBINARY_DT:
+        case XSConstants.ID_DT:
+        case XSConstants.IDREF_DT:
+        case XSConstants.LANGUAGE_DT:
+        case XSConstants.LIST_DT:
+        case XSConstants.LISTOFUNION_DT:
+        case XSConstants.NAME_DT:
+        case XSConstants.NCNAME_DT:
+        case XSConstants.NMTOKEN_DT:
+        case XSConstants.NORMALIZEDSTRING_DT:
+        case XSConstants.NOTATION_DT:
+        case XSConstants.QNAME_DT:
+        case XSConstants.STRING_DT:
+        case XSConstants.TOKEN_DT:
+        case XSConstants.UNAVAILABLE_DT: {
+            return BaseType.STRING;
+        }
+        }
+        throw new IllegalArgumentException( "Unexpected simple type: " + xsdTypeDef );
     }
 }

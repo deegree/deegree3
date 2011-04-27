@@ -35,12 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql;
 
-import static org.deegree.commons.tom.primitive.BasicType.STRING;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.expression.PropertyName;
 
@@ -58,7 +58,7 @@ public class PropertyNameMapping {
 
     private final List<Join> joins;
 
-    private final BasicType pt;
+    private final BaseType pt;
 
     private final ICRS crs;
 
@@ -114,7 +114,7 @@ public class PropertyNameMapping {
         return valueField;
     }
 
-    public BasicType getTargetFieldType() {
+    public BaseType getTargetFieldType() {
         return pt;
     }
 

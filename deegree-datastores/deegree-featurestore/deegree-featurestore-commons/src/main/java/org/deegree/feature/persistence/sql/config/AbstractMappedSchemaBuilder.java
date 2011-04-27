@@ -52,7 +52,7 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
@@ -122,24 +122,24 @@ public class AbstractMappedSchemaBuilder {
         throw new RuntimeException( "Internal error. Unhandled JAXB config bean: " + config.getClass() );
     }
 
-    protected BasicType getPrimitiveType( org.deegree.feature.persistence.postgis.jaxb.PrimitiveType type ) {
+    protected BaseType getPrimitiveType( org.deegree.feature.persistence.postgis.jaxb.PrimitiveType type ) {
         switch ( type ) {
         case BOOLEAN:
-            return BasicType.BOOLEAN;
+            return BaseType.BOOLEAN;
         case DATE:
-            return BasicType.DATE;
+            return BaseType.DATE;
         case DATE_TIME:
-            return BasicType.DATE_TIME;
+            return BaseType.DATE_TIME;
         case DECIMAL:
-            return BasicType.DECIMAL;
+            return BaseType.DECIMAL;
         case DOUBLE:
-            return BasicType.DOUBLE;
+            return BaseType.DOUBLE;
         case INTEGER:
-            return BasicType.INTEGER;
+            return BaseType.INTEGER;
         case STRING:
-            return BasicType.STRING;
+            return BaseType.STRING;
         case TIME:
-            return BasicType.TIME;
+            return BaseType.TIME;
         }
         throw new RuntimeException( "Internal error: Unhandled JAXB primitive type: " + type );
     }

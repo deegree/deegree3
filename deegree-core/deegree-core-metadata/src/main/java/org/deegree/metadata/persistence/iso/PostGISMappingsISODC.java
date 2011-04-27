@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
-import static org.deegree.commons.tom.primitive.BasicType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BasicType.DATE;
-import static org.deegree.commons.tom.primitive.BasicType.DECIMAL;
-import static org.deegree.commons.tom.primitive.BasicType.INTEGER;
-import static org.deegree.commons.tom.primitive.BasicType.STRING;
+import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.DATE;
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
@@ -54,7 +54,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.primitive.BasicType;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.utils.Pair;
@@ -92,7 +92,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
 
     private static final Logger LOG = getLogger( PostGISMappingsISODC.class );
 
-    private static Map<QName, Triple<Pair<String, String>, Boolean, BasicType>> propToTableAndCol = new HashMap<QName, Triple<Pair<String, String>, Boolean, BasicType>>();
+    private static Map<QName, Triple<Pair<String, String>, Boolean, BaseType>> propToTableAndCol = new HashMap<QName, Triple<Pair<String, String>, Boolean, BaseType>>();
 
     /**
      * XML element name in the representation of the response
@@ -275,7 +275,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
             LOG.debug( msg );
         } else {
 
-            Triple<Pair<String, String>, Boolean, BasicType> tableColumn = propToTableAndCol.get( qName );
+            Triple<Pair<String, String>, Boolean, BaseType> tableColumn = propToTableAndCol.get( qName );
 
             if ( tableColumn != null ) {
                 String mainTable = DatabaseTables.idxtb_main.name();
@@ -302,7 +302,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
 
     private static void addBooleanProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        Triple<Pair<String, String>, Boolean, BasicType> mapping = new Triple<Pair<String, String>, Boolean, BasicType>(
+        Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
                                                                                                                                  new Pair<String, String>(
                                                                                                                                                            table.name(),
                                                                                                                                                            column ),
@@ -314,7 +314,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
 
     private static void addDateProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        Triple<Pair<String, String>, Boolean, BasicType> mapping = new Triple<Pair<String, String>, Boolean, BasicType>(
+        Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
                                                                                                                                  new Pair<String, String>(
                                                                                                                                                            table.name(),
                                                                                                                                                            column ),
@@ -327,7 +327,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
     private static void addStringProp( String propNs, String propName, DatabaseTables table, String column,
                                        boolean concatenated ) {
         QName qName = new QName( propNs, propName );
-        Triple<Pair<String, String>, Boolean, BasicType> mapping = new Triple<Pair<String, String>, Boolean, BasicType>(
+        Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
                                                                                                                                  new Pair<String, String>(
                                                                                                                                                            table.name(),
                                                                                                                                                            column ),
@@ -338,7 +338,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
 
     private static void addIntProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        Triple<Pair<String, String>, Boolean, BasicType> mapping = new Triple<Pair<String, String>, Boolean, BasicType>(
+        Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
                                                                                                                                  new Pair<String, String>(
                                                                                                                                                            table.name(),
                                                                                                                                                            column ),
@@ -349,7 +349,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
 
     private static void addDecimalProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        Triple<Pair<String, String>, Boolean, BasicType> mapping = new Triple<Pair<String, String>, Boolean, BasicType>(
+        Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
                                                                                                                                  new Pair<String, String>(
                                                                                                                                                            table.name(),
                                                                                                                                                            column ),
@@ -488,7 +488,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
      * 
      * @return a map&lang;QName, PropertyNameMapping&rang; can not be <Code>null</Code>
      */
-    public Map<QName, Triple<Pair<String, String>, Boolean, BasicType>> getPropToTableAndCol() {
+    public Map<QName, Triple<Pair<String, String>, Boolean, BaseType>> getPropToTableAndCol() {
         return propToTableAndCol;
     }
 }
