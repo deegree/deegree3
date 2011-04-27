@@ -136,7 +136,7 @@ public class XMLValueMangler {
         return value;
     }
 
-    public static String internalToXML( Object o, BaseType pt ) {
+    static String internalToXML( Object o, BaseType pt ) {
         String xml = null;
         if ( o != null ) {
             if ( pt != null ) {
