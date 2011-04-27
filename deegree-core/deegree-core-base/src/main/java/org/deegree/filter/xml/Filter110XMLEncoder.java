@@ -207,13 +207,14 @@ public class Filter110XMLEncoder {
         writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
         writer.writeStartElement( CommonNamespaces.OGCNS, "Filter" );
         writer.writeNamespace( "ogc", "http://www.opengis.net/ogc" );
+        writer.writeNamespace( "gml", "http://www.opengis.net/gml" );
 
         switch ( filter.getType() ) {
         case ID_FILTER:
             Collection<String> ids = ( (IdFilter) filter ).getMatchingIds();
             for ( String id : ids ) {
                 writer.writeStartElement( CommonNamespaces.OGCNS, "GmlObjectId" );
-                writer.writeCharacters( id );
+                writer.writeAttribute( "http://www.opengis.net/gml", "id", id );
                 writer.writeEndElement();
             }
             break;
