@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se"
     xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+    xsi:schemaLocation="http://www.opengis.net/se http://schemas.deegree.org/se/1.1.0/symbology.xsd">
   <Name>EnergyResources</Name>
   <Rule>
     <Description>
       <Title>Coal</Title>
     </Description>
     <PolygonSymbolizer>
-      <Geometry>
+      <GeometryExt>
       <ogc:Function name="MoveGeometry">
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
@@ -27,7 +27,7 @@
         <ogc:Literal>0</ogc:Literal>
         <ogc:Literal>162</ogc:Literal>
         </ogc:Function>
-      </Geometry>
+      </GeometryExt>
         <Fill>
           <SvgParameter name="fill">#683D3D</SvgParameter>
           <SvgParameter name="fill-opacity">1</SvgParameter>
@@ -44,7 +44,7 @@
       <Title>GF</Title>
     </Description>
     <PolygonSymbolizer>
-      <Geometry>
+      <GeometryExt>
       <ogc:Function name="MoveGeometry">
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
@@ -63,7 +63,7 @@
         <ogc:Literal>0</ogc:Literal>
         <ogc:Literal>135</ogc:Literal>
         </ogc:Function>
-      </Geometry>
+      </GeometryExt>
         <Fill>
           <SvgParameter name="fill">#3E4370</SvgParameter>
           <SvgParameter name="fill-opacity">1</SvgParameter>
@@ -80,7 +80,7 @@
       <Title>OF</Title>
     </Description>
     <PolygonSymbolizer>
-      <Geometry>
+      <GeometryExt>
       <ogc:Function name="MoveGeometry">
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
@@ -99,7 +99,7 @@
         <ogc:Literal>0</ogc:Literal>
         <ogc:Literal>108</ogc:Literal>
         </ogc:Function>
-      </Geometry>
+      </GeometryExt>
         <Fill>
           <SvgParameter name="fill">#75401C</SvgParameter>
           <SvgParameter name="fill-opacity">1</SvgParameter>
@@ -116,7 +116,7 @@
       <Title>OI</Title>
     </Description>
     <PolygonSymbolizer>
-      <Geometry>
+      <GeometryExt>
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
       <ogc:Function name="MoveGeometry">
@@ -138,7 +138,7 @@
         <ogc:Literal>81</ogc:Literal>
         </ogc:Function>
         </ogc:Function>
-      </Geometry>
+      </GeometryExt>
         <Fill>
           <SvgParameter name="fill">#656060</SvgParameter>
           <SvgParameter name="fill-opacity">1</SvgParameter>
@@ -155,7 +155,7 @@
       <Title>PC</Title>
     </Description>
     <PolygonSymbolizer>
-      <Geometry>
+      <GeometryExt>
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
       <ogc:Function name="MoveGeometry">
@@ -177,7 +177,7 @@
         <ogc:Literal>54</ogc:Literal>
         </ogc:Function>
         </ogc:Function>
-      </Geometry>
+      </GeometryExt>
         <Fill>
           <SvgParameter name="fill">#930101</SvgParameter>
           <SvgParameter name="fill-opacity">1</SvgParameter>
@@ -194,7 +194,7 @@
       <Title>GEOMR/GEOME</Title>
     </Description>
     <PolygonSymbolizer>
-      <Geometry>
+      <GeometryExt>
       <ogc:Function name="MoveGeometry">
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
@@ -213,7 +213,7 @@
         <ogc:Literal>0</ogc:Literal>
         <ogc:Literal>27</ogc:Literal>
         </ogc:Function>
-      </Geometry>
+      </GeometryExt>
         <Fill>
           <SvgParameter name="fill">#C273A3</SvgParameter>
           <SvgParameter name="fill-opacity">1</SvgParameter>
@@ -230,7 +230,7 @@
       <Title>Unknown</Title>
     </Description>
     <PolygonSymbolizer>
-      <Geometry>
+      <GeometryExt>
         <ogc:Function name="GeometryFromWKT">
           <ogc:Literal>CRS:1</ogc:Literal>
           <ogc:Literal>POLYGON ((
@@ -245,7 +245,7 @@
         16.500000000000004 21.163793103448274
     ))</ogc:Literal>
         </ogc:Function>
-      </Geometry>
+      </GeometryExt>
         <Fill>
           <SvgParameter name="fill">#E00000</SvgParameter>
           <SvgParameter name="fill-opacity">1</SvgParameter>
