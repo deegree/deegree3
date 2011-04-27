@@ -89,7 +89,7 @@ public class GenericXMLElement implements ElementNode {
     public boolean isNilled() {
         if ( attrs != null ) {
             PrimitiveValue pv = attrs.get( new QName( CommonNamespaces.XSINS, "nil" ) );
-            if ( pv != null && pv.getType() == BOOLEAN && pv.getValue() != null ) {
+            if ( pv != null && pv.getType().getBaseType() == BOOLEAN && pv.getValue() != null ) {
                 return (Boolean) pv.getValue();
             }
         }

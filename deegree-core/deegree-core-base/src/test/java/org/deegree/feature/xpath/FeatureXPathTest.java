@@ -163,7 +163,7 @@ public class FeatureXPathTest {
         assertEquals( 1, result.length );
         SimpleProperty prop = (SimpleProperty) result[0];
         PrimitiveValue name = prop.getValue();
-        assertEquals( STRING, name.getType() );
+        assertEquals( STRING, name.getType().getBaseType() );
         assertEquals( "Karl Marx", name.getAsText() );
         assertTrue( name.getValue() instanceof String );
         // assertEquals( STRING, name.getXSType().getName() );
@@ -176,7 +176,7 @@ public class FeatureXPathTest {
         TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertEquals( 1, result.length );
         PrimitiveValue name = (PrimitiveValue) result[0];
-        assertEquals( STRING, name.getType() );
+        assertEquals( STRING, name.getType().getBaseType() );
         assertEquals( "Karl Marx", name.getAsText() );
         assertTrue( name.getValue() instanceof String );
         // assertEquals( STRING, name.getXSType().getName() );
@@ -190,7 +190,7 @@ public class FeatureXPathTest {
         assertEquals( 1, result.length );
         SimpleProperty prop = (SimpleProperty) result[0];
         PrimitiveValue name = prop.getValue();
-        assertEquals( STRING, name.getType() );
+        assertEquals( STRING, name.getType().getBaseType() );
         assertEquals( "Mondovi", name.getAsText() );
         assertTrue( name.getValue() instanceof String );
     }
@@ -270,7 +270,7 @@ public class FeatureXPathTest {
         assertNotNull( result );
         assertEquals( 1, result.length );
         PrimitiveValue value = (PrimitiveValue) result[0];
-        assertEquals( BOOLEAN, value.getType() );
+        assertEquals( BOOLEAN, value.getType().getBaseType() );
         assertEquals( TRUE, value.getValue() );
     }
 
@@ -282,7 +282,7 @@ public class FeatureXPathTest {
         assertNotNull( result );
         assertEquals( 1, result.length );
         PrimitiveValue value = (PrimitiveValue) result[0];
-        assertEquals( DOUBLE, value.getType() );
+        assertEquals( DOUBLE, value.getType().getBaseType() );
         assertEquals( new Double( 7.0 ), value.getValue() );
     }
 
@@ -294,7 +294,7 @@ public class FeatureXPathTest {
         assertNotNull( result );
         assertEquals( 1, result.length );
         PrimitiveValue value = (PrimitiveValue) result[0];
-        assertEquals( STRING, value.getType() );
+        assertEquals( STRING, value.getType().getBaseType() );
         assertEquals( "Albert Camus", value.getValue() );
     }
 
@@ -318,7 +318,7 @@ public class FeatureXPathTest {
         assertEquals( 7, result.length );
         for ( TypedObjectNode typedObjectNode : result ) {
             PrimitiveValue value = (PrimitiveValue) typedObjectNode;
-            assertEquals( STRING, value.getType() );
+            assertEquals( STRING, value.getType().getBaseType() );
             assertTrue( value.getValue().toString().startsWith( "PHILOSOPHER_" ) );
         }
     }

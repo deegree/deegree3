@@ -110,7 +110,7 @@ public class SQLValueMangler {
         Object sqlValue = null;
         Object value = pv.getValue();
         if ( value != null ) {
-            BaseType pt = pv.getType();
+            BaseType pt = pv.getType().getBaseType();
             switch ( pt ) {
             case BOOLEAN:
                 sqlValue = value;

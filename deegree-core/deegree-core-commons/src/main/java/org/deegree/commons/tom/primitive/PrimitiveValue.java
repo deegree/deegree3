@@ -62,18 +62,15 @@ import org.deegree.commons.utils.Pair;
  */
 public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValue> {
 
+    private final PrimitiveType type;
+
     private final Object value;
 
     private final String textValue;
 
-    private final XSSimpleTypeDefinition xsdType;
-
-    private final BaseType type;
-
     public PrimitiveValue( Object value, BaseType type ) throws IllegalArgumentException {
         this.textValue = XMLValueMangler.internalToXML( value, type );
-        this.xsdType = null;
-        this.type = type;
+        this.type = new PrimitiveType( type );
         this.value = value;
     }
 
@@ -85,8 +82,7 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
     public PrimitiveValue( String value, BaseType type ) throws IllegalArgumentException {
         this.value = XMLValueMangler.xmlToInternal( value, type );
         this.textValue = value;
-        this.xsdType = null;
-        this.type = type;
+        this.type = new PrimitiveType( type );
     }
 
     /**
@@ -96,9 +92,8 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
      */
     public PrimitiveValue( String value, XSSimpleTypeDefinition xsdType ) throws IllegalArgumentException {
         this.textValue = value;
-        this.xsdType = xsdType;
-        this.type = BaseType.valueOf( xsdType );
-        this.value = XMLValueMangler.xmlToInternal( value, type );
+        this.type = new PrimitiveType( xsdType );
+        this.value = XMLValueMangler.xmlToInternal( value, type.getBaseType() );
     }
 
     /**
@@ -106,9 +101,8 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
      * @throws IllegalArgumentException
      */
     public PrimitiveValue( Object value ) throws IllegalArgumentException {
-        this.type = BaseType.valueOf( value );
-        this.textValue = XMLValueMangler.internalToXML( value, type );
-        this.xsdType = null;
+        this.type = new PrimitiveType( BaseType.valueOf( value ) );
+        this.textValue = XMLValueMangler.internalToXML( value, type.getBaseType() );
         this.value = value;
     }
 
@@ -135,17 +129,8 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
      * 
      * @return the type of the value, never <code>null</code>
      */
-    public BaseType getType() {
+    public PrimitiveType getType() {
         return type;
-    }
-
-    /**
-     * Returns the XML schema type for the value.
-     * 
-     * @return the XML schema type for the value, can be <code>null</code>
-     */
-    public XSSimpleTypeDefinition getXSType() {
-        return xsdType;
     }
 
     @Override

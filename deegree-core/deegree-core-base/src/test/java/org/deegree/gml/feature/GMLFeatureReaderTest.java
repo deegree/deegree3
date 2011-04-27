@@ -332,10 +332,10 @@ public class GMLFeatureReaderTest {
         Assert.assertEquals( 2, custom1Prop.getAttributes().size() );
         PrimitiveValue mimeTypeAttr = custom1Prop.getAttributes().get( new QName( "mimeType" ) );
         Assert.assertEquals( "img/gif", mimeTypeAttr.getAsText() );
-        Assert.assertEquals( "string", mimeTypeAttr.getXSType().getName() );
+        Assert.assertEquals( "string", mimeTypeAttr.getType().getXSType().getName() );
         PrimitiveValue lengthAttr = custom1Prop.getAttributes().get( new QName( "length" ) );
         Assert.assertEquals( "5657", lengthAttr.getAsText() );
-        Assert.assertEquals( "positiveInteger", lengthAttr.getXSType().getName() );
+        Assert.assertEquals( "positiveInteger", lengthAttr.getType().getXSType().getName() );
         // assertNull (custom1PropValue.getChildren());
 
         // System.out.println( "type: " + custom1Prop.getType() );

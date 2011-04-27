@@ -468,7 +468,7 @@ public class GMLFeatureWriter {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( pValue != null ) {
                     // TODO
-                    if ( pValue.getType() == BaseType.DECIMAL ) {
+                    if ( pValue.getType().getBaseType() == BaseType.DECIMAL ) {
                         writer.writeCharacters( pValue.getValue().toString() );
                     } else {
                         writer.writeCharacters( pValue.getAsText() );
