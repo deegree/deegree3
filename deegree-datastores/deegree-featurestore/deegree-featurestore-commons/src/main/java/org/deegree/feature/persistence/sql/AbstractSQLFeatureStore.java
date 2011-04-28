@@ -86,6 +86,7 @@ import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
@@ -129,6 +130,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
     private String jdbcConnId;
 
+    private final Map<Mapping, ParticleConverter<?>> particeMappingToConverter = new HashMap<Mapping, ParticleConverter<?>>();
+
     // TODO make this configurable
     private final FeatureStoreCache cache = new SimpleFeatureStoreCache( 10000 );
 
@@ -144,6 +147,37 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         this.blobMapping = schema.getBlobMapping();
         this.jdbcConnId = jdbcConnId;
         taManager = new TransactionManager( this, getConnId() );
+        initConverters();
+    }
+
+    private void initConverters() {
+        for ( FeatureType ft : schema.getFeatureTypes() ) {
+            FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
+            if ( ftMapping != null ) {
+                for ( Mapping particleMapping : ftMapping.getMappings() ) {
+                    initConverter( particleMapping );
+                }
+            }
+        }
+    }
+
+    private void initConverter( Mapping particleMapping ) {
+        if ( particleMapping instanceof PrimitiveMapping ) {
+            PrimitiveMapping pm = (PrimitiveMapping) particleMapping;
+            ParticleConverter<?> converter = pm.getConverter();
+            if ( converter == null ) {
+                converter = new DefaultPrimitiveConverter( pm.getType(), ( (DBField) pm.getMapping() ).getColumn() );
+            }
+            particeMappingToConverter.put( particleMapping, converter );
+        } else if ( particleMapping instanceof GeometryMapping ) {
+            ParticleConverter<?> converter = getGeometryConverter( (GeometryMapping) particleMapping );
+            particeMappingToConverter.put( particleMapping, converter );
+        } else if ( particleMapping instanceof CompoundMapping ) {
+            CompoundMapping cm = (CompoundMapping) particleMapping;
+            for ( Mapping childMapping : cm.getParticles() ) {
+                initConverter( childMapping );
+            }
+        }
     }
 
     @Override
@@ -168,24 +202,24 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     }
 
     /**
-     * Returns the {@link ParticleConverter} for the given {@link Mapping} instance.
+     * Returns a {@link ParticleConverter} for the given {@link Mapping} instance.
      * 
      * @param mapping
      *            particle mapping, must not be <code>null</code>
      * @return particle converter, never <code>null</code>
      */
     public ParticleConverter<?> getConverter( Mapping mapping ) {
-        if ( mapping instanceof PrimitiveMapping ) {
-            PrimitiveMapping pm = (PrimitiveMapping) mapping;
-            return new DefaultPrimitiveConverter( pm.getType(), ( (DBField) pm.getMapping() ).getColumn() );
-        } else if ( mapping instanceof GeometryMapping ) {
-            GeometryMapping gm = (GeometryMapping) mapping;
-            return getGeometryConverter( gm );
-        }
-        return null;
+        return particeMappingToConverter.get( mapping );
     }
 
-    public abstract ParticleConverter<Geometry> getGeometryConverter( GeometryMapping gm );
+    /**
+     * Implementations must return a {@link ParticleConverter} for converting {@link Geometry} instances.
+     * 
+     * @param mapping
+     *            geometry mapping, never <code>null</code>
+     * @return particle converer, must not be <code>null</code>
+     */
+    protected abstract ParticleConverter<Geometry> getGeometryConverter( GeometryMapping mapping );
 
     @Override
     public Envelope getEnvelope( QName ftName )

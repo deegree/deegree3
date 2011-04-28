@@ -143,7 +143,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             GeometryStorageParams geometryParams = new GeometryStorageParams( blobMapping.getCRS(), null, DIM_2 );
             GeometryMapping blobGeomMapping = new GeometryMapping( null, bboxColumn, GeometryType.GEOMETRY,
                                                                    geometryParams, null );
-            blobGeomConverter = fs.getGeometryConverter( blobGeomMapping );
+            blobGeomConverter = (ParticleConverter<Geometry>) fs.getGeometryConverter( blobGeomMapping );
         }
     }
 

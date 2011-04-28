@@ -60,7 +60,7 @@ public class PrimitiveMapping extends Mapping {
 
     private final MappingExpression mapping;
 
-    private final ParticleConverter converter;
+    private final ParticleConverter<PrimitiveValue> converter;
 
     /**
      * 

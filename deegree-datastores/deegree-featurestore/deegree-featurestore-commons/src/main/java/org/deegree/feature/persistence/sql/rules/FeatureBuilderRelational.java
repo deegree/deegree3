@@ -184,7 +184,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 GeometryMapping gm = (GeometryMapping) mapping;
                 MappingExpression column = gm.getMapping();
                 if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, fs.getGeometryConverter( gm ).getSelectSnippet( null ) );
+                    addColumn( colToRsIdx, fs.getConverter( gm ).getSelectSnippet( null ) );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
                 FeatureMapping fm = (FeatureMapping) mapping;
@@ -304,7 +304,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                String col = fs.getGeometryConverter( pm ).getSelectSnippet( null );
+                String col = fs.getConverter( pm ).getSelectSnippet( null );
                 Object sqlValue = rs.getObject( colToRsIdx.get( col ) );
                 particle = fs.getConverter( mapping ).toParticle( sqlValue );
             }
