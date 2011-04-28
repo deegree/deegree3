@@ -4,7 +4,7 @@
   <NamespaceHint prefix="om" namespaceURI="http://www.opengis.net/om/1.0"/>
   <NamespaceHint prefix="sa" namespaceURI="http://www.opengis.net/sampling/1.0"/>
   <GMLSchema version="GML_31">../../appschemas/geosciml/2.1/geosciml.xsd</GMLSchema>
-  <GMLFeatureCollection version="GML_31">data/gsmlContact.xml</GMLFeatureCollection>
-  <GMLFeatureCollection version="GML_31">data/gsmlGeologicUnit.xml</GMLFeatureCollection>
-  <GMLFeatureCollection version="GML_31">data/gsmlShearDisplacementStructure.xml</GMLFeatureCollection>
+  <GMLFeatureCollection version="GML_31">../../data/gsmlContact.xml</GMLFeatureCollection>
+  <GMLFeatureCollection version="GML_31">../../data/gsmlGeologicUnit.xml</GMLFeatureCollection>
+  <GMLFeatureCollection version="GML_31">../../data/gsmlShearDisplacementStructure.xml</GMLFeatureCollection>
 </MemoryFeatureStore>
