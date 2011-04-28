@@ -167,6 +167,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
         LOG.info( "Initializing/looking up configured record stores." );
         MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
+        if ( mgr == null )
+            throw new IllegalArgumentException( "Could not find a MetadataStoreManager!" );
         List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
         for ( ResourceState<MetadataStore<?>> state : mgr.getStates() ) {
             if ( state.getResource() != null ) {
@@ -215,6 +217,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         try {
             String rootElement = KVPUtils.getRequired( normalizedKVPParams, "REQUEST" );
             CSWRequestType requestType = getRequestType( rootElement );
+            if ( requestType == null )
+                throw new IllegalArgumentException( rootElement + " is not a known request type by this CSW" );
 
             Version requestVersion = getVersion( normalizedKVPParams.get( "ACCEPTVERSIONS" ) );
 
@@ -263,8 +267,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             LOG.debug( e.getMessage(), e );
             sendServiceException( new OWSException( e ), response );
         } catch ( Throwable t ) {
-            LOG.debug( t.getMessage(), t );
-            String msg = t.getMessage();
+            String msg = "An unexpected error occured: " + t.getMessage();
+            LOG.debug( msg, t );
             sendServiceException( new OWSException( msg, t, ControllerException.NO_APPLICABLE_CODE ), response );
         }
     }
@@ -281,6 +285,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             OMElement rootElement = requestDoc.getRootElement();
             String rootElementString = rootElement.getLocalName();
             CSWRequestType requestType = getRequestType( rootElementString );
+            if ( requestType == null )
+                throw new IllegalArgumentException( rootElement + " is not a known request type by this CSW" );
 
             // check if requested version is supported and offered (except for GetCapabilities)
             Version requestVersion = getVersion( requestDoc.getRootElement().getAttributeValue( new QName( "version" ) ) );
@@ -336,8 +342,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             LOG.debug( e.getMessage(), e );
             sendServiceException( new OWSException( e ), response );
         } catch ( Throwable t ) {
-            LOG.debug( t.getMessage(), t );
-            String msg = t.getMessage();
+            String msg = "An unexpected error occured: " + t.getMessage();
+            LOG.debug( msg, t );
             sendServiceException( new OWSException( msg, t, ControllerException.NO_APPLICABLE_CODE ), response );
         }
     }
@@ -353,8 +359,9 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
         try {
             String rootElement = requestElement.getLocalName();
-
             CSWRequestType requestType = getRequestType( rootElement );
+            if ( requestType == null )
+                throw new IllegalArgumentException( rootElement + " is not a known request type by this CSW" );
 
             Version requestVersion = getVersion( requestElement.getAttributeValue( new QName( "version" ) ) );
             // check if requested version is supported and offered (except for GetCapabilities)
