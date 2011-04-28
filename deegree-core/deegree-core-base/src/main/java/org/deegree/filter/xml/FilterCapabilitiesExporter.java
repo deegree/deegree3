@@ -270,16 +270,17 @@ public class FilterCapabilitiesExporter {
         writeElement( writer, OGCNS, "GeometryOperand", "gml:Arc" );
         writeElement( writer, OGCNS, "GeometryOperand", "gml:Circle" );
         writeElement( writer, OGCNS, "GeometryOperand", "gml:ArcByBulge" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:Bezier" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:Clothoid" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:CubicSpline" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:Geodesic" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:OffsetCurve" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:Triangle" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:PolyhedralSurface" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:TriangulatedSurface" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:Tin" );
-        writeElement( writer, OGCNS, "GeometryOperand", "gml:Solid" );
+        // check and reactivate
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:Bezier" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:Clothoid" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:CubicSpline" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:Geodesic" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:OffsetCurve" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:Triangle" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:PolyhedralSurface" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:TriangulatedSurface" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:Tin" );
+//        writeElement( writer, OGCNS, "GeometryOperand", "gml:Solid" );
         writer.writeEndElement();
 
         writer.writeStartElement( OGCNS, "SpatialOperators" );
