@@ -243,37 +243,23 @@ public class DCRecord implements MetadataRecord {
     private void writeFullElements( XMLStreamWriter writer )
                             throws XMLStreamException {
         if ( getCreator() != null ) {
-            writer.writeStartElement( dc.getPrefix(), "creator", dc.getNamespaceURI() );
-            writer.writeCharacters( getCreator() );
-            writer.writeEndElement();
+            write( writer, "creator", getCreator(), dc );
         }
         if ( getPublisher() != null ) {
-            writer.writeStartElement( dc.getPrefix(), "publisher", dc.getNamespaceURI() );
-            writer.writeCharacters( getPublisher() );
-            writer.writeEndElement();
+            write( writer, "publisher", getPublisher(), dc );
         }
         if ( getContributor() != null ) {
-            writer.writeStartElement( dc.getPrefix(), "contributor", dc.getNamespaceURI() );
-            writer.writeCharacters( getContributor() );
-            writer.writeEndElement();
+            write( writer, "contributor", getContributor(), dc );
         }
         if ( getSource() != null ) {
-            writer.writeStartElement( dc.getPrefix(), "source", dc.getNamespaceURI() );
-            writer.writeCharacters( getSource() );
-            writer.writeEndElement();
+            write( writer, "source", getSource(), dc );
         }
         if ( getLanguage() != null ) {
-            writer.writeStartElement( dc.getPrefix(), "language", dc.getNamespaceURI() );
-            writer.writeCharacters( getLanguage() );
-            writer.writeEndElement();
+            write( writer, "language", getLanguage(), dc );
         }
-
         for ( String r : getRights() ) {
-            writer.writeStartElement( dc.getPrefix(), "rights", dc.getNamespaceURI() );
-            writer.writeCharacters( r );
-            writer.writeEndElement();
+            write( writer, "rights", r, dc );
         }
-
     }
 
     private void toDCSummary( XMLStreamWriter writer )
@@ -288,33 +274,30 @@ public class DCRecord implements MetadataRecord {
 
     private void writeSummaryElements( XMLStreamWriter writer )
                             throws XMLStreamException {
-
         for ( String s : getSubject() ) {
-            writer.writeStartElement( dc.getPrefix(), "subject", dc.getNamespaceURI() );
-            writer.writeCharacters( s );
-            writer.writeEndElement();
+            write( writer, "subject", s, dc );
         }
         for ( String f : getFormat() ) {
-            writer.writeStartElement( dc.getPrefix(), "format", dc.getNamespaceURI() );
-            writer.writeCharacters( f );
-            writer.writeEndElement();
+            write( writer, "format", f, dc );
         }
         for ( String r : getRelation() ) {
-            writer.writeStartElement( dc.getPrefix(), "relation", dc.getNamespaceURI() );
-            writer.writeCharacters( r );
-            writer.writeEndElement();
+            write( writer, "relation", r, dc );
         }
         if ( getModified() != null ) {
-            writer.writeStartElement( dct.getPrefix(), "modified", dct.getNamespaceURI() );
-            writer.writeCharacters( getModified().getDate().toString() );
-            writer.writeEndElement();
+            write( writer, "modified", getModified().getDate().toString(), dct );
         }
         for ( String a : getAbstract() ) {
-            writer.writeStartElement( dct.getPrefix(), "abstract", dct.getNamespaceURI() );
-            writer.writeCharacters( a );
+            write( writer, "abstract", a, dct );
+        }
+    }
+
+    private void write( XMLStreamWriter writer, String elementName, String value, QName ns )
+                            throws XMLStreamException {
+        if ( value != null ) {
+            writer.writeStartElement( ns.getPrefix(), elementName, ns.getNamespaceURI() );
+            writer.writeCharacters( value );
             writer.writeEndElement();
         }
-
     }
 
     private void toDCBrief( XMLStreamWriter writer )
@@ -329,19 +312,13 @@ public class DCRecord implements MetadataRecord {
     private void writeBriefElements( XMLStreamWriter writer )
                             throws XMLStreamException {
         if ( getIdentifier() != null ) {
-            writer.writeStartElement( dc.getPrefix(), "identifier", dc.getNamespaceURI() );
-            writer.writeCharacters( getIdentifier() );
-            writer.writeEndElement();
+            write( writer, "identifier", getIdentifier(), dc );
         }
         for ( String t : getTitle() ) {
-            writer.writeStartElement( dc.getPrefix(), "title", dc.getNamespaceURI() );
-            writer.writeCharacters( t );
-            writer.writeEndElement();
+            write( writer, "title", t, dc );
         }
         if ( getType() != null ) {
-            writer.writeStartElement( dc.getPrefix(), "type", dc.getNamespaceURI() );
-            writer.writeCharacters( getType() );
-            writer.writeEndElement();
+            write( writer, "type", getType(), dc );
         }
     }
 
