@@ -472,6 +472,22 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             sql.append( " = ?" );
             first = false;
         }
+        if ( jc.getOrderColumns() != null && !jc.getOrderColumns().isEmpty() ) {
+            sql.append( " ORDER BY " );
+            first = true;
+            for ( String orderColumn : jc.getOrderColumns() ) {
+                if ( !first ) {
+                    sql.append( "," );
+                }
+                if ( orderColumn.endsWith( "-" ) ) {
+                    sql.append( orderColumn.substring( 0, orderColumn.length() - 1 ) );
+                    sql.append( " DESC" );
+                } else {
+                    sql.append( orderColumn );
+                }
+                first = false;
+            }
+        }
         LOG.debug( "SQL: {}", sql );
 
         PreparedStatement stmt = null;
