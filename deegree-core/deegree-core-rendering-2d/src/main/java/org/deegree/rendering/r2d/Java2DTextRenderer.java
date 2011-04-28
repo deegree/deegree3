@@ -48,6 +48,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.BasicStroke;
 import java.awt.Font;
+import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D.Double;
@@ -95,15 +96,21 @@ public class Java2DTextRenderer implements TextRenderer {
     }
 
     private void render( TextStyling styling, Font font, String text, Point p ) {
-        Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform(
-                                                                               new Point2D.Double( p.get0(), p.get1() ),
+        Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ),
                                                                                null );
         double x = pt.x + renderer.considerUOM( styling.displacementX, styling.uom );
         double y = pt.y - renderer.considerUOM( styling.displacementY, styling.uom );
         renderer.graphics.setFont( font );
         AffineTransform transform = renderer.graphics.getTransform();
         renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
-        TextLayout layout = new TextLayout( text, font, renderer.graphics.getFontRenderContext() );
+        FontRenderContext frc = renderer.graphics.getFontRenderContext();
+        TextLayout layout;
+        synchronized ( frc ) {
+            // assuming synchronizing over the font render context will fix issue
+            // http://tracker.deegree.org/deegree-core/ticket/200
+            // synchronizing over the font would be my next guess
+            layout = new TextLayout( text, font, frc );
+        }
         double width = layout.getBounds().getWidth();
         double height = layout.getBounds().getHeight();
         double px = x - styling.anchorPointX * width;
