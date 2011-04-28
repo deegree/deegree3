@@ -79,7 +79,7 @@ public class PrimitiveMapping extends Mapping {
     }
 
     public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, List<TableJoin> tableChange ) {
-        this( path, mapping, pt, tableChange, new DefaultPrimitiveConverter( pt, ( (DBField) mapping ).getColumn() ) );
+        this( path, mapping, pt, tableChange, null );
     }
 
     /**

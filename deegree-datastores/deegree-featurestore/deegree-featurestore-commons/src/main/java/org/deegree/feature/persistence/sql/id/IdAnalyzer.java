@@ -93,8 +93,21 @@ public class IdAnalyzer {
             }
         }
         if ( ft == null ) {
-            String msg = "Unable to determine feature type for id '" + featureOrGeomId + "'.";
-            throw new IllegalArgumentException( msg );
+            StringBuilder sb = new StringBuilder( "Unable to determine feature type for id '" );
+            sb.append( featureOrGeomId );
+            sb.append( "'. Given id does not start with a configured identifier prefix. Known prefixes are: " );
+            boolean first = true;
+            for ( String prefix : prefixToFt.keySet() ) {
+                if ( !first ) {
+                    sb.append( ", " );
+                }
+                sb.append( "'" );
+                sb.append( prefix );
+                sb.append( "'" );
+                first = false;
+            }
+            sb.append( "." );
+            throw new IllegalArgumentException( sb.toString() );
         }
 
         FIDMapping fidMapping = schema.getFtMapping( ft.getName() ).getFidMapping();

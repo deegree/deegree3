@@ -64,7 +64,6 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
-import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -84,6 +83,7 @@ import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
+import org.deegree.feature.persistence.sql.converter.ConverterFactory;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
@@ -166,7 +166,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             PrimitiveMapping pm = (PrimitiveMapping) particleMapping;
             ParticleConverter<?> converter = pm.getConverter();
             if ( converter == null ) {
-                converter = new DefaultPrimitiveConverter( pm.getType(), ( (DBField) pm.getMapping() ).getColumn() );
+                converter = ConverterFactory.buildConverter( pm, this );
             }
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof GeometryMapping ) {
@@ -219,7 +219,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
      *            geometry mapping, never <code>null</code>
      * @return particle converer, must not be <code>null</code>
      */
-    protected abstract ParticleConverter<Geometry> getGeometryConverter( GeometryMapping mapping );
+    public abstract ParticleConverter<Geometry> getGeometryConverter( GeometryMapping mapping );
 
     @Override
     public Envelope getEnvelope( QName ftName )

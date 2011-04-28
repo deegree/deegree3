@@ -222,13 +222,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
                     PrimitiveType primType = new PrimitiveType( type );
-                    PrimitiveMapping mapping = new PrimitiveMapping(
-                                                                     path,
-                                                                     dbField,
-                                                                     primType,
-                                                                     null,
-                                                                     new DefaultPrimitiveConverter( primType,
-                                                                                                    dbField.getColumn() ) );
+                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, primType, null, null );
                     mappings.add( mapping );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Skipping column with type code '" + md.sqlType + "' from list of properties:"
@@ -317,9 +311,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 primType = valueOf( md.sqlType );
             }
             pt = new SimplePropertyType( propName, minOccurs, maxOccurs, primType, null, null );
-            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc,
-                                      new DefaultPrimitiveConverter( ( (SimplePropertyType) pt ).getPrimitiveType(),
-                                                                     md.column ) );
+            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc, null );
         } else if ( propDecl instanceof GeometryPropertyJAXB ) {
             GeometryPropertyJAXB geomDecl = (GeometryPropertyJAXB) propDecl;
             GeometryType type = null;

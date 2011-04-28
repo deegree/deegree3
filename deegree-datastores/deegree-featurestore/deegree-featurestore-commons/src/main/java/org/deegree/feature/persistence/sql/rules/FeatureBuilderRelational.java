@@ -55,6 +55,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.Feature;
@@ -172,19 +173,18 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 }
             }
         } else {
+            ParticleConverter<?> particleConverter = fs.getConverter( mapping );
             if ( mapping instanceof PrimitiveMapping ) {
-                PrimitiveMapping pm = (PrimitiveMapping) mapping;
-                MappingExpression column = pm.getMapping();
-                if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, ( (DBField) column ).getColumn() );
+                if ( particleConverter != null ) {
+                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( null ) );
                 } else {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else if ( mapping instanceof GeometryMapping ) {
-                GeometryMapping gm = (GeometryMapping) mapping;
-                MappingExpression column = gm.getMapping();
-                if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, fs.getConverter( gm ).getSelectSnippet( null ) );
+                if ( particleConverter != null ) {
+                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( null ) );
+                } else {
+                    LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
                 FeatureMapping fm = (FeatureMapping) mapping;
@@ -297,8 +297,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                Object sqlValue = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
-                particle = pm.getConverter().toParticle( sqlValue );
+                String col = fs.getConverter( pm ).getSelectSnippet( null );
+                Object sqlValue = rs.getObject( colToRsIdx.get( col ) );
+                particle = fs.getConverter( mapping ).toParticle( sqlValue );
             }
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;

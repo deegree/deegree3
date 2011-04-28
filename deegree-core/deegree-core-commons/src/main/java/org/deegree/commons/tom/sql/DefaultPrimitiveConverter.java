@@ -35,17 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.sql;
 
-import static org.deegree.commons.tom.primitive.BaseType.DATE;
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.text.ParseException;
 
-import javax.xml.namespace.QName;
-
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Time;
@@ -68,34 +62,24 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
 
     private static Logger LOG = LoggerFactory.getLogger( DefaultPrimitiveConverter.class );
 
-    private final PrimitiveType pt;
+    protected final PrimitiveType pt;
 
-    private BaseType bt;
+    protected BaseType bt;
 
-    private final String column;
-
-    private static final QName GML32_TIME_UNION = new QName( GML3_2_NS, "TimePositionUnion" );
+    protected final String column;
 
     public DefaultPrimitiveConverter( PrimitiveType pt, String column ) {
         this.pt = pt;
         this.bt = pt.getBaseType();
         this.column = column;
-        XSSimpleTypeDefinition xsTypeDef = pt.getXSType();
-        if ( xsTypeDef != null && !( xsTypeDef.getAnonymous() ) ) {
-            QName typeName = new QName( xsTypeDef.getNamespace(), xsTypeDef.getName() );
-            if ( GML32_TIME_UNION.equals( typeName ) ) {
-                LOG.info( "Detected " + GML32_TIME_UNION + " simple type. Treating as date." );
-                bt = DATE;
-            }
-        }
     }
 
     @Override
     public String getSelectSnippet( String tableAlias ) {
-        if ( tableAlias == null ) {
+        if ( tableAlias != null ) {
             return tableAlias + "." + column;
         }
-        return null;
+        return column;
     }
 
     public String getSetSnippet() {
