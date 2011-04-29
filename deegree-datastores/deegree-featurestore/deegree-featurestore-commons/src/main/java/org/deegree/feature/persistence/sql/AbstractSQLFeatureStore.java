@@ -352,7 +352,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
      * @return transformed version of the geometry, never <code>null</code>
      * @throws FilterEvaluationException
      */
-    protected Geometry getCompatibleGeometry( Geometry literal, ICRS crs )
+    public static Geometry getCompatibleGeometry( Geometry literal, ICRS crs )
                             throws FilterEvaluationException {
         if ( crs == null ) {
             return literal;
