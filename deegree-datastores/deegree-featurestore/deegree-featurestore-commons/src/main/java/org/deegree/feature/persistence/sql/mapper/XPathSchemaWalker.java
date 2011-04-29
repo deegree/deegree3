@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.mapper;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
@@ -52,6 +54,7 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.expression.PropertyName;
@@ -83,14 +86,15 @@ public class XPathSchemaWalker {
         this.nsBindings = nsBindings;
     }
 
-    public XSElementDeclaration getTargetElement( XSElementDeclaration context, PropertyName propName ) {
+    public Pair<XSElementDeclaration, Boolean> getTargetElement( Pair<XSElementDeclaration, Boolean> context,
+                                                                 PropertyName propName ) {
 
         Expr path = propName.getAsXPath();
         if ( !( path instanceof LocationPath ) ) {
             throw new IllegalArgumentException( "XPath '" + propName + "' does not denote a location path." );
         }
 
-        XSElementDeclaration currentEl = context;
+        Pair<XSElementDeclaration, Boolean> currentEl = context;
         for ( Object o : ( (LocationPath) path ).getSteps() ) {
             if ( o instanceof NameStep ) {
                 NameStep step = (NameStep) o;
@@ -119,14 +123,15 @@ public class XPathSchemaWalker {
         return currentEl;
     }
 
-    public PrimitiveType getTargetType( XSElementDeclaration context, PropertyName propName ) {
+    public Pair<PrimitiveType, Boolean> getTargetType( Pair<XSElementDeclaration, Boolean> context,
+                                                       PropertyName propName ) {
 
         Expr path = propName.getAsXPath();
         if ( !( path instanceof LocationPath ) ) {
             throw new IllegalArgumentException( "XPath '" + propName + "' does not denote a location path." );
         }
 
-        XSElementDeclaration currentEl = context;
+        Pair<XSElementDeclaration, Boolean> currentEl = context;
         for ( Object o : ( (LocationPath) path ).getSteps() ) {
             if ( o instanceof NameStep ) {
                 NameStep step = (NameStep) o;
@@ -141,7 +146,7 @@ public class XPathSchemaWalker {
                     }
                 } else if ( step.getAxis() == Axis.ATTRIBUTE ) {
                     QName qName = getQName( step );
-                    XSTypeDefinition typeDef = currentEl.getTypeDefinition();
+                    XSTypeDefinition typeDef = currentEl.first.getTypeDefinition();
                     if ( !( typeDef instanceof XSComplexTypeDefinition ) ) {
                         throw new IllegalArgumentException(
                                                             "Unable to match XPath '"
@@ -149,13 +154,13 @@ public class XPathSchemaWalker {
                                                                                     + "' to application schema. Referenced attribute does not exist." );
                     }
                     if ( new QName( XSINS, "nil" ).equals( qName ) ) {
-                        if ( !currentEl.getNillable() ) {
+                        if ( !currentEl.first.getNillable() ) {
                             throw new IllegalArgumentException(
                                                                 "Unable to match XPath '"
                                                                                         + propName
                                                                                         + "' to application schema. Referenced element is not nillable." );
                         }
-                        return new PrimitiveType( BOOLEAN );
+                        return new Pair<PrimitiveType, Boolean>( new PrimitiveType( BOOLEAN ), TRUE );
                     }
                     XSComplexTypeDefinition complexTypeDef = (XSComplexTypeDefinition) typeDef;
                     XSObjectList attrUses = complexTypeDef.getAttributeUses();
@@ -163,7 +168,10 @@ public class XPathSchemaWalker {
                         XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
                         QName attrName = getQName( attrUse.getAttrDeclaration() );
                         if ( qName.equals( attrName ) ) {
-                            return new PrimitiveType( attrUse.getAttrDeclaration().getTypeDefinition() );
+                            return new Pair<PrimitiveType, Boolean>(
+                                                                     new PrimitiveType(
+                                                                                        attrUse.getAttrDeclaration().getTypeDefinition() ),
+                                                                     !attrUse.getRequired() );
                         }
                     }
                     throw new IllegalArgumentException(
@@ -186,16 +194,16 @@ public class XPathSchemaWalker {
             }
         }
 
-        XSTypeDefinition typeDef = currentEl.getTypeDefinition();
+        XSTypeDefinition typeDef = currentEl.first.getTypeDefinition();
         if ( typeDef instanceof XSComplexTypeDefinition ) {
             XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) typeDef;
             if ( complexType.getSimpleType() == null ) {
                 throw new IllegalArgumentException( "XPath '" + propName
                                                     + "' refers to a complex type with complex content." );
             }
-            return new PrimitiveType( complexType.getSimpleType() );
+            return new Pair<PrimitiveType, Boolean>( new PrimitiveType( complexType.getSimpleType() ), FALSE );
         }
-        return new PrimitiveType( (XSSimpleTypeDefinition) typeDef );
+        return new Pair<PrimitiveType, Boolean>( new PrimitiveType( (XSSimpleTypeDefinition) typeDef ), FALSE );
     }
 
     private QName getQName( NameStep step ) {
@@ -217,8 +225,9 @@ public class XPathSchemaWalker {
         return new QName( attrUse.getNamespace(), attrUse.getName() );
     }
 
-    private XSElementDeclaration getTargetElement( XSElementDeclaration context, QName elName ) {
-        XSTypeDefinition typeDef = context.getTypeDefinition();
+    private Pair<XSElementDeclaration, Boolean> getTargetElement( Pair<XSElementDeclaration, Boolean> context,
+                                                                  QName elName ) {
+        XSTypeDefinition typeDef = context.getFirst().getTypeDefinition();
         if ( !( typeDef instanceof XSComplexTypeDefinition ) ) {
             throw new IllegalArgumentException( "XPath refers to a simple type definition." );
         }
@@ -229,14 +238,14 @@ public class XPathSchemaWalker {
         return getTargetElement( particle.getTerm(), elName );
     }
 
-    private XSElementDeclaration getTargetElement( XSTerm term, QName elName ) {
+    private Pair<XSElementDeclaration, Boolean> getTargetElement( XSTerm term, QName elName ) {
         if ( term instanceof XSElementDeclaration ) {
             XSElementDeclaration elDecl = (XSElementDeclaration) term;
             for ( XSElementDeclaration substitution : appSchema.getXSModel().getSubstitutions( elDecl, null, true,
                                                                                                false ) ) {
                 QName elDeclName = getQName( substitution );
                 if ( elName.equals( elDeclName ) ) {
-                    return substitution;
+                    return new Pair<XSElementDeclaration, Boolean>( substitution, null );
                 }
             }
         } else if ( term instanceof XSModelGroup ) {
@@ -244,9 +253,9 @@ public class XPathSchemaWalker {
             XSObjectList ol = mg.getParticles();
             for ( int i = 0; i < ol.getLength(); i++ ) {
                 XSParticle o = (XSParticle) ol.item( i );
-                XSElementDeclaration elDecl = getTargetElement( o.getTerm(), elName );
+                Pair<XSElementDeclaration, Boolean> elDecl = getTargetElement( o.getTerm(), elName );
                 if ( elDecl != null ) {
-                    return elDecl;
+                    return new Pair<XSElementDeclaration, Boolean>( elDecl.first, o.getMinOccurs() == 0 );
                 }
             }
         } else if ( term instanceof XSWildcard ) {

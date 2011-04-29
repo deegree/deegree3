@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
+import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 
@@ -236,7 +237,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         List<Mapping> particleMappings = new ArrayList<Mapping>();
         XSElementDeclaration elDecl = gmlSchema.getXSModel().getElementDecl( ftName );
         for ( JAXBElement<? extends AbstractParticleJAXB> particle : ftMappingConf.getAbstractParticle() ) {
-            particleMappings.add( buildMapping( ftTable, elDecl, particle.getValue() ) );
+            particleMappings.add( buildMapping( ftTable, new Pair<XSElementDeclaration, Boolean>( elDecl, TRUE ),
+                                                particle.getValue() ) );
         }
         return new FeatureTypeMapping( ftName, ftTable, fidMapping, particleMappings );
     }
@@ -271,7 +273,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         return new FIDMapping( prefix, "_", columns, generator );
     }
 
-    private Mapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl, AbstractParticleJAXB value ) {
+    private Mapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
+                                  AbstractParticleJAXB value ) {
         LOG.debug( "Building mapping for path '{}' on element '{}'", value.getPath(), elDecl );
         if ( value instanceof PrimitiveParticleJAXB ) {
             return buildMapping( currentTable, elDecl, (PrimitiveParticleJAXB) value );
@@ -289,27 +292,28 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                     + value.getClass().getName() + "'." );
     }
 
-    private Mapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl, PrimitiveParticleJAXB config ) {
+    private Mapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
+                                  PrimitiveParticleJAXB config ) {
 
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
-        PrimitiveType pt = schemaWalker.getTargetType( elDecl, path );
+        Pair<PrimitiveType, Boolean> pt = schemaWalker.getTargetType( elDecl, path );
         MappingExpression me = parseMappingExpression( config.getMapping() );
 
         if ( me instanceof DBField ) {
             List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
             LOG.debug( "Targeted primitive type: " + pt );
-            return new PrimitiveMapping( path, me, pt, joinedTable );
+            return new PrimitiveMapping( path, me, pt.first, joinedTable, null, pt.second );
         } else if ( me instanceof StringConst ) {
             String s = me.toString();
             s = s.substring( 1, s.length() - 1 );
-            PrimitiveValue value = new PrimitiveValue( s, pt );
+            PrimitiveValue value = new PrimitiveValue( s, pt.first );
             return new ConstantMapping<PrimitiveValue>( path, value );
         }
         throw new IllegalArgumentException( "Mapping expressions of type '" + me.getClass()
                                             + "' are not supported yet." );
     }
 
-    private GeometryMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
+    private GeometryMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                           GeometryParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
         MappingExpression me = parseMappingExpression( config.getMapping() );
@@ -320,7 +324,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         return new GeometryMapping( path, me, type, geometryParams, joinedTable );
     }
 
-    private FeatureMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
+    private FeatureMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                          FeatureParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
         MappingExpression me = parseMappingExpression( config.getMapping() );
@@ -329,15 +333,15 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             hrefMe = parseMappingExpression( config.getHrefMapping() );
         }
         elDecl = schemaWalker.getTargetElement( elDecl, path );
-        QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
+        QName ptName = new QName( elDecl.first.getNamespace(), elDecl.first.getName() );
         // TODO rework this
-        FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl, ptName, 0, 1,
+        FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl.first, ptName, 0, 1,
                                                                                                   null );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new FeatureMapping( path, me, hrefMe, pt.getFTName(), joinedTable );
     }
 
-    private CompoundMapping buildMapping( QTableName currentTable, XSElementDeclaration elDecl,
+    private CompoundMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                           ComplexParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
         elDecl = schemaWalker.getTargetElement( elDecl, path );
@@ -350,6 +354,6 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new CompoundMapping( path, particles, joinedTable );
+        return new CompoundMapping( path, particles, joinedTable, elDecl.second, elDecl.first );
     }
 }

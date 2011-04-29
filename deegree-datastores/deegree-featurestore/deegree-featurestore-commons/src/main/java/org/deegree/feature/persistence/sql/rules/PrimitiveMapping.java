@@ -39,11 +39,9 @@ import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 
 /**
@@ -62,6 +60,8 @@ public class PrimitiveMapping extends Mapping {
 
     private final ParticleConverter<PrimitiveValue> converter;
 
+    private final boolean isNullable;
+
     /**
      * 
      * @param path
@@ -71,15 +71,13 @@ public class PrimitiveMapping extends Mapping {
      *            table joins, can be <code>null</code> (no joins involved)
      */
     public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt,
-                             List<TableJoin> tableChange, ParticleConverter<PrimitiveValue> converter ) {
+                             List<TableJoin> tableChange, ParticleConverter<PrimitiveValue> converter,
+                             boolean isNullable ) {
         super( path, tableChange );
         this.pt = pt;
         this.mapping = mapping;
         this.converter = converter;
-    }
-
-    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt, List<TableJoin> tableChange ) {
-        this( path, mapping, pt, tableChange, null );
+        this.isNullable = isNullable;
     }
 
     /**
@@ -97,5 +95,15 @@ public class PrimitiveMapping extends Mapping {
 
     public ParticleConverter<PrimitiveValue> getConverter() {
         return converter;
+    }
+
+    /**
+     * Returns whether the particle can simply be omitted (or if a missing value needs further action, such as NULL
+     * escalation).
+     * 
+     * @return true, if the particle can be omitted, false otherwise
+     */
+    public boolean isNullable() {
+        return isNullable;
     }
 }

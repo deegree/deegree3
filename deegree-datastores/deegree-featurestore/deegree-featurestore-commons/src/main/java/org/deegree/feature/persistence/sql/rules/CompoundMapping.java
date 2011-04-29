@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.sql.rules;
 
 import java.util.List;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.filter.expression.PropertyName;
 
@@ -52,13 +53,29 @@ public class CompoundMapping extends Mapping {
 
     private final List<Mapping> particles;
 
-    public CompoundMapping( PropertyName path, List<Mapping> particles, List<TableJoin> tableChange ) {
+    private final boolean isNullable;
+
+    private final XSElementDeclaration elDecl;
+
+    public CompoundMapping( PropertyName path, List<Mapping> particles, List<TableJoin> tableChange,
+                            boolean isNullable, XSElementDeclaration elDecl ) {
         super( path, tableChange );
+        System.out.println( "New compound mapping: " + elDecl.getName() + ", nullable: " + isNullable );
         this.particles = particles;
+        this.isNullable = isNullable;
+        this.elDecl = elDecl;
     }
 
     public List<Mapping> getParticles() {
         return particles;
+    }
+
+    public boolean isNullable() {
+        return isNullable;
+    }
+    
+    public XSElementDeclaration getElementDecl () {
+        return elDecl;
     }
 
     @Override

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
+import static java.lang.Boolean.TRUE;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.tom.primitive.BaseType.valueOf;
@@ -62,7 +63,6 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -222,7 +222,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
                     PrimitiveType primType = new PrimitiveType( type );
-                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, primType, null, null );
+                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, primType, null, null, TRUE );
                     mappings.add( mapping );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Skipping column with type code '" + md.sqlType + "' from list of properties:"
@@ -311,7 +311,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 primType = valueOf( md.sqlType );
             }
             pt = new SimplePropertyType( propName, minOccurs, maxOccurs, primType, null, null );
-            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc, null );
+            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc, null,
+                                      minOccurs == 0 );
         } else if ( propDecl instanceof GeometryPropertyJAXB ) {
             GeometryPropertyJAXB geomDecl = (GeometryPropertyJAXB) propDecl;
             GeometryType type = null;

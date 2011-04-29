@@ -57,6 +57,7 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
@@ -335,9 +336,26 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
             List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
 
+            boolean escalateNull = false;
+
             for ( Mapping particleMapping : cm.getParticles() ) {
 
                 List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx );
+
+                if ( particleMapping instanceof PrimitiveMapping ) {
+                    PrimitiveMapping pm = (PrimitiveMapping) particleMapping;
+                    if ( !pm.isNullable() ) {
+                        boolean found = false;
+                        for ( TypedObjectNode particleValue : particleValues ) {
+                            if ( particleValue != null ) {
+                                found = true;
+                            }
+                        }
+                        if ( !found ) {
+                            escalateNull = true;
+                        }
+                    }
+                }
 
                 Expr xpath = particleMapping.getPath().getAsXPath();
                 if ( xpath instanceof LocationPath ) {
@@ -414,11 +432,23 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 }
             }
 
-            // TODO
-            XSElementDeclaration xsType = null;
-            if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
-                QName elName = getName( mapping.getPath() );
-                particle = new GenericXMLElement( elName, xsType, attrs, children );
+            if ( escalateNull ) {
+                if ( cm.isNullable() ) {
+                    return null;
+                } else if ( cm.getElementDecl().getNillable() ) {
+                    QName elName = getName( mapping.getPath() );
+                    attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
+                                                      new PrimitiveValue( Boolean.TRUE ) );
+                    particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
+                } else {
+                    LOG.info( "Unable to map NULL value for mapping '" + cm.getPath().getAsText()
+                              + "' to output. Escalating to parent particle." );
+                }
+            } else {
+                if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
+                    QName elName = getName( mapping.getPath() );
+                    particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, children );
+                }
             }
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
