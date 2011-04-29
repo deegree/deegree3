@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.mapper;
 
-import static java.lang.Boolean.FALSE;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
@@ -252,7 +251,7 @@ public class AppSchemaMapper {
                 particles = generateMapping( (XSComplexTypeDefinition) elDecl.getTypeDefinition(), propMc,
                                              new HashMap<QName, QName>(), pt.isNillable() );
             }
-            return new CompoundMapping( path, particles, jc, pt.getMinOccurs() == 0, elDecl );
+            return new CompoundMapping( path, pt.getMinOccurs() == 0, particles, jc, elDecl );
         }
 
         Mapping mapping = null;
@@ -284,7 +283,7 @@ public class AppSchemaMapper {
             LOG.warn( "TODO: Build JoinChain" );
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
-        return new PrimitiveMapping( path, mapping, pt.getPrimitiveType(), jc, null, FALSE );
+        return new PrimitiveMapping( path, false, mapping, pt.getPrimitiveType(), jc, null );
     }
 
     private DBField getNilMapping( MappingContext ctx ) {
@@ -304,7 +303,7 @@ public class AppSchemaMapper {
             LOG.warn( "TODO: Build JoinChain" );
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
-        return new GeometryMapping( path, mapping, pt.getGeometryType(), geometryParams, jc );
+        return new GeometryMapping( path, pt.getMinOccurs() == 0, mapping, pt.getGeometryType(), geometryParams, jc );
     }
 
     private Mapping generatePropMapping( FeaturePropertyType pt, MappingContext mc ) {
@@ -325,8 +324,8 @@ public class AppSchemaMapper {
             fkMC = mcManager.mapOneToOneElement( mc, new QName( "fk" ) );
             hrefMC = mcManager.mapOneToOneElement( mc, new QName( "href" ) );
         }
-        return new FeatureMapping( path, new DBField( fkMC.getColumn() ), new DBField( hrefMC.getColumn() ),
-                                   pt.getFTName(), jc );
+        return new FeatureMapping( path, pt.getMinOccurs() == 0, new DBField( fkMC.getColumn() ),
+                                   new DBField( hrefMC.getColumn() ), pt.getFTName(), jc );
     }
 
     private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
@@ -351,7 +350,7 @@ public class AppSchemaMapper {
         }
         List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, new HashMap<QName, QName>(),
                                                    pt.isNillable() );
-        return new CompoundMapping( path, particles, jc, pt.getMinOccurs() == 0, pt.getElementDecl() );
+        return new CompoundMapping( path, pt.getMinOccurs() == 0, particles, jc, pt.getElementDecl() );
     }
 
     private CompoundMapping generatePropMapping( CodePropertyType pt, MappingContext mc ) {
@@ -373,11 +372,11 @@ public class AppSchemaMapper {
         }
         MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
         List<Mapping> particles = new ArrayList<Mapping>();
-        particles.add( new PrimitiveMapping( new PropertyName( "text()", null ), mapping, new PrimitiveType( STRING ),
-                                             null, null, Boolean.FALSE ) );
-        particles.add( new PrimitiveMapping( new PropertyName( "@codeSpace", null ), csMapping,
-                                             new PrimitiveType( STRING ), null, null, Boolean.FALSE ) );
-        return new CompoundMapping( path, particles, jc, pt.getMinOccurs() == 0, pt.getElementDecl() );
+        particles.add( new PrimitiveMapping( new PropertyName( "text()", null ), false, mapping,
+                                             new PrimitiveType( STRING ), null, null ) );
+        particles.add( new PrimitiveMapping( new PropertyName( "@codeSpace", null ), true, csMapping,
+                                             new PrimitiveType( STRING ), null, null ) );
+        return new CompoundMapping( path, pt.getMinOccurs() == 0, particles, jc, pt.getElementDecl() );
     }
 
     private List<TableJoin> generateJoinChain( MappingContext from, MappingContext to ) {
@@ -409,13 +408,14 @@ public class AppSchemaMapper {
             if ( typeDef.getSimpleType() != null ) {
                 pt = new PrimitiveType( typeDef.getSimpleType() );
             }
-            particles.add( new PrimitiveMapping( path, dbField, pt, null, null, Boolean.FALSE ) );
+            particles.add( new PrimitiveMapping( path, false, dbField, pt, null, null ) );
         }
 
         // attributes
         XSObjectList attributeUses = typeDef.getAttributeUses();
         for ( int i = 0; i < attributeUses.getLength(); i++ ) {
-            XSAttributeDeclaration attrDecl = ( (XSAttributeUse) attributeUses.item( i ) ).getAttrDeclaration();
+            XSAttributeUse attrUse = ( (XSAttributeUse) attributeUses.item( i ) );
+            XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
             QName attrName = new QName( attrDecl.getName() );
             if ( attrDecl.getNamespace() != null ) {
                 attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
@@ -426,7 +426,7 @@ public class AppSchemaMapper {
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             PrimitiveType pt = new PrimitiveType( attrDecl.getTypeDefinition() );
-            particles.add( new PrimitiveMapping( path, dbField, pt, null, null, Boolean.FALSE ) );
+            particles.add( new PrimitiveMapping( path, !attrUse.getRequired(), dbField, pt, null, null ) );
         }
 
         // xsi:nil attribute
@@ -435,7 +435,7 @@ public class AppSchemaMapper {
             MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
             PropertyName path = new PropertyName( "@" + getName( attrName ), null );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            particles.add( new PrimitiveMapping( path, dbField, new PrimitiveType( BOOLEAN ), null, null, Boolean.FALSE ) );
+            particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( BOOLEAN ), null, null ) );
         }
 
         // child elements
@@ -455,7 +455,8 @@ public class AppSchemaMapper {
         // attributes
         XSObjectList attributeUses = typeDef.getAttributeUses();
         for ( int i = 0; i < attributeUses.getLength(); i++ ) {
-            XSAttributeDeclaration attrDecl = ( (XSAttributeUse) attributeUses.item( i ) ).getAttrDeclaration();
+            XSAttributeUse attrUse = ( (XSAttributeUse) attributeUses.item( i ) );
+            XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
             QName attrName = new QName( attrDecl.getName() );
             if ( XLNNS.equals( attrDecl.getNamespace() ) ) {
                 // TODO should all xlink attributes be skipped?
@@ -470,7 +471,7 @@ public class AppSchemaMapper {
             PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             PrimitiveType pt = new PrimitiveType( attrDecl.getTypeDefinition() );
-            particles.add( new PrimitiveMapping( path, dbField, pt, null, null, Boolean.FALSE ) );
+            particles.add( new PrimitiveMapping( path, !attrUse.getRequired(), dbField, pt, null, null ) );
         }
 
         // xsi:nil attribute
@@ -479,7 +480,7 @@ public class AppSchemaMapper {
             MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
             PropertyName path = new PropertyName( "@" + getName( attrName ), null );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            particles.add( new PrimitiveMapping( path, dbField, new PrimitiveType( BOOLEAN ), null, null, Boolean.FALSE ) );
+            particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( BOOLEAN ), null, null ) );
         }
 
         PropertyName path = new PropertyName( ".", null );
@@ -490,12 +491,12 @@ public class AppSchemaMapper {
             // TODO
             String srid = "-1";
             MappingContext elMC = mcManager.mapOneToOneElement( mc, new QName( "value" ) );
-            particles.add( new GeometryMapping( path, new DBField( elMC.getColumn() ), gt, geometryParams, null ) );
+            particles.add( new GeometryMapping( path, true, new DBField( elMC.getColumn() ), gt, geometryParams, null ) );
         } else if ( opt instanceof FeaturePropertyType ) {
             QName valueFtName = ( (FeaturePropertyType) opt ).getFTName();
             MappingContext fkMC = mcManager.mapOneToOneElement( mc, new QName( "fk" ) );
             MappingContext hrefMC = mcManager.mapOneToOneElement( mc, new QName( "href" ) );
-            particles.add( new FeatureMapping( path, new DBField( fkMC.getColumn() ),
+            particles.add( new FeatureMapping( path, true, new DBField( fkMC.getColumn() ),
                                                new DBField( hrefMC.getColumn() ), valueFtName, null ) );
         } else {
             LOG.warn( "Unhandled object property type '" + opt.getClass() + "'." );
@@ -637,11 +638,11 @@ public class AppSchemaMapper {
                     List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2,
                                                                substitution.getNillable() );
                     // TODO
-                    mappings.add( new CompoundMapping( path, particles, jc, false, substitution ) );
+                    mappings.add( new CompoundMapping( path, false, particles, jc, substitution ) );
                 } else {
                     MappingExpression mapping = new DBField( elMC.getColumn() );
                     PrimitiveType pt = new PrimitiveType( (XSSimpleTypeDefinition) typeDef );
-                    mappings.add( new PrimitiveMapping( path, mapping, pt, jc, null, FALSE ) );
+                    mappings.add( new PrimitiveMapping( path, false, mapping, pt, jc, null ) );
                 }
             }
         }

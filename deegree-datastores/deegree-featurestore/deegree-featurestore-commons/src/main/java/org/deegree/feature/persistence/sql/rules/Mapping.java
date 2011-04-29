@@ -58,16 +58,22 @@ public abstract class Mapping {
 
     private final List<TableJoin> tableChange;
 
+    private final boolean voidable;
+
     /**
      * Creates a new {@link Mapping} instance.
      * 
      * @param path
      *            relative xpath expression, must not be <code>null</code>
+     * @param voidable
+     *            true, if the particle can be omitted from the parent particle (i.e. be <code>null</code>), false
+     *            otherwise
      * @param tableChange
      *            table joins, can be <code>null</code> (no joins involved)
      */
-    protected Mapping( PropertyName path, List<TableJoin> tableChange ) {
+    protected Mapping( PropertyName path, boolean voidable, List<TableJoin> tableChange ) {
         this.path = path;
+        this.voidable = voidable;
         this.tableChange = tableChange;
     }
 
@@ -82,6 +88,16 @@ public abstract class Mapping {
     }
 
     /**
+     * Returns whether the particle can be omitted from the parent particle without violating the schema.
+     * 
+     * @return true, if the particle can be omitted from the parent particle (i.e. be <code>null</code>), false
+     *         otherwise
+     */
+    public boolean isVoidable() {
+        return voidable;
+    }
+
+    /**
      * Returns the table joins that have to be performed in the relational model to follow the particle path.
      * 
      * @return the table joins, can be <code>null</code> (no joins involved)
@@ -89,7 +105,7 @@ public abstract class Mapping {
     public List<TableJoin> getJoinedTable() {
         return tableChange;
     }
-    
+
     @Override
     public String toString() {
         return "{path=" + path + ",joinChain=" + tableChange + "}";

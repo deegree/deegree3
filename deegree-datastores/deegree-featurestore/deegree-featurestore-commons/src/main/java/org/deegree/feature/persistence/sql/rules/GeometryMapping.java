@@ -62,9 +62,9 @@ public class GeometryMapping extends Mapping {
 
     private final GeometryStorageParams geometryParams;
 
-    public GeometryMapping( PropertyName path, MappingExpression mapping, GeometryType type,
+    public GeometryMapping( PropertyName path, boolean voidable, MappingExpression mapping, GeometryType type,
                             GeometryStorageParams geometryParams, List<TableJoin> tableChange ) {
-        super( path, tableChange );
+        super( path, voidable, tableChange );
         this.mapping = mapping;
         this.type = type;
         this.geometryParams = geometryParams;

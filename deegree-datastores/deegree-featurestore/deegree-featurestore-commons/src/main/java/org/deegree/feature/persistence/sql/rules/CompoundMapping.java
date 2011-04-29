@@ -53,16 +53,12 @@ public class CompoundMapping extends Mapping {
 
     private final List<Mapping> particles;
 
-    private final boolean isNullable;
-
     private final XSElementDeclaration elDecl;
 
-    public CompoundMapping( PropertyName path, List<Mapping> particles, List<TableJoin> tableChange,
-                            boolean isNullable, XSElementDeclaration elDecl ) {
-        super( path, tableChange );
-        System.out.println( "New compound mapping: " + elDecl.getName() + ", nullable: " + isNullable );
+    public CompoundMapping( PropertyName path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
+                            XSElementDeclaration elDecl ) {
+        super( path, voidable, tableChange );
         this.particles = particles;
-        this.isNullable = isNullable;
         this.elDecl = elDecl;
     }
 
@@ -70,11 +66,7 @@ public class CompoundMapping extends Mapping {
         return particles;
     }
 
-    public boolean isNullable() {
-        return isNullable;
-    }
-    
-    public XSElementDeclaration getElementDecl () {
+    public XSElementDeclaration getElementDecl() {
         return elDecl;
     }
 

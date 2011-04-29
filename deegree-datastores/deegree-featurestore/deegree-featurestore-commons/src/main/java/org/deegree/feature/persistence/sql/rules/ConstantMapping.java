@@ -59,7 +59,7 @@ public class ConstantMapping<T extends TypedObjectNode> extends Mapping {
      *            the value of the particle, must not be <code>null</code>
      */
     public ConstantMapping( PropertyName path, T value ) {
-        super( path, null );
+        super( path, false, null );
         this.value = value;
     }
 

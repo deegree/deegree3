@@ -336,24 +336,21 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
             List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
 
-            boolean escalateNull = false;
+            boolean escalateVoid = false;
 
             for ( Mapping particleMapping : cm.getParticles() ) {
 
                 List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx );
 
-                if ( particleMapping instanceof PrimitiveMapping ) {
-                    PrimitiveMapping pm = (PrimitiveMapping) particleMapping;
-                    if ( !pm.isNullable() ) {
-                        boolean found = false;
-                        for ( TypedObjectNode particleValue : particleValues ) {
-                            if ( particleValue != null ) {
-                                found = true;
-                            }
+                if ( !particleMapping.isVoidable() ) {
+                    boolean found = false;
+                    for ( TypedObjectNode particleValue : particleValues ) {
+                        if ( particleValue != null ) {
+                            found = true;
                         }
-                        if ( !found ) {
-                            escalateNull = true;
-                        }
+                    }
+                    if ( !found ) {
+                        escalateVoid = true;
                     }
                 }
 
@@ -432,8 +429,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 }
             }
 
-            if ( escalateNull ) {
-                if ( cm.isNullable() ) {
+            if ( escalateVoid ) {
+                if ( cm.isVoidable() ) {
                     return null;
                 } else if ( cm.getElementDecl().getNillable() ) {
                     QName elName = getName( mapping.getPath() );

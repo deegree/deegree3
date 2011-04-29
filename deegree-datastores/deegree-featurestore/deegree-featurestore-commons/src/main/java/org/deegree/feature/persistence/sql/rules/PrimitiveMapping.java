@@ -60,24 +60,24 @@ public class PrimitiveMapping extends Mapping {
 
     private final ParticleConverter<PrimitiveValue> converter;
 
-    private final boolean isNullable;
-
     /**
      * 
      * @param path
+     *            relative xpath expression, must not be <code>null</code>
+     * @param voidable
+     *            true, if the particle can be omitted from the parent particle (i.e. be <code>null</code>), false
+     *            otherwise
      * @param mapping
      * @param pt
      * @param tableChange
      *            table joins, can be <code>null</code> (no joins involved)
      */
-    public PrimitiveMapping( PropertyName path, MappingExpression mapping, PrimitiveType pt,
-                             List<TableJoin> tableChange, ParticleConverter<PrimitiveValue> converter,
-                             boolean isNullable ) {
-        super( path, tableChange );
+    public PrimitiveMapping( PropertyName path, boolean voidable, MappingExpression mapping, PrimitiveType pt,
+                             List<TableJoin> tableChange, ParticleConverter<PrimitiveValue> converter ) {
+        super( path, voidable, tableChange );
         this.pt = pt;
         this.mapping = mapping;
         this.converter = converter;
-        this.isNullable = isNullable;
     }
 
     /**
@@ -95,15 +95,5 @@ public class PrimitiveMapping extends Mapping {
 
     public ParticleConverter<PrimitiveValue> getConverter() {
         return converter;
-    }
-
-    /**
-     * Returns whether the particle can simply be omitted (or if a missing value needs further action, such as NULL
-     * escalation).
-     * 
-     * @return true, if the particle can be omitted, false otherwise
-     */
-    public boolean isNullable() {
-        return isNullable;
     }
 }

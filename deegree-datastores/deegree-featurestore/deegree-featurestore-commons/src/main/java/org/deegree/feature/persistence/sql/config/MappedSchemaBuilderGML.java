@@ -302,7 +302,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         if ( me instanceof DBField ) {
             List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
             LOG.debug( "Targeted primitive type: " + pt );
-            return new PrimitiveMapping( path, me, pt.first, joinedTable, null, pt.second );
+            return new PrimitiveMapping( path, pt.second, me, pt.first, joinedTable, null );
         } else if ( me instanceof StringConst ) {
             String s = me.toString();
             s = s.substring( 1, s.length() - 1 );
@@ -321,7 +321,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         LOG.warn( "Determining geometry type from element decls is not implemented." );
         GeometryType type = GeometryType.GEOMETRY;
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new GeometryMapping( path, me, type, geometryParams, joinedTable );
+        return new GeometryMapping( path, elDecl.second, me, type, geometryParams, joinedTable );
     }
 
     private FeatureMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -335,10 +335,10 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         QName ptName = new QName( elDecl.first.getNamespace(), elDecl.first.getName() );
         // TODO rework this
-        FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl.first, ptName, 0, 1,
-                                                                                                  null );
+        FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl.first, ptName,
+                                                                                                  0, 1, null );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new FeatureMapping( path, me, hrefMe, pt.getFTName(), joinedTable );
+        return new FeatureMapping( path, elDecl.second, me, hrefMe, pt.getFTName(), joinedTable );
     }
 
     private CompoundMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -354,6 +354,6 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new CompoundMapping( path, particles, joinedTable, elDecl.second, elDecl.first );
+        return new CompoundMapping( path, elDecl.second, particles, joinedTable, elDecl.first );
     }
 }

@@ -60,9 +60,9 @@ public class FeatureMapping extends Mapping {
 
     private QName valueFtName;
 
-    public FeatureMapping( PropertyName path, MappingExpression mapping, MappingExpression hrefMapping,
-                           QName valueFtName, List<TableJoin> tableChange ) {
-        super( path, tableChange );
+    public FeatureMapping( PropertyName path, boolean voidable, MappingExpression mapping,
+                           MappingExpression hrefMapping, QName valueFtName, List<TableJoin> tableChange ) {
+        super( path, voidable, tableChange );
         this.mapping = mapping;
         this.hrefMapping = hrefMapping;
         this.valueFtName = valueFtName;

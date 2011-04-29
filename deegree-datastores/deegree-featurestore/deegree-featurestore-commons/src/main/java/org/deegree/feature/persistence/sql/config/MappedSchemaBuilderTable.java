@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
-import static java.lang.Boolean.TRUE;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.tom.primitive.BaseType.valueOf;
@@ -222,7 +221,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     pts.add( pt );
                     PropertyName path = new PropertyName( ptName );
                     PrimitiveType primType = new PrimitiveType( type );
-                    PrimitiveMapping mapping = new PrimitiveMapping( path, dbField, primType, null, null, TRUE );
+                    PrimitiveMapping mapping = new PrimitiveMapping( path, true, dbField, primType, null, null );
                     mappings.add( mapping );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Skipping column with type code '" + md.sqlType + "' from list of properties:"
@@ -233,7 +232,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                                                             md.geometryParams.getDim(), INLINE );
                 pts.add( pt );
                 PropertyName path = new PropertyName( ptName );
-                GeometryMapping mapping = new GeometryMapping( path, dbField, md.geomType, md.geometryParams, null );
+                GeometryMapping mapping = new GeometryMapping( path, true, dbField, md.geomType, md.geometryParams,
+                                                               null );
                 mappings.add( mapping );
             }
         }
@@ -311,8 +311,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 primType = valueOf( md.sqlType );
             }
             pt = new SimplePropertyType( propName, minOccurs, maxOccurs, primType, null, null );
-            m = new PrimitiveMapping( path, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(), jc, null,
-                                      minOccurs == 0 );
+            m = new PrimitiveMapping( path, minOccurs == 0, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(),
+                                      jc, null );
         } else if ( propDecl instanceof GeometryPropertyJAXB ) {
             GeometryPropertyJAXB geomDecl = (GeometryPropertyJAXB) propDecl;
             GeometryType type = null;
@@ -341,7 +341,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 dim = md.geometryParams.getDim();
             }
             pt = new GeometryPropertyType( propName, minOccurs, maxOccurs, null, null, type, dim, INLINE );
-            m = new GeometryMapping( path, mapping, type, new GeometryStorageParams( crs, srid, dim ), jc );
+            m = new GeometryMapping( path, minOccurs == 0, mapping, type, new GeometryStorageParams( crs, srid, dim ),
+                                     jc );
         } else {
             LOG.warn( "Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it." );
         }
