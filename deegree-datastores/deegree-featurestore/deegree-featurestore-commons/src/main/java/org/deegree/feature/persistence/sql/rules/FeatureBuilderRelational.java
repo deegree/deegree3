@@ -48,11 +48,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -444,12 +447,36 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             if ( escalateVoid ) {
                 if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
                     QName elName = getName( mapping.getPath() );
-                    attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
-                                                      new PrimitiveValue( Boolean.TRUE ) );
-                    particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
+                    // required attributes must still be present even if element is nilled...
+                    Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
+                    if ( cm.getElementDecl().getTypeDefinition() instanceof XSComplexTypeDefinition ) {
+                        XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) cm.getElementDecl().getTypeDefinition();
+                        XSObjectList attrUses = complexType.getAttributeUses();
+                        for ( int i = 0; i < attrUses.getLength(); i++ ) {
+                            XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
+                            if ( attrUse.getRequired() ) {
+                                QName attrName = null;
+                                XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
+                                if ( attrDecl.getNamespace() == null || attrDecl.getNamespace().isEmpty() ) {
+                                    attrName = new QName( attrDecl.getName() );
+                                } else {
+                                    attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
+                                }
+                                PrimitiveValue attrValue = attrs.get( attrName );
+                                if ( attrValue == null ) {
+                                    LOG.debug( "Required attribute " + attrName
+                                               + "not present. Cannot void using xsi:nil. Escalating void value." );
+                                    return null;
+                                }
+                                nilAttrs.put( attrName, attrValue );
+                            }
+                        }
+                    }
+                    nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
+
+                    particle = new GenericXMLElement( elName, cm.getElementDecl(), nilAttrs, null );
                 } else if ( !cm.isVoidable() ) {
-                    LOG.info( "Unable to map NULL value for mapping '" + cm.getPath().getAsText()
-                              + "' to output. Escalating to parent particle." );
+                    LOG.info( "Escalating void to parent particle." );
                 }
             } else {
                 if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
@@ -461,6 +488,34 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
         }
         return particle;
+    }
+
+    private Map<QName, PrimitiveValue> getNilledAttributes( XSElementDeclaration elDecl,
+                                                            Map<QName, PrimitiveValue> attrs ) {
+        // required attributes must still be present even if element is nilled...
+        Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
+        if ( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) {
+            XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
+            XSObjectList attrUses = complexType.getAttributeUses();
+            for ( int i = 0; i < attrUses.getLength(); i++ ) {
+                XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
+                if ( attrUse.getRequired() ) {
+                    QName attrName = null;
+                    XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
+                    if ( attrDecl.getNamespace() == null || attrDecl.getNamespace().isEmpty() ) {
+                        attrName = new QName( attrDecl.getName() );
+                    } else {
+                        attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
+                    }
+                    PrimitiveValue attrValue = attrs.get( attrName );
+                    if ( attrValue != null ) {
+                        nilAttrs.put( attrName, attrValue );
+                    }
+                }
+            }
+        }
+        nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
+        return nilAttrs;
     }
 
     private QName getName( PropertyName path ) {
