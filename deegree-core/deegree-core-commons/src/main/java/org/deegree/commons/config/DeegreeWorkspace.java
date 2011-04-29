@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 
@@ -338,6 +339,7 @@ public class DeegreeWorkspace {
      */
     public synchronized void initAll()
                             throws ResourceInitException {
+        TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
         for ( ResourceManager m : managers ) {
             m.startup( this );
         }

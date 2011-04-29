@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
+import static java.util.Collections.EMPTY_LIST;
 import static org.deegree.commons.utils.JDBCUtils.close;
 
 import java.sql.Connection;
@@ -47,6 +48,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
@@ -248,6 +250,16 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
 
         List<TypedObjectNode> particles = buildParticles( propMapping, rs, colToRsIdx );
+        if ( particles.isEmpty() && pt.getMinOccurs() > 0 ) {
+            if ( pt.isNillable() ) {
+                Map<QName, PrimitiveValue> attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
+                                                                             new PrimitiveValue( Boolean.TRUE ) );
+                props.add( new GenericProperty( pt, propMapping.getPath().getAsQName(), null, attrs, EMPTY_LIST ) );
+            } else {
+                LOG.warn( "Unable to map NULL value for mapping '" + propMapping.getPath().getAsText()
+                          + "' to output. This will result in schema violations." );
+            }
+        }
         for ( TypedObjectNode particle : particles ) {
             if ( particle instanceof GenericXMLElement ) {
                 GenericXMLElement xmlEl = (GenericXMLElement) particle;
@@ -430,14 +442,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
 
             if ( escalateVoid ) {
-                if ( cm.isVoidable() ) {
-                    return null;
-                } else if ( cm.getElementDecl().getNillable() ) {
+                if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
                     QName elName = getName( mapping.getPath() );
                     attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
                                                       new PrimitiveValue( Boolean.TRUE ) );
                     particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
-                } else {
+                } else if ( !cm.isVoidable() ) {
                     LOG.info( "Unable to map NULL value for mapping '" + cm.getPath().getAsText()
                               + "' to output. Escalating to parent particle." );
                 }
@@ -522,6 +532,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         try {
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
+
             LOG.debug( "Preparing subsequent SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             int i = 1;
             for ( String keyColumn : jc.getFromColumns() ) {

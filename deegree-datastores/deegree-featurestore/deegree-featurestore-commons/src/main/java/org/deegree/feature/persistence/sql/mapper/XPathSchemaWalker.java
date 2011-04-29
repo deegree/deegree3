@@ -235,33 +235,33 @@ public class XPathSchemaWalker {
         if ( particle == null ) {
             throw new IllegalArgumentException( "XPath refers to an empty type definition." );
         }
-        return getTargetElement( particle.getTerm(), elName );
+        return getTargetElementTerm( new Pair<XSTerm, Boolean>( particle.getTerm(), null ), elName );
     }
 
-    private Pair<XSElementDeclaration, Boolean> getTargetElement( XSTerm term, QName elName ) {
-        if ( term instanceof XSElementDeclaration ) {
-            XSElementDeclaration elDecl = (XSElementDeclaration) term;
+    private Pair<XSElementDeclaration, Boolean> getTargetElementTerm( Pair<XSTerm, Boolean> term, QName elName ) {
+        if ( term.first instanceof XSElementDeclaration ) {
+            XSElementDeclaration elDecl = (XSElementDeclaration) term.first;
             for ( XSElementDeclaration substitution : appSchema.getXSModel().getSubstitutions( elDecl, null, true,
                                                                                                false ) ) {
                 QName elDeclName = getQName( substitution );
                 if ( elName.equals( elDeclName ) ) {
-                    return new Pair<XSElementDeclaration, Boolean>( substitution, null );
+                    return new Pair<XSElementDeclaration, Boolean>( substitution, term.second );
                 }
             }
-        } else if ( term instanceof XSModelGroup ) {
-            XSModelGroup mg = (XSModelGroup) term;
+        } else if ( term.first instanceof XSModelGroup ) {
+            XSModelGroup mg = (XSModelGroup) term.first;
             XSObjectList ol = mg.getParticles();
             for ( int i = 0; i < ol.getLength(); i++ ) {
                 XSParticle o = (XSParticle) ol.item( i );
-                Pair<XSElementDeclaration, Boolean> elDecl = getTargetElement( o.getTerm(), elName );
+                Pair<XSElementDeclaration, Boolean> elDecl = getTargetElementTerm( new Pair<XSTerm,Boolean>(o.getTerm(), o.getMinOccurs() == 0), elName );
                 if ( elDecl != null ) {
-                    return new Pair<XSElementDeclaration, Boolean>( elDecl.first, o.getMinOccurs() == 0 );
+                    return elDecl;
                 }
             }
-        } else if ( term instanceof XSWildcard ) {
+        } else if ( term.first instanceof XSWildcard ) {
             throw new IllegalArgumentException( "Matching of wildcard elements not supported." );
         } else {
-            throw new RuntimeException();
+            throw new RuntimeException("Unexpected term type: " + term.getClass());
         }
         return null;
     }
