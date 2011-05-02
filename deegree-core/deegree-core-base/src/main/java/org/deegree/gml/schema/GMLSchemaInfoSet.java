@@ -43,6 +43,7 @@ import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GSR_NS;
 import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GSS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GTS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.gml.GMLVersion.GML_31;
@@ -338,8 +339,10 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         if ( appNamespaces == null ) {
             appNamespaces = new TreeSet<String>( getSchemaNamespaces() );
             appNamespaces.remove( version.getNamespace() );
+            appNamespaces.remove( XMLNS );            
             appNamespaces.remove( XLNNS );
             appNamespaces.remove( XSNS );
+            appNamespaces.remove( "http://www.w3.org/XML/1998/namespace" );            
             appNamespaces.remove( ISOAP10GMDNS );
             appNamespaces.remove( ISO_2005_GCO_NS );
             appNamespaces.remove( ISO_2005_GSR_NS );
