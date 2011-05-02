@@ -176,6 +176,10 @@ public class GenericProperty implements Property {
             return new GenericXMLElement( name, xsType, attrs, children );
         }
 
+        if ( children == null ) {
+            return null;
+        }
+
         for ( TypedObjectNode child : children ) {
             if ( declaration instanceof GeometryPropertyType && child instanceof Geometry ) {
                 return child;
