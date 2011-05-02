@@ -59,9 +59,6 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
@@ -381,17 +378,12 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
         // TODO Do not modify the incoming feature, but create a new one.
         for ( Property prop : feature.getProperties() ) {
-            TypedObjectNode value = prop.getValue();
-            if ( value != null ) {
-                PropertyType pt = prop.getType();
-                if ( pt instanceof GeometryPropertyType ) {
-                    Geometry transformed = transformGeometry( (Geometry) value, transformer );
-                    prop.setValue( transformed );
-                } else if ( pt instanceof CustomPropertyType ) {
-                    TypedObjectNode transformed = transformGeometries( value, transformer );
-                    prop.setValue( transformed );
-                }
+            List<TypedObjectNode> children = prop.getChildren();
+            List<TypedObjectNode> newChildren = new ArrayList<TypedObjectNode>( children.size() );
+            for ( TypedObjectNode child : children ) {
+                newChildren.add( transformGeometries( child, transformer ) );
             }
+            prop.setChildren( newChildren );
         }
         feature.getGMLProperties().setBoundedBy( null );
         return feature;
@@ -401,6 +393,15 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
         if ( value instanceof GenericXMLElement ) {
             GenericXMLElement generic = (GenericXMLElement) value;
+            List<TypedObjectNode> newChildren = new ArrayList<TypedObjectNode>( generic.getChildren().size() );
+            for ( int i = 0; i < generic.getChildren().size(); i++ ) {
+                TypedObjectNode child = generic.getChildren().get( i );
+                TypedObjectNode transformed = transformGeometries( child, transformer );
+                newChildren.add( transformed );
+            }
+            generic.setChildren( newChildren );
+        } else if ( value instanceof Property ) {
+            Property generic = (Property) value;
             List<TypedObjectNode> newChildren = new ArrayList<TypedObjectNode>( generic.getChildren().size() );
             for ( int i = 0; i < generic.getChildren().size(); i++ ) {
                 TypedObjectNode child = generic.getChildren().get( i );

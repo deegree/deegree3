@@ -45,7 +45,7 @@ import org.deegree.gml.props.GMLStdProps;
 /**
  * Basic interface for GML objects.
  * <p>
- * Currently, deegree has built-in support for the following types of GML objects:
+ * Currently, deegree supports the following types of GML objects:
  * <ul>
  * <li>{@link Feature}</li>
  * <li>{@link Geometry}</li>

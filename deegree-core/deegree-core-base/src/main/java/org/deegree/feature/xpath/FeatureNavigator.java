@@ -232,17 +232,34 @@ class FeatureNavigator extends DefaultNavigator {
         } else if ( node instanceof PropertyNode ) {
             PropertyNode propNode = (PropertyNode) node;
             Property prop = propNode.getValue();
-            Object propValue = prop.getValue();
-            if ( propValue instanceof GMLObject ) {
-                GMLObject castNode = (GMLObject) propValue;
-                iter = new SingleObjectIterator( new GMLObjectNode<GMLObject, Property>( propNode, castNode, version ) );
-            } else if ( propValue instanceof PrimitiveValue ) {
-                iter = new SingleObjectIterator( new TextNode<Property>( (PropertyNode) node,
-                                                                         (PrimitiveValue) propValue ) );
+            if ( !prop.getChildren().isEmpty() ) {
+                List<XPathNode> xpathNodes = new ArrayList<XPathNode>( prop.getChildren().size() );
+                for ( TypedObjectNode xmlNode : prop.getChildren() ) {
+                    if ( xmlNode instanceof org.deegree.commons.tom.ElementNode ) {
+                        xpathNodes.add( new XMLElementNode<Property>( propNode,
+                                                                      (org.deegree.commons.tom.ElementNode) xmlNode ) );
+                    } else if ( xmlNode instanceof GMLObject ) {
+                        xpathNodes.add( new GMLObjectNode<GMLObject, Property>( propNode, (GMLObject) xmlNode, version ) );
+                    } else if ( xmlNode instanceof PrimitiveValue ) {
+                        xpathNodes.add( new TextNode<Property>( propNode, (PrimitiveValue) xmlNode ) );
+                    }
+                }
+                iter = xpathNodes.iterator();
             } else {
-                // TODO remove this case
-                iter = new SingleObjectIterator( new TextNode<Property>( (PropertyNode) node,
-                                                                         new PrimitiveValue( propValue.toString() ) ) );
+                Object propValue = prop.getValue();
+                if ( propValue instanceof GMLObject ) {
+                    GMLObject castNode = (GMLObject) propValue;
+                    iter = new SingleObjectIterator( new GMLObjectNode<GMLObject, Property>( propNode, castNode,
+                                                                                             version ) );
+                } else if ( propValue instanceof PrimitiveValue ) {
+                    iter = new SingleObjectIterator( new TextNode<Property>( (PropertyNode) node,
+                                                                             (PrimitiveValue) propValue ) );
+                } else {
+                    // TODO remove this case
+                    iter = new SingleObjectIterator(
+                                                     new TextNode<Property>( (PropertyNode) node,
+                                                                             new PrimitiveValue( propValue.toString() ) ) );
+                }
             }
         } else if ( node instanceof XMLElementNode<?> ) {
             XMLElementNode<?> xmlElementNode = (XMLElementNode<?>) node;

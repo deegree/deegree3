@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.property;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ElementNode;
@@ -87,11 +89,25 @@ public interface Property extends ElementNode {
 
     /**
      * Sets the value of this property.
+     * <p>
+     * NOTE: This also changes the children of the property.
+     * </p>
      * 
      * @param value
      *            the value of this property, can be <code>null</code>
      */
     public void setValue( TypedObjectNode value );
+
+    /**
+     * Sets the children of this property.
+     * <p>
+     * NOTE: This also changes the value of the property.
+     * </p>
+     * 
+     * @param children
+     *            the children of this property, can be <code>null</code>
+     */
+    public void setChildren( List<TypedObjectNode> children );
 
     /**
      * Returns the text value of this property.

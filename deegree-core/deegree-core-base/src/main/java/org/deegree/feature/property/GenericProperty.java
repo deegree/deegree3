@@ -197,6 +197,26 @@ public class GenericProperty implements Property {
     @Override
     public void setValue( TypedObjectNode value ) {
         this.value = value;
+        if ( value != null ) {
+            this.children = Collections.singletonList( value );
+        } else {
+            this.children = Collections.emptyList();
+        }
+    }
+
+    @Override
+    public void setChildren( List<TypedObjectNode> children ) {
+        if ( children == null ) {
+            this.children = Collections.emptyList();
+            this.value = null;
+        } else {
+            this.children = children;
+            if ( children.size() == 1 ) {
+                this.value = children.get( 0 );
+            } else {
+                this.value = null;
+            }
+        }
     }
 
     @Override

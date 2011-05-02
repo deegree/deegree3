@@ -104,4 +104,15 @@ public class SimpleProperty implements Property {
     public List<TypedObjectNode> getChildren() {
         return Collections.emptyList();
     }
+
+    @Override
+    public void setChildren( List<TypedObjectNode> children ) {
+        if ( children.isEmpty() ) {
+            value = null;
+        } else if ( children.size() == 1 ) {
+            value = (PrimitiveValue) children.get( 0 );
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
 }
