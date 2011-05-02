@@ -348,7 +348,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( "," );
                 sql.append( blobMapping.getBBoxColumn() );
                 sql.append( ") VALUES(?,?,?," );
-                blobGeomConverter.getSetSnippet();
+                sql.append( blobGeomConverter.getSetSnippet() );
                 sql.append( ")" );
                 System.out.println( sql );
                 blobInsertStmt = conn.prepareStatement( sql.toString(), new String[] { "ID" } );
