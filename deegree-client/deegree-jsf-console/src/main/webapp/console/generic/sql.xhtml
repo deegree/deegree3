@@ -25,7 +25,7 @@
                 value="#{execution.statements}" /> <h:outputText value="#{execution.message}" /> <br />
             <br />
             <h:commandButton styleClass="buttonSave" value="#{labels.sql_execute}" action="#{execution.execute}" /> <h:commandButton
-                styleClass="buttonCancel" value="Done" action="#{execution.getBackOutcome}" />
+                styleClass="buttonCancel" value="#{labels.sql_back}" action="#{execution.getBackOutcome}" />
             <p id="highlighting" style="cursor: pointer;" class="schema" onclick="activateEditor();">Turn on
             highlighting</p>
             </fieldset>
