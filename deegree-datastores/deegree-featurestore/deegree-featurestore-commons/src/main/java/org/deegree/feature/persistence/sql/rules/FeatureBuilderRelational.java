@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.Collections.EMPTY_LIST;
 import static org.deegree.commons.utils.JDBCUtils.close;
 
@@ -287,7 +288,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 while ( rs2.next() ) {
                     TypedObjectNode particle = buildParticle( mapping, rs2, p.second );
                     if ( particle != null ) {
-                        values.add( buildParticle( mapping, rs2, p.second ) );
+                        values.add( particle );
                     }
                 }
             } finally {
@@ -300,7 +301,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         TypedObjectNode particle = buildParticle( mapping, rs, colToRsIdx );
         if ( particle != null ) {
-            return Collections.singletonList( buildParticle( mapping, rs, colToRsIdx ) );
+            return Collections.singletonList( particle );
         }
         return Collections.emptyList();
     }
@@ -322,7 +323,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
                 String col = fs.getConverter( pm ).getSelectSnippet( null );
-                Object sqlValue = rs.getObject( colToRsIdx.get( col ) );
+                // TODO getObject seems not to work w/ oracle, the oracle.sql.BLOB does not yield correct results
+                Object sqlValue = rs.getBytes( colToRsIdx.get( col ) );
                 particle = fs.getConverter( mapping ).toParticle( sqlValue );
             }
         } else if ( mapping instanceof FeatureMapping ) {
@@ -444,7 +446,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 }
             }
 
-            if ( escalateVoid ) {
+            PrimitiveValue nilled = attrs.get( new QName( CommonNamespaces.XSINS, "nil" ) );
+            if ( nilled != null && nilled.getValue().equals( TRUE ) ) {
+                QName elName = getName( mapping.getPath() );
+                particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
+            } else if ( escalateVoid ) {
                 if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
                     QName elName = getName( mapping.getPath() );
                     // required attributes must still be present even if element is nilled...
@@ -473,7 +479,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         }
                     }
                     nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
-
                     particle = new GenericXMLElement( elName, cm.getElementDecl(), nilAttrs, null );
                 } else if ( !cm.isVoidable() ) {
                     LOG.info( "Escalating void to parent particle." );
@@ -487,6 +492,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
         }
+
         return particle;
     }
 

@@ -143,7 +143,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             GeometryStorageParams geometryParams = new GeometryStorageParams( blobMapping.getCRS(), null, DIM_2 );
             GeometryMapping blobGeomMapping = new GeometryMapping( null, true, bboxColumn, GeometryType.GEOMETRY,
                                                                    geometryParams, null );
-            blobGeomConverter = (ParticleConverter<Geometry>) fs.getGeometryConverter( blobGeomMapping );
+            blobGeomConverter = fs.getGeometryConverter( blobGeomMapping );
         }
     }
 
@@ -495,6 +495,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
         FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
         TypedObjectNode[] values = evaluator.eval( particle, mapping.getPath() );
+        int childIdx = 1;
         for ( TypedObjectNode value : values ) {
             InsertRowNode insertNode = node;
             if ( jc != null ) {
@@ -562,6 +563,16 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             } else {
                 LOG.warn( "Unhandled mapping type '" + mapping.getClass() + "'." );
+            }
+
+            if ( jc != null ) {
+                // add index column value
+                for ( String col : jc.get( 0 ).getOrderColumns() ) {
+                    if ( insertNode.getRow().get( col ) == null ) {
+                        // TODO do this properly
+                        insertNode.getRow().addLiteralValue( col, "" + childIdx++ );
+                    }
+                }
             }
         }
     }
