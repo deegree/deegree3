@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.gml.geometry.refs.GeometryReference;
 
 import com.vividsolutions.jts.io.OutputStreamOutStream;
 import com.vividsolutions.jts.io.ParseException;
@@ -62,6 +63,9 @@ public class WKBWriter {
 
     public static byte[] write( Geometry geom )
                             throws ParseException {
+        if ( geom instanceof GeometryReference ) {
+            geom = ( (GeometryReference<Geometry>) geom ).getReferencedObject();
+        }
         // com.vividsolutions.jts.io.WKBWriter is not thread safe
         return new com.vividsolutions.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
     }
