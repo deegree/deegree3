@@ -162,6 +162,7 @@ public class BlobCodec {
             gmlWriter.setXLinkDepth( 0 );
             gmlWriter.write( object );
             gmlWriter.close();
+            os.close();
             LOG.debug( "Wrote encoded feature to '" + file.getAbsolutePath() + "'" );
         }
         LOG.debug( "Encoding feature (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );

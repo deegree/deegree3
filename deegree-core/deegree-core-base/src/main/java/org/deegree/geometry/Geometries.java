@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -46,10 +47,15 @@ import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.standard.points.PackedPoints;
+import org.deegree.geometry.standard.points.PointsArray;
 
 /**
  * Contains utility methods for common tasks on {@link Geometry} objects.
@@ -60,6 +66,8 @@ import org.deegree.geometry.primitive.Polygon;
  * @version $Revision$, $Date$
  */
 public class Geometries {
+
+    private final static GeometryFactory fac = new GeometryFactory();
 
     /**
      * Homogenizes the given generic {@link MultiGeometry}, i.e. returns a {@link MultiPoint}, {@link MultiCurve},
@@ -162,5 +170,26 @@ public class Geometries {
             }
         }
         }
+    }
+
+    public static Geometry getAsGeometry( Envelope env ) {
+        Point min = env.getMin();
+        Point max = env.getMax();
+        ICRS crs = env.getCoordinateSystem();
+        if ( min.equals( max ) ) {
+            return fac.createPoint( null, min.getAsArray(), crs );
+        }
+        if ( env.getCoordinateDimension() == 2 ) {
+            if ( min.get0() == max.get0() || min.get1() == max.get1() ) {
+                Points points = new PointsArray( min, max );
+                return fac.createLineString( null, crs, points );
+            }
+            double[] points = new double[] { min.get0(), min.get1(), max.get0(), min.get1(), max.get0(), max.get1(),
+                                            min.get0(), max.get1() };
+            Curve ls = fac.createLineString( null, crs, new PackedPoints( null, points, 2 ) );
+            Ring exteriorRing = fac.createRing( null, crs, Collections.singletonList( ls ) );
+            return fac.createPolygon( null, crs, exteriorRing, null );
+        }
+        throw new UnsupportedOperationException();
     }
 }

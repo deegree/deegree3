@@ -501,7 +501,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             @Override
             public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {
-                return new PropertyNameMapping( blobMapping.getTable().getTable(), blobMapping.getBBoxColumn(),
+                return new PropertyNameMapping( null, blobMapping.getBBoxColumn(),
                                                 blobMapping.getCRS(), "-1" );
             }
         };

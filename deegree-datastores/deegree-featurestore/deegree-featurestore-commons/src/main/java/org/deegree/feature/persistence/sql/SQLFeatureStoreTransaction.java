@@ -90,6 +90,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
@@ -98,7 +99,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStoreTransaction} implementation for {@link AbstractSQLFeatureStore} implementations.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -353,12 +354,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( blobGeomConverter.getSetSnippet() );
                 sql.append( ")" );
                 System.out.println( sql );
-                blobInsertStmt = conn.prepareStatement( sql.toString(), new String[] { "ID" } );
+                blobInsertStmt = conn.prepareStatement( sql.toString() );
                 for ( Feature feature : features ) {
                     fid = feature.getId();
-                    int internalId = -1;
                     if ( blobInsertStmt != null ) {
-                        internalId = insertFeatureBlob( blobInsertStmt, feature );
+                        insertFeatureBlob( blobInsertStmt, feature );
                     }
                     FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
                     if ( ftMapping != null ) {
@@ -429,17 +429,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         byte[] bytes = bos.toByteArray();
         stmt.setBytes( 3, bytes );
         LOG.debug( "Feature blob size: " + bytes.length );
+        Geometry bboxGeom = null;
         Envelope bbox = feature.getEnvelope();
-        // if ( bbox != null ) {
-        // try {
-        // GeometryTransformer bboxTransformer = new GeometryTransformer( crs );
-        // bbox = bboxTransformer.transform( bbox );
-        // } catch ( Exception e ) {
-        // throw new SQLException( e.getMessage(), e );
-        // }
-        // }
+        if ( bbox != null ) {
+            bboxGeom = Geometries.getAsGeometry( bbox );
+        }
         try {
-            stmt.setObject( 4, blobGeomConverter.toSQLArgument( bbox, conn ) );
+            stmt.setObject( 4, blobGeomConverter.toSQLArgument( bboxGeom, conn ) );
         } catch ( Throwable e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e );
@@ -450,17 +446,17 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
         int internalId = -1;
 
-        ResultSet rs = null;
-        try {
-            // TODO only supported for PostgreSQL >= 8.2
-            rs = stmt.getGeneratedKeys();
-            rs.next();
-            internalId = rs.getInt( 1 );
-        } finally {
-            if ( rs != null ) {
-                rs.close();
-            }
-        }
+//        ResultSet rs = null;
+//        try {
+//            // TODO only supported for PostgreSQL >= 8.2
+//            rs = stmt.getGeneratedKeys();
+//            rs.next();
+//            internalId = rs.getInt( 1 );
+//        } finally {
+//            if ( rs != null ) {
+//                rs.close();
+//            }
+//        }
         return internalId;
     }
 

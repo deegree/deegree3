@@ -635,6 +635,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
         LOG.debug( "Performing query by operator filter" );
 
+        AbstractWhereBuilder blobWb = null;
         AbstractWhereBuilder wb = null;
         Connection conn = null;
         FeatureResultSet result = null;
@@ -667,6 +668,11 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             String tableAlias = ftTableAlias;
             if ( blobMapping != null ) {
                 tableAlias = blobTableAlias;
+            }
+
+            if ( query.getPrefilterBBox() != null && blobMapping != null ) {
+                OperatorFilter bboxFilter = new OperatorFilter( new BBOX( query.getPrefilterBBox() ) );
+                blobWb = getWhereBuilderBlob( bboxFilter, conn );
             }
 
             StringBuilder sql = new StringBuilder( "SELECT " );
@@ -741,10 +747,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                 sql.append( "=?" );
                 if ( query.getPrefilterBBox() != null ) {
                     sql.append( " AND " );
-                    sql.append( blobTableAlias );
-                    sql.append( "." );
-                    sql.append( blobMapping.getBBoxColumn() );
-                    sql.append( " && ?" );
+                    sql.append( blobWb.getWhere().getSQL() );
                 }
             }
 
@@ -769,13 +772,9 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             int i = 1;
             if ( blobMapping != null ) {
                 stmt.setShort( i++, getSchema().getFtId( ftName ) );
-                if ( query.getPrefilterBBox() != null ) {
-                    OperatorFilter bboxFilter = new OperatorFilter( new BBOX( query.getPrefilterBBox() ) );
-                    AbstractWhereBuilder blobWb = getWhereBuilderBlob( bboxFilter, conn );
-                    if ( blobWb.getWhere() != null ) {
-                        for ( SQLLiteral o : blobWb.getWhere().getLiterals() ) {
-                            stmt.setObject( i++, o.getValue() );
-                        }
+                if ( blobWb != null ) {
+                    for ( SQLLiteral o : blobWb.getWhere().getLiterals() ) {
+                        stmt.setObject( i++, o.getValue() );
                     }
                 }
             }
