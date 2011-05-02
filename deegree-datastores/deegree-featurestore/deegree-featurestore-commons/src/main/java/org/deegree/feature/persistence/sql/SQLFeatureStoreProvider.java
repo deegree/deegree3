@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -36,31 +36,96 @@
 package org.deegree.feature.persistence.sql;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.ServiceLoader;
+
+import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * {@link FeatureStoreProvider} for {@link AbstractSQLFeatureStore} implementations.
+ * <p>
+ * This {@link FeatureStoreProvider} needs registered {@link SQLDialectProvider} implementations in order to actually
+ * create {@link FeatureStore} instances.
+ * </p>
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface SQLFeatureStoreProvider<T extends SQLFeatureStore> {
+public class SQLFeatureStoreProvider implements FeatureStoreProvider {
 
-    /**
-     * @return the db type which is supported by this feature store provider
-     */
-    Type getSupportedType();
+    private static final Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreProvider.class );
 
-    /**
-     * @param config
-     * @param configURL
-     * @param workspace
-     * @return a new SQL feature store
-     */
-    T create( PostGISFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace );
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/sql";
 
+    static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.sql.jaxb";
+
+    static final URL CONFIG_SCHEMA = SQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/sql/3.1.0/sql.xsd" );
+
+    private DeegreeWorkspace workspace;
+
+    private HashMap<Type, SQLDialectProvider<? extends SQLFeatureStore>> providers = new HashMap<Type, SQLDialectProvider<? extends SQLFeatureStore>>();
+
+    @Override
+    public String getConfigNamespace() {
+        return CONFIG_NS;
+    }
+
+    @Override
+    public URL getConfigSchema() {
+        return CONFIG_SCHEMA;
+    }
+
+    @Override
+    public SQLFeatureStore create( URL configURL )
+                            throws ResourceInitException {
+
+        try {
+            SQLFeatureStoreJAXB cfg = (SQLFeatureStoreJAXB) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+                                                                                  configURL, workspace );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            Type connType = mgr.getType( cfg.getJDBCConnId() );
+            if ( connType == null ) {
+                throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId() + "' defined." );
+            }
+            LOG.debug( "Connection type is {}.", connType );
+            SQLDialectProvider<? extends SQLFeatureStore> provider = providers.get( connType );
+            if ( provider != null ) {
+                LOG.debug( "Found SQL provider {}", provider.getClass().getSimpleName() );
+                return provider.create( cfg, configURL, workspace );
+            }
+            throw new ResourceInitException( "No SQL feature store provider for connection type '" + connType
+                                             + "' available." );
+        } catch ( JAXBException e ) {
+            LOG.trace( "Stack trace: ", e );
+            throw new ResourceInitException( "Error when parsing configuration: " + e.getLocalizedMessage(), e );
+        }
+    }
+
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
+        for ( SQLDialectProvider<? extends SQLFeatureStore> p : ServiceLoader.load( SQLDialectProvider.class,
+                                                                                    workspace.getModuleClassLoader() ) ) {
+            LOG.info( "Registering SQL dialect provider '{}' for connection type '{}'", p.getClass(), p.getSupportedType() );
+            providers.put( p.getSupportedType(), p );
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ConnectionManager.class };
+    }
 }

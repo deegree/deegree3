@@ -81,9 +81,9 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
-import org.deegree.feature.persistence.sql.config.PostGISFeatureStoreConfigWriter;
+import org.deegree.feature.persistence.sql.SQLFeatureStoreProvider;
+import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
-import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
@@ -133,7 +133,7 @@ public class PostGISFeatureStoreTest {
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true,
                                                       new GeometryStorageParams( CRSUtils.EPSG_4326, "-1", DIM_2 ), -1 );
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
-        PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
+        SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter( mappedSchema );
         File file = new File( "/tmp/inspire-ad.xml" );
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
@@ -204,7 +204,7 @@ public class PostGISFeatureStoreTest {
 
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
                                          "testconn", null );
-        PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
+        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
         FeatureStore fs = provider.create( new URL(
                                                     "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
         Assert.assertNotNull( fs );
@@ -212,7 +212,7 @@ public class PostGISFeatureStoreTest {
         MappedApplicationSchema mappedSchema = (MappedApplicationSchema) fs.getSchema();
         Assert.assertNotNull( mappedSchema );
 
-        PostGISFeatureStoreConfigWriter configWriter = new PostGISFeatureStoreConfigWriter( mappedSchema );
+        SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter( mappedSchema );
         File file = new File( "/tmp/inspire-au.xml" );
         FileOutputStream fos = new FileOutputStream( file );
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
@@ -254,7 +254,7 @@ public class PostGISFeatureStoreTest {
         ConnectionManager.addConnection( new URL(
                                                   "file:/home/schneider/.deegree/deegree-inspire-node-1.1/jdbc/testconn.xml" ),
                                          "testconn", null );
-        PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
+        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
         FeatureStore fs = provider.create( new URL(
                                                     "file:/home/schneider/.deegree/deegree-inspire-node-1.1/datasources/feature/inspire-au.xml" ) );
 
@@ -282,7 +282,7 @@ public class PostGISFeatureStoreTest {
 
         ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
                                          "testconn", null );
-        PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
+        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
         FeatureStore fs = provider.create( new URL(
                                                     "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
         QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
@@ -351,7 +351,7 @@ public class PostGISFeatureStoreTest {
             URL configURL = new URL(
                                      "file:/home/schneider/.deegree/deegree-inspire-node-1.1/datasources/feature/inspire-au.xml" );
 
-            PostGISFeatureStoreProvider provider = new PostGISFeatureStoreProvider();
+            SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
             PostGISFeatureStore fs = (PostGISFeatureStore) provider.create( configURL );
             try {
                 fs.init( null );

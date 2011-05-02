@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,34 +33,34 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
-
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
+package org.deegree.feature.persistence.sql;
 
 import java.net.URL;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.feature.persistence.sql.SQLDialectProvider;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 
 /**
- * {@link SQLDialectProvider} for the {@link PostGISFeatureStore}.
+ * Implementations provide {@link AbstractSQLFeatureStore} implementations for a specific (spatial) SQL dialect.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStoreProvider implements SQLDialectProvider<PostGISFeatureStore> {
+public interface SQLDialectProvider<T extends SQLFeatureStore> {
 
-    @Override
-    public Type getSupportedType() {
-        return PostgreSQL;
-    }
+    /**
+     * @return the db type which is supported by this feature store provider
+     */
+    Type getSupportedType();
 
-    @Override
-    public PostGISFeatureStore create( SQLFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace ) {
-        return new PostGISFeatureStore( config, configURL, workspace );
-    }
+    /**
+     * @param config
+     * @param configURL
+     * @param workspace
+     * @return a new SQL feature store
+     */
+    T create( SQLFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace );
 }

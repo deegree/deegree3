@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:postgisfs="http://www.deegree.org/datasource/feature/postgis"
-  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/feature/postgis"
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sqlfs="http://www.deegree.org/datasource/feature/sql"
+  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/feature/sql"
   elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
   <annotation>
     <appinfo>
       <jaxb:schemaBindings>
-        <jaxb:package name="org.deegree.feature.persistence.postgis.jaxb" />
+        <jaxb:package name="org.deegree.feature.persistence.sql.jaxb" />
       </jaxb:schemaBindings>
     </appinfo>
   </annotation>
-  <element name="PostGISFeatureStore">
+  <element name="SQLFeatureStore">
     <annotation>
-      <documentation>FeatureStore that is backed by a PostgreSQL / PostGIS database</documentation>
+      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS)</documentation>
       <appinfo>
-        <jaxb:class name="PostGISFeatureStoreJAXB" />
+        <jaxb:class name="SQLFeatureStoreJAXB" />
       </appinfo>
     </annotation>
     <complexType>
       <sequence>
         <element name="JDBCConnId" type="string" />
         <choice>
-          <element ref="postgisfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
+          <element ref="sqlfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
           <sequence>
             <element name="StorageCRS">
               <complexType>
@@ -57,7 +57,7 @@
                 </sequence>
               </complexType>
             </element>
-            <element ref="postgisfs:FeatureTypeMapping" minOccurs="0" maxOccurs="unbounded" />
+            <element ref="sqlfs:FeatureTypeMapping" minOccurs="0" maxOccurs="unbounded" />
           </sequence>
         </choice>
       </sequence>
@@ -80,8 +80,8 @@
         </appinfo>
       </annotation>
       <sequence>
-        <element ref="postgisfs:FIDMapping" minOccurs="0" />
-        <element ref="postgisfs:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="sqlfs:FIDMapping" minOccurs="0" />
+        <element ref="sqlfs:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="name" type="QName">
         <annotation>
@@ -114,44 +114,44 @@
               </appinfo>
             </annotation>
             <attribute name="name" type="string" use="required" />
-            <attribute name="type" type="postgisfs:PrimitiveType" />
+            <attribute name="type" type="sqlfs:PrimitiveType" />
           </complexType>
         </element>
-        <element ref="postgisfs:AbstractIDGenerator" />
+        <element ref="sqlfs:AbstractIDGenerator" />
       </sequence>
       <attribute name="prefix" type="string" use="optional" />
     </complexType>
   </element>
 
-  <element name="AbstractIDGenerator" abstract="true" type="postgisfs:AbstractIDGeneratorType" />
+  <element name="AbstractIDGenerator" abstract="true" type="sqlfs:AbstractIDGeneratorType" />
   <complexType name="AbstractIDGeneratorType" abstract="true">
     <sequence />
   </complexType>
-  <element name="AutoIdGenerator" substitutionGroup="postgisfs:AbstractIDGenerator">
+  <element name="AutoIdGenerator" substitutionGroup="sqlfs:AbstractIDGenerator">
     <complexType>
       <complexContent>
-        <extension base="postgisfs:AbstractIDGeneratorType" />
+        <extension base="sqlfs:AbstractIDGeneratorType" />
       </complexContent>
     </complexType>
   </element>
-  <element name="UUIDGenerator" substitutionGroup="postgisfs:AbstractIDGenerator">
+  <element name="UUIDGenerator" substitutionGroup="sqlfs:AbstractIDGenerator">
     <complexType>
       <complexContent>
-        <extension base="postgisfs:AbstractIDGeneratorType" />
+        <extension base="sqlfs:AbstractIDGeneratorType" />
       </complexContent>
     </complexType>
   </element>
-  <element name="SequenceIDGenerator" substitutionGroup="postgisfs:AbstractIDGenerator">
+  <element name="SequenceIDGenerator" substitutionGroup="sqlfs:AbstractIDGenerator">
     <complexType>
       <complexContent>
-        <extension base="postgisfs:AbstractIDGeneratorType">
+        <extension base="sqlfs:AbstractIDGeneratorType">
           <attribute name="sequence" type="string" use="required" />
         </extension>
       </complexContent>
     </complexType>
   </element>
   <!-- === Abstract property definition === -->
-  <element name="AbstractProperty" type="postgisfs:AbstractPropertyType" abstract="true" />
+  <element name="AbstractProperty" type="sqlfs:AbstractPropertyType" abstract="true" />
   <complexType name="AbstractPropertyType" abstract="true">
     <annotation>
       <documentation>Declaration of a property of a feature type.</documentation>
@@ -160,7 +160,7 @@
       </appinfo>
     </annotation>
     <sequence>
-      <element ref="postgisfs:Join" minOccurs="0" />
+      <element ref="sqlfs:Join" minOccurs="0" />
     </sequence>
     <attribute name="name" type="QName">
       <annotation>
@@ -175,7 +175,7 @@
     </attribute>
   </complexType>
   <!-- === Simple property declaration / mapping === -->
-  <element name="SimpleProperty" substitutionGroup="postgisfs:AbstractProperty">
+  <element name="SimpleProperty" substitutionGroup="sqlfs:AbstractProperty">
     <complexType>
       <annotation>
         <documentation>Declaration of a simple property of a feature type.</documentation>
@@ -184,8 +184,8 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="postgisfs:AbstractPropertyType">
-          <attribute name="type" type="postgisfs:PrimitiveType">
+        <extension base="sqlfs:AbstractPropertyType">
+          <attribute name="type" type="sqlfs:PrimitiveType">
             <annotation>
               <documentation>Primitive type of the property (if omitted, it is automatically determined from column)
               </documentation>
@@ -196,7 +196,7 @@
     </complexType>
   </element>
   <!-- === Geometry property declaration / mapping === -->
-  <element name="GeometryProperty" substitutionGroup="postgisfs:AbstractProperty">
+  <element name="GeometryProperty" substitutionGroup="sqlfs:AbstractProperty">
     <complexType>
       <annotation>
         <documentation>Definition of a geometry-valued property of a feature type</documentation>
@@ -205,8 +205,8 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="postgisfs:AbstractPropertyType">
-          <attribute name="type" type="postgisfs:GeometryType">
+        <extension base="sqlfs:AbstractPropertyType">
+          <attribute name="type" type="sqlfs:GeometryType">
             <annotation>
               <documentation>Geometry type (if omitted, it is automatically determined from table geometry_columns)
               </documentation>
@@ -320,9 +320,9 @@
     </restriction>
   </simpleType>
   <!-- === Feature property declaration / mapping === -->
-  <!-- element name="FeatureProperty" substitutionGroup="postgisfs:AbstractProperty"> <complexType> <annotation> <documentation>Definition 
+  <!-- element name="FeatureProperty" substitutionGroup="sqlfs:AbstractProperty"> <complexType> <annotation> <documentation>Definition 
     of a feature-valued property of a feature type.</documentation> <appinfo> <jaxb:class name="FeaturePropertyDecl" /> </appinfo> 
-    </annotation> <complexContent> <extension base="postgisfs:AbstractPropertyType"> <attribute name="type" type="QName" use="optional"> 
+    </annotation> <complexContent> <extension base="sqlfs:AbstractPropertyType"> <attribute name="type" type="QName" use="optional"> 
     <annotation> <documentation>Allowed feature type.</documentation> </annotation> </attribute> </extension> </complexContent> 
     </complexType> </element -->
   <element name="FeatureTypeMapping">
@@ -334,8 +334,8 @@
     </annotation>
     <complexType>
       <sequence>
-        <element ref="postgisfs:FIDMapping" />
-        <element ref="postgisfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="sqlfs:FIDMapping" />
+        <element ref="sqlfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="name" type="QName" use="required">
         <annotation>
@@ -349,7 +349,7 @@
       </attribute>
     </complexType>
   </element>
-  <element name="AbstractParticle" abstract="true" type="postgisfs:AbstractParticleType" />
+  <element name="AbstractParticle" abstract="true" type="sqlfs:AbstractParticleType" />
   <complexType name="AbstractParticleType">
     <annotation>
       <documentation>Defines the mapping for a particle of a feature type.</documentation>
@@ -358,7 +358,7 @@
       </appinfo>
     </annotation>
     <sequence>
-      <element ref="postgisfs:Join" minOccurs="0" />
+      <element ref="sqlfs:Join" minOccurs="0" />
     </sequence>
     <attribute name="path" type="string" use="required">
       <annotation>
@@ -371,7 +371,7 @@
       </annotation>
     </attribute>
   </complexType>
-  <element name="Primitive" substitutionGroup="postgisfs:AbstractParticle">
+  <element name="Primitive" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
         <documentation>Defines the mapping for a primitive-valued particle.</documentation>
@@ -380,11 +380,11 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="postgisfs:AbstractParticleType" />
+        <extension base="sqlfs:AbstractParticleType" />
       </complexContent>
     </complexType>
   </element>
-  <element name="Geometry" substitutionGroup="postgisfs:AbstractParticle">
+  <element name="Geometry" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
         <documentation>Defines the mapping for a geometry particle.</documentation>
@@ -393,11 +393,11 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="postgisfs:AbstractParticleType" />
+        <extension base="sqlfs:AbstractParticleType" />
       </complexContent>
     </complexType>
   </element>
-  <element name="Feature" substitutionGroup="postgisfs:AbstractParticle">
+  <element name="Feature" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
         <documentation>Defines the mapping for a feature particle</documentation>
@@ -406,7 +406,7 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="postgisfs:AbstractParticleType">
+        <extension base="sqlfs:AbstractParticleType">
           <attribute name="hrefMapping" type="string" use="optional">
             <annotation>
               <documentation>Mapping expression.</documentation>
@@ -416,7 +416,7 @@
       </complexContent>
     </complexType>
   </element>
-  <element name="Complex" substitutionGroup="postgisfs:AbstractParticle">
+  <element name="Complex" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
         <documentation>Defines the mapping for a complex particle</documentation>
@@ -425,9 +425,9 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="postgisfs:AbstractParticleType">
+        <extension base="sqlfs:AbstractParticleType">
           <sequence>
-            <element ref="postgisfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
+            <element ref="sqlfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
           </sequence>
         </extension>
       </complexContent>
@@ -443,17 +443,17 @@
           <documentation>Name of the table to change to.</documentation>
         </annotation>
       </attribute>
-      <attribute name="fromColumns" type="postgisfs:columnList" use="required">
+      <attribute name="fromColumns" type="sqlfs:columnList" use="required">
         <annotation>
           <documentation>Join columns (current table).</documentation>
         </annotation>
       </attribute>
-      <attribute name="toColumns" type="postgisfs:columnList" use="required">
+      <attribute name="toColumns" type="sqlfs:columnList" use="required">
         <annotation>
           <documentation>Join columns (target table).</documentation>
         </annotation>
       </attribute>
-      <attribute name="orderColumns" type="postgisfs:columnList" use="optional">
+      <attribute name="orderColumns" type="sqlfs:columnList" use="optional">
         <annotation>
           <documentation>Columns in the target table used for sorting.</documentation>
         </annotation>

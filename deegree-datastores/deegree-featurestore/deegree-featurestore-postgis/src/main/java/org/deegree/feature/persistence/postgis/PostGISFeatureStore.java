@@ -54,7 +54,6 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
@@ -62,6 +61,7 @@ import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.config.MappedSchemaBuilderGML;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
@@ -118,7 +118,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     // if true, use old-style for spatial predicates (e.g "intersects" instead of "ST_Intersects")
     boolean useLegacyPredicates;
 
-    private PostGISFeatureStoreJAXB config;
+    private SQLFeatureStoreJAXB config;
 
     private final URL configURL;
 
@@ -132,7 +132,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
      * @param workspace
      *            deegree workspace, must not be <code>null</code>
      */
-    protected PostGISFeatureStore( PostGISFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace ) {
+    protected PostGISFeatureStore( SQLFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace ) {
         this.config = config;
         this.configURL = configURL;
     }
@@ -446,7 +446,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                 try {
                     return WKBReader.read( (byte[]) sqlValue, gm.getCRS() );
                 } catch ( Throwable t ) {
-                    throw new IllegalArgumentException(t.getMessage(), t);
+                    throw new IllegalArgumentException( t.getMessage(), t );
                 }
             }
 

@@ -56,21 +56,20 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
-import org.deegree.feature.persistence.postgis.jaxb.AbstractIDGeneratorType;
-import org.deegree.feature.persistence.postgis.jaxb.AutoIdGenerator;
-import org.deegree.feature.persistence.postgis.jaxb.FIDMappingJAXB;
-import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeMappingJAXB;
-import org.deegree.feature.persistence.postgis.jaxb.Join;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.BLOBMapping;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.NamespaceHint;
-import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreJAXB.StorageCRS;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
+import org.deegree.feature.persistence.sql.jaxb.AbstractIDGeneratorType;
+import org.deegree.feature.persistence.sql.jaxb.AutoIdGenerator;
+import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
+import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
+import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
+import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.StorageCRS;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.sql.MappingExpression;
 import org.slf4j.Logger;
@@ -88,7 +87,7 @@ public class AbstractMappedSchemaBuilder {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractMappedSchemaBuilder.class );
 
-    public static MappedApplicationSchema build( String configURL, PostGISFeatureStoreJAXB config )
+    public static MappedApplicationSchema build( String configURL, SQLFeatureStoreJAXB config )
                             throws SQLException, FeatureStoreException {
         if ( config.getGMLSchema() == null || config.getGMLSchema().isEmpty() ) {
             MappedSchemaBuilderTable builder = new MappedSchemaBuilderTable( config.getJDBCConnId(),
@@ -113,16 +112,16 @@ public class AbstractMappedSchemaBuilder {
         }
         if ( config == null || config instanceof AutoIdGenerator ) {
             return new AutoIDGenerator();
-        } else if ( config instanceof org.deegree.feature.persistence.postgis.jaxb.SequenceIDGenerator ) {
-            String sequence = ( (org.deegree.feature.persistence.postgis.jaxb.SequenceIDGenerator) config ).getSequence();
+        } else if ( config instanceof org.deegree.feature.persistence.sql.jaxb.SequenceIDGenerator ) {
+            String sequence = ( (org.deegree.feature.persistence.sql.jaxb.SequenceIDGenerator) config ).getSequence();
             return new SequenceIDGenerator( sequence );
-        } else if ( config instanceof org.deegree.feature.persistence.postgis.jaxb.UUIDGenerator ) {
+        } else if ( config instanceof org.deegree.feature.persistence.sql.jaxb.UUIDGenerator ) {
             return new UUIDGenerator();
         }
         throw new RuntimeException( "Internal error. Unhandled JAXB config bean: " + config.getClass() );
     }
 
-    protected BaseType getPrimitiveType( org.deegree.feature.persistence.postgis.jaxb.PrimitiveType type ) {
+    protected BaseType getPrimitiveType( org.deegree.feature.persistence.sql.jaxb.PrimitiveType type ) {
         switch ( type ) {
         case BOOLEAN:
             return BaseType.BOOLEAN;
@@ -182,13 +181,13 @@ public class AbstractMappedSchemaBuilder {
         return mapping;
     }
 
-    protected List<TableJoin> buildJoinTable( QTableName from, Join join ) {
+    protected List<TableJoin> buildJoinTable( QTableName from, org.deegree.feature.persistence.sql.jaxb.Join join ) {
         if ( join != null ) {
             QTableName target = new QTableName( join.getTable() );
             if ( join.getFromColumns().size() != join.getToColumns().size() ) {
                 throw new UnsupportedOperationException( "Joins must use same number of from and to columns." );
             }
-            if ( join.getFromColumns().isEmpty()) {
+            if ( join.getFromColumns().isEmpty() ) {
                 throw new UnsupportedOperationException( "Joins must use at least a single column." );
             }
             boolean isNumbered = join.isNumbered() == null ? false : join.isNumbered();

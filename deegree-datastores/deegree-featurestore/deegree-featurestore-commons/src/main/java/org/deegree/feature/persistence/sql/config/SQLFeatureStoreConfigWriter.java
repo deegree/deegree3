@@ -79,23 +79,23 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStoreConfigWriter {
+public class SQLFeatureStoreConfigWriter {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreConfigWriter.class );
+    private static Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreConfigWriter.class );
 
-    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/postgis";
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/sql";
 
-    private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/3.1.0/postgis.xsd";
+    private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd";
 
     private final MappedApplicationSchema schema;
 
     /**
-     * Creates a new {@link PostGISFeatureStoreConfigWriter} instance.
+     * Creates a new {@link SQLFeatureStoreConfigWriter} instance.
      * 
      * @param schema
      *            the mapped application schema to export, must not be <code>null</code>
      */
-    public PostGISFeatureStoreConfigWriter( MappedApplicationSchema schema ) {
+    public SQLFeatureStoreConfigWriter( MappedApplicationSchema schema ) {
         this.schema = schema;
     }
 
@@ -110,7 +110,7 @@ public class PostGISFeatureStoreConfigWriter {
     public void writeConfig( XMLStreamWriter writer, String connId, List<String> schemaURLs )
                             throws XMLStreamException {
 
-        writer.writeStartElement( "PostGISFeatureStore" );
+        writer.writeStartElement( "SQLFeatureStore" );
         writer.writeAttribute( "configVersion", "3.1.0" );
         writer.writeNamespace( DEFAULT_NS_PREFIX, CONFIG_NS );
         writer.writeNamespace( "xsi", XSINS );
