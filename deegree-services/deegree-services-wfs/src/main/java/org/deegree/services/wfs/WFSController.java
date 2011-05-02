@@ -727,10 +727,8 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
         };
         Collection<FeatureType> sortedFts = new TreeSet<FeatureType>( comp );
         for ( FeatureStore fs : service.getStores() ) {
-            for ( FeatureType ft : fs.getSchema().getFeatureTypes() ) {
-                if ( !ft.isAbstract() ) {
-                    sortedFts.add( ft );
-                }
+            for ( FeatureType ft : fs.getSchema().getFeatureTypes( null, false, false ) ) {
+                sortedFts.add( ft );
             }
         }
 
