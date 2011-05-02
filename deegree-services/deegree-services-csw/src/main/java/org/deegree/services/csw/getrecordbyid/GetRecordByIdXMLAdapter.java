@@ -118,7 +118,9 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
             id = new ArrayList<String>();
             for ( OMElement elem : idList ) {
                 String idString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-                id.add( idString );
+                if ( !id.contains( idString ) ) {
+                    id.add( idString );
+                }
             }
         } catch ( XMLParsingException e ) {
             String msg = "No ID provided, please check the mandatory element 'id'. ";

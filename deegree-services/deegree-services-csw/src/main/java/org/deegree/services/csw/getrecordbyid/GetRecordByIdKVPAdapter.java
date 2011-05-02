@@ -38,6 +38,7 @@ package org.deegree.services.csw.getrecordbyid;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -113,11 +114,17 @@ public class GetRecordByIdKVPAdapter {
         URI outputSchema = URI.create( outputSchemaString );
 
         // elementName List<String>
-        List<String> id = KVPUtils.splitAll( normalizedKVPParams, "ID" );
+        List<String> id = new ArrayList<String>();
+        List<String> tmpIds = KVPUtils.splitAll( normalizedKVPParams, "ID" );
         if ( id.size() == 0 ) {
             String msg = "No ID provided, please check the mandatory element 'id'. ";
             LOG.info( msg );
             throw new MissingParameterException( msg );
+        }
+        for ( String tmpId : tmpIds ) {
+            if ( !id.contains( tmpId ) ) {
+                tmpIds.add( tmpId );
+            }
         }
 
         return new GetRecordById( version202, outputFormat, elementSetName, outputSchema, id );
