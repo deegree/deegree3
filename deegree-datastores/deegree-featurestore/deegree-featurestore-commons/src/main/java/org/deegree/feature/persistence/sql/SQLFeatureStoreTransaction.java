@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -97,7 +97,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ * {@link FeatureStoreTransaction} implementation for {@link AbstractSQLFeatureStore} implementations.
+ *
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
@@ -838,5 +840,4 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             taManager.releaseTransaction( this );
         }
     }
-
 }
