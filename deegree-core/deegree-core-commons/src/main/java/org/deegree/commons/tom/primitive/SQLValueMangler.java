@@ -82,7 +82,12 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case INTEGER:
-                sqlValue = Integer.parseInt( value.toString() );
+                try {
+                    sqlValue = Integer.parseInt( value.toString() );
+                } catch ( NumberFormatException e ) {
+                    LOG.debug( "Setting {} as string in sql as it does not fit into an integer.", value );
+                    sqlValue = value.toString();
+                }
                 break;
             case STRING:
                 sqlValue = value;
