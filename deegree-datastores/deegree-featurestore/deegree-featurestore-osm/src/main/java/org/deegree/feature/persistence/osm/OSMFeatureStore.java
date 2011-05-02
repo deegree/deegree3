@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.osm;
 
-import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.LINE_STRING;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;

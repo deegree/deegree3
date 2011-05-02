@@ -1,6 +1,6 @@
 package org.deegree.feature.persistence.osm;
 
-import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POINT;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
@@ -64,7 +64,7 @@ public class OSMToFeature {
 
     GeometryFactory geomFac = new GeometryFactory();
 
-    OSMToFeature() throws FileNotFoundException, XMLStreamException {
+    OSMToFeature() {
 
         QName ftName = new QName( OSM_NS, "Node", "osm" );
         List<PropertyType> pts = new ArrayList<PropertyType>();
