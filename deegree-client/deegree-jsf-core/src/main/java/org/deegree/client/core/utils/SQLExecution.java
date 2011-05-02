@@ -35,10 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.utils;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -92,7 +98,7 @@ public class SQLExecution implements Serializable {
         }
     }
 
-    public void execute() {
+    public String execute() {
         Connection conn = null;
         Statement stmt = null;
         try {
@@ -104,8 +110,9 @@ public class SQLExecution implements Serializable {
                 stmt.execute( sql );
             }
             conn.commit();
-            message = "Executed " + sqlStatements.length + " statements successfully.";
-        } catch ( SQLException e ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Executed " + sqlStatements.length + " statements successfully.", null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );            
+        } catch ( Throwable t ) {
             if ( conn != null ) {
                 try {
                     conn.rollback();
@@ -114,12 +121,14 @@ public class SQLExecution implements Serializable {
                 }
             }
             JDBCUtils.close( null, stmt, conn, LOG );
-            message = "Error: " + e.getMessage();
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Error: " + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return null;
         }
+        return backOutcome;
     }
 
     public String getBackOutcome() {
         return backOutcome;
     }
-
 }
