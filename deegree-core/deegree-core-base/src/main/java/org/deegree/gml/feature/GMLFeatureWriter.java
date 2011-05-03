@@ -643,8 +643,11 @@ public class GMLFeatureWriter {
                         }
                     } else {
                         // don't force export (maximum number of inline levels reached)
+                        if ( !( subFeature instanceof GMLReference<?> ) ) {
+                            LOG.warn( "References not expected at this point. Needs investigation." );
+                        }
                         writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                        if ( additionalObjectHandler != null ) {
+                        if ( additionalObjectHandler != null && subFeature instanceof GMLReference<?> ) {
                             String uri = additionalObjectHandler.handleReference( (GMLReference<?>) subFeature );
                             writeAttributeWithNS( XLNNS, "href", uri );
                         } else {
