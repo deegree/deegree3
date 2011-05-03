@@ -116,14 +116,14 @@ public class GetRecordByIdKVPAdapter {
         // elementName List<String>
         List<String> id = new ArrayList<String>();
         List<String> tmpIds = KVPUtils.splitAll( normalizedKVPParams, "ID" );
-        if ( id.size() == 0 ) {
+        if ( tmpIds.size() == 0 ) {
             String msg = "No ID provided, please check the mandatory element 'id'. ";
             LOG.info( msg );
             throw new MissingParameterException( msg );
         }
         for ( String tmpId : tmpIds ) {
             if ( !id.contains( tmpId ) ) {
-                tmpIds.add( tmpId );
+                id.add( tmpId );
             }
         }
 
