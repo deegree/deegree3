@@ -17,6 +17,7 @@
     <groupId>org.deegree</groupId>
     <artifactId>deegree-test-parent</artifactId>
     <version>3.1-pre4-SNAPSHOT</version>
+    <relativePath />
   </parent>
 
   <repositories>
