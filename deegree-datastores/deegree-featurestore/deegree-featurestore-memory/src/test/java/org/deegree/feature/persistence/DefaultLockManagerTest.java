@@ -48,11 +48,11 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
-import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,7 +68,7 @@ public class DefaultLockManagerTest {
 
     private static final String BASE_DIR = "../../gml/feature/testdata/features/";
 
-    private LockManager lockManager;
+    // private LockManager lockManager;
 
     @Before
     public void setUp()
@@ -85,7 +85,13 @@ public class DefaultLockManagerTest {
 
         URL docURL = DefaultLockManagerTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         FeatureStore store = new MemoryFeatureStore( docURL, schema );
-        lockManager = store.getLockManager();
+        // lockManager =
+        store.getLockManager();
+    }
+
+    @After
+    public void shutdown() {
+        DeegreeWorkspace.getInstance().destroyAll();
     }
 
     @Test

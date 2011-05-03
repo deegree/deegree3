@@ -108,7 +108,6 @@ public class MemoryFeatureStoreTest {
 
     @After
     public void shutDown() {
-        store.destroy();
         DeegreeWorkspace.getInstance().destroyAll();
     }
 
