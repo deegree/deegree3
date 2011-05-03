@@ -415,9 +415,12 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     public ResourceState deactivate( String id ) {
         ResourceState state = getState( id );
         if ( state != null && state.getType() != deactivated ) {
-            File oldFile = state.getConfigLocation();
-            File newFile = new File( dir, id + ".ignore" );
-            oldFile.renameTo( newFile );
+            File newFile = null;
+            if ( state.getConfigLocation() != null ) {
+                File oldFile = state.getConfigLocation();
+                newFile = new File( dir, id + ".ignore" );
+                oldFile.renameTo( newFile );
+            }
 
             ConnectionPool pool = idToPools.get( id );
             idToPools.remove( id );
