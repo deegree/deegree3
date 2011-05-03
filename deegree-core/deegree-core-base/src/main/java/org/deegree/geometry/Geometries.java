@@ -172,6 +172,21 @@ public class Geometries {
         }
     }
 
+    /**
+     * Returns a corresponding {@link Geometry} object for the given {@link Envelope}.
+     * <p>
+     * Depending on the extent, this can either be:
+     * <ul>
+     * <li>a {@link Polygon}</li>
+     * <li>a {@link LineString}</li>
+     * <li>a {@link Point}</li>
+     * </ul>
+     * </p>
+     * 
+     * @param env
+     *            envelope, must not be <code>null</code>
+     * @return corresponding geometry object, never <code>null</code>
+     */
     public static Geometry getAsGeometry( Envelope env ) {
         Point min = env.getMin();
         Point max = env.getMax();
@@ -185,7 +200,7 @@ public class Geometries {
                 return fac.createLineString( null, crs, points );
             }
             double[] points = new double[] { min.get0(), min.get1(), max.get0(), min.get1(), max.get0(), max.get1(),
-                                            min.get0(), max.get1() };
+                                            min.get0(), max.get1(), min.get0(), min.get1() };
             Curve ls = fac.createLineString( null, crs, new PackedPoints( null, points, 2 ) );
             Ring exteriorRing = fac.createRing( null, crs, Collections.singletonList( ls ) );
             return fac.createPolygon( null, crs, exteriorRing, null );
