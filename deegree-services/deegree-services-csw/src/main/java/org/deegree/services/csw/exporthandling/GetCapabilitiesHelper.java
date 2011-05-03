@@ -69,7 +69,7 @@ public class GetCapabilitiesHelper {
     }
 
     public void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType identification,
-                                             String serviceType, String serviceTypeVersion, String serviceTypeVersionAtt )
+                                             String serviceType, String serviceTypeVersion, String serviceTypeCodeSpace )
                             throws XMLStreamException {
         writer.writeStartElement( "http://www.opengis.net/ows", Sections.ServiceIdentification.toString() );
 
@@ -83,13 +83,13 @@ public class GetCapabilitiesHelper {
 
         // keywords [0,n]
         exportKeywords( writer, identification.getKeywords() );
-        writeElement( writer, "http://www.opengis.net/ows", "ServiceType", serviceType );
-        if ( serviceTypeVersionAtt != null ) {
-            writeElement( writer, "http://www.opengis.net/ows", "ServiceTypeVersion", serviceTypeVersion, null, null,
-                          "codeSpace", serviceTypeVersionAtt );
+        if ( serviceTypeCodeSpace != null ) {
+            writeElement( writer, "http://www.opengis.net/ows", "ServiceType", serviceType, null, null,
+                          "codeSpace", serviceTypeCodeSpace );
         } else {
-            writeElement( writer, "http://www.opengis.net/ows", "ServiceTypeVersion", serviceTypeVersion );
+            writeElement( writer, "http://www.opengis.net/ows", "ServiceType", serviceType );
         }
+        writeElement( writer, "http://www.opengis.net/ows", "ServiceTypeVersion", serviceTypeVersion );
 
         // fees [1]
         String fees = identification.getFees();
