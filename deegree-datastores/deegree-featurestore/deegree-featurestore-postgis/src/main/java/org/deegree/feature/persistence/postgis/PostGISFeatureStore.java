@@ -459,7 +459,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                     Geometry compatible = getCompatibleGeometry( particle, gm.getCRS() );
                     return WKBWriter.write( compatible );
                 } catch ( Throwable t ) {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException(t.getMessage(), t);
                 }
             }
         };
