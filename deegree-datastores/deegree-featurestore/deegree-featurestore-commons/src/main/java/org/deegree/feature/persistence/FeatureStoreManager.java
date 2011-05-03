@@ -104,4 +104,10 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
     public ResourceManagerMetadata<FeatureStore> getMetadata() {
         return metadata;
     }
+
+    @Override
+    public void shutdown() {
+        workspace.getSubsystemManager( ConnectionManager.class ).deactivate( "LOCK_DB" );
+    }
+
 }
