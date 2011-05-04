@@ -96,7 +96,7 @@ public class WorkspaceBean implements Serializable {
     private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
 
     // only used when no module version information is available
-    private static final String DEFAULT_VERSION = "3.1-pre4-SNAPSHOT";
+    private static final String DEFAULT_VERSION = "3.1-pre5-SNAPSHOT";
 
     @Getter
     private String lastMessage = "Workspace initialized.";
