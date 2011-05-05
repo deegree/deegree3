@@ -48,6 +48,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -314,7 +315,11 @@ public abstract class AbstractGetRecordsHandler {
             constraints = getRec.getQuery().getConstraint();
             sortProps = getRec.getQuery().getSortProps();
         }
-        return new MetadataQuery( constraints, sortProps, getRec.getStartPosition(), getRec.getMaxRecords() );
+        // TODO
+        QName[] queryTypeNames = null;
+        QName[] returnTypeNames = null;
+        return new MetadataQuery( queryTypeNames, returnTypeNames, constraints, sortProps, getRec.getStartPosition(),
+                                  getRec.getMaxRecords() );
     }
 
     /**
