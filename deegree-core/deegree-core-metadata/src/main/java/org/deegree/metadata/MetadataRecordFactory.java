@@ -47,6 +47,9 @@ import org.deegree.metadata.iso.ISORecord;
 /**
  * Main entry point for creating {@link MetadataRecord} instances from XML representations.
  * 
+ * TODO Factory concept needs reconsideration, especially with regard to plugability for different metadata formats
+ * (ISO, ebRIM, ...). Ideally, this factory shouldn't have any compile-time dependencies to the concrete record types.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
