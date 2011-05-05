@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata;
+package org.deegree.metadata.iso;
 
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;

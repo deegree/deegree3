@@ -42,8 +42,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataRecordFactory;
+import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
 import org.deegree.metadata.persistence.iso.helper.TstConstants;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;

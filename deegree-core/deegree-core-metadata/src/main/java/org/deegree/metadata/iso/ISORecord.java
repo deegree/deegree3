@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata;
+package org.deegree.metadata.iso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -68,6 +68,8 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.metadata.DCRecord;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.filter.XPathElementFilter;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;

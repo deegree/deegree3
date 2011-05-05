@@ -58,7 +58,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;

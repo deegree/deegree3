@@ -36,8 +36,8 @@
 package org.deegree.metadata.persistence.inspectors;
 
 import static org.deegree.metadata.DCRecord.SCHEMA_URL;
-import static org.deegree.metadata.ISORecord.SCHEMA_URL_GMD;
-import static org.deegree.metadata.ISORecord.SCHEMA_URL_SRV;
+import static org.deegree.metadata.iso.ISORecord.SCHEMA_URL_GMD;
+import static org.deegree.metadata.iso.ISORecord.SCHEMA_URL_SRV;
 
 import java.io.InputStream;
 import java.sql.Connection;

@@ -41,7 +41,7 @@ import java.sql.ResultSet;
 
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.XMLMetadataResultSet;
 

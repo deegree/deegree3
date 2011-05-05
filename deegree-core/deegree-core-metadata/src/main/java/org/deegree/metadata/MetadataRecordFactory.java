@@ -36,12 +36,13 @@
 package org.deegree.metadata;
 
 import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
-import static org.deegree.metadata.ISORecord.ISO_RECORD_NS;
+import static org.deegree.metadata.iso.ISORecord.ISO_RECORD_NS;
 
 import java.io.File;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.metadata.iso.ISORecord;
 
 /**
  * Main entry point for creating {@link MetadataRecord} instances from XML representations.
