@@ -140,13 +140,11 @@ public abstract class AbstractGetRecordsHandler {
      */
     private void export( XMLStreamWriter xmlWriter, GetRecords getRec, Version version, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
-
         if ( VERSION_202.equals( version ) ) {
             export202( xmlWriter, getRec, store );
         } else {
             throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
         }
-
     }
 
     /**
@@ -311,13 +309,14 @@ public abstract class AbstractGetRecordsHandler {
     protected MetadataQuery getQuery( GetRecords getRec ) {
         Filter constraints = null;
         SortProperty[] sortProps = null;
+        QName[] queryTypeNames = null;
+        QName[] returnTypeNames = null;        
         if ( getRec.getQuery() != null ) {
             constraints = getRec.getQuery().getConstraint();
             sortProps = getRec.getQuery().getSortProps();
+            queryTypeNames = getRec.getQuery().getQueryTypeNames();
+            returnTypeNames = getRec.getQuery().getReturnTypeNames();
         }
-        // TODO
-        QName[] queryTypeNames = null;
-        QName[] returnTypeNames = null;
         return new MetadataQuery( queryTypeNames, returnTypeNames, constraints, sortProps, getRec.getStartPosition(),
                                   getRec.getMaxRecords() );
     }
@@ -426,6 +425,5 @@ public abstract class AbstractGetRecordsHandler {
         } catch ( FactoryConfigurationError e ) {
             e.printStackTrace();
         }
-
     }
 }

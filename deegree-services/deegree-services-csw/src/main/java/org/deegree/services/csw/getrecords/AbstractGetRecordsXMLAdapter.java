@@ -39,10 +39,7 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -73,7 +70,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract base class encapsulating the parsing an {@Link GetRecords} XML request.
+ * Abstract base class encapsulating the parsing an {@link GetRecords} XML request.
  * 
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -147,7 +144,6 @@ public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXML
 
     protected Query parseQuery( OMElement omElement ) {
         if ( new QName( CSWConstants.CSW_202_NS, "Query" ).equals( omElement.getQName() ) ) {
-            Set<QName> setOfTypeNames = new HashSet<QName>();
             SortProperty[] sortProps = null;
             Filter constraint = null;
             ReturnableElement elementSetName = null;
@@ -163,7 +159,7 @@ public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXML
                 throw new MissingParameterException( msg );
             }
 
-            String[] queryTypeNamesString = ArrayUtils.toArray( typeQuery, " ,", true );
+            String[] queryTypeNamesString = ArrayUtils.toArray( typeQuery, " ", true );
             QName[] queryTypeNames = new QName[queryTypeNamesString.length];
             int counterQName = 0;
             for ( String s : queryTypeNamesString ) {
@@ -172,6 +168,7 @@ public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXML
                 queryTypeNames[counterQName++] = qname;
             }
             elementName = getNodesAsStrings( omElement, new XPath( "./csw:ElementName", nsContext ) );
+            QName[] returnTypeNames = null;
             for ( OMElement omQueryElement : queryChildElements ) {
 
                 // TODO mandatory exclusiveness between ElementSetName vs. ElementName not implemented yet
@@ -182,28 +179,11 @@ public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXML
                     // elementSetNameTypeNames = getNodesAsQNames( omQueryElement, new XPath( "@typeNames",
                     // nsContext ) );
                     String typeElementSetName = getNodeAsString( omQueryElement,
-                                                                 new XPath( "./@typeNames", nsContext ), "" );
-                    if ( "".equals( typeElementSetName ) ) {
-                        LOG.info( "TypeName of element 'ElementSetName' is not specified, so there are the typeNames taken from element 'Query'. " );
-                        setOfTypeNames.addAll( Arrays.asList( queryTypeNames ) );
-                    } else {
-
-                        String[] elementSetNameTypeNamesString = ArrayUtils.toArray( typeElementSetName, " ,", true );
-                        boolean isSubset = false;
-                        for ( String s : elementSetNameTypeNamesString ) {
-                            LOG.debug( "Parsing typeName '" + s + "' of ElementSetName as QName. " );
-                            QName qname = parseQName( s, omElement );
-                            LOG.debug( "Parsing correct, so check for containing of the typeName '" + s + "'. " );
-                            isSubset = ArrayUtils.contains( queryTypeNamesString, s, true, true );
-                            if ( !isSubset ) {
-                                String msg = "QName '"
-                                             + s
-                                             + "' is not containing in typeNames of element Query => typeName of element ElementSetName is not a subset of typeName of element Query!";
-                                LOG.debug( msg );
-                                throw new InvalidParameterValueException( msg );
-                            }
-                            setOfTypeNames.add( qname );
-                        }
+                                                                 new XPath( "./@typeNames", nsContext ), "" ).trim();
+                    String[] elementSetNameTypeNamesString = ArrayUtils.toArray( typeElementSetName, " ", true );
+                    returnTypeNames = new QName[elementSetNameTypeNamesString.length];
+                    for ( int i = 0; i < elementSetNameTypeNamesString.length; i++ ) {
+                        returnTypeNames[i] = parseQName( elementSetNameTypeNamesString[i], omElement );
                     }
                 }
 
@@ -275,10 +255,9 @@ public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXML
                         sortProps[counter++] = sortProp;
                     }
                 }
-
             }
-            return new Query( elementSetName, elementName, constraint, constraintLanguage, sortProps,
-                              setOfTypeNames.toArray( new QName[setOfTypeNames.size()] ) );
+            return new Query( elementSetName, elementName, constraint, constraintLanguage, sortProps, queryTypeNames,
+                              returnTypeNames );
         }
         return null;
     }

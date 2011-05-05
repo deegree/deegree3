@@ -70,7 +70,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
  * Encapsulates the method for parsing a {@Link GetRecords} KVP request via Http-GET.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
@@ -79,6 +78,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
+
     private static Logger LOG = LoggerFactory.getLogger( GetRecordsKVPAdapter.class );
 
     /**
@@ -253,7 +253,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         // TODO
         String responseHandler = normalizedKVPParams.get( "RESPONSEHANDLER" );
 
-        Query query = new Query( elementSetName, elementName, constraint, constraintLanguage, sortBy, typeNames );
+        Query query = new Query( elementSetName, elementName, constraint, constraintLanguage, sortBy, typeNames, null );
 
         return new GetRecords( version, nsContext, outputFormat, resultType, requestId, outputSchema, startPosition,
                                maxRecords, distributedSearch, hopCount, responseHandler, query, null );
@@ -269,7 +269,6 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
     private static SortProperty[] getSortBy( List<String> sortByStrList, NamespaceBindings nsContext ) {
         SortProperty[] result = null;
         if ( sortByStrList != null ) {
-
             result = new SortProperty[sortByStrList.size()];
             int counter = 0;
             for ( String s : sortByStrList ) {
@@ -278,7 +277,6 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
                     result[counter++] = new SortProperty( new PropertyName( sortbyProp, nsContext ), false );
 
                 } else {
-
                     if ( s.endsWith( " A" ) ) {
                         String sortbyProp = s.substring( 0, s.indexOf( " " ) );
                         result[counter++] = new SortProperty( new PropertyName( sortbyProp, nsContext ), true );
@@ -291,5 +289,4 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         }
         return result;
     }
-
 }

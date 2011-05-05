@@ -343,7 +343,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             sendServiceException( new OWSException( e ), response );
         } catch ( Throwable t ) {
             String msg = "An unexpected error occured: " + t.getMessage();
-            LOG.debug( msg, t );
+            LOG.error( msg, t );
             sendServiceException( new OWSException( msg, t, ControllerException.NO_APPLICABLE_CODE ), response );
         }
     }
@@ -601,5 +601,4 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         XMLExceptionSerializer<OWSException> serializer = new OWSException110XMLAdapter();
         return new Pair<XMLExceptionSerializer<OWSException>, String>( serializer, mime );
     }
-
 }

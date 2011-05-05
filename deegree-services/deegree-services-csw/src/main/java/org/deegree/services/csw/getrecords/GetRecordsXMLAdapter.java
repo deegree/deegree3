@@ -49,7 +49,7 @@ import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 
 /**
- * Encapsulates the method for parsing a {@Link GetRecords} XML request via Http-POST.
+ * Encapsulates the method for parsing a {@link GetRecords} XML request via Http-POST.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -96,5 +96,4 @@ public class GetRecordsXMLAdapter extends AbstractGetRecordsXMLAdapter {
                                startPosition, maxRecords, distributedSearch, hopCount, responseHandler, query,
                                holeRequest );
     }
-
 }

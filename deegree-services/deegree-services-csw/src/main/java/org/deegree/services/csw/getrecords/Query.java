@@ -52,26 +52,41 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  */
 public class Query {
 
-    private ReturnableElement elementSetName = null;
+    private ReturnableElement elementSetName;
 
-    private String[] elementName = null;
+    private String[] elementName;
 
-    private Filter constraint = null;
+    private Filter constraint;
 
-    private ConstraintLanguage constraintLanguage = null;
+    private ConstraintLanguage constraintLanguage;
 
-    private SortProperty[] sortProps = null;
+    private SortProperty[] sortProps;
 
-    private QName[] typeNames = null;
+    private QName[] queryTypeNames;
+    
+    private QName[] returnTypeNames;
 
     public Query( ReturnableElement elementSetName, String[] elementName, Filter constraint,
-                  ConstraintLanguage constraintLanguage, SortProperty[] sortProps, QName[] typeNames ) {
+                  ConstraintLanguage constraintLanguage, SortProperty[] sortProps, QName[] queryTypeNames, QName[] returnTypeNames ) {
         this.elementSetName = elementSetName;
         this.elementName = elementName;
         this.constraint = constraint;
         this.constraintLanguage = constraintLanguage;
         this.sortProps = sortProps;
-        this.typeNames = typeNames;
+        this.queryTypeNames = queryTypeNames;
+        this.returnTypeNames = returnTypeNames;
+    }
+
+    public QName[] getQueryTypeNames() {
+        if ( queryTypeNames == null )
+            return new QName[0];
+        return queryTypeNames;
+    }
+
+    public QName[] getReturnTypeNames() {
+        if ( returnTypeNames == null )
+            return new QName[0];
+        return returnTypeNames;
     }
 
     public ReturnableElement getElementSetName() {
@@ -96,11 +111,5 @@ public class Query {
         if ( sortProps == null )
             return new SortProperty[0];
         return sortProps;
-    }
-
-    public QName[] getTypeNames() {
-        if ( typeNames == null )
-            return new QName[0];
-        return typeNames;
     }
 }

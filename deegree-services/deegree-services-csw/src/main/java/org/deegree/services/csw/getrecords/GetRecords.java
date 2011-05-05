@@ -105,7 +105,7 @@ public class GetRecords extends AbstractCSWRequest {
                        String requestId, URI outputSchema, int startPosition, int maxRecords,
                        boolean distributedSearch, int hopCount, String responseHandler, Query query,
                        OMElement holeRequest ) {
-        super( version, namespaces, query != null ? query.getTypeNames(): new QName[0], outputFormat );
+        super( version, namespaces, query != null ? query.getQueryTypeNames() : new QName[0], outputFormat );
         this.resultType = resultType;
         this.requestId = requestId;
         this.outputSchema = outputSchema;
@@ -175,7 +175,9 @@ public class GetRecords extends AbstractCSWRequest {
     }
 
     /**
-     * @return the constraintLanguage
+     * Returns the query.
+     * 
+     * @return query, never <code>null</code>
      */
     public Query getQuery() {
         return query;
@@ -187,5 +189,4 @@ public class GetRecords extends AbstractCSWRequest {
     public OMElement getHoleRequest() {
         return holeRequest;
     }
-
 }
