@@ -1,1 +1,1 @@
-org.deegree.metadata.persistence.iso.ISOMetadataStoreProvider
+org.deegree.metadata.iso.persistence.ISOMetadataStoreProvider

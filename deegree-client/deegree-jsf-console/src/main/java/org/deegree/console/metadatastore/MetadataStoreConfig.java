@@ -55,9 +55,9 @@ import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.console.WorkspaceBean;
+import org.deegree.metadata.iso.persistence.ISOMetadataStore;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
-import org.deegree.metadata.persistence.iso.ISOMetadataStore;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**

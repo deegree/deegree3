@@ -49,7 +49,7 @@ import jj2000.j2k.NotImplementedError;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
@@ -159,7 +159,7 @@ public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXML
                 throw new MissingParameterException( msg );
             }
 
-            String[] queryTypeNamesString = ArrayUtils.toArray( typeQuery, " ", true );
+            String[] queryTypeNamesString = StringUtils.split( typeQuery, " " );
             QName[] queryTypeNames = new QName[queryTypeNamesString.length];
             int counterQName = 0;
             for ( String s : queryTypeNamesString ) {
@@ -180,7 +180,7 @@ public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXML
                     // nsContext ) );
                     String typeElementSetName = getNodeAsString( omQueryElement,
                                                                  new XPath( "./@typeNames", nsContext ), "" ).trim();
-                    String[] elementSetNameTypeNamesString = ArrayUtils.toArray( typeElementSetName, " ", true );
+                    String[] elementSetNameTypeNamesString = StringUtils.split( typeElementSetName, " " );
                     returnTypeNames = new QName[elementSetNameTypeNamesString.length];
                     for ( int i = 0; i < elementSetNameTypeNamesString.length; i++ ) {
                         returnTypeNames[i] = parseQName( elementSetNameTypeNamesString[i], omElement );
