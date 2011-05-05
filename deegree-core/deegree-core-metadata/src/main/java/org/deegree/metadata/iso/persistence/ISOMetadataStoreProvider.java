@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso;
+package org.deegree.metadata.iso.persistence;
 
 import static org.slf4j.LoggerFactory.getLogger;
 

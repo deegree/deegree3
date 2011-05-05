@@ -33,57 +33,25 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.parsing;
+package org.deegree.metadata.iso.persistence.inspectors;
+
+import java.sql.Connection;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.metadata.persistence.MetadataInspectorException;
 
 /**
- * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.<br>
- * Here are the queryable and returnable properties and the elements in xml format.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ParsedProfileElement {
+public interface InspireCompliance {
 
-    private final OMElement rootElement;
-
-    private final QueryableProperties queryableProperties;
-
-    private final ReturnableProperties returnableProperties;
-
-    /**
-     * Creates a new {@link ParsedProfileElement} instance.
-     * 
-     * @param queryableProperties
-     * @param returnableProperties
-     * @param generateRecord
-     */
-    public ParsedProfileElement( QueryableProperties queryableProperties, ReturnableProperties returnableProperties,
-                                 OMElement element ) {
-        this.queryableProperties = queryableProperties;
-        this.returnableProperties = returnableProperties;
-        this.rootElement = element;
-    }
-
-    /**
-     * @return the queryableProperties
-     */
-    public QueryableProperties getQueryableProperties() {
-        return queryableProperties;
-    }
-
-    /**
-     * @return the returnableProperties
-     */
-    public ReturnableProperties getReturnableProperties() {
-        return returnableProperties;
-    }
-
-    public OMElement getRootElement() {
-        return rootElement;
-    }
+    OMElement inspect( OMElement record, Connection conn, Type connectionType )
+                            throws MetadataInspectorException;
 
 }

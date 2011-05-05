@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.inspectors;
+package org.deegree.metadata.iso.persistence.inspectors;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -54,11 +54,11 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.iso.persistence.MSSQLMappingsISODC;
+import org.deegree.metadata.iso.persistence.PostGISMappingsISODC;
 import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
-import org.deegree.metadata.persistence.iso.MSSQLMappingsISODC;
-import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.slf4j.Logger;
 

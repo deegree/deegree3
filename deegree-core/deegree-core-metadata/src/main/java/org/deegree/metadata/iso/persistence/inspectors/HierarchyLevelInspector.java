@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.inspectors;
+package org.deegree.metadata.iso.persistence.inspectors;
 
 import java.sql.Connection;
 

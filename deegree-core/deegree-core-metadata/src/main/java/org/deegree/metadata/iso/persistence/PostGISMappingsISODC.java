@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso;
+package org.deegree.metadata.iso.persistence;
 
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DATE;
@@ -78,8 +78,8 @@ import org.slf4j.Logger;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change
- * in the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
+ * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change in
+ * the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
  * <p>
  * TODO denominator, distanceUOM, distanceValue put a type in
  * 
@@ -88,9 +88,9 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision$, $Date$
  */
-public class MSSQLMappingsISODC implements PropertyNameMapper {
+public class PostGISMappingsISODC implements PropertyNameMapper {
 
-    private static final Logger LOG = getLogger( MSSQLMappingsISODC.class );
+    private static final Logger LOG = getLogger( PostGISMappingsISODC.class );
 
     private static Map<QName, Triple<Pair<String, String>, Boolean, BaseType>> propToTableAndCol = new HashMap<QName, Triple<Pair<String, String>, Boolean, BaseType>>();
 
@@ -229,6 +229,7 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
          * the identifier of the record
          */
         fileidentifier,
+        
 
         /**
          * the resourceIdentifier of the record

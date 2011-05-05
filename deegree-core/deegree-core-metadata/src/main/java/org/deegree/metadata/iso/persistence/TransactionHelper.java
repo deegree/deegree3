@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso;
+package org.deegree.metadata.iso.persistence;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -55,12 +55,12 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.iso.persistence.parsing.QueryableProperties;
 import org.deegree.metadata.iso.types.BoundingBox;
 import org.deegree.metadata.iso.types.Constraint;
 import org.deegree.metadata.iso.types.Format;
 import org.deegree.metadata.iso.types.Keyword;
 import org.deegree.metadata.iso.types.OperatesOnData;
-import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;

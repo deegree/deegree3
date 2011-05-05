@@ -1,4 +1,4 @@
-package org.deegree.metadata.persistence.iso;
+package org.deegree.metadata.iso.persistence;
 
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 

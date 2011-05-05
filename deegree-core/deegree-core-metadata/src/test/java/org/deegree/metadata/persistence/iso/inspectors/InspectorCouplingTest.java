@@ -38,10 +38,10 @@ package org.deegree.metadata.persistence.iso.inspectors;
 import java.util.List;
 
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.metadata.iso.persistence.ISOMetadataStore;
+import org.deegree.metadata.iso.persistence.ISOMetadataStoreProvider;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.iso.ISOMetadataStore;
-import org.deegree.metadata.persistence.iso.ISOMetadataStoreProvider;
 import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
 import org.deegree.metadata.persistence.iso.helper.TstConstants;
 import org.deegree.metadata.persistence.iso.helper.TstUtils;

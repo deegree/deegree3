@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso;
+package org.deegree.metadata.iso.persistence;
 
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.utils.JDBCUtils.close;
@@ -57,16 +57,16 @@ import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
+import org.deegree.metadata.iso.persistence.inspectors.FIInspector;
+import org.deegree.metadata.iso.persistence.inspectors.HierarchyLevelInspector;
+import org.deegree.metadata.iso.persistence.inspectors.InspireComplianceInspector;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.inspectors.MetadataSchemaValidationInspector;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
-import org.deegree.metadata.persistence.iso.inspectors.CoupledDataInspector;
-import org.deegree.metadata.persistence.iso.inspectors.FIInspector;
-import org.deegree.metadata.persistence.iso.inspectors.HierarchyLevelInspector;
-import org.deegree.metadata.persistence.iso.inspectors.InspireComplianceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
