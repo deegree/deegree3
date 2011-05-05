@@ -145,7 +145,7 @@ public class CommonISOTest extends AbstractISOTest {
 
         TstUtils.insertMetadata( store, urlArray );
 
-        MetadataQuery query = new MetadataQuery( null, null, 1, 10 );
+        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 10 );
         resultSet = store.getRecords( query );
         int size = 0;
         while ( resultSet.next() ) {
@@ -241,7 +241,7 @@ public class CommonISOTest extends AbstractISOTest {
         taDel.performDelete( delete );
         taDel.commit();
         // test query
-        MetadataQuery query = new MetadataQuery( null, null, 1, 10 );
+        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 10 );
         resultSet = store.getRecords( query );
         int size = 0;
         while ( resultSet.next() ) {
@@ -363,7 +363,7 @@ public class CommonISOTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query
-            MetadataQuery query = new MetadataQuery( null, null, 1, 10 );
+            MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 10 );
             resultSet = store.getRecords( query );
             // identifier
             String identifier = null;
@@ -461,7 +461,7 @@ public class CommonISOTest extends AbstractISOTest {
         mst.commit();
 
         // get record which should be updated
-        MetadataQuery query = new MetadataQuery( constraint, null, 1, 10 );
+        MetadataQuery query = new MetadataQuery( null, null, constraint, null, 1, 10 );
         resultSet = store.getRecords( query );
         assertNotNull( resultSet );
         assertTrue( resultSet.next() );
@@ -506,7 +506,7 @@ public class CommonISOTest extends AbstractISOTest {
         mst.commit();
 
         // get record which should be updated
-        MetadataQuery query = new MetadataQuery( constraint, null, 1, 10 );
+        MetadataQuery query = new MetadataQuery( null, null, constraint, null, 1, 10 );
         resultSet = store.getRecords( query );
         assertNotNull( resultSet );
         assertTrue( resultSet.next() );
@@ -555,7 +555,7 @@ public class CommonISOTest extends AbstractISOTest {
         mst.commit();
 
         // get record which should be updated
-        MetadataQuery query = new MetadataQuery( constraint, null, 1, 10 );
+        MetadataQuery query = new MetadataQuery( null, null, constraint, null, 1, 10 );
         resultSet = store.getRecords( query );
         assertNotNull( resultSet );
         assertTrue( resultSet.next() );
@@ -599,7 +599,7 @@ public class CommonISOTest extends AbstractISOTest {
         recordProperties.add( new MetadataProperty( name, null ) );
 
         // get record which should be updated
-        MetadataQuery query = new MetadataQuery( constraint, null, 1, 10 );
+        MetadataQuery query = new MetadataQuery( null, null, constraint, null, 1, 10 );
         resultSet = store.getRecords( query );
         assertNotNull( resultSet );
         assertTrue( resultSet.next() );
@@ -657,7 +657,7 @@ public class CommonISOTest extends AbstractISOTest {
         // get record which should be updated
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
                                              new Literal<PrimitiveValue>( idToUpdate ), true );
-        MetadataQuery query = new MetadataQuery( new OperatorFilter( op ), null, 1, 10 );
+        MetadataQuery query = new MetadataQuery( null, null, new OperatorFilter( op ), null, 1, 10 );
         resultSet = store.getRecords( query );
         assertNotNull( resultSet );
         assertTrue( resultSet.next() );
@@ -706,7 +706,7 @@ public class CommonISOTest extends AbstractISOTest {
         mst.commit();
 
         // get record which should be updated
-        MetadataQuery query = new MetadataQuery( constraint, null, 1, 10 );
+        MetadataQuery query = new MetadataQuery( null, null, constraint, null, 1, 10 );
         resultSet = store.getRecords( query );
         assertNotNull( resultSet );
         assertTrue( resultSet.next() );
