@@ -776,8 +776,18 @@ public class XMLAdapter {
      */
     public QName parseQName( String s, OMElement element )
                             throws XMLParsingException {
-
         QName value = element.resolveQName( s );
+        if ( value == null ) {
+            // unbound prefix
+            int colonIdx = s.indexOf( ':' );
+            if ( colonIdx != -1 ) {
+                String prefix = s.substring( 0, colonIdx );
+                String localPart = s.substring( colonIdx + 1 );
+                value = new QName( null, localPart, prefix );
+            } else {
+                value = new QName( s );
+            }
+        }
         return value;
     }
 
