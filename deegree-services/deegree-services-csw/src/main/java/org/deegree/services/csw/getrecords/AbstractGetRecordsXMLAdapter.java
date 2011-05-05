@@ -246,11 +246,11 @@ public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXML
                         }
 
                     } else if ( ( filterEl == null ) && ( cqlTextEl != null ) ) {
-                        String msg = "CQL-Filter is not implemented yet. Please use the OGC Filter expression, instead. ";
+                        String msg = Messages.get( "CSW_UNSUPPORTED_CQL_FILTER" );
                         LOG.info( msg );
                         throw new NotImplementedError( msg );
                     } else {
-                        String msg = Messages.get( "MANDATORY EXCLUSIVENESS! EITHER AN OGC FILTER- OR CQL-EXPRESSION MUST BE SPECIFIED." );
+                        String msg = Messages.get( "CSW_MISSING_FILTER_OR_CQL" );
                         LOG.debug( msg );
                         throw new InvalidParameterValueException( msg );
                     }
