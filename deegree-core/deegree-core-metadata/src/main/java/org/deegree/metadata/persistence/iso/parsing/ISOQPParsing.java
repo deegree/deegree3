@@ -53,7 +53,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.persistence.types.Format;
+import org.deegree.metadata.iso.types.Format;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;

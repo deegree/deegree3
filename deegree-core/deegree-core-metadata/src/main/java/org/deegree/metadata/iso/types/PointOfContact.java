@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.types.inspire;
+package org.deegree.metadata.iso.types;
 
 /**
  * TODO add class documentation here
@@ -43,12 +43,12 @@ package org.deegree.metadata.persistence.types.inspire;
  * 
  * @version $Revision$, $Date$
  */
-public class DataExtent {
+public class PointOfContact {
 
     // TODO
-    // extent information including the
-    // bounding box, bounding polygon,
-    // vertical, and temporal extent of the
-    // dataset
+    // identification of, and means of
+    // communication with, person(s) and
+    // organization(s) associated with the
+    // resource(s)
 
 }

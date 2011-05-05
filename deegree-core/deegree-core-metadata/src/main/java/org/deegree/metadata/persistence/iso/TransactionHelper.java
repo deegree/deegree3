@@ -55,13 +55,13 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.iso.types.BoundingBox;
+import org.deegree.metadata.iso.types.Constraint;
+import org.deegree.metadata.iso.types.Format;
+import org.deegree.metadata.iso.types.Keyword;
+import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
-import org.deegree.metadata.persistence.types.BoundingBox;
-import org.deegree.metadata.persistence.types.Format;
-import org.deegree.metadata.persistence.types.Keyword;
-import org.deegree.metadata.persistence.types.OperatesOnData;
-import org.deegree.metadata.persistence.types.inspire.Constraint;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 

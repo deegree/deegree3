@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.types;
+package org.deegree.metadata.iso.types;
 
 import java.util.List;
 

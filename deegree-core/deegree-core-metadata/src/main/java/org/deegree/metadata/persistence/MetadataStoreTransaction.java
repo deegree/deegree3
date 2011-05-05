@@ -80,6 +80,8 @@ public interface MetadataStoreTransaction {
     /**
      * Performs the given {@link InsertOperation}.
      * 
+     * TODO for scalabilitiy reasons and simplicitly, consider changing this to #performInsert (MetadataRecord)
+     * 
      * @param insert
      *            operation to be performed, must not be <code>null</code>
      * @return identifier of the inserted records, can be empty, but never <code>null</code>

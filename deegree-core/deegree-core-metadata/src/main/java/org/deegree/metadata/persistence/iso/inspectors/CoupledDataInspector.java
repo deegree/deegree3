@@ -54,12 +54,12 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
 import org.deegree.metadata.persistence.iso.MSSQLMappingsISODC;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
-import org.deegree.metadata.persistence.types.OperatesOnData;
 import org.slf4j.Logger;
 
 /**

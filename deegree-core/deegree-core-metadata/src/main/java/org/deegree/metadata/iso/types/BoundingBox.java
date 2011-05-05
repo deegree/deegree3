@@ -33,33 +33,67 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.types.inspire;
+package org.deegree.metadata.iso.types;
 
 /**
- * TODO add class documentation here
+ * BoundingBox representation for records. This class encapsulates the data for representation only.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class MD_LegalConstraints {
+public class BoundingBox {
 
-    private final String[] accessConstraints;
+    private final double westBoundLongitude;
 
-    private final String[] useConstraints;
+    private final double southBoundLatitude;
 
-    private final String[] otherConstraints;
+    private final double eastBoundLongitude;
 
-    private MD_LegalConstraints( String[] accessConstraints, String[] useConstraints, String[] otherConstraints ) {
-        this.accessConstraints = accessConstraints;
-        this.useConstraints = useConstraints;
-        this.otherConstraints = otherConstraints;
+    private final double northBoundLatitude;
+
+    /**
+     * 
+     * @param westBoundLongitude
+     * @param southBoundLatitude
+     * @param eastBoundLongitude
+     * @param northBoundLatitude
+     */
+    public BoundingBox( double westBoundLongitude, double southBoundLatitude, double eastBoundLongitude,
+                        double northBoundLatitude ) {
+        this.westBoundLongitude = westBoundLongitude;
+        this.southBoundLatitude = southBoundLatitude;
+        this.eastBoundLongitude = eastBoundLongitude;
+        this.northBoundLatitude = northBoundLatitude;
     }
 
-    public MD_LegalConstraints newInstance( String[] accessConstraints, String[] useConstraints,
-                                            String[] otherConstraints ) {
-        return new MD_LegalConstraints( accessConstraints, useConstraints, otherConstraints );
+    /**
+     * @return the westBoundLongitude
+     */
+    public double getWestBoundLongitude() {
+        return westBoundLongitude;
+    }
+
+    /**
+     * @return the southBoundLatitude
+     */
+    public double getSouthBoundLatitude() {
+        return southBoundLatitude;
+    }
+
+    /**
+     * @return the eastBoundLongitude
+     */
+    public double getEastBoundLongitude() {
+        return eastBoundLongitude;
+    }
+
+    /**
+     * @return the northBoundLatitude
+     */
+    public double getNorthBoundLatitude() {
+        return northBoundLatitude;
     }
 
 }

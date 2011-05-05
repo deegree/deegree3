@@ -33,48 +33,61 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.types;
+package org.deegree.metadata.iso.types;
 
 /**
- * Format representation for records. This class encapsulates the data for representation only. <br>
- * Format determines the software, hardware or other equipment needed to display or operates on a resource.
+ * Specifies the tightly coupled dataset relation in ISO profile 1.0. This is defined in OGC 07-045 document.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Format {
+public class OperatesOnData {
 
-    private String name;
+    private final String operatesOnId;
 
-    private String version;
+    private final String operatesOnIdentifier;
+
+    private final String operationName;
 
     /**
-     * Creates a new {@link Format} instance.
+     * Creates a new {@link OperatesOnData} instance.
      * 
-     * @param name
-     *            physical or digital manifestation of a resource, e.g. shapefile
-     * @param version
-     *            of the format, e.g. Amendment 1 or 1.0
+     * @param scopedName
+     * 
+     * @param operatesOnIdentifier
+     *            identifier of a tightly coupled dataset on which the service operates on.
+     * 
+     * @param operatesOnName
+     *            name of an operation with which the service operates on a tightly coupled dataset.
+     * 
      */
-    public Format( String name, String version ) {
-        this.name = name;
-        this.version = version;
+    public OperatesOnData( String operatesOnId, String operatesOnIdentifier, String operatesOnName ) {
+        this.operatesOnId = operatesOnId;
+        this.operatesOnIdentifier = operatesOnIdentifier;
+        this.operationName = operatesOnName;
     }
 
     /**
-     * @return the name
+     * @return the operatesOn
      */
-    public String getName() {
-        return name;
+    public String getOperatesOnId() {
+        return operatesOnId;
     }
 
     /**
-     * @return the version
+     * @return the operatesOnIdentifier
      */
-    public String getVersion() {
-        return version;
+    public String getOperatesOnIdentifier() {
+        return operatesOnIdentifier;
+    }
+
+    /**
+     * @return the operatesOnName
+     */
+    public String getOperatesOnName() {
+        return operationName;
     }
 
 }

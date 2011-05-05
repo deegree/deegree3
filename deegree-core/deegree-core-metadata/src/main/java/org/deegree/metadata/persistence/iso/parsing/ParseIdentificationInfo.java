@@ -54,10 +54,10 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.persistence.types.BoundingBox;
-import org.deegree.metadata.persistence.types.Keyword;
-import org.deegree.metadata.persistence.types.OperatesOnData;
-import org.deegree.metadata.persistence.types.inspire.Constraint;
+import org.deegree.metadata.iso.types.BoundingBox;
+import org.deegree.metadata.iso.types.Constraint;
+import org.deegree.metadata.iso.types.Keyword;
+import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
