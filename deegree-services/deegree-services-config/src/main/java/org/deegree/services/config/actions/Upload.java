@@ -67,6 +67,8 @@ public class Upload {
 
         Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
 
+        resp.setContentType( "text/plain" );
+
         if ( p.second == null ) {
             IOUtils.write( "No file name given.\n", resp.getOutputStream() );
             return;

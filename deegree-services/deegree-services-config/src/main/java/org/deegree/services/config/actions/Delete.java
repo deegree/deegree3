@@ -62,6 +62,8 @@ public class Delete {
 
         Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
 
+        resp.setContentType( "text/plain" );
+
         if ( p.second == null ) {
             File dir = p.first.getLocation();
             if ( !deleteQuietly( dir ) ) {

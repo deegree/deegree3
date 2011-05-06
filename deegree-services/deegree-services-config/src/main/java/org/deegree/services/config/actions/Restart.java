@@ -61,6 +61,7 @@ public class Restart {
                             throws IOException, ServletException {
         Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
 
+        resp.setContentType( "text/plain" );
         // TODO handle case of partial workspace restart
 
         try {

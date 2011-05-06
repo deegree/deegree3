@@ -74,6 +74,7 @@ public class Download {
                 download( p.first, resp );
             } catch ( IOException e ) {
                 resp.setStatus( 500 );
+                resp.setContentType( "text/plain" );
                 IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
             }
             return;
@@ -83,6 +84,7 @@ public class Download {
             download( p.first, p.second, resp );
         } catch ( IOException e ) {
             resp.setStatus( 500 );
+            resp.setContentType( "text/plain" );
             IOUtils.write( "Error while downloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
         }
 
@@ -93,12 +95,17 @@ public class Download {
         File f = new File( ws.getLocation(), file );
         if ( !f.exists() ) {
             resp.setStatus( 404 );
+            resp.setContentType( "text/plain" );
             IOUtils.write( "No such file in workspace: " + ws.getName() + " -> " + file + "\n", resp.getOutputStream() );
             return;
         }
         FileInputStream in = null;
         try {
             in = new FileInputStream( f );
+            if( f.getName().endsWith( ".xml" ) )
+            	resp.setContentType( "application/xml" );
+            else
+            	resp.setContentType( "application/octet-stream" );
             copy( in, resp.getOutputStream() );
         } finally {
             closeQuietly( in );
@@ -115,6 +122,7 @@ public class Download {
         File dir = ws.getLocation();
         if ( !dir.exists() ) {
             resp.setStatus( 404 );
+        	resp.setContentType( "text/plain" );
             IOUtils.write( "No such workspace.\n", resp.getOutputStream() );
             return;
         }

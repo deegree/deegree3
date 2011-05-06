@@ -60,6 +60,8 @@ public class List {
                             throws IOException {
         Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
 
+        resp.setContentType( "text/plain" );
+        
         File dir = p.first.getLocation();
         dir = p.second == null ? dir : new File( dir, p.second );
 

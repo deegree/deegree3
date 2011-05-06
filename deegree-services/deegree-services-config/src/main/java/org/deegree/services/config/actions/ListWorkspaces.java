@@ -57,6 +57,8 @@ public class ListWorkspaces {
                             throws IOException {
         File dir = new File( DeegreeWorkspace.getWorkspaceRoot() );
 
+        resp.setContentType( "text/plain" );
+
         File[] ls = dir.listFiles();
         ServletOutputStream os = resp.getOutputStream();
         if ( ls != null ) {
