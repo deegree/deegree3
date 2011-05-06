@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-parent</artifactId>
@@ -38,6 +39,40 @@
         <artifactId>deegree-maven-plugin</artifactId>
         <version>1.1</version>
         <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-workspace</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo>uploading ${project.build.finalName}.deegree-workspace to webserver</echo>
+                <scp keyfile="/home/hudson/.ssh/id_dsa" passphrase="" todir="hudson@web.lat-lon.de:/var/www/download.deegree.org/deegree3/workspaces/${project.version}/" trust="true" failonerror="false">
+                  <fileset dir="${project.basedir}/target">
+                    <include name="${project.build.finalName}.deegree-workspace" />
+                  </fileset>
+                </scp>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant-jsch</artifactId>
+            <version>1.6.5</version>
+          </dependency>
+          <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.42</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
