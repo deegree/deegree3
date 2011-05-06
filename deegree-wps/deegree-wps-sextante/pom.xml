@@ -4,13 +4,13 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wps-sextante</artifactId>
   <packaging>jar</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0.4</version>
   <name>deegree-wps-sextante</name>
   <url>http://www.deegree.org</url>
   <!-- <parent> -->
   <!--   <groupId>org.deegree</groupId> -->
   <!--   <artifactId>deegree-wps</artifactId> -->
-  <!--   <version>3.0-SNAPSHOT</version> -->
+  <!--   <version>3.0.4</version> -->
   <!-- </parent> -->
   <scm>
     <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-wps/deegree-wps-sextante</connection>
@@ -68,7 +68,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0.4</version>
     </dependency>
     <dependency>
       <groupId>es.unex.sextante</groupId>
