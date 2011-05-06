@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre6-SNAPSHOT</version>
+  <version>3.1-pre5-SNAPSHOT</version>
   <name>deegree</name>
   <url>http://www.deegree.org</url>
 

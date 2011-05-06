@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-processproviders</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre6-SNAPSHOT</version>
+  <version>3.1-pre5-SNAPSHOT</version>
   <name>deegree-wps</name>
   <url>http://www.deegree.org</url>
 
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre6-SNAPSHOT</version>
+    <version>3.1-pre5-SNAPSHOT</version>
     <relativePath />
   </parent>
 
