@@ -664,7 +664,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
             BlobMapping blobMapping = getSchema().getBlobMapping();
             String ftTableAlias = wb.getAliasManager().getRootTableAlias();
-            String blobTableAlias = wb.getAliasManager().generateNew();
+            // TODO
+            String blobTableAlias = ftTableAlias;
             String tableAlias = ftTableAlias;
             if ( blobMapping != null ) {
                 tableAlias = blobTableAlias;
