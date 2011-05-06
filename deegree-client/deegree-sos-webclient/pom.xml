@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-sos-webclient</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre6-SNAPSHOT</version>
+  <version>3.1-pre5-SNAPSHOT</version>
   <name>deegree-sos-webclient Maven Webapp</name>
   <url>http://maven.apache.org</url>
 
@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre6-SNAPSHOT</version>
+    <version>3.1-pre5-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-sos</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>jfreechart</groupId>

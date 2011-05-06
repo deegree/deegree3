@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-tomcat</artifactId>
-  <version>3.1-pre6-SNAPSHOT</version>
+  <version>3.1-pre5-SNAPSHOT</version>
   <name>deegree Tomcat</name>
   <url>http://maven.apache.org</url>
   <scm>
@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre6-SNAPSHOT</version>
+    <version>3.1-pre5-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-javacheck</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

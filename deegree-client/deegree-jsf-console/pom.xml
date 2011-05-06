@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-jsf-console</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre6-SNAPSHOT</version>
+  <version>3.1-pre5-SNAPSHOT</version>
   <name>deegree 3 JSF console</name>
   <url>http://maven.apache.org</url>
 
@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre6-SNAPSHOT</version>
+    <version>3.1-pre5-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -69,57 +69,57 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wps</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-csw</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-config</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-memory</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-postgis</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-metadata</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-observation</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-core</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
