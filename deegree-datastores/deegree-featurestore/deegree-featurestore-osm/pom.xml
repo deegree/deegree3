@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-featurestore-osm</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1-pre5-SNAPSHOT</version>
   <name>deegree-featurestore-osm</name>
   <url>http://www.deegree.org</url>
   <scm>
@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
