@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<sml:SensorML
+	xmlns:sml="http://www.opengis.net/sensorML/1.0.1"
+	xmlns="http://www.opengis.net/sensorML/1.0.1"
+	xmlns:gml="http://www.opengis.net/gml"
+	xmlns:swe="http://www.opengis.net/swe/1.0.1"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	version="1.0.1"
+	xsi:schemaLocation="http://www.opengis.net/sensorML/1.0.1 http://schemas.opengis.net/sensorML/1.0.1/sensorML.xsd">
+	<sml:identification>
+		<sml:IdentifierList>
+			<sml:identifier name="URN">
+				<sml:Term definition="urn:ogc:def:identifierType:OGC:uniqueID">
+					<sml:value>urn:ogc:object:Sensor:latlon:foobarnator</sml:value>
+				</sml:Term>
+			</sml:identifier>
+			<sml:identifier name="longName">
+				<sml:Term>
+					<sml:value>lat/lon foobarnator</sml:value>
+				</sml:Term>
+			</sml:identifier>
+			<sml:identifier name="shortName">
+				<sml:Term>
+					<sml:value>foobarnator</sml:value>
+				</sml:Term>
+			</sml:identifier>
+			<sml:identifier name="modelNumber">
+				<sml:Term>
+					<sml:value>0001</sml:value>
+				</sml:Term>
+			</sml:identifier>
+			<sml:identifier name="manufacturer">
+				<sml:Term>
+					<sml:value>lat/lon</sml:value>
+				</sml:Term>
+			</sml:identifier>
+		</sml:IdentifierList>
+	</sml:identification>
+	<sml:classification>
+		<sml:ClassifierList>
+			<sml:classifier name="intendedApplication">
+				<sml:Term>
+					<sml:value>testing</sml:value>
+				</sml:Term>
+			</sml:classifier>
+			<sml:classifier name="sensorType">
+				<sml:Term>
+					<sml:value>FooGenerator</sml:value>
+				</sml:Term>
+			</sml:classifier>
+			<sml:classifier name="phenomenon">
+				<sml:Term>
+					<sml:value>entropy</sml:value>
+				</sml:Term>
+			</sml:classifier>
+		</sml:ClassifierList>
+	</sml:classification>
+	<sml:member>
+		<sml:System gml:id="foo">
+			<sml:position name="actualPosition">
+				<swe:Position
+					fixed="false"
+					referenceFrame="urn:ogc:crs:epsg:4326">
+					<swe:location>
+						<swe:Vector>
+							<swe:coordinate name="x">
+								<swe:Quantity>
+									<swe:value>7</swe:value>
+								</swe:Quantity>
+							</swe:coordinate>
+							<swe:coordinate name="y">
+								<swe:Quantity>
+									<swe:value>51</swe:value>
+								</swe:Quantity>
+							</swe:coordinate>
+						</swe:Vector>
+					</swe:location>
+				</swe:Position>
+			</sml:position>
+			<sml:inputs>
+				<sml:InputList>
+					<sml:input name="waterlevel">
+						<swe:ObservableProperty definition="urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel" />
+					</sml:input>
+				</sml:InputList>
+			</sml:inputs>
+			<sml:outputs>
+				<sml:OutputList>
+					<sml:output name="Entropy">
+						<swe:Quantity definition="urn:ogc:def:phenomenon:OGC:entropy">
+							<swe:uom code="foo" />
+						</swe:Quantity>
+					</sml:output>
+					<sml:output name="Temperature">
+						<swe:Quantity definition="urn:ogc:def:phenomenon:OGC:temperature">
+							<swe:uom code="Cel" />
+						</swe:Quantity>
+					</sml:output>
+					<sml:output name="Windspeed">
+						<swe:Quantity definition="urn:ogc:def:phenomenon:OGC:windspeed">
+							<swe:uom code="m/s" />
+						</swe:Quantity>
+					</sml:output>
+				</sml:OutputList>
+			</sml:outputs>
+		</sml:System>
+	</sml:member>
+</sml:SensorML>
