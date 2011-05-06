@@ -3,14 +3,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-sos-demo</artifactId>
   <packaging>war</packaging>
-  <version>3.1-pre5-SNAPSHOT</version>
+  <version>3.1-pre5</version>
   <name>deegree 3 SOS demo</name>
   <url>http://maven.apache.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tomcat-parent</artifactId>
-    <version>3.1-pre5-SNAPSHOT</version>
+    <version>3.1-pre5</version>
     <relativePath />
   </parent>
 
@@ -31,19 +31,19 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre5-SNAPSHOT</version>
+      <version>3.1-pre5</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sos-webclient</artifactId>
-      <version>3.1-pre5-SNAPSHOT</version>
+      <version>3.1-pre5</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sos-webclient</artifactId>
-      <version>3.1-pre5-SNAPSHOT</version>
+      <version>3.1-pre5</version>
       <type>zip</type>
       <classifier>sos-webclient-template</classifier>
       <scope>compile</scope>
