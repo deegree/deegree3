@@ -33,12 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso;
+package org.deegree.metadata.iso.persistence;
 
-import org.deegree.metadata.persistence.iso.inspectors.InspectorCouplingTest;
-import org.deegree.metadata.persistence.iso.inspectors.InspectorIdentifierTest;
-import org.deegree.metadata.persistence.iso.testclasses.CommonISOTest;
-import org.deegree.metadata.persistence.iso.testclasses.TstAnyTextElement;
+import org.deegree.metadata.iso.persistence.inspectors.InspectorCouplingTest;
+import org.deegree.metadata.iso.persistence.inspectors.InspectorIdentifierTest;
+import org.deegree.metadata.iso.persistence.parsing.ParseISOTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -52,8 +51,8 @@ import org.junit.runners.Suite.SuiteClasses;
  * @version $Revision$, $Date$
  */
 @RunWith(Suite.class)
-@SuiteClasses({ InspectorIdentifierTest.class, CommonISOTest.class, InspectorCouplingTest.class,
-               TstAnyTextElement.class })
+@SuiteClasses({ InspectorIdentifierTest.class, ParseISOTest.class, InspectorCouplingTest.class,
+               ISORecordAnyTextTest.class, ISORecordSerializeTest.class, ISOMetadatStoreTransactionTest.class })
 public class ISOTestbed {
 
 }

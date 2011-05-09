@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.helper;
+package org.deegree.metadata.iso.persistence;
 
 import java.net.URL;
 
@@ -51,10 +51,12 @@ public class TstConstants {
 
     }
 
-    private final static String CONFIG_DIR = "../configdocs/";
+    private final static String CONFIG_DIR = "configdocs/";
 
-    private final static String DATA_DIR = "../metadatarecords/";
+    private final static String DATA_DIR = "metadatarecords/";
 
+    private final static String FILTER_DIR = "filter/";
+    
     public static final URL configURL = TstConstants.class.getResource( CONFIG_DIR + "iso19115_SetUpTables.xml" );
 
     public static final URL configURL_REJECT_FI_FALSE = TstConstants.class.getResource( CONFIG_DIR
@@ -116,6 +118,6 @@ public class TstConstants {
 
     public static final URL briefRecord = TstConstants.class.getResource( DATA_DIR + "filterTstBrief.xml" );
 
-    public static final URL propEqualToID = TstConstants.class.getResource( "../filter/propEqualToID.xml" );
+    public static final URL propEqualToID = TstConstants.class.getResource( FILTER_DIR + "propEqualToID.xml" );
 
 }

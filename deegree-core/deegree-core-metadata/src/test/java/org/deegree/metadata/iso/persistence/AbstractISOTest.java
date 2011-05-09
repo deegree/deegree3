@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.helper;
+package org.deegree.metadata.iso.persistence;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -75,7 +75,7 @@ public abstract class AbstractISOTest {
 
     protected String jdbcPass;
 
-    protected MetadataResultSet resultSet;
+    protected MetadataResultSet<?> resultSet;
 
     protected Connection conn;
 

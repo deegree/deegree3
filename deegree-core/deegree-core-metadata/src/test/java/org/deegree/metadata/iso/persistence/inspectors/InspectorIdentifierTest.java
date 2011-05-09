@@ -33,19 +33,19 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.inspectors;
+package org.deegree.metadata.iso.persistence.inspectors;
 
 import java.sql.SQLException;
 import java.util.List;
 
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.metadata.iso.persistence.AbstractISOTest;
 import org.deegree.metadata.iso.persistence.ISOMetadataStore;
 import org.deegree.metadata.iso.persistence.ISOMetadataStoreProvider;
+import org.deegree.metadata.iso.persistence.TstConstants;
+import org.deegree.metadata.iso.persistence.TstUtils;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.iso.helper.AbstractISOTest;
-import org.deegree.metadata.persistence.iso.helper.TstConstants;
-import org.deegree.metadata.persistence.iso.helper.TstUtils;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
 import org.junit.Test;
