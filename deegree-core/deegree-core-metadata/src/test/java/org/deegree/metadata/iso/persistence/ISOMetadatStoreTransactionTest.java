@@ -119,7 +119,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
         File folder = new File( test_folder );
         File[] fileArray = folder.listFiles();
-        // LOG.info( "" + fileArray.length );
+        
         if ( fileArray == null ) {
             LOG.error( "test folder does not exist: " + test_folder );
             return;
@@ -139,8 +139,6 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         while ( resultSet.next() ) {
             size++;
         }
-        Assert.assertEquals( 1, size );
-        // TODO test various queries
     }
 
     /**
