@@ -122,9 +122,8 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 }
                 if ( record != null ) {
                     ISORecord rec = new ISORecord( record.getAsOMElement() );
-                    TransactionHelper generateQP = new TransactionHelper( connectionType, anyTextConfig );
-                    int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
-                    generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
+                    TransactionHelper transactionHelper = new TransactionHelper( connectionType, anyTextConfig );
+                    transactionHelper.executeInsert( conn, rec );
                     identifierList.add( rec.getIdentifier() );
                 }
             } catch ( XMLStreamException e ) {
