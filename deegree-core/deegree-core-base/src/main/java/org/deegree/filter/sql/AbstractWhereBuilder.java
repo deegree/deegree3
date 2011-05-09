@@ -109,17 +109,17 @@ public abstract class AbstractWhereBuilder {
     /** Keeps track of all successfully mapped property names. */
     protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
 
-    private final OperatorFilter filter;
+    protected final OperatorFilter filter;
 
-    private final SortProperty[] sortCrit;
+    protected final SortProperty[] sortCrit;
 
-    private SQLExpression whereClause;
+    protected SQLExpression whereClause;
 
-    private SQLExpression orderByClause;
+    protected SQLExpression orderByClause;
 
-    private OperatorFilter postFilter;
+    protected OperatorFilter postFilter;
 
-    private SortProperty[] postSortCrit;
+    protected SortProperty[] postSortCrit;
 
     /**
      * Creates a new {@link AbstractWhereBuilder} instance.

@@ -91,15 +91,17 @@ public class PropertyNameMapping {
         this.srid = srid;
         this.isConcatenated = isConcatenated;
 
-        String currentAlias = aliasManager.getRootTableAlias();
-        if ( joins != null ) {
-            for ( Join join : joins ) {
-                join.getFrom().setAlias( currentAlias );
-                currentAlias = aliasManager.generateNew();
-                join.getTo().setAlias( currentAlias );
+        if ( aliasManager != null ) {
+            String currentAlias = aliasManager.getRootTableAlias();
+            if ( joins != null ) {
+                for ( Join join : joins ) {
+                    join.getFrom().setAlias( currentAlias );
+                    currentAlias = aliasManager.generateNew();
+                    join.getTo().setAlias( currentAlias );
+                }
             }
+            valueField.setAlias( currentAlias );
         }
-        valueField.setAlias( currentAlias );
     }
 
     public ICRS getCRS() {
