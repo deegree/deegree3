@@ -133,7 +133,9 @@ public class WorkspaceBean implements Serializable {
     }
 
     public List<String> getWorkspaceList() {
-        return DeegreeWorkspace.listWorkspaces();
+        List<String> list = DeegreeWorkspace.listWorkspaces();
+        Collections.sort( list );
+        return list;
     }
 
     public void startWorkspace()
