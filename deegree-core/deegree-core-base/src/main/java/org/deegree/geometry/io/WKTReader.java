@@ -35,19 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
+import java.io.IOException;
 import java.io.Reader;
+import java.sql.SQLException;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.postgis.binary.BinaryWriter;
 
 import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Text (WKT).
  * 
- * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves)
+ * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves) TODO
+ * TODO TODO do not go about using PostGIS for parsing the WKT, generate WKB and then parse it back using JTS TODO TODO
+ * TODO repeat after me s/TODO/TODO TODO/g
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -56,29 +60,33 @@ import com.vividsolutions.jts.io.ParseException;
  */
 public class WKTReader {
 
-    private static final com.vividsolutions.jts.io.WKTReader jtsReader = new com.vividsolutions.jts.io.WKTReader();
-
-    // TODO remove the need for this object
-    private final AbstractDefaultGeometry defaultGeom;
-
     private ICRS crs;
 
     public WKTReader( ICRS crs ) {
         this.crs = crs;
-        this.defaultGeom = new DefaultPoint( null, crs, null, new double[] { 0.0, 0.0 } );
     }
 
     public Geometry read( Reader reader )
                             throws ParseException {
-        return defaultGeom.createFromJTS( jtsReader.read( reader ), crs );
+        try {
+            return read( IOUtils.toString( reader ) );
+        } catch ( IOException e ) {
+            // wrap the exception nicely as to not break 172643521 API calls
+            throw new ParseException( e );
+        }
     }
 
     public Geometry read( String wkt )
                             throws ParseException {
-        return defaultGeom.createFromJTS( jtsReader.read( wkt ), crs );
+        try {
+            org.postgis.Geometry g = org.postgis.PGgeometry.geomFromString( wkt );
+            byte[] bs = new BinaryWriter().writeBinary( g );
+            return WKBReader.read( bs, crs );
+        } catch ( SQLException e ) {
+            e.printStackTrace();
+            // wrap the exception nicely as to not break 172643521 API calls
+            throw new ParseException( e );
+        }
     }
 
-    public static void main( String[] args ) throws ParseException {
-        System.out.println( new WKTReader( null ).read( "POINT(1 2 3)" ) );
-    }
 }
