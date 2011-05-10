@@ -52,6 +52,8 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.TransactionRow;
+import org.deegree.commons.jdbc.UpdateRow;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSUtils;
@@ -163,232 +165,23 @@ class TransactionHelper {
             ir.addPreparedArgument( "version", null );
             ir.addPreparedArgument( "status", null );
 
-            appendValues( rec, ir, JDBCUtils.useLegayPostGISPredicates( conn, LOG ) );
+            appendValues( rec, ir, conn );
 
-            LOG.debug( ir.getInsert() );
+            LOG.debug( ir.getSql() );
             ir.performInsert( conn );
 
-            executeQueryableProperties( false, conn, internalId, rec );
+            QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
+            updateCRSTable( false, conn, internalId, qp );
+            updateKeywordTable( false, conn, internalId, qp );
+            updateOperatesOnTable( false, conn, internalId, qp );
+            updateConstraintTable( false, conn, internalId, qp );
+
         } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_SQL", ir.getInsert(), e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         }
         return internalId;
-    }
-
-    private void appendValues( ISORecord rec, InsertRow ir, boolean useLegayPostGISPredicates )
-                            throws SQLException {
-        ir.addPreparedArgument( "abstract", concatenate( Arrays.asList( rec.getAbstract() ) ) );
-        ir.addPreparedArgument( "anytext", rec.getAnyText( anyTextConfig ) );
-        ir.addPreparedArgument( "language", rec.getLanguage() );
-        Timestamp modified = null;
-        if ( rec.getModified() != null ) {
-            modified = new Timestamp( rec.getModified().getDate().getTime() );
-        }
-        ir.addPreparedArgument( "modified", modified );
-        ir.addPreparedArgument( "parentid", rec.getParentIdentifier() );
-        ir.addPreparedArgument( "type", rec.getType() );
-        ir.addPreparedArgument( "title", concatenate( Arrays.asList( rec.getTitle() ) ) );
-        ir.addPreparedArgument( "hassecurityconstraints", rec.isHasSecurityConstraints() );
-
-        QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-        ir.addPreparedArgument( "topiccategories", concatenate( qp.getTopicCategory() ) );
-        ir.addPreparedArgument( "alternateTitles", concatenate( qp.getAlternateTitle() ) );
-        Timestamp revDate = null;
-        if ( qp.getRevisionDate() != null ) {
-            revDate = new Timestamp( qp.getRevisionDate().getDate().getTime() );
-        }
-        ir.addPreparedArgument( "revisiondate", revDate );
-        Timestamp createDate = null;
-        if ( qp.getCreationDate() != null ) {
-            createDate = new Timestamp( qp.getCreationDate().getDate().getTime() );
-        }
-        ir.addPreparedArgument( "creationdate", createDate );
-        Timestamp pubDate = null;
-        if ( qp.getPublicationDate() != null ) {
-            pubDate = new Timestamp( qp.getPublicationDate().getDate().getTime() );
-        }
-        ir.addPreparedArgument( "publicationdate", pubDate );
-        ir.addPreparedArgument( "organisationname", qp.getOrganisationName() );
-        ir.addPreparedArgument( "resourceid", qp.getResourceIdentifier() );
-        ir.addPreparedArgument( "resourcelanguage", qp.getResourceLanguage() );
-        ir.addPreparedArgument( "geographicdescriptioncode", concatenate( qp.getGeographicDescriptionCode_service() ) );
-        ir.addPreparedArgument( "denominator", qp.getDenominator() );
-        ir.addPreparedArgument( "distancevalue", qp.getDistanceValue() );
-        ir.addPreparedArgument( "distanceuom", qp.getDistanceUOM() );
-        Timestamp begTmpExten = null;
-        if ( qp.getTemporalExtentBegin() != null ) {
-            begTmpExten = new Timestamp( qp.getTemporalExtentBegin().getDate().getTime() );
-        }
-        ir.addPreparedArgument( "tempextent_begin", begTmpExten );
-        Timestamp endTmpExten = null;
-        if ( qp.getTemporalExtentEnd() != null ) {
-            endTmpExten = new Timestamp( qp.getTemporalExtentEnd().getDate().getTime() );
-        }
-        ir.addPreparedArgument( "tempextent_end", endTmpExten );
-        ir.addPreparedArgument( "servicetype", qp.getServiceType() );
-        ir.addPreparedArgument( "servicetypeversion", concatenate( qp.getServiceTypeVersion() ) );
-        ir.addPreparedArgument( "couplingtype", qp.getCouplingType() );
-        ir.addPreparedArgument( "formats", getFormats( qp.getFormat() ) );
-        ir.addPreparedArgument( "operations", concatenate( qp.getOperation() ) );
-        ir.addPreparedArgument( "degree", qp.isDegree() );
-        ir.addPreparedArgument( "lineage", concatenate( qp.getLineages() ) );
-        ir.addPreparedArgument( "resppartyrole", qp.getRespPartyRole() );
-        ir.addPreparedArgument( "spectitle", concatenate( qp.getSpecificationTitle() ) );
-        Timestamp specDate = null;
-        if ( qp.getSpecificationDate() != null ) {
-            specDate = new Timestamp( qp.getSpecificationDate().getDate().getTime() );
-        }
-        ir.addPreparedArgument( "specdate", specDate );
-        ir.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
-
-        Geometry geom = calculateMainBBox( qp.getBoundingBox() );
-        byte[] wkt;
-        try {
-            wkt = WKBWriter.write( geom );
-            StringBuilder sb = new StringBuilder();
-            if ( connectionType == Type.MSSQL ) {
-                sb.append( "geometry::STGEOMFROMWKB(?, 0)" );
-            } else {
-                if ( useLegayPostGISPredicates ) {
-                    sb.append( "SetSRID(GeomFromWKB(?)," );
-                } else {
-                    sb.append( "SetSRID(ST_GeomFromWKB(?)," );
-                }
-                sb.append( "-1)" );
-            }
-            ir.addPreparedArgument( "bbox", wkt, sb.toString() );
-
-        } catch ( ParseException e ) {
-            String msg = "Could not write as WKB " + geom + ": " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private void appendValues( ISORecord rec, PreparedStatement stm, int next )
-                            throws SQLException {
-        // abstract, anytext, language, modified, parentid, type, title, hassecurityconstraints, topiccategories,
-        stm.setString( next++, concatenate( Arrays.asList( rec.getAbstract() ) ) );
-        stm.setString( next++, rec.getAnyText( anyTextConfig ) );
-        stm.setString( next++, rec.getLanguage() );
-        if ( rec.getModified() != null ) {
-            stm.setTimestamp( next, new Timestamp( rec.getModified().getDate().getTime() ) );
-        } else {
-            stm.setTimestamp( next, null );
-        }
-        next++;
-        stm.setString( next++, rec.getParentIdentifier() );
-        stm.setString( next++, rec.getType() );
-        stm.setString( next++, concatenate( Arrays.asList( rec.getTitle() ) ) );
-        stm.setBoolean( next++, rec.isHasSecurityConstraints() );
-
-        QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-        stm.setString( next++, concatenate( qp.getTopicCategory() ) );
-        // alternateTitles, revisiondate, creationdate, publicationdate, organisationname, resourceid,
-        // resourcelanguage
-        stm.setString( next++, concatenate( qp.getAlternateTitle() ) );
-        if ( qp.getRevisionDate() != null ) {
-            stm.setTimestamp( next, new Timestamp( qp.getRevisionDate().getDate().getTime() ) );
-        } else {
-            stm.setTimestamp( next, null );
-        }
-        next++;
-        if ( qp.getCreationDate() != null ) {
-            stm.setTimestamp( next, new Timestamp( qp.getCreationDate().getDate().getTime() ) );
-        } else {
-            stm.setTimestamp( next, null );
-        }
-        next++;
-        if ( qp.getPublicationDate() != null ) {
-            stm.setTimestamp( next, new Timestamp( qp.getPublicationDate().getDate().getTime() ) );
-        } else {
-            stm.setTimestamp( next, null );
-        }
-        next++;
-        stm.setString( next++, qp.getOrganisationName() );
-        stm.setString( next++, qp.getResourceIdentifier() );
-        stm.setString( next++, qp.getResourceLanguage() );
-
-        // "geographicdescriptioncode, denominator, distancevalue, distanceuom, tempextent_begin, tempextent_end
-        stm.setString( next++, concatenate( qp.getGeographicDescriptionCode_service() ) );
-        stm.setInt( next++, qp.getDenominator() );
-        stm.setFloat( next++, qp.getDistanceValue() );
-        stm.setString( next++, qp.getDistanceUOM() );
-        if ( qp.getTemporalExtentBegin() != null ) {
-            stm.setTimestamp( next, new Timestamp( qp.getTemporalExtentBegin().getDate().getTime() ) );
-        } else {
-            stm.setTimestamp( next, null );
-        }
-        next++;
-        if ( qp.getTemporalExtentEnd() != null ) {
-            stm.setTimestamp( next, new Timestamp( qp.getTemporalExtentEnd().getDate().getTime() ) );
-        } else {
-            stm.setTimestamp( next, null );
-        }
-        next++;
-        // servicetype, servicetypeversion, couplingtype, formats, operations, degree, lineage, resppartyrole
-        stm.setString( next++, qp.getServiceType() );
-        stm.setString( next++, concatenate( qp.getServiceTypeVersion() ) );
-        stm.setString( next++, qp.getCouplingType() );
-        stm.setString( next++, getFormats( qp.getFormat() ) );
-        stm.setString( next++, concatenate( qp.getOperation() ) );
-        stm.setBoolean( next++, qp.isDegree() );
-        stm.setString( next++, concatenate( qp.getLineages() ) );
-        stm.setString( next++, qp.getRespPartyRole() );
-
-        // spectitle, specdate, specdatetype, bbox
-        stm.setString( next++, concatenate( qp.getSpecificationTitle() ) );
-        if ( qp.getSpecificationDate() != null ) {
-            stm.setTimestamp( next, new Timestamp( qp.getSpecificationDate().getDate().getTime() ) );
-        } else {
-            stm.setTimestamp( next, null );
-        }
-        next++;
-        stm.setString( next++, qp.getSpecificationDateType() );
-        // stm.setObject( next++, getBBox( qp.getBoundingBox() ), Types. );
-    }
-
-    //
-    // private String getBBox( List<BoundingBox> bboxs ) {
-    // GeometryFactory gf = new GeometryFactory();
-    //
-    // Envelope bbox = calculateMainBBox( bboxs );
-    // StringBuffer sb = new StringBuffer();
-    // if ( bbox != null ) {
-    // LOG.debug( "Boundingbox = " + bboxs );
-    // double east = bbox.getEastBoundLongitude();
-    // double north = bbox.getNorthBoundLatitude();
-    // double west = bbox.getWestBoundLongitude();
-    // double south = bbox.getSouthBoundLatitude();
-    // if ( connectionType == Type.MSSQL ) {
-    // sb.append( "geometry::STGeomFromText('POLYGON((" + west ).append( " " + south );
-    // sb.append( "," + west ).append( " " + north );
-    // sb.append( "," + east ).append( " " + north );
-    // sb.append( "," + east ).append( " " + south );
-    // sb.append( "," + west ).append( " " + south ).append( "))', 0)" );
-    // } else if ( connectionType == Type.PostgreSQL ) {
-    // sb.append( "SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
-    // sb.append( " " + north ).append( ")'::box3d,-1)" );
-    // }
-    // }
-    // return ( sb.toString() != null && sb.length() > 0 ) ? sb.toString() : null;
-    // }
-
-    private String getFormats( List<Format> list ) {
-        StringBuffer sb = new StringBuffer();
-        if ( list != null && list.size() > 0 ) {
-            sb.append( '\'' );
-            for ( Format f : list ) {
-                sb.append( '|' ).append( f.getName() );
-            }
-            if ( !list.isEmpty() ) {
-                sb.append( "|" );
-            }
-            sb.append( "'," );
-        }
-        return ( sb.toString() != null && sb.length() > 0 ) ? sb.toString() : null;
     }
 
     /**
@@ -404,13 +197,13 @@ class TransactionHelper {
      * @throws MetadataStoreException
      *             if updating fails
      */
-    int updateMainDatabaseTable( Connection conn, ISORecord rec, String fileIdentifier )
+    int executeUpdate( Connection conn, ISORecord rec, String fileIdentifier )
                             throws MetadataStoreException {
         PreparedStatement stm = null;
         ResultSet rs = null;
 
         StringWriter s = new StringWriter( 150 );
-        int requestedId = 0;
+        int requestedId = -1;
 
         String idToUpdate = ( fileIdentifier == null ? rec.getIdentifier() : fileIdentifier );
         try {
@@ -429,33 +222,23 @@ class TransactionHelper {
                 LOG.debug( "resultSet: " + rs.getInt( 1 ) );
             }
 
-            if ( requestedId != 0 ) {
-                s.append( "UPDATE " ).append( mainTable ).append( " SET " );
-                s.append( " version = ?, " );
-                s.append( " status = ?, " );
-                s.append( recordColumn ).append( " = ?, " );
-                s.append( "abstract=?, anytext=?, language=?, modified=?, parentid=?, type=?, title=?, hassecurityconstraints=?, topiccategories=?, " );
-                s.append( "alternateTitles=?, revisiondate=?, creationdate=?, publicationdate=?, organisationname=?, resourceid=?, resourcelanguage=?, " );
-                s.append( "geographicdescriptioncode=?, denominator=?, distancevalue=?, distanceuom=?, tempextent_begin=?, tempextent_end=?, " );
-                s.append( "servicetype=?, servicetypeversion=?,  couplingtype=?, formats=?, operations=?,  degree=?, lineage=?, resppartyrole=?, " );
-                s.append( "spectitle=?, specdate=?, specdatetype=?" );
-                // s.append( ", bbox = " + getBBox( rec.getParsedElement().getQueryableProperties().getBoundingBox() )
-                // );
+            if ( requestedId > -1 ) {
+                UpdateRow ur = new UpdateRow( new QTableName( mainTable ) );
+                ur.addPreparedArgument( "version", null );
+                ur.addPreparedArgument( "status", null );
+                ur.addPreparedArgument( recordColumn, rec.getAsByteArray() );
 
-                s.append( "WHERE " );
-                s.append( idColumn ).append( '=' );
-                s.append( Integer.toString( requestedId ) );
-                stm = conn.prepareStatement( s.toString() );
+                appendValues( rec, ur, conn );
 
-                stm.setObject( 1, null );
-                stm.setObject( 2, null );
-                stm.setBytes( 3, rec.getAsByteArray() );
-
-                appendValues( rec, stm, 4 );
-
+                ur.setWhereClause( idColumn + " = " + Integer.toString( requestedId ) );
                 LOG.debug( stm.toString() );
-                stm.executeUpdate();
-                stm.close();
+                ur.performUpdate( conn );
+
+                QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
+                updateCRSTable( true, conn, requestedId, qp );
+                updateKeywordTable( true, conn, requestedId, qp );
+                updateOperatesOnTable( true, conn, requestedId, qp );
+                updateConstraintTable( true, conn, requestedId, qp );
             }
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", s.toString(), e.getMessage() );
@@ -468,6 +251,111 @@ class TransactionHelper {
             JDBCUtils.close( rs );
         }
         return requestedId;
+    }
+
+    private void appendValues( ISORecord rec, TransactionRow tr, Connection conn )
+                            throws SQLException {
+        tr.addPreparedArgument( "abstract", concatenate( Arrays.asList( rec.getAbstract() ) ) );
+        tr.addPreparedArgument( "anytext", rec.getAnyText( anyTextConfig ) );
+        tr.addPreparedArgument( "language", rec.getLanguage() );
+        Timestamp modified = null;
+        if ( rec.getModified() != null ) {
+            modified = new Timestamp( rec.getModified().getDate().getTime() );
+        }
+        tr.addPreparedArgument( "modified", modified );
+        tr.addPreparedArgument( "parentid", rec.getParentIdentifier() );
+        tr.addPreparedArgument( "type", rec.getType() );
+        tr.addPreparedArgument( "title", concatenate( Arrays.asList( rec.getTitle() ) ) );
+        tr.addPreparedArgument( "hassecurityconstraints", rec.isHasSecurityConstraints() );
+
+        QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
+        tr.addPreparedArgument( "topiccategories", concatenate( qp.getTopicCategory() ) );
+        tr.addPreparedArgument( "alternateTitles", concatenate( qp.getAlternateTitle() ) );
+        Timestamp revDate = null;
+        if ( qp.getRevisionDate() != null ) {
+            revDate = new Timestamp( qp.getRevisionDate().getDate().getTime() );
+        }
+        tr.addPreparedArgument( "revisiondate", revDate );
+        Timestamp createDate = null;
+        if ( qp.getCreationDate() != null ) {
+            createDate = new Timestamp( qp.getCreationDate().getDate().getTime() );
+        }
+        tr.addPreparedArgument( "creationdate", createDate );
+        Timestamp pubDate = null;
+        if ( qp.getPublicationDate() != null ) {
+            pubDate = new Timestamp( qp.getPublicationDate().getDate().getTime() );
+        }
+        tr.addPreparedArgument( "publicationdate", pubDate );
+        tr.addPreparedArgument( "organisationname", qp.getOrganisationName() );
+        tr.addPreparedArgument( "resourceid", qp.getResourceIdentifier() );
+        tr.addPreparedArgument( "resourcelanguage", qp.getResourceLanguage() );
+        tr.addPreparedArgument( "geographicdescriptioncode", concatenate( qp.getGeographicDescriptionCode_service() ) );
+        tr.addPreparedArgument( "denominator", qp.getDenominator() );
+        tr.addPreparedArgument( "distancevalue", qp.getDistanceValue() );
+        tr.addPreparedArgument( "distanceuom", qp.getDistanceUOM() );
+        Timestamp begTmpExten = null;
+        if ( qp.getTemporalExtentBegin() != null ) {
+            begTmpExten = new Timestamp( qp.getTemporalExtentBegin().getDate().getTime() );
+        }
+        tr.addPreparedArgument( "tempextent_begin", begTmpExten );
+        Timestamp endTmpExten = null;
+        if ( qp.getTemporalExtentEnd() != null ) {
+            endTmpExten = new Timestamp( qp.getTemporalExtentEnd().getDate().getTime() );
+        }
+        tr.addPreparedArgument( "tempextent_end", endTmpExten );
+        tr.addPreparedArgument( "servicetype", qp.getServiceType() );
+        tr.addPreparedArgument( "servicetypeversion", concatenate( qp.getServiceTypeVersion() ) );
+        tr.addPreparedArgument( "couplingtype", qp.getCouplingType() );
+        tr.addPreparedArgument( "formats", getFormats( qp.getFormat() ) );
+        tr.addPreparedArgument( "operations", concatenate( qp.getOperation() ) );
+        tr.addPreparedArgument( "degree", qp.isDegree() );
+        tr.addPreparedArgument( "lineage", concatenate( qp.getLineages() ) );
+        tr.addPreparedArgument( "resppartyrole", qp.getRespPartyRole() );
+        tr.addPreparedArgument( "spectitle", concatenate( qp.getSpecificationTitle() ) );
+        Timestamp specDate = null;
+        if ( qp.getSpecificationDate() != null ) {
+            specDate = new Timestamp( qp.getSpecificationDate().getDate().getTime() );
+        }
+        tr.addPreparedArgument( "specdate", specDate );
+        tr.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
+
+        Geometry geom = calculateMainBBox( qp.getBoundingBox() );
+        byte[] wkb;
+        try {
+            wkb = WKBWriter.write( geom );
+            StringBuilder sb = new StringBuilder();
+            if ( connectionType == Type.MSSQL ) {
+                sb.append( "geometry::STGEOMFROMWKB(?, 0)" );
+            } else {
+                if ( JDBCUtils.useLegayPostGISPredicates( conn, LOG ) ) {
+                    sb.append( "SetSRID(GeomFromWKB(?)," );
+                } else {
+                    sb.append( "SetSRID(ST_GeomFromWKB(?)," );
+                }
+                sb.append( "-1)" );
+            }
+            tr.addPreparedArgument( "bbox", wkb, sb.toString() );
+
+        } catch ( ParseException e ) {
+            String msg = "Could not write as WKB " + geom + ": " + e.getMessage();
+            LOG.debug( msg, e );
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private String getFormats( List<Format> list ) {
+        StringBuffer sb = new StringBuffer();
+        if ( list != null && list.size() > 0 ) {
+            sb.append( '\'' );
+            for ( Format f : list ) {
+                sb.append( '|' ).append( f.getName() );
+            }
+            if ( !list.isEmpty() ) {
+                sb.append( "|" );
+            }
+            sb.append( "'," );
+        }
+        return ( sb.toString() != null && sb.length() > 0 ) ? sb.toString() : null;
     }
 
     private Envelope calculateMainBBox( List<BoundingBox> bbox ) {
@@ -487,26 +375,7 @@ class TransactionHelper {
         return gf.createEnvelope( west, south, east, north, CRSUtils.EPSG_4326 );
     }
 
-    /**
-     * Method that encapsulates the generating for all the queryable properties.
-     * 
-     * @param isUpdate
-     * @param connection
-     * @param operatesOnId
-     * @throws MetadataStoreException
-     */
-    public void executeQueryableProperties( boolean isUpdate, Connection connection, int operatesOnId, ISORecord rec )
-                            throws MetadataStoreException {
-        QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-        generateIDXTB_CRSStatement( isUpdate, connection, operatesOnId, qp );
-        generateIDXTB_KeywordStatement( isUpdate, connection, operatesOnId, qp );
-        generateIDXTB_OperatesOnStatement( isUpdate, connection, operatesOnId, qp );
-        generateIDXTB_ConstraintStatement( isUpdate, connection, operatesOnId, qp );
-
-    }
-
-    private void generateIDXTB_ConstraintStatement( boolean isUpdate, Connection connection, int operatesOnId,
-                                                    QueryableProperties qp )
+    private void updateConstraintTable( boolean isUpdate, Connection connection, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
         List<Constraint> constraintss = qp.getConstraints();
         if ( constraintss != null && constraintss.size() > 0 ) {
@@ -519,7 +388,7 @@ class TransactionHelper {
                     sw.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ",conditionapptoacc,accessconstraints,otherconstraints,classification)" );
                     sw.append( "VALUES( ?,?,?,?,?,? )" );
 
-                    int localId = executeQPDatabasetables( isUpdate, connection, operatesOnId, constraintTable );
+                    int localId = updateTable( isUpdate, connection, operatesOnId, constraintTable );
                     stm = connection.prepareStatement( sw.toString() );
                     stm.setInt( 1, localId );
                     stm.setInt( 2, operatesOnId );
@@ -538,14 +407,14 @@ class TransactionHelper {
         }
     }
 
-    private void generateIDXTB_CRSStatement( boolean isUpdate, Connection conn, int operatesOnId, QueryableProperties qp )
+    private void updateCRSTable( boolean isUpdate, Connection conn, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
         List<CRSCodeType> crss = qp.getCrs();
         if ( crss != null && crss.size() > 0 ) {
             for ( CRSCodeType crs : crss ) {
                 InsertRow ir = new InsertRow( new QTableName( crsTable ), null );
                 try {
-                    int localId = executeQPDatabasetables( isUpdate, conn, operatesOnId, crsTable );
+                    int localId = updateTable( isUpdate, conn, operatesOnId, crsTable );
                     ir.addPreparedArgument( idColumn, localId );
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "authority",
@@ -559,7 +428,7 @@ class TransactionHelper {
                                                                                                                  : null );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
-                    String msg = Messages.getMessage( "ERROR_SQL", ir.getInsert(), e.getMessage() );
+                    String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
                     LOG.debug( msg );
                     throw new MetadataStoreException( msg );
                 }
@@ -567,22 +436,21 @@ class TransactionHelper {
         }
     }
 
-    private void generateIDXTB_KeywordStatement( boolean isUpdate, Connection conn, int operatesOnId,
-                                                 QueryableProperties qp )
+    private void updateKeywordTable( boolean isUpdate, Connection conn, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
         List<Keyword> keywords = qp.getKeywords();
         if ( keywords != null && keywords.size() > 0 ) {
             for ( Keyword keyword : keywords ) {
                 InsertRow ir = new InsertRow( new QTableName( keywordTable ), null );
                 try {
-                    int localId = executeQPDatabasetables( isUpdate, conn, operatesOnId, keywordTable );
+                    int localId = updateTable( isUpdate, conn, operatesOnId, keywordTable );
                     ir.addPreparedArgument( idColumn, localId );
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "keywordtype", keyword.getKeywordType() );
                     ir.addPreparedArgument( "keywords", concatenate( keyword.getKeywords() ) );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
-                    String msg = Messages.getMessage( "ERROR_SQL", ir.getInsert(), e.getMessage() );
+                    String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
                     LOG.debug( msg );
                     throw new MetadataStoreException( msg );
                 }
@@ -590,15 +458,14 @@ class TransactionHelper {
         }
     }
 
-    private void generateIDXTB_OperatesOnStatement( boolean isUpdate, Connection conn, int operatesOnId,
-                                                    QueryableProperties qp )
+    private void updateOperatesOnTable( boolean isUpdate, Connection conn, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
         List<OperatesOnData> opOns = qp.getOperatesOnData();
         if ( opOns != null && opOns.size() > 0 ) {
             for ( OperatesOnData opOn : opOns ) {
                 InsertRow ir = new InsertRow( new QTableName( opOnTable ), null );
                 try {
-                    int localId = executeQPDatabasetables( isUpdate, conn, operatesOnId, opOnTable );
+                    int localId = updateTable( isUpdate, conn, operatesOnId, opOnTable );
                     ir.addPreparedArgument( idColumn, localId );
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "operateson", opOn.getOperatesOnId() );
@@ -606,7 +473,7 @@ class TransactionHelper {
                     ir.addPreparedArgument( "operatesonname", opOn.getOperatesOnName() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
-                    String msg = Messages.getMessage( "ERROR_SQL", ir.getInsert(), e.getMessage() );
+                    String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
                     LOG.debug( msg );
                     throw new MetadataStoreException( msg );
                 }
@@ -623,25 +490,7 @@ class TransactionHelper {
             }
     }
 
-    /**
-     * Common procedure to execute a queryable property statement.
-     * 
-     * @param isUpdate
-     *            if this is an update action
-     * @param connection
-     *            the SQL connection
-     * @param operatesOnId
-     *            on which dataset is working on
-     * @param databaseTable
-     *            the specific databasetable
-     * @param queryablePropertyStatement_PRE
-     *            the precondition to generate an executable statement
-     * @param queryablePropertyStatement_POST
-     *            the postcondition to generate an executable statement
-     * @return
-     * @throws MetadataStoreException
-     */
-    private int executeQPDatabasetables( boolean isUpdate, Connection connection, int operatesOnId, String databaseTable )
+    private int updateTable( boolean isUpdate, Connection connection, int operatesOnId, String databaseTable )
                             throws MetadataStoreException {
         StringWriter sqlStatement = new StringWriter( 500 );
         PreparedStatement stm = null;
@@ -697,19 +546,14 @@ class TransactionHelper {
 
     }
 
-    private String stringInspectation( String input ) {
-        if ( input != null ) {
-            input = input.replace( "\'", "\'\'" );
-        }
-        return input;
-    }
-
     private String concatenate( List<String> values ) {
         if ( values == null || values.isEmpty() )
             return null;
         String s = "";
         for ( String value : values ) {
-            s = s + '|' + stringInspectation( value );
+            if ( value != null ) {
+                s = s + '|' + value.replace( "\'", "\'\'" );
+            }
         }
         if ( !values.isEmpty() )
             s = s + '|';

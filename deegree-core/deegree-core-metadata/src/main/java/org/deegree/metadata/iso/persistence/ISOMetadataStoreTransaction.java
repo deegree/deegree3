@@ -146,8 +146,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 record = r.inspect( record, conn, connectionType );
             }
             ISORecord rec = new ISORecord( record.getAsOMElement() );
-            int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, null );
-            generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
+            generateQP.executeUpdate( conn, rec, null );
             return 1;
         }
 
@@ -210,8 +209,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     }
                 }
                 if ( rec != null ) {
-                    int operatesOnId = generateQP.updateMainDatabaseTable( conn, rec, rec.getIdentifier() );
-                    generateQP.executeQueryableProperties( true, conn, operatesOnId, rec );
+                    generateQP.executeUpdate( conn, rec, rec.getIdentifier() );
                     if ( updated )
                         result++;
                 }
