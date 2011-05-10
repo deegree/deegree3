@@ -7,7 +7,7 @@
   <version>3.1-pre6-SNAPSHOT</version>
   <name>deegree-wfs-cite110 Webapp</name>
   <url>http://www.deegree.org</url>
-  
+
   <scm>
     <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-test/deegree-wfs-cite110</developerConnection>
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-test/deegree-wfs-cite110</url>
@@ -17,6 +17,7 @@
     <groupId>org.deegree</groupId>
     <artifactId>deegree-test-parent</artifactId>
     <version>3.1-pre6-SNAPSHOT</version>
+    <relativePath />
   </parent>
 
   <repositories>
