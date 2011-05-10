@@ -46,6 +46,7 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
@@ -124,6 +125,10 @@ class FeatureNavigator extends DefaultNavigator {
                 PrimitiveValue codeSpace = new PrimitiveValue( ( (CodeType) value ).getCodeSpace() );
                 return new SingleObjectIterator( new AttributeNode<Property>( (PropertyNode) node,
                                                                               new QName( "codeSpace" ), codeSpace ) );
+            } else if ( value instanceof GenericXMLElement ) {
+                XMLElementNode<Property> n = new XMLElementNode<Property>( (PropertyNode) node,
+                                                                           (GenericXMLElement) value );
+                return getAttributeAxisIterator( n );
             }
         } else if ( node instanceof XMLElementNode<?> ) {
             org.deegree.commons.tom.ElementNode value = ( (XMLElementNode<?>) node ).getValue();
