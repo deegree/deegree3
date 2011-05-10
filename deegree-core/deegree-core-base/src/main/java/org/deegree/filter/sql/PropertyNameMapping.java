@@ -35,89 +35,39 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql;
 
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.tom.primitive.BaseType;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.expression.PropertyName;
 
 /**
- * Represents a {@link PropertyName} that's mapped to a relational model.
+ * A {@link PropertyName} that's mapped to a {@link DBField} (can be connected via joins).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PropertyNameMapping {
+public abstract class PropertyNameMapping {
+
+    private final int sqlType;
 
     private final DBField valueField;
 
     private final List<Join> joins;
 
-    private final BaseType pt;
-
-    private final ICRS crs;
-
-    private final String srid;
-
-    private final boolean isConcatenated;
-
-    public PropertyNameMapping( String table, String column, ICRS crs, String srid ) {
-        this.valueField = new DBField( table, column );
-        this.joins = Collections.emptyList();
-        this.pt = STRING;
-        this.crs = crs;
-        this.srid = srid;
-        isConcatenated = false;
-    }
-
-    /**
-     * @param aliasManager
-     * @param valueField
-     * @param joins
-     * @param crs
-     * @param srid
-     */
-    public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins, ICRS crs,
-                                String srid, boolean isConcatenated ) {
+    protected PropertyNameMapping( DBField valueField, int sqlType, List<Join> joins ) {
         this.valueField = valueField;
-        this.joins = joins;
-        this.pt = STRING;
-        this.crs = crs;
-        this.srid = srid;
-        this.isConcatenated = isConcatenated;
-
-        if ( aliasManager != null ) {
-            String currentAlias = aliasManager.getRootTableAlias();
-            if ( joins != null ) {
-                for ( Join join : joins ) {
-                    join.getFrom().setAlias( currentAlias );
-                    currentAlias = aliasManager.generateNew();
-                    join.getTo().setAlias( currentAlias );
-                }
-            }
-            valueField.setAlias( currentAlias );
+        this.sqlType = sqlType;
+        if ( joins == null ) {
+            this.joins = Collections.emptyList();
+        } else {
+            this.joins = joins;
         }
-    }
-
-    public ICRS getCRS() {
-        return crs;
-    }
-
-    public String getSRID() {
-        return srid;
     }
 
     public DBField getTargetField() {
         return valueField;
-    }
-
-    public BaseType getTargetFieldType() {
-        return pt;
     }
 
     public List<Join> getJoins() {
@@ -125,15 +75,7 @@ public class PropertyNameMapping {
     }
 
     public int getSQLType() {
-        return -1;
-    }
-
-    public boolean isSpatial() {
-        return true;
-    }
-
-    public boolean isConcatenated() {
-        return isConcatenated;
+        return sqlType;
     }
 
     @Override

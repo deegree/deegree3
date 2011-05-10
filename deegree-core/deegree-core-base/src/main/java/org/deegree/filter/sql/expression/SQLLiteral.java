@@ -35,11 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.expression;
 
-import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.primitive.SQLValueMangler;
+import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.UnmappableException;
@@ -57,15 +59,11 @@ public class SQLLiteral implements SQLExpression {
 
     private int sqlType;
 
+    private PrimitiveType pt;
+
     private boolean isSpatial;
 
     private Object value;
-
-    public SQLLiteral( Geometry geom ) {
-        this.value = geom;
-        this.sqlType = Types.OTHER;
-        this.isSpatial = true;
-    }
 
     public SQLLiteral( Object value, int sqlType ) {
         this.value = value;
@@ -131,5 +129,20 @@ public class SQLLiteral implements SQLExpression {
     @Override
     public String getSRID() {
         return null;
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return pt;
+    }
+
+    @Override
+    public void cast( PrimitiveType pt ) {
+        this.pt = pt;
+        if ( value != null ) {
+            String stringValue = value.toString();
+            Object o = XMLValueMangler.xmlToInternal( stringValue, pt.getBaseType() );
+            value = SQLValueMangler.internalToSQL( o );
+        }
     }
 }

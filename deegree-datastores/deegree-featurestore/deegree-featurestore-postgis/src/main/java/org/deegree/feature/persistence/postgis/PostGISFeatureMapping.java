@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.postgis;
 
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
@@ -46,7 +47,9 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
+import org.deegree.filter.sql.GeometryPropertyNameMapping;
 import org.deegree.filter.sql.Join;
+import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
@@ -105,11 +108,15 @@ class PostGISFeatureMapping implements PropertyNameMapper {
 
         DBField valueField = mapping.getValueField();
         List<Join> joins = mapping.getJoins();
-        ICRS crs = mapping.getCRS();
-        String srid = mapping.getSRID();
+        int sqlType = mapping.getSQLType();
+        PrimitiveType pt = mapping.getPrimitiveType();
 
-        PropertyNameMapping propMapping = new PropertyNameMapping( aliasManager, valueField, joins, crs, srid, false );
-        return propMapping;
+        if ( mapping.isSpatial() ) {
+            ICRS crs = mapping.getCRS();
+            String srid = mapping.getSRID();
+            return new GeometryPropertyNameMapping( valueField, sqlType, joins, crs, srid );
+        }
+        return new PrimitivePropertyNameMapping( valueField, sqlType, joins, pt, mapping.isConcatenated() );
     }
 
     @Override

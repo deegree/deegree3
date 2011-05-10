@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
+import static java.sql.Types.TIME;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -62,24 +64,24 @@ import org.slf4j.LoggerFactory;
 public enum BaseType {
 
     /** Property value is of class <code>String</code>. */
-    STRING( "string", String.class ),
+    STRING( "string", String.class, Types.VARCHAR ),
     /** Property value is of class <code>Boolean</code>. */
-    BOOLEAN( "boolean", Boolean.class ),
+    BOOLEAN( "boolean", Boolean.class, Types.BOOLEAN ),
     /** Property value is of class <code>BigDecimal</code>. */
-    DECIMAL( "decimal", BigDecimal.class ),
+    DECIMAL( "decimal", BigDecimal.class, Types.NUMERIC ),
     /**
      * Property value is of class <code>Double</code> (needed because BigDecimal cannot express "NaN", "-INF" and
      * "INF"), which are required by <code>xs:double</code> / <code>xs:float</code>.
      */
-    DOUBLE( "double", Double.class ),
+    DOUBLE( "double", Double.class, Types.DOUBLE ),
     /** Property value is of class <code>BigInteger</code>. */
-    INTEGER( "integer", BigInteger.class ),
+    INTEGER( "integer", BigInteger.class, Types.INTEGER ),
     /** Property value is of class {@link Date}. */
-    DATE( "date", Date.class ),
+    DATE( "date", Date.class, Types.DATE ),
     /** Property value is of class {@link DateTime}. */
-    DATE_TIME( "dateTime", DateTime.class ),
+    DATE_TIME( "dateTime", DateTime.class, Types.TIMESTAMP ),
     /** Property value is of class {@link Time}. */
-    TIME( "time", Time.class );
+    TIME( "time", Time.class, Types.TIME );
 
     private static final Logger LOG = LoggerFactory.getLogger( BaseType.class );
 
@@ -87,9 +89,12 @@ public enum BaseType {
 
     private Class<?> valueClass;
 
-    private BaseType( String xsTypeName, Class<?> valueClass ) {
+    private int sqlType;
+
+    private BaseType( String xsTypeName, Class<?> valueClass, int sqlType ) {
         this.xsTypeName = xsTypeName;
         this.valueClass = valueClass;
+        this.sqlType = sqlType;
     }
 
     /**
@@ -106,6 +111,14 @@ public enum BaseType {
      */
     public String getXSTypeName() {
         return xsTypeName;
+    }
+
+    /**
+     * Returns the
+     * @return
+     */
+    public int getSQLType() {
+        return sqlType;
     }
 
     /**

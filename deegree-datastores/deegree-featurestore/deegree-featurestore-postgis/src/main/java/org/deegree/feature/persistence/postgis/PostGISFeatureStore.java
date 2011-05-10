@@ -43,6 +43,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import javax.xml.namespace.QName;
 
@@ -79,6 +80,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.DBField;
+import org.deegree.filter.sql.GeometryPropertyNameMapping;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
@@ -459,7 +461,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                     Geometry compatible = getCompatibleGeometry( particle, gm.getCRS() );
                     return WKBWriter.write( compatible );
                 } catch ( Throwable t ) {
-                    throw new IllegalArgumentException(t.getMessage(), t);
+                    throw new IllegalArgumentException( t.getMessage(), t );
                 }
             }
         };
@@ -501,8 +503,9 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             @Override
             public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {
-                return new PropertyNameMapping( aliasManager.getRootTableAlias(), blobMapping.getBBoxColumn(),
-                                                blobMapping.getCRS(), "-1" );
+                return new GeometryPropertyNameMapping( new DBField( aliasManager.getRootTableAlias(),
+                                                                     blobMapping.getBBoxColumn() ), Types.OTHER, null,
+                                                        blobMapping.getCRS(), "-1" );
             }
         };
         return new PostGISWhereBuilder( pgMapping, filter, null, useLegacyPredicates );

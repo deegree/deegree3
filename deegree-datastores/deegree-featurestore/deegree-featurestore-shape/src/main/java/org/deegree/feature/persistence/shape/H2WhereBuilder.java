@@ -35,8 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
+
 import java.sql.Types;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
@@ -79,7 +82,9 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
     @Override
     protected SQLExpression toProtoSQL( PropertyName expr )
                             throws UnmappableException, FilterEvaluationException {
-        return new SQLColumn( null, expr.getAsQName().getLocalPart().toLowerCase(), true, 0, null, null, false );
+        // TODO
+        PrimitiveType pt = new PrimitiveType( STRING );
+        return new SQLColumn( null, expr.getAsQName().getLocalPart().toLowerCase(), true, pt, 0, null, null, false );
     }
 
     // avoid setting a Date on fields which are strings just containing ISO dates...

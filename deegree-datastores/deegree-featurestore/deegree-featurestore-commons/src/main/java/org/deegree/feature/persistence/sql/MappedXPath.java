@@ -41,6 +41,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -82,6 +84,8 @@ public class MappedXPath {
     private String srid;
 
     private ICRS crs;
+
+    private boolean isSpatial;
 
     /**
      * @param schema
@@ -252,6 +256,7 @@ public class MappedXPath {
         }
 
         if ( mapping instanceof GeometryMapping ) {
+            isSpatial = true;
             crs = ( (GeometryMapping) mapping ).getCRS();
             srid = ( (GeometryMapping) mapping ).getSrid();
         }
@@ -299,6 +304,10 @@ public class MappedXPath {
         return valueField;
     }
 
+    public boolean isSpatial () {
+        return isSpatial;
+    }
+    
     public ICRS getCRS() {
         return crs;
     }
@@ -325,5 +334,20 @@ public class MappedXPath {
         }
         s += valueField;
         return s;
+    }
+
+    // TODO
+    public int getSQLType() {
+        return -1;
+    }
+
+    // TODO
+    public PrimitiveType getPrimitiveType() {
+        return new PrimitiveType (BaseType.STRING);
+    }
+
+    // TODO
+    public boolean isConcatenated () {
+        return false;
     }
 }

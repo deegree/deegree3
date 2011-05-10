@@ -61,7 +61,7 @@ public interface PropertyNameMapper {
      *            manager for creating and tracking table aliases, never <code>null</code>
      * @return relational mapping, may be <code>null</code> (if no mapping is possible)
      * @throws FilterEvaluationException
-     *             thrown to indicate that the {@link PropertyName} is invalid
+     *             indicates that the {@link PropertyName} is invalid
      * @throws UnmappableException
      */
     public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )

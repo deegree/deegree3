@@ -38,6 +38,7 @@ package org.deegree.filter.sql.expression;
 import java.sql.Types;
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
@@ -56,6 +57,13 @@ public interface SQLExpression {
      * @return the type code
      */
     public int getSQLType();
+
+    /**
+     * Returns the primitive type of this expression.
+     * 
+     * @return the primitive type, can be <code>null</code> (no type information / spatial)
+     */
+    public PrimitiveType getPrimitiveType();
 
     /**
      * Returns whether the expression denotes a spatial value.
@@ -103,4 +111,14 @@ public interface SQLExpression {
      * @return the SQL literals, never <code>null</code>
      */
     public List<SQLLiteral> getLiterals();
+
+    /**
+     * Propagates type information to this expression (=performs a type cast).
+     * 
+     * @param pt
+     *            primitive type, must not be <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the cast cannot be performed
+     */
+    public void cast( PrimitiveType pt );
 }

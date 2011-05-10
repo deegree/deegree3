@@ -38,6 +38,7 @@ package org.deegree.filter.sql.expression;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.cs.coordinatesystems.CRS;
 
 /**
@@ -121,5 +122,16 @@ public class SQLOperation implements SQLExpression {
     @Override
     public String getSRID() {
         return null;
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void cast( PrimitiveType pt ) {
+        throw new UnsupportedOperationException( "Operation casts are not implemented yet." );       
     }
 }

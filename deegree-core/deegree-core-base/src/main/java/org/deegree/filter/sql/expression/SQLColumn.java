@@ -38,6 +38,7 @@ package org.deegree.filter.sql.expression;
 import java.util.Collections;
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
@@ -64,10 +65,13 @@ public class SQLColumn implements SQLExpression {
 
     private boolean isConcatenated;
 
-    public SQLColumn( String table, String column, boolean spatial, int sqlType, ICRS crs, String srid,
-                      boolean isConcatenated ) {
+    private PrimitiveType pt;
+
+    public SQLColumn( String table, String column, boolean spatial, PrimitiveType pt, int sqlType, ICRS crs,
+                      String srid, boolean isConcatenated ) {
         this.table = table;
         this.column = column;
+        this.pt = pt;
         this.sqlType = sqlType;
         this.isSpatial = spatial;
         this.crs = crs;
@@ -88,6 +92,18 @@ public class SQLColumn implements SQLExpression {
     @Override
     public int getSQLType() {
         return sqlType;
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return pt;
+    }
+
+    @Override
+    public void cast( PrimitiveType pt ) {
+        if ( pt.getBaseType() != this.pt.getBaseType() ) {
+            throw new UnsupportedOperationException( "Column type casts are not implemented yet." );
+        }
     }
 
     @Override

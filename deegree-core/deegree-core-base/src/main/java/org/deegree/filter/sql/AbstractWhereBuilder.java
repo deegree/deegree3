@@ -39,14 +39,12 @@ import static java.sql.Types.BOOLEAN;
 
 import java.sql.ResultSet;
 import java.sql.Types;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.StringUtils;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -81,7 +79,7 @@ import org.slf4j.LoggerFactory;
  * <code>ResultSet</code> to those rows that contain objects that match the given filter. Also handles the creation of
  * ORDER BY clauses.
  * <p>
- * Note that the generated WHERE and ORDER-BY expressions are sometimes not sufficient to guarantee that the
+ * Note that the generated WHERE and ORDER-BY expressions are sometimes not sufficient to guarantee that a
  * <code>ResultSet</code> only contains the targeted objects and/or keeps the requested order. This happens when the
  * {@link PropertyName}s used in the filter/sort criteria are not mappable to columns in the database or the contained
  * XPath expressions are not mappable to an equivalent SQL expression. In these cases, one or both of the methods
@@ -288,14 +286,18 @@ public abstract class AbstractWhereBuilder {
         case PROPERTY_IS_BETWEEN: {
             PropertyIsBetween propIsBetween = (PropertyIsBetween) op;
             SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            SQLExpression lower = toProtoSQL( propIsBetween.getLowerBoundary(), true );
+            SQLExpression expr = toProtoSQL( propIsBetween.getExpression(), true );
+            SQLExpression upper = toProtoSQL( propIsBetween.getUpperBoundary(), true );
+            inferType( lower, expr, upper );
             builder.add( "(" );
-            builder.add( toProtoSQL( propIsBetween.getLowerBoundary(), true ) );
+            builder.add( lower );
             builder.add( " <= " );
-            builder.add( toProtoSQL( propIsBetween.getExpression(), true ) );
+            builder.add( expr );
             builder.add( " AND " );
-            builder.add( toProtoSQL( propIsBetween.getExpression(), true ) );
+            builder.add( expr );
             builder.add( " <= " );
-            builder.add( toProtoSQL( propIsBetween.getUpperBoundary(), true ) );
+            builder.add( upper );
             builder.add( ")" );
             sqlOper = builder.toOperation();
             break;
@@ -305,6 +307,7 @@ public abstract class AbstractWhereBuilder {
             SQLExpression param1 = toProtoSQL( propIsEqualTo.getParameter1() );
             SQLExpression param2 = toProtoSQL( propIsEqualTo.getParameter2() );
             if ( !param1.isMultiValued() && !param2.isMultiValued() ) {
+                inferType( param1, param2 );
                 SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
                 builder.add( param1 );
                 builder.add( " = " );
@@ -314,8 +317,7 @@ public abstract class AbstractWhereBuilder {
                 Expression propName = propIsEqualTo.getParameter1();
                 Expression literal = propIsEqualTo.getParameter2();
                 if ( propName instanceof PropertyName && literal instanceof Literal ) {
-                    PropertyIsLike propIsLike = buildIsLike( propName, literal,
-                                                             propIsEqualTo.getMatchCase() );
+                    PropertyIsLike propIsLike = buildIsLike( propName, literal, propIsEqualTo.getMatchCase() );
                     sqlOper = toProtoSQL( propIsLike );
                 } else {
                     String msg = "Can not map filter. Multi-valued columns can only be compared to literals.";
@@ -327,36 +329,48 @@ public abstract class AbstractWhereBuilder {
         case PROPERTY_IS_GREATER_THAN: {
             PropertyIsGreaterThan propIsGT = (PropertyIsGreaterThan) op;
             SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-            builder.add( toProtoSQL( propIsGT.getParameter1(), true ) );
+            SQLExpression param1 = toProtoSQL( propIsGT.getParameter1(), true );
+            SQLExpression param2 = toProtoSQL( propIsGT.getParameter2(), true );
+            inferType( param1, param2 );
+            builder.add( param1 );
             builder.add( " > " );
-            builder.add( toProtoSQL( propIsGT.getParameter2(), true ) );
+            builder.add( param2 );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO: {
             PropertyIsGreaterThanOrEqualTo propIsGTOrEqualTo = (PropertyIsGreaterThanOrEqualTo) op;
             SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-            builder.add( toProtoSQL( propIsGTOrEqualTo.getParameter1(), true ) );
+            SQLExpression param1 = toProtoSQL( propIsGTOrEqualTo.getParameter1(), true );
+            SQLExpression param2 = toProtoSQL( propIsGTOrEqualTo.getParameter2(), true );
+            inferType( param1, param2 );
+            builder.add( param1 );
             builder.add( " >= " );
-            builder.add( toProtoSQL( propIsGTOrEqualTo.getParameter2(), true ) );
+            builder.add( param2 );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_LESS_THAN: {
             PropertyIsLessThan propIsLT = (PropertyIsLessThan) op;
             SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-            builder.add( toProtoSQL( propIsLT.getParameter1(), true ) );
+            SQLExpression param1 = toProtoSQL( propIsLT.getParameter1(), true );
+            SQLExpression param2 = toProtoSQL( propIsLT.getParameter2(), true );
+            inferType( param1, param2 );
+            builder.add( param1 );
             builder.add( " < " );
-            builder.add( toProtoSQL( propIsLT.getParameter2(), true ) );
+            builder.add( param2 );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO: {
             PropertyIsLessThanOrEqualTo propIsLTOrEqualTo = (PropertyIsLessThanOrEqualTo) op;
             SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-            builder.add( toProtoSQL( propIsLTOrEqualTo.getParameter1(), true ) );
+            SQLExpression param1 = toProtoSQL( propIsLTOrEqualTo.getParameter1(), true );
+            SQLExpression param2 = toProtoSQL( propIsLTOrEqualTo.getParameter2(), true );
+            inferType( param1, param2 );
+            builder.add( param1 );
             builder.add( " <= " );
-            builder.add( toProtoSQL( propIsLTOrEqualTo.getParameter2(), true ) );
+            builder.add( param2 );
             sqlOper = builder.toOperation();
             break;
         }
@@ -367,9 +381,10 @@ public abstract class AbstractWhereBuilder {
         case PROPERTY_IS_NOT_EQUAL_TO: {
             PropertyIsNotEqualTo propIsNotEqualTo = (PropertyIsNotEqualTo) op;
             SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-            SQLExpression param1 = toProtoSQL( propIsNotEqualTo.getParameter1() );
-            SQLExpression param2 = toProtoSQL( propIsNotEqualTo.getParameter2() );
+            SQLExpression param1 = toProtoSQL( propIsNotEqualTo.getParameter1(), true );
+            SQLExpression param2 = toProtoSQL( propIsNotEqualTo.getParameter2(), true );
             if ( !param1.isMultiValued() && !param2.isMultiValued() ) {
+                inferType( param1, param2 );
                 builder.add( param1 );
                 builder.add( " <> " );
                 builder.add( param2 );
@@ -378,8 +393,7 @@ public abstract class AbstractWhereBuilder {
                 Expression propName = propIsNotEqualTo.getParameter1();
                 Expression literal = propIsNotEqualTo.getParameter2();
                 if ( propName instanceof PropertyName && literal instanceof Literal ) {
-                    PropertyIsLike propIsLike = buildIsLike( propName, literal,
-                                                             propIsNotEqualTo.getMatchCase() );
+                    PropertyIsLike propIsLike = buildIsLike( propName, literal, propIsNotEqualTo.getMatchCase() );
                     sqlOper = toProtoSQL( new Not( propIsLike ) );
                 } else {
                     String msg = "Can not map filter. Multi-valued columns can only be compared to literals.";
@@ -398,6 +412,36 @@ public abstract class AbstractWhereBuilder {
         }
         }
         return sqlOper;
+    }
+
+    private void inferType( SQLExpression expr1, SQLExpression expr2 ) {
+        PrimitiveType pt1 = expr1.getPrimitiveType();
+        PrimitiveType pt2 = expr2.getPrimitiveType();
+        if ( pt1 == null && pt2 != null ) {
+            expr1.cast( pt2 );
+        } else if ( pt1 != null && pt2 == null ) {
+            expr2.cast( pt1 );
+        } else if ( pt1 != null && pt2 != null ) {
+            if ( pt1.getBaseType() != pt2.getBaseType() ) {
+                LOG.warn( "Comparison on different types (" + pt1 + "/" + pt2 + "). Relying on db type conversion." );
+            }
+        }
+    }
+
+    private void inferType( SQLExpression expr1, SQLExpression expr2, SQLExpression expr3 ) {
+        PrimitiveType pt1 = expr1.getPrimitiveType();
+        PrimitiveType pt2 = expr2.getPrimitiveType();
+        PrimitiveType pt3 = expr3.getPrimitiveType();
+        if ( pt1 != null ) {
+            inferType( expr1, expr2 );
+            inferType( expr1, expr3 );
+        } else if ( pt2 != null ) {
+            inferType( expr2, expr1 );
+            inferType( expr2, expr3 );
+        } else if ( pt3 != null ) {
+            inferType( expr3, expr1 );
+            inferType( expr3, expr2 );
+        }
     }
 
     private PropertyIsLike buildIsLike( Expression propName, Expression literal, boolean matchCase )
@@ -605,9 +649,11 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
-     * Translates the given {@link Literal} into an {@link SQLExpression}. <br>
-     * TODO be aware: if the literal can be parsed as a date from {@link DateUtils} the literals sqlType will be set to
-     * TIMESTAMP.
+     * Translates the given {@link Literal} into an {@link SQLExpression}.
+     * <p>
+     * The returned literal does not have any type information. Literal types are inferred in
+     * {@link #toProtoSQL(ComparisonOperator)}.
+     * </p>
      * 
      * @param literal
      *            literal to be translated, must not be <code>null</code>
@@ -619,22 +665,6 @@ public abstract class AbstractWhereBuilder {
      */
     protected SQLExpression toProtoSQL( Literal<?> literal )
                             throws UnmappableException, FilterEvaluationException {
-        int javaType = -1;
-        Date date;
-        try {
-            date = DateUtils.parseISO8601Date( literal.getValue().toString() );
-
-        } catch ( ParseException e ) {
-            date = null;
-        }
-        if ( date != null ) {
-            javaType = Types.TIMESTAMP;
-            return new SQLLiteral( literal.getValue(), javaType );
-        }
-        if ( literal.getValue().toString().equals( "true" ) || literal.getValue().toString().equals( "false" ) ) {
-            javaType = Types.BOOLEAN;
-            return new SQLLiteral( literal.getValue(), javaType );
-        }
         return new SQLLiteral( literal );
     }
 

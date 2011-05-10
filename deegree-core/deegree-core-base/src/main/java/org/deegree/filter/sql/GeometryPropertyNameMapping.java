@@ -33,66 +33,37 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.tom.primitive;
+package org.deegree.filter.sql;
 
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import java.util.List;
+
+import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
- * Defines a primitive type.
+ * {@link PropertyNameMapping} that targets a geometry column.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PrimitiveType {
+public class GeometryPropertyNameMapping extends PropertyNameMapping {
 
-    private final BaseType baseType;
+    private final ICRS crs;
 
-    private final XSSimpleTypeDefinition xsType;
+    private final String srid;
 
-    /**
-     * Creates a new {@link PrimitiveType} instance for the given {@link BaseType}.
-     * 
-     * @param baseType
-     *            base type, must not be <code>null</code>
-     */
-    public PrimitiveType( BaseType baseType ) {
-        this.baseType = baseType;
-        xsType = null;
+    public GeometryPropertyNameMapping( DBField valueField, int sqlType, List<Join> joins, ICRS crs, String srid ) {
+        super( valueField, sqlType, joins );
+        this.crs = crs;
+        this.srid = srid;
     }
 
-    /**
-     * Creates a new {@link PrimitiveType} instance for the given {@link XSSimpleTypeDefinition}.
-     * 
-     * @param xsType
-     *            XML schema type, must not be <code>null</code>
-     */
-    public PrimitiveType( XSSimpleTypeDefinition xsType ) {
-        this.xsType = xsType;
-        this.baseType = BaseType.valueOf( xsType );
+    public ICRS getCRS() {
+        return crs;
     }
 
-    /**
-     * Returns the base type.
-     * 
-     * @return base type, never <code>null</code>
-     */
-    public BaseType getBaseType() {
-        return baseType;
-    }
-
-    /**
-     * Returns the XML schema simple type definition.
-     * 
-     * @return XML schema simple type definition, can be <code>null</code>
-     */
-    public XSSimpleTypeDefinition getXSType() {
-        return xsType;
-    }
-    
-    @Override
-    public String toString () {
-        return baseType.toString();
+    public String getSRID() {
+        return srid;
     }
 }

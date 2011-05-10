@@ -55,6 +55,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.utils.Pair;
@@ -64,12 +65,15 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
+import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.iso.persistence.MSSQLMappingsISODC.CommonColumnNames;
+import org.deegree.metadata.iso.persistence.MSSQLMappingsISODC.DatabaseTables;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -78,8 +82,8 @@ import org.slf4j.Logger;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change in
- * the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
+ * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change
+ * in the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
  * <p>
  * TODO denominator, distanceUOM, distanceValue put a type in
  * 
@@ -229,7 +233,6 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
          * the identifier of the record
          */
         fileidentifier,
-        
 
         /**
          * the resourceIdentifier of the record
@@ -285,13 +288,13 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
                 if ( !tableColumn.first.first.equals( mainTable ) ) {
                     DBField from = new DBField( mainTable, id );
                     DBField to = new DBField( tableColumn.first.first, fk_main );
+                    to.setAlias( aliasManager.generateNew() );
                     joins.add( new Join( from, to, null, 0 ) );
                 }
-                // TODO primitive type
                 DBField valueField = new DBField( tableColumn.first.first, tableColumn.first.second );
-                mapping = new PropertyNameMapping( aliasManager, valueField, joins, null, "-1", tableColumn.second );
+                mapping = new PrimitivePropertyNameMapping( valueField, tableColumn.third.getSQLType(), joins,
+                                                            new PrimitiveType( tableColumn.third ), tableColumn.second );
             } else {
-
                 String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
                 LOG.debug( msg );
                 throw new FilterEvaluationException( msg );
@@ -303,11 +306,11 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
     private static void addBooleanProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
         Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
-                                                                                                                                 new Pair<String, String>(
-                                                                                                                                                           table.name(),
-                                                                                                                                                           column ),
-                                                                                                                                 false,
-                                                                                                                                 BOOLEAN );
+                                                                                                                       new Pair<String, String>(
+                                                                                                                                                 table.name(),
+                                                                                                                                                 column ),
+                                                                                                                       false,
+                                                                                                                       BOOLEAN );
         propToTableAndCol.put( qName, mapping );
 
     }
@@ -315,11 +318,11 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
     private static void addDateProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
         Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
-                                                                                                                                 new Pair<String, String>(
-                                                                                                                                                           table.name(),
-                                                                                                                                                           column ),
-                                                                                                                                 false,
-                                                                                                                                 DATE );
+                                                                                                                       new Pair<String, String>(
+                                                                                                                                                 table.name(),
+                                                                                                                                                 column ),
+                                                                                                                       false,
+                                                                                                                       DATE );
         propToTableAndCol.put( qName, mapping );
 
     }
@@ -328,33 +331,33 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
                                        boolean concatenated ) {
         QName qName = new QName( propNs, propName );
         Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
-                                                                                                                                 new Pair<String, String>(
-                                                                                                                                                           table.name(),
-                                                                                                                                                           column ),
-                                                                                                                                 concatenated,
-                                                                                                                                 STRING );
+                                                                                                                       new Pair<String, String>(
+                                                                                                                                                 table.name(),
+                                                                                                                                                 column ),
+                                                                                                                       concatenated,
+                                                                                                                       STRING );
         propToTableAndCol.put( qName, mapping );
     }
 
     private static void addIntProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
         Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
-                                                                                                                                 new Pair<String, String>(
-                                                                                                                                                           table.name(),
-                                                                                                                                                           column ),
-                                                                                                                                 false,
-                                                                                                                                 INTEGER );
+                                                                                                                       new Pair<String, String>(
+                                                                                                                                                 table.name(),
+                                                                                                                                                 column ),
+                                                                                                                       false,
+                                                                                                                       INTEGER );
         propToTableAndCol.put( qName, mapping );
     }
 
     private static void addDecimalProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
         Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
-                                                                                                                                 new Pair<String, String>(
-                                                                                                                                                           table.name(),
-                                                                                                                                                           column ),
-                                                                                                                                 false,
-                                                                                                                                 DECIMAL );
+                                                                                                                       new Pair<String, String>(
+                                                                                                                                                 table.name(),
+                                                                                                                                                 column ),
+                                                                                                                       false,
+                                                                                                                       DECIMAL );
         propToTableAndCol.put( qName, mapping );
     }
 
@@ -362,10 +365,10 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
     public Object getSQLValue( Literal<?> literal, PropertyName propName )
                             throws FilterEvaluationException {
 
-        Object pgValue = null;
+        Object sqlValue = null;
 
         if ( propName == null ) {
-            pgValue = literal.getValue().toString();
+            sqlValue = literal.getValue().toString();
         } else {
 
             Expr xpath = propName.getAsXPath();
@@ -413,16 +416,19 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
                 throw new FilterEvaluationException( Messages.getMessage( "ERROR_COLUMN_NOT_EXISTS", column ) );
             }
 
-            Object internalValue = XMLValueMangler.xmlToInternal( literal.getValue().toString(),
-                                                                  getMapping( new PropertyName( requestedProperty ),
-                                                                              null ).getTargetFieldType() );
-
-            pgValue = SQLValueMangler.internalToSQL( internalValue );
-            LOG.debug( "pg_value in mapping: " + pgValue );
-
+            PropertyNameMapping mapping = getMapping( new PropertyName( requestedProperty ), null );
+            if ( mapping instanceof PrimitivePropertyNameMapping ) {
+                PrimitivePropertyNameMapping primitiveMapping = (PrimitivePropertyNameMapping) mapping;
+                Object internalValue = XMLValueMangler.xmlToInternal( literal.getValue().toString(),
+                                                                      primitiveMapping.getTargetFieldType().getBaseType() );
+                sqlValue = SQLValueMangler.internalToSQL( internalValue );
+                LOG.debug( "sqlValue in mapping: " + sqlValue );
+            } else {
+                throw new FilterEvaluationException( "Cannot treat geometry column as literal." );
+            }
         }
 
-        return pgValue;
+        return sqlValue;
     }
 
     @Override

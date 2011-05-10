@@ -35,25 +35,34 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.postgis;
 
+import static java.sql.Types.VARCHAR;
+import static org.deegree.commons.tom.primitive.BaseType.DATE;
+
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Types;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.DBField;
+import org.deegree.filter.sql.GeometryPropertyNameMapping;
+import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLExpression;
-import org.deegree.filter.xml.Filter110XMLDecoderTest;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.filter.xml.Filter110XMLDecoderTest;
 import org.deegree.geometry.Geometry;
 import org.junit.Test;
 
@@ -155,25 +164,30 @@ public class PostGISWhereBuilderTest {
         public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                 throws FilterEvaluationException, UnmappableException {
             if ( propName.getAsText().equals( "app:name" ) ) {
-                return new PropertyNameMapping( "PHILOSOPHER", "NAME", null, "-1" );
+                return new PrimitivePropertyNameMapping( new DBField( "PHILOSOPHER", "NAME" ), VARCHAR, null,
+                                                         new PrimitiveType( BaseType.STRING ), false );
             }
             if ( propName.getAsText().equals( "app:id" ) ) {
-                return new PropertyNameMapping( "PHILOSOPHER", "ID", null, "-1" );
+                return new PrimitivePropertyNameMapping( new DBField( "PHILOSOPHER", "ID" ), VARCHAR, null,
+                                                         new PrimitiveType( BaseType.STRING ), false );
             }
             if ( propName.getAsText().equals( "app:subject" ) ) {
-                return new PropertyNameMapping( "SUBJECT", "NAME", null, "-1" );
+                return new PrimitivePropertyNameMapping( new DBField( "SUBJECT", "NAME" ), VARCHAR, null,
+                                                         new PrimitiveType( BaseType.STRING ), false );
             }
             if ( propName.getAsText().equals( "app:dateOfBirth" ) ) {
-                return new PropertyNameMapping( "PHILOSOPHER", "DATE_OF_BIRTH", null, "-1" );
+                return new PrimitivePropertyNameMapping( new DBField( "PHIOSOPHER", "DATE_OF_BIRTH" ), Types.DATE,
+                                                         null, new PrimitiveType( DATE ), false );
             }
             if ( propName.getAsText().equals( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) ) {
-                return new PropertyNameMapping( "COUNTRY", "NAME", null, "-1" );
+                return new PrimitivePropertyNameMapping( new DBField( "COUNTRY", "NAME" ), VARCHAR, null,
+                                                         new PrimitiveType( BaseType.STRING ), false );
             }
             if ( propName.getAsText().equals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom" ) ) {
-                return new PropertyNameMapping( "COUNTRY", "GEOM", null, "-1" );
+                return new GeometryPropertyNameMapping( new DBField( "COUNTRY", "GEOM" ), Types.OTHER, null, null, "-1" );
             }
             if ( propName.getAsText().equals( "app:placeOfDeath/app:Place/app:country/app:Country/app:geom" ) ) {
-                return new PropertyNameMapping( "COUNTRY", "GEOM", null, "-1" );
+                return new GeometryPropertyNameMapping( new DBField( "COUNTRY", "GEOM" ), Types.OTHER, null, null, "-1" );
             }
             throw new UnmappableException( "Property '" + propName + "' is not mappable." );
         }
