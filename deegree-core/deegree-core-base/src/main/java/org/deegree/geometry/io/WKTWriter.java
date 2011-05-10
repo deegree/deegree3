@@ -1122,7 +1122,7 @@ public class WKTWriter {
     public void writeMultiCurve( MultiCurve<Curve> geometry, Writer writer )
                             throws IOException {
 
-        writer.append( "MULTICURVE " );
+        writer.append( "MULTILINESTRING " );
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
         }
