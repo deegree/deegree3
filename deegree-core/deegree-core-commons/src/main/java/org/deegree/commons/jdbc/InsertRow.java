@@ -39,9 +39,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -56,15 +54,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class InsertRow {
+public class InsertRow extends TransactionRow {
 
     private static Logger LOG = LoggerFactory.getLogger( InsertRow.class );
-
-    private final QTableName table;
-
-    private final LinkedHashMap<String, String> columnToLiteral = new LinkedHashMap<String, String>();
-
-    private final LinkedHashMap<String, Object> columnToObject = new LinkedHashMap<String, Object>();
 
     private final Map<String, Object> columnToAutoKey = new HashMap<String, Object>();
 
@@ -79,31 +71,11 @@ public class InsertRow {
      *            name of column with auto generation, can be <code>null</code> (no auto-generated columns)
      */
     public InsertRow( QTableName table, String autoGenColumn ) {
-        this.table = table;
+        super( table );
         this.autogenColumn = autoGenColumn;
     }
 
-    public QTableName getTable() {
-        return table;
-    }
-
-    public void addLiteralValue( String column, String literal ) {
-        columnToLiteral.put( column.toLowerCase(), literal );
-    }
-
-    public void addPreparedArgument( String column, Object value ) {
-        addPreparedArgument( column, value, "?" );
-    }
-
-    public void addPreparedArgument( String column, Object value, String literal ) {
-        columnToLiteral.put( column.toLowerCase(), literal );
-        columnToObject.put( column.toLowerCase(), value );
-    }
-
-    public Collection<String> getColumns() {
-        return columnToLiteral.keySet();
-    }
-
+    @Override
     public Object get( String column ) {
         if ( columnToObject.containsKey( column ) ) {
             return columnToObject.get( column.toLowerCase() );
@@ -111,7 +83,8 @@ public class InsertRow {
         return columnToAutoKey.get( column.toLowerCase() );
     }
 
-    public String getInsert() {
+    @Override
+    public String getSql() {
         StringBuilder sql = new StringBuilder( "INSERT INTO " + table + "(" );
         boolean first = true;
         for ( String column : columnToLiteral.keySet() ) {
@@ -151,7 +124,7 @@ public class InsertRow {
             LOG.debug( "Inserting: " + this );
         }
 
-        String sql = getInsert();
+        String sql = getSql();
         PreparedStatement stmt = null;
         if ( autogenColumn == null ) {
             stmt = conn.prepareStatement( sql );
