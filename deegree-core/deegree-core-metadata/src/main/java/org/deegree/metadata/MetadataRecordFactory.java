@@ -36,18 +36,18 @@
 package org.deegree.metadata;
 
 import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
-import static org.deegree.metadata.ebrim.RegistryObjectRecord.RIM_NS;
+import static org.deegree.metadata.ebrim.RegistryObject.RIM_NS;
 import static org.deegree.metadata.iso.ISORecord.ISO_RECORD_NS;
 
 import java.io.File;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.metadata.ebrim.AssociationRecord;
-import org.deegree.metadata.ebrim.ClassificationNodeRecord;
-import org.deegree.metadata.ebrim.ClassificationRecord;
-import org.deegree.metadata.ebrim.ExtrinsicObjectRecord;
-import org.deegree.metadata.ebrim.RegistryPackageRecord;
+import org.deegree.metadata.ebrim.Association;
+import org.deegree.metadata.ebrim.ClassificationNode;
+import org.deegree.metadata.ebrim.Classification;
+import org.deegree.metadata.ebrim.ExtrinsicObject;
+import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.iso.ISORecord;
 
 /**
@@ -81,15 +81,15 @@ public class MetadataRecordFactory {
         if ( RIM_NS.equals( ns ) ) {
             String name = rootEl.getLocalName();
             if ( "ExtrinsicObject".equals( name ) ) {
-                return new ExtrinsicObjectRecord( rootEl );
+                return new ExtrinsicObject( rootEl );
             } else if ( "Association".equals( name ) ) {
-                return new AssociationRecord( rootEl );
+                return new Association( rootEl );
             } else if ( "Classification".equals( name ) ) {
-                return new ClassificationRecord( rootEl );
+                return new Classification( rootEl );
             } else if ( "ClassificationNode".equals( name ) ) {
-                return new ClassificationNodeRecord( rootEl );
+                return new ClassificationNode( rootEl );
             } else if ( "RegistryPackage".equals( name ) ) {
-                return new RegistryPackageRecord( rootEl );
+                return new RegistryPackage( rootEl );
             }
             throw new IllegalArgumentException( "Unknown / unsuppported RegistryObject '" + name + "'." );
         }

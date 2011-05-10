@@ -39,8 +39,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XPath;
-import org.deegree.metadata.ebrim.model.Classification;
-import org.deegree.metadata.ebrim.model.RegistryObject;
 
 /**
  * TODO add class documentation here
@@ -50,23 +48,35 @@ import org.deegree.metadata.ebrim.model.RegistryObject;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ClassificationRecord extends RegistryObjectRecord {
+public class Association extends RegistryObject {
 
-    public ClassificationRecord( XMLStreamReader xmlReader ) {
+    public Association( XMLStreamReader xmlReader ) {
         super( xmlReader );
     }
 
-    public ClassificationRecord( OMElement record ) {
+    public Association( OMElement record ) {
         super( record );
     }
 
-    @Override
-    public Classification getParsedRecord() {
-        RegistryObject ro = super.getParsedRecord();
-        OMElement record = adapter.getRootElement();
-        String classificationScheme = adapter.getNodeAsString( record, new XPath( "@classificationScheme", ns ), null );
-        String classificationNode = adapter.getNodeAsString( record, new XPath( "@classificationNode", ns ), null );
-        String classifiedObject = adapter.getRequiredNodeAsString( record, new XPath( "@classifiedObject", ns ) );
-        return new Classification( ro, classificationScheme, classificationNode, classifiedObject );
+    /**
+     * @return the sourceObject
+     */
+    public String getSourceObject() {
+        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@targetObject", ns ) );
     }
+
+    /**
+     * @return the targetObject
+     */
+    public String getTargetObject() {
+        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@sourceObject", ns ) );
+    }
+
+    /**
+     * @return the associationType
+     */
+    public String getAssociationType() {
+        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@associationType", ns ) );
+    }
+
 }

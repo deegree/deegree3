@@ -56,7 +56,6 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
-import org.deegree.metadata.ebrim.model.RegistryObject;
 import org.deegree.metadata.filter.XPathElementFilter;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
@@ -68,7 +67,7 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  * 
  * @version $Revision: $, $Date: $
  */
-public class RegistryObjectRecord implements MetadataRecord {
+public class RegistryObject implements MetadataRecord {
 
     protected static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
@@ -79,10 +78,6 @@ public class RegistryObjectRecord implements MetadataRecord {
     private static List<XPath> briefFilterElementsXPath = new ArrayList<XPath>();
 
     protected XMLAdapter adapter;
-
-    // private OMElement record;
-
-    private RegistryObject object;
 
     static {
         ns.addNamespace( "rim", RIM_NS );
@@ -105,52 +100,27 @@ public class RegistryObjectRecord implements MetadataRecord {
         summaryFilterElementsXPath.add( new XPath( "./rim:Description", ns ) );
     }
 
-    public RegistryObjectRecord( OMElement record ) {
+    public RegistryObject( OMElement record ) {
         this.adapter = new XMLAdapter( record );
     }
 
-    public RegistryObjectRecord( XMLStreamReader xmlStream ) {
+    public RegistryObject( XMLStreamReader xmlStream ) {
         this.adapter = new XMLAdapter( xmlStream );
-    }
-
-    /**
-     * @return the parsed EbrimEORecord
-     */
-    public RegistryObject getParsedRecord() {
-        if ( object == null ) {
-            String id = parseId( adapter.getRootElement() );
-            String home = parseHome( adapter.getRootElement() );
-            String lid = parseLid( adapter.getRootElement() );
-            String objectType = parseObjectType( adapter.getRootElement() );
-            String status = parseStatus( adapter.getRootElement() );
-
-            String extId = parseExtId( adapter.getRootElement() );
-            String name = parseName( adapter.getRootElement() );
-            String desc = parseDesc( adapter.getRootElement() );
-            String versionInfo = parseVersionInfo( adapter.getRootElement() );
-            this.object = new RegistryObject( id, home, lid, status, name, desc, versionInfo, extId, objectType,
-                                              adapter.getRootElement() );
-        }
-        return object;
     }
 
     @Override
     public QName getName() {
-        String name = getParsedRecord().getName();
-        if ( name != null ) {
-            return new QName( name );
-        }
         return null;
     }
 
     @Override
     public String getIdentifier() {
-        return getParsedRecord().getId();
+        return getId();
     }
 
     @Override
     public String[] getTitle() {
-        return new String[] { getParsedRecord().getName() };
+        return new String[] { getROName() };
     }
 
     @Override
@@ -179,7 +149,7 @@ public class RegistryObjectRecord implements MetadataRecord {
 
     @Override
     public String[] getAbstract() {
-        return new String[] { getParsedRecord().getDesc() };
+        return new String[] { getDesc() };
     }
 
     @Override
@@ -313,42 +283,75 @@ public class RegistryObjectRecord implements MetadataRecord {
         throw new UnsupportedOperationException();
     }
 
-    private String parseId( OMElement root ) {
-        return adapter.getRequiredNodeAsString( root, new XPath( "./@id", ns ) );
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "./@id", ns ) );
     }
 
-    private String parseLid( OMElement root ) {
-        return adapter.getNodeAsString( root, new XPath( "./@lid", ns ), null );
+    /**
+     * @return the name
+     */
+    public String getROName() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./rim:Name/rim:LocalizedString/@value",
+                                                                             ns ), null );
     }
 
-    private String parseHome( OMElement root ) {
-        return adapter.getNodeAsString( root, new XPath( "./@home", ns ), null );
+    /**
+     * @return the desc
+     */
+    public String getDesc() {
+        return adapter.getNodeAsString( adapter.getRootElement(),
+                                        new XPath( "./rim:Description/rim:LocalizedString/@value", ns ), null );
     }
 
-    private String parseStatus( OMElement root ) {
-        return adapter.getNodeAsString( root, new XPath( "./@status", ns ), null );
-    }
-
-    private String parseVersionInfo( OMElement root ) {
-        return adapter.getNodeAsString( root, new XPath( "./rim:versionInfo/@versionName", ns ), null );
-    }
-
-    private String parseName( OMElement root ) {
-        return adapter.getNodeAsString( root, new XPath( "./rim:Name/rim:LocalizedString/@value", ns ), null );
-    }
-
-    private String parseExtId( OMElement root ) {
-        return adapter.getNodeAsString( root,
+    /**
+     * @return the extId
+     */
+    public String getExtId() {
+        return adapter.getNodeAsString( adapter.getRootElement(),
                                         new XPath( "./rim:ExternalIdentifier/rim:Name/rim:LocalizedString/@value", ns ),
                                         null );
     }
 
-    private String parseDesc( OMElement root ) {
-        return adapter.getNodeAsString( root, new XPath( "./rim:Description/rim:LocalizedString/@value", ns ), null );
+    /**
+     * @return the home
+     */
+    public String getHome() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@home", ns ), null );
     }
 
-    private String parseObjectType( OMElement root ) {
-        return adapter.getNodeAsString( root, new XPath( "./@objectType", ns ), null );
+    /**
+     * @return the lid
+     */
+    public String getLid() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@lid", ns ), null );
     }
 
+    /**
+     * @return the status
+     */
+    public String getStatus() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@status", ns ), null );
+    }
+
+    /**
+     * @return the versionInfo
+     */
+    public String getVersionInfo() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./rim:versionInfo/@versionName", ns ),
+                                        null );
+    }
+
+    /**
+     * @return the objectType
+     */
+    public String getObjectType() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@objectType", ns ), null );
+    }
+
+    public OMElement getElement() {
+        return adapter.getRootElement();
+    }
 }

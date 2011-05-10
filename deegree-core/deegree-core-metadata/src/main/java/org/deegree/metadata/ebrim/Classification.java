@@ -39,8 +39,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XPath;
-import org.deegree.metadata.ebrim.model.Association;
-import org.deegree.metadata.ebrim.model.RegistryObject;
 
 /**
  * TODO add class documentation here
@@ -50,23 +48,35 @@ import org.deegree.metadata.ebrim.model.RegistryObject;
  * 
  * @version $Revision: $, $Date: $
  */
-public class AssociationRecord extends RegistryObjectRecord {
+public class Classification extends RegistryObject {
 
-    public AssociationRecord( XMLStreamReader xmlReader ) {
+    public Classification( XMLStreamReader xmlReader ) {
         super( xmlReader );
     }
 
-    public AssociationRecord( OMElement record ) {
+    public Classification( OMElement record ) {
         super( record );
     }
 
-    @Override
-    public Association getParsedRecord() {
-        RegistryObject ro = super.getParsedRecord();
-        OMElement associationElem = adapter.getRootElement();
-        String targetObject = adapter.getRequiredNodeAsString( associationElem, new XPath( "@sourceObject", ns ) );
-        String sourceObject = adapter.getRequiredNodeAsString( associationElem, new XPath( "@targetObject", ns ) );
-        String associationType = adapter.getRequiredNodeAsString( associationElem, new XPath( "@associationType", ns ) );
-        return new Association( ro, sourceObject, targetObject, associationType );
+    /**
+     * @return the classificationScheme
+     */
+    public String getClassificationScheme() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "@classificationScheme", ns ), null );
     }
+
+    /**
+     * @return the classificationNode
+     */
+    public String getClassificationNode() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "@classificationNode", ns ), null );
+    }
+
+    /**
+     * @return the classifiedObject
+     */
+    public String getClassifiedObject() {
+        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@classifiedObject", ns ) );
+    }
+
 }

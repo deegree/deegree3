@@ -39,8 +39,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XPath;
-import org.deegree.metadata.ebrim.model.ClassificationNode;
-import org.deegree.metadata.ebrim.model.RegistryObject;
 
 /**
  * TODO add class documentation here
@@ -50,24 +48,35 @@ import org.deegree.metadata.ebrim.model.RegistryObject;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ClassificationNodeRecord extends RegistryObjectRecord {
+public class ClassificationNode extends RegistryObject {
 
-    public ClassificationNodeRecord( XMLStreamReader xmlReader ) {
+    public ClassificationNode( XMLStreamReader xmlReader ) {
         super( xmlReader );
     }
 
-    public ClassificationNodeRecord( OMElement record ) {
+    public ClassificationNode( OMElement record ) {
         super( record );
     }
 
-    @Override
-    public ClassificationNode getParsedRecord() {
-        RegistryObject ro = super.getParsedRecord();
-        OMElement record = adapter.getRootElement();
-        String parent = adapter.getNodeAsString( record, new XPath( "./@parent", ns ), null );
-        String code = adapter.getNodeAsString( record, new XPath( "./@code", ns ), null );
-        String path = adapter.getNodeAsString( record, new XPath( "./@path", ns ), null );
-        return new ClassificationNode( ro, parent, code, path );
+    /**
+     * @return the parent
+     */
+    public String getParent() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@parent", ns ), null );
+    }
+
+    /**
+     * @return the code
+     */
+    public String getCode() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@code", ns ), null );
+    }
+
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@path", ns ), null );
     }
 
 }
