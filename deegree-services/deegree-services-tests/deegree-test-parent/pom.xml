@@ -49,11 +49,13 @@
         <version>1.1</version>
         <executions>
           <execution>
+            <id>attach-workspace</id>
             <goals>
               <goal>attach-workspace</goal>
             </goals>
           </execution>
           <execution>
+            <id>generate-portnumber</id>
             <phase>pre-integration-test</phase>
             <goals>
               <goal>generate-portnumber</goal>
