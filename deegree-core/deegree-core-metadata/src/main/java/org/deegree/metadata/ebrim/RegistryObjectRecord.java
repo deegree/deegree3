@@ -87,16 +87,17 @@ public class RegistryObjectRecord implements MetadataRecord {
     static {
         ns.addNamespace( "rim", RIM_NS );
         ns.addNamespace( "wrs", "http://www.opengis.net/cat/wrs/1.0" );
-        briefFilterElementsXPath.add( new XPath( "./@id", ns ) );
-        briefFilterElementsXPath.add( new XPath( "./@lid", ns ) );
-        briefFilterElementsXPath.add( new XPath( "./@objectType", ns ) );
-        briefFilterElementsXPath.add( new XPath( "./@status", ns ) );
+
+        // briefFilterElementsXPath.add( new XPath( "./@id", ns ) );
+        // briefFilterElementsXPath.add( new XPath( "./@lid", ns ) );
+        // briefFilterElementsXPath.add( new XPath( "./@objectType", ns ) );
+        // briefFilterElementsXPath.add( new XPath( "./@status", ns ) );
         briefFilterElementsXPath.add( new XPath( "./rim:VersionInfo", ns ) );
 
-        summaryFilterElementsXPath.add( new XPath( "./@id", ns ) );
-        summaryFilterElementsXPath.add( new XPath( "./@lid", ns ) );
-        summaryFilterElementsXPath.add( new XPath( "./@objectType", ns ) );
-        summaryFilterElementsXPath.add( new XPath( "./@status", ns ) );
+        // summaryFilterElementsXPath.add( new XPath( "./@id", ns ) );
+        // summaryFilterElementsXPath.add( new XPath( "./@lid", ns ) );
+        // summaryFilterElementsXPath.add( new XPath( "./@objectType", ns ) );
+        // summaryFilterElementsXPath.add( new XPath( "./@status", ns ) );
         summaryFilterElementsXPath.add( new XPath( "./rim:VersionInfo", ns ) );
         summaryFilterElementsXPath.add( new XPath( "./rim:Slot", ns ) );
         // TODO: As specified by the value of the the Accept-Language request header field (if present).
