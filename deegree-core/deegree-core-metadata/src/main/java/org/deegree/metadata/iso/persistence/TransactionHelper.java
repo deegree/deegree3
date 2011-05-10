@@ -43,6 +43,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,6 +58,8 @@ import org.deegree.commons.jdbc.UpdateRow;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSUtils;
+import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -84,57 +87,16 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision$, $Date$
  */
-class TransactionHelper {
+class TransactionHelper extends SqlHelper {
 
     private static final Logger LOG = getLogger( TransactionHelper.class );
 
-    private String idColumn;
-
-    private String fileIdColumn;
-
-    private String recordColumn;
-
-    private String fk_main;
-
-    private Type connectionType;
-
-    private String mainTable;
-
-    private String crsTable;
-
-    private String keywordTable;
-
-    private String constraintTable;
-
-    private String opOnTable;
-
     private AnyText anyTextConfig;
 
-    TransactionHelper( Type dbtype, AnyText anyTextConfig ) {
-        this.connectionType = dbtype;
+    TransactionHelper( Type connectionType, AnyText anyTextConfig ) {
+        super( connectionType );
         this.anyTextConfig = anyTextConfig;
-        if ( connectionType == Type.PostgreSQL ) {
-            idColumn = PostGISMappingsISODC.CommonColumnNames.id.name();
-            fk_main = PostGISMappingsISODC.CommonColumnNames.fk_main.name();
-            recordColumn = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
-            fileIdColumn = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
-            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
-            crsTable = PostGISMappingsISODC.DatabaseTables.idxtb_crs.name();
-            keywordTable = PostGISMappingsISODC.DatabaseTables.idxtb_keyword.name();
-            opOnTable = PostGISMappingsISODC.DatabaseTables.idxtb_operatesondata.name();
-            constraintTable = PostGISMappingsISODC.DatabaseTables.idxtb_constraint.name();
-        }
-        if ( connectionType == Type.MSSQL ) {
-            idColumn = MSSQLMappingsISODC.CommonColumnNames.id.name();
-            fk_main = MSSQLMappingsISODC.CommonColumnNames.fk_main.name();
-            recordColumn = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
-            fileIdColumn = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
-            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
-            crsTable = PostGISMappingsISODC.DatabaseTables.idxtb_crs.name();
-            keywordTable = PostGISMappingsISODC.DatabaseTables.idxtb_keyword.name();
-            opOnTable = PostGISMappingsISODC.DatabaseTables.idxtb_operatesondata.name();
-            constraintTable = PostGISMappingsISODC.DatabaseTables.idxtb_constraint.name();
-        }
+
     }
 
     /**
@@ -182,6 +144,62 @@ class TransactionHelper {
             throw new MetadataStoreException( msg );
         }
         return internalId;
+    }
+
+    public int executeDelete( Connection connection, AbstractWhereBuilder builder )
+                            throws MetadataStoreException {
+        LOG.debug( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        List<Integer> deletableDatasets;
+        int deleted = 0;
+        try {
+            StringBuilder header = getPreparedStatementDatasetIDs( builder );
+            getPSBody( builder, header );
+            preparedStatement = connection.prepareStatement( header.toString() );
+            int i = 1;
+            if ( builder.getWhere() != null ) {
+                for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
+                    preparedStatement.setObject( i++, o.getValue() );
+                }
+            }
+            if ( builder.getOrderBy() != null ) {
+                for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
+                    preparedStatement.setObject( i++, o.getValue() );
+                }
+            }
+            LOG.debug( Messages.getMessage( "INFO_TA_DELETE_FIND", preparedStatement.toString() ) );
+
+            rs = preparedStatement.executeQuery();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append( "DELETE FROM " );
+            stringBuilder.append( mainTable );
+            stringBuilder.append( " WHERE " ).append( idColumn );
+            stringBuilder.append( " = ?" );
+
+            deletableDatasets = new ArrayList<Integer>();
+            if ( rs != null ) {
+                while ( rs.next() ) {
+                    deletableDatasets.add( rs.getInt( 1 ) );
+                }
+                rs.close();
+                for ( int d : deletableDatasets ) {
+                    preparedStatement = connection.prepareStatement( stringBuilder.toString() );
+                    preparedStatement.setInt( 1, d );
+
+                    LOG.debug( Messages.getMessage( "INFO_TA_DELETE_DEL", preparedStatement.toString() ) );
+                    deleted = deleted + preparedStatement.executeUpdate();
+                }
+            }
+        } catch ( SQLException e ) {
+            String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
+        } finally {
+            JDBCUtils.close( rs, preparedStatement, null, LOG );
+        }
+        return deleted;
     }
 
     /**
@@ -375,7 +393,8 @@ class TransactionHelper {
         return gf.createEnvelope( west, south, east, north, CRSUtils.EPSG_4326 );
     }
 
-    private void updateConstraintTable( boolean isUpdate, Connection connection, int operatesOnId, QueryableProperties qp )
+    private void updateConstraintTable( boolean isUpdate, Connection connection, int operatesOnId,
+                                        QueryableProperties qp )
                             throws MetadataStoreException {
         List<Constraint> constraintss = qp.getConstraints();
         if ( constraintss != null && constraintss.size() > 0 ) {

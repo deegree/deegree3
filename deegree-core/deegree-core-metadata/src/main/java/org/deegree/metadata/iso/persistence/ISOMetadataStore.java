@@ -40,8 +40,6 @@ import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,11 +48,6 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
@@ -193,49 +186,14 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         }
     }
 
-    private AbstractWhereBuilder getWhereBuilder( MetadataQuery query )
-                            throws FilterEvaluationException {
-        if ( getDBType() == PostgreSQL ) {
-            PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-            return new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
-                                            useLegacyPredicates );
-        }
-        if ( getDBType() == Type.MSSQL ) {
-            MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
-            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting() );
-        }
-        return null;
-    }
-
     @Override
     public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
                             throws MetadataStoreException {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
-        AbstractWhereBuilder builder = null;
-        try {
-            builder = getWhereBuilder( query );
-        } catch ( FilterEvaluationException e ) {
-            String msg = Messages.getMessage( "ERROR_OPERATION", operationName, e.getLocalizedMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        }
 
-        ResultSet rs = null;
-        PreparedStatement preparedStatement = null;
-        ExecuteStatements exe = new ExecuteStatements( getDBType() );
-        Connection conn = getConnection();
-        try {
-            preparedStatement = exe.executeGetRecords( query, builder, conn );
-            preparedStatement.setFetchSize( DEFAULT_FETCH_SIZE );
-            rs = preparedStatement.executeQuery();
-        } catch ( Throwable t ) {
-            JDBCUtils.close( rs, preparedStatement, conn, LOG );
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        }
-        return new ISOMetadataResultSet( rs, conn, preparedStatement );
+        QueryHelper exe = new QueryHelper( getDBType() );
+        return exe.execute( query, getConnection() );
     }
 
     /**
@@ -247,83 +205,21 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         String resultTypeName = "hits";
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
-        ResultSet rs = null;
-        PreparedStatement ps = null;
-        int countRows = 0;
-        Connection conn = null;
         try {
-            AbstractWhereBuilder builder = getWhereBuilder( query );
-            conn = getConnection();
-            ps = new ExecuteStatements( getDBType() ).executeCounting( builder, conn );
-            rs = ps.executeQuery();
-            rs.next();
-            countRows = rs.getInt( 1 );
-            LOG.debug( "rs for rowCount: " + rs.getInt( 1 ) );
+            return new QueryHelper( getDBType() ).executeCounting( query, getConnection() );
         } catch ( Throwable t ) {
-            JDBCUtils.close( rs, ps, conn, LOG );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
-        } finally {
-            JDBCUtils.close( rs, ps, conn, LOG );
         }
-        return countRows;
     }
 
     @Override
     public MetadataResultSet<ISORecord> getRecordById( List<String> idList )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        String mainTable;
-        String fileidentifier;
-        String recordfull;
-        if ( getDBType() == Type.MSSQL ) {
-            mainTable = MSSQLMappingsISODC.DatabaseTables.idxtb_main.name();
-            fileidentifier = MSSQLMappingsISODC.CommonColumnNames.fileidentifier.name();
-            recordfull = MSSQLMappingsISODC.CommonColumnNames.recordfull.name();
-        } else {
-            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
-            fileidentifier = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
-            recordfull = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
-        }
-        ResultSet rs = null;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            int size = idList.size();
-            conn = getConnection();
-
-            StringBuilder select = new StringBuilder();
-            select.append( "SELECT " ).append( recordfull );
-            select.append( " FROM " ).append( mainTable );
-            select.append( " WHERE " );
-            for ( int iter = 0; iter < size; iter++ ) {
-                select.append( fileidentifier ).append( " = ? " );
-                if ( iter < size - 1 ) {
-                    select.append( " OR " );
-                }
-            }
-
-            stmt = conn.prepareStatement( select.toString() );
-            stmt.setFetchSize( DEFAULT_FETCH_SIZE );
-            LOG.debug( "select RecordById statement: " + stmt );
-
-            int i = 1;
-            for ( String identifier : idList ) {
-                stmt.setString( i, identifier );
-                LOG.debug( "identifier: " + identifier );
-                LOG.debug( "" + stmt );
-                i++;
-            }
-            rs = stmt.executeQuery();
-
-        } catch ( Throwable t ) {
-            JDBCUtils.close( rs, stmt, conn, LOG );
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        }
-        return new ISOMetadataResultSet( rs, conn, stmt );
+        QueryHelper qh = new QueryHelper( getDBType() );
+        return qh.executeGetRecordById( idList, getConnection() );
     }
 
     @Override

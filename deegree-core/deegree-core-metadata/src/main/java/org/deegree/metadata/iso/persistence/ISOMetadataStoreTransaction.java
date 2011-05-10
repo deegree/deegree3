@@ -3,8 +3,6 @@ package org.deegree.metadata.iso.persistence;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +22,7 @@ import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
+import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
@@ -102,8 +101,8 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         try {
             AbstractWhereBuilder builder = getWhereBuilder( (OperatorFilter) delete.getConstraint() );
 
-            ExecuteStatements execStm = new ExecuteStatements( connectionType );
-            return execStm.executeDeleteStatement( conn, builder );
+            TransactionHelper transactionHelper = new TransactionHelper( connectionType, anyTextConfig );
+            return transactionHelper.executeDelete( conn, builder );
 
         } catch ( FilterEvaluationException e ) {
             throw new MetadataStoreException( e.getMessage() );
@@ -150,19 +149,12 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             return 1;
         }
 
-        ResultSet rs = null;
-        PreparedStatement preparedStatement = null;
-        ExecuteStatements exe = new ExecuteStatements( connectionType );
+        QueryHelper qh = new QueryHelper( connectionType );
         try {
-            AbstractWhereBuilder builder = getWhereBuilder( (OperatorFilter) update.getConstraint() );
-            ExecuteStatements execStm = new ExecuteStatements( connectionType );
-            execStm.executeGetRecords( null, builder, conn );
-            preparedStatement = exe.executeGetRecords( null, builder, conn );
-            preparedStatement.setFetchSize( ISOMetadataStore.DEFAULT_FETCH_SIZE );
-            rs = preparedStatement.executeQuery();
-
+            MetadataQuery query = new MetadataQuery( null, null, (OperatorFilter) update.getConstraint(), null, 1,
+                                                     Integer.MIN_VALUE );
             // get all metadatasets to update
-            ISOMetadataResultSet isoRs = new ISOMetadataResultSet( rs, conn, preparedStatement );
+            ISOMetadataResultSet isoRs = qh.execute( query, conn );
             while ( isoRs.next() ) {
                 ISORecord rec = isoRs.getRecord();
                 LOG.debug( "record to update" + rec );
@@ -218,8 +210,6 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.info( msg );
             throw new MetadataStoreException( msg );
-        } finally {
-            JDBCUtils.close( rs, preparedStatement, null, LOG );
         }
         return result;
     }
