@@ -18,6 +18,7 @@
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services-parent</artifactId>
     <version>3.1-pre6-SNAPSHOT</version>
+    <relativePath />
   </parent>
 
   <repositories>
