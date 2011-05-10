@@ -76,8 +76,8 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.patches.GriddedSurfacePatch;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.PolygonPatch.PolygonPatchType;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.ArcByBulge;
 import org.deegree.geometry.primitive.segments.ArcByCenterPoint;
@@ -96,6 +96,7 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
+import org.deegree.gml.geometry.refs.GeometryReference;
 import org.deegree.gml.props.GMLStdProps;
 import org.slf4j.Logger;
 
@@ -1320,6 +1321,9 @@ public class WKTWriter {
     public static String write( Geometry geom ) {
         if ( geom == null ) {
             return "";
+        }
+        if ( geom instanceof GeometryReference ) {
+            geom = ( (GeometryReference<Geometry>) geom ).getReferencedObject();
         }
         StringWriter writer = new StringWriter();
         try {
