@@ -293,7 +293,8 @@ public class DBFIndex {
                     Object o = lit.getValue();
                     if ( o instanceof PrimitiveValue ) {
                         o = ( (PrimitiveValue) o ).getValue();
-                    } else if ( o instanceof ElementNode ) {
+                    }
+                    if ( o instanceof ElementNode ) {
                         stmt.setString( i++, o.toString() );
                     } else {
                         stmt.setObject( i++, o );
