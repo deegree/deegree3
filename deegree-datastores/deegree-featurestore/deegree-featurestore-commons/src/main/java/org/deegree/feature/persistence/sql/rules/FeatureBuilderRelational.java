@@ -334,7 +334,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 Object value = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
                 if ( value != null ) {
                     // TODO
-                    String ref = "#" + value;
+                    String ref;
+                    if ( value.toString().startsWith( "http" ) ) {
+                        ref = value.toString();
+                    } else {
+                        ref = "#" + value;
+                    }
                     particle = new FeatureReference( fs.getResolver(), ref, null );
                 }
             }
