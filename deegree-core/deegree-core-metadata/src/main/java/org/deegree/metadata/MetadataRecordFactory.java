@@ -36,12 +36,18 @@
 package org.deegree.metadata;
 
 import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
+import static org.deegree.metadata.ebrim.RegistryObjectRecord.RIM_NS;
 import static org.deegree.metadata.iso.ISORecord.ISO_RECORD_NS;
 
 import java.io.File;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.metadata.ebrim.AssociationRecord;
+import org.deegree.metadata.ebrim.ClassificationNodeRecord;
+import org.deegree.metadata.ebrim.ClassificationRecord;
+import org.deegree.metadata.ebrim.ExtrinsicObjectRecord;
+import org.deegree.metadata.ebrim.RegistryPackageRecord;
 import org.deegree.metadata.iso.ISORecord;
 
 /**
@@ -71,6 +77,21 @@ public class MetadataRecordFactory {
         String ns = rootEl.getNamespace().getNamespaceURI();
         if ( ISO_RECORD_NS.equals( ns ) ) {
             return new ISORecord( rootEl );
+        }
+        if ( RIM_NS.equals( ns ) ) {
+            String name = rootEl.getLocalName();
+            if ( "ExtrinsicObject".equals( name ) ) {
+                return new ExtrinsicObjectRecord( rootEl );
+            } else if ( "Association".equals( name ) ) {
+                return new AssociationRecord( rootEl );
+            } else if ( "Classification".equals( name ) ) {
+                return new ClassificationRecord( rootEl );
+            } else if ( "ClassificationNode".equals( name ) ) {
+                return new ClassificationNodeRecord( rootEl );
+            } else if ( "RegistryPackage".equals( name ) ) {
+                return new RegistryPackageRecord( rootEl );
+            }
+            throw new IllegalArgumentException( "Unknown / unsuppported RegistryObject '" + name + "'." );
         }
         if ( DC_RECORD_NS.equals( ns ) ) {
             throw new UnsupportedOperationException( "Creating DC records from XML is not implemented yet." );

@@ -72,6 +72,8 @@ public class RegistryObjectRecord implements MetadataRecord {
 
     protected static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
+    public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+
     private static List<XPath> summaryFilterElementsXPath = new ArrayList<XPath>();
 
     private static List<XPath> briefFilterElementsXPath = new ArrayList<XPath>();
@@ -83,7 +85,7 @@ public class RegistryObjectRecord implements MetadataRecord {
     private RegistryObject object;
 
     static {
-        ns.addNamespace( "rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" );
+        ns.addNamespace( "rim", RIM_NS );
         ns.addNamespace( "wrs", "http://www.opengis.net/cat/wrs/1.0" );
         briefFilterElementsXPath.add( new XPath( "./@id", ns ) );
         briefFilterElementsXPath.add( new XPath( "./@lid", ns ) );
