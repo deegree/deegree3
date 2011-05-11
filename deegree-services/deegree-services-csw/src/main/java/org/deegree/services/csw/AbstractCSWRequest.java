@@ -100,5 +100,4 @@ public abstract class AbstractCSWRequest {
     public String getOutputFormat() {
         return outputFormat;
     }
-
 }
