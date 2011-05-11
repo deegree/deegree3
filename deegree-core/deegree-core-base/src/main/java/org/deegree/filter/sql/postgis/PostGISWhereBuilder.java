@@ -96,19 +96,24 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
-     *            criteria to use generating the ORDER BY clause, can be <code>null</code>
+     *            criteria to use for generating the ORDER BY clause, can be <code>null</code>
+     * @param allowPartialMappings
+     *            if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
      * @param useLegacyPredicates
      *            if true, legacy-style PostGIS spatial predicates are used (e.g. <code>Intersects</code> instead of
      *            <code>ST_Intersects</code>)
      * @throws FilterEvaluationException
      *             if the expression contains invalid {@link PropertyName}s
+     * @throws UnmappableException
+     *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
     public PostGISWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
-                                boolean useLegacyPredicates ) throws FilterEvaluationException {
+                                boolean allowPartialMappings, boolean useLegacyPredicates )
+                            throws FilterEvaluationException, UnmappableException {
         super( filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         this.mapper = mapper;
-        build();
+        build( allowPartialMappings );
     }
 
     /**

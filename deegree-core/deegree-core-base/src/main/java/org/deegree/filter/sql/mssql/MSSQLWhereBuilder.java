@@ -95,14 +95,18 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
      *            filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
      *            criteria to use for generating the ORDER BY clause, can be <code>null</code>
+     * @param allowPartialMappings
+     *            if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
      * @throws FilterEvaluationException
      *             if the expression contains invalid {@link PropertyName}s
+     * @throws UnmappableException
+     *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
-    public MSSQLWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit )
-                            throws FilterEvaluationException {
+    public MSSQLWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
+                              boolean allowPartialMappings ) throws FilterEvaluationException, UnmappableException {
         super( filter, sortCrit );
         this.mapper = mapper;
-        build();
+        build( allowPartialMappings );
     }
 
     /**

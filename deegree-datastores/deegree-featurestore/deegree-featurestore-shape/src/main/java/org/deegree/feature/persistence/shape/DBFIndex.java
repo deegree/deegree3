@@ -66,6 +66,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLExpression;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.slf4j.Logger;
@@ -247,6 +248,7 @@ public class DBFIndex {
      * @return null, if there was an error, else a pair of left overs (with possibly null values if everything could be
      *         mapped)
      * @throws FilterEvaluationException
+     * @throws UnmappableException 
      */
     public Pair<Filter, SortProperty[]> query( List<Pair<Integer, Long>> available, Filter filter, SortProperty[] sort )
                             throws FilterEvaluationException {

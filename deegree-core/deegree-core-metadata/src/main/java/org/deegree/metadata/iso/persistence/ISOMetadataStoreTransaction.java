@@ -16,6 +16,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.MetadataRecord;
@@ -82,14 +83,14 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     }
 
     private AbstractWhereBuilder getWhereBuilder( OperatorFilter filter )
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, UnmappableException {
         if ( connectionType == PostgreSQL ) {
             PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-            return new PostGISWhereBuilder( mapping, filter, null, useLegacyPredicates );
+            return new PostGISWhereBuilder( mapping, filter, null, false, useLegacyPredicates );
         }
         if ( connectionType == Type.MSSQL ) {
             MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
-            return new MSSQLWhereBuilder( mapping, filter, null );
+            return new MSSQLWhereBuilder( mapping, filter, null, false );
         }
         return null;
     }
@@ -104,7 +105,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             TransactionHelper transactionHelper = new TransactionHelper( connectionType, anyTextConfig );
             return transactionHelper.executeDelete( conn, builder );
 
-        } catch ( FilterEvaluationException e ) {
+        } catch ( Exception e ) {
             throw new MetadataStoreException( e.getMessage() );
         }
     }

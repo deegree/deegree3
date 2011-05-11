@@ -54,6 +54,7 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
@@ -187,7 +188,7 @@ class QueryHelper extends SqlHelper {
     }
 
     int executeCounting( MetadataQuery query, Connection conn )
-                            throws MetadataStoreException, FilterEvaluationException {
+                            throws MetadataStoreException, FilterEvaluationException, UnmappableException {
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -282,15 +283,15 @@ class QueryHelper extends SqlHelper {
     }
 
     private AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, UnmappableException {
         if ( connectionType == PostgreSQL ) {
             PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-            return new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
+            return new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false,
                                             JDBCUtils.useLegayPostGISPredicates( conn, LOG ) );
         }
         if ( connectionType == Type.MSSQL ) {
             MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
-            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting() );
+            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false );
         }
         return null;
     }

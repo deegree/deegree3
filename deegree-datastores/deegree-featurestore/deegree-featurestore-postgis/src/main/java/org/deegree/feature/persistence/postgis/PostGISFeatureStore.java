@@ -470,14 +470,14 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     @Override
     protected AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
                                                     Connection conn )
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, UnmappableException {
         return new PostGISWhereBuilder( new PostGISFeatureMapping( getSchema(), ft, getMapping( ft.getName() ), this ),
-                                        filter, sortCrit, useLegacyPredicates );
+                                        filter, sortCrit, true, useLegacyPredicates );
     }
 
     @Override
     protected AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, UnmappableException {
         PropertyNameMapper pgMapping = new PropertyNameMapper() {
             @Override
             public byte[] getSQLValue( Geometry literal, PropertyName propName )
@@ -508,6 +508,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                                                         blobMapping.getCRS(), "-1" );
             }
         };
-        return new PostGISWhereBuilder( pgMapping, filter, null, useLegacyPredicates );
+        return new PostGISWhereBuilder( pgMapping, filter, null, true, useLegacyPredicates );
     }
 }

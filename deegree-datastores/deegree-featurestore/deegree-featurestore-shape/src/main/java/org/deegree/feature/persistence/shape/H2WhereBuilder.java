@@ -66,11 +66,16 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
      * @param filter
      * @param sort
      * @throws FilterEvaluationException
+     * @throws UnmappableException
      * 
      */
     public H2WhereBuilder( OperatorFilter filter, SortProperty[] sort ) throws FilterEvaluationException {
         super( filter, sort );
-        build();
+        try {
+            build( true );
+        } catch ( UnmappableException e ) {
+            // can not happen
+        }
     }
 
     @Override

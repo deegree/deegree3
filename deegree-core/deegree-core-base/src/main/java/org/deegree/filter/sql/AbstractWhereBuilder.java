@@ -129,7 +129,8 @@ public abstract class AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link PropertyName}s
      */
-    protected AbstractWhereBuilder( OperatorFilter filter, SortProperty[] sortCrit ) throws FilterEvaluationException {
+    protected AbstractWhereBuilder( OperatorFilter filter, SortProperty[] sortCrit )
+                            throws FilterEvaluationException {
         this.filter = filter;
         this.sortCrit = sortCrit;
     }
@@ -137,14 +138,21 @@ public abstract class AbstractWhereBuilder {
     /**
      * Invokes the building of the internal variables that store filter and sort criteria.
      * 
+     * @param allowPartialMappings
+     *            if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
      * @throws FilterEvaluationException
+     * @throws UnmappableException
+     *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
-    protected void build()
-                            throws FilterEvaluationException {
+    protected void build( boolean allowPartialMappings )
+                            throws FilterEvaluationException, UnmappableException {
         if ( filter != null ) {
             try {
                 whereClause = toProtoSQL( filter.getOperator() );
             } catch ( UnmappableException e ) {
+                if ( !allowPartialMappings ) {
+                    throw e;
+                }
                 LOG.debug( "Unable to map filter to WHERE-clause. Setting post filter.", e );
                 LOG.warn( "Using full filter for post filtering step. Partial backend-filtering is not implemented yet. " );
                 postFilter = filter;
@@ -159,6 +167,9 @@ public abstract class AbstractWhereBuilder {
             try {
                 orderByClause = toProtoSQL( sortCrit );
             } catch ( UnmappableException e ) {
+                if ( !allowPartialMappings ) {
+                    throw e;
+                }
                 LOG.debug( "Unable to map sort criteria to ORDER BY-clause. Setting post order criteria.", e );
                 LOG.warn( "Using all sort criteria for post sorting step. Partial backend-sorting is not implemented yet. " );
                 postSortCrit = sortCrit;

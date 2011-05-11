@@ -102,6 +102,7 @@ import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -899,10 +900,10 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
      */
     protected abstract AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter,
                                                              SortProperty[] sortCrit, Connection conn )
-                            throws FilterEvaluationException;
+                            throws FilterEvaluationException, UnmappableException;
 
     protected abstract AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
-                            throws FilterEvaluationException;
+                            throws FilterEvaluationException, UnmappableException;
 
     private class PostGISResultSetIterator extends ResultSetIterator<Feature> {
 
