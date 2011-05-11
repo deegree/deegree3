@@ -390,6 +390,10 @@ public class RegistryObject implements MetadataRecord {
                                         null );
     }
 
+    public String[] getSlotNames() {
+        return adapter.getNodesAsStrings( adapter.getRootElement(), new XPath( "./rim:Slot/@name", ns ) );
+    }
+
     /**
      * @return the encapsulated XML
      */
