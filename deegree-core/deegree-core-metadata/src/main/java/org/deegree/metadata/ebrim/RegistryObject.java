@@ -67,7 +67,7 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Base type for all ebRIM {@link MetadataRecord}s.
  * 
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
