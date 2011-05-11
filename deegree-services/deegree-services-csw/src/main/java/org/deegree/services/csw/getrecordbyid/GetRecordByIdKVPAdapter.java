@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public class GetRecordByIdKVPAdapter {
+
     private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdKVPAdapter.class );
 
     /**
@@ -84,7 +85,6 @@ public class GetRecordByIdKVPAdapter {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
             throw new InvalidParameterValueException( msg );
         }
-
         return result;
     }
 
@@ -126,8 +126,6 @@ public class GetRecordByIdKVPAdapter {
                 id.add( tmpId );
             }
         }
-
-        return new GetRecordById( version202, outputFormat, elementSetName, outputSchema, id );
+        return new GetRecordById( version202, outputFormat, elementSetName, outputSchema, id, null );
     }
-
 }

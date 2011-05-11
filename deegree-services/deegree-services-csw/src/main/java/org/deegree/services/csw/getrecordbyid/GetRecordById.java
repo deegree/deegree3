@@ -38,6 +38,8 @@ package org.deegree.services.csw.getrecordbyid;
 import java.net.URI;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.csw.AbstractCSWRequest;
@@ -68,10 +70,11 @@ public class GetRecordById extends AbstractCSWRequest {
      *            {@link ReturnableElement}
      * @param outputSchema
      * @param id
+     * @param typeNames
      */
     public GetRecordById( Version version, String outputFormat, ReturnableElement elementSetName, URI outputSchema,
-                          List<String> id ) {
-        super( version, null, null, outputFormat );
+                          List<String> id, QName[] typeNames ) {
+        super( version, null, typeNames, outputFormat );
         this.elementSetName = elementSetName;
         this.outputSchema = outputSchema;
         this.requestedIds = id;

@@ -41,8 +41,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
@@ -101,25 +104,35 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
         String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ),
                                                defaultOutputFormat );
 
+                
         String elementSetNameString = getNodeAsString( rootElement, new XPath( "csw:ElementSetName", nsContext ),
                                                        ReturnableElement.summary.name() );
 
         ReturnableElement elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
+
+        QName[] typeNames = null;
+        OMElement elSetNameEl = getElement( rootElement, new XPath( "csw:ElementSetName") );
+        String typeElementSetName = getNodeAsString( elSetNameEl, new XPath( "@typeNames", nsContext ), "" ).trim();
+        String[] elementSetNameTypeNamesString = StringUtils.split( typeElementSetName, " " );
+        typeNames = new QName[elementSetNameTypeNamesString.length];
+        for ( int i = 0; i < elementSetNameTypeNamesString.length; i++ ) {
+            typeNames[i] = parseQName( elementSetNameTypeNamesString[i], elSetNameEl );
+        }
 
         String outputSchemaString = getNodeAsString( rootElement, new XPath( "@outputSchema", nsContext ),
                                                      defaultOutputSchema );
         URI outputSchema = URI.create( outputSchemaString );
 
         // elementName List<String>
-        List<String> id = null;
+        List<String> ids = null;
         try {
             List<OMElement> idList = getRequiredNodes( rootElement, new XPath( "csw:Id", nsContext ) );
             LOG.debug( "idList: " + idList );
-            id = new ArrayList<String>();
+            ids = new ArrayList<String>();
             for ( OMElement elem : idList ) {
                 String idString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-                if ( !id.contains( idString ) ) {
-                    id.add( idString );
+                if ( !ids.contains( idString ) ) {
+                    ids.add( idString );
                 }
             }
         } catch ( XMLParsingException e ) {
@@ -128,7 +141,6 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
             throw new MissingParameterException( msg );
         }
 
-        return new GetRecordById( VERSION_202, outputFormat, elementSetName, outputSchema, id );
+        return new GetRecordById( VERSION_202, outputFormat, elementSetName, outputSchema, ids, typeNames );
     }
-
 }
