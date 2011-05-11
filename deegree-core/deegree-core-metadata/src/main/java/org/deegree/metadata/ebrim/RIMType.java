@@ -36,14 +36,14 @@
 package org.deegree.metadata.ebrim;
 
 /**
- * Enum for discriminating the registry object types defined in the ebRIM 3.0 information model.
+ * Enum for discriminating the registry object types of the ebRIM 3.0 information model.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public enum RegistryObjectType {
+public enum RIMType {
 
     /** TODO some details on semantics would be nice */
     AdhocQuery,

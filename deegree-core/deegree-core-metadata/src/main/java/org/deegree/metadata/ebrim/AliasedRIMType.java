@@ -44,25 +44,25 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 /**
- * {@link RegistryObjectType} with (query) alias.
+ * {@link RIMType} with (query) alias.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class AliasedRegistryObjectType {
+public class AliasedRIMType {
 
-    private final RegistryObjectType type;
+    private final RIMType type;
 
     private final String alias;
 
-    private AliasedRegistryObjectType( String name, String alias ) {
-        type = RegistryObjectType.valueOf( name );
+    private AliasedRIMType( String name, String alias ) {
+        type = RIMType.valueOf( name );
         this.alias = alias;
     }
 
-    public RegistryObjectType getType() {
+    public RIMType getType() {
         return type;
     }
 
@@ -71,28 +71,28 @@ public class AliasedRegistryObjectType {
     }
 
     /**
-     * Returns {@link AliasedRegistryObjectType}s for the given qualified name.
+     * Returns {@link AliasedRIMType}s for the given qualified name.
      * 
      * @param name
-     *            qualified name of a {@link RegistryObjectType} with optional aliases, separated by underscores
+     *            qualified name of a {@link RIMType} with optional aliases, separated by underscores
      * @return aliased registry object types, never <code>null</code> and contains at least a single entry
      * @throws IllegalArgumentException
-     *             if the input name does not refer to a known {@link RegistryObjectType}
+     *             if the input name does not refer to a known {@link RIMType}
      */
-    public static List<AliasedRegistryObjectType> valueOf( QName name )
+    public static List<AliasedRIMType> valueOf( QName name )
                             throws IllegalArgumentException {
-        List<AliasedRegistryObjectType> values = null;
+        List<AliasedRIMType> values = null;
         String[] tokens = split( name.getLocalPart(), "_" );
         if ( tokens.length > 1 ) {
             String unaliasedName = tokens [0];
-            values = new ArrayList<AliasedRegistryObjectType>( tokens.length - 1 );
+            values = new ArrayList<AliasedRIMType>( tokens.length - 1 );
             for ( int i = 1; i < tokens.length; i++ ) {
                 String alias = tokens[i];
-                values.add( new AliasedRegistryObjectType( unaliasedName, alias ) );
+                values.add( new AliasedRIMType( unaliasedName, alias ) );
             }
         } else {
             String unaliasedName = name.getLocalPart();
-            values = Collections.singletonList( new AliasedRegistryObjectType( unaliasedName, unaliasedName ) );
+            values = Collections.singletonList( new AliasedRIMType( unaliasedName, unaliasedName ) );
         }
         return values;
     }

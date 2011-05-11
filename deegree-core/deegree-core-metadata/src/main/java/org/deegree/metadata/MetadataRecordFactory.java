@@ -49,7 +49,7 @@ import org.deegree.metadata.ebrim.Classification;
 import org.deegree.metadata.ebrim.ClassificationNode;
 import org.deegree.metadata.ebrim.ExtrinsicObject;
 import org.deegree.metadata.ebrim.RegistryObject;
-import org.deegree.metadata.ebrim.RegistryObjectType;
+import org.deegree.metadata.ebrim.RIMType;
 import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.iso.ISORecord;
 import org.slf4j.Logger;
@@ -86,9 +86,9 @@ public class MetadataRecordFactory {
             return new ISORecord( rootEl );
         }
         if ( RIM_NS.equals( ns ) ) {
-            RegistryObjectType type = null;
+            RIMType type = null;
             try {
-                type = RegistryObjectType.valueOf( rootEl.getLocalName() );
+                type = RIMType.valueOf( rootEl.getLocalName() );
             } catch ( Throwable t ) {
                 throw new IllegalArgumentException( "Element '" + rootEl.getLocalName()
                                                     + "' does not denote an ebRIM 3.0 registry object." );

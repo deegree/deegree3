@@ -117,6 +117,15 @@ public class RegistryObject implements MetadataRecord {
         this.adapter = new XMLAdapter( xmlStream );
     }
 
+    /**
+     * Returns the {@link RIMType}.
+     * 
+     * @return {@link RIMType}, never <code>null</code>
+     */
+    public RIMType getRIMType() {
+        return RIMType.valueOf( adapter.getRootElement().getLocalName() );
+    }
+
     @Override
     public QName getName() {
         return null;
