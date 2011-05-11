@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.ebrim;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,10 +56,15 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLVersion;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.filter.XPathElementFilter;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -68,6 +75,8 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  * @version $Revision: $, $Date: $
  */
 public class RegistryObject implements MetadataRecord {
+
+    private static final Logger LOG = getLogger( RegistryObject.class );
 
     protected static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
@@ -351,6 +360,39 @@ public class RegistryObject implements MetadataRecord {
         return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@objectType", ns ), null );
     }
 
+    public Geometry getGeometrySlotValue( String slotName ) {
+        OMElement geomElem = adapter.getElement( adapter.getRootElement(),
+                                                 new XPath( "./rim:Slot[@name='" + slotName
+                                                            + "']/wrs:ValueList/wrs:AnyValue[1]/*", ns ) );
+        if ( geomElem != null ) {
+            try {
+                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31,
+                                                                                   geomElem.getXMLStreamReader() );
+                return gmlReader.readGeometry();
+            } catch ( Exception e ) {
+                String msg = "Could not parse geometry " + geomElem;
+                LOG.debug( msg, e );
+                e.printStackTrace();
+                throw new IllegalArgumentException( msg );
+            }
+        }
+        return null;
+    }
+
+    public String[] getSlotValueList( String slotName ) {
+        return adapter.getNodesAsStrings( adapter.getRootElement(), new XPath( "./rim:Slot[@name='" + slotName
+                                                                               + "']/rim:ValueList/rim:Value", ns ) );
+    }
+
+    public String getSlotValue( String slotName ) {
+        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./rim:Slot[@name='" + slotName
+                                                                             + "']/rim:ValueList/rim:Value[1]", ns ),
+                                        null );
+    }
+
+    /**
+     * @return the encapsulated XML
+     */
     public OMElement getElement() {
         return adapter.getRootElement();
     }

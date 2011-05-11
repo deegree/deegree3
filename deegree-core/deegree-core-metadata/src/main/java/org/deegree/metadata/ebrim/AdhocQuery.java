@@ -38,6 +38,7 @@ package org.deegree.metadata.ebrim;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.XPath;
 
 /**
  * TODO add class documentation here
@@ -47,28 +48,28 @@ import org.apache.axiom.om.OMElement;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ExtrinsicObject extends RegistryObject {
+public class AdhocQuery extends RegistryObject {
 
-    public ExtrinsicObject( XMLStreamReader xmlReader ) {
-        super( xmlReader );
+    public AdhocQuery( OMElement record ) {
+        super( record );
     }
 
-    public ExtrinsicObject( OMElement eoElement ) {
-        super( eoElement );
-    }
-
-    /**
-     * @return the isOpaque
-     */
-    public boolean isOpaque() {
-        return false;
+    public AdhocQuery( XMLStreamReader xmlStream ) {
+        super( xmlStream );
     }
 
     /**
-     * @return
+     * @return the queryLanguage
      */
-    public Object getResource() {
-        return null;
+    public String getQueryLanguage() {
+        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "./@queryLanguage", ns ) );
+    }
+
+    /**
+     * @return the queryExpression
+     */
+    public OMElement getQueryExpression() {
+        return adapter.getElement( adapter.getRootElement(), new XPath( "./rim:QueryExpression", ns ) );
     }
 
 }
