@@ -77,15 +77,6 @@ public class GetRecordByIdHandler {
     private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdHandler.class );
 
     /**
-     * Creates a new {@link GetRecordByIdHandler} instance that uses the given service to lookup the
-     * {@link MetadataStore} s.
-     * 
-     * @param service
-     */
-    public GetRecordByIdHandler() {
-    }
-
-    /**
      * Preprocessing for the export of a {@link GetRecordById} request
      * 
      * @param getRecBI
@@ -171,7 +162,7 @@ public class GetRecordByIdHandler {
         try {
             if ( store != null ) {
                 try {
-                    resultSet = store.getRecordById( requestedIdList );
+                    resultSet = store.getRecordById( requestedIdList, getRecBI.getTypeNames() );
                 } catch ( MetadataStoreException e ) {
                     throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
                 }

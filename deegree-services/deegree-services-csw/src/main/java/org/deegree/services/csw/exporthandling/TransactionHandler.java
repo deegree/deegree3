@@ -222,7 +222,7 @@ public class TransactionHandler {
                 if ( handle != null ) {
                     writer.writeAttribute( "handleRef", handle );
                 }
-                MetadataResultSet<?> rs = store.getRecordById( ids );
+                MetadataResultSet<?> rs = store.getRecordById( ids, null );
                 try {
                     while ( rs.next() ) {
                         DCRecord dc = rs.getRecord().toDublinCore();
