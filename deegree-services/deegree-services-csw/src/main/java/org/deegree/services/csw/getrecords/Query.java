@@ -35,12 +35,40 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.getrecords;
 
-import javax.xml.namespace.QName;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import jj2000.j2k.NotImplementedError;
+
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.utils.kvp.MissingParameterException;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.filter.Filter;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.xml.Filter100XMLDecoder;
+import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.i18n.Messages;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -51,6 +79,14 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  * @version $Revision: $, $Date: $
  */
 public class Query {
+
+    private static final Logger LOG = getLogger( Query.class );
+
+    private static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+
+    static {
+        nsContext.addNamespace( CSW_PREFIX, CSW_202_NS );
+    }
 
     private ReturnableElement elementSetName;
 
@@ -63,11 +99,12 @@ public class Query {
     private SortProperty[] sortProps;
 
     private QName[] queryTypeNames;
-    
+
     private QName[] returnTypeNames;
 
     public Query( ReturnableElement elementSetName, String[] elementName, Filter constraint,
-                  ConstraintLanguage constraintLanguage, SortProperty[] sortProps, QName[] queryTypeNames, QName[] returnTypeNames ) {
+                  ConstraintLanguage constraintLanguage, SortProperty[] sortProps, QName[] queryTypeNames,
+                  QName[] returnTypeNames ) {
         this.elementSetName = elementSetName;
         this.elementName = elementName;
         this.constraint = constraint;
@@ -111,5 +148,126 @@ public class Query {
         if ( sortProps == null )
             return new SortProperty[0];
         return sortProps;
+    }
+
+    public static Query getQuery( OMElement omElement ) {
+        if ( new QName( CSWConstants.CSW_202_NS, "Query" ).equals( omElement.getQName() ) ) {
+            XMLAdapter adapter = new XMLAdapter( omElement );
+            SortProperty[] sortProps = null;
+            Filter constraint = null;
+            ReturnableElement elementSetName = null;
+            String[] elementName = null;
+            ConstraintLanguage constraintLanguage = null;
+
+            List<OMElement> queryChildElements = adapter.getRequiredElements( omElement, new XPath( "*", nsContext ) );
+
+            String typeQuery = adapter.getNodeAsString( omElement, new XPath( "./@typeNames", nsContext ), "" );
+
+            if ( "".equals( typeQuery ) ) {
+                String msg = "ERROR in XML document: Required attribute \"typeNames\" in element \"Query\" is missing!";
+                throw new MissingParameterException( msg );
+            }
+
+            String[] queryTypeNamesString = StringUtils.split( typeQuery, " " );
+            QName[] queryTypeNames = new QName[queryTypeNamesString.length];
+            int counterQName = 0;
+            for ( String s : queryTypeNamesString ) {
+                LOG.debug( "Parsing typeName '" + s + "' of Query as QName. " );
+                QName qname = adapter.parseQName( s, adapter.getRootElement() );
+                queryTypeNames[counterQName++] = qname;
+            }
+            elementName = adapter.getNodesAsStrings( omElement, new XPath( "./csw:ElementName", nsContext ) );
+            QName[] returnTypeNames = null;
+            for ( OMElement omQueryElement : queryChildElements ) {
+
+                // TODO mandatory exclusiveness between ElementSetName vs. ElementName not implemented yet
+                if ( new QName( CSWConstants.CSW_202_NS, "ElementSetName" ).equals( omQueryElement.getQName() ) ) {
+                    String elementSetNameString = omQueryElement.getText();
+                    elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
+
+                    // elementSetNameTypeNames = getNodesAsQNames( omQueryElement, new XPath( "@typeNames",
+                    // nsContext ) );
+                    String typeElementSetName = adapter.getNodeAsString( omQueryElement,
+                                                                         new XPath( "./@typeNames", nsContext ), "" ).trim();
+                    String[] elementSetNameTypeNamesString = StringUtils.split( typeElementSetName, " " );
+                    returnTypeNames = new QName[elementSetNameTypeNamesString.length];
+                    for ( int i = 0; i < elementSetNameTypeNamesString.length; i++ ) {
+                        returnTypeNames[i] = adapter.parseQName( elementSetNameTypeNamesString[i], omElement );
+                    }
+                }
+
+                if ( new QName( CSWConstants.CSW_202_NS, "Constraint" ).equals( omQueryElement.getQName() ) ) {
+                    Version versionConstraint = adapter.getRequiredNodeAsVersion( omQueryElement,
+                                                                                  new XPath( "@version", nsContext ) );
+
+                    OMElement filterEl = omQueryElement.getFirstChildWithName( new QName( OGCNS, "Filter" ) );
+                    OMElement cqlTextEl = omQueryElement.getFirstChildWithName( new QName( "", "CQLTEXT" ) );
+                    if ( ( filterEl != null ) && ( cqlTextEl == null ) ) {
+
+                        constraintLanguage = ConstraintLanguage.FILTER;
+                        try {
+                            // TODO remove usage of wrapper (necessary at the moment to work around problems
+                            // with AXIOM's
+
+                            XMLStreamReader xmlStream = new XMLStreamReaderWrapper(
+                                                                                    filterEl.getXMLStreamReaderWithoutCaching(),
+                                                                                    null );
+                            // skip START_DOCUMENT
+                            xmlStream.nextTag();
+
+                            if ( versionConstraint.equals( new Version( 1, 1, 0 ) ) ) {
+
+                                constraint = Filter110XMLDecoder.parse( xmlStream );
+
+                            } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
+                                constraint = Filter100XMLDecoder.parse( xmlStream );
+                            } else {
+                                String msg = Messages.get( "CSW_FILTER_VERSION_NOT_SPECIFIED", versionConstraint,
+                                                           Version.getVersionsString( new Version( 1, 1, 0 ) ),
+                                                           Version.getVersionsString( new Version( 1, 0, 0 ) ) );
+                                LOG.info( msg );
+                                throw new InvalidParameterValueException( msg );
+                            }
+                        } catch ( XMLStreamException e ) {
+                            String msg = "FilterParsingException: There went something wrong while parsing the filter expression, so please check this!";
+                            LOG.debug( msg );
+                            throw new XMLParsingException( adapter, filterEl, e.getMessage() );
+                        }
+
+                    } else if ( ( filterEl == null ) && ( cqlTextEl != null ) ) {
+                        String msg = Messages.get( "CSW_UNSUPPORTED_CQL_FILTER" );
+                        LOG.info( msg );
+                        throw new NotImplementedError( msg );
+                    } else {
+                        String msg = Messages.get( "CSW_MISSING_FILTER_OR_CQL" );
+                        LOG.debug( msg );
+                        throw new InvalidParameterValueException( msg );
+                    }
+
+                }
+                if ( new QName( OGCNS, "SortBy" ).equals( omQueryElement.getQName() ) ) {
+
+                    List<OMElement> sortPropertyElements = adapter.getRequiredElements( omQueryElement,
+                                                                                        new XPath( "ogc:SortProperty",
+                                                                                                   nsContext ) );
+                    sortProps = new SortProperty[sortPropertyElements.size()];
+                    int counter = 0;
+                    for ( OMElement sortPropertyEl : sortPropertyElements ) {
+                        OMElement propNameEl = adapter.getRequiredElement( sortPropertyEl,
+                                                                           new XPath( "ogc:PropertyName", nsContext ) );
+                        String sortOrder = adapter.getNodeAsString( sortPropertyEl, new XPath( "ogc:SortOrder",
+                                                                                               nsContext ), "ASC" );
+                        SortProperty sortProp = new SortProperty(
+                                                                  new PropertyName( propNameEl.getText(),
+                                                                                    adapter.getNamespaceContext( propNameEl ) ),
+                                                                  sortOrder.equals( "ASC" ) );
+                        sortProps[counter++] = sortProp;
+                    }
+                }
+            }
+            return new Query( elementSetName, elementName, constraint, constraintLanguage, sortProps, queryTypeNames,
+                              returnTypeNames );
+        }
+        return null;
     }
 }

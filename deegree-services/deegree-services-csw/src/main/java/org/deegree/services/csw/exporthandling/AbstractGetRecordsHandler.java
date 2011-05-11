@@ -306,11 +306,12 @@ public abstract class AbstractGetRecordsHandler {
 
     protected abstract String getSchemaLocation( Version version );
 
-    protected MetadataQuery getQuery( GetRecords getRec ) {
+    protected MetadataQuery getQuery( GetRecords getRec )
+                            throws MetadataStoreException {
         Filter constraints = null;
         SortProperty[] sortProps = null;
         QName[] queryTypeNames = null;
-        QName[] returnTypeNames = null;        
+        QName[] returnTypeNames = null;
         if ( getRec.getQuery() != null ) {
             constraints = getRec.getQuery().getConstraint();
             sortProps = getRec.getQuery().getSortProps();
