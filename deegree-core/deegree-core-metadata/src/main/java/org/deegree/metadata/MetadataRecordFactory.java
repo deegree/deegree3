@@ -43,12 +43,17 @@ import java.io.File;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.metadata.ebrim.AdhocQuery;
 import org.deegree.metadata.ebrim.Association;
-import org.deegree.metadata.ebrim.ClassificationNode;
 import org.deegree.metadata.ebrim.Classification;
+import org.deegree.metadata.ebrim.ClassificationNode;
 import org.deegree.metadata.ebrim.ExtrinsicObject;
+import org.deegree.metadata.ebrim.RegistryObject;
+import org.deegree.metadata.ebrim.RegistryObjectType;
 import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.iso.ISORecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main entry point for creating {@link MetadataRecord} instances from XML representations.
@@ -62,6 +67,8 @@ import org.deegree.metadata.iso.ISORecord;
  * @version $Revision$, $Date$
  */
 public class MetadataRecordFactory {
+
+    private static Logger LOG = LoggerFactory.getLogger( MetadataRecordFactory.class );
 
     /**
      * Creates a new {@link MetadataRecord} from the given element.
@@ -79,19 +86,32 @@ public class MetadataRecordFactory {
             return new ISORecord( rootEl );
         }
         if ( RIM_NS.equals( ns ) ) {
-            String name = rootEl.getLocalName();
-            if ( "ExtrinsicObject".equals( name ) ) {
-                return new ExtrinsicObject( rootEl );
-            } else if ( "Association".equals( name ) ) {
-                return new Association( rootEl );
-            } else if ( "Classification".equals( name ) ) {
-                return new Classification( rootEl );
-            } else if ( "ClassificationNode".equals( name ) ) {
-                return new ClassificationNode( rootEl );
-            } else if ( "RegistryPackage".equals( name ) ) {
-                return new RegistryPackage( rootEl );
+            RegistryObjectType type = null;
+            try {
+                type = RegistryObjectType.valueOf( rootEl.getLocalName() );
+            } catch ( Throwable t ) {
+                throw new IllegalArgumentException( "Element '" + rootEl.getLocalName()
+                                                    + "' does not denote an ebRIM 3.0 registry object." );
             }
-            throw new IllegalArgumentException( "Unknown / unsuppported RegistryObject '" + name + "'." );
+            switch ( type ) {
+            case AdhocQuery:
+                return new AdhocQuery( rootEl );
+            case Association:
+                return new Association( rootEl );
+            case Classification:
+                return new Classification( rootEl );
+            case ClassificationNode:
+                return new ClassificationNode( rootEl );
+            case ExtrinsicObject:
+                return new ExtrinsicObject( rootEl );
+            case RegistryObject:
+                return new RegistryObject( rootEl );
+            case RegistryPackage:
+                return new RegistryPackage( rootEl );
+            default:
+                LOG.warn( "Treating registry object '" + type + "' as generic registry object." );
+                return new RegistryObject( rootEl );
+            }
         }
         if ( DC_RECORD_NS.equals( ns ) ) {
             throw new UnsupportedOperationException( "Creating DC records from XML is not implemented yet." );
