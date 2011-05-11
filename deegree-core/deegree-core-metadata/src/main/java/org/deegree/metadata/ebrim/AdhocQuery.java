@@ -39,6 +39,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XPath;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
  * TODO add class documentation here
@@ -70,6 +71,20 @@ public class AdhocQuery extends RegistryObject {
      */
     public OMElement getQueryExpression() {
         return adapter.getElement( adapter.getRootElement(), new XPath( "./rim:QueryExpression", ns ) );
+    }
+
+    // TODO: let adhocquery implement query interface
+    public ReturnableElement getElementSetName() {
+        String reAsString = adapter.getNodeAsString( adapter.getRootElement(),
+                                                     new XPath( "./rim:QueryExpression/csw:Query/csw:ElementSetName",
+                                                                ns ), null );
+        ReturnableElement re = ReturnableElement.summary;
+        try {
+            re = ReturnableElement.valueOf( reAsString );
+        } catch ( Exception e ) {
+            //
+        }
+        return re;
     }
 
 }
