@@ -77,7 +77,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
                                                     TstConstants.tst_13 );
 
-        resultSet = store.getRecordById( ids );
+        resultSet = store.getRecordById( ids, null );
         int size = 0;
         while ( resultSet.next() ) {
             size++;
@@ -100,7 +100,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
         }
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
 
-        resultSet = store.getRecordById( ids );
+        resultSet = store.getRecordById( ids, null );
         int size = 0;
         while ( resultSet.next() ) {
             size++;
@@ -124,7 +124,7 @@ public class InspectorCouplingTest extends AbstractISOTest {
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
                                                     TstConstants.tst_13 );
 
-        resultSet = store.getRecordById( ids );
+        resultSet = store.getRecordById( ids, null );
         int size = 0;
         while ( resultSet.next() ) {
             size++;

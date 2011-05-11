@@ -37,6 +37,8 @@ package org.deegree.metadata.persistence;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.config.Resource;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -88,9 +90,11 @@ public interface MetadataStore<T extends MetadataRecord> extends Resource {
      * 
      * @param idList
      *            list of the requested record identifiers, can be empty, but must not be <code>null</code>
+     * @param recordTypeNames
+     *            requested record type names, can be empty or <code>null</code>
      * @throws MetadataStoreException
      */
-    public MetadataResultSet<T> getRecordById( List<String> idList )
+    public MetadataResultSet<T> getRecordById( List<String> idList, QName[] recordTypeNames )
                             throws MetadataStoreException;
 
     /**

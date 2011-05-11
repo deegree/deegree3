@@ -122,7 +122,7 @@ public class InspectorIdentifierTest extends AbstractISOTest {
         }
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
 
-        resultSet = store.getRecordById( ids );
+        resultSet = store.getRecordById( ids, null );
         int size = 0;
         while ( resultSet.next() ) {
             size++;
@@ -157,7 +157,7 @@ public class InspectorIdentifierTest extends AbstractISOTest {
         }
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
 
-        resultSet = store.getRecordById( ids );
+        resultSet = store.getRecordById( ids, null );
         int size = 0;
         while ( resultSet.next() ) {
             size++;

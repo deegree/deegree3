@@ -90,7 +90,7 @@ public class ISORecordSerializeTest extends AbstractISOTest {
         }
 
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12 );
-        resultSet = store.getRecordById( ids );
+        resultSet = store.getRecordById( ids, null );
 
         // create the is output
         // String file = "/home/thomas/Desktop/zTestBrief.xml";
@@ -142,7 +142,7 @@ public class ISORecordSerializeTest extends AbstractISOTest {
             return;
         }
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
-        resultSet = store.getRecordById( ids );
+        resultSet = store.getRecordById( ids, null );
 
         XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.briefRecord.openStream() );
 
@@ -190,7 +190,7 @@ public class ISORecordSerializeTest extends AbstractISOTest {
             return;
         }
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
-        resultSet = store.getRecordById( ids );
+        resultSet = store.getRecordById( ids, null );
 
         XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.summaryRecord.openStream() );
 

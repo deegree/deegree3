@@ -43,6 +43,8 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -215,7 +217,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     }
 
     @Override
-    public MetadataResultSet<ISORecord> getRecordById( List<String> idList )
+    public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
         QueryHelper qh = new QueryHelper( getDBType() );
