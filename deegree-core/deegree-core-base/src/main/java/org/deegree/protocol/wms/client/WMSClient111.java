@@ -59,9 +59,11 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,6 +78,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
+import org.deegree.commons.utils.CollectionUtils;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -720,6 +724,19 @@ public class WMSClient111 {
                                                     boolean errorsInImage, boolean validate,
                                                     List<String> validationErrors )
                                 throws IOException {
+        	layers = new ArrayList<String>( layers );
+        	layers = CollectionUtils.map( layers, new Mapper<String, String>(){
+				public String apply( String u ) {
+					try {
+						return URLEncoder.encode( u, "UTF-8" );
+					} catch ( UnsupportedEncodingException e ) {
+						// eat it
+					}
+					return u;
+				}
+        	} );
+        	
+        	
             if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
                 return getTiledMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
                                     validationErrors );
