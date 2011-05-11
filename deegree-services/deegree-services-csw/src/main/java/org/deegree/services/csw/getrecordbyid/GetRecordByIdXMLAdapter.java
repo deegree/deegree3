@@ -104,19 +104,20 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
         String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ),
                                                defaultOutputFormat );
 
-                
         String elementSetNameString = getNodeAsString( rootElement, new XPath( "csw:ElementSetName", nsContext ),
                                                        ReturnableElement.summary.name() );
 
         ReturnableElement elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
 
         QName[] typeNames = null;
-        OMElement elSetNameEl = getElement( rootElement, new XPath( "csw:ElementSetName") );
+        OMElement elSetNameEl = getElement( rootElement, new XPath( "csw:ElementSetName", nsContext ) );
         String typeElementSetName = getNodeAsString( elSetNameEl, new XPath( "@typeNames", nsContext ), "" ).trim();
-        String[] elementSetNameTypeNamesString = StringUtils.split( typeElementSetName, " " );
-        typeNames = new QName[elementSetNameTypeNamesString.length];
-        for ( int i = 0; i < elementSetNameTypeNamesString.length; i++ ) {
-            typeNames[i] = parseQName( elementSetNameTypeNamesString[i], elSetNameEl );
+        if ( typeElementSetName != null && !typeElementSetName.isEmpty() ) {
+            String[] elementSetNameTypeNamesString = StringUtils.split( typeElementSetName, " " );
+            typeNames = new QName[elementSetNameTypeNamesString.length];
+            for ( int i = 0; i < elementSetNameTypeNamesString.length; i++ ) {
+                typeNames[i] = parseQName( elementSetNameTypeNamesString[i], elSetNameEl );
+            }
         }
 
         String outputSchemaString = getNodeAsString( rootElement, new XPath( "@outputSchema", nsContext ),
