@@ -423,7 +423,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         writer.writeStartElement( WMSNS, "GetMap" );
         writeImageFormats( writer );
-        writeDCP( writer, true, true );
+        writeDCP( writer, true, false );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetFeatureInfo" );

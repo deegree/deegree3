@@ -375,7 +375,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
         writer.writeStartElement( "GetMap" );
         writeImageFormats( writer );
-        writeDCP( writer, true, true );
+        writeDCP( writer, true, false );
         writer.writeEndElement();
 
         writer.writeStartElement( "GetFeatureInfo" );
