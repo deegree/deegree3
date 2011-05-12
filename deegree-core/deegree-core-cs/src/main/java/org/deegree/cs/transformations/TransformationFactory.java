@@ -60,6 +60,7 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.components.IEllipsoid;
 import org.deegree.cs.components.IGeodeticDatum;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
@@ -69,7 +70,6 @@ import org.deegree.cs.coordinatesystems.IGeocentricCRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
@@ -680,10 +680,10 @@ public class TransformationFactory {
             case GEOCENTRIC:
                 break;
             case PROJECTED:
-                sourceTransformationChain = new ProjectionTransform( (ProjectedCRS) sourceCRS.getUnderlyingCRS() );
+                ICRS underlying = resolve( sourceCRS.getUnderlyingCRS() );
+                sourceTransformationChain = new ProjectionTransform( (ProjectedCRS) underlying );
                 sourceTransformationChain.inverse();
-                ICRS underlying = sourceCRS.getUnderlyingCRS();
-                sourceGeographic = ( (IProjectedCRS) resolve( underlying ) ).getGeographicCRS();
+                sourceGeographic = ( (IProjectedCRS) underlying ).getGeographicCRS();
             case GEOGRAPHIC:
                 underlying = sourceCRS.getUnderlyingCRS();
                 if ( sourceGeographic == null ) {
@@ -696,7 +696,8 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final Transformation axisAligned = createMatrixTransform( sourceGeographic, sourceGeocentric,
+                final Transformation axisAligned = createMatrixTransform( sourceGeographic,
+                                                                          sourceGeocentric,
                                                                           swapAxis( sourceGeographic,
                                                                                     GeographicCRS.WGS84 ) );
                 if ( LOG.isDebugEnabled() ) {
@@ -740,7 +741,8 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final Transformation axisAligned = createMatrixTransform( targetGeocentric, targetGeographic,
+                final Transformation axisAligned = createMatrixTransform( targetGeocentric,
+                                                                          targetGeographic,
                                                                           swapAxis( GeographicCRS.WGS84,
                                                                                     targetGeographic ) );
                 final Transformation geoCentricTransform = new GeocentricTransform( targetCRS, targetGeocentric );
@@ -1003,7 +1005,8 @@ public class TransformationFactory {
                     sourceGeocentric = targetCRS;
                 }
             }
-            final Transformation axisAlign = createMatrixTransform( sourceCRS, createWGSAlligned( sourceCRS ),
+            final Transformation axisAlign = createMatrixTransform( sourceCRS,
+                                                                    createWGSAlligned( sourceCRS ),
                                                                     swapAndRotateGeoAxis( sourceCRS,
                                                                                           GeographicCRS.WGS84 ) );
             if ( LOG.isDebugEnabled() ) {

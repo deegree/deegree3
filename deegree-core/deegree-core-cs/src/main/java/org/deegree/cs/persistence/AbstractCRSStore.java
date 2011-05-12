@@ -54,7 +54,9 @@ import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.ICompoundCRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
+import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,10 +140,8 @@ public abstract class AbstractCRSStore implements CRSStore {
                 if ( result.getType() == COMPOUND ) {
                     addIdToCache( cachedCRSXY, ( (ICompoundCRS) result ).getUnderlyingCRS(), false );
                     if ( ( (ICompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
-                        addIdToCache(
-                                      cachedCRSXY,
-                                      ( (IProjectedCRS) ( (ICompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
-                                      false );
+                        ICRS underlying = resolve( ( (ICompoundCRS) result ).getUnderlyingCRS() );
+                        addIdToCache( cachedCRSXY, ( (ProjectedCRS) underlying ).getGeographicCRS(), false );
                     }
                 } else if ( result.getType() == PROJECTED ) {
                     addIdToCache( ( (IProjectedCRS) result ).getGeographicCRS(), false );
@@ -151,9 +151,8 @@ public abstract class AbstractCRSStore implements CRSStore {
                 if ( result.getType() == COMPOUND ) {
                     addIdToCache( ( (ICompoundCRS) result ).getUnderlyingCRS(), false );
                     if ( ( (ICompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
-                        addIdToCache(
-                                      ( (IProjectedCRS) ( (ICompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
-                                      false );
+                        ICRS underlying = resolve( ( (ICompoundCRS) result ).getUnderlyingCRS() );
+                        addIdToCache( ( (ProjectedCRS) underlying ).getGeographicCRS(), false );
                     }
                 } else if ( result.getType() == PROJECTED ) {
                     addIdToCache( ( (IProjectedCRS) result ).getGeographicCRS(), false );
@@ -474,5 +473,12 @@ public abstract class AbstractCRSStore implements CRSStore {
      * @return
      */
     public abstract ICRS getCoordinateSystem( String id );
+
+    protected ICRS resolve( ICRS crs ) {
+        if ( crs instanceof CRSRef ) {
+            return ( (CRSRef) crs ).getReferencedObject();
+        }
+        return crs;
+    }
 
 }
