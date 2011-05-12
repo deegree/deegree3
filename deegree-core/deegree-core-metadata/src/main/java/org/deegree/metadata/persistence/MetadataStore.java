@@ -106,4 +106,11 @@ public interface MetadataStore<T extends MetadataRecord> extends Resource {
      */
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException;
+
+    /**
+     * Returns the JDBC connection id.
+     * 
+     * @return the JDBC connection id, never <code>null</code>
+     */
+    public String getConnId();
 }

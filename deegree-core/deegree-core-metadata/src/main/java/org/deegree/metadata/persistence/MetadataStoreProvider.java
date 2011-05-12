@@ -37,9 +37,9 @@ package org.deegree.metadata.persistence;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 
 import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 
 /**
  * Implementations plug-in {@link MetadataStore}s.
@@ -51,12 +51,9 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  */
 public interface MetadataStoreProvider extends ExtendedResourceProvider<MetadataStore> {
 
-    public String[] getCreateStatements( URL configURL )
+    String[] getCreateStatements( Type dbType )
                             throws UnsupportedEncodingException, IOException;
 
-    public String[] getDefaultCreateStatements()
-                            throws UnsupportedEncodingException, IOException;
-
-    public String[] getDropStatements( URL configURL )
+    String[] getDropStatements( Type dbType )
                             throws UnsupportedEncodingException, IOException;
 }

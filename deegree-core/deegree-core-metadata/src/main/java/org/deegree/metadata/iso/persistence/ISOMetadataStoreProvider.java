@@ -53,6 +53,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.metadata.i18n.Messages;
@@ -85,30 +86,38 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     }
 
     @Override
-    public String[] getCreateStatements( URL configURL )
-                            throws UnsupportedEncodingException, IOException {
-        return getDefaultCreateStatements();
-    }
-
-    @Override
-    public String[] getDefaultCreateStatements()
+    public String[] getCreateStatements( Type dbType )
                             throws UnsupportedEncodingException, IOException {
         List<String> creates = new ArrayList<String>();
-        URL script = ISOMetadataStoreProvider.class.getResource( "postgis/create.sql" );
-        creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        script = ISOMetadataStoreProvider.class.getResource( "postgis/create_inspire.sql" );
-        creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+        if ( dbType == Type.MSSQL ) {
+            URL script = ISOMetadataStoreProvider.class.getResource( "mssql/create.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+            script = ISOMetadataStoreProvider.class.getResource( "mssql/create_inspire.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+        } else if ( dbType == Type.PostgreSQL ) {
+            URL script = ISOMetadataStoreProvider.class.getResource( "postgis/create.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+            script = ISOMetadataStoreProvider.class.getResource( "postgis/create_inspire.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+        }
         return creates.toArray( new String[creates.size()] );
     }
 
     @Override
-    public String[] getDropStatements( URL configURL )
+    public String[] getDropStatements( Type dbType )
                             throws UnsupportedEncodingException, IOException {
         List<String> creates = new ArrayList<String>();
-        URL script = ISOMetadataStoreProvider.class.getResource( "postgis/drop_inspire.sql" );
-        creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        script = ISOMetadataStoreProvider.class.getResource( "postgis/drop.sql" );
-        creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+        if ( dbType == Type.MSSQL ) {
+            URL script = ISOMetadataStoreProvider.class.getResource( "mssql/drop_inspire.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+            script = ISOMetadataStoreProvider.class.getResource( "mssql/drop.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+        } else if ( dbType == Type.PostgreSQL ) {
+            URL script = ISOMetadataStoreProvider.class.getResource( "postgis/drop_inspire.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+            script = ISOMetadataStoreProvider.class.getResource( "postgis/drop.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+        }
         return creates.toArray( new String[creates.size()] );
     }
 

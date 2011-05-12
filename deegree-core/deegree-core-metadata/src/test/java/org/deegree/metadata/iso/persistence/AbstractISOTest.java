@@ -46,9 +46,8 @@ import java.util.Set;
 
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.metadata.iso.persistence.ISOMetadataStore;
-import org.deegree.metadata.iso.persistence.ISOMetadataStoreProvider;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.After;
@@ -129,16 +128,16 @@ public abstract class AbstractISOTest {
         try {
             stmt = conn.createStatement();
 
-            for ( String sql : new ISOMetadataStoreProvider().getDropStatements( TstConstants.configURL ) ) {
+            for ( String sql : new ISOMetadataStoreProvider().getDropStatements( Type.PostgreSQL ) ) {
                 try {
                     stmt.executeUpdate( sql );
                 } catch ( Exception e ) {
                     // TODO: handle exception
-                    System.out.println(e.getMessage());
+                    System.out.println( e.getMessage() );
                 }
             }
 
-            for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( TstConstants.configURL ) ) {
+            for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( Type.PostgreSQL ) ) {
 
                 stmt.execute( sql );
             }

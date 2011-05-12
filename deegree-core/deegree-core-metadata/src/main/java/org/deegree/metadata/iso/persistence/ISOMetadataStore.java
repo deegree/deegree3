@@ -164,6 +164,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
      * 
      * @return the JDBC connection id, never <code>null</code>
      */
+    @Override
     public String getConnId() {
         return connectionId;
     }
