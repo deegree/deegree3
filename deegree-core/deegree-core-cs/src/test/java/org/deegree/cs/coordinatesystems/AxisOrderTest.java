@@ -233,11 +233,14 @@ public class AxisOrderTest {
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 9.853730, 52.405600, 1225.0 ) );        
         List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
-                
+                System.out.println(transformedPoints.get( 0 ));
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertEquals( 52.405600, transformedPoints.get( 0 ).x );
-        assertEquals( 9.853730, transformedPoints.get( 0 ).y );
-        assertEquals( 1225.0, transformedPoints.get( 0 ).z );
+        double deltaX = Math.abs( 52.405600 - transformedPoints.get( 0 ).x );
+        double deltaY = Math.abs( 9.853730 - transformedPoints.get( 0 ).y );
+        double deltaZ = Math.abs( 1225.0 - transformedPoints.get( 0 ).z );
+        assertTrue( deltaX < 0.0001 );
+        assertTrue( deltaY < 0.0001 );
+        assertTrue( deltaZ < 0.01 );
     }
 }

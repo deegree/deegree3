@@ -50,10 +50,10 @@ import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.IEllipsoid;
 import org.deegree.cs.components.Unit;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.ICompoundCRS;
 import org.deegree.cs.coordinatesystems.IGeocentricCRS;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.transformations.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,8 +136,16 @@ public class GeocentricTransform extends Transformation {
     }
 
     private void calcParams() {
-        this.hasHeight = ( getSourceCRS().getType() == CRSType.COMPOUND );
-        defaultHeightValue = ( hasHeight ) ? ( (ICompoundCRS) getSourceCRS() ).getDefaultHeight() : 0;
+        if ( getSourceCRS().getType() == CRSType.COMPOUND ) {
+            this.hasHeight = true;
+            defaultHeightValue = ( (ICompoundCRS) getSourceCRS() ).getDefaultHeight();
+        } else if ( getTargetCRS().getType() == CRSType.COMPOUND ) {
+            this.hasHeight = true;
+            defaultHeightValue = ( (ICompoundCRS) getTargetCRS() ).getDefaultHeight();
+        } else {
+            this.hasHeight = false;
+            defaultHeightValue = 0;
+        }
         IEllipsoid ellipsoid = getSourceCRS().getGeodeticDatum().getEllipsoid();
         semiMajorAxis = Unit.METRE.convert( ellipsoid.getSemiMajorAxis(), ellipsoid.getUnits() );
         semiMinorAxis = Unit.METRE.convert( ellipsoid.getSemiMinorAxis(), ellipsoid.getUnits() );
@@ -231,7 +239,7 @@ public class GeocentricTransform extends Transformation {
                 }
                 p.z = height;
             } else {
-                p.z = Double.NaN;
+                p.z = defaultHeightValue;
             }
         }
     }
