@@ -223,4 +223,21 @@ public class AxisOrderTest {
         assertEquals( 817.0, transformedPoints.get( 0 ).z );
     }
 
+    @Test
+    public void testEPSG7423ToXY()
+                            throws UnknownCRSException, IllegalArgumentException, TransformationException {
+        ICRS sourceCRS = CRSManager.lookup( "urn:ogc:def:crs:epsg::7423_XY" );
+        ICRS targetCRS = CRSManager.lookup( "urn:ogc:def:crs:epsg::7423" );
+
+        CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS );
+        List<Point3d> points = new ArrayList<Point3d>();
+        points.add( new Point3d( 9.853730, 52.405600, 1225.0 ) );        
+        List<Point3d> transformedPoints = tranformer.transform( sourceCRS, points );
+                
+        assertNotNull( transformedPoints );
+        assertEquals( 1, transformedPoints.size() );
+        assertEquals( 52.405600, transformedPoints.get( 0 ).x );
+        assertEquals( 9.853730, transformedPoints.get( 0 ).y );
+        assertEquals( 1225.0, transformedPoints.get( 0 ).z );
+    }
 }
