@@ -85,6 +85,7 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
@@ -485,6 +486,10 @@ public class GetMap {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue",
                                         "sld" );
+            } catch ( XMLParsingException e ) {
+                LOG.trace( "Stack trace:", e );
+                throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue",
+                                        "sld" );
             } catch ( ParseException e ) {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( get( "WMS.DIMENSION_PARAMETER_INVALID", "embeddded in SLD", e.getMessage() ),
@@ -498,6 +503,10 @@ public class GetMap {
         if ( sldBody != null ) {
             try {
                 pair = parse( xmlfac.createXMLStreamReader( new StringReader( sldBody ) ), service, this );
+            } catch ( XMLParsingException e ) {
+                LOG.trace( "Stack trace:", e );
+                throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD_BODY", e.getMessage() ),
+                                        "InvalidParameterValue", "sld_body" );
             } catch ( XMLStreamException e ) {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD_BODY", e.getMessage() ),
