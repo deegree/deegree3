@@ -64,7 +64,7 @@ public class PrimitivePropertyNameMapping extends PropertyNameMapping {
         return isConcatenated;
     }
 
-    public PrimitiveType getTargetFieldType() {
+    public PrimitiveType getType() {
         return pt;
     }
 }

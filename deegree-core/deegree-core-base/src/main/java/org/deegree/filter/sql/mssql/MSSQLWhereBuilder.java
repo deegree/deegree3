@@ -275,7 +275,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
                 crs = ( (GeometryPropertyNameMapping) propMapping ).getCRS();
                 srid = ( (GeometryPropertyNameMapping) propMapping ).getSRID();
             } else if ( propMapping instanceof PrimitivePropertyNameMapping ) {
-                pt = ( (PrimitivePropertyNameMapping) propMapping ).getTargetFieldType();
+                pt = ( (PrimitivePropertyNameMapping) propMapping ).getType();
             }
             sql = new SQLColumn( table, column, true, pt, sqlType, crs, srid, isConcatenated );
         } else {

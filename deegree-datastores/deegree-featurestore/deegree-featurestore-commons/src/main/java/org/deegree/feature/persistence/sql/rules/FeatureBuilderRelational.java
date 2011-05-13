@@ -309,6 +309,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     private TypedObjectNode buildParticle( Mapping mapping, ResultSet rs, LinkedHashMap<String, Integer> colToRsIdx )
                             throws SQLException {
 
+        QName q = getName( mapping.getPath() );
+        System.out.println ("building: " + q);
+        
         TypedObjectNode particle = null;
         if ( mapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;

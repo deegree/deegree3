@@ -418,7 +418,7 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
             if ( mapping instanceof PrimitivePropertyNameMapping ) {
                 PrimitivePropertyNameMapping primitiveMapping = (PrimitivePropertyNameMapping) mapping;
                 Object internalValue = XMLValueMangler.xmlToInternal( literal.getValue().toString(),
-                                                                      primitiveMapping.getTargetFieldType().getBaseType() );
+                                                                      primitiveMapping.getType().getBaseType() );
                 sqlValue = SQLValueMangler.internalToSQL( internalValue );
                 LOG.debug( "sqlValue in mapping: " + sqlValue );
             } else {
