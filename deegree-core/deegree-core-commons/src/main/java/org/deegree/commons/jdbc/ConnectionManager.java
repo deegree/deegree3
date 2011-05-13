@@ -151,7 +151,11 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     public static void destroy( String connid ) {
         try {
-            idToPools.remove( connid ).destroy();
+            if ( connid == null )
+                return;
+            ConnectionPool pool = idToPools.remove( connid );
+            if ( pool != null )
+                pool.destroy();
         } catch ( Exception e ) {
             LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
         }
