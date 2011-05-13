@@ -771,7 +771,7 @@ public class GetMap {
             if ( sldFilter != null ) {
                 Operator op1 = ( (OperatorFilter) sldFilter ).getOperator();
                 Operator op2 = ( (OperatorFilter) extra ).getOperator();
-                extra = new OperatorFilter( new Or( op1, op2 ) );
+                extra = new OperatorFilter( new And( op1, op2 ) );
             }
         }
         if ( filter != null ) {
