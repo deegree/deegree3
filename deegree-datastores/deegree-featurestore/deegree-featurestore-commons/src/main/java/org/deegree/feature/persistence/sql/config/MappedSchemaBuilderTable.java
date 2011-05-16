@@ -62,6 +62,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.SQLDialectHelper;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -121,6 +122,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     // caches the column information
     private Map<String, LinkedHashMap<String, ColumnMetadata>> tableNameToColumns = new HashMap<String, LinkedHashMap<String, ColumnMetadata>>();
 
+    private final SQLDialectHelper dialect;
+
     /**
      * Creates a new {@link MappedSchemaBuilderTable} instance.
      * 
@@ -131,8 +134,9 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
      * @throws SQLException
      * @throws FeatureStoreException
      */
-    public MappedSchemaBuilderTable( String jdbcConnId, List<FeatureTypeJAXB> ftDecls ) throws SQLException,
-                            FeatureStoreException {
+    public MappedSchemaBuilderTable( String jdbcConnId, List<FeatureTypeJAXB> ftDecls, SQLDialectHelper dialect )
+                            throws SQLException, FeatureStoreException {
+        this.dialect = dialect;
         conn = ConnectionManager.getConnection( jdbcConnId );
         try {
             for ( FeatureTypeJAXB ftDecl : ftDecls ) {
@@ -441,7 +445,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             ResultSet rs = null;
             try {
                 LOG.debug( "Analyzing metadata for table {}", qTable );
-                String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : "public";
+                String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : dialect.getDefaultSchema();
                 String table = qTable.getTable();
                 rs = md.getColumns( null, dbSchema, table.toLowerCase(), "%" );
                 while ( rs.next() ) {
