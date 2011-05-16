@@ -493,7 +493,8 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
                                                                int httpStatusCode, ExceptionSerializer<E> serializer,
                                                                E exception, HttpServletResponse response )
                             throws ServletException {
-        sendException( contentType, encoding, additionalHeaders, httpStatusCode, serializer, null, exception, response );
+        sendException( contentType, encoding, additionalHeaders, httpStatusCode, serializer,
+                       getImplementationMetadata(), exception, response );
     }
 
     /**
