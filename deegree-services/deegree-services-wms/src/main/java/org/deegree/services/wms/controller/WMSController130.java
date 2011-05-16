@@ -38,6 +38,7 @@ package org.deegree.services.wms.controller;
 
 import static org.deegree.services.controller.ows.OWSException.INVALID_CRS;
 import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 
@@ -82,7 +83,8 @@ public class WMSController130 extends WMSControllerBase {
 
     public void sendException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        AbstractOGCServiceController.sendException( "text/xml", "UTF-8", null, 200, EXCEPTIONS, ex, response );
+        AbstractOGCServiceController.sendException( "text/xml", "UTF-8", null, 200, EXCEPTIONS,
+                                                    IMPLEMENTATION_METADATA, ex, response );
     }
 
     public void throwSRSException( String name )

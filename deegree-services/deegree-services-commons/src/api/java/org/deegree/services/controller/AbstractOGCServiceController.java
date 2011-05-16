@@ -42,8 +42,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -78,6 +80,7 @@ import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.SOAPException;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.SOAPExceptionSerializer;
+import org.deegree.services.controller.exception.serializer.SerializerProvider;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
@@ -136,10 +139,19 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
         this.serviceInfo = serviceInfo;
     }
 
+    private static List<SerializerProvider> exceptionSerializers = new ArrayList<SerializerProvider>();
+
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         this.workspace = workspace;
+
+        exceptionSerializers.clear();
+        Iterator<SerializerProvider> serializers = ServiceLoader.load( SerializerProvider.class,
+                                                                       workspace.getModuleClassLoader() ).iterator();
+        while ( serializers.hasNext() )
+            exceptionSerializers.add( serializers.next() );
+
         WebServicesConfiguration ws = workspace.getSubsystemManager( WebServicesConfiguration.class );
 
         // Copying to temporary input stream is necessary to avoid config file locks (on Windows)
@@ -476,10 +488,18 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
         return agreedVersion;
     }
 
+    public <E extends ControllerException> void sendException( String contentType, String encoding,
+                                                               Map<String, String> additionalHeaders,
+                                                               int httpStatusCode, ExceptionSerializer<E> serializer,
+                                                               E exception, HttpServletResponse response )
+                            throws ServletException {
+        sendException( contentType, encoding, additionalHeaders, httpStatusCode, serializer, null, exception, response );
+    }
+
     /**
      * Sends an exception to the client.
      * 
-     * @param <T>
+     * @param <E>
      *            the type of the Exception, which should be subtype of controller exception
      * 
      * @param contentType
@@ -491,7 +511,8 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
      * @param httpStatusCode
      *            of the exception response
      * @param serializer
-     *            responsible for creating the appropriate response format of the exception.
+     *            responsible for creating the appropriate response format of the exception. Could be overridden by a
+     *            matching {@link SerializerProvider} on the classpath.
      * @param exception
      *            the cause, holding relevant information.
      * @param response
@@ -499,12 +520,19 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
      * @throws ServletException
      *             if the exception could not be sent.
      */
-    public static <T extends ControllerException> void sendException( String contentType, String encoding,
+    public static <E extends ControllerException> void sendException( String contentType, String encoding,
                                                                       Map<String, String> additionalHeaders,
                                                                       int httpStatusCode,
-                                                                      ExceptionSerializer<T> serializer, T exception,
+                                                                      ExceptionSerializer<E> serializer,
+                                                                      ImplementationMetadata<?> md, E exception,
                                                                       HttpServletResponse response )
                             throws ServletException {
+        for ( SerializerProvider p : exceptionSerializers ) {
+            if ( p.matches( md ) ) {
+                serializer = p.getSerializer( md );
+            }
+        }
+
         // take care of proper request logging
         LoggingHttpResponseWrapper wrapper = null;
         if ( response instanceof LoggingHttpResponseWrapper ) {

@@ -1140,12 +1140,12 @@ public class OGCFrontController extends HttpServlet {
             // correct)
             OWS<? extends Enum<?>> first = values.iterator().next();
             Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = first.getExceptionSerializer( requestVersion );
-            AbstractOGCServiceController.sendException( serializerAndMime.second, "UTF-8", null, 200,
-                                                        serializerAndMime.first, e, res );
+            ( (AbstractOGCServiceController<?>) first ).sendException( serializerAndMime.second, "UTF-8", null, 200,
+                                                                       serializerAndMime.first, e, res );
         } else {
             // use the most common serializer (OWS 1.1.0)
             AbstractOGCServiceController.sendException( "text/xml", "UTF-8", null, 200,
-                                                        new OWSException110XMLAdapter(), e, res );
+                                                        new OWSException110XMLAdapter(), null, e, res );
         }
     }
 }

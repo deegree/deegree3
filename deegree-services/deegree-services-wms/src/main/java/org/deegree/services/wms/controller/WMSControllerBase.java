@@ -46,6 +46,7 @@ import static org.deegree.rendering.r2d.utils.ImageUtils.prepareImage;
 import static org.deegree.services.controller.ows.OWSException.CURRENT_UPDATE_SEQUENCE;
 import static org.deegree.services.controller.ows.OWSException.INVALID_UPDATE_SEQUENCE;
 import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -122,7 +123,8 @@ public abstract class WMSControllerBase implements Controller {
                                 Color color, boolean transparent, String format, WMSController controller )
                             throws ServletException {
         if ( type.equalsIgnoreCase( EXCEPTION_DEFAULT ) ) {
-            AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, ex, response );
+            AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                                                        IMPLEMENTATION_METADATA, ex, response );
         } else if ( type.equalsIgnoreCase( EXCEPTION_INIMAGE ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
             Graphics2D g = img.createGraphics();
@@ -146,25 +148,26 @@ public abstract class WMSControllerBase implements Controller {
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, ex,
-                                                            response );
+                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                                                            IMPLEMENTATION_METADATA, ex, response );
             } catch ( IOException e ) {
-                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, ex,
-                                                            response );
+                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                                                            IMPLEMENTATION_METADATA, ex, response );
             }
         } else if ( type.equalsIgnoreCase( EXCEPTION_BLANK ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, ex,
-                                                            response );
+                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                                                            IMPLEMENTATION_METADATA, ex, response );
             } catch ( IOException e ) {
-                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, ex,
-                                                            response );
+                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                                                            IMPLEMENTATION_METADATA, ex, response );
             }
         } else {
-            AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, ex, response );
+            AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                                                        IMPLEMENTATION_METADATA, ex, response );
         }
     }
 
