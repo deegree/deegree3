@@ -262,9 +262,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
         PropertyNameMapping propMapping = mapper.getMapping( propName, aliasManager );
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
-            // TODO
-            String table = propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
-                                                                          : propMapping.getTargetField().getTable();
+            String table = propMapping.getTargetField().getAlias();
             String column = propMapping.getTargetField().getColumn();
             int sqlType = propMapping.getSQLType();
             ICRS crs = null;
