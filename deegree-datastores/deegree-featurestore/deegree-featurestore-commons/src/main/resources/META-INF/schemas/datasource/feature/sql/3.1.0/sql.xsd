@@ -11,7 +11,8 @@
   </annotation>
   <element name="SQLFeatureStore">
     <annotation>
-      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS)</documentation>
+      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS)
+      </documentation>
       <appinfo>
         <jaxb:class name="SQLFeatureStoreJAXB" />
       </appinfo>
@@ -19,29 +20,29 @@
     <complexType>
       <sequence>
         <element name="JDBCConnId" type="string" />
+        <element name="StorageCRS">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="srid" type="string" use="required" />
+                <attribute name="dim" use="required">
+                  <annotation>
+                    <documentation>Dimensionality of the geometry coordinates</documentation>
+                  </annotation>
+                  <simpleType>
+                    <restriction base="NMTOKENS">
+                      <enumeration value="2D" />
+                      <enumeration value="3D" />
+                    </restriction>
+                  </simpleType>
+                </attribute>
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
         <choice>
           <element ref="sqlfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
           <sequence>
-            <element name="StorageCRS">
-              <complexType>
-                <simpleContent>
-                  <extension base="string">
-                    <attribute name="srid" type="string" use="required" />
-                    <attribute name="dim" use="required">
-                      <annotation>
-                        <documentation>Dimensionality of the geometry coordinates</documentation>
-                      </annotation>
-                      <simpleType>
-                        <restriction base="NMTOKENS">
-                          <enumeration value="2D" />
-                          <enumeration value="3D" />
-                        </restriction>
-                      </simpleType>
-                    </attribute>
-                  </extension>
-                </simpleContent>
-              </complexType>
-            </element>
             <element name="GMLSchema" type="string" minOccurs="1" maxOccurs="unbounded" />
             <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
               <complexType>
