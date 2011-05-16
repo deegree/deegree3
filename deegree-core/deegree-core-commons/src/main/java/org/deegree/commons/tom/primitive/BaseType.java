@@ -170,6 +170,8 @@ public enum BaseType {
             pt = DECIMAL;
             break;
         }
+        case Types.NCHAR:
+        case Types.NVARCHAR:
         case Types.CHAR:
         case Types.VARCHAR: {
             pt = STRING;
@@ -199,10 +201,8 @@ public enum BaseType {
         case Types.LONGNVARCHAR:
         case Types.LONGVARBINARY:
         case Types.LONGVARCHAR:
-        case Types.NCHAR:
         case Types.NCLOB:
         case Types.NULL:
-        case Types.NVARCHAR:
         case Types.OTHER:
         case Types.REF:
         case Types.ROWID:
