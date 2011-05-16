@@ -60,7 +60,7 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.persistence.sql.config.MappedSchemaBuilderGML;
+import org.deegree.feature.persistence.sql.config.AbstractMappedSchemaBuilder;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
@@ -147,7 +147,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
         MappedApplicationSchema schema;
         try {
-            schema = MappedSchemaBuilderGML.build( configURL.toString(), config );
+            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, new PostGISDialect() );
         } catch ( Throwable t ) {
             LOG.error( t.getMessage(), t );
             throw new ResourceInitException( t.getMessage(), t );
@@ -171,6 +171,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         }
     }
 
+    @Override
     protected Envelope getEnvelope( FeatureTypeMapping ftMapping )
                             throws FeatureStoreException {
 
@@ -231,6 +232,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
         return env;
     }
 
+    @Override
     protected Envelope getEnvelope( QName ftName, BlobMapping blobMapping )
                             throws FeatureStoreException {
 
