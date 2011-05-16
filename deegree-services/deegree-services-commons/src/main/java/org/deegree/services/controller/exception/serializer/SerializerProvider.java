@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.exception.serializer;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.ControllerException;
 
@@ -48,6 +49,13 @@ import org.deegree.services.controller.exception.ControllerException;
  * @version $Revision$, $Date$
  */
 public interface SerializerProvider {
+
+    /**
+     * Called before anything else, so configuration files can be loaded etc.
+     * 
+     * @param workspace
+     */
+    void init( DeegreeWorkspace workspace );
 
     /**
      * @param metadata

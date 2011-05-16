@@ -149,8 +149,11 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
         exceptionSerializers.clear();
         Iterator<SerializerProvider> serializers = ServiceLoader.load( SerializerProvider.class,
                                                                        workspace.getModuleClassLoader() ).iterator();
-        while ( serializers.hasNext() )
-            exceptionSerializers.add( serializers.next() );
+        while ( serializers.hasNext() ) {
+            SerializerProvider p = serializers.next();
+            p.init( workspace );
+            exceptionSerializers.add( p );
+        }
 
         WebServicesConfiguration ws = workspace.getSubsystemManager( WebServicesConfiguration.class );
 
