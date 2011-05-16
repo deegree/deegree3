@@ -731,7 +731,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                     sql.append( column );
                     sql.append( "=" );
-                    StringBuilder sb = new StringBuilder();
                     sql.append( geomConverter.getSetSnippet() );
                 } else {
                     LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
@@ -742,7 +741,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         }
         sql.append( " WHERE " );
-        sql.append( fidMapping.getColumns().get( 0 ) );
+        sql.append( fidMapping.getColumns().get( 0 ).first );
         sql.append( "=?" );
         for ( int i = 1; i < fidMapping.getColumns().size(); i++ ) {
             sql.append( " AND " );
