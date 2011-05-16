@@ -137,7 +137,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.csw";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/csw/3.0.0/csw_configuration.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/csw/3.1.0/csw_configuration.xsd";
 
     private MetadataStore<?> store;
 
@@ -202,10 +202,13 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             LOG.info( "Inspire is activated" );
         } else {
             enableInspireExtensions = false;
-            LOG.info( "Inspire is de-activated" );
+            LOG.info( "Inspire extensions are deactivated" );
         }
+
+        int maxMatches = jaxbConfig.getMaxMatches() == null ? 0 : jaxbConfig.getMaxMatches().intValue();
+
         describeRecordHandler = new DescribeRecordHandler();
-        getRecordsHandler = new GetRecordsHandler();
+        getRecordsHandler = new GetRecordsHandler( maxMatches );
         transactionHandler = new TransactionHandler();
         getRecordByIdHandler = new GetRecordByIdHandler();
     }

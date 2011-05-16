@@ -94,6 +94,32 @@ public abstract class XMLMetadataResultSet<T extends MetadataRecord> implements 
     }
 
     @Override
+    public void skip( int rows )
+                            throws MetadataStoreException {
+        try {
+            for ( int i = 0; i < rows; i++ ) {
+                rs.next();
+            }
+        } catch ( SQLException e ) {
+            throw new MetadataStoreException( e.getMessage(), e );
+        }
+    }
+
+    @Override
+    public int getRemaining()
+                            throws MetadataStoreException {
+        int i = 0;
+        try {
+            while ( rs.next() ) {
+                i++;
+            }
+        } catch ( SQLException e ) {
+            throw new MetadataStoreException( e.getMessage(), e );
+        }
+        return i;
+    }
+
+    @Override
     public boolean next()
                             throws MetadataStoreException {
         try {
@@ -104,5 +130,4 @@ public abstract class XMLMetadataResultSet<T extends MetadataRecord> implements 
     }
 
     protected abstract T getRecord( XMLStreamReader xmlReader );
-
 }

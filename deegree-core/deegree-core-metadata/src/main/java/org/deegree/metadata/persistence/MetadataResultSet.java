@@ -61,9 +61,20 @@ public interface MetadataResultSet<T extends MetadataRecord> {
      * first row; the first call to the method next makes the first row the current row; the second call makes the
      * second row the current row, and so on.
      * 
-     * @return
+     * @return true, if the cursor was moved down one row, false otherwise (no rows left)
      */
     public boolean next()
+                            throws MetadataStoreException;
+
+    public void skip( int rows )
+                            throws MetadataStoreException;
+
+    /**
+     * 
+     * @return
+     * @throws MetadataStoreException
+     */
+    public int getRemaining()
                             throws MetadataStoreException;
 
     /**

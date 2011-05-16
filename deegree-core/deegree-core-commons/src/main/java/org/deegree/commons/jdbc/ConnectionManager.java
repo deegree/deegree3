@@ -63,6 +63,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -178,12 +179,8 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
      * @return connection from the corresponding connection pool, null, if not available
      */
     public Connection get( String id ) {
-        ConnectionPool pool = idToPools.get( id );
-        if ( pool == null ) {
-            return null;
-        }
         try {
-            return pool.getConnection();
+            return getConnection( id );
         } catch ( SQLException e ) {
             LOG.trace( "Stack trace: ", e );
             return null;
@@ -205,7 +202,25 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         if ( pool == null ) {
             throw new SQLException( Messages.getMessage( "JDBC_UNKNOWN_CONNECTION", id ) );
         }
-        return pool.getConnection();
+        Connection conn = pool.getConnection();
+        return conn;
+    }
+
+    /**
+     * Invalidates a broken {@link Connection} to avoid its re-use.
+     * 
+     * @param id
+     *            connection pool id, must not be <code>null</code>
+     * @param conn
+     *            connection, must not be <code>null</code>
+     * @throws Exception
+     */
+    public static void invalidate( String id, Connection conn )
+                            throws Exception {
+        ConnectionPool pool = idToPools.get( id );
+        if ( pool != null ) {
+            pool.invalidate( (DelegatingConnection) conn );
+        }
     }
 
     /**

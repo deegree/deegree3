@@ -186,7 +186,7 @@ public class GetRecords extends AbstractCSWRequest {
     /**
      * @return the holeRequest
      */
-    public OMElement getHoleRequest() {
+    public OMElement getXMLRequest() {
         return holeRequest;
     }
 }

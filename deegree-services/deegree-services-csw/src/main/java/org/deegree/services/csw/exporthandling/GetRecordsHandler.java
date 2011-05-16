@@ -56,13 +56,16 @@ import org.deegree.services.csw.getrecords.GetRecords;
  * 
  * @see CSWController
  * 
- * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
  */
 public class GetRecordsHandler extends AbstractGetRecordsHandler {
+
+    public GetRecordsHandler( int maxMatches ) {
+        super( maxMatches );
+    }
 
     @Override
     protected void writeRecord( XMLStreamWriter writer, GetRecords getRec, MetadataRecord m, boolean isElementName )
@@ -92,5 +95,4 @@ public class GetRecordsHandler extends AbstractGetRecordsHandler {
         }
         return "";
     }
-
 }

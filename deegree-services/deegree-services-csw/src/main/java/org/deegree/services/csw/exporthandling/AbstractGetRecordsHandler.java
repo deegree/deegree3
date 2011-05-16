@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -91,6 +92,12 @@ public abstract class AbstractGetRecordsHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractGetRecordsHandler.class );
 
+    private final int maxMatches;
+
+    protected AbstractGetRecordsHandler( int maxMatches ) {
+        this.maxMatches = maxMatches;
+    }
+
     /**
      * Preprocessing for the export of a {@link GetRecords} request
      * 
@@ -107,12 +114,10 @@ public abstract class AbstractGetRecordsHandler {
         LOG.debug( "doGetRecords: " + getRec );
 
         Version version = getRec.getVersion();
-
         response.setContentType( getRec.getOutputFormat() );
 
         // to be sure of a valid response
         String schemaLocation = getSchemaLocation( getRec.getVersion() );
-
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {
             export( xmlWriter, getRec, version, store );
@@ -143,7 +148,7 @@ public abstract class AbstractGetRecordsHandler {
         if ( VERSION_202.equals( version ) ) {
             export202( xmlWriter, getRec, store );
         } else {
-            throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
+            throw new IllegalArgumentException( "Version '" + version + "' is currently not supported." );
         }
     }
 
@@ -160,61 +165,37 @@ public abstract class AbstractGetRecordsHandler {
      */
     private void export202( XMLStreamWriter writer, GetRecords getRec, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
-        Version version = new Version( 2, 0, 2 );
 
         if ( getRec.getResultType() != ResultType.validate ) {
             writer.writeStartElement( CSW_PREFIX, "GetRecordsResponse", CSW_202_NS );
-
             writer.writeNamespace( CSW_PREFIX, CSW_202_NS );
             writer.writeNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-
-            searchStatus( writer, version );
-            searchResult( writer, getRec, version, store );
-
+            exportSearchStatus202( writer );
+            exportSearchResults202( writer, getRec, store );
         } else {
-            if ( validate( getRec.getHoleRequest() ).size() != 0 ) {
+            if ( validate( getRec.getXMLRequest() ).size() != 0 ) {
                 String errorMessage = "VALIDATION-ERROR: ";
-                for ( String error : validate( getRec.getHoleRequest() ) ) {
+                for ( String error : validate( getRec.getXMLRequest() ) ) {
                     errorMessage += error + "; \n";
                 }
-
                 throw new IllegalArgumentException( errorMessage );
-
             }
             writer.writeStartElement( CSW_PREFIX, "Acknowledgement", CSW_202_NS );
             writer.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
             writer.writeStartElement( CSW_202_NS, "EchoedRequest" );
-            readXMLFragment( getRec.getHoleRequest().toString(), writer );
-
+            readXMLFragment( getRec.getXMLRequest().toString(), writer );
             writer.writeEndElement();
             writer.writeEndElement();
-
         }
-
         writer.writeEndDocument();
-
     }
 
-    /**
-     * Exports the timestamp of the request
-     * 
-     * @param writer
-     * @param version
-     * @throws XMLStreamException
-     */
-    private void searchStatus( XMLStreamWriter writer, Version version )
+    private void exportSearchStatus202( XMLStreamWriter writer )
                             throws XMLStreamException {
-
-        if ( VERSION_202.equals( version ) ) {
-            writer.writeStartElement( CSW_202_NS, "SearchStatus" );
-        } else {
-            throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
-        }
-
+        writer.writeStartElement( CSW_202_NS, "SearchStatus" );
         writer.writeAttribute( "timestamp", DateUtils.formatISO8601Date( new Date() ) );
-
-        writer.writeEndElement();// SearchStatus
-
+        // SearchStatus
+        writer.writeEndElement();
     }
 
     /**
@@ -222,12 +203,11 @@ public abstract class AbstractGetRecordsHandler {
      * 
      * @param writer
      * @param getRec
-     * @param version
      * @throws XMLStreamException
      * @throws OWSException
      * @throws MetadataStoreException
      */
-    protected void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version, MetadataStore<?> store )
+    protected void exportSearchResults202( XMLStreamWriter writer, GetRecords getRec, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
         boolean isElementName = false;
         if ( getRec.getQuery() != null && getRec.getQuery().getElementName().length != 0 ) {
@@ -235,31 +215,28 @@ public abstract class AbstractGetRecordsHandler {
         }
         String elementSetValue = getRec.getQuery() != null && getRec.getQuery().getElementSetName() != null ? getRec.getQuery().getElementSetName().name()
                                                                                                            : "custom";
-
         int returnedRecords = 0;
         int counter = 0;
 
         boolean isResultTypeHits = getRec.getResultType().name().equals( CSWConstants.ResultType.hits.name() ) ? true
                                                                                                               : false;
 
-        MetadataResultSet<?> storeSet = null;
+        MetadataResultSet<?> rs = null;
+        MetadataQuery query = getQuery( getRec );
 
+        writer.writeStartElement( CSW_202_NS, "SearchResults" );
         try {
-            if ( VERSION_202.equals( version ) ) {
-
-                writer.writeStartElement( CSW_202_NS, "SearchResults" );
-
+            if ( maxMatches <= 0 ) {
+                LOG.debug( "Max matches not configured, performing 2 queries: count + data" );
                 int countRows = 0;
                 int nextRecord = 0;
-
-                MetadataQuery query = getQuery( getRec );
 
                 try {
                     countRows = store.getRecordCount( query );
                     returnedRecords = 0;
                     nextRecord = 1;
                     if ( !isResultTypeHits ) {
-                        storeSet = store.getRecords( query );
+                        rs = store.getRecords( query );
                         returnedRecords = computeReturned( countRows, getRec.getMaxRecords(), getRec.getStartPosition() );
                         nextRecord = computeNext( countRows, getRec.getMaxRecords(), getRec.getStartPosition() );
                     }
@@ -268,36 +245,66 @@ public abstract class AbstractGetRecordsHandler {
                 }
 
                 writer.writeAttribute( "elementSet", elementSetValue );
-
                 writer.writeAttribute( "recordSchema", getRec.getOutputSchema().toString() );
-
                 writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
-
                 writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( returnedRecords ) );
-
                 writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
-
                 writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
 
-            } else {
-                throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
-            }
-            if ( storeSet != null ) {
-                while ( storeSet.next() ) {
-                    if ( counter < returnedRecords ) {
-                        writeRecord( writer, getRec, storeSet.getRecord(), isElementName );
+                if ( rs != null ) {
+                    while ( rs.next() ) {
+                        if ( counter < returnedRecords ) {
+                            writeRecord( writer, getRec, rs.getRecord(), isElementName );
+                        }
+                        counter++;
                     }
-                    counter++;
+                }
+            } else {
+                LOG.debug( "Max matches configured: {}, performing single data query", maxMatches );
+                rs = store.getRecords( query );
+                List<MetadataRecord> records = new ArrayList<MetadataRecord>( maxMatches );
+                int maxRecords = getRec.getMaxRecords();
+                if ( maxMatches > 0 && maxMatches < maxRecords ) {
+                    maxRecords = maxMatches;
+                }
+                int matches = 0;
+                if ( getRec.getStartPosition() > 1 ) {
+                    rs.skip( getRec.getStartPosition() - 1 );
+                    matches += getRec.getStartPosition() - 1;
+                }
+                for ( int i = 0; i < maxRecords; i++ ) {
+                    if ( rs.next() ) {
+                        records.add( rs.getRecord() );
+                    }
+                }
+                int remaining = rs.getRemaining();
+                int nextRecord = 0;
+                if ( remaining > 0 ) {
+                    nextRecord = records.size() + 1;
+                    if ( getRec.getStartPosition() > 1 ) {
+                        nextRecord += ( getRec.getStartPosition() - 1 );
+                    }
+                }
+                matches += records.size() + remaining;
+
+                writer.writeAttribute( "elementSet", elementSetValue );
+                writer.writeAttribute( "recordSchema", getRec.getOutputSchema().toString() );
+                writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( matches ) );
+                writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( records.size() ) );
+                writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
+                writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+                for ( MetadataRecord record : records ) {
+                    writeRecord( writer, getRec, record, isElementName );
                 }
             }
         } finally {
-            if ( storeSet != null ) {
-                storeSet.close();
+            if ( rs != null ) {
+                rs.close();
             }
         }
 
-        writer.writeEndElement();// SearchResult
-
+        // SearchResult
+        writer.writeEndElement();
     }
 
     protected abstract void writeRecord( XMLStreamWriter writer, GetRecords getRecords, MetadataRecord record,
@@ -318,8 +325,9 @@ public abstract class AbstractGetRecordsHandler {
             queryTypeNames = getRec.getQuery().getQueryTypeNames();
             returnTypeNames = getRec.getQuery().getReturnTypeNames();
         }
-        return new MetadataQuery( queryTypeNames, returnTypeNames, constraints, sortProps, getRec.getStartPosition(),
-                                  getRec.getMaxRecords() );
+        int maxRecords = maxMatches >= 0 ? maxMatches : getRec.getMaxRecords();
+        int startPosition = maxMatches >= 0 ? 1 : getRec.getStartPosition();
+        return new MetadataQuery( queryTypeNames, returnTypeNames, constraints, sortProps, startPosition, maxRecords );
     }
 
     /**

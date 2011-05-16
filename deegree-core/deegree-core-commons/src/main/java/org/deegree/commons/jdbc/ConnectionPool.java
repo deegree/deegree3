@@ -42,6 +42,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.commons.dbcp.ConnectionFactory;
+import org.apache.commons.dbcp.DelegatingConnection;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
@@ -116,5 +117,11 @@ class ConnectionPool {
     void destroy()
                             throws Exception {
         pool.close();
+    }
+
+    void invalidate( DelegatingConnection conn )
+                            throws Exception {
+        conn.getDelegate().close();
+        pool.invalidateObject( conn );
     }
 }
