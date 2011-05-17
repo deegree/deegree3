@@ -103,12 +103,24 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer<SOAPExceptio
         if ( exception == null || writer == null ) {
             return;
         }
+
         String ns = factory.getNamespace().getNamespaceURI();
+        String prefix = factory.getNamespace().getPrefix();
 
         writer.writeStartElement( "soapenv", envelope.getLocalName(), ns );
         writer.writeNamespace( "xsi", XSINS );
-        writer.writeAttribute( XSINS, "schemaLocation",
-                               "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope" );
+        boolean isSoap11 = false;
+        if ( ns.equalsIgnoreCase( "http://schemas.xmlsoap.org/soap/envelope" )
+             || ns.equalsIgnoreCase( "http://schemas.xmlsoap.org/soap/envelope/" ) ) {
+            isSoap11 = true;
+        }
+        if ( isSoap11 ) {
+            writer.writeAttribute( XSINS, "schemaLocation",
+                                   "http://schemas.xmlsoap.org/soap/envelope http://schemas.xmlsoap.org/soap/envelope" );
+        } else {
+            writer.writeAttribute( XSINS, "schemaLocation",
+                                   "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope" );
+        }
 
         writeAttributes( writer, envelope );
         writeHeader( writer, header );
@@ -128,7 +140,13 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer<SOAPExceptio
         SOAPFaultValue val = factory.createSOAPFaultValue( code );
         writer.writeStartElement( ns, val.getLocalName() );
         writeAttributes( writer, val );
-        writer.writeCharacters( exception.getExceptionCode() );
+
+        String exceptionCode = exception.getExceptionCode();
+        // add namespace for SOAP 1.2 if not there
+        if ( !isSoap11 && !exceptionCode.startsWith( prefix + ":" ) ) {
+            exceptionCode = prefix + ":" + exceptionCode;
+        }
+        writer.writeCharacters( exceptionCode );
         writer.writeEndElement(); // value
         writer.writeEndElement(); // code
 
