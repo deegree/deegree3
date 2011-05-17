@@ -353,7 +353,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( ") VALUES(?,?,?," );
                 sql.append( blobGeomConverter.getSetSnippet() );
                 sql.append( ")" );
-                System.out.println( sql );
+                LOG.debug( "Inserting: {}", sql );
                 blobInsertStmt = conn.prepareStatement( sql.toString() );
                 for ( Feature feature : features ) {
                     fid = feature.getId();
@@ -423,7 +423,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             codec.encode( feature, fs.getNamespaceContext(), bos, crs );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
-            LOG.error( msg, e );
+            LOG.error( msg );
+            LOG.trace( "Stack trace:", e );
+            // stmt.cancel();
             throw new SQLException( msg, e );
         }
         byte[] bytes = bos.toByteArray();
@@ -446,17 +448,17 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
         int internalId = -1;
 
-//        ResultSet rs = null;
-//        try {
-//            // TODO only supported for PostgreSQL >= 8.2
-//            rs = stmt.getGeneratedKeys();
-//            rs.next();
-//            internalId = rs.getInt( 1 );
-//        } finally {
-//            if ( rs != null ) {
-//                rs.close();
-//            }
-//        }
+        // ResultSet rs = null;
+        // try {
+        // // TODO only supported for PostgreSQL >= 8.2
+        // rs = stmt.getGeneratedKeys();
+        // rs.next();
+        // internalId = rs.getInt( 1 );
+        // } finally {
+        // if ( rs != null ) {
+        // rs.close();
+        // }
+        // }
         return internalId;
     }
 

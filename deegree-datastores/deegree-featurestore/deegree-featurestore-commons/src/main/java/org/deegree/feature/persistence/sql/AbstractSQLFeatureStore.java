@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.sql;
 
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
@@ -66,7 +67,9 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.SQLDialectHelper;
+import org.deegree.commons.utils.CollectionUtils.Reducer;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
@@ -75,6 +78,7 @@ import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
+import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
@@ -147,12 +151,21 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     // must be set after init!
     protected SQLDialectHelper dialect;
 
+    private DefaultLockManager lockManager;
+
     protected void init( MappedApplicationSchema schema, String jdbcConnId ) {
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
         this.jdbcConnId = jdbcConnId;
         taManager = new TransactionManager( this, getConnId() );
         initConverters();
+        try {
+            // however TODO it properly on the DB
+            lockManager = new DefaultLockManager( this, "LOCK_DB" );
+        } catch ( Throwable e ) {
+            LOG.warn( "Lock manager initialization failed, locking will not be available." );
+            LOG.trace( "Stack trace:", e );
+        }
     }
 
     private void initConverters() {
@@ -287,8 +300,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        // TODO
-        return null;
+        return lockManager;
     }
 
     @Override
@@ -482,27 +494,36 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
         FeatureResultSet result = null;
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( getConnId() );
 
             // create temp table with ids
-            stmt = conn.createStatement();
-            stmt.executeUpdate( "CREATE TEMP TABLE temp_ids (fid TEXT)" );
-            stmt.close();
+            // stmt = conn.createStatement();
+            // stmt.executeUpdate( "CREATE TEMP TABLE temp_ids (fid TEXT)" );
+            // stmt.close();
 
             // fill temp table
-            PreparedStatement insertFid = conn.prepareStatement( "INSERT INTO temp_ids (fid) VALUES (?)" );
-            for ( String fid : filter.getMatchingIds() ) {
-                insertFid.setString( 1, fid );
-                insertFid.addBatch();
-            }
-            insertFid.executeBatch();
+            // PreparedStatement insertFid = conn.prepareStatement( "INSERT INTO temp_ids (fid) VALUES (?)" );
+            // for ( String fid : filter.getMatchingIds() ) {
+            // insertFid.setString( 1, fid );
+            // insertFid.addBatch();
+            // }
+            // insertFid.executeBatch();
 
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
-                                    + " A, temp_ids B WHERE A.gml_id=b.fid" );
+            StringBuilder sb = new StringBuilder( filter.getMatchingIds().size() * 2 );
+            sb.append( "?" );
+            for ( int i = 1; i < filter.getMatchingIds().size(); ++i ) {
+                sb.append( ",?" );
+            }
+            stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
+                                          + " A WHERE A.gml_id in (" + sb + ")" );
+            int idx = 0;
+            for ( String id : filter.getMatchingIds() ) {
+                stmt.setString( ++idx, id );
+            }
+            rs = stmt.executeQuery();
 
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
@@ -511,18 +532,18 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             String msg = "Error performing id query: " + e.getMessage();
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
-        } finally {
-            if ( conn != null ) {
-                try {
-                    // drop temp table
-                    stmt = conn.createStatement();
-                    stmt.executeUpdate( "DROP TABLE temp_ids " );
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    String msg = "Error dropping temp table.";
-                    LOG.debug( msg, e );
-                }
-            }
+            // } finally {
+            // if ( conn != null ) {
+            // try {
+            // // drop temp table
+            // stmt = conn.createStatement();
+            // stmt.executeUpdate( "DROP TABLE temp_ids " );
+            // stmt.close();
+            // } catch ( SQLException e ) {
+            // String msg = "Error dropping temp table.";
+            // LOG.debug( msg, e );
+            // }
+            // }
         }
 
         // sort features
@@ -878,8 +899,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                 orderString.append( "]" );
             }
             stmt.setString( ftId.length + firstFtArg, orderString.toString() );
-            LOG.debug( "Query {}", stmt );
-            LOG.debug( "Query {}", sql );
+            LOG.debug( "Query: {}", sql );
+            LOG.debug( "Prepared: {}", stmt );
 
             rs = stmt.executeQuery();
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
@@ -887,7 +908,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
             String msg = "Error performing query: " + e.getMessage();
-            LOG.debug( msg, e );
+            LOG.debug( msg );
+            LOG.trace( "Stack trace:", e );
             throw new FeatureStoreException( msg, e );
         }
         return result;
