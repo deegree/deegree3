@@ -50,4 +50,8 @@ public class PostGISDialect implements SQLDialectHelper {
         return "public";
     }
 
+    public String getStringConcatenationOperator() {
+        return "||";
+    }
+
 }
