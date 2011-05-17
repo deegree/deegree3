@@ -350,6 +350,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
                 srid = ( (GeometryPropertyNameMapping) propMapping ).getSRID();
             } else if ( propMapping instanceof PrimitivePropertyNameMapping ) {
                 pt = ( (PrimitivePropertyNameMapping) propMapping ).getType();
+                isConcatenated = ( (PrimitivePropertyNameMapping) propMapping ).isConcatenated();
             }
             sql = new SQLColumn( table, column, true, pt, sqlType, crs, srid, isConcatenated );
         } else {
