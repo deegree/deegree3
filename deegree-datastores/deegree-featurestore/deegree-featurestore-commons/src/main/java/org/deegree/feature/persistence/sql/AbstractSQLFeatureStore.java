@@ -860,8 +860,9 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             for ( int i = 1; i < ftId.length; i++ ) {
                 sql.append( ",?" );
             }
-            sql.append( ") ORDER BY position('['" ).append( dialect.getStringConcatenationOperator() );
-            sql.append( "ft_type" ).append( dialect.getStringConcatenationOperator() ).append( "']' IN ?)" );
+            sql.append( ") ORDER BY " );
+            sql.append( dialect.stringIndex( "'['" + dialect.stringPlus() + dialect.cast( "ft_type", "varchar" )
+                                             + dialect.stringPlus() + "']'", "?" ) );
             stmt = conn.prepareStatement( sql.toString() );
             int firstFtArg = 1;
             if ( blobWb != null && blobWb.getWhere() != null ) {
