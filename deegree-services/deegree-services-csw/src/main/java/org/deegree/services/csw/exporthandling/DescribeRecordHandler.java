@@ -49,10 +49,12 @@ import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 import static org.deegree.services.i18n.Messages.get;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -158,59 +160,63 @@ public class DescribeRecordHandler {
      */
     private void export202( XMLStreamWriter writer, QName[] typeNames )
                             throws XMLStreamException, MetadataStoreException {
-
         writer.setDefaultNamespace( CSW_202_NS );
         writer.writeStartElement( CSW_202_NS, "DescribeRecordResponse" );
         writer.writeDefaultNamespace( CSW_202_NS );
         writer.writeNamespace( XSI_PREFIX, XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
 
-        URLConnection urlConn = null;
         try {
             if ( typeNames.length == 0 ) {
-                urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
-                dcHelper.exportSchemaFile( writer, new QName( DC_NS, DC_LOCAL_PART, DC_PREFIX ), urlConn );
+                writeDC( writer, new QName( DC_NS, DC_LOCAL_PART, DC_PREFIX ) );
                 exportISO( writer );
             }
             for ( QName typeName : typeNames ) {
-
-                /*
-                 * if typeName is csw:Record
-                 */
+                // if typeName is csw:Record
                 if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
-
-                    urlConn = new URL( CSW_202_RECORD ).openConnection();
-                    dcHelper.exportSchemaFile( writer, typeName, urlConn );
-
+                    writeDC( writer, typeName );
                 }
-
-                /*
-                 * if typeName is gmd:MD_Metadata
-                 */
+                // if typeName is gmd:MD_Metadata
                 else if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.ISO_19115 ) {
                     exportISO( writer );
                 }
-                /*
-                 * if the typeName is no registered in this recordprofile
-                 */
+                // if the typeName is no registered in this recordprofile
                 else {
                     String errorMessage = "The typeName " + typeName + "is not supported. ";
                     LOG.debug( errorMessage );
                     throw new InvalidParameterValueException( errorMessage );
                 }
-
             }
         } catch ( IOException e ) {
-
             LOG.debug( "error: " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );
         } catch ( Exception e ) {
-
             LOG.debug( "error: " + e.getMessage(), e );
         }
-
         writer.writeEndElement();// DescribeRecordResponse
         writer.writeEndDocument();
+    }
+
+    private void writeDC( XMLStreamWriter writer, QName typeName )
+                            throws XMLStreamException, UnsupportedEncodingException {
+        URL url = null;
+        try {
+            url = new URL( CSW_202_RECORD );
+            URLConnection urlConn = url.openConnection();
+            BufferedInputStream bais = new BufferedInputStream( urlConn.getInputStream() );
+            InputStreamReader isr = new InputStreamReader( bais, "UTF-8" );
+            dcHelper.exportSchemaComponent( writer, typeName, isr );
+        } catch ( Exception e ) {
+            LOG.info( "Could not get connection to " + CSW_202_RECORD + ". Export schema as reference." );
+            InputStream is = DescribeRecordHandler.class.getResourceAsStream( "dublinCore.xml" );
+            if ( is != null ) {
+                InputStreamReader isr = new InputStreamReader( is, "UTF-8" );
+                dcHelper.exportSchemaComponent( writer, typeName, isr );
+            } else {
+                String msg = get( "CSW_NO_FILE", "dublinCore.xml" );
+                LOG.debug( msg );
+            }
+        }
     }
 
     private void exportISO( XMLStreamWriter writer )
@@ -236,6 +242,21 @@ public class DescribeRecordHandler {
             LOG.debug( msg );
         }
 
+    }
+
+    public static void main( String[] args ) {
+        URLConnection urlConn;
+        try {
+            urlConn = new URL( CSW_202_RECORD ).openConnection();
+            System.out.println( urlConn );
+            urlConn.getInputStream();
+        } catch ( MalformedURLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

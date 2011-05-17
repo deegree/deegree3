@@ -37,10 +37,8 @@ package org.deegree.services.csw.exporthandling;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URLConnection;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -62,17 +60,6 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  * @version $Revision: $, $Date: $
  */
 public class DescribeRecordHelper {
-
-    public void exportSchemaFile( XMLStreamWriter writer, QName typeName, URLConnection urlConn )
-                            throws IOException, XMLStreamException {
-        // urlConn.setDoInput( true );
-        BufferedInputStream bais = new BufferedInputStream( urlConn.getInputStream() );
-
-        // Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
-        InputStreamReader isr = new InputStreamReader( bais, "UTF-8" );
-
-        exportSchemaComponent( writer, typeName, isr );
-    }
 
     /**
      * SchemaCompontent which encapsulates the requested xml schema.

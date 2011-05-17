@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://purl.org/dc/elements/1.1/" elementFormDefault="qualified" version="0.1"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:annotation>
+    <xs:documentation>This is the reference to the basic record xmlschema. </xs:documentation>
+  </xs:annotation>
+  <xs:include schemaLocation="http://schemas.opengis.net/csw/2.0.2/record.xsd" />
+</xs:schema>
