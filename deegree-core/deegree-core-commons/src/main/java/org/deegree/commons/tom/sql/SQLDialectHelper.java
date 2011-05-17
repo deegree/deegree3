@@ -49,4 +49,9 @@ public interface SQLDialectHelper {
      */
     String getDefaultSchema();
 
+    /**
+     * @return the string concatenation operator
+     */
+    String getStringConcatenationOperator();
+
 }
