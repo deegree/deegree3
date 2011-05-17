@@ -543,16 +543,20 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
                 sendServiceException110( e, response );
             }
         } catch ( XMLParsingException e ) {
-            LOG.error( e.getMessage(), e );
+            LOG.error( e.getMessage() );
+            LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE ), response );
         } catch ( MissingParameterException e ) {
-            LOG.error( e.getMessage(), e );
+            LOG.error( e.getMessage() );
+            LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
-            LOG.error( e.getMessage(), e );
+            LOG.error( e.getMessage() );
+            LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( Exception e ) {
-            LOG.error( e.getMessage(), e );
+            LOG.error( e.getMessage() );
+            LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                      response );
         }

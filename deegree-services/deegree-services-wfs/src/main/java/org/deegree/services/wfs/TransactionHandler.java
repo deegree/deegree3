@@ -284,7 +284,6 @@ class TransactionHandler {
                     LOG.debug( "Error occured during rollback: " + e.getMessage(), e );
                 }
             }
-            e.printStackTrace();
             throw new OWSException( "Error occured during transaction: " + e.getMessage(), NO_APPLICABLE_CODE );
         }
 
@@ -380,7 +379,6 @@ class TransactionHandler {
                 insertedFidswithoutHandle.addAll( newFids );
             }
         } catch ( Exception e ) {
-            e.printStackTrace();
             LOG.debug( e.getMessage(), e );
             String msg = "Cannot perform insert operation: " + e.getMessage();
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );
@@ -584,7 +582,7 @@ class TransactionHandler {
                 acquiredTransactions.put( fs, ta );
             } catch ( FeatureStoreException e ) {
                 throw new OWSException( Messages.get( "WFS_CANNOT_ACQUIRE_TA", e.getMessage() ),
-                                        OWSException.NO_APPLICABLE_CODE );
+                                        ControllerException.NO_APPLICABLE_CODE );
             }
         }
         return ta;
