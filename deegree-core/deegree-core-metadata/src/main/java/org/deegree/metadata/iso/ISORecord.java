@@ -133,30 +133,30 @@ public class ISORecord implements MetadataRecord {
     static {
         xpathAll[0] = new XPath( "//child::text()", null );
 
-        summaryElements.add( "dataSetURI" );
-        summaryElements.add( "locale" );
-        summaryElements.add( "spatialRepresentationInfo" );
-        summaryElements.add( "metadataExtensionInfo" );
-        summaryElements.add( "contentInfo" );
-        summaryElements.add( "portrayalCatalogueInfo" );
-        summaryElements.add( "metadataConstraints" );
         summaryElements.add( "applicationSchemaInfo" );
-        summaryElements.add( "metadataMaintenance" );
-        summaryElements.add( "series" );
+        summaryElements.add( "contentInfo" );
+        summaryElements.add( "dataSetURI" );
         summaryElements.add( "describes" );
-        summaryElements.add( "propertyType" );
-        summaryElements.add( "featureType" );
         summaryElements.add( "featureAttribute" );
+        summaryElements.add( "featureType" );
+        summaryElements.add( "locale" );
+        summaryElements.add( "metadataConstraints" );
+        summaryElements.add( "metadataExtensionInfo" );
+        summaryElements.add( "metadataMaintenance" );
+        summaryElements.add( "portrayalCatalogueInfo" );
+        summaryElements.add( "propertyType" );
+        summaryElements.add( "series" );
+        summaryElements.add( "spatialRepresentationInfo" );
 
-        briefElements.add( "language" );
         briefElements.add( "characterSet" );
-        briefElements.add( "parentIdentifier" );
+        briefElements.add( "dataQualityInfo" );
+        briefElements.add( "distributionInfo" );
         briefElements.add( "hierarchyLevelName" );
+        briefElements.add( "language" );
         briefElements.add( "metadataStandardName" );
         briefElements.add( "metadataStandardVersion" );
+        briefElements.add( "parentIdentifier" );
         briefElements.add( "referenceSystemInfo" );
-        briefElements.add( "distributionInfo" );
-        briefElements.add( "dataQualityInfo" );
     }
 
     public ISORecord( XMLStreamReader xmlStream ) {
