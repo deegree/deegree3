@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.deegree.services.csw.CSWProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
@@ -139,6 +142,9 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/csw/3.1.0/csw_configuration.xsd";
 
+    private static final String SCHEMA_LOCATION = CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA + " " + GMD_NS + " "
+                                                  + "http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd";
+
     private MetadataStore<?> store;
 
     private boolean enableTransactions;
@@ -208,7 +214,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         int maxMatches = jaxbConfig.getMaxMatches() == null ? 0 : jaxbConfig.getMaxMatches().intValue();
 
         describeRecordHandler = new DescribeRecordHandler();
-        getRecordsHandler = new GetRecordsHandler( maxMatches );
+        getRecordsHandler = new GetRecordsHandler( maxMatches, SCHEMA_LOCATION, store );
         transactionHandler = new TransactionHandler();
         getRecordByIdHandler = new GetRecordByIdHandler();
     }

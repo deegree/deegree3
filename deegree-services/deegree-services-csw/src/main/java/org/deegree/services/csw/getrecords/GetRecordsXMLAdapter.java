@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.getrecords;
 
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.URI;
@@ -43,10 +44,13 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.metadata.ebrim.AdhocQuery;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates the method for parsing a {@link GetRecords} XML request via Http-POST.
@@ -58,6 +62,8 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
  */
 public class GetRecordsXMLAdapter extends AbstractGetRecordsXMLAdapter {
 
+    private static Logger LOG = LoggerFactory.getLogger( GetRecordsXMLAdapter.class );
+    
     @Override
     protected GetRecords parseSubElements( OMElement holeRequest, ResultType resultType, int maxRecords,
                                            int startPosition, String outputFormat, String requestId, URI outputSchema,
@@ -67,16 +73,17 @@ public class GetRecordsXMLAdapter extends AbstractGetRecordsXMLAdapter {
         String responseHandler = null;
 
         Query query = null;
+        AdhocQuery ahQuery = null;
         for ( OMElement omElement : getRecordsChildElements ) {
-
-            if ( !new QName( CSWConstants.CSW_202_NS, "DistributedSearch" ).equals( omElement.getQName() )
-                 && !new QName( CSWConstants.CSW_202_NS, "ResponseHandler" ).equals( omElement.getQName() )
-                 && !new QName( CSWConstants.CSW_202_NS, "Query" ).equals( omElement.getQName() ) ) {
+            if ( !new QName( CSW_202_NS, "DistributedSearch" ).equals( omElement.getQName() )
+                 && !new QName( CSW_202_NS, "ResponseHandler" ).equals( omElement.getQName() )
+                 && !new QName( CSW_202_NS, "Query" ).equals( omElement.getQName() )
+                 && !new QName( RIM_NS, "AdhocQuery" ).equals( omElement.getQName() ) ) {
                 String msg = "Child element '" + omElement.getQName() + "' is not allowed.";
                 throw new XMLParsingException( this, omElement, msg );
             }
             // optional
-            if ( new QName( CSWConstants.CSW_202_NS, "DistributedSearch" ).equals( omElement.getQName() ) ) {
+            if ( new QName( CSW_202_NS, "DistributedSearch" ).equals( omElement.getQName() ) ) {
                 if ( omElement.getText().equals( "true" ) ) {
                     distributedSearch = true;
                 } else {
@@ -85,15 +92,27 @@ public class GetRecordsXMLAdapter extends AbstractGetRecordsXMLAdapter {
                 hopCount = getNodeAsInt( omElement, new XPath( "@hopCount", nsContext ), 2 );
             }
             // optional
-            if ( new QName( CSWConstants.CSW_202_NS, "ResponseHandler" ).equals( omElement.getQName() ) ) {
+            if ( new QName( CSW_202_NS, "ResponseHandler" ).equals( omElement.getQName() ) ) {
                 responseHandler = omElement.getText();
             }
-            // mandatory
+            // one of Query or AdhocQuery is mandatory
             query = parseQuery( omElement );
+            if ( query == null && new QName( RIM_NS, "AdhocQuery" ).equals( omElement.getQName() ) ) {
+                ahQuery = new AdhocQuery( omElement );
+            }
         }
-
+        if ( query == null && ahQuery == null ) {
+            String msg = "Invalid query: either Query or AdhocQuery element is required!";
+            LOG.debug( msg );
+            throw new InvalidParameterValueException( msg );
+        }
+        if ( query != null ) {
+            return new GetRecords( VERSION_202, nsContext, outputFormat, resultType, requestId, outputSchema,
+                                   startPosition, maxRecords, distributedSearch, hopCount, responseHandler, query,
+                                   holeRequest );
+        }
         return new GetRecords( VERSION_202, nsContext, outputFormat, resultType, requestId, outputSchema,
-                               startPosition, maxRecords, distributedSearch, hopCount, responseHandler, query,
+                               startPosition, maxRecords, distributedSearch, hopCount, responseHandler, ahQuery,
                                holeRequest );
     }
 }

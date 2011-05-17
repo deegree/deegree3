@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.metadata.ebrim.AdhocQuery;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.services.csw.AbstractCSWRequest;
 
@@ -73,6 +74,8 @@ public class GetRecords extends AbstractCSWRequest {
 
     private final Query query;
 
+    private AdhocQuery adhocQuery;
+
     private final OMElement holeRequest;
 
     /**
@@ -98,7 +101,7 @@ public class GetRecords extends AbstractCSWRequest {
      * @param hopCount
      * @param responseHandler
      * @param query
-     *            thhe query of the GetRecords request, never <code>null</code>
+     *            the query of the GetRecords request, never <code>null</code>
      * @param holeRequest
      */
     public GetRecords( Version version, NamespaceBindings namespaces, String outputFormat, ResultType resultType,
@@ -116,6 +119,15 @@ public class GetRecords extends AbstractCSWRequest {
         this.responseHandler = responseHandler;
         this.query = query;
         this.holeRequest = holeRequest;
+    }
+
+    public GetRecords( Version version, NamespaceBindings namespaces, String outputFormat, ResultType resultType,
+                       String requestId, URI outputSchema, int startPosition, int maxRecords,
+                       boolean distributedSearch, int hopCount, String responseHandler, AdhocQuery adhocQuery,
+                       OMElement holeRequest ) {
+        this( version, namespaces, outputFormat, resultType, requestId, outputSchema, startPosition, maxRecords,
+              distributedSearch, hopCount, responseHandler, (Query) null, holeRequest );
+        this.adhocQuery = adhocQuery;
     }
 
     /**
@@ -177,10 +189,17 @@ public class GetRecords extends AbstractCSWRequest {
     /**
      * Returns the query.
      * 
-     * @return query, never <code>null</code>
+     * @return query, can be <code>null</code> (if an AdhocQuery is used)
      */
     public Query getQuery() {
         return query;
+    }
+
+    /**
+     * @return the query
+     */
+    public AdhocQuery getAdhocQuery() {
+        return adhocQuery;
     }
 
     /**

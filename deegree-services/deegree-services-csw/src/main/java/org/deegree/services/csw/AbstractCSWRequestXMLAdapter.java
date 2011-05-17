@@ -56,9 +56,13 @@ public abstract class AbstractCSWRequestXMLAdapter extends XMLAdapter {
 
     protected final static String SOAP_10_PREFIX = "wsse";
 
+    public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+
+    public static final String RIM_PREFIX = "rim";
+
     static {
         nsContext.addNamespace( CSW_PREFIX, CSW_202_NS );
         nsContext.addNamespace( SOAP_10_PREFIX, SOAP_10 );
-
+        nsContext.addNamespace( RIM_PREFIX, RIM_NS );
     }
 }

@@ -234,7 +234,7 @@ public class RegistryObject implements MetadataRecord {
 
     @Override
     public DCRecord toDublinCore() {
-        return new DCRecord( this );
+        throw new UnsupportedOperationException( "Conversion to DublinCore records is not implemented yet." );
     }
 
     @Override
@@ -383,7 +383,7 @@ public class RegistryObject implements MetadataRecord {
                 QName elName = inStream.getName();
                 if ( RIM_NS.equals( elName.getNamespaceURI() ) ) {
                     if ( "VersionInfo".equals( elName.getLocalPart() ) || "Slot".equals( elName.getLocalPart() )
-                                            || "Name".equals( elName.getLocalPart() ) || "Description".equals( elName.getLocalPart() )) {
+                         || "Name".equals( elName.getLocalPart() ) || "Description".equals( elName.getLocalPart() ) ) {
                         XMLAdapter.writeElement( writer, inStream );
                     }
                 } else {
