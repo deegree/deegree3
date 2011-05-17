@@ -65,6 +65,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.tom.sql.SQLDialectHelper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -142,6 +143,9 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     private final Map<FeatureType, Envelope> ftToBBox = Collections.synchronizedMap( new HashMap<FeatureType, Envelope>() );
 
     private Map<String, String> nsContext;
+
+    // must be set after init!
+    protected SQLDialectHelper dialect;
 
     protected void init( MappedApplicationSchema schema, String jdbcConnId ) {
         this.schema = schema;
@@ -856,7 +860,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             for ( int i = 1; i < ftId.length; i++ ) {
                 sql.append( ",?" );
             }
-            sql.append( ") ORDER BY position('['||ft_type||']' IN ?)" );
+            sql.append( ") ORDER BY position('['" ).append( dialect.getStringConcatenationOperator() );
+            sql.append( "ft_type" ).append( dialect.getStringConcatenationOperator() ).append( "']' IN ?)" );
             stmt = conn.prepareStatement( sql.toString() );
             int firstFtArg = 1;
             if ( blobWb != null && blobWb.getWhere() != null ) {
@@ -873,6 +878,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             }
             stmt.setString( ftId.length + firstFtArg, orderString.toString() );
             LOG.debug( "Query {}", stmt );
+            LOG.debug( "Query {}", sql );
 
             rs = stmt.executeQuery();
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
