@@ -44,6 +44,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URL;
 import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -53,8 +57,14 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
@@ -62,6 +72,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
+import org.xml.sax.SAXException;
 
 /**
  * TODO add class documentation here
@@ -116,98 +127,58 @@ public class ISORecordSerializeTest extends AbstractISOTest {
 
     }
 
-    /**
-     * Tests if the output is in summary representation
-     * <p>
-     * Output should be 1
-     * 
-     * @throws MetadataStoreException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
-     * @throws IOException
-     * @throws MetadataInspectorException
-     * @throws ResourceInitException
-     */
-    @Test
+    // @Test
     public void testOutputBrief()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
                             MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: is output ISO brief? " );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
-        resultSet = store.getRecordById( ids, null );
+        XMLOutputFactory of = XMLOutputFactory.newInstance();
+        StringWriter sw = new StringWriter();
+        XMLStreamWriter writer = of.createXMLStreamWriter( sw );
 
-        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.briefRecord.openStream() );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.fullRecord.openStream() );
+        ISORecord rec = new ISORecord( xmlStream );
+        rec.serialize( writer, ReturnableElement.brief );
 
-        // create the should be output
-        StringBuilder streamActual = stringBuilderFromXMLStream( xmlStreamActual );
-
-        // create the is output
-        // String file = "/home/thomas/Desktop/zTestBrief.xml";
-        String file = null;
-        StringBuilder streamExpected = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
-                                                                   XMLStreamConstants.START_ELEMENT );
-        if ( streamExpected == null ) {
-            return;
-        }
-        LOG.info( "streamThis: " + streamActual.toString() );
-        LOG.info( "streamThat: " + streamExpected.toString() );
-        Assert.assertEquals( streamActual.toString(), streamExpected.toString() );
-
+        StringReader input = new StringReader( sw.toString() );
+        Assert.assertTrue( validate( input ) );
     }
 
-    /**
-     * Tests if the output is in summary representation
-     * <p>
-     * Output should be 1
-     * 
-     * @throws MetadataStoreException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
-     * @throws IOException
-     * @throws MetadataInspectorException
-     * @throws ResourceInitException
-     */
-
-    @Test
+    // @Test
     public void testOutputSummary()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
                             MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: is output ISO summary? " );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.fullRecord );
-        resultSet = store.getRecordById( ids, null );
+        XMLOutputFactory of = XMLOutputFactory.newInstance();
+        StringWriter sw = new StringWriter();
+        XMLStreamWriter writer = of.createXMLStreamWriter( sw );
 
-        XMLStreamReader xmlStreamActual = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.summaryRecord.openStream() );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.fullRecord.openStream() );
+        ISORecord rec = new ISORecord( xmlStream );
+        rec.serialize( writer, ReturnableElement.summary );
 
-        // create the should be output
-        StringBuilder streamActual = stringBuilderFromXMLStream( xmlStreamActual );
+        StringReader input = new StringReader( sw.toString() );
+        Assert.assertTrue( validate( input ) );
 
-        // create the is output
-        // String file = "/home/thomas/Desktop/zTestSummary.xml";
-        String file = null;
-        StringBuilder streamExpected = stringBuilderFromResultSet( resultSet, ReturnableElement.summary, file,
-                                                                   XMLStreamConstants.START_ELEMENT );
-        if ( streamExpected == null ) {
-            return;
+    }
+
+    private boolean validate( Reader toValidate ) {
+        try {
+            SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
+            Schema schema = factory.newSchema( new URL(
+                                                        "http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd" ) );
+            Validator validator = schema.newValidator();
+            Source source = new StreamSource( toValidate );
+            validator.validate( source );
+            return true;
+        } catch ( SAXException ex ) {
+            ex.printStackTrace();
+        } catch ( IOException e ) {
+            e.printStackTrace();
         }
-        LOG.debug( "streamThis: " + streamActual.toString() );
-        LOG.debug( "streamThat: " + streamExpected.toString() );
-        Assert.assertEquals( streamActual.toString(), streamExpected.toString() );
+        return false;
 
     }
 

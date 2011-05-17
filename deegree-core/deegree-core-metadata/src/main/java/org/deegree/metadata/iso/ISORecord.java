@@ -133,6 +133,70 @@ public class ISORecord implements MetadataRecord {
     static {
         xpathAll[0] = new XPath( "//child::text()", null );
 
+        // BRIEF
+        // BoundingBox
+        // ->MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.westBoundLongitude
+        // +MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.southBoundLatitude
+        // +MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.eastBoundLongitude
+        // +MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox.northBoundLatitude
+        // Identifier -> MD_Metadata.fileIdentifier
+        // GraphicOverview
+        // ->MD_Metadata.identificationInfo.AbstractMD_Identification.graphicOverview.MD_BrowseGraphic.fileName
+        // ServiceType -> MD_Metadata.identificationInfo.SV_ServiceIdentification.serviceType
+        // ServiceTypeVersion -> MD_Metadata.identificationInfo.SV_ServiceIdentification.serviceTypeVersion
+        // Type (HierarchyLevel) -> MD_Metadata.hierarchyLevel.MD_ScopeCode@codeListValue
+        // Title -> MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.title
+
+        // SUMMARY
+        // Abstract -> MD_Metadata.identificationInfo.AbstractMD_Identification.abstract
+        // CharacterSet ->
+        // MD_Metadata.identificationInfo.MD_DataIdentification.characterSet.MD_CharacterSetCode@codeListValue
+        // Creator
+        // ->MD_Metadata.identificationInfo.AbstractMD_Identification.pointOfContact.CI_ResponsibleParty.organisationName[role.CI_RoleCode@codeListValue=’originator’]
+        // Contributor
+        // ->MD_Metadata.identificationInfo.AbstractMD_Identification.pointOfContact.CI_ResponsibleParty.organisationName[role.CI_RoleCode@codeListValue=’author’]
+        // CouplingType
+        // -> MD_Metadata.identificationInfo.SV_ServiceIdentification.couplingType.SV_CouplingType.code@codeListValue
+        // Format -> MD_Metadata.distributionInfo.MD_Distribution.distributionFormat.MD_Format.name
+        // FormatVersion -> MD_Metadata.distributionInfo.MD_Distribution.distributionFormat.MD_Format.version
+        // HierarchyLevelName -> MD_Metadata.hierarchyLevelName
+        // Language -> MD_Metadata.language
+        // Lineage -> MD_Metadata.dataQualityInfo.DQ_DataQuality.lineage.LI_Lineage.statement
+        // MetadataCharacterSet -> MD_Metadata.characterSet.MD_ScopeCode@codeListValue
+        // MetadataStandardName -> MD_Metadata.metadataStandardName
+        // MetadataStandardVersion -> MD_Metadata.metadataStandardVersion
+        // Modified -> MD_Metadata.dateStamp.Date
+        // OnlineResource
+        // ->MD_Metadata.distributionInfo.MD_Distribution.transferOptions.MD_DigitalTransferOption.onLine.CI_OnlineResource.linkage.URL
+        // ParentIdentifier -> MD_Metadata.parentIdentifier
+        // Publisher
+        // ->MD_Metadata.identificationInfo.AbstractMD_Identification.pointOfContact.CI_ResponsibleParty.organisationName[role.CI_RoleCode@codeListValue=’publisher’]
+        // ResourceIdentifier
+        // ->MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.identifier.MD_Identifier.code
+        // ResourceLanguage -> MD_Metadata.identificationInfo.MD_DataIdentification.language
+        // ReferenceSystem
+        // ->MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.code
+        // +MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.codeSpace
+        // +MD_Metadata.referenceSystemInfo.MD_ReferenceSystem.referenceSystemIdentifier.RS_Identifier.version
+        // RevisionDate
+        // ->MD_Metadata.identificationInfo.AbstractMD_Identification.citation.CI_Citation.date.CI_Date[dateType.CI_DateTypeCode.@codeListValue='revision'].date.Date
+        // Rights
+        // ->MD_Metadata.identificationInfo.AbstractMD_Identification.resourceConstraints.MD_LegalConstraints.accessConstraints@codeListValue
+        // ServiceOperation
+        // ->MD_Metadata.identificationInfo.SV_ServiceIdentification.
+        // containsOperations.SV_OperationMetadata.operationName
+        // +MD_Metadata.identificationInfo.SV_ServiceIdentification.containsOperations. SV_OperationMetadata.DCP
+        // +MD_Metadata.identificationInfo.SV_ServiceIdentification.containsOperations.SV_OperationMetadata.connectPoint.
+        // CI_OnlineResource.linkage.URL
+        // SpatialResolution
+        // ->MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.equivalentScale.MD_RepresentativeFraction.denominator,
+        // +MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.distance.gco:Distance,
+        // +MD_Metadata.identificationInfo.MD_DataIdentification.spatialResolution.MD_Resolution.distance.gco:Distance@uom
+        // SpatialRepresentationType
+        // ->MD_Metadata.identificationInfo.MD_DataIdentification.spatialRepresentationType.MD_SpatialRepresentationTypeCode@codeListValue
+        // TopicCategory -> MD_Metadata.identificationInfo.MD_DataIdentification.topicCategory
+        // + BRIEF
+
         summaryElements.add( "applicationSchemaInfo" );
         summaryElements.add( "contentInfo" );
         summaryElements.add( "dataSetURI" );
