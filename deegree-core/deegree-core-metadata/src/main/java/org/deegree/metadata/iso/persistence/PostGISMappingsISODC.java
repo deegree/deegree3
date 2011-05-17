@@ -72,8 +72,6 @@ import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.iso.persistence.MSSQLMappingsISODC.CommonColumnNames;
-import org.deegree.metadata.iso.persistence.MSSQLMappingsISODC.DatabaseTables;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -285,13 +283,17 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
                 String id = CommonColumnNames.id.name();
                 String fk_main = CommonColumnNames.fk_main.name();
                 List<Join> joins = new ArrayList<Join>();
+                String aliasFirstFirst = aliasManager.getRootTableAlias();
                 if ( !tableColumn.first.first.equals( mainTable ) ) {
                     DBField from = new DBField( mainTable, id );
+                    from.setAlias( aliasManager.getRootTableAlias() );
                     DBField to = new DBField( tableColumn.first.first, fk_main );
-                    to.setAlias( aliasManager.generateNew() );
+                    aliasFirstFirst = aliasManager.generateNew();
+                    to.setAlias( aliasFirstFirst );
                     joins.add( new Join( from, to, null, 0 ) );
                 }
                 DBField valueField = new DBField( tableColumn.first.first, tableColumn.first.second );
+                valueField.setAlias( aliasFirstFirst );
                 mapping = new PrimitivePropertyNameMapping( valueField, tableColumn.third.getSQLType(), joins,
                                                             new PrimitiveType( tableColumn.third ), tableColumn.second );
             } else {

@@ -48,8 +48,11 @@ import org.deegree.CoreTstProperties;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -66,6 +69,8 @@ public abstract class AbstractISOTest {
 
     private static final Logger LOG = getLogger( AbstractISOTest.class );
 
+    protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+
     protected ISOMetadataStore store;
 
     protected String jdbcURL;
@@ -77,6 +82,10 @@ public abstract class AbstractISOTest {
     protected MetadataResultSet<?> resultSet;
 
     protected Connection conn;
+
+    static {
+        nsContext.addNamespace( OWSCommonXMLAdapter.OWS_PREFIX, OWSCommonXMLAdapter.OWS_NS );
+    }
 
     /**
      * @throws java.lang.Exception

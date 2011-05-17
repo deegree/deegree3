@@ -100,7 +100,6 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
     private static final Logger LOG = getLogger( ISOMetadatStoreTransactionTest.class );
 
-    protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
     @Test
     public void testInsert()
