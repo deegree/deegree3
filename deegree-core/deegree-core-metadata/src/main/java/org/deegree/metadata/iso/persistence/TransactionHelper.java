@@ -343,7 +343,7 @@ class TransactionHelper extends SqlHelper {
             wkb = WKBWriter.write( geom );
             StringBuilder sb = new StringBuilder();
             if ( connectionType == Type.MSSQL ) {
-                sb.append( "geometry::STGEOMFROMWKB(?, 0)" );
+                sb.append( "geometry::STGeomFromWKB(?, 0)" );
             } else {
                 if ( JDBCUtils.useLegayPostGISPredicates( conn, LOG ) ) {
                     sb.append( "SetSRID(GeomFromWKB(?)," );
