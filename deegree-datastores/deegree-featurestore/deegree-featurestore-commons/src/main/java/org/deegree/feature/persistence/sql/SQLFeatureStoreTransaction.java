@@ -382,7 +382,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         } catch ( Throwable t ) {
             String msg = "Error inserting feature '" + fid + "':" + t.getMessage();
-            LOG.error( msg, t );
+            LOG.error( msg );
+            LOG.trace( "Stack trace:", t );
             throw new FeatureStoreException( msg, t );
         }
 
@@ -425,7 +426,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg );
             LOG.trace( "Stack trace:", e );
-            // stmt.cancel();
             throw new SQLException( msg, e );
         }
         byte[] bytes = bos.toByteArray();
@@ -440,7 +440,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             stmt.setObject( 4, blobGeomConverter.toSQLArgument( bboxGeom, conn ) );
         } catch ( Throwable e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
-            LOG.error( msg, e );
+            LOG.error( msg );
+            LOG.trace( "Stack trace:", e );
             throw new SQLException( msg, e );
         }
         // stmt.addBatch();
