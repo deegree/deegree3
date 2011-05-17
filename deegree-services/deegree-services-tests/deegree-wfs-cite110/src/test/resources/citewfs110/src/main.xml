@@ -38,7 +38,7 @@
 
       <!-- ***** Hard-wired the URL, tested conformance classes and GMLSF level (everything) ***** -->
       <xsl:variable name="wfs.GetCapabilities.get.url"
-        select="'http://127.0.0.1:${portnumber}/deegree-wfs-cite110/services?request=GetCapabilities&amp;service=WFS'" />
+        select="'http://127.0.0.1:${portnumber}/${project.artifactId}/services?request=GetCapabilities&amp;service=WFS'" />
       <xsl:variable name="wfs-transaction" select="'Transaction'" />
       <xsl:variable name="wfs-xlink" select="'XLink'" />
       <xsl:variable name="gmlsf.profile.level" select="'sf-1'" />
