@@ -52,6 +52,20 @@ public interface SQLDialectHelper {
     /**
      * @return the string concatenation operator
      */
-    String getStringConcatenationOperator();
+    String stringPlus();
+
+    /**
+     * @param pattern
+     * @param string
+     * @return an expression that yields the string index
+     */
+    String stringIndex( String pattern, String string );
+
+    /**
+     * @param expr
+     * @param type
+     * @return expr cast to type
+     */
+    String cast( String expr, String type );
 
 }
