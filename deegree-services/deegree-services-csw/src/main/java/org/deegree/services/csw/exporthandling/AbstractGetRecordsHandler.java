@@ -325,8 +325,8 @@ public abstract class AbstractGetRecordsHandler {
             queryTypeNames = getRec.getQuery().getQueryTypeNames();
             returnTypeNames = getRec.getQuery().getReturnTypeNames();
         }
-        int maxRecords = maxMatches >= 0 ? maxMatches : getRec.getMaxRecords();
-        int startPosition = maxMatches >= 0 ? 1 : getRec.getStartPosition();
+        int maxRecords = maxMatches > 0 ? maxMatches : getRec.getMaxRecords();
+        int startPosition = maxMatches > 0 ? 1 : getRec.getStartPosition();
         return new MetadataQuery( queryTypeNames, returnTypeNames, constraints, sortProps, startPosition, maxRecords );
     }
 
