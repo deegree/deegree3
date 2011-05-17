@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.InvalidParameterException;
@@ -45,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamConstants;
@@ -70,7 +75,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
-import org.deegree.metadata.filter.XPathElementFilter;
 import org.deegree.metadata.iso.persistence.parsing.ISOQPParsing;
 import org.deegree.metadata.iso.persistence.parsing.ParsedProfileElement;
 import org.deegree.metadata.iso.types.BoundingBox;
@@ -116,83 +120,49 @@ public class ISORecord implements MetadataRecord {
 
     private ParsedProfileElement pElem;
 
-    private final static String STOPWORD = " ";
+    private static final String STOPWORD = " ";
 
-    private static String[] summaryLocalParts = new String[14];
+    private static final Set<String> summaryElements = new HashSet<String>();
 
-    private static String[] briefLocalParts = new String[9];
-
-    private static String[] briefSummaryLocalParts = new String[23];
+    private static final Set<String> briefElements = new HashSet<String>();
 
     private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
-    private static XPath[] xpathAll = new XPath[1];
+    private static final XPath[] xpathAll = new XPath[1];
 
     static {
-
         xpathAll[0] = new XPath( "//child::text()", null );
 
-        summaryLocalParts[0] = "/gmd:MD_Metadata/gmd:dataSetURI";
-        summaryLocalParts[1] = "/gmd:MD_Metadata/gmd:locale";
-        summaryLocalParts[2] = "/gmd:MD_Metadata/gmd:spatialRepresentationInfo";
-        summaryLocalParts[3] = "/gmd:MD_Metadata/gmd:metadataExtensionInfo";
-        summaryLocalParts[4] = "/gmd:MD_Metadata/gmd:contentInfo";
-        summaryLocalParts[5] = "/gmd:MD_Metadata/gmd:portrayalCatalogueInfo";
-        summaryLocalParts[6] = "/gmd:MD_Metadata/gmd:metadataConstraints";
-        summaryLocalParts[7] = "/gmd:MD_Metadata/gmd:applicationSchemaInfo";
-        summaryLocalParts[8] = "/gmd:MD_Metadata/gmd:metadataMaintenance";
-        summaryLocalParts[9] = "/gmd:MD_Metadata/gmd:series";
-        summaryLocalParts[10] = "/gmd:MD_Metadata/gmd:describes";
-        summaryLocalParts[11] = "/gmd:MD_Metadata/gmd:propertyType";
-        summaryLocalParts[12] = "/gmd:MD_Metadata/gmd:featureType";
-        summaryLocalParts[13] = "/gmd:MD_Metadata/gmd:featureAttribute";
+        summaryElements.add( "dataSetURI" );
+        summaryElements.add( "locale" );
+        summaryElements.add( "spatialRepresentationInfo" );
+        summaryElements.add( "metadataExtensionInfo" );
+        summaryElements.add( "contentInfo" );
+        summaryElements.add( "portrayalCatalogueInfo" );
+        summaryElements.add( "metadataConstraints" );
+        summaryElements.add( "applicationSchemaInfo" );
+        summaryElements.add( "metadataMaintenance" );
+        summaryElements.add( "series" );
+        summaryElements.add( "describes" );
+        summaryElements.add( "propertyType" );
+        summaryElements.add( "featureType" );
+        summaryElements.add( "featureAttribute" );
 
-        briefLocalParts[0] = "/gmd:MD_Metadata/gmd:language";
-        briefLocalParts[1] = "/gmd:MD_Metadata/gmd:characterSet";
-        briefLocalParts[2] = "/gmd:MD_Metadata/gmd:parentIdentifier";
-        briefLocalParts[3] = "/gmd:MD_Metadata/gmd:hierarchieLevelName";
-        briefLocalParts[4] = "/gmd:MD_Metadata/gmd:metadataStandardName";
-        briefLocalParts[5] = "/gmd:MD_Metadata/gmd:metadataStandardVersion";
-        briefLocalParts[6] = "/gmd:MD_Metadata/gmd:referenceSystemInfo";
-        briefLocalParts[7] = "/gmd:MD_Metadata/gmd:distributionInfo";
-        briefLocalParts[8] = "/gmd:MD_Metadata/gmd:dataQualityInfo";
-        // metadatacharacterSet
-
-        briefSummaryLocalParts[0] = "/gmd:MD_Metadata/gmd:dataSetURI";
-        briefSummaryLocalParts[1] = "/gmd:MD_Metadata/gmd:locale";
-        briefSummaryLocalParts[2] = "/gmd:MD_Metadata/gmd:spatialRepresentationInfo";
-        briefSummaryLocalParts[3] = "/gmd:MD_Metadata/gmd:metadataExtensionInfo";
-        briefSummaryLocalParts[4] = "/gmd:MD_Metadata/gmd:contentInfo";
-        briefSummaryLocalParts[5] = "/gmd:MD_Metadata/gmd:portrayalCatalogueInfo";
-        briefSummaryLocalParts[6] = "/gmd:MD_Metadata/gmd:metadataConstraints";
-        briefSummaryLocalParts[7] = "/gmd:MD_Metadata/gmd:applicationSchemaInfo";
-        briefSummaryLocalParts[8] = "/gmd:MD_Metadata/gmd:metadataMaintenance";
-        briefSummaryLocalParts[9] = "/gmd:MD_Metadata/gmd:series";
-        briefSummaryLocalParts[10] = "/gmd:MD_Metadata/gmd:describes";
-        briefSummaryLocalParts[11] = "/gmd:MD_Metadata/gmd:propertyType";
-        briefSummaryLocalParts[12] = "/gmd:MD_Metadata/gmd:featureType";
-        briefSummaryLocalParts[13] = "/gmd:MD_Metadata/gmd:featureAttribute";
-        briefSummaryLocalParts[14] = "/gmd:MD_Metadata/gmd:language";
-        briefSummaryLocalParts[15] = "/gmd:MD_Metadata/gmd:characterSet";
-        briefSummaryLocalParts[16] = "/gmd:MD_Metadata/gmd:parentIdentifier";
-        briefSummaryLocalParts[17] = "/gmd:MD_Metadata/gmd:hierarchieLevelName";
-        briefSummaryLocalParts[18] = "/gmd:MD_Metadata/gmd:metadataStandardName";
-        briefSummaryLocalParts[19] = "/gmd:MD_Metadata/gmd:metadataStandardVersion";
-        briefSummaryLocalParts[20] = "/gmd:MD_Metadata/gmd:referenceSystemInfo";
-        briefSummaryLocalParts[21] = "/gmd:MD_Metadata/gmd:distributionInfo";
-        briefSummaryLocalParts[22] = "/gmd:MD_Metadata/gmd:dataQualityInfo";
+        briefElements.add( "language" );
+        briefElements.add( "characterSet" );
+        briefElements.add( "parentIdentifier" );
+        briefElements.add( "hierarchyLevelName" );
+        briefElements.add( "metadataStandardName" );
+        briefElements.add( "metadataStandardVersion" );
+        briefElements.add( "referenceSystemInfo" );
+        briefElements.add( "distributionInfo" );
+        briefElements.add( "dataQualityInfo" );
     }
-
-    private static List<XPath> summaryFilterElementsXPath;
-
-    private static List<XPath> briefFilterElementsXPath;
 
     public ISORecord( XMLStreamReader xmlStream ) {
         this.root = new XMLAdapter( xmlStream ).getRootElement();
         this.pElem = new ISOQPParsing().parseAPISO( root );
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
-        summaryFilterElementsXPath = removeElementsXPath( summaryLocalParts );
-        briefFilterElementsXPath = removeElementsXPath( briefSummaryLocalParts );
     }
 
     public ISORecord( OMElement root ) {
@@ -464,39 +434,87 @@ public class ISORecord implements MetadataRecord {
     @Override
     public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
                             throws XMLStreamException {
-        XMLStreamReader xmlStream = root.getXMLStreamReader();
-
         switch ( returnType ) {
         case brief:
-            StAXParsingHelper.skipStartDocument( xmlStream );
-            toISOBrief( writer, xmlStream );
+            serialize( writer, briefElements );
             break;
         case summary:
-            StAXParsingHelper.skipStartDocument( xmlStream );
-            toISOSummary( writer, xmlStream );
+            serialize( writer, summaryElements );
             break;
         case full:
-            StAXParsingHelper.skipStartDocument( xmlStream );
-            XMLAdapter.writeElement( writer, xmlStream );
+            XMLStreamReader inStream = root.getXMLStreamReader();
+            StAXParsingHelper.skipStartDocument( inStream );
+            XMLAdapter.writeElement( writer, inStream );
             break;
         default:
-            StAXParsingHelper.skipStartDocument( xmlStream );
-            toISOSummary( writer, xmlStream );
-            break;
+            throw new IllegalArgumentException( "Unexpected return type '" + returnType + "'." );
         }
-
     }
 
     @Override
     public void serialize( XMLStreamWriter writer, String[] elementNames )
                             throws XMLStreamException {
-        List<XPath> xpathEN = new ArrayList<XPath>();
+        Set<String> elSet = new HashSet<String>();
         for ( String s : elementNames ) {
-            xpathEN.add( new XPath( s, CommonNamespaces.getNamespaceContext() ) );
+            elSet.add( s );
+        }
+        serialize( writer, elSet );
+    }
+
+    private void serialize( XMLStreamWriter writer, Set<String> includeElements )
+                            throws XMLStreamException {
+        XMLStreamReader inStream = root.getXMLStreamReader();
+        StAXParsingHelper.skipStartDocument( inStream );
+        if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
+            throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
         }
 
-        OMElement elem = new XPathElementFilter( root, xpathEN );
-        elem.serialize( writer );
+        if ( inStream.getNamespaceURI() == NULL_NS_URI
+             && ( inStream.getPrefix() == DEFAULT_NS_PREFIX || inStream.getPrefix() == null ) ) {
+            writer.writeStartElement( inStream.getLocalName() );
+        } else {
+            if ( inStream.getPrefix() != null
+                 && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                // TODO handle special cases for prefix binding, see
+                // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
+                writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
+            }
+            writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+        }
+
+        // copy namespace bindings
+        for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
+            String nsPrefix = inStream.getNamespacePrefix( i );
+            String nsURI = inStream.getNamespaceURI( i );
+            writer.writeNamespace( nsPrefix, nsURI );
+        }
+
+        // copy all attributes
+        for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
+            String localName = inStream.getAttributeLocalName( i );
+            String nsPrefix = inStream.getAttributePrefix( i );
+            String value = inStream.getAttributeValue( i );
+            String nsURI = inStream.getAttributeNamespace( i );
+            if ( nsURI == null ) {
+                writer.writeAttribute( localName, value );
+            } else {
+                writer.writeAttribute( nsPrefix, nsURI, localName, value );
+            }
+        }
+
+        while ( inStream.next() != END_ELEMENT ) {
+            if ( inStream.isStartElement() ) {
+                QName elName = inStream.getName();
+                // TODO should namespace be considered?
+                if ( includeElements.contains( elName.getLocalPart() ) ) {
+                    XMLAdapter.writeElement( writer, inStream );
+                } else {
+                    StAXParsingHelper.skipElement( inStream );
+                }
+            }
+        }
+
+        writer.writeEndElement();
     }
 
     @Override
@@ -564,59 +582,6 @@ public class ISORecord implements MetadataRecord {
 
     public OMElement getNodeFromXPath( XPath xpath ) {
         return new XMLAdapter().getElement( root, xpath );
-    }
-
-    private void toISOSummary( XMLStreamWriter writer, XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-
-        // XMLStreamReader filter = new NamedElementFilter( xmlStream, summaryFilterElements );
-        OMElement filter = new XPathElementFilter( root, summaryFilterElementsXPath );
-        filter.detach();
-        generateOutput( writer, filter.getXMLStreamReader() );
-    }
-
-    private void toISOBrief( XMLStreamWriter writer, XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        // XMLStreamReader filter = new NamedElementFilter( xmlStream, briefSummaryFilterElements );
-        OMElement filter = new XPathElementFilter( root, briefFilterElementsXPath );
-        filter.detach();
-        generateOutput( writer, filter.getXMLStreamReader() );
-
-    }
-
-    private Set<QName> removeElementsISONamespace( String[] localParts ) {
-        Set<QName> removeElements = new HashSet<QName>();
-        for ( String l : localParts ) {
-            removeElements.add( new QName( "http://www.isotc211.org/2005/gmd", l, "gmd" ) );
-        }
-
-        return removeElements;
-
-    }
-
-    private List<XPath> removeElementsXPath( String[] xpathExpr ) {
-        List<XPath> removeElements = new ArrayList<XPath>();
-        for ( String l : xpathExpr ) {
-
-            removeElements.add( new XPath( l, ns ) );
-        }
-
-        return removeElements;
-
-    }
-
-    private void generateOutput( XMLStreamWriter writer, XMLStreamReader filter )
-                            throws XMLStreamException {
-        while ( filter.hasNext() ) {
-
-            if ( filter.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-                XMLAdapter.writeElement( writer, filter );
-            } else {
-                filter.next();
-            }
-        }
-        filter.close();
-
     }
 
     private StringBuilder generateAnyText( XPath[] xpath ) {
@@ -737,5 +702,4 @@ public class ISORecord implements MetadataRecord {
     public String toString() {
         return getIdentifier();
     }
-
 }

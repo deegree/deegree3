@@ -35,11 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.ebrim;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -62,7 +66,6 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
-import org.deegree.metadata.filter.XPathElementFilter;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.slf4j.Logger;
 
@@ -243,46 +246,159 @@ public class RegistryObject implements MetadataRecord {
     @Override
     public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
                             throws XMLStreamException {
-        XMLStreamReader xmlStream = adapter.getRootElement().getXMLStreamReader();
+
         switch ( returnType ) {
         case brief:
-            StAXParsingHelper.skipStartDocument( xmlStream );
-            OMElement briefFilter = new XPathElementFilter( adapter.getRootElement(), briefFilterElementsXPath );
-            briefFilter.detach();
-            generateOutput( writer, briefFilter.getXMLStreamReader() );
+            serializeBrief( writer );
+            break;
+        case summary:
+            serializeSummary( writer );
             break;
         case full:
+            XMLStreamReader xmlStream = adapter.getRootElement().getXMLStreamReader();
             StAXParsingHelper.skipStartDocument( xmlStream );
             XMLAdapter.writeElement( writer, xmlStream );
             break;
-        case summary:
         default:
-            StAXParsingHelper.skipStartDocument( xmlStream );
-            OMElement sumFilter = new XPathElementFilter( adapter.getRootElement(), summaryFilterElementsXPath );
-            sumFilter.detach();
-            generateOutput( writer, sumFilter.getXMLStreamReader() );
-            break;
+            throw new IllegalArgumentException( "Unexpected return type '" + returnType + "'." );
         }
-
     }
 
-    private void generateOutput( XMLStreamWriter writer, XMLStreamReader filter )
+    /**
+     * Writes out a brief representation of this {@link RegistryObject} to OGC 07-110r4, section 7.5.
+     * 
+     * @param writer
+     *            writer to write to, must not be <code>null</code>
+     * @throws XMLStreamException
+     */
+    private void serializeBrief( XMLStreamWriter writer )
                             throws XMLStreamException {
-        while ( filter.hasNext() ) {
-            if ( filter.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-                XMLAdapter.writeElement( writer, filter );
-            } else {
-                filter.next();
+
+        XMLStreamReader inStream = adapter.getRootElement().getXMLStreamReader();
+        StAXParsingHelper.skipStartDocument( inStream );
+        if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
+            throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
+        }
+
+        if ( inStream.getNamespaceURI() == NULL_NS_URI
+             && ( inStream.getPrefix() == DEFAULT_NS_PREFIX || inStream.getPrefix() == null ) ) {
+            writer.writeStartElement( inStream.getLocalName() );
+        } else {
+            if ( inStream.getPrefix() != null
+                 && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                // TODO handle special cases for prefix binding, see
+                // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
+                writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
+            }
+            writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+        }
+
+        // copy RIM namespace binding
+        for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
+            String nsPrefix = inStream.getNamespacePrefix( i );
+            String nsURI = inStream.getNamespaceURI( i );
+            if ( RIM_NS.equals( nsURI ) ) {
+                writer.writeNamespace( nsPrefix, nsURI );
             }
         }
-        filter.close();
+
+        // copy attributes required for brief representation
+        for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
+            String localName = inStream.getAttributeLocalName( i );
+            String value = inStream.getAttributeValue( i );
+            String nsURI = inStream.getAttributeNamespace( i );
+            if ( nsURI == null ) {
+                if ( "id".equals( localName ) || "lid".equals( localName ) || "objectType".equals( localName )
+                     || "status".equals( localName ) )
+                    writer.writeAttribute( localName, value );
+            }
+        }
+
+        while ( inStream.next() != END_ELEMENT ) {
+            if ( inStream.isStartElement() ) {
+                QName elName = inStream.getName();
+                if ( RIM_NS.equals( elName.getNamespaceURI() ) && "VersionInfo".equals( elName.getLocalPart() ) ) {
+                    XMLAdapter.writeElement( writer, inStream );
+                } else {
+                    StAXParsingHelper.skipElement( inStream );
+                }
+            }
+        }
+
+        writer.writeEndElement();
+    }
+
+    /**
+     * Writes out a summary representation of this {@link RegistryObject} to OGC 07-110r4, section 7.5.
+     * 
+     * @param writer
+     *            writer to write to, must not be <code>null</code>
+     * @throws XMLStreamException
+     */
+    private void serializeSummary( XMLStreamWriter writer )
+                            throws XMLStreamException {
+
+        XMLStreamReader inStream = adapter.getRootElement().getXMLStreamReader();
+        StAXParsingHelper.skipStartDocument( inStream );
+        if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
+            throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
+        }
+
+        if ( inStream.getNamespaceURI() == NULL_NS_URI
+             && ( inStream.getPrefix() == DEFAULT_NS_PREFIX || inStream.getPrefix() == null ) ) {
+            writer.writeStartElement( inStream.getLocalName() );
+        } else {
+            if ( inStream.getPrefix() != null
+                 && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                // TODO handle special cases for prefix binding, see
+                // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
+                writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
+            }
+            writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+        }
+
+        // copy RIM namespace binding
+        for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
+            String nsPrefix = inStream.getNamespacePrefix( i );
+            String nsURI = inStream.getNamespaceURI( i );
+            if ( RIM_NS.equals( nsURI ) ) {
+                writer.writeNamespace( nsPrefix, nsURI );
+            }
+        }
+
+        // copy attributes required for brief representation
+        for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
+            String localName = inStream.getAttributeLocalName( i );
+            String value = inStream.getAttributeValue( i );
+            String nsURI = inStream.getAttributeNamespace( i );
+            if ( nsURI == null ) {
+                if ( "id".equals( localName ) || "lid".equals( localName ) || "objectType".equals( localName )
+                     || "status".equals( localName ) )
+                    writer.writeAttribute( localName, value );
+            }
+        }
+
+        while ( inStream.next() != END_ELEMENT ) {
+            if ( inStream.isStartElement() ) {
+                QName elName = inStream.getName();
+                if ( RIM_NS.equals( elName.getNamespaceURI() ) ) {
+                    if ( "VersionInfo".equals( elName.getLocalPart() ) || "Slot".equals( elName.getLocalPart() )
+                                            || "Name".equals( elName.getLocalPart() ) || "Description".equals( elName.getLocalPart() )) {
+                        XMLAdapter.writeElement( writer, inStream );
+                    }
+                } else {
+                    StAXParsingHelper.skipElement( inStream );
+                }
+            }
+        }
+
+        writer.writeEndElement();
     }
 
     @Override
     public void serialize( XMLStreamWriter writer, String[] elementNames )
                             throws XMLStreamException {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -293,7 +409,6 @@ public class RegistryObject implements MetadataRecord {
     @Override
     public void update( PropertyName propName, OMElement replaceValue ) {
         throw new UnsupportedOperationException();
-
     }
 
     @Override
