@@ -1,0 +1,5 @@
+<MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.0.0" xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd">
+  <NamespaceHint prefix="sf" namespaceURI="http://cite.opengeospatial.org/gmlsf"/>
+  <GMLSchema version="GML_31">../../appschemas/cite-gmlsf2.xsd</GMLSchema>
+  <GMLFeatureCollection version="GML_31">gml/dataset-sf0-2.gml</GMLFeatureCollection>
+</MemoryFeatureStore>
