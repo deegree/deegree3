@@ -50,8 +50,16 @@ public class PostGISDialect implements SQLDialectHelper {
         return "public";
     }
 
-    public String getStringConcatenationOperator() {
+    public String stringPlus() {
         return "||";
+    }
+
+    public String stringIndex( String pattern, String string ) {
+        return "POSITION(" + pattern + " IN " + string + ")";
+    }
+
+    public String cast( String expr, String type ) {
+        return expr + "::" + type;
     }
 
 }
