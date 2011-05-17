@@ -137,6 +137,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     protected PostGISFeatureStore( SQLFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace ) {
         this.config = config;
         this.configURL = configURL;
+        dialect = new PostGISDialect();
     }
 
     @Override
@@ -147,7 +148,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
         MappedApplicationSchema schema;
         try {
-            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, new PostGISDialect() );
+            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect );
         } catch ( Throwable t ) {
             LOG.error( t.getMessage(), t );
             throw new ResourceInitException( t.getMessage(), t );
