@@ -103,14 +103,14 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class Java2DRenderingTest extends TestCase {
+public class Java2DRendererTest extends TestCase {
 
-    private static final Logger LOG = getLogger( Java2DRenderingTest.class );
+    private static final Logger LOG = getLogger( Java2DRendererTest.class );
 
     private static File textFile, perfFile;
 
     // setting this to true will delete all rendering_* files in your temporary directory!
-    private static final boolean INTERACTIVE_TESTS = false;
+    private static final boolean INTERACTIVE_TESTS = true;
 
     private static BufferedImage fill;
 
@@ -135,7 +135,7 @@ public class Java2DRenderingTest extends TestCase {
         }
 
         try {
-            fill = read( Java2DRenderingTest.class.getResource( "logo-deegree.png" ) );
+            fill = read( Java2DRendererTest.class.getResource( "logo-deegree.png" ) );
         } catch ( MalformedURLException e ) {
             LOG.error( "Unknown error", e );
         } catch ( IOException e ) {
