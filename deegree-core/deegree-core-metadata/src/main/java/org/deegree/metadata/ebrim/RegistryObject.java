@@ -40,9 +40,6 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
@@ -85,31 +82,11 @@ public class RegistryObject implements MetadataRecord {
 
     public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
 
-    private static List<XPath> summaryFilterElementsXPath = new ArrayList<XPath>();
-
-    private static List<XPath> briefFilterElementsXPath = new ArrayList<XPath>();
-
     protected XMLAdapter adapter;
 
     static {
         ns.addNamespace( "rim", RIM_NS );
         ns.addNamespace( "wrs", "http://www.opengis.net/cat/wrs/1.0" );
-
-        // briefFilterElementsXPath.add( new XPath( "./@id", ns ) );
-        // briefFilterElementsXPath.add( new XPath( "./@lid", ns ) );
-        // briefFilterElementsXPath.add( new XPath( "./@objectType", ns ) );
-        // briefFilterElementsXPath.add( new XPath( "./@status", ns ) );
-        briefFilterElementsXPath.add( new XPath( "./rim:VersionInfo", ns ) );
-
-        // summaryFilterElementsXPath.add( new XPath( "./@id", ns ) );
-        // summaryFilterElementsXPath.add( new XPath( "./@lid", ns ) );
-        // summaryFilterElementsXPath.add( new XPath( "./@objectType", ns ) );
-        // summaryFilterElementsXPath.add( new XPath( "./@status", ns ) );
-        summaryFilterElementsXPath.add( new XPath( "./rim:VersionInfo", ns ) );
-        summaryFilterElementsXPath.add( new XPath( "./rim:Slot", ns ) );
-        // TODO: As specified by the value of the the Accept-Language request header field (if present).
-        summaryFilterElementsXPath.add( new XPath( "./rim:Name", ns ) );
-        summaryFilterElementsXPath.add( new XPath( "./rim:Description", ns ) );
     }
 
     public RegistryObject( OMElement record ) {
