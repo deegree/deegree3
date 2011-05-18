@@ -618,7 +618,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
         String message = SOAPMessage;
         if ( message == null || "".equals( message ) ) {
             if ( exception == null ) {
-                message = "unknwown";
+                message = "unknown";
             } else {
                 message = exception.getMessage();
             }
