@@ -363,6 +363,9 @@ public class DeegreeWorkspace {
      */
     public static String getWorkspaceRoot() {
         String workspaceRoot = System.getProperty( VAR_WORKSPACE_ROOT );
+        if (workspaceRoot == null || workspaceRoot.isEmpty()) {
+            workspaceRoot = System.getenv( VAR_WORKSPACE_ROOT );            
+        }
         if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
             workspaceRoot = System.getProperty( "user.home" ) + separator + ".deegree";
         }
