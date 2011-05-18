@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -69,18 +70,22 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
+import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Font;
@@ -134,6 +139,8 @@ public class PostgreSQLReader {
 
     private final HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
 
+    private final HashMap<Styling<?>, Continuation<Styling<?>>> continuations = new HashMap<Styling<?>, Continuation<Styling<?>>>();
+
     private String connid;
 
     private final String baseSystemId;
@@ -151,17 +158,17 @@ public class PostgreSQLReader {
         this.baseSystemId = baseSystemId;
     }
 
-    private Graphic getGraphic( int id, Connection conn )
+    private Pair<Graphic, Continuation<Styling<?>>> getGraphic( int id, Connection conn, Continuation<Styling<?>> contn )
                             throws SQLException {
         Graphic graphic = graphics.get( id );
         if ( graphic != null ) {
-            return graphic;
+            return new Pair<Graphic, Continuation<Styling<?>>>( graphic, contn );
         }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select size, rotation, anchorx, anchory, displacementx, displacementy, wellknownname, svg, base64raster, fill_id, stroke_id from "
+            stmt = conn.prepareStatement( "select size, sizeexpr, rotation, rotationexpr, anchorx, anchory, displacementx, displacementy, wellknownname, svg, base64raster, fill_id, stroke_id from "
                                           + schema + ".graphics where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
@@ -172,9 +179,25 @@ public class PostgreSQLReader {
                 if ( size != null ) {
                     res.size = size;
                 }
+                String sizeExpr = (String) rs.getObject( "sizeexpr" );
+                if ( sizeExpr != null ) {
+                    contn = getContn( sizeExpr, contn, new Updater<Styling<?>>() {
+                        public void update( Styling<?> obj, String val ) {
+                            ( (PointStyling) obj ).graphic.size = Double.parseDouble( val );
+                        }
+                    } );
+                }
                 Double rotation = (Double) rs.getObject( "rotation" );
                 if ( rotation != null ) {
                     res.rotation = rotation;
+                }
+                String rotationExpr = (String) rs.getObject( "rotationexpr" );
+                if ( rotationExpr != null ) {
+                    contn = getContn( rotationExpr, contn, new Updater<Styling<?>>() {
+                        public void update( Styling<?> obj, String val ) {
+                            ( (PointStyling) obj ).graphic.rotation = Double.parseDouble( val );
+                        }
+                    } );
                 }
                 Double ax = (Double) rs.getObject( "anchorx" );
                 if ( ax != null ) {
@@ -227,12 +250,14 @@ public class PostgreSQLReader {
                 }
                 Integer stroke = (Integer) rs.getObject( "stroke_id" );
                 if ( stroke != null ) {
-                    res.mark.stroke = getStroke( stroke, conn );
+                    Pair<Stroke, Continuation<Styling<?>>> p = getStroke( stroke, conn, contn );
+                    res.mark.stroke = p.first;
+                    contn = p.second;
                 }
 
                 graphics.put( id, res );
 
-                return res;
+                return new Pair<Graphic, Continuation<Styling<?>>>( res, contn );
             }
             return null;
         } finally {
@@ -245,17 +270,17 @@ public class PostgreSQLReader {
         }
     }
 
-    private Stroke getStroke( int id, Connection conn )
+    private Pair<Stroke, Continuation<Styling<?>>> getStroke( int id, Connection conn, Continuation<Styling<?>> contn )
                             throws SQLException {
         Stroke stroke = strokes.get( id );
         if ( stroke != null ) {
-            return stroke;
+            return new Pair<Stroke, Continuation<Styling<?>>>( stroke, contn );
         }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select color, width, linejoin, linecap, dasharray, dashoffset, stroke_graphic_id, fill_graphic_id, strokegap, strokeinitialgap, positionpercentage from "
+            stmt = conn.prepareStatement( "select color, width, widthexpr, linejoin, linecap, dasharray, dashoffset, stroke_graphic_id, fill_graphic_id, strokegap, strokeinitialgap, positionpercentage from "
                                           + schema + ".strokes where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
@@ -269,6 +294,19 @@ public class PostgreSQLReader {
                 Double width = (Double) rs.getObject( "width" );
                 if ( width != null ) {
                     res.width = width;
+                }
+                String widthExpr = (String) rs.getObject( "widthexpr" );
+                if ( widthExpr != null ) {
+                    contn = getContn( widthExpr, contn, new Updater<Styling<?>>() {
+                        public void update( Styling<?> obj, String val ) {
+                            if ( obj instanceof LineStyling ) {
+                                ( (LineStyling) obj ).stroke.width = Double.parseDouble( val );
+                            }
+                            if ( obj instanceof PolygonStyling ) {
+                                ( (PolygonStyling) obj ).stroke.width = Double.parseDouble( val );
+                            }
+                        }
+                    } );
                 }
                 String linejoin = rs.getString( "linejoin" );
                 if ( linejoin != null ) {
@@ -296,11 +334,11 @@ public class PostgreSQLReader {
                 }
                 Integer graphicstroke = (Integer) rs.getObject( "stroke_graphic_id" );
                 if ( graphicstroke != null ) {
-                    res.stroke = getGraphic( graphicstroke, conn );
+                    res.stroke = getGraphic( graphicstroke, conn, null ).first;
                 }
                 Integer graphicfill = (Integer) rs.getObject( "fill_graphic_id" );
                 if ( graphicfill != null ) {
-                    res.fill = getGraphic( graphicfill, conn );
+                    res.fill = getGraphic( graphicfill, conn, null ).first;
                 }
                 Double strokegap = (Double) rs.getObject( "strokegap" );
                 if ( strokegap != null ) {
@@ -317,7 +355,7 @@ public class PostgreSQLReader {
 
                 strokes.put( id, res );
 
-                return res;
+                return new Pair<Stroke, Continuation<Styling<?>>>( res, contn );
             }
             return null;
         } finally {
@@ -352,7 +390,7 @@ public class PostgreSQLReader {
                 }
                 Integer graphic = (Integer) rs.getObject( "graphic_id" );
                 if ( graphic != null ) {
-                    res.graphic = getGraphic( graphic, conn );
+                    res.graphic = getGraphic( graphic, conn, null ).first;
                 }
 
                 fills.put( id, res );
@@ -520,11 +558,12 @@ public class PostgreSQLReader {
         }
     }
 
-    private PointStyling getPointStyling( int id, Connection conn )
+    private Pair<PointStyling, Continuation<PointStyling>> getPointStyling( int id, Connection conn )
                             throws SQLException {
         PointStyling sym = points.get( id );
+        Continuation<Styling<?>> contn = continuations.get( sym );
         if ( sym != null ) {
-            return sym;
+            return new Pair<PointStyling, Continuation<PointStyling>>( sym, (Continuation) contn );
         }
 
         PreparedStatement stmt = null;
@@ -542,10 +581,12 @@ public class PostgreSQLReader {
                 }
                 Integer graphic = (Integer) rs.getObject( "graphic_id" );
                 if ( graphic != null ) {
-                    res.graphic = getGraphic( graphic, conn );
+                    Pair<Graphic, Continuation<Styling<?>>> p = getGraphic( graphic, conn, contn );
+                    res.graphic = p.first;
+                    contn = p.second;
                 }
 
-                return res;
+                return new Pair<PointStyling, Continuation<PointStyling>>( res, (Continuation) contn );
             }
             return null;
         } finally {
@@ -558,11 +599,12 @@ public class PostgreSQLReader {
         }
     }
 
-    private LineStyling getLineStyling( int id, Connection conn )
+    private Pair<LineStyling, Continuation<LineStyling>> getLineStyling( int id, Connection conn )
                             throws SQLException {
         LineStyling sym = lines.get( id );
+        Continuation<Styling<?>> contn = continuations.get( sym );
         if ( sym != null ) {
-            return sym;
+            return new Pair<LineStyling, Continuation<LineStyling>>( sym, (Continuation) contn );
         }
 
         PreparedStatement stmt = null;
@@ -581,14 +623,16 @@ public class PostgreSQLReader {
                 }
                 Integer stroke = (Integer) rs.getObject( "stroke_id" );
                 if ( stroke != null ) {
-                    res.stroke = getStroke( stroke, conn );
+                    Pair<Stroke, Continuation<Styling<?>>> p = getStroke( stroke, conn, contn );
+                    res.stroke = p.first;
+                    contn = p.second;
                 }
                 Double off = (Double) rs.getObject( "perpendicularoffset" );
                 if ( off != null ) {
                     res.perpendicularOffset = off;
                 }
 
-                return res;
+                return new Pair<LineStyling, Continuation<LineStyling>>( res, (Continuation) contn );
             }
             return null;
         } finally {
@@ -601,11 +645,12 @@ public class PostgreSQLReader {
         }
     }
 
-    private PolygonStyling getPolygonStyling( int id, Connection conn )
+    private Pair<PolygonStyling, Continuation<PolygonStyling>> getPolygonStyling( int id, Connection conn )
                             throws SQLException {
         PolygonStyling sym = polygons.get( id );
+        Continuation<Styling<?>> contn = continuations.get( sym );
         if ( sym != null ) {
-            return sym;
+            return new Pair<PolygonStyling, Continuation<PolygonStyling>>( sym, (Continuation) contn );
         }
 
         PreparedStatement stmt = null;
@@ -628,7 +673,9 @@ public class PostgreSQLReader {
                 }
                 Integer stroke = (Integer) rs.getObject( "stroke_id" );
                 if ( stroke != null ) {
-                    res.stroke = getStroke( stroke, conn );
+                    Pair<Stroke, Continuation<Styling<?>>> p = getStroke( stroke, conn, contn );
+                    res.stroke = p.first;
+                    contn = p.second;
                 }
                 Double dx = (Double) rs.getObject( "displacementx" );
                 if ( dx != null ) {
@@ -643,7 +690,7 @@ public class PostgreSQLReader {
                     res.perpendicularOffset = off;
                 }
 
-                return res;
+                return new Pair<PolygonStyling, Continuation<PolygonStyling>>( res, (Continuation) contn );
             }
             return null;
         } finally {
@@ -656,17 +703,51 @@ public class PostgreSQLReader {
         }
     }
 
-    private Pair<TextStyling, String> getTextStyling( int id, Connection conn )
+    private Continuation<Styling<?>> getContn( String text, Continuation<Styling<?>> contn,
+                                               final Updater<Styling<?>> updater ) {
+        XMLInputFactory fac = XMLInputFactory.newInstance();
+        Expression expr;
+        try {
+            XMLStreamReader reader = fac.createXMLStreamReader( new StringReader( text ) );
+            reader.next();
+            expr = Filter110XMLDecoder.parseExpression( reader );
+        } catch ( XMLParsingException e ) {
+            String[] ss = text.split( "}" );
+            expr = new PropertyName( new QName( ss[0].substring( 1 ), ss[1] ) );
+        } catch ( XMLStreamException e ) {
+            String[] ss = text.split( "}" );
+            expr = new PropertyName( new QName( ss[0].substring( 1 ), ss[1] ) );
+        }
+        final Expression expr2 = expr;
+        return new Continuation<Styling<?>>( contn ) {
+            @Override
+            public void updateStep( Styling<?> base, Feature obj, XPathEvaluator<Feature> evaluator ) {
+                try {
+                    Object[] evald = expr2.evaluate( obj, evaluator );
+                    if ( evald.length == 0 ) {
+                        LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), expr2 );
+                    } else {
+                        updater.update( base, evald[0].toString() );
+                    }
+                } catch ( FilterEvaluationException e ) {
+                    LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), expr2 );
+                }
+            }
+        };
+    }
+
+    private Triple<TextStyling, Continuation<TextStyling>, String> getTextStyling( int id, Connection conn )
                             throws SQLException {
         TextStyling sym = texts.get( id );
+        Continuation<Styling<?>> contn = continuations.get( sym );
         if ( sym != null ) {
-            return new Pair<TextStyling, String>( sym, null );
+            return new Triple<TextStyling, Continuation<TextStyling>, String>( sym, (Continuation) contn, null );
         }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = conn.prepareStatement( "select labelexpr, uom, font_id, fill_id, rotation, displacementx, displacementy, anchorx, anchory, lineplacement_id, halo_id from "
+            stmt = conn.prepareStatement( "select labelexpr, uom, font_id, fill_id, rotation, rotationexpr, displacementx, displacementy, anchorx, anchory, lineplacement_id, halo_id from "
                                           + schema + ".texts where id = ?" );
             stmt.setInt( 1, id );
             rs = stmt.executeQuery();
@@ -689,6 +770,15 @@ public class PostgreSQLReader {
                 Double rotation = (Double) rs.getObject( "rotation" );
                 if ( rotation != null ) {
                     res.rotation = rotation;
+                }
+                String rotationExpr = (String) rs.getObject( "rotationexpr" );
+                if ( rotationExpr != null ) {
+                    contn = getContn( rotationExpr, contn, new Updater<Styling<?>>() {
+                        @Override
+                        public void update( Styling<?> obj, String val ) {
+                            ( (TextStyling) obj ).rotation = Double.parseDouble( val );
+                        }
+                    } );
                 }
                 Double dx = (Double) rs.getObject( "displacementx" );
                 if ( dx != null ) {
@@ -715,7 +805,7 @@ public class PostgreSQLReader {
                     res.halo = getHalo( halo, conn );
                 }
 
-                return new Pair<TextStyling, String>( res, labelexpr );
+                return new Triple<TextStyling, Continuation<TextStyling>, String>( res, (Continuation) contn, labelexpr );
             }
             return null;
         } finally {
@@ -732,7 +822,7 @@ public class PostgreSQLReader {
      * @param id
      * @return the corresponding style from the database
      */
-    public Style getStyle( int id ) {
+    public synchronized Style getStyle( int id ) {
         Style style = pool.get( id );
         if ( style != null ) {
             return style;
@@ -759,20 +849,39 @@ public class PostgreSQLReader {
                     final Symbolizer<?> sym;
                     switch ( Type.valueOf( type.toUpperCase() ) ) {
                     case LINE:
-                        sym = new Symbolizer<LineStyling>( getLineStyling( key, conn ), null, null, null, -1, -1 );
+                        Pair<LineStyling, Continuation<LineStyling>> lpair = getLineStyling( key, conn );
+                        if ( lpair.second != null ) {
+                            sym = new Symbolizer<LineStyling>( lpair.first, lpair.second, null, null, null, -1, -1 );
+                        } else {
+                            sym = new Symbolizer<LineStyling>( lpair.first, null, null, null, -1, -1 );
+                        }
                         break;
                     case POINT:
-                        sym = new Symbolizer<PointStyling>( getPointStyling( key, conn ), null, null, null, -1, -1 );
+                        Pair<PointStyling, Continuation<PointStyling>> pair = getPointStyling( key, conn );
+                        if ( pair.second != null ) {
+                            sym = new Symbolizer<PointStyling>( pair.first, pair.second, null, null, null, -1, -1 );
+                        } else {
+                            sym = new Symbolizer<PointStyling>( pair.first, null, null, null, -1, -1 );
+                        }
                         break;
                     case POLYGON:
-                        sym = new Symbolizer<PolygonStyling>( getPolygonStyling( key, conn ), null, null, null, -1, -1 );
+                        Pair<PolygonStyling, Continuation<PolygonStyling>> ppair = getPolygonStyling( key, conn );
+                        if ( ppair.second != null ) {
+                            sym = new Symbolizer<PolygonStyling>( ppair.first, ppair.second, null, null, null, -1, -1 );
+                        } else {
+                            sym = new Symbolizer<PolygonStyling>( ppair.first, null, null, null, -1, -1 );
+                        }
                         break;
                     case TEXT:
-                        Pair<TextStyling, String> p = getTextStyling( key, conn );
-                        XMLStreamReader reader = fac.createXMLStreamReader( new StringReader( p.second ) );
+                        Triple<TextStyling, Continuation<TextStyling>, String> p = getTextStyling( key, conn );
+                        XMLStreamReader reader = fac.createXMLStreamReader( new StringReader( p.third ) );
                         reader.next();
                         final Expression expr = Filter110XMLDecoder.parseExpression( reader );
-                        sym = new Symbolizer<TextStyling>( p.first, null, null, null, -1, -1 );
+                        if ( p.second != null ) {
+                            sym = new Symbolizer<TextStyling>( p.first, p.second, null, null, null, -1, -1 );
+                        } else {
+                            sym = new Symbolizer<TextStyling>( p.first, null, null, null, -1, -1 );
+                        }
                         labels.put( (Symbolizer) sym, new Continuation<StringBuffer>() {
                             @Override
                             public void updateStep( StringBuffer base, Feature f, XPathEvaluator<Feature> evaluator ) {

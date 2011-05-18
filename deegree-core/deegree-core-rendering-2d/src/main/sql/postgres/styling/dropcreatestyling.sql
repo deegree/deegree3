@@ -2,6 +2,8 @@
 --  DBMS       : PostgreSQL 
 --  -------------------------------------------------- 
 
+--SET search_path TO deegree,public;
+
 -- indexes
 drop index pk_id_layers;
 drop index pk_id_styles;
@@ -105,6 +107,7 @@ create table strokes (
 id integer not null default nextval('strokes_seq'),
 color varchar,
 width float,
+widthexpr varchar,
 linejoin varchar,
 linecap varchar,
 dasharray varchar,
@@ -119,7 +122,9 @@ positionpercentage float
 create table graphics (
 id integer not null default nextval('graphics_seq'),
 size float,
+sizeexpr varchar,
 rotation float,
+rotationexpr varchar,
 anchorx float,
 anchory float,
 displacementx float,
@@ -186,6 +191,7 @@ uom varchar,
 font_id integer,
 fill_id integer,
 rotation float,
+rotationexpr varchar,
 displacementx float,
 displacementy float,
 anchorx float,
