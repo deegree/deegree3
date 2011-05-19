@@ -100,7 +100,7 @@ public class FIInspector implements RecordInspector<ISORecord> {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
             for ( String f : fi ) {
-                LOG.info( Messages.getMessage( "INFO_FI_AVAILABLE", f.trim() ) );
+                LOG.debug( Messages.getMessage( "INFO_FI_AVAILABLE", f.trim() ) );
                 idList.add( f.trim() );
             }
             return idList;
