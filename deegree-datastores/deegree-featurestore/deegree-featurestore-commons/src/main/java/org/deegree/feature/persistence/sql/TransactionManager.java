@@ -66,44 +66,45 @@ public class TransactionManager {
         this.jdbcConnId = jdbcConnId;
     }
 
-    /**
-     * @param conn
-     * @return a new transaction
-     * @throws FeatureStoreException
-     */
-    public SQLFeatureStoreTransaction acquireTransaction( Connection conn )
-                            throws FeatureStoreException {
-
-        while ( this.activeTransaction != null ) {
-            Thread holder = this.transactionHolder;
-            // check if transaction holder variable has (just) been cleared or if the other thread
-            // has been killed (avoid deadlocks)
-            if ( holder == null || !holder.isAlive() ) {
-                this.activeTransaction = null;
-                this.transactionHolder = null;
-                break;
-            }
-
-            try {
-                // wait until the transaction holder wakes us, but not longer than 5000
-                // milliseconds (as the transaction holder may very rarely get killed without
-                // signalling us)
-                wait( 5000 );
-            } catch ( InterruptedException e ) {
-                // nothing to do
-            }
-        }
-
-        try {
-            conn.setAutoCommit( false );
-            this.activeTransaction = new SQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
-        } catch ( SQLException e ) {
-            throw new FeatureStoreException( "Unable to disable auto commit on JDBC connection for transaction: "
-                                             + e.getMessage(), e );
-        }
-        this.transactionHolder = Thread.currentThread();
-        return this.activeTransaction;
-    }
+    // seems not to be used?
+    // /**
+    // * @param conn
+    // * @return a new transaction
+    // * @throws FeatureStoreException
+    // */
+    // public SQLFeatureStoreTransaction acquireTransaction( Connection conn )
+    // throws FeatureStoreException {
+    //
+    // while ( this.activeTransaction != null ) {
+    // Thread holder = this.transactionHolder;
+    // // check if transaction holder variable has (just) been cleared or if the other thread
+    // // has been killed (avoid deadlocks)
+    // if ( holder == null || !holder.isAlive() ) {
+    // this.activeTransaction = null;
+    // this.transactionHolder = null;
+    // break;
+    // }
+    //
+    // try {
+    // // wait until the transaction holder wakes us, but not longer than 5000
+    // // milliseconds (as the transaction holder may very rarely get killed without
+    // // signalling us)
+    // wait( 5000 );
+    // } catch ( InterruptedException e ) {
+    // // nothing to do
+    // }
+    // }
+    //
+    // try {
+    // conn.setAutoCommit( false );
+    // this.activeTransaction = new SQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
+    // } catch ( SQLException e ) {
+    // throw new FeatureStoreException( "Unable to disable auto commit on JDBC connection for transaction: "
+    // + e.getMessage(), e );
+    // }
+    // this.transactionHolder = Thread.currentThread();
+    // return this.activeTransaction;
+    // }
 
     public synchronized FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
@@ -131,8 +132,7 @@ public class TransactionManager {
         }
 
         try {
-            Connection conn = ConnectionManager.getConnection( jdbcConnId );
-            conn.setAutoCommit( false );
+            Connection conn = fs.getConnection();
             this.activeTransaction = new SQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );

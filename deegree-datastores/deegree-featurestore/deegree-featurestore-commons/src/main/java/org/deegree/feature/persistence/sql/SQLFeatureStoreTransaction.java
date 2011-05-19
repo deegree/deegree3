@@ -666,8 +666,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
         int updated = 0;
         if ( blobMapping != null ) {
-            throw new FeatureStoreException(
-                                             "Updates in PostGISFeatureStore (BLOB mode) are currently not implemented." );
+            throw new FeatureStoreException( "Updates in SQLFeatureStore (BLOB mode) are currently not implemented." );
         } else {
             try {
                 updated = performUpdateRelational( ftName, replacementProps, filter );
@@ -838,4 +837,5 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             taManager.releaseTransaction( this );
         }
     }
+
 }

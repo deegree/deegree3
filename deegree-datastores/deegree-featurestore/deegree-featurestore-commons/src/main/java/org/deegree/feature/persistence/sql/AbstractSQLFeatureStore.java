@@ -36,7 +36,6 @@
 package org.deegree.feature.persistence.sql;
 
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
@@ -67,9 +66,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.SQLDialectHelper;
-import org.deegree.commons.utils.CollectionUtils.Reducer;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
@@ -126,7 +123,7 @@ import org.slf4j.Logger;
  */
 public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
-    private static final Logger LOG = getLogger( AbstractSQLFeatureStore.class );
+    static final Logger LOG = getLogger( AbstractSQLFeatureStore.class );
 
     private MappedApplicationSchema schema;
 
@@ -433,12 +430,12 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
         // check for most common case: multiple featuretypes, same bbox (WMS), no filter
         boolean wmsStyleQuery = false;
-        Envelope env = (Envelope) queries[0].getPrefilterBBox();
+        Envelope env = queries[0].getPrefilterBBox();
         if ( getSchema().getBlobMapping() != null && queries[0].getFilter() == null
              && queries[0].getSortProperties().length == 0 ) {
             wmsStyleQuery = true;
             for ( int i = 1; i < queries.length; i++ ) {
-                Envelope queryBBox = (Envelope) queries[i].getPrefilterBBox();
+                Envelope queryBBox = queries[i].getPrefilterBBox();
                 if ( queryBBox != env && queries[i].getFilter() != null && queries[i].getSortProperties() != null ) {
                     wmsStyleQuery = false;
                     break;
@@ -497,7 +494,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( getConnId() );
+            conn = getConnection();
 
             // create temp table with ids
             // stmt = conn.createStatement();
@@ -589,7 +586,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         Connection conn = null;
         try {
             long begin = System.currentTimeMillis();
-            conn = ConnectionManager.getConnection( getConnId() );
+            conn = getConnection();
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
             List<String> columns = builder.getInitialSelectColumns();
@@ -648,12 +645,18 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         return result;
     }
 
+    protected Connection getConnection()
+                            throws SQLException {
+        Connection conn = ConnectionManager.getConnection( getConnId() );
+        // TODO where to put this?
+        conn.setAutoCommit( false );
+        return conn;
+    }
+
     /**
-     * @param conn
      * @param query
      * @param ftName
      * @param filter
-     * @return
      * @throws FeatureStoreException
      */
     FeatureResultSet queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
@@ -669,9 +672,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         ResultSet rs = null;
 
         try {
-            conn = ConnectionManager.getConnection( getConnId() );
-            // TODO where to put this?
-            conn.setAutoCommit( false );
+            conn = getConnection();
 
             FeatureType ft = getSchema().getFeatureType( ftName );
             FeatureTypeMapping ftMapping = getMapping( ftName );
@@ -871,7 +872,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                 blobWb = getWhereBuilderBlob( bboxFilter, conn );
             }
 
-            conn = ConnectionManager.getConnection( getConnId() );
+            conn = getConnection();
             StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                                  + " WHERE " );
             if ( looseBBox != null ) {
