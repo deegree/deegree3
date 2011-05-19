@@ -360,6 +360,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     @Override
                     protected Feature createElement( ResultSet rs )
                                             throws SQLException {
+                        int id = 0;
+
                         LinkedList<Property> props = new LinkedList<Property>();
                         for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
                             if ( pt instanceof GeometryPropertyType ) {
@@ -382,7 +384,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                                 }
                             }
                         }
-                        return new GenericFeature( featureType, null, props, null, null );
+                        return new GenericFeature( featureType, ++id + "", props, null, null );
                     }
                 } );
 
