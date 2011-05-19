@@ -533,7 +533,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
                             throws ServletException {
         for ( SerializerProvider p : exceptionSerializers ) {
             if ( p.matches( md ) ) {
-                serializer = p.getSerializer( md );
+                serializer = p.getSerializer( md, serializer );
             }
         }
 

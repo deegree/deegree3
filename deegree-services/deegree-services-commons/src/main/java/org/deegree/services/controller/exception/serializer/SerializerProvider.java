@@ -67,9 +67,12 @@ public interface SerializerProvider {
     /**
      * @param <T>
      * @param metadata
+     * @param originalSerializer
+     *            the originally selected serializer
      * @return an exception serializer for the specified service. Must not return null if matches(metadata) would return
      *         true.
      */
-    <T extends ControllerException> ExceptionSerializer<T> getSerializer( ImplementationMetadata<?> metadata );
+    <T extends ControllerException> ExceptionSerializer<T> getSerializer( ImplementationMetadata<?> metadata,
+                                                                          ExceptionSerializer<T> originalSerializer );
 
 }
