@@ -140,8 +140,11 @@ public class ISORecordSerializeTest extends AbstractISOTest {
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.fullRecord.openStream() );
         ISORecord rec = new ISORecord( xmlStream );
         rec.serialize( writer, ReturnableElement.brief );
+        writer.close();
+        xmlStream.close();
 
         StringReader input = new StringReader( sw.toString() );
+        sw.close();
         Assert.assertTrue( validate( input ) );
     }
 
@@ -158,10 +161,12 @@ public class ISORecordSerializeTest extends AbstractISOTest {
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.fullRecord.openStream() );
         ISORecord rec = new ISORecord( xmlStream );
         rec.serialize( writer, ReturnableElement.summary );
+        writer.close();
+        xmlStream.close();
 
         StringReader input = new StringReader( sw.toString() );
+        sw.close();
         Assert.assertTrue( validate( input ) );
-
     }
 
     private boolean validate( Reader toValidate ) {
@@ -229,16 +234,4 @@ public class ISORecordSerializeTest extends AbstractISOTest {
         return streamThat;
     }
 
-    private static StringBuilder stringBuilderFromXMLStream( XMLStreamReader xmlStreamThis )
-                            throws XMLStreamException {
-        StringBuilder streamThis = new StringBuilder();
-        while ( xmlStreamThis.hasNext() ) {
-            xmlStreamThis.next();
-            if ( xmlStreamThis.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-                streamThis.append( xmlStreamThis.getName() ).append( ' ' );
-            }
-        }
-
-        return streamThis;
-    }
 }
