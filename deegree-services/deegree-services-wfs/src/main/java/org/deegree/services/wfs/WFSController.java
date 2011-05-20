@@ -415,7 +415,8 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
                                         OWSException.OPERATION_NOT_SUPPORTED );
             }
         } catch ( OWSException e ) {
-            LOG.debug( e.getMessage(), e );
+            LOG.debug( "OWS-Exception: {}", e.getMessage() );
+            LOG.trace( e.getMessage(), e );
             if ( requestVersion != null && requestVersion.equals( VERSION_100 ) ) {
                 sendServiceException100( e, response );
             } else {
@@ -423,13 +424,16 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
                 sendServiceException110( e, response );
             }
         } catch ( MissingParameterException e ) {
-            LOG.debug( e.getMessage(), e );
+            LOG.debug( "OWS-Exception: {}", e.getMessage() );
+            LOG.trace( e.getMessage(), e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
-            LOG.debug( e.getMessage(), e );
+            LOG.debug( "OWS-Exception: {}", e.getMessage() );
+            LOG.trace( e.getMessage(), e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( Exception e ) {
-            LOG.debug( e.getMessage(), e );
+            LOG.debug( "OWS-Exception: {}", e.getMessage() );
+            LOG.trace( e.getMessage(), e );
             sendServiceException110( new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE ),
                                      response );
         }
