@@ -374,44 +374,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     }
 
     @Override
-    protected GMLObject getObjectByIdBlob( String id, BlobMapping blobMapping )
-                            throws FeatureStoreException {
-
-        GMLObject geomOrFeature = null;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( blobMapping.getDataColumn() );
-            sql.append( " FROM " );
-            sql.append( blobMapping.getTable() );
-            sql.append( " WHERE " );
-            sql.append( blobMapping.getGMLIdColumn() );
-            sql.append( "=?" );
-
-            conn = ConnectionManager.getConnection( getConnId() );
-            stmt = conn.prepareStatement( sql.toString() );
-            stmt.setString( 1, id );
-            rs = stmt.executeQuery();
-            if ( rs.next() ) {
-                LOG.debug( "Recreating object '" + id + "' from bytea." );
-                BlobCodec codec = blobMapping.getCodec();
-                geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), getSchema(),
-                                              blobMapping.getCRS(), new FeatureStoreGMLIdResolver( this ) );
-                getCache().add( geomOrFeature );
-            }
-        } catch ( Exception e ) {
-            String msg = "Error retrieving object by id (BLOB mode): " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
-        } finally {
-            close( rs, stmt, conn, LOG );
-        }
-        return geomOrFeature;
-    }
-
-    @Override
     public String[] getDDL() {
         return new PostGISDDLCreator( getSchema() ).getDDL();
     }
