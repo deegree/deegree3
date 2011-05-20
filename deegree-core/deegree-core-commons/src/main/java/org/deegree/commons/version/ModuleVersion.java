@@ -35,9 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.version;
 
-import java.net.URL;
-import java.util.Properties;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collection;
+import java.util.Properties;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,45 +63,52 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public final class ModuleVersion {
+public final class ModuleVersion implements Comparable<ModuleVersion> {
 
     private static final Logger LOG = LoggerFactory.getLogger( ModuleVersion.class );
 
-    private String buildVersion;
+    private static Collection<ModuleVersion> modulesInfo;
 
-    private String buildDate;
-
-    private String buildBy;
-
-    private String svnRevision;
-
-    private String svnPath;
-
-    /**
-     * @param buildInfoPropertiesURL
-     */
-    public ModuleVersion( URL buildInfoPropertiesURL ) {
+    static {
         try {
-            // fetch build properties
-            Properties buildProps = new Properties();
-            buildProps.load( buildInfoPropertiesURL.openStream() );
-            buildVersion = buildProps.getProperty( "build.version" );
-            buildDate = buildProps.getProperty( "build.date" );
-            buildBy = buildProps.getProperty( "build.by" );
-            // svnRevision = buildProps.getProperty( "svn.revision" ).trim();
-            // svnPath = buildProps.getProperty( "svn.path" ).trim();
-        } catch ( Exception ex ) {
-            LOG.error( "Error fetching version / build properties: " + ex.getMessage(), ex );
+            modulesInfo = extractModulesInfo( ClasspathHelper.getUrlsForCurrentClasspath() );
+        } catch ( IOException e ) {
+            LOG.error( "Error extracting module info: " + e.getMessage(), e );
         }
     }
 
+    private final String classpath;
+
+    private final String groupId;
+
+    private final String artifactId;
+
+    private final String version;
+
+    private final String scmRevision;
+
+    private final String buildDate;
+
+    private final String buildBy;
+
+    public ModuleVersion( String classpath, String groupId, String artifactId, String version, String scmRevision,
+                          String buildDate, String buildBy ) {
+        this.classpath = classpath;
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version;
+        this.scmRevision = scmRevision;
+        this.buildDate = buildDate;
+        this.buildBy = buildBy;
+    }
+
     /**
-     * Returns the version number.
+     * Returns the module version.
      * 
      * @return the version number
      */
-    public String getVersionNumber() {
-        return buildVersion;
+    public String getVersion() {
+        return version;
     }
 
     /**
@@ -112,25 +133,144 @@ public final class ModuleVersion {
      * @return the svn revision number and path
      */
     public String getSvnInfo() {
-        return "revision " + svnRevision + " of " + svnPath;
+        return "revision " + scmRevision;
     }
 
     /**
      * @return the svn revision number
      */
     public String getSvnRevision() {
-        return svnRevision;
+        return scmRevision;
+    }
+
+    public static Collection<ModuleVersion> getModulesInfo() {
+        return modulesInfo;
     }
 
     /**
-     * @return the svn path
+     * Returns the {@link ModuleVersion}s for the deegree modules on the given classpathes.
+     * 
+     * @param classpathURLs
+     *            classpath urls, must not be <code>null</code>
+     * @return module infos, never <code>null</code>, but can be empty (if no deegree module information is present on
+     *         the given classpathes)
+     * @throws IOException
+     *             if accessing <code>META-INF/deegree/buildinfo.properties</code> or
+     *             <code>META-INF/maven/[..]/pom.properties</code> fails
      */
-    public String getSvnPath() {
-        return svnPath;
+    public static Collection<ModuleVersion> extractModulesInfo( Set<URL> classpathURLs )
+                            throws IOException {
+        SortedSet<ModuleVersion> modules = new TreeSet<ModuleVersion>();
+        for ( URL classpathURL : classpathURLs ) {
+            ModuleVersion moduleInfo = extractModuleInfo( classpathURL );
+            if ( moduleInfo != null ) {
+                modules.add( moduleInfo );
+            }
+        }
+        return modules;
+    }
+
+    /**
+     * Returns the {@link ModuleVersion} for the deegree module on the given classpath.
+     * 
+     * @param classpathURL
+     *            classpath url, must not be <code>null</code>
+     * @return module info or <code>null</code> (if the module does not have file META-INF/deegree/buildinfo.properties)
+     * @throws IOException
+     *             if accessing <code>META-INF/deegree/buildinfo.properties</code> or
+     *             <code>META-INF/maven/[..]/pom.properties</code> fails
+     */
+    public static ModuleVersion extractModuleInfo( URL classpathURL )
+                            throws IOException {
+
+        ModuleVersion moduleInfo = null;
+
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        builder = builder.setUrls( classpathURL );
+        builder = builder.setScanners( new ResourcesScanner() );
+        Reflections r = new Reflections( builder );
+
+        Set<String> resources = r.getResources( Pattern.compile( "buildinfo\\.properties" ) );
+        if ( !resources.isEmpty() ) {
+            URLClassLoader classLoader = new URLClassLoader( new URL[] { classpathURL }, null );
+            String resourcePath = resources.iterator().next();
+            InputStream buildInfoStream = null;
+            try {
+                Properties props = new Properties();
+                buildInfoStream = classLoader.getResourceAsStream( resourcePath );
+                props.load( buildInfoStream );
+                String buildBy = props.getProperty( "build.by" );
+                String buildArtifactId = props.getProperty( "build.artifactId" );
+                String buildDate = props.getProperty( "build.date" );
+                String buildRev = props.getProperty( "build.svnrev" );
+                String pomGroupId = null;
+                String pomVersion = null;
+
+                resources = r.getResources( Pattern.compile( "pom\\.properties" ) );
+                InputStream pomInputStream = null;
+                if ( !resources.isEmpty() ) {
+                    resourcePath = resources.iterator().next();
+                    try {
+                        props = new Properties();
+                        pomInputStream = classLoader.findResource( resourcePath ).openStream();
+                        props.load( pomInputStream );
+                        String pomArtifactId = props.getProperty( "artifactId" );
+                        if ( !pomArtifactId.equals( buildArtifactId ) ) {
+                            LOG.warn( "ArtifactId mismatch for module on path: " + classpathURL
+                                      + " (buildinfo.properties vs. pom.properties)." );
+                        }
+                        pomGroupId = props.getProperty( "groupId" );
+                        pomVersion = props.getProperty( "version" );
+                    } finally {
+                        closeQuietly( pomInputStream );
+                    }
+                }
+                moduleInfo = new ModuleVersion( classpathURL.toString(), pomGroupId, buildArtifactId, pomVersion,
+                                                buildRev, buildDate, buildBy );
+            } finally {
+                closeQuietly( buildInfoStream );
+            }
+        }
+        return moduleInfo;
+    }
+
+    @Override
+    public int compareTo( ModuleVersion that ) {
+        return toString().compareTo( that.toString() );
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if ( o instanceof ModuleVersion ) {
+            return this.toString().equals( o.toString() );
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        return buildVersion + " (build@" + buildDate + " by " + buildBy + ")";
+        StringBuilder sb = new StringBuilder();
+//        if ( groupId != null ) {
+//            sb.append( groupId );
+//            sb.append( "." );
+//        }
+        sb.append( artifactId );
+        if ( version != null ) {
+            sb.append( "-" );
+            sb.append( version );
+        }
+        sb.append( " (svn revision " );
+        sb.append( scmRevision );
+        sb.append( " build@" );
+        sb.append( buildDate );
+        sb.append( " by " );
+        sb.append( buildBy );
+        sb.append( ")" );
+        return sb.toString();
+    }
+
+    public static void main( String[] args )
+                            throws IOException {
+        System.out.println( getModulesInfo() );
     }
 }

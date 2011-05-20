@@ -51,6 +51,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,7 +68,7 @@ import org.apache.commons.io.FileUtils;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.io.Zip;
-import org.deegree.commons.version.DeegreeModuleInfo;
+import org.deegree.commons.version.ModuleVersion;
 import org.deegree.console.util.RequestBean;
 import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
@@ -165,7 +166,6 @@ public class WorkspaceBean implements Serializable {
 
     public String applyChanges() {
         try {
-            OGCFrontController.getServiceWorkspace().initClassloader();
             OGCFrontController.getInstance().reload();
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -297,10 +297,10 @@ public class WorkspaceBean implements Serializable {
 
     private String getVersion() {
         String version = DEFAULT_VERSION;
-        List<DeegreeModuleInfo> modules = DeegreeModuleInfo.getRegisteredModules();
+        Collection<ModuleVersion> modules = ModuleVersion.getModulesInfo();
         if ( !modules.isEmpty() ) {
-            if ( !( "${project.version}" ).equals( modules.get( 0 ).getVersion().getVersionNumber() ) ) {
-                version = modules.get( 0 ).getVersion().getVersionNumber();
+            if ( !( "${project.version}" ).equals( modules.iterator().next().getVersion() ) ) {
+                version = modules.iterator().next().getVersion();
             } else {
                 LOG.warn( "No valid version information for modules available. Defaulting to " + DEFAULT_VERSION );
             }

@@ -36,6 +36,7 @@
 package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
+import static org.deegree.commons.version.ModuleVersion.getModulesInfo;
 
 import java.beans.Introspector;
 import java.io.BufferedInputStream;
@@ -96,7 +97,7 @@ import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.commons.version.DeegreeModuleInfo;
+import org.deegree.commons.version.ModuleVersion;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
@@ -872,7 +873,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "deegree modules" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
-            for ( DeegreeModuleInfo moduleInfo : DeegreeModuleInfo.getRegisteredModules() ) {
+            for ( ModuleVersion moduleInfo : getModulesInfo() ) {
                 LOG.info( " - " + moduleInfo.toString() );
             }
             LOG.info( "" );

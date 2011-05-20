@@ -42,18 +42,22 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeSet;
 
+import org.deegree.commons.version.ModuleVersion;
 import org.slf4j.Logger;
 
 /**
@@ -99,6 +103,8 @@ public class DeegreeWorkspace {
 
     private ClassLoader moduleClassLoader;
 
+    private Collection<ModuleVersion> wsModules = new TreeSet<ModuleVersion>();
+
     /**
      * @return a list of the currently loaded resource managers, never null
      */
@@ -107,22 +113,50 @@ public class DeegreeWorkspace {
     }
 
     /**
+     * Returns the {@link ModuleVersion} for all deegree modules in the workspace.
+     * 
+     * @return
+     * @throws IOException
+     */
+    public Collection<ModuleVersion> getModulesInfo()
+                            throws IOException {
+        if ( !( moduleClassLoader instanceof URLClassLoader ) ) {
+            return null;
+        }
+        Set<URL> urls = new HashSet<URL>();
+        for ( URL url : ( (URLClassLoader) moduleClassLoader ).getURLs() ) {
+            urls.add( url );
+        }
+        return ModuleVersion.extractModulesInfo( urls );
+    }
+
+    /**
      * Call this if modules directory content has changed.
      */
-    public void initClassloader() {
+    private void initClassloader() {
         // setup classloader
         File modules = new File( dir, "modules" );
         moduleClassLoader = Thread.currentThread().getContextClassLoader();
         if ( modules.exists() ) {
             File[] fs = modules.listFiles();
             if ( fs != null && fs.length > 0 ) {
+                LOG.info( "--------------------------------------------------------------------------------" );
+                LOG.info( "deegree modules (additional)" );
+                LOG.info( "--------------------------------------------------------------------------------" );
                 List<URL> urls = new ArrayList<URL>( fs.length );
                 for ( int i = 0; i < fs.length; ++i ) {
                     if ( fs[i].isFile() ) {
                         try {
-                            urls.add( fs[i].toURI().toURL() );
-                            LOG.info( "Using module {}.", fs[i].getName() );
-                        } catch ( MalformedURLException e ) {
+                            URL url = fs[i].toURI().toURL();
+                            urls.add( url );
+                            ModuleVersion moduleInfo = ModuleVersion.extractModuleInfo( url );
+                            if ( moduleInfo != null ) {
+                                LOG.info( " - " + moduleInfo );
+                                wsModules.add( moduleInfo );
+                            } else {
+                                LOG.info( " -" + fs[i] + " (non-deegree)" );
+                            }
+                        } catch ( Exception e ) {
                             LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
                         }
                     }
@@ -201,7 +235,6 @@ public class DeegreeWorkspace {
         nameToWs.put( name, this );
         register();
         LOG.debug( "Created workspace '{}' at '{}'.", this.name, this.dir );
-        load();
     }
 
     private DeegreeWorkspace( String workspaceName ) {
@@ -214,10 +247,10 @@ public class DeegreeWorkspace {
         name = workspaceName;
         register();
         LOG.debug( "Created workspace '{}' at '{}'.", this.name, this.dir );
-        load();
     }
 
     private void register() {
+
         wsRootDirToWs.put( this.dir, this );
         nameToWs.put( name, this );
     }
@@ -340,6 +373,7 @@ public class DeegreeWorkspace {
     public synchronized void initAll()
                             throws ResourceInitException {
         TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
+        load();
         for ( ResourceManager m : managers ) {
             m.startup( this );
         }
@@ -363,8 +397,8 @@ public class DeegreeWorkspace {
      */
     public static String getWorkspaceRoot() {
         String workspaceRoot = System.getProperty( VAR_WORKSPACE_ROOT );
-        if (workspaceRoot == null || workspaceRoot.isEmpty()) {
-            workspaceRoot = System.getenv( VAR_WORKSPACE_ROOT );            
+        if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
+            workspaceRoot = System.getenv( VAR_WORKSPACE_ROOT );
         }
         if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
             workspaceRoot = System.getProperty( "user.home" ) + separator + ".deegree";
