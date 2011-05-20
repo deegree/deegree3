@@ -67,8 +67,8 @@ import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.modules.ModuleInfo;
 import org.deegree.commons.utils.io.Zip;
-import org.deegree.commons.version.ModuleVersion;
 import org.deegree.console.util.RequestBean;
 import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
@@ -297,7 +297,7 @@ public class WorkspaceBean implements Serializable {
 
     private String getVersion() {
         String version = DEFAULT_VERSION;
-        Collection<ModuleVersion> modules = ModuleVersion.getModulesInfo();
+        Collection<ModuleInfo> modules = ModuleInfo.getModulesInfo();
         if ( !modules.isEmpty() ) {
             if ( !( "${project.version}" ).equals( modules.iterator().next().getVersion() ) ) {
                 version = modules.iterator().next().getVersion();

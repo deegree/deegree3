@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.version;
+package org.deegree.commons.modules;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
@@ -56,6 +56,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Provides access to deegree module metadata (e.g. Maven artifact identifier and build information).
+ * <p>
+ * The information is extracted from the following resources on the classpath:
+ * <ul>
+ * <li><code>META-INF/deegree/buildinfo.properties</code></li>
+ * <li><code>META-INF/maven/$groupId/$artifactId/pom.properties</code></li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -63,11 +71,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public final class ModuleVersion implements Comparable<ModuleVersion> {
+public final class ModuleInfo implements Comparable<ModuleInfo> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ModuleVersion.class );
+    private static final Logger LOG = LoggerFactory.getLogger( ModuleInfo.class );
 
-    private static Collection<ModuleVersion> modulesInfo;
+    private static Collection<ModuleInfo> modulesInfo;
 
     static {
         try {
@@ -91,8 +99,8 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
 
     private final String buildBy;
 
-    public ModuleVersion( String classpath, String groupId, String artifactId, String version, String scmRevision,
-                          String buildDate, String buildBy ) {
+    private ModuleInfo( String classpath, String groupId, String artifactId, String version, String scmRevision,
+                        String buildDate, String buildBy ) {
         this.classpath = classpath;
         this.groupId = groupId;
         this.artifactId = artifactId;
@@ -143,12 +151,12 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
         return scmRevision;
     }
 
-    public static Collection<ModuleVersion> getModulesInfo() {
+    public static Collection<ModuleInfo> getModulesInfo() {
         return modulesInfo;
     }
 
     /**
-     * Returns the {@link ModuleVersion}s for the deegree modules on the given classpathes.
+     * Returns the {@link ModuleInfo}s for the deegree modules on the given classpathes.
      * 
      * @param classpathURLs
      *            classpath urls, must not be <code>null</code>
@@ -158,11 +166,11 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
      *             if accessing <code>META-INF/deegree/buildinfo.properties</code> or
      *             <code>META-INF/maven/[..]/pom.properties</code> fails
      */
-    public static Collection<ModuleVersion> extractModulesInfo( Set<URL> classpathURLs )
+    public static Collection<ModuleInfo> extractModulesInfo( Set<URL> classpathURLs )
                             throws IOException {
-        SortedSet<ModuleVersion> modules = new TreeSet<ModuleVersion>();
+        SortedSet<ModuleInfo> modules = new TreeSet<ModuleInfo>();
         for ( URL classpathURL : classpathURLs ) {
-            ModuleVersion moduleInfo = extractModuleInfo( classpathURL );
+            ModuleInfo moduleInfo = extractModuleInfo( classpathURL );
             if ( moduleInfo != null ) {
                 modules.add( moduleInfo );
             }
@@ -171,7 +179,7 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
     }
 
     /**
-     * Returns the {@link ModuleVersion} for the deegree module on the given classpath.
+     * Returns the {@link ModuleInfo} for the deegree module on the given classpath.
      * 
      * @param classpathURL
      *            classpath url, must not be <code>null</code>
@@ -180,10 +188,10 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
      *             if accessing <code>META-INF/deegree/buildinfo.properties</code> or
      *             <code>META-INF/maven/[..]/pom.properties</code> fails
      */
-    public static ModuleVersion extractModuleInfo( URL classpathURL )
+    public static ModuleInfo extractModuleInfo( URL classpathURL )
                             throws IOException {
 
-        ModuleVersion moduleInfo = null;
+        ModuleInfo moduleInfo = null;
 
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder = builder.setUrls( classpathURL );
@@ -225,8 +233,8 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
                         closeQuietly( pomInputStream );
                     }
                 }
-                moduleInfo = new ModuleVersion( classpathURL.toString(), pomGroupId, buildArtifactId, pomVersion,
-                                                buildRev, buildDate, buildBy );
+                moduleInfo = new ModuleInfo( classpathURL.toString(), pomGroupId, buildArtifactId, pomVersion,
+                                             buildRev, buildDate, buildBy );
             } finally {
                 closeQuietly( buildInfoStream );
             }
@@ -235,13 +243,13 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
     }
 
     @Override
-    public int compareTo( ModuleVersion that ) {
+    public int compareTo( ModuleInfo that ) {
         return toString().compareTo( that.toString() );
     }
 
     @Override
     public boolean equals( Object o ) {
-        if ( o instanceof ModuleVersion ) {
+        if ( o instanceof ModuleInfo ) {
             return this.toString().equals( o.toString() );
         }
         return false;
@@ -250,10 +258,10 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-//        if ( groupId != null ) {
-//            sb.append( groupId );
-//            sb.append( "." );
-//        }
+        // if ( groupId != null ) {
+        // sb.append( groupId );
+        // sb.append( "." );
+        // }
         sb.append( artifactId );
         if ( version != null ) {
             sb.append( "-" );
@@ -267,10 +275,5 @@ public final class ModuleVersion implements Comparable<ModuleVersion> {
         sb.append( buildBy );
         sb.append( ")" );
         return sb.toString();
-    }
-
-    public static void main( String[] args )
-                            throws IOException {
-        System.out.println( getModulesInfo() );
     }
 }

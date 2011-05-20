@@ -49,8 +49,8 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import org.deegree.commons.modules.ModuleInfo;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
-import org.deegree.commons.version.ModuleVersion;
 import org.deegree.console.WorkspaceBean;
 import org.slf4j.Logger;
 
@@ -79,7 +79,7 @@ public class ApplicationBean implements Serializable {
     private List<String> internalModules = new ArrayList<String>();
 
     public ApplicationBean() {
-        for ( ModuleVersion info : ModuleVersion.getModulesInfo() ) {
+        for ( ModuleInfo info : ModuleInfo.getModulesInfo() ) {
             if ( baseVersion == null ) {
                 baseVersion = info.getVersion();
             }
@@ -117,7 +117,7 @@ public class ApplicationBean implements Serializable {
 
         List<String> wsModules = new ArrayList<String>();
         try {
-            for ( ModuleVersion info : wsBean.getActiveWorkspace().getModulesInfo() ) {
+            for ( ModuleInfo info : wsBean.getActiveWorkspace().getModulesInfo() ) {
                 wsModules.add( info.toString() );
             }
         } catch ( IOException e ) {

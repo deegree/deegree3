@@ -57,7 +57,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import org.deegree.commons.version.ModuleVersion;
+import org.deegree.commons.modules.ModuleInfo;
 import org.slf4j.Logger;
 
 /**
@@ -103,7 +103,7 @@ public class DeegreeWorkspace {
 
     private ClassLoader moduleClassLoader;
 
-    private Collection<ModuleVersion> wsModules = new TreeSet<ModuleVersion>();
+    private Collection<ModuleInfo> wsModules = new TreeSet<ModuleInfo>();
 
     /**
      * @return a list of the currently loaded resource managers, never null
@@ -113,12 +113,12 @@ public class DeegreeWorkspace {
     }
 
     /**
-     * Returns the {@link ModuleVersion} for all deegree modules in the workspace.
+     * Returns the {@link ModuleInfo} for all deegree modules in the workspace.
      * 
      * @return
      * @throws IOException
      */
-    public Collection<ModuleVersion> getModulesInfo()
+    public Collection<ModuleInfo> getModulesInfo()
                             throws IOException {
         if ( !( moduleClassLoader instanceof URLClassLoader ) ) {
             return null;
@@ -127,7 +127,7 @@ public class DeegreeWorkspace {
         for ( URL url : ( (URLClassLoader) moduleClassLoader ).getURLs() ) {
             urls.add( url );
         }
-        return ModuleVersion.extractModulesInfo( urls );
+        return ModuleInfo.extractModulesInfo( urls );
     }
 
     /**
@@ -149,7 +149,7 @@ public class DeegreeWorkspace {
                         try {
                             URL url = fs[i].toURI().toURL();
                             urls.add( url );
-                            ModuleVersion moduleInfo = ModuleVersion.extractModuleInfo( url );
+                            ModuleInfo moduleInfo = ModuleInfo.extractModuleInfo( url );
                             if ( moduleInfo != null ) {
                                 LOG.info( " - " + moduleInfo );
                                 wsModules.add( moduleInfo );
