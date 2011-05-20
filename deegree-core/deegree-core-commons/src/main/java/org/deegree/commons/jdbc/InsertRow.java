@@ -129,7 +129,8 @@ public class InsertRow extends TransactionRow {
         if ( autogenColumn == null ) {
             stmt = conn.prepareStatement( sql );
         } else {
-            stmt = conn.prepareStatement( sql, new String[] { autogenColumn.toUpperCase() } );
+            // @Andreas: autogenColumn.toUpperCase () breaks on PostgreSQL
+            stmt = conn.prepareStatement( sql, new String[] { autogenColumn } );
         }
         int columnId = 1;
         for ( Entry<String, Object> entry : columnToObject.entrySet() ) {

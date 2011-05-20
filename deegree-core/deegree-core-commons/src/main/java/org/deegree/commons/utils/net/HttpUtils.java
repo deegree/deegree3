@@ -55,8 +55,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -438,6 +438,42 @@ public class HttpUtils {
         }
 
         return worker.work( client.execute( get ).getEntity().getContent() );
+    }
+
+    /**
+     * Performs an HTTP-Get request and provides typed access to the response.
+     * 
+     * @param <T>
+     * @param worker
+     * @param url
+     * @param headers
+     *            may be null
+     * @param user
+     *            optional username for HTTP basic authentication
+     * @param pass
+     *            optional password for HTTP basic authentication
+     * @return some object from the url, null, if url is not valid
+     * @throws IOException
+     */
+    public static <T> Pair<T, HttpResponse> getFullResponse( Worker<T> worker, String url, Map<String, String> headers,
+                                                             String user, String pass )
+                            throws IOException {
+        DURL u = new DURL( url );
+        if ( !u.valid() ) {
+            return null;
+        }
+        DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+        if ( user != null && pass != null ) {
+            authenticate( client, user, pass, u );
+        }
+        HttpGet get = new HttpGet( url );
+        if ( headers != null ) {
+            for ( String key : headers.keySet() ) {
+                get.addHeader( key, headers.get( key ) );
+            }
+        }
+        HttpResponse response = client.execute( get );
+        return new Pair<T, HttpResponse>( worker.work( response.getEntity().getContent() ), response );
     }
 
     private static void handleProxies( String protocol, DefaultHttpClient client, String host ) {

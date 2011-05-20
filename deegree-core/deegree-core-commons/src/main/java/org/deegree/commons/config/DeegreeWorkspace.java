@@ -385,6 +385,8 @@ public class DeegreeWorkspace {
         for ( ResourceManager m : managers ) {
             m.shutdown();
         }
+        managers.clear();
+        managerMap.clear();
     }
 
     public ClassLoader getModuleClassLoader() {

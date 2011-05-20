@@ -64,7 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents a {@link PropertyName} that's mapped to a relational model defined by a {@link MappedApplicationSchema}.
+ * A {@link PropertyName} that's mapped to the relational model defined by a {@link MappedApplicationSchema}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -304,10 +304,10 @@ public class MappedXPath {
         return valueField;
     }
 
-    public boolean isSpatial () {
+    public boolean isSpatial() {
         return isSpatial;
     }
-    
+
     public ICRS getCRS() {
         return crs;
     }
@@ -343,11 +343,11 @@ public class MappedXPath {
 
     // TODO
     public PrimitiveType getPrimitiveType() {
-        return new PrimitiveType (BaseType.STRING);
+        return new PrimitiveType( BaseType.STRING );
     }
 
     // TODO
-    public boolean isConcatenated () {
+    public boolean isConcatenated() {
         return false;
     }
 }

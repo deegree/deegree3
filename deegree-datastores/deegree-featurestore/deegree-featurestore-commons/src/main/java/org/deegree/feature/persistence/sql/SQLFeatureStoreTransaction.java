@@ -244,7 +244,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 PreparedStatement stmt = null;
                 try {
                     StringBuilder sql = new StringBuilder( "DELETE FROM " + ftMapping.getFtTable() + " WHERE " );
-                    sql.append( fidMapping.getColumns().get( 0 ) );
+                    sql.append( fidMapping.getColumns().get( 0 ).first );
                     sql.append( "=?" );
                     for ( int i = 1; i < fidMapping.getColumns().size(); i++ ) {
                         sql.append( " AND " );
@@ -260,6 +260,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                         Object sqlValue = SQLValueMangler.internalToSQL( value );
                         stmt.setObject( i++, sqlValue );
                     }
+                    LOG.debug( "Executing: " + stmt );
                     deleted += stmt.executeUpdate();
                 } catch ( SQLException e ) {
                     LOG.debug( e.getMessage(), e );

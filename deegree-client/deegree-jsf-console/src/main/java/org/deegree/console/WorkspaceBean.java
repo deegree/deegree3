@@ -42,7 +42,6 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.deegree.client.core.utils.ActionParams.getParam1;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.commons.utils.net.HttpUtils.get;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,10 +64,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.modules.ModuleInfo;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.Zip;
+import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.console.util.RequestBean;
 import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
@@ -97,7 +99,7 @@ public class WorkspaceBean implements Serializable {
     private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
 
     // only used when no module version information is available
-    private static final String DEFAULT_VERSION = "3.1-pre5-SNAPSHOT";
+    private static final String DEFAULT_VERSION = "3.1-pre6-SNAPSHOT";
 
     @Getter
     private String lastMessage = "Workspace initialized.";
@@ -186,7 +188,13 @@ public class WorkspaceBean implements Serializable {
         String wsName = (String) getParam1();
         InputStream in = null;
         try {
-            in = get( STREAM, getDownloadBaseUrl(), null );
+            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, getDownloadBaseUrl(), null, null,
+                                                                           null );
+            in = p.getFirst();
+            if ( p.second.getStatusLine().getStatusCode() != 200 ) {
+                throw new Exception( "Server responded with HTTP status code "
+                                     + p.second.getStatusLine().getStatusCode() );
+            }
             for ( String s : readLines( in ) ) {
                 String[] ss = s.split( " ", 2 );
                 if ( ss[1].equals( wsName ) ) {
@@ -194,7 +202,8 @@ public class WorkspaceBean implements Serializable {
                 }
             }
         } catch ( Throwable t ) {
-            lastMessage = "Workspace could not be loaded: " + t.getLocalizedMessage();
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to download workspace: " + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
         } finally {
             closeQuietly( in );
         }
@@ -204,8 +213,13 @@ public class WorkspaceBean implements Serializable {
         InputStream in = null;
         try {
             URL url = new URL( location );
+            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, location, null, null, null );
             File root = new File( getWorkspaceRoot() );
-            in = get( STREAM, location, null );
+            in = p.getFirst();
+            if ( p.second.getStatusLine().getStatusCode() != 200 ) {
+                throw new Exception( "Download of '" + location + "' failed. Server responded with HTTP status code "
+                                     + p.second.getStatusLine().getStatusCode() );
+            }
             String name = workspaceImportName;
             if ( name == null || name.isEmpty() ) {
                 name = new File( url.getPath() ).getName();
@@ -219,15 +233,19 @@ public class WorkspaceBean implements Serializable {
                 lastMessage = "Workspace has been imported.";
             }
         } catch ( Exception e ) {
-            e.printStackTrace();
-            LOG.trace( "Stack trace: ", e );
-            lastMessage = "Workspace could not be imported: " + e.getLocalizedMessage();
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to import workspace: " + e.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
         } finally {
             closeQuietly( in );
         }
     }
 
     public String uploadWorkspace() {
+        if ( upload == null || upload.getFileItem() == null ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Please select a workspace file first.", null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return null;
+        }
         LOG.info( "Uploaded workspace file: '" + upload.getFileName() + "'" );
         workspaceImportName = upload.getFileName();
         if ( workspaceImportName.endsWith( ".deegree-workspace" ) ) {
@@ -270,7 +288,13 @@ public class WorkspaceBean implements Serializable {
     public List<String> getRemoteWorkspaces() {
         InputStream in = null;
         try {
-            in = get( STREAM, getDownloadBaseUrl(), null );
+            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, getDownloadBaseUrl(), null, null,
+                                                                           null );
+            in = p.getFirst();
+            if ( p.second.getStatusLine().getStatusCode() != 200 ) {
+                throw new Exception( "Server responded with HTTP status code "
+                                     + p.second.getStatusLine().getStatusCode() );
+            }
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
             for ( String s : list ) {
