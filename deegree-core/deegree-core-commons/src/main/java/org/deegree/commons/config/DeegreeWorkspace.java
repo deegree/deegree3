@@ -224,7 +224,6 @@ public class DeegreeWorkspace {
                 }
             }
         }
-
         managers.addAll( order );
     }
 

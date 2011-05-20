@@ -43,9 +43,9 @@ import java.io.File;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.TempFileManager;
@@ -71,20 +71,22 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
                             throws ResourceInitException {
         metadata = new FeatureStoreManagerMetadata( workspace );
 
-        // ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         // lockdb stuff
-        String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
-        LOG.info( "Using '" + lockDb + "' for h2 lock database." );
+        if ( !mgr.getConnectionIds().contains( "LOCK_DB" ) ) {
 
-        try {
-            Class.forName( "org.h2.Driver" );
-        } catch ( ClassNotFoundException e ) {
-            LOG.error( "Unable to load h2 driver class." );
+            String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
+            LOG.info( "Using '" + lockDb + "' for h2 lock database." );
+
+            try {
+                Class.forName( "org.h2.Driver" );
+            } catch ( ClassNotFoundException e ) {
+                LOG.error( "Unable to load h2 driver class." );
+            }
+
+            // TODO: mgr.
+            addConnection( "LOCK_DB", "jdbc:h2:" + lockDb, "SA", "", 0, 10 );
         }
-
-        // TODO: mgr.
-        addConnection( "LOCK_DB", "jdbc:h2:" + lockDb, "SA", "", 0, 10 );
-
         // stores startup
         super.startup( workspace );
     }
@@ -107,7 +109,7 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
 
     @Override
     public void shutdown() {
-        workspace.getSubsystemManager( ConnectionManager.class ).deactivate( "LOCK_DB" );
+//        workspace.getSubsystemManager( ConnectionManager.class ).deactivate( "LOCK_DB" );
     }
 
 }
