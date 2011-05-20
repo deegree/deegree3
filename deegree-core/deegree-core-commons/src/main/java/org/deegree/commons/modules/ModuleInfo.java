@@ -85,7 +85,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
         }
     }
 
-    private final String classpath;
+    private final URL classpath;
 
     private final String groupId;
 
@@ -99,7 +99,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
 
     private final String buildBy;
 
-    private ModuleInfo( String classpath, String groupId, String artifactId, String version, String scmRevision,
+    private ModuleInfo( URL classpath, String groupId, String artifactId, String version, String scmRevision,
                         String buildDate, String buildBy ) {
         this.classpath = classpath;
         this.groupId = groupId;
@@ -111,7 +111,24 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
     }
 
     /**
-     * Returns the module version.
+     * Returns the URL of the module's classpath.
+     * 
+     * @return url, never <code>null</code>
+     */
+    public URL getClasspath() {
+        return classpath;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public String getArtifactId() {
+        return artifactId;
+    }
+
+    /**
+     * Returns the module's version.
      * 
      * @return the version number
      */
@@ -138,19 +155,17 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
     }
 
     /**
-     * @return the svn revision number and path
-     */
-    public String getSvnInfo() {
-        return "revision " + scmRevision;
-    }
-
-    /**
      * @return the svn revision number
      */
     public String getSvnRevision() {
         return scmRevision;
     }
 
+    /**
+     * Returns the {@link ModuleInfo}s for the deegree modules accessible by the default classloader.
+     * 
+     * @return module infos, never <code>null</code>, but can be empty
+     */
     public static Collection<ModuleInfo> getModulesInfo() {
         return modulesInfo;
     }
@@ -233,8 +248,8 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                         closeQuietly( pomInputStream );
                     }
                 }
-                moduleInfo = new ModuleInfo( classpathURL.toString(), pomGroupId, buildArtifactId, pomVersion,
-                                             buildRev, buildDate, buildBy );
+                moduleInfo = new ModuleInfo( classpathURL, pomGroupId, buildArtifactId, pomVersion, buildRev,
+                                             buildDate, buildBy );
             } finally {
                 closeQuietly( buildInfoStream );
             }
