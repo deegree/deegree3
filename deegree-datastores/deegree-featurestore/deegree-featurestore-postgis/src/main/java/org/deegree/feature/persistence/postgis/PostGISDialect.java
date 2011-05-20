@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.deegree.commons.tom.sql.SQLDialectHelper;
 
 /**
@@ -60,6 +63,11 @@ public class PostGISDialect implements SQLDialectHelper {
 
     public String cast( String expr, String type ) {
         return expr + "::" + type;
+    }
+
+    public void setNullGeometry( int index, PreparedStatement stmt )
+                            throws SQLException {
+        stmt.setObject( index, null );
     }
 
 }

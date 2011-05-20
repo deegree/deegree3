@@ -437,7 +437,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             bboxGeom = Geometries.getAsGeometry( bbox );
         }
         try {
-            stmt.setObject( 4, blobGeomConverter.toSQLArgument( bboxGeom, conn ) );
+            Object o = blobGeomConverter.toSQLArgument( bboxGeom, conn );
+            if ( o == null ) {
+                fs.dialect.setNullGeometry( 4, stmt );
+            } else {
+                stmt.setObject( 4, o );
+            }
         } catch ( Throwable e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg );
