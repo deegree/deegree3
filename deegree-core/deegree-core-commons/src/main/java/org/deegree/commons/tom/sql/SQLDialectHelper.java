@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.sql;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -67,5 +70,12 @@ public interface SQLDialectHelper {
      * @return expr cast to type
      */
     String cast( String expr, String type );
+
+    /**
+     * @param index
+     * @param stmt
+     */
+    void setNullGeometry( int index, PreparedStatement stmt )
+                            throws SQLException;
 
 }
