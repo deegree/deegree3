@@ -917,7 +917,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                 sql.append( ",?" );
             }
             sql.append( ") ORDER BY " );
-            sql.append( dialect.stringIndex( "'['" + dialect.stringPlus() + dialect.cast( "ft_type", "varchar" )
+            sql.append( dialect.stringIndex( "'['" + dialect.stringPlus() + dialect.cast( "ft_type", "varchar(2000)" )
                                              + dialect.stringPlus() + "']'", "?" ) );
             stmt = conn.prepareStatement( sql.toString() );
             int firstFtArg = 1;

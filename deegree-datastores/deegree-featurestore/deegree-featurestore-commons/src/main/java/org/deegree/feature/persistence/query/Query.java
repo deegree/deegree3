@@ -44,6 +44,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
@@ -62,6 +63,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.SpatialOperator.SubType;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
@@ -94,9 +96,9 @@ public class Query {
 
     private final Filter filter;
 
-    private final String featureVersion;
-
-    private final ICRS srsName;
+    // private final String featureVersion;
+    //
+    // private final ICRS srsName;
 
     private final SortProperty[] sortBy;
 
@@ -122,8 +124,8 @@ public class Query {
     public Query( QName ftName, Filter filter, int scale, int maxFeatures, double resolution ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
-        this.featureVersion = null;
-        this.srsName = null;
+        // this.featureVersion = null;
+        // this.srsName = null;
         this.maxFeatures = maxFeatures;
         if ( scale > 0 ) {
             hints.put( HINT_SCALE, scale );
@@ -152,8 +154,8 @@ public class Query {
     public Query( TypeName[] typeNames, Filter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         this.typeNames = typeNames;
         this.filter = filter;
-        this.featureVersion = featureVersion;
-        this.srsName = srsName;
+        // this.featureVersion = featureVersion;
+        // this.srsName = srsName;
         if ( sortBy != null ) {
             this.sortBy = sortBy;
         } else {
@@ -176,8 +178,8 @@ public class Query {
     public Query( IdFilter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         this.typeNames = new TypeName[0];
         this.filter = filter;
-        this.featureVersion = featureVersion;
-        this.srsName = srsName;
+        // this.featureVersion = featureVersion;
+        // this.srsName = srsName;
         if ( sortBy != null ) {
             this.sortBy = sortBy;
         } else {
@@ -257,7 +259,10 @@ public class Query {
         case BBOX:
             return ( (BBOX) oper ).getBoundingBox();
         case CONTAINS:
-            return ( (Contains) oper ).getGeometry().getEnvelope();
+            // Oracle does not like zero-extent bboxes
+            if ( !( ( (Contains) oper ).getGeometry() instanceof Point ) )
+                return ( (Contains) oper ).getGeometry().getEnvelope();
+            return null;
         case CROSSES:
             return ( (Crosses) oper ).getGeometry().getEnvelope();
         case DWITHIN:
