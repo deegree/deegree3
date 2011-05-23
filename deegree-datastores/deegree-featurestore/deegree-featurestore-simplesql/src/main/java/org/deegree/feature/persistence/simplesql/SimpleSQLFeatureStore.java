@@ -55,6 +55,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -134,6 +135,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     private Pair<Long, Envelope> cachedEnvelope = new Pair<Long, Envelope>();
 
     private DeegreeWorkspace workspace;
+
+    static int currentid = 0;
 
     /**
      * @param connId
@@ -225,30 +228,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                 available = false;
                 return null;
             } finally {
-                if ( set != null ) {
-                    try {
-                        set.close();
-                    } catch ( SQLException e ) {
-                        LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                    }
-                }
-                if ( stmt != null ) {
-                    try {
-                        stmt.close();
-                    } catch ( SQLException e ) {
-                        LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                    }
-                }
-                if ( conn != null ) {
-                    try {
-                        conn.close();
-                    } catch ( SQLException e ) {
-                        LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                    }
-                }
+                JDBCUtils.close( set, stmt, conn, LOG );
             }
             return null;
         }
@@ -360,7 +340,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     @Override
                     protected Feature createElement( ResultSet rs )
                                             throws SQLException {
-                        int id = 0;
 
                         LinkedList<Property> props = new LinkedList<Property>();
                         for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
@@ -384,7 +363,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                                 }
                             }
                         }
-                        return new GenericFeature( featureType, ++id + "", props, null, null );
+                        return new GenericFeature( featureType, ( ++currentid ) + "", props, null, null );
                     }
                 } );
 
