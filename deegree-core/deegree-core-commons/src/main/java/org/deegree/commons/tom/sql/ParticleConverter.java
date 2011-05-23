@@ -36,6 +36,9 @@
 package org.deegree.commons.tom.sql;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.deegree.commons.tom.TypedObjectNode;
 
@@ -49,11 +52,35 @@ import org.deegree.commons.tom.TypedObjectNode;
  */
 public interface ParticleConverter<T extends TypedObjectNode> {
 
+    /**
+     * Returns an SQL fragment for SELECTing the particle value from the associated database table.
+     * 
+     * @param tableAlias
+     *            alias that's used for disambiguating the table, may be <code>null</code>
+     * @return SQL fragment (e.g. <code>X1.columname</code>), may be <code>null</code>
+     */
     public String getSelectSnippet( String tableAlias );
 
+    /**
+     * Builds a particle from the specified column of the current row of the given {@link ResultSet}.
+     * 
+     * @param rs
+     *            result set, never <code>null</code>
+     * @param colIndex
+     *            index of the column in the result set
+     * @return particle, may be <code>null</code>
+     */
+    public T toParticle( ResultSet rs, int colIndex )
+                            throws SQLException;
+
+    /**
+     * Returns a {@link PreparedStatement} fragment for setting the particle value in an SQL statement.
+     * 
+     * @return SQL fragment (e.g. <code>?</code>), may be <code>null</code>
+     */
     public String getSetSnippet();
 
-    public T toParticle( Object sqlValue );
-
+//    public void setArgument( T particle, PreparedStatement stmt, int colIndex );
+    
     public Object toSQLArgument( T particle, Connection conn );
 }

@@ -310,16 +310,16 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
 
         QName q = getName( mapping.getPath() );
-        System.out.println ("building: " + q);
-        
+        System.out.println( "building: " + q );
+
         TypedObjectNode particle = null;
         if ( mapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
                 String col = fs.getConverter( pm ).getSelectSnippet( null );
-                Object sqlValue = rs.getObject( colToRsIdx.get( col ) );
-                particle = fs.getConverter( mapping ).toParticle( sqlValue );
+                int colIndex = colToRsIdx.get( col );
+                particle = fs.getConverter( mapping ).toParticle( rs, colIndex );
             }
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;
@@ -327,8 +327,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             if ( me instanceof DBField ) {
                 String col = fs.getConverter( pm ).getSelectSnippet( null );
                 // TODO getObject seems not to work w/ oracle, the oracle.sql.BLOB does not yield correct results
-                Object sqlValue = rs.getBytes( colToRsIdx.get( col ) );
-                particle = fs.getConverter( mapping ).toParticle( sqlValue );
+                int colIndex = colToRsIdx.get( col );
+                particle = fs.getConverter( mapping ).toParticle( rs, colIndex );
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;

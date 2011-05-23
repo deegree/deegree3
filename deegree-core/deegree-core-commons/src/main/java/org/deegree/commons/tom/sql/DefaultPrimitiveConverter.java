@@ -38,6 +38,8 @@ package org.deegree.commons.tom.sql;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 
 import org.deegree.commons.tom.datetime.Date;
@@ -87,7 +89,8 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
     }
 
     @Override
-    public PrimitiveValue toParticle( Object sqlValue ) {
+    public PrimitiveValue toParticle( ResultSet rs, int colIndex ) throws SQLException {
+        Object sqlValue = rs.getObject( colIndex );
         if ( sqlValue == null ) {
             return null;
         }

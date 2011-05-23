@@ -54,11 +54,9 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
-import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.config.AbstractMappedSchemaBuilder;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
@@ -406,7 +404,9 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             }
 
             @Override
-            public Geometry toParticle( Object sqlValue ) {
+            public Geometry toParticle( ResultSet rs, int colIndex )
+                                    throws SQLException {
+                Object sqlValue = rs.getObject( colIndex );
                 if ( sqlValue == null ) {
                     return null;
                 }

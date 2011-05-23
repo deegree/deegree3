@@ -36,6 +36,8 @@
 package org.deegree.feature.persistence.sql.converter;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -71,8 +73,9 @@ public class DoubleListConverter implements ParticleConverter<TypedObjectNode> {
     }
 
     @Override
-    public PrimitiveValue toParticle( Object sqlValue ) {
-        Geometry geom = (Geometry) geomConverter.toParticle( sqlValue );
+    public PrimitiveValue toParticle( ResultSet rs, int colIndex )
+                            throws SQLException {
+        Geometry geom = (Geometry) geomConverter.toParticle( rs, colIndex );
         if ( geom == null ) {
             return null;
         }
