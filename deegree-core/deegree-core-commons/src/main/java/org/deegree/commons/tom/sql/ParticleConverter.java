@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.sql;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,7 +42,8 @@ import java.sql.SQLException;
 import org.deegree.commons.tom.TypedObjectNode;
 
 /**
- * Implementations convert particles between {@link TypedObjectNode} instances and SQL argument objects.
+ * Implementations convert particles between {@link TypedObjectNode} instances and SQL argument / parameter objects in
+ * {@link PreparedStatement} / {@link ResultSet} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -80,7 +80,16 @@ public interface ParticleConverter<T extends TypedObjectNode> {
      */
     public String getSetSnippet();
 
-//    public void setArgument( T particle, PreparedStatement stmt, int colIndex );
-    
-    public Object toSQLArgument( T particle, Connection conn );
+    /**
+     * Converts the given particle and sets the designated SQL parameter in the given {@link PreparedStatement}.
+     * 
+     * @param stmt
+     *            prepared statement, never <code>null</code>
+     * @param particle
+     *            particle value, can be <code>null</<code>
+     * @param paramIndex
+     *            index of the SQL parameter in the statement
+     */
+    public void setParticle( PreparedStatement stmt, T particle, int paramIndex )
+                            throws SQLException;
 }

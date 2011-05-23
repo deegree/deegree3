@@ -437,19 +437,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         if ( bbox != null ) {
             bboxGeom = Geometries.getAsGeometry( bbox );
         }
-        try {
-            Object o = blobGeomConverter.toSQLArgument( bboxGeom, conn );
-            if ( o == null ) {
-                fs.dialect.setNullGeometry( 4, stmt );
-            } else {
-                stmt.setObject( 4, o );
-            }
-        } catch ( Throwable e ) {
-            String msg = "Error encoding feature for BLOB: " + e.getMessage();
-            LOG.error( msg );
-            LOG.trace( "Stack trace:", e );
-            throw new SQLException( msg, e );
-        }
+        blobGeomConverter.setParticle( stmt, bboxGeom, 4 );
         // stmt.addBatch();
         stmt.execute();
 
@@ -526,9 +514,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 } else {
                     Geometry geom = (Geometry) getPropValue( value );
                     ParticleConverter<Geometry> converter = (ParticleConverter<Geometry>) fs.getConverter( mapping );
-                    Object sqlValue = converter.toSQLArgument( geom, conn );
                     String column = ( (DBField) me ).getColumn();
-                    insertNode.getRow().addPreparedArgument( column, sqlValue, converter.getSetSnippet() );
+                    insertNode.getRow().addPreparedArgument( column, geom, converter );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
                 String fid = null;
@@ -693,8 +680,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
         FIDMapping fidMapping = ftMapping.getFidMapping();
 
-        List<Object> sqlObjects = new ArrayList<Object>( replacementProps.size() );
-
         StringBuffer sql = new StringBuffer( "UPDATE " );
         sql.append( ftMapping.getFtTable() );
         sql.append( " SET " );
@@ -710,28 +695,21 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                         continue;
                     }
                     column = ( (DBField) me ).getColumn();
-                    PrimitiveValue value = (PrimitiveValue) replacementProp.getValue();
-                    sqlObjects.add( SQLValueMangler.internalToSQL( value ) );
                     if ( !first ) {
                         sql.append( "," );
                     } else {
                         first = false;
                     }
                     sql.append( column );
-                    sql.append( "=?" );
+                    sql.append( "=" );
+                    ParticleConverter<PrimitiveValue> converter = ( (PrimitiveMapping) mapping ).getConverter();
+                    sql.append( converter.getSetSnippet() );
                 } else if ( mapping instanceof GeometryMapping ) {
                     MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
                     if ( !( me instanceof DBField ) ) {
                         continue;
                     }
                     ParticleConverter<Geometry> geomConverter = (ParticleConverter<Geometry>) fs.getConverter( mapping );
-                    column = ( (DBField) me ).getColumn();
-                    Geometry value = (Geometry) replacementProp.getValue();
-                    try {
-                        sqlObjects.add( geomConverter.toSQLArgument( value, conn ) );
-                    } catch ( Throwable t ) {
-                        throw new FeatureStoreException( t.getMessage(), t );
-                    }
                     if ( !first ) {
                         sql.append( "," );
                     } else {
@@ -764,9 +742,31 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         try {
             stmt = conn.prepareStatement( sql.toString() );
             int i = 1;
-            for ( Object param : sqlObjects ) {
-                stmt.setObject( i++, param );
+
+            for ( Property replacementProp : replacementProps ) {
+                QName propName = replacementProp.getType().getName();
+                Mapping mapping = ftMapping.getMapping( propName );
+                if ( mapping != null ) {
+                    if ( mapping instanceof PrimitiveMapping ) {
+                        MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
+                        if ( !( me instanceof DBField ) ) {
+                            continue;
+                        }
+                        PrimitiveValue value = (PrimitiveValue) replacementProp.getValue();
+                        ParticleConverter<PrimitiveValue> converter = ( (PrimitiveMapping) mapping ).getConverter();
+                        converter.setParticle( stmt, value, i++ );
+                    } else if ( mapping instanceof GeometryMapping ) {
+                        MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
+                        if ( !( me instanceof DBField ) ) {
+                            continue;
+                        }
+                        Geometry value = (Geometry) replacementProp.getValue();
+                        ParticleConverter<Geometry> converter = (ParticleConverter<Geometry>) fs.getConverter( mapping );
+                        converter.setParticle( stmt, value, i++ );
+                    }
+                }
             }
+
             for ( String id : filter.getMatchingIds() ) {
                 IdAnalysis analysis = schema.analyzeId( id );
                 int j = i;

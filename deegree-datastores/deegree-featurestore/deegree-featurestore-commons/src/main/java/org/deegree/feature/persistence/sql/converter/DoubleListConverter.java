@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.converter;
 
-import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -96,13 +96,8 @@ public class DoubleListConverter implements ParticleConverter<TypedObjectNode> {
     }
 
     @Override
-    public Object toSQLArgument( TypedObjectNode particle, Connection conn ) {
-        return geomConverter.toSQLArgument( particle, conn );
+    public void setParticle( PreparedStatement stmt, TypedObjectNode particle, int paramIndex )
+                            throws SQLException {
+        geomConverter.setParticle( stmt, particle, paramIndex );
     }
-
-    // protected PrimitiveValue toStringParticle( Object sqlValue ) {
-    // if ( sqlValue instanceof Point ) {
-
-    // return new PrimitiveValue( "" + sqlValue, pt );
-    // }
 }

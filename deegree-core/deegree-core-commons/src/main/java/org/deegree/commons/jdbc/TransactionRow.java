@@ -38,6 +38,10 @@ package org.deegree.commons.jdbc;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.sql.ParticleConversion;
+import org.deegree.commons.tom.sql.ParticleConverter;
+
 /**
  * Encapsulates columns and values for manipulating one row in a database.
  * 
@@ -105,6 +109,12 @@ public abstract class TransactionRow {
     public void addPreparedArgument( String column, Object value, String literal ) {
         columnToLiteral.put( column.toLowerCase(), literal );
         columnToObject.put( column.toLowerCase(), value );
+    }
+
+    public <T extends TypedObjectNode> void addPreparedArgument( String column, T particle,
+                                                                 ParticleConverter<T> converter ) {
+        columnToLiteral.put( column.toLowerCase(), converter.getSetSnippet() );
+        columnToObject.put( column.toLowerCase(), new ParticleConversion<T>( converter, particle ) );
     }
 
     /**

@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.deegree.commons.tom.sql.ParticleConversion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,10 +138,16 @@ public class InsertRow extends TransactionRow {
             if ( entry.getValue() != null ) {
                 LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
                            + entry.getValue().getClass() + ")" );
+                if ( entry.getValue() instanceof ParticleConversion<?> ) {
+                    ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
+                    conversion.setParticle( stmt, columnId++ );
+                } else {
+                    stmt.setObject( columnId++, null );
+                }
             } else {
                 LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
+                stmt.setObject( columnId++, null );
             }
-            stmt.setObject( columnId++, entry.getValue() );
         }
         stmt.execute();
 

@@ -391,6 +391,20 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             }
 
             @Override
+            public Geometry toParticle( ResultSet rs, int colIndex )
+                                    throws SQLException {
+                byte[] wkb = rs.getBytes( colIndex );
+                if ( wkb == null ) {
+                    return null;
+                }
+                try {
+                    return WKBReader.read( wkb, gm.getCRS() );
+                } catch ( Throwable t ) {
+                    throw new IllegalArgumentException( t.getMessage(), t );
+                }
+            }
+
+            @Override
             public String getSetSnippet() {
                 StringBuilder sb = new StringBuilder();
                 if ( useLegacyPredicates ) {
@@ -404,30 +418,18 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             }
 
             @Override
-            public Geometry toParticle( ResultSet rs, int colIndex )
+            public void setParticle( PreparedStatement stmt, Geometry particle, int paramIndex )
                                     throws SQLException {
-                Object sqlValue = rs.getObject( colIndex );
-                if ( sqlValue == null ) {
-                    return null;
+                byte[] wkb = null;
+                if ( particle != null ) {
+                    try {
+                        Geometry compatible = getCompatibleGeometry( particle, gm.getCRS() );
+                        wkb = WKBWriter.write( compatible );
+                    } catch ( Throwable t ) {
+                        throw new IllegalArgumentException( t.getMessage(), t );
+                    }
                 }
-                try {
-                    return WKBReader.read( (byte[]) sqlValue, gm.getCRS() );
-                } catch ( Throwable t ) {
-                    throw new IllegalArgumentException( t.getMessage(), t );
-                }
-            }
-
-            @Override
-            public Object toSQLArgument( Geometry particle, Connection conn ) {
-                if ( particle == null ) {
-                    return null;
-                }
-                try {
-                    Geometry compatible = getCompatibleGeometry( particle, gm.getCRS() );
-                    return WKBWriter.write( compatible );
-                } catch ( Throwable t ) {
-                    throw new IllegalArgumentException( t.getMessage(), t );
-                }
+                stmt.setBytes( paramIndex, wkb );
             }
         };
     }

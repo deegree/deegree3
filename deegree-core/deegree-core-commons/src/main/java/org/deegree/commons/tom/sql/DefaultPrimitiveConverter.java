@@ -37,7 +37,7 @@ package org.deegree.commons.tom.sql;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -48,6 +48,7 @@ import org.deegree.commons.tom.datetime.Time;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.utils.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,8 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
     }
 
     @Override
-    public PrimitiveValue toParticle( ResultSet rs, int colIndex ) throws SQLException {
+    public PrimitiveValue toParticle( ResultSet rs, int colIndex )
+                            throws SQLException {
         Object sqlValue = rs.getObject( colIndex );
         if ( sqlValue == null ) {
             return null;
@@ -219,8 +221,9 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
     }
 
     @Override
-    public Object toSQLArgument( PrimitiveValue particle, Connection conn ) {
-        // TODO Auto-generated method stub
-        return null;
+    public void setParticle( PreparedStatement stmt, PrimitiveValue particle, int colIndex ) throws SQLException {
+        // TODO rework this
+        Object sqlValue = SQLValueMangler.internalToSQL( particle );
+        stmt.setObject( colIndex, sqlValue );
     }
 }
