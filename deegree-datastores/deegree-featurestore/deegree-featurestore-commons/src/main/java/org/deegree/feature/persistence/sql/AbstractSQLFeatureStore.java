@@ -166,7 +166,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         }
     }
 
-    private void initConverters() {
+    protected void initConverters() {
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
             if ( ftMapping != null ) {
@@ -177,7 +177,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         }
     }
 
-    private void initConverter( Mapping particleMapping ) {
+    protected void initConverter( Mapping particleMapping ) {
         if ( particleMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) particleMapping;
             ParticleConverter<?> converter = pm.getConverter();
