@@ -40,10 +40,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
@@ -71,29 +72,33 @@ public class WorkspaceTest {
 
     public static final String CRS_UNKNOWN = "unknown";
 
+    private DeegreeWorkspace workspace;
+
     @Before
     public void beforeAll()
-                            throws URISyntaxException {
+                            throws ResourceInitException {
         URL resource = WorkspaceTest.class.getResource( "crs" );
         File file = new File( resource.getPath() );
-        CRSManager.init( file );
+        workspace = DeegreeWorkspace.getInstance();
+        workspace.initAll();
+        workspace.getSubsystemManager( CRSManager.class ).init( file );
     }
 
     @After
     public void afterAll() {
-        CRSManager.destroy();
+        workspace.destroyAll();
     }
 
     @Test
     public void testInitWorkspace() {
         Collection<CRSStore> all = CRSManager.getAll();
         assertNotNull( all );
-        assertEquals( 2, all.size() );
+        assertEquals( 3, all.size() );
         assertNotNull( CRSManager.get( STORE_DEEGREE ) );
         assertNotNull( CRSManager.get( STORE_GML1 ) );
         Collection<String> crsStoreIds = CRSManager.getCrsStoreIds();
         assertNotNull( crsStoreIds );
-        assertEquals( 2, crsStoreIds.size() );
+        assertEquals( 3, crsStoreIds.size() );
         assertTrue( crsStoreIds.contains( STORE_DEEGREE ) );
         assertTrue( crsStoreIds.contains( STORE_GML1 ) );
     }

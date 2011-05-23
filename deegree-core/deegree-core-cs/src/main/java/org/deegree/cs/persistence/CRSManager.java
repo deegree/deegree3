@@ -87,11 +87,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CRSManager extends AbstractBasicResourceManager implements ResourceManager {
 
-    private static boolean loadDefault = true;
-
     private static Logger LOG = LoggerFactory.getLogger( CRSManager.class );
-
-    private static ServiceLoader<CRSStoreProvider> crssProviderLoader = ServiceLoader.load( CRSStoreProvider.class );
 
     private static Map<String, CRSStoreProvider> nsToProvider = null;
 
@@ -99,12 +95,19 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
 
     private static Map<String, TransformationFactory> idToTransF = new HashMap<String, TransformationFactory>();
 
+    private DeegreeWorkspace workspace;
+
+    private static boolean defaultInitialized = false;
+
     static {
-        initDefault();
+        new CRSManager().initDefault();
     }
 
-    private static void initDefault() {
-        if ( loadDefault ) {
+    private void initDefault() {
+        synchronized ( CRSManager.class ) {
+            if ( defaultInitialized ) {
+                return;
+            }
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "No 'crs' directory -- use default configuration." );
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -112,6 +115,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             URL defaultConfig = CRSManager.class.getResource( "default.xml" );
             try {
                 handleConfigFile( defaultConfig );
+                defaultInitialized = true;
             } catch ( Throwable t ) {
                 LOG.error( "The default configuration could not be loaded: " + t.getMessage() );
             }
@@ -120,6 +124,8 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
 
     public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
+        this.workspace = workspace;
+        initDefault();
         init( new File( workspace.getLocation(), "crs" ) );
     }
 
@@ -134,12 +140,13 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         LOG.info( "Clear CRS store and transformation map" );
         idToCRSStore.clear();
         idToTransF.clear();
-        initDefault();
+        defaultInitialized = false;
+        new CRSManager().initDefault();
     }
 
-    // TODO: dependencies
+    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return null;
+        return new Class[] {};
     }
 
     /**
@@ -148,10 +155,9 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
      * 
      * @param crsDir
      */
-    public static void init( File crsDir ) {
+    public void init( File crsDir ) {
+        initDefault();
         if ( crsDir != null && crsDir.exists() ) {
-            loadDefault = false;
-            destroy();
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "Setting up crs stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -170,14 +176,12 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
                 }
             }
             LOG.info( "" );
-            loadDefault = true;
         } else {
-            LOG.info( "Could not set up CRS stores: CRS workspace directory " + crsDir + "is null or does not exists" );
-            destroy();
+            LOG.info( "Could not set up CRS stores: CRS workspace directory " + crsDir + " is null or does not exist." );
         }
     }
 
-    private static void handleConfigFile( URL crsConfigFile ) {
+    private void handleConfigFile( URL crsConfigFile ) {
         String fileName = crsConfigFile.getFile();
         int fileNameStart = fileName.lastIndexOf( '/' ) + 1;
         // 4 is the length of ".xml"
@@ -201,7 +205,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
      * @throws CRSStoreException
      *             if the creation fails, e.g. due to a configuration error
      */
-    public static synchronized CRSStore create( URL configURL )
+    public synchronized CRSStore create( URL configURL )
                             throws CRSStoreException {
         String namespace = null;
         try {
@@ -228,11 +232,17 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
      * 
      * @return all available providers, keys: config namespace, value: provider instance
      */
-    private static synchronized Map<String, CRSStoreProvider> getProviders() {
+    private synchronized Map<String, CRSStoreProvider> getProviders() {
         if ( nsToProvider == null ) {
             nsToProvider = new HashMap<String, CRSStoreProvider>();
             try {
-                for ( CRSStoreProvider provider : crssProviderLoader ) {
+                ServiceLoader<CRSStoreProvider> loaded;
+                if ( workspace != null ) {
+                    loaded = ServiceLoader.load( CRSStoreProvider.class, workspace.getModuleClassLoader() );
+                } else {
+                    loaded = ServiceLoader.load( CRSStoreProvider.class );
+                }
+                for ( CRSStoreProvider provider : loaded ) {
                     LOG.debug( "CRS store provider: " + provider + ", namespace: " + provider.getConfigNamespace() );
                     if ( nsToProvider.containsKey( provider.getConfigNamespace() ) ) {
                         LOG.error( "Multiple crs store providers for config namespace: '"

@@ -42,6 +42,8 @@ import static junit.framework.Assert.assertTrue;
 
 import java.util.Collection;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.IAxis;
@@ -64,6 +66,8 @@ import org.deegree.cs.refs.components.DatumRef;
 import org.deegree.cs.refs.projections.ProjectionRef;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -79,19 +83,34 @@ import org.junit.Test;
  */
 public class DeegreeCRSStoreProviderTest {
 
+    private DeegreeWorkspace workspace;
+
+    @Before
+    public void setUp()
+                            throws ResourceInitException {
+        workspace = DeegreeWorkspace.getInstance();
+        workspace.initAll();
+    }
+
+    @After
+    public void shutDown() {
+        workspace.destroyAll();
+    }
+
     /**
      * Tries to load the default configuration, when no workspace is set!
+     * 
+     * @throws ResourceInitException
      */
     @Test
-    public void testLoadingDefaultConfiguration() {
-        CRSManager.init( null );
+    public void testLoadingDefaultConfiguration()
+                            throws ResourceInitException {
         Collection<CRSStore> stores = CRSManager.getAll();
         assertNotNull( stores );
         assertTrue( stores.size() == 1 );
         for ( CRSStore store : stores ) {
             assertTrue( store instanceof DeegreeCRSStore );
         }
-        CRSManager.destroy();
     }
 
     /**
@@ -102,7 +121,7 @@ public class DeegreeCRSStoreProviderTest {
     @Test
     public void testCRSByID()
                             throws CRSStoreException {
-        CRSStore defaultStore = CRSManager.create( CRSManager.class.getResource( "default.xml" ) );
+        CRSStore defaultStore = workspace.getSubsystemManager( CRSManager.class ).create( CRSManager.class.getResource( "default.xml" ) );
         assertNotNull( defaultStore );
         assertTrue( defaultStore instanceof DeegreeCRSStore );
         DeegreeCRSStore dStore = (DeegreeCRSStore) defaultStore;
@@ -200,7 +219,7 @@ public class DeegreeCRSStoreProviderTest {
      */
     public void testCache()
                             throws CRSStoreException {
-        CRSStore defaultStore = CRSManager.create( CRSManager.class.getResource( "default.xml" ) );
+        CRSStore defaultStore = CRSManager.get( "default" );
         assertNotNull( defaultStore );
         assertTrue( defaultStore instanceof DeegreeCRSStore );
         DeegreeCRSStore dStore = (DeegreeCRSStore) defaultStore;
