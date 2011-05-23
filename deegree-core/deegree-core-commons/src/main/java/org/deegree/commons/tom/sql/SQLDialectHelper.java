@@ -70,12 +70,4 @@ public interface SQLDialectHelper {
      * @return expr cast to type
      */
     String cast( String expr, String type );
-
-    /**
-     * @param index
-     * @param stmt
-     */
-    void setNullGeometry( int index, PreparedStatement stmt )
-                            throws SQLException;
-
 }
