@@ -168,7 +168,7 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
 
     @Override
     public String toString() {
-        return "{uri=" + getURI() + ", resolved=" + ( getReferencedObject() != null ) + "}";
+        return "{uri=" + getURI() + ", resolved=" + isResolved() + "}";
     }
 
     public IAxis[] getAxis() {
