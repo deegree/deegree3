@@ -94,6 +94,24 @@ public class PropertyName implements Expression {
         init( nsContext );
     }
 
+    /**
+     * Creates a new {@link PropertyName} instance that selects a property.
+     * 
+     * @param name
+     *            qualified name of the property, never <code>null</code>
+     */
+    public PropertyName( QName name ) {
+        NamespaceBindings nsContext = new NamespaceBindings();
+        if ( name.getNamespaceURI() != null ) {
+            String prefix = ( name.getPrefix() != null && !"".equals( name.getPrefix() ) ) ? name.getPrefix() : "app";
+            nsContext.addNamespace( prefix, name.getNamespaceURI() );
+            this.text = prefix + ":" + name.getLocalPart();
+        } else {
+            this.text = name.getLocalPart();
+        }
+        init( nsContext );
+    }
+
     private void init( NamespaceContext nsContext ) {
 
         try {
@@ -130,24 +148,6 @@ public class PropertyName implements Expression {
                 }
             }
         }
-    }
-
-    /**
-     * Creates a new {@link PropertyName} instance that selects a property.
-     * 
-     * @param name
-     *            qualified name of the property, never <code>null</code>
-     */
-    public PropertyName( QName name ) {
-        NamespaceBindings nsContext = new NamespaceBindings();
-        if ( name.getNamespaceURI() != null ) {
-            String prefix = ( name.getPrefix() != null && !"".equals( name.getPrefix() ) ) ? name.getPrefix() : "app";
-            nsContext.addNamespace( prefix, name.getNamespaceURI() );
-            this.text = prefix + ":" + name.getLocalPart();
-        } else {
-            this.text = name.getLocalPart();
-        }
-        init( nsContext );
     }
 
     // TODO check if this should stay here
