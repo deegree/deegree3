@@ -40,6 +40,7 @@ import static java.sql.Types.BOOLEAN;
 import java.sql.Types;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
@@ -59,6 +60,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.ConstantPropertyNameMapping;
 import org.deegree.filter.sql.GeometryPropertyNameMapping;
 import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
@@ -336,23 +338,28 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         PropertyNameMapping propMapping = mapper.getMapping( propName, aliasManager );
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
-            // TODO
-            String table = propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
-                                                                          : propMapping.getTargetField().getTable();
-            String column = propMapping.getTargetField().getColumn();
-            int sqlType = propMapping.getSQLType();
-            ICRS crs = null;
-            String srid = null;
-            boolean isConcatenated = false;
-            PrimitiveType pt = null;
-            if ( propMapping instanceof GeometryPropertyNameMapping ) {
-                crs = ( (GeometryPropertyNameMapping) propMapping ).getCRS();
-                srid = ( (GeometryPropertyNameMapping) propMapping ).getSRID();
-            } else if ( propMapping instanceof PrimitivePropertyNameMapping ) {
-                pt = ( (PrimitivePropertyNameMapping) propMapping ).getType();
-                isConcatenated = ( (PrimitivePropertyNameMapping) propMapping ).isConcatenated();
+            if ( propMapping instanceof ConstantPropertyNameMapping ) {
+                // TODO
+                sql = new SQLLiteral( (PrimitiveValue) ( (ConstantPropertyNameMapping) propMapping ).getValue() );
+            } else {
+                // TODO
+                String table = propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
+                                                                              : propMapping.getTargetField().getTable();
+                String column = propMapping.getTargetField().getColumn();
+                int sqlType = propMapping.getSQLType();
+                ICRS crs = null;
+                String srid = null;
+                boolean isConcatenated = false;
+                PrimitiveType pt = null;
+                if ( propMapping instanceof GeometryPropertyNameMapping ) {
+                    crs = ( (GeometryPropertyNameMapping) propMapping ).getCRS();
+                    srid = ( (GeometryPropertyNameMapping) propMapping ).getSRID();
+                } else if ( propMapping instanceof PrimitivePropertyNameMapping ) {
+                    pt = ( (PrimitivePropertyNameMapping) propMapping ).getType();
+                    isConcatenated = ( (PrimitivePropertyNameMapping) propMapping ).isConcatenated();
+                }
+                sql = new SQLColumn( table, column, true, pt, sqlType, crs, srid, isConcatenated );
             }
-            sql = new SQLColumn( table, column, true, pt, sqlType, crs, srid, isConcatenated );
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }

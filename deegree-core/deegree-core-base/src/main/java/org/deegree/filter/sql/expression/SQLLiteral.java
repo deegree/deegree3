@@ -57,13 +57,21 @@ import org.deegree.geometry.Geometry;
  */
 public class SQLLiteral implements SQLExpression {
 
-    private int sqlType;
+    private Object value;
 
     private PrimitiveType pt;
 
+    private int sqlType;
+
     private boolean isSpatial;
 
-    private Object value;
+    public SQLLiteral( PrimitiveValue value ) {
+        this.value = value;
+        this.sqlType = -1;
+        this.isSpatial = false;
+        // TODO SQL type conversion desparately needs to be outfactored (merge with ParticleConverter concept)
+        cast( value.getType() );
+    }
 
     public SQLLiteral( Object value, int sqlType ) {
         this.value = value;
