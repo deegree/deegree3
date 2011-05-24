@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rim:RegistryPackage xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" id="urn:x-ogc:specification:csw-ebrim:package:EOProducts" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:RegistryPackage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0 http://www.oasis-open.org/committees/regrep/documents/3.0/schema/rim.xsd">
+	<rim:Name>
+		<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Earth Observation Products extension package for CSW-ebRIM"/>
+	</rim:Name>
+	<rim:Description>
+		<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Provides Earth Observation Products extensions to the Basic package of the CSW-ebRIM catalogue profile."/>
+	</rim:Description>
+	<rim:RegistryObjectList>
+		<!-- extensions to canonical ObjectType scheme -->
+		<rim:ClassificationNode code="EOProduct" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct" id="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct" parent="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExtrinsicObject">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOProduct"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Represents an Earth Observation Product"/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="EOAcquisitionPlatform" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOAcquisitionPlatform" id="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOAcquisitionPlatform" parent="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExtrinsicObject">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOAcquisitionPlatform"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Represents an Earth Observation Acquisition Platform"/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="EOProductInformation" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProductInformation" id="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProductInformation" parent="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExtrinsicObject">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOProductInformation"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Represents an Earth Observation Product Information"/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="EOMaskInformation" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOMaskInformation" id="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOMaskInformation" parent="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExtrinsicObject">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOMaskInformation"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Represents an Earth Observation Mask Information"/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="EOBrowseInformation" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOBrowseInformation" id="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOBrowseInformation" parent="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExtrinsicObject">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOBrowseInformation"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Represents an Earth Observation Browse Information"/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="EOArchivingInformation" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOArchivingInformation" id="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOArchivingInformation" parent="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExtrinsicObject">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOArchivingInformation"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Represents an Earth Observation Archiving Information"/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="EODataLayer" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EODataLayer" id="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EODataLayer" parent="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExtrinsicObject">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EODataLayer"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Represents an Earth Observation Data Layer"/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<!-- extensions to canonical AssociationType scheme -->
+		<rim:ClassificationNode code="AcquiredBy" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:AcquiredBy" id="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:AcquiredBy" parent="urn:oasis:names:tc:ebxml-regrep:classificationScheme:AssociationType">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="AcquiredBy"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Associates a EOProduct with a EOAcquisitionPlatform."/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="HasProductInformation" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasProductInformation" id="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasProductInformation" parent="urn:oasis:names:tc:ebxml-regrep:classificationScheme:AssociationType">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="HasProductInformation"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Associates a EOProduct with a EOProductInformation."/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="HasMaskInformation" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasMaskInformation" id="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasMaskInformation" parent="urn:oasis:names:tc:ebxml-regrep:classificationScheme:AssociationType">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="HasMaskInformation"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Associates a EOProduct with a EOMaskInformation."/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="HasBrowseInformation" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasBrowseInformation" id="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasBrowseInformation" parent="urn:oasis:names:tc:ebxml-regrep:classificationScheme:AssociationType">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="HasBrowseInformation"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Associates a EOProduct with a EOBrowseInformation."/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="ArchivedIn" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:ArchivedIn" id="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:ArchivedIn" parent="urn:oasis:names:tc:ebxml-regrep:classificationScheme:AssociationType">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="ArchivedIn"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Associates a EOProduct with a EOArchivingInformation."/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<rim:ClassificationNode code="HasDataLayer" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationNode" lid="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasDataLayer" id="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasDataLayer" parent="urn:oasis:names:tc:ebxml-regrep:classificationScheme:AssociationType">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="HasDataLayer"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Associates a EOProduct with a EODataLayer."/>
+			</rim:Description>
+		</rim:ClassificationNode>
+		<!-- Meta-associations to constrain source and target object types by AssociationType -->
+		<rim:Association id="AcquiredByAssociationId" sourceObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct" associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:AcquiredBy" targetObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOAcquisitionPlatform"/>
+		<rim:Association id="HasProductInformationAssociationId1" sourceObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct" associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasProductInformation" targetObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProductInformation"/>
+		<rim:Association id="HasProductInformationAssociationId" sourceObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct" associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasMaskInformation" targetObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOMaskInformation"/>
+		<rim:Association id="HasBrowseInformationAssociationId" sourceObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct" associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasBrowseInformation" targetObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOBrowseInformation"/>
+		<rim:Association id="ArchivedInAssociationId" sourceObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct" associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:ArchivedIn" targetObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOArchivingInformation"/>
+		<rim:Association id="HasDataLayerAssociationId" sourceObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct" associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasDataLayer" targetObject="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EODataLayer"/>
+		<!-- ClassificationScheme - Earth Observation Product Types taxonomy -->
+		<rim:ClassificationScheme lid="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes" id="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ClassificationScheme" isInternal="true" nodeType="urn:oasis:names:tc:ebxml-regrep:NodeType:UniqueCode">
+			<rim:Name>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOProductTypes"/>
+			</rim:Name>
+			<rim:Description>
+				<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="This is the canonical ClassificationScheme for EO Product Types hierarchy"/>
+			</rim:Description>
+			<rim:ClassificationNode lid="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:EOP" code="EOP" id="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:EOP">
+				<rim:Name>
+					<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOP"/>
+				</rim:Name>
+				<rim:Description>
+					<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="EOP General type"/>
+				</rim:Description>
+				<rim:ClassificationNode lid="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:SAR" code="SAR" id="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:SAR">
+					<rim:Name>
+						<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="SAR"/>
+					</rim:Name>
+					<rim:Description>
+						<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Radar type"/>
+					</rim:Description>
+				</rim:ClassificationNode>
+				<rim:ClassificationNode lid="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:ATM" code="ATM" id="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:ATM">
+					<rim:Name>
+						<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="ATM"/>
+					</rim:Name>
+					<rim:Description>
+						<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Atmospheric type"/>
+					</rim:Description>
+				</rim:ClassificationNode>
+				<rim:ClassificationNode lid="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:OPT" code="OPT" id="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:OPT">
+					<rim:Name>
+						<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="OPT"/>
+					</rim:Name>
+					<rim:Description>
+						<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Optical type"/>
+					</rim:Description>
+					<rim:ClassificationNode lid="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:PHR" code="PHR" id="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:PHR">
+						<rim:Name>
+							<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="PHR"/>
+						</rim:Name>
+						<rim:Description>
+							<rim:LocalizedString xml:lang="en-US" charset="UTF-8" value="Spot Pleiades Optical High-Resolution type"/>
+						</rim:Description>
+					</rim:ClassificationNode>
+				</rim:ClassificationNode>
+			</rim:ClassificationNode>
+		</rim:ClassificationScheme>
+		<!-- Meta-registryObjcts to list allowed slots by objectType -->
+		<rim:RegistryObject id="ProductId" objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct">
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acquisitionType" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acquisitionStation" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acquisitionDate" slotType="dateTime">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acquisitionNodeDate" slotType="dateTime">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:startTimeFromAscendingNode" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:completionTimeFromAscendingNode" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:ascendingNodeLongitude" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:orbitDuration" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:incidenceAngle" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:compositeType" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:method" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:methodVersion" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:processorName" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:processorVersion" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:processingLevel" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:nativeProductFormat" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acquisitionSubType" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acrossTrackIncidenceAngle" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:alongTrackIncidenceAngle" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:antennaLookDirection" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:beginPosition" slotType="dateTime">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:centerOf" slotType="geometry">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:cloudCoverPercentage" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:doi" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:dopplerFrequency" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:endPosition" slotType="dateTime">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:extentOf" slotType="geometry">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:illuminationAzimuthAngle" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:illuminationElevationAngle" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:imageQualityDegradation" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:imageQualityDegradationQuotationMode" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:incidenceAngleVariation" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:lastOrbitNumber" slotType="int">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:maximumIncidenceAngle" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:minimumIncidenceAngle" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:orbitDirection" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:orbitNumber" slotType="int">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:parentIdentifier" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:pitch" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:polarisationChannels" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:polarisationMode" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:productType" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:roll" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:snowCoverPercentage" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:status" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:swathId" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:vendorSpecificAttributes" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:vendorSpecificValues" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:yaw" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+		</rim:RegistryObject>
+		<rim:RegistryObject id="AcquisitionPlatformId" objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOAcquisitionPlatform">
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:instrumentShortName" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:platformOrbitType" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:platformSerialIdentifier" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:sensorOperationalMode" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:sensorResolution" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:sensorType" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:swathIdentifier" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+		</rim:RegistryObject>
+		<rim:RegistryObject id="ProductInformationId" objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProductInformation">
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:fileName" slotType="anyURI">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:referenceSystemIdentifier" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:size" slotType="int">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:version" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+		</rim:RegistryObject>
+		<rim:RegistryObject id="BrowseInformationId" objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOBrowseInformation">
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:fileName" slotType="anyURI">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:referenceSystemIdentifier" slotType="int">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:subType" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+		</rim:RegistryObject>
+		<rim:RegistryObject id="MaskInformationId" objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOMaskInformation">
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:fileName" slotType="anyURI">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:referenceSystemIdentifier" slotType="int">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:format" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+		</rim:RegistryObject>
+		<rim:RegistryObject id="ArchivingInformationId" objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOArchivingInformation">
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:archivingDate" slotType="dateTime">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:archivingIdentifier" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+		</rim:RegistryObject>
+		<rim:RegistryObject id="DataLayerId" objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EODataLayer">
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:algorithmName" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:algorithmVersion" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:highestLocation" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:lowestLocation" slotType="double">
+				<rim:ValueList/>
+			</rim:Slot>
+			<rim:Slot name="urn:ogc:def:ebRIM-Slot:OGC-06-131:unit" slotType="string">
+				<rim:ValueList/>
+			</rim:Slot>
+		</rim:RegistryObject>
+	</rim:RegistryObjectList>
+</rim:RegistryPackage>

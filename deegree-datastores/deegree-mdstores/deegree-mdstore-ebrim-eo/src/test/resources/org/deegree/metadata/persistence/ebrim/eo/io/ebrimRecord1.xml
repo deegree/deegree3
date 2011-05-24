@@ -1,0 +1,247 @@
+
+<rim:RegistryPackage xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:gml="http://www.opengis.net/gml"
+  objectType="urn:oasis:names:tc:ebxmlregrep:ObjectType:RegistryObject:RegistryPackage" id="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:RP"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/wrs/1.0 E:\ogc\schemas\all_20110105\csw\2.0.2\profiles\ebrim\1.0\csw-ebrim.xsd">
+  <rim:Name>
+    <rim:LocalizedString value="EOProduct" charset="UTF-8" xml:lang="en-US" />
+  </rim:Name>
+  <rim:Description>
+    <rim:LocalizedString
+      value="Provides Earth Observation Products extensions to the Basic package of the CSW-ebRIM catalogue profile."
+      charset="UTF-8" xml:lang="en-US" />
+  </rim:Description>
+  <rim:RegistryObjectList>
+    <rim:ExtrinsicObject objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOProduct"
+      status="valid" isOpaque="false" mimeType="application/xml" id="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420">
+      <rim:Slot slotType="geometry" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:multiExtentOf">
+        <wrs:ValueList xmlns:wrs="http://www.opengis.net/cat/wrs/1.0">
+          <wrs:AnyValue>
+            <gml:MultiSurface>
+              <gml:surfaceMember>
+                <gml:Polygon srsName="EPSG:4326">
+                  <gml:exterior>
+                    <gml:LinearRing srsName="EPSG:4326">
+                      <gml:posList>5.987410 59.719888 5.968350 59.504664 6.391591 59.494363 6.413357 59.709499 5.987410
+                        59.719888</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:Polygon>
+              </gml:surfaceMember>
+            </gml:MultiSurface>
+          </wrs:AnyValue>
+        </wrs:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:parentIdentifier">
+        <rim:ValueList>
+          <rim:Value>urn:ogc:def:EOP:RE00:IMG_MSI_3A</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:status">
+        <rim:ValueList>
+          <rim:Value>ACQUIRED</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acquisitionType">
+        <rim:ValueList>
+          <rim:Value>NOMINAL</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:productType">
+        <rim:ValueList>
+          <rim:Value>IMAGE</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="date" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:beginPosition">
+        <rim:ValueList>
+          <rim:Value>2010-06-06</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="date" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:endPosition">
+        <rim:ValueList>
+          <rim:Value>2010-06-09T22:00:00Z</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="date" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acquisitionDate">
+        <rim:ValueList>
+          <rim:Value>2010-06-06</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:orbitDirection">
+        <rim:ValueList>
+          <rim:Value>DESCENDING</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="double" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:acrossTrackIncidenceAngle">
+        <rim:ValueList>
+          <rim:Value>11.55</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="double" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:roll">
+        <rim:ValueList>
+          <rim:Value>-9.50488</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="double" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:incidenceAngle">
+        <rim:ValueList>
+          <rim:Value>11.55</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="double" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:imageQualityDegradationQuotation">
+        <rim:ValueList>
+          <rim:Value>0</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:imageQualityDegradationQuotationMode">
+        <rim:ValueList>
+          <rim:Value>AUTOMATIC</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:processingLevel">
+        <rim:ValueList>
+          <rim:Value>RAW</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:nativeProductFormat">
+        <rim:ValueList>
+          <rim:Value>RAW</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="double" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:illuminationAzimuthAngle">
+        <rim:ValueList>
+          <rim:Value>189.89042</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="double" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:illuminationElevationAngle">
+        <rim:ValueList>
+          <rim:Value>52.94672</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="double" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:cloudCoverPercentage">
+        <rim:ValueList>
+          <rim:Value>2</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:ExternalIdentifier identificationScheme="urn:x-ogc:specification:csw-ebrim:EO:UnknownIdentifiers"
+        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" id="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:extrenalid"
+        registryObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420" value="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420">
+        <rim:Name>
+          <rim:LocalizedString charset="UTF-8" xml:lang="en-US" value="RapidEye" />
+        </rim:Name>
+      </rim:ExternalIdentifier>
+    </rim:ExtrinsicObject>
+    <rim:Classification classificationScheme="urn:x-ogc:specification:cswebrim:EO:EOProductTypes"
+      classificationNode="urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:OPT" id="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:class"
+      classifiedObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420" />
+    <rim:ExtrinsicObject objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOAcquisitionPlatform"
+      id="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:eoap">
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:sensorType">
+        <rim:ValueList>
+          <rim:Value>OPTICAL</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:instrumentShortName">
+        <rim:ValueList>
+          <rim:Value>MSI_IMG</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:platformSerialIdentifier">
+        <rim:ValueList>
+          <rim:Value />
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:platformOrbitType">
+        <rim:ValueList>
+          <rim:Value>LEO</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:sensorOperationalMode">
+        <rim:ValueList>
+          <rim:Value>MSI</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="double" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:sensorResolution">
+        <rim:ValueList>
+          <rim:Value>6.5</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Name>
+        <rim:LocalizedString charset="UTF-8" xml:lang="en-US" value="OPTICAL" />
+      </rim:Name>
+    </rim:ExtrinsicObject>
+    <rim:Association associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:AcquiredBy"
+      sourceObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420" targetObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:eoap"
+      id="AcquiredBy_5230420" />
+    <rim:ExtrinsicObject objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOArchivingInformation"
+      id="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:eoai">
+      <rim:Slot slotType="dateTime" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:archivingDate">
+        <rim:ValueList>
+          <rim:Value>2010-06-06</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:archivingIdentifier">
+        <rim:ValueList>
+          <rim:Value>508045</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Name>
+        <rim:LocalizedString charset="UTF-8" xml:lang="en-US" value="-" />
+      </rim:Name>
+    </rim:ExtrinsicObject>
+    <rim:Association associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:ArchivedIn"
+      sourceObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420" targetObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:eoai"
+      id="ArchivedIn_5230420" />
+    <rim:ExtrinsicObject objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOBrowseInformation"
+      id="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:eobi">
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:fileName">
+        <rim:ValueList>
+          <rim:Value>http://localhost/rapideye/5230420</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:referenceSystemIdentifier">
+        <rim:ValueList>
+          <rim:Value>EPSG:4326</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:type">
+        <rim:ValueList>
+          <rim:Value>QUICKLOOK</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:subType">
+        <rim:ValueList>
+          <rim:Value>OPTICAL</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Name>
+        <rim:LocalizedString charset="UTF-8" xml:lang="en-US" value="-" />
+      </rim:Name>
+    </rim:ExtrinsicObject>
+    <rim:Association associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasBrowseInformation"
+      sourceObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420" targetObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:eobi"
+      id="HasBrowseInformation_5230420" />
+    <rim:ExtrinsicObject objectType="urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOMaskInformation"
+      id="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:eomi">
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:fileName">
+        <rim:ValueList>
+          <rim:Value>http://localhost/rapideye/5230420</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:referenceSystemIdentifier">
+        <rim:ValueList>
+          <rim:Value>EPSG:326005</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Slot slotType="string" name="urn:ogc:def:ebRIM-Slot:OGC-06-131:format">
+        <rim:ValueList>
+          <rim:Value>RASTER</rim:Value>
+        </rim:ValueList>
+      </rim:Slot>
+      <rim:Name>
+        <rim:LocalizedString charset="UTF-8" xml:lang="en-US" value="-" />
+      </rim:Name>
+    </rim:ExtrinsicObject>
+    <rim:Association associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:HasMaskInformation"
+      sourceObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420" targetObject="urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:eomi"
+      id="HasMaskInformation_5230420" />
+  </rim:RegistryObjectList>
+</rim:RegistryPackage>
