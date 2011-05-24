@@ -57,6 +57,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.SQLPropertyNameMapper;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.config.AbstractMappedSchemaBuilder;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
@@ -438,8 +439,8 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     protected AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
                                                     Connection conn )
                             throws FilterEvaluationException, UnmappableException {
-        return new PostGISWhereBuilder( new PostGISFeatureMapping( getSchema(), ft, getMapping( ft.getName() ), this ),
-                                        filter, sortCrit, true, useLegacyPredicates );
+        return new PostGISWhereBuilder( new SQLPropertyNameMapper( getSchema(), getMapping( ft.getName() ) ), filter,
+                                        sortCrit, true, useLegacyPredicates );
     }
 
     @Override
