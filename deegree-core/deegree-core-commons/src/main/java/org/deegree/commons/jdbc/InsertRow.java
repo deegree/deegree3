@@ -142,7 +142,7 @@ public class InsertRow extends TransactionRow {
                     ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
                     conversion.setParticle( stmt, columnId++ );
                 } else {
-                    stmt.setObject( columnId++, null );
+                    stmt.setObject( columnId++, entry.getValue() );
                 }
             } else {
                 LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
