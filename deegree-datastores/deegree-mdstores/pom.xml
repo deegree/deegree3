@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-datastores</artifactId>
+  <artifactId>deegree-mdstores</artifactId>
   <packaging>pom</packaging>
   <version>3.1-pre6-SNAPSHOT</version>
   <name>deegree-datastores</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-mdstores</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-mdstores</url>
   </scm>
 
   <parent>
@@ -32,8 +32,7 @@
   </repositories>
 
   <modules>
-    <module>deegree-featurestore</module>
-    <module>deegree-mdstores</module>
+    <module>deegree-mdstore-ebrim-eo</module>
   </modules>
 
 </project>
