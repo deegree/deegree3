@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.profile;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -51,14 +50,17 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.ows.OWSException;
+import org.deegree.services.csw.describerecord.DescribeRecord;
 import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
+import org.deegree.services.csw.exporthandling.GetCapabilitiesHandler;
+import org.deegree.services.csw.getrecordbyid.GetRecordById;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 
 /**
- * TODO add class documentation here
+ * Bundles the differences of different CSW implemantations.
  * 
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -67,16 +69,34 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
  */
 public interface ServiceProfile {
 
+    /**
+     * @return the {@link ImplementationMetadata} instance of the service
+     */
     ImplementationMetadata<CSWRequestType> getImplementationMetadata();
 
+    /**
+     * @return all versions supported of the service
+     */
     List<String> getSupportedVersions();
 
+    /**
+     * @return all service names supported of the service
+     */
     String[] getSupportedServiceNames();
 
+    /**
+     * @param getCapabilitiesRequest
+     * @return the format accepted of the service dependent of the GetCapabilities request, never <code>null</code>. If
+     *         the format os not accepted a {@link OWSException} is thrown.
+     * @throws OWSException
+     *             if the format is not accepted
+     */
     String getAcceptFormat( GetCapabilities getCapabilitiesRequest )
                             throws OWSException;
 
     /**
+     * TODO
+     * 
      * @param writer
      * @param mainControllerConf
      * @param mainConf
@@ -85,7 +105,7 @@ public interface ServiceProfile {
      * @param version
      * @param isTransactionEnabled
      * @param isEnabledInspireExtension
-     * @return
+     * @return an instance of a {@link GetCapabilitiesHandler} to hanlde the a GetCapabilities request
      */
     CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
                                                 DeegreeServiceControllerType mainConf, Set<Sections> sections,
@@ -93,28 +113,62 @@ public interface ServiceProfile {
                                                 boolean isTransactionEnabled, boolean isEnabledInspireExtension,
                                                 ServiceProviderType provider );
 
+    /**
+     * @return the defaultTypeNames supported for a {@link DescribeRecord} request
+     */
     QName[] getDefaultTypeNames();
 
-    URL getSchema( QName typeName )
-                            throws MalformedURLException;
+    /**
+     * @param typeName
+     * @return the URL of the schema assigned to the type name, <code>null</code> if no schema can be found
+     */
+    URL getSchema( QName typeName );
 
+    /**
+     * @param typeName
+     *            a list of schema references assigned to the type name, <code>null</code> if no schema reference can be
+     *            found
+     * @return
+     */
     List<URL> getSchemaReferences( QName typeName );
 
-    Version checkVersion( Version requestVersion );
+    /**
+     * Checks is the version is supported and must be handled as another version. This can be required if two version
+     * should be handled equal.
+     * 
+     * @param version
+     *            the version to check
+     * @return the version to use instead (often the same as the given one)
+     */
+    Version checkVersion( Version version );
 
+    /**
+     * Checks if the given {@link CSWRequestType} is supported by this service
+     * 
+     * @param type
+     * @return true, if the request is supported, false otherwise
+     */
     boolean supportsOperation( CSWRequestType type );
 
     /**
      * @param version
-     * @return
+     * @return the schemalocation for the a {@link GetRecordById} request
      */
-    String getSchemaLocation( Version version );
+    String getGetRecordByIdSchemaLocation( Version version );
 
     /**
-     * @return
+     * @return true if the service handles unknown ids requestes by a {@link GetRecordById} strict, false otherwise
      */
     boolean isStrict();
 
+    /**
+     * Determine if the given outputSchema should be handled as DublinCore.
+     * 
+     * @param outputSchema
+     *            the outputsschema, can be <code>null</code>
+     * @return true, if dublinCore should be forced, false otherwise
+     * @throws MetadataStoreException
+     */
     boolean returnAsDC( URI outputSchema )
                             throws MetadataStoreException;
 

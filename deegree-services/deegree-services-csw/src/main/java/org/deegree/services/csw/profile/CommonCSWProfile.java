@@ -41,6 +41,7 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -68,6 +69,7 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -78,6 +80,8 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
  * @version $Revision: $, $Date: $
  */
 public class CommonCSWProfile implements ServiceProfile {
+
+    private static final Logger LOG = getLogger( CommonCSWProfile.class );
 
     private static List<String> versions = new ArrayList<String>();
 
@@ -148,10 +152,13 @@ public class CommonCSWProfile implements ServiceProfile {
     }
 
     @Override
-    public URL getSchema( QName typeName )
-                            throws MalformedURLException {
+    public URL getSchema( QName typeName ) {
         if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
-            return new URL( CSWConstants.CSW_202_RECORD );
+            try {
+                return new URL( CSWConstants.CSW_202_RECORD );
+            } catch ( MalformedURLException e ) {
+                LOG.info( "Could not resolve URL " + CSWConstants.CSW_202_RECORD );
+            }
         }
         return null;
     }
@@ -180,7 +187,7 @@ public class CommonCSWProfile implements ServiceProfile {
     }
 
     @Override
-    public String getSchemaLocation( Version version ) {
+    public String getGetRecordByIdSchemaLocation( Version version ) {
         if ( VERSION_202.equals( version ) ) {
             return CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA;
         }
@@ -193,7 +200,8 @@ public class CommonCSWProfile implements ServiceProfile {
     }
 
     @Override
-    public boolean returnAsDC( URI outputSchema ) throws MetadataStoreException {
+    public boolean returnAsDC( URI outputSchema )
+                            throws MetadataStoreException {
         if ( outputSchema != null && outputSchema.equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
             return false;
         }

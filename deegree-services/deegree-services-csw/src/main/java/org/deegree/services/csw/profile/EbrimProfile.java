@@ -123,8 +123,7 @@ public class EbrimProfile implements ServiceProfile {
     }
 
     @Override
-    public String getAcceptFormat( GetCapabilities getCapabilitiesRequest )
-                            throws OWSException {
+    public String getAcceptFormat( GetCapabilities getCapabilitiesRequest ) throws OWSException {
         String acceptFormat;
         Set<String> af = getCapabilitiesRequest.getAcceptFormats();
         String text = "text/xml";
@@ -178,7 +177,7 @@ public class EbrimProfile implements ServiceProfile {
     }
 
     @Override
-    public String getSchemaLocation( Version version ) {
+    public String getGetRecordByIdSchemaLocation( Version version ) {
         return CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA + " " + RIM_AP_NS + " " + RIM_AP_SCHEMA + " " + RIM_NS + " "
                + RIM_SCHEMA;
     }

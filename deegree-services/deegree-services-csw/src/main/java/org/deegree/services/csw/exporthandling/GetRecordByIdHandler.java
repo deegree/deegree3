@@ -98,7 +98,7 @@ public class GetRecordByIdHandler {
         response.setContentType( getRecBI.getOutputFormat() );
 
         // to be sure of a valid response
-        String schemaLocation = profile.getSchemaLocation( getRecBI.getVersion() );
+        String schemaLocation = profile.getGetRecordByIdSchemaLocation( getRecBI.getVersion() );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {

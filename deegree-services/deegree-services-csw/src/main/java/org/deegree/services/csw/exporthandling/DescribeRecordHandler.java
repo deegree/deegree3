@@ -171,28 +171,23 @@ public class DescribeRecordHandler {
         writer.writeNamespace( XSI_PREFIX, XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
 
-        try {
-            if ( typeNames == null || typeNames.length == 0 ) {
-                typeNames = profile.getDefaultTypeNames();
-            }
-            for ( QName typeName : typeNames ) {
-                URL schema = profile.getSchema( typeName );
-                List<URL> schemaReferences = profile.getSchemaReferences( typeName );
-                if ( schema != null ) {
-                    writeSchema( writer, typeName, schema );
-                } else if ( schemaReferences != null && !schemaReferences.isEmpty() ) {
-                    for ( URL ref : schemaReferences ) {
-                        writeSchemaReference( writer, typeName, ref );
-                    }
-                } else {
-                    String errorMessage = "The typeName " + typeName + " is not supported. ";
-                    LOG.debug( errorMessage );
-                    throw new InvalidParameterValueException( errorMessage );
+        if ( typeNames == null || typeNames.length == 0 ) {
+            typeNames = profile.getDefaultTypeNames();
+        }
+        for ( QName typeName : typeNames ) {
+            URL schema = profile.getSchema( typeName );
+            List<URL> schemaReferences = profile.getSchemaReferences( typeName );
+            if ( schema != null ) {
+                writeSchema( writer, typeName, schema );
+            } else if ( schemaReferences != null && !schemaReferences.isEmpty() ) {
+                for ( URL ref : schemaReferences ) {
+                    writeSchemaReference( writer, typeName, ref );
                 }
+            } else {
+                String errorMessage = "The typeName " + typeName + " is not supported. ";
+                LOG.debug( errorMessage );
+                throw new InvalidParameterValueException( errorMessage );
             }
-        } catch ( IOException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
         }
         writer.writeEndElement();// DescribeRecordResponse
         writer.writeEndDocument();
