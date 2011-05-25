@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.describerecord;
 
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-
 import java.util.Collections;
 import java.util.Map;
 
@@ -46,7 +44,6 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWKVPAdapter;
 
 /**
@@ -69,18 +66,8 @@ public class DescribeRecordKVPAdapter extends AbstractCSWKVPAdapter {
      * @return {@link DescribeRecord}
      */
     public static DescribeRecord parse( Map<String, String> normalizedKVPParams ) {
-
         Version version = Version.parseVersion( KVPUtils.getRequired( normalizedKVPParams, "VERSION" ) );
-        DescribeRecord result = null;
-        if ( VERSION_202.equals( version ) ) {
-            result = parse202( VERSION_202, normalizedKVPParams );
-
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-
-        return result;
+        return parse202( version, normalizedKVPParams );
     }
 
     /**
@@ -108,7 +95,7 @@ public class DescribeRecordKVPAdapter extends AbstractCSWKVPAdapter {
         }
 
         // typeName (optional)
-        QName[] typeNames = extractTypeNames( normalizedKVPParams, nsBindings );
+        QName[] typeNames = extractTypeName( normalizedKVPParams, nsBindings );
 
         // outputFormat (optional)
         String outputFormat = KVPUtils.getDefault( normalizedKVPParams, "outputFormat", "application/xml" );
@@ -118,6 +105,20 @@ public class DescribeRecordKVPAdapter extends AbstractCSWKVPAdapter {
                                                      "http://www.w3.org/XML/Schema" );
 
         return new DescribeRecord( version, nsContext, typeNames, outputFormat, schemaLanguage );
+    }
+
+    private static QName[] extractTypeName( Map<String, String> kvpParam, Map<String, String> nsBindings )
+                            throws InvalidParameterValueException {
+        QName[] typeNames = null;
+        String typeNameString = kvpParam.get( "TYPENAME" );
+        if ( typeNameString != null ) {
+            String[] typeNameStrings = typeNameString.split( "," );
+            typeNames = new QName[typeNameStrings.length];
+            for ( int i = 0; i < typeNameStrings.length; i++ ) {
+                typeNames[i] = qualifyName( typeNameStrings[i], nsBindings );
+            }
+        }
+        return typeNames;
     }
 
 }

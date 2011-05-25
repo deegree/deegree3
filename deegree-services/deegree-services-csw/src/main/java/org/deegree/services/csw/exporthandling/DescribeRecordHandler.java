@@ -39,7 +39,6 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -134,13 +133,25 @@ public class DescribeRecordHandler {
      */
     private void export( XMLStreamWriter writer, QName[] typeNames, Version version )
                             throws XMLStreamException, MetadataStoreException {
-
-        if ( VERSION_202.equals( version ) ) {
+        List<String> supportedVersions = profile.getSupportedVersions();
+        if ( supportedVersions.contains( version ) ) {
             export202( writer, typeNames );
         } else {
-            throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
+            StringBuilder sb = new StringBuilder();
+            sb.append( "Version '" ).append( version );
+            sb.append( "' is not supported." );
+            sb.append( " Supported versions are " );
+            boolean isFirst = true;
+            for ( String v : supportedVersions ) {
+                if ( isFirst ) {
+                    isFirst = false;
+                } else {
+                    sb.append( ", " );
+                }
+                sb.append( v );
+            }
+            throw new IllegalArgumentException( sb.toString() );
         }
-
     }
 
     /**

@@ -92,7 +92,7 @@ public abstract class AbstractCSWKVPAdapter {
      *            namespace bindings, may be null
      * @return qualified name
      */
-    private static QName qualifyName( String name, Map<String, String> nsBindings ) {
+    protected static QName qualifyName( String name, Map<String, String> nsBindings ) {
         QName typeName;
         String prefix = "";
         int idx = name.indexOf( ':' );
