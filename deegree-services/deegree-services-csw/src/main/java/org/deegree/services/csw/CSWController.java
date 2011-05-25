@@ -94,10 +94,10 @@ import org.deegree.services.csw.capabilities.GetCapabilitiesVersionXMLAdapter;
 import org.deegree.services.csw.describerecord.DescribeRecord;
 import org.deegree.services.csw.describerecord.DescribeRecordKVPAdapter;
 import org.deegree.services.csw.describerecord.DescribeRecordXMLAdapter;
+import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
 import org.deegree.services.csw.exporthandling.DescribeRecordHandler;
 import org.deegree.services.csw.exporthandling.GetRecordByIdHandler;
 import org.deegree.services.csw.exporthandling.GetRecordsHandler;
-import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
 import org.deegree.services.csw.exporthandling.TransactionHandler;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
 import org.deegree.services.csw.getrecordbyid.GetRecordByIdKVPAdapter;
@@ -265,7 +265,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                 break;
             case DescribeRecord:
                 DescribeRecord descRec = DescribeRecordKVPAdapter.parse( normalizedKVPParams );
-                describeRecordHandler.doDescribeRecord( descRec, response );
+                describeRecordHandler.doDescribeRecord( descRec, response, profile );
                 break;
 
             case GetRecords:
@@ -335,7 +335,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                 DescribeRecordXMLAdapter describeRecordAdapter = new DescribeRecordXMLAdapter();
                 describeRecordAdapter.setRootElement( requestDoc.getRootElement() );
                 DescribeRecord cswDRRequest = describeRecordAdapter.parse( requestVersion );
-                describeRecordHandler.doDescribeRecord( cswDRRequest, response );
+                describeRecordHandler.doDescribeRecord( cswDRRequest, response, profile );
                 break;
             case GetRecords:
                 GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
@@ -410,7 +410,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                 DescribeRecordXMLAdapter describeRecordAdapter = new DescribeRecordXMLAdapter();
                 describeRecordAdapter.setRootElement( requestElement );
                 DescribeRecord cswDRRequest = describeRecordAdapter.parse( requestVersion );
-                describeRecordHandler.doDescribeRecord( cswDRRequest, response );
+                describeRecordHandler.doDescribeRecord( cswDRRequest, response, profile );
                 break;
             case GetRecords:
                 GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
@@ -518,11 +518,11 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         response.setContentType( profile.getAcceptFormat( getCapabilitiesRequest ) );
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
         CapabilitiesHandler gce = profile.getCapabilitiesHandler( xmlWriter, mainMetadataConf, mainControllerConf,
-                                                                      sections,
-                                                                      mainMetadataConf.getServiceIdentification(),
-                                                                      negotiatedVersion, enableTransactions,
-                                                                      enableInspireExtensions,
-                                                                      mainMetadataConf.getServiceProvider() );
+                                                                  sections,
+                                                                  mainMetadataConf.getServiceIdentification(),
+                                                                  negotiatedVersion, enableTransactions,
+                                                                  enableInspireExtensions,
+                                                                  mainMetadataConf.getServiceProvider() );
         gce.export();
         xmlWriter.flush();
 

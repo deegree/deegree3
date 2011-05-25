@@ -39,24 +39,15 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_RECORD;
-import static org.deegree.protocol.csw.CSWConstants.DC_LOCAL_PART;
-import static org.deegree.protocol.csw.CSWConstants.DC_NS;
-import static org.deegree.protocol.csw.CSWConstants.DC_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.GMD_LOCAL_PART;
-import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-import static org.deegree.services.i18n.Messages.get;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -64,14 +55,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.csw.describerecord.DescribeRecord;
+import org.deegree.services.csw.profile.ServiceProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +86,8 @@ public class DescribeRecordHandler {
 
     private DescribeRecordHelper dcHelper = new DescribeRecordHelper();
 
+    private ServiceProfile profile;
+
     /**
      * Preprocessing for the export of a {@link DescribeRecord} request to determine which recordstore is requested.
      * 
@@ -107,8 +99,10 @@ public class DescribeRecordHandler {
      * @throws IOException
      * @throws OWSException
      */
-    public void doDescribeRecord( DescribeRecord descRec, HttpResponseBuffer response )
+    public void doDescribeRecord( DescribeRecord descRec, HttpResponseBuffer response, ServiceProfile profile )
                             throws XMLStreamException, IOException, OWSException {
+
+        this.profile = profile;
 
         QName[] typeNames = descRec.getTypeNames();
 
@@ -167,22 +161,20 @@ public class DescribeRecordHandler {
         writer.writeAttribute( XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
 
         try {
-            if ( typeNames.length == 0 ) {
-                writeDC( writer, new QName( DC_NS, DC_LOCAL_PART, DC_PREFIX ) );
-                exportISO( writer );
+            if ( typeNames == null || typeNames.length == 0 ) {
+                typeNames = profile.getDefaultTypeNames();
             }
             for ( QName typeName : typeNames ) {
-                // if typeName is csw:Record
-                if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
-                    writeDC( writer, typeName );
-                }
-                // if typeName is gmd:MD_Metadata
-                else if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.ISO_19115 ) {
-                    exportISO( writer );
-                }
-                // if the typeName is no registered in this recordprofile
-                else {
-                    String errorMessage = "The typeName " + typeName + "is not supported. ";
+                URL schema = profile.getSchema( typeName );
+                List<URL> schemaReferences = profile.getSchemaReferences( typeName );
+                if ( schema != null ) {
+                    writeSchema( writer, typeName, schema );
+                } else if ( schemaReferences != null && !schemaReferences.isEmpty() ) {
+                    for ( URL ref : schemaReferences ) {
+                        writeSchemaReference( writer, typeName, ref );
+                    }
+                } else {
+                    String errorMessage = "The typeName " + typeName + " is not supported. ";
                     LOG.debug( errorMessage );
                     throw new InvalidParameterValueException( errorMessage );
                 }
@@ -190,72 +182,48 @@ public class DescribeRecordHandler {
         } catch ( IOException e ) {
             LOG.debug( "error: " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );
-        } catch ( Exception e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
         }
         writer.writeEndElement();// DescribeRecordResponse
         writer.writeEndDocument();
     }
 
-    private void writeDC( XMLStreamWriter writer, QName typeName )
-                            throws XMLStreamException, UnsupportedEncodingException {
-        URL url = null;
+    private void writeSchema( XMLStreamWriter writer, QName typeName, URL url )
+                            throws MetadataStoreException {
         try {
-            url = new URL( CSW_202_RECORD );
             URLConnection urlConn = url.openConnection();
             BufferedInputStream bais = new BufferedInputStream( urlConn.getInputStream() );
             InputStreamReader isr = new InputStreamReader( bais, "UTF-8" );
             dcHelper.exportSchemaComponent( writer, typeName, isr );
         } catch ( Exception e ) {
-            LOG.info( "Could not get connection to " + CSW_202_RECORD + ". Export schema as reference." );
-            InputStream is = DescribeRecordHandler.class.getResourceAsStream( "dublinCore.xml" );
-            if ( is != null ) {
-                InputStreamReader isr = new InputStreamReader( is, "UTF-8" );
-                dcHelper.exportSchemaComponent( writer, typeName, isr );
-            } else {
-                String msg = get( "CSW_NO_FILE", "dublinCore.xml" );
-                LOG.debug( msg );
+            LOG.info( "Could not get connection to " + url.toExternalForm() + ". Try to export schema as reference." );
+            List<URL> schemaReferenceSnippet = profile.getSchemaReferences( typeName );
+            for ( URL ref : schemaReferenceSnippet ) {
+                writeSchemaReference( writer, typeName, ref );
             }
         }
     }
 
-    private void exportISO( XMLStreamWriter writer )
-                            throws XMLStreamException, UnsupportedEncodingException {
-        InputStream in_data = DescribeRecordHandler.class.getResourceAsStream( "iso_data.xml" );
-        InputStream in_service = DescribeRecordHandler.class.getResourceAsStream( "iso_service.xml" );
-        InputStreamReader isr = null;
-
-        if ( in_data != null ) {
-            isr = new InputStreamReader( in_data, "UTF-8" );
-            dcHelper.exportSchemaComponent( writer, new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), isr );
-        } else {
-            String msg = get( "CSW_NO_FILE", "iso_data.xml" );
-            LOG.debug( msg );
+    private void writeSchemaReference( XMLStreamWriter writer, QName typeName, URL url )
+                            throws MetadataStoreException {
+        if ( url == null ) {
+            LOG.info( "Could not find schema reference snippet for type name " + typeName );
+            return;
         }
-
-        if ( in_service != null ) {
-            isr = new InputStreamReader( in_service, "UTF-8" );
-            dcHelper.exportSchemaComponent( writer, new QName( CSWConstants.SRV_NS, CSWConstants.SRV_LOCAL_PART,
-                                                               CSWConstants.SRV_PREFIX ), isr );
-        } else {
-            String msg = get( "CSW_NO_FILE", "iso_service.xml" );
-            LOG.debug( msg );
-        }
-
-    }
-
-    public static void main( String[] args ) {
-        URLConnection urlConn;
         try {
-            urlConn = new URL( CSW_202_RECORD ).openConnection();
-            System.out.println( urlConn );
-            urlConn.getInputStream();
-        } catch ( MalformedURLException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            InputStreamReader isr = new InputStreamReader( url.openStream(), "UTF-8" );
+            dcHelper.exportSchemaComponent( writer, typeName, isr );
+        } catch ( UnsupportedEncodingException e ) {
+            String msg = "Could not export " + typeName;
+            LOG.debug( msg, e );
+            throw new MetadataStoreException( msg );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String msg = "Could not export " + typeName;
+            LOG.debug( msg, e );
+            throw new MetadataStoreException( msg );
+        } catch ( XMLStreamException e ) {
+            String msg = "Could not export " + typeName;
+            LOG.debug( msg, e );
+            throw new MetadataStoreException( msg );
         }
     }
 

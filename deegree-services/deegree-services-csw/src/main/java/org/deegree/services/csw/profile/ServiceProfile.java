@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.profile;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
@@ -82,11 +85,17 @@ public interface ServiceProfile {
      * @param isEnabledInspireExtension
      * @return
      */
-    CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer,
-                                                    DeegreeServicesMetadataType mainControllerConf,
-                                                    DeegreeServiceControllerType mainConf, Set<Sections> sections,
-                                                    ServiceIdentificationType identification, Version version,
-                                                    boolean isTransactionEnabled, boolean isEnabledInspireExtension,
-                                                    ServiceProviderType provider );
+    CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
+                                                DeegreeServiceControllerType mainConf, Set<Sections> sections,
+                                                ServiceIdentificationType identification, Version version,
+                                                boolean isTransactionEnabled, boolean isEnabledInspireExtension,
+                                                ServiceProviderType provider );
+
+    QName[] getDefaultTypeNames();
+
+    URL getSchema( QName typeName )
+                            throws MalformedURLException;
+
+    List<URL> getSchemaReferences( QName typeName );
 
 }

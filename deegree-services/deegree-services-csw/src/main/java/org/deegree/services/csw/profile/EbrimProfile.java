@@ -39,10 +39,13 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_100;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
@@ -95,7 +98,6 @@ public class EbrimProfile implements ServiceProfile {
         }
     };
 
-
     @Override
     public List<String> getSupportedVersions() {
         return versions;
@@ -130,15 +132,28 @@ public class EbrimProfile implements ServiceProfile {
 
     @Override
     public CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer,
-                                                           DeegreeServicesMetadataType mainControllerConf,
-                                                           DeegreeServiceControllerType mainConf,
-                                                           Set<Sections> sections,
-                                                           ServiceIdentificationType identification, Version version,
-                                                           boolean isTransactionEnabled,
-                                                           boolean isEnabledInspireExtension,
-                                                           ServiceProviderType provider ) {
+                                                       DeegreeServicesMetadataType mainControllerConf,
+                                                       DeegreeServiceControllerType mainConf, Set<Sections> sections,
+                                                       ServiceIdentificationType identification, Version version,
+                                                       boolean isTransactionEnabled, boolean isEnabledInspireExtension,
+                                                       ServiceProviderType provider ) {
         return new EbrimGetCapabilitiesHandler( writer, sections, identification, provider, version,
                                                 isTransactionEnabled );
     }
 
+    @Override
+    public QName[] getDefaultTypeNames() {
+        return new QName[] { new QName( "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage", "rim" ) };
+    }
+
+    @Override
+    public URL getSchema( QName typeName ) {
+        return null;
+    }
+
+    @Override
+    public List<URL> getSchemaReferences( QName typeName ) {
+        return Collections.singletonList( EbrimProfile.class.getResource( "/org/deegree/services/csw/exporthandling/rim_schema_ref.xml" ) );
+    }
+    
 }

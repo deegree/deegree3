@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:annotation>
+    <xs:documentation>This is the reference to the OASIS ebXML Registry Information Model schema.</xs:documentation>
+  </xs:annotation>
+  <xs:include schemaLocation="http://docs.oasis-open.org/regrep/v3.0/schema/rim.xsd"/>
+</xs:schema>

@@ -36,22 +36,31 @@
 package org.deegree.services.csw.profile;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
+import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
+import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.csw.exporthandling.GetCapabilitiesHandler;
 import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
+import org.deegree.services.csw.exporthandling.GetCapabilitiesHandler;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
@@ -120,14 +129,41 @@ public class CommonCSWProfile implements ServiceProfile {
 
     @Override
     public CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer,
-                                                           DeegreeServicesMetadataType mainControllerConf,
-                                                           DeegreeServiceControllerType mainConf,
-                                                           Set<Sections> sections,
-                                                           ServiceIdentificationType identification, Version version,
-                                                           boolean isTransactionEnabled,
-                                                           boolean isEnabledInspireExtension,
-                                                           ServiceProviderType provider ) {
+                                                       DeegreeServicesMetadataType mainControllerConf,
+                                                       DeegreeServiceControllerType mainConf, Set<Sections> sections,
+                                                       ServiceIdentificationType identification, Version version,
+                                                       boolean isTransactionEnabled, boolean isEnabledInspireExtension,
+                                                       ServiceProviderType provider ) {
         return new GetCapabilitiesHandler( writer, mainControllerConf, mainConf, sections, identification, version,
                                            isTransactionEnabled, isEnabledInspireExtension );
     }
+
+    @Override
+    public QName[] getDefaultTypeNames() {
+        return new QName[] { new QName( CSW_202_NS, "DublinCore", CSW_PREFIX ),
+                            new QName( GMD_NS, "MD_Metadata", GMD_PREFIX ) };
+    }
+
+    @Override
+    public URL getSchema( QName typeName )
+                            throws MalformedURLException {
+        if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
+            return new URL( CSWConstants.CSW_202_RECORD );
+        }
+        return null;
+    }
+
+    @Override
+    public List<URL> getSchemaReferences( QName typeName ) {
+        if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
+            return Collections.singletonList( CommonCSWProfile.class.getResource( "/org/deegree/services/csw/exporthandling/dublinCore.xml" ) );
+        } else if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.ISO_19115 ) {
+            List<URL> schemas = new ArrayList<URL>();
+            schemas.add( CommonCSWProfile.class.getResource( "/org/deegree/services/csw/exporthandling/iso_data.xml" ) );
+            schemas.add( CommonCSWProfile.class.getResource( "/org/deegree/services/csw/exporthandling/iso_service.xml" ) );
+            return schemas;
+        }
+        return null;
+    }
+    
 }
