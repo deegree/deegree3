@@ -60,6 +60,7 @@
   </element>
   <simpleType name="CSWVersionType">
     <restriction base="string">
+      <enumeration value="1.0.0" />
       <enumeration value="2.0.2" />
     </restriction>
   </simpleType>
