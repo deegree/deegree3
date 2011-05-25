@@ -89,7 +89,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
+public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements CapabilitiesHandler {
 
     private static Logger LOG = LoggerFactory.getLogger( GetCapabilitiesHandler.class );
 

@@ -36,9 +36,21 @@
 package org.deegree.services.csw.profile;
 
 import java.util.List;
+import java.util.Set;
 
+import javax.xml.stream.XMLStreamWriter;
+
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
+import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.controller.ows.OWSException;
+import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 
 /**
  * TODO add class documentation here
@@ -52,17 +64,29 @@ public interface ServiceProfile {
 
     ImplementationMetadata<CSWRequestType> getImplementationMetadata();
 
-    String[] getSupportedOutputSchemas();
-
-    String[] getSupportedOutputFormats();
-
-    String getDefaultOutputSchema();
-
-    String getDefaultOutputFormat();
-
-    String getSchemaLocation();
-
     List<String> getSupportedVersions();
-    
+
     String[] getSupportedServiceNames();
+
+    String getAcceptFormat( GetCapabilities getCapabilitiesRequest )
+                            throws OWSException;
+
+    /**
+     * @param writer
+     * @param mainControllerConf
+     * @param mainConf
+     * @param sections
+     * @param identification
+     * @param version
+     * @param isTransactionEnabled
+     * @param isEnabledInspireExtension
+     * @return
+     */
+    CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer,
+                                                    DeegreeServicesMetadataType mainControllerConf,
+                                                    DeegreeServiceControllerType mainConf, Set<Sections> sections,
+                                                    ServiceIdentificationType identification, Version version,
+                                                    boolean isTransactionEnabled, boolean isEnabledInspireExtension,
+                                                    ServiceProviderType provider );
+
 }

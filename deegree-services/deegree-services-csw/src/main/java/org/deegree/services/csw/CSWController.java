@@ -95,9 +95,9 @@ import org.deegree.services.csw.describerecord.DescribeRecord;
 import org.deegree.services.csw.describerecord.DescribeRecordKVPAdapter;
 import org.deegree.services.csw.describerecord.DescribeRecordXMLAdapter;
 import org.deegree.services.csw.exporthandling.DescribeRecordHandler;
-import org.deegree.services.csw.exporthandling.GetCapabilitiesHandler;
 import org.deegree.services.csw.exporthandling.GetRecordByIdHandler;
 import org.deegree.services.csw.exporthandling.GetRecordsHandler;
+import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
 import org.deegree.services.csw.exporthandling.TransactionHandler;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
 import org.deegree.services.csw.getrecordbyid.GetRecordByIdKVPAdapter;
@@ -507,23 +507,22 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
     private void doGetCapabilities( GetCapabilities getCapabilitiesRequest, HttpServletRequest requestWrapper,
                                     HttpResponseBuffer response, boolean isSoap )
                             throws XMLStreamException, IOException, OWSException {
-        String acceptFormat = getAcceptsFormats( getCapabilitiesRequest );
         Set<Sections> sections = getSections( getCapabilitiesRequest );
+        // TODO: ???
         Version negotiatedVersion = null;
         if ( getCapabilitiesRequest.getAcceptVersions() == null ) {
             negotiatedVersion = new Version( 2, 0, 2 );
         } else {
             negotiatedVersion = negotiateVersion( getCapabilitiesRequest );
         }
-
-        response.setContentType( acceptFormat );
-
+        response.setContentType( profile.getAcceptFormat( getCapabilitiesRequest ) );
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
-
-        GetCapabilitiesHandler gce = new GetCapabilitiesHandler( xmlWriter, mainMetadataConf, mainControllerConf,
-                                                                 sections, mainMetadataConf.getServiceIdentification(),
-                                                                 negotiatedVersion, enableTransactions,
-                                                                 enableInspireExtensions );
+        CapabilitiesHandler gce = profile.getCapabilitiesHandler( xmlWriter, mainMetadataConf, mainControllerConf,
+                                                                      sections,
+                                                                      mainMetadataConf.getServiceIdentification(),
+                                                                      negotiatedVersion, enableTransactions,
+                                                                      enableInspireExtensions,
+                                                                      mainMetadataConf.getServiceProvider() );
         gce.export();
         xmlWriter.flush();
 
@@ -580,26 +579,6 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             }
         }
         return result;
-    }
-
-    private String getAcceptsFormats( GetCapabilities getCapabilitiesRequest )
-                            throws OWSException {
-        String acceptFormat;
-        Set<String> af = getCapabilitiesRequest.getAcceptFormats();
-        String application = "application/xml";
-        String text = "text/xml";
-        if ( af.isEmpty() ) {
-            acceptFormat = text;
-        } else if ( af.contains( application ) ) {
-            acceptFormat = application;
-        } else if ( af.contains( text ) ) {
-            acceptFormat = text;
-        } else {
-            throw new OWSException( "Format determination failed. Requested format is not supported by this CSW.",
-                                    OWSException.INVALID_FORMAT );
-        }
-
-        return acceptFormat;
     }
 
     /**

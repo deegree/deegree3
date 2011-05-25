@@ -40,10 +40,22 @@ import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
+import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.controller.ows.OWSException;
+import org.deegree.services.csw.exporthandling.GetCapabilitiesHandler;
+import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 
 /**
  * TODO add class documentation here
@@ -72,31 +84,6 @@ public class CommonCSWProfile implements ServiceProfile {
     };
 
     @Override
-    public String[] getSupportedOutputSchemas() {
-        return null;
-    }
-
-    @Override
-    public String[] getSupportedOutputFormats() {
-        return null;
-    }
-
-    @Override
-    public String getDefaultOutputSchema() {
-        return null;
-    }
-
-    @Override
-    public String getDefaultOutputFormat() {
-        return null;
-    }
-
-    @Override
-    public String getSchemaLocation() {
-        return null;
-    }
-
-    @Override
     public List<String> getSupportedVersions() {
         return versions;
     }
@@ -109,5 +96,38 @@ public class CommonCSWProfile implements ServiceProfile {
     @Override
     public String[] getSupportedServiceNames() {
         return new String[] { "CSW" };
+    }
+
+    @Override
+    public String getAcceptFormat( GetCapabilities getCapabilitiesRequest )
+                            throws OWSException {
+        String acceptFormat;
+        Set<String> af = getCapabilitiesRequest.getAcceptFormats();
+        String application = "application/xml";
+        String text = "text/xml";
+        if ( af.isEmpty() ) {
+            acceptFormat = text;
+        } else if ( af.contains( application ) ) {
+            acceptFormat = application;
+        } else if ( af.contains( text ) ) {
+            acceptFormat = text;
+        } else {
+            throw new OWSException( "Format determination failed. Requested format is not supported by this CSW.",
+                                    OWSException.INVALID_FORMAT );
+        }
+        return acceptFormat;
+    }
+
+    @Override
+    public CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer,
+                                                           DeegreeServicesMetadataType mainControllerConf,
+                                                           DeegreeServiceControllerType mainConf,
+                                                           Set<Sections> sections,
+                                                           ServiceIdentificationType identification, Version version,
+                                                           boolean isTransactionEnabled,
+                                                           boolean isEnabledInspireExtension,
+                                                           ServiceProviderType provider ) {
+        return new GetCapabilitiesHandler( writer, mainControllerConf, mainConf, sections, identification, version,
+                                           isTransactionEnabled, isEnabledInspireExtension );
     }
 }

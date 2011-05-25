@@ -41,10 +41,22 @@ import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
+import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.controller.ows.OWSException;
+import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
+import org.deegree.services.csw.exporthandling.EbrimGetCapabilitiesHandler;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 
 /**
  * TODO add class documentation here
@@ -58,6 +70,16 @@ public class EbrimProfile implements ServiceProfile {
 
     private static List<String> versions = new ArrayList<String>();
 
+    // the CSW-ebRim needs two service names because of contradictoons between OGC ebRim profile for EO
+    // products and its base specification.
+    public static final String SERVICENAME_CSW = "CSW";
+
+    public static final String SERVICENAME_CSW_EBRIM = "CSW-ebRIM";
+
+    public static final String SERVICENAME_WRS = "WRS";
+
+    public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+
     static {
         versions.add( VERSION_100.toString() );
         versions.add( VERSION_202.toString() );
@@ -69,34 +91,10 @@ public class EbrimProfile implements ServiceProfile {
             handledNamespaces = new String[] { CSW_202_NS, "http://www.opengis.net/cat/csw" };
             handledRequests = CSWRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.1.0" ) };
-            serviceName = new String[] { "CSW", "CSW-ebRIM", "WRS" };
+            serviceName = new String[] { SERVICENAME_CSW, SERVICENAME_CSW_EBRIM, SERVICENAME_WRS };
         }
     };
 
-    @Override
-    public String[] getSupportedOutputSchemas() {
-        return null;
-    }
-
-    @Override
-    public String[] getSupportedOutputFormats() {
-        return null;
-    }
-
-    @Override
-    public String getDefaultOutputSchema() {
-        return null;
-    }
-
-    @Override
-    public String getDefaultOutputFormat() {
-        return null;
-    }
-
-    @Override
-    public String getSchemaLocation() {
-        return null;
-    }
 
     @Override
     public List<String> getSupportedVersions() {
@@ -111,6 +109,36 @@ public class EbrimProfile implements ServiceProfile {
     @Override
     public String[] getSupportedServiceNames() {
         return new String[] { "CSW", "CSW-ebRIM", "WRS" };
+    }
+
+    @Override
+    public String getAcceptFormat( GetCapabilities getCapabilitiesRequest )
+                            throws OWSException {
+        String acceptFormat;
+        Set<String> af = getCapabilitiesRequest.getAcceptFormats();
+        String text = "text/xml";
+        if ( af.isEmpty() ) {
+            acceptFormat = text;
+        } else if ( af.contains( text ) ) {
+            acceptFormat = text;
+        } else {
+            throw new OWSException( "Format determination failed. Requested format is not supported by this CSW.",
+                                    OWSException.INVALID_FORMAT );
+        }
+        return acceptFormat;
+    }
+
+    @Override
+    public CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer,
+                                                           DeegreeServicesMetadataType mainControllerConf,
+                                                           DeegreeServiceControllerType mainConf,
+                                                           Set<Sections> sections,
+                                                           ServiceIdentificationType identification, Version version,
+                                                           boolean isTransactionEnabled,
+                                                           boolean isEnabledInspireExtension,
+                                                           ServiceProviderType provider ) {
+        return new EbrimGetCapabilitiesHandler( writer, sections, identification, provider, version,
+                                                isTransactionEnabled );
     }
 
 }
