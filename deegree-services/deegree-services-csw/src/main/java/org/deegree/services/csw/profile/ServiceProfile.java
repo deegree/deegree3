@@ -100,4 +100,6 @@ public interface ServiceProfile {
 
     Version checkVersion( Version requestVersion );
 
+    boolean supportsOperation( CSWRequestType type );
+
 }

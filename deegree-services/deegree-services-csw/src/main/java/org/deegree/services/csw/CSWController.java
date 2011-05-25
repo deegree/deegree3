@@ -105,6 +105,9 @@ import org.deegree.services.csw.getrecordbyid.GetRecordByIdXMLAdapter;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.GetRecordsKVPAdapter;
 import org.deegree.services.csw.getrecords.GetRecordsXMLAdapter;
+import org.deegree.services.csw.getrepositoryitem.GetRepositoryItem;
+import org.deegree.services.csw.getrepositoryitem.GetRepositoryItemHandler;
+import org.deegree.services.csw.getrepositoryitem.GetRepositoryItemKVPAdapter;
 import org.deegree.services.csw.profile.ServiceProfile;
 import org.deegree.services.csw.profile.ServiceProfileManager;
 import org.deegree.services.csw.transaction.Transaction;
@@ -258,6 +261,10 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             if ( requestType != CSWRequestType.GetCapabilities ) {
                 checkVersion( requestVersion );
             }
+            boolean supportedOperation = profile.supportsOperation( requestType );
+            if ( !supportedOperation ) {
+                throw new OWSException( requestType + " is not supported by this CSW service ", INVALID_PARAMETER_VALUE );
+            }
             switch ( requestType ) {
             case GetCapabilities:
                 GetCapabilities getCapabilities = GetCapabilities202KVPAdapter.parse( normalizedKVPParams );
@@ -282,6 +289,10 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                 checkTransactionsEnabled( rootElement );
                 Transaction trans = TransactionKVPAdapter.parse( normalizedKVPParams );
                 transactionHandler.doTransaction( trans, response, store );
+                break;
+            case GetRepositoryItem:
+                GetRepositoryItem getRepItem = GetRepositoryItemKVPAdapter.parse( normalizedKVPParams );
+                new GetRepositoryItemHandler().doGetRepositoryItem( getRepItem, response );
                 break;
             }
 
@@ -321,8 +332,12 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             if ( requestType != CSWRequestType.GetCapabilities ) {
                 checkVersion( requestVersion );
             }
-            requestVersion = profile.checkVersion(requestVersion);
+            requestVersion = profile.checkVersion( requestVersion );
 
+            boolean supportedOperation = profile.supportsOperation( requestType );
+            if ( !supportedOperation ) {
+                throw new OWSException( requestType + " is not supported by this CSW service ", INVALID_PARAMETER_VALUE );
+            }
             switch ( requestType ) {
 
             case GetCapabilities:
@@ -359,8 +374,10 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                 Transaction cswTRequest = transAdapter.parse( requestVersion );
                 transactionHandler.doTransaction( cswTRequest, response, store );
                 break;
+            default:
+                throw new OWSException( requestType + " as POST request is not supported by this CSW service yet",
+                                        INVALID_PARAMETER_VALUE );
             }
-
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
             sendServiceException( e, response );
@@ -398,6 +415,13 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             // checkVersion( requestVersion );
             // }
 
+            requestVersion = profile.checkVersion( requestVersion );
+
+            boolean supportedOperation = profile.supportsOperation( requestType );
+            if ( !supportedOperation ) {
+                throw new OWSException( requestType + " is not supported by this CSW service ", INVALID_PARAMETER_VALUE );
+            }
+
             beginSOAPResponse( response );
 
             switch ( requestType ) {
@@ -434,6 +458,9 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                 Transaction cswTRequest = transAdapter.parse( requestVersion );
                 transactionHandler.doTransaction( cswTRequest, response, store );
                 break;
+            default:
+                throw new OWSException( requestType + " as SOAP request is not supported by this CSW service yet",
+                                        INVALID_PARAMETER_VALUE );
             }
             // endSOAPResponse( response );
         } catch ( OWSException e ) {

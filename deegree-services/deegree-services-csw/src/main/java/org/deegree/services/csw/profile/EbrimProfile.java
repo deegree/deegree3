@@ -162,4 +162,9 @@ public class EbrimProfile implements ServiceProfile {
             return VERSION_202;
         return version;
     }
+
+    @Override
+    public boolean supportsOperation( CSWRequestType type ) {
+        return true;
+    }
 }

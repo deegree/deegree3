@@ -170,5 +170,10 @@ public class CommonCSWProfile implements ServiceProfile {
     public Version checkVersion( Version version ) {
         return version;
     }
-    
+
+    @Override
+    public boolean supportsOperation( CSWRequestType type ) {
+        return CSWRequestType.GetRepositoryItem.equals( type ) ? false : true;
+    }
+
 }
