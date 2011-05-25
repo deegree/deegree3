@@ -321,6 +321,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             if ( requestType != CSWRequestType.GetCapabilities ) {
                 checkVersion( requestVersion );
             }
+            requestVersion = profile.checkVersion(requestVersion);
 
             switch ( requestType ) {
 

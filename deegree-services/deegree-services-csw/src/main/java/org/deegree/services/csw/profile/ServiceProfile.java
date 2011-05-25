@@ -98,4 +98,6 @@ public interface ServiceProfile {
 
     List<URL> getSchemaReferences( QName typeName );
 
+    Version checkVersion( Version requestVersion );
+
 }

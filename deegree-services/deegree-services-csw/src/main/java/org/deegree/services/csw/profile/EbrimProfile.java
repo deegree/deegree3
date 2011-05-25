@@ -155,5 +155,11 @@ public class EbrimProfile implements ServiceProfile {
     public List<URL> getSchemaReferences( QName typeName ) {
         return Collections.singletonList( EbrimProfile.class.getResource( "/org/deegree/services/csw/exporthandling/rim_schema_ref.xml" ) );
     }
-    
+
+    @Override
+    public Version checkVersion( Version version ) {
+        if ( VERSION_100.equals( version ) )
+            return VERSION_202;
+        return version;
+    }
 }

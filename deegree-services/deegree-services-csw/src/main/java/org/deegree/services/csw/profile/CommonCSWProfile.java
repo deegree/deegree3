@@ -165,5 +165,10 @@ public class CommonCSWProfile implements ServiceProfile {
         }
         return null;
     }
+
+    @Override
+    public Version checkVersion( Version version ) {
+        return version;
+    }
     
 }
