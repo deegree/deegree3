@@ -36,6 +36,7 @@
 package org.deegree.services.csw.profile;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.ows.OWSException;
@@ -101,5 +103,19 @@ public interface ServiceProfile {
     Version checkVersion( Version requestVersion );
 
     boolean supportsOperation( CSWRequestType type );
+
+    /**
+     * @param version
+     * @return
+     */
+    String getSchemaLocation( Version version );
+
+    /**
+     * @return
+     */
+    boolean isStrict();
+
+    boolean returnAsDC( URI outputSchema )
+                            throws MetadataStoreException;
 
 }

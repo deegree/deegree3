@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.profile;
 
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_100;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +53,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.ows.OWSException;
@@ -82,6 +85,12 @@ public class EbrimProfile implements ServiceProfile {
     public static final String SERVICENAME_WRS = "WRS";
 
     public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+
+    private static final String RIM_SCHEMA = "http://docs.oasis-open.org/regrep/v3.0/schema/rim.xsd";
+
+    private static final String RIM_AP_NS = "http://www.opengis.net/cat/wrs/1.0";
+
+    private static final String RIM_AP_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/profiles/ebrim/1.0/csw-ebrim.xsd";
 
     static {
         versions.add( VERSION_100.toString() );
@@ -166,5 +175,22 @@ public class EbrimProfile implements ServiceProfile {
     @Override
     public boolean supportsOperation( CSWRequestType type ) {
         return true;
+    }
+
+    @Override
+    public String getSchemaLocation( Version version ) {
+        return CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA + " " + RIM_AP_NS + " " + RIM_AP_SCHEMA + " " + RIM_NS + " "
+               + RIM_SCHEMA;
+    }
+
+    @Override
+    public boolean isStrict() {
+        return false;
+    }
+
+    @Override
+    public boolean returnAsDC( URI outputSchema )
+                            throws MetadataStoreException {
+        return false;
     }
 }

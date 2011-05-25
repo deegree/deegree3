@@ -35,13 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -54,12 +51,12 @@ import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
+import org.deegree.services.csw.profile.ServiceProfile;
 import org.deegree.services.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +73,8 @@ public class GetRecordByIdHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdHandler.class );
 
+    private ServiceProfile profile;
+
     /**
      * Preprocessing for the export of a {@link GetRecordById} request
      * 
@@ -89,20 +88,17 @@ public class GetRecordByIdHandler {
      * @throws InvalidParameterValueException
      * @throws OWSException
      */
-    public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, MetadataStore<?> store )
+    public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, MetadataStore<?> store,
+                                 ServiceProfile profile )
                             throws XMLStreamException, IOException, InvalidParameterValueException, OWSException {
-
+        this.profile = profile;
         LOG.debug( "doGetRecordById: " + getRecBI );
-
         Version version = getRecBI.getVersion();
 
         response.setContentType( getRecBI.getOutputFormat() );
 
         // to be sure of a valid response
-        String schemaLocation = "";
-        if ( getRecBI.getVersion() == VERSION_202 ) {
-            schemaLocation = CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA;
-        }
+        String schemaLocation = profile.getSchemaLocation( getRecBI.getVersion() );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {
@@ -119,36 +115,30 @@ public class GetRecordByIdHandler {
 
     /**
      * Exports the correct recognized request and determines to which version export it should delegate the request
-     * 
-     * @param xmlWriter
-     * @param getRecBI
-     * @param response
-     * @param version
-     * @throws XMLStreamException
-     * @throws SQLException
-     * @throws OWSException
-     * @throws MetadataStoreException
      */
     private void export( XMLStreamWriter xmlWriter, GetRecordById getRecBI, Version version, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
-        if ( VERSION_202.equals( version ) ) {
+        List<String> supportedVersions = profile.getSupportedVersions();
+        if ( supportedVersions.contains( version.toString() ) ) {
             export202( xmlWriter, getRecBI, store );
         } else {
-            throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
+            StringBuilder sb = new StringBuilder();
+            sb.append( "Version '" ).append( version );
+            sb.append( "' is not supported." );
+            sb.append( " Supported versions are " );
+            boolean isFirst = true;
+            for ( String v : supportedVersions ) {
+                if ( isFirst ) {
+                    isFirst = false;
+                } else {
+                    sb.append( ", " );
+                }
+                sb.append( v );
+            }
+            throw new IllegalArgumentException( sb.toString() );
         }
-
     }
 
-    /**
-     * Exporthandling for the CSW version 2.0.2
-     * 
-     * @param xmlWriter
-     * @param getRecBI
-     * @throws XMLStreamException
-     * @throws SQLException
-     * @throws OWSException
-     * @throws MetadataStoreException
-     */
     private void export202( XMLStreamWriter writer, GetRecordById getRecBI, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
@@ -164,23 +154,21 @@ public class GetRecordByIdHandler {
                 try {
                     resultSet = store.getRecordById( requestedIdList, getRecBI.getTypeNames() );
                 } catch ( MetadataStoreException e ) {
-                    throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
+                    throw new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
                 }
             }
 
             while ( resultSet.next() ) {
                 countIdList++;
-                if ( getRecBI.getOutputSchema().equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
-                    recordResponse = resultSet.getRecord();
-                    recordResponse.serialize( writer, getRecBI.getElementSetName() );
-                    removeId( recordResponse, requestedIdList );
-                } else {
-                    recordResponse = resultSet.getRecord();
+                recordResponse = resultSet.getRecord();
+                if ( profile.returnAsDC( getRecBI.getOutputSchema() ) ) {
                     recordResponse.toDublinCore().serialize( writer, getRecBI.getElementSetName() );
-                    removeId( recordResponse, requestedIdList );
+                } else {
+                    recordResponse.serialize( writer, getRecBI.getElementSetName() );
                 }
+                removeId( recordResponse, requestedIdList );
             }
-            if ( countIdList != requestedIds ) {
+            if ( profile.isStrict() && countIdList != requestedIds ) {
                 String msg = Messages.getMessage( "CSW_NO_IDENTIFIER_FOUND", requestedIdList );
                 LOG.debug( msg );
                 throw new MetadataStoreException( msg );
@@ -205,7 +193,7 @@ public class GetRecordByIdHandler {
      * @throws XMLStreamException
      * @throws IOException
      */
-    static XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String schemaLocation )
+    private XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String schemaLocation )
                             throws XMLStreamException, IOException {
 
         if ( schemaLocation == null ) {

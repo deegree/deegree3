@@ -134,7 +134,7 @@ public class DescribeRecordHandler {
     private void export( XMLStreamWriter writer, QName[] typeNames, Version version )
                             throws XMLStreamException, MetadataStoreException {
         List<String> supportedVersions = profile.getSupportedVersions();
-        if ( supportedVersions.contains( version ) ) {
+        if ( supportedVersions.contains( version.toString() ) ) {
             export202( writer, typeNames );
         } else {
             StringBuilder sb = new StringBuilder();

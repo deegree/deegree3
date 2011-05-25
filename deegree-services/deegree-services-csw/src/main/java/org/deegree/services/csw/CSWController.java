@@ -284,7 +284,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             case GetRecordById:
                 GetRecordById getRecBI = GetRecordByIdKVPAdapter.parse( normalizedKVPParams, "application/xml",
                                                                         "http://www.opengis.net/cat/csw/2.0.2" );
-                getRecordByIdHandler.doGetRecordById( getRecBI, response, store );
+                getRecordByIdHandler.doGetRecordById( getRecBI, response, store, profile );
                 break;
             case Transaction:
                 checkTransactionsEnabled( rootElement );
@@ -443,7 +443,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             getRecordByIdAdapter.setRootElement( requestElement );
             GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion, "application/xml",
                                                                        "http://www.opengis.net/cat/csw/2.0.2" );
-            getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
+            getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store, profile );
             break;
         case Transaction:
             checkTransactionsEnabled( rootElement );

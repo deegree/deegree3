@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.profile;
 
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
@@ -42,6 +43,7 @@ import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +58,7 @@ import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.ows.OWSException;
@@ -176,4 +179,24 @@ public class CommonCSWProfile implements ServiceProfile {
         return CSWRequestType.GetRepositoryItem.equals( type ) ? false : true;
     }
 
+    @Override
+    public String getSchemaLocation( Version version ) {
+        if ( VERSION_202.equals( version ) ) {
+            return CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isStrict() {
+        return true;
+    }
+
+    @Override
+    public boolean returnAsDC( URI outputSchema ) throws MetadataStoreException {
+        if ( outputSchema != null && outputSchema.equals( OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ) ) ) {
+            return false;
+        }
+        return true;
+    }
 }
