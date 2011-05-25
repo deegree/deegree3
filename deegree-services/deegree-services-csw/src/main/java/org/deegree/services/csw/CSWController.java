@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -57,10 +58,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
+import org.apache.axiom.soap.SOAP11Version;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
-import org.apache.axiom.soap.SOAPFault;
-import org.apache.axiom.soap.SOAPFaultCode;
+import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
@@ -268,7 +269,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             switch ( requestType ) {
             case GetCapabilities:
                 GetCapabilities getCapabilities = GetCapabilities202KVPAdapter.parse( normalizedKVPParams );
-                doGetCapabilities( getCapabilities, request, response, false );
+                doGetCapabilities( getCapabilities, response, false );
                 break;
             case DescribeRecord:
                 DescribeRecord descRec = DescribeRecordKVPAdapter.parse( normalizedKVPParams );
@@ -322,62 +323,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         try {
             XMLAdapter requestDoc = new XMLAdapter( xmlStream );
             OMElement rootElement = requestDoc.getRootElement();
-            String rootElementString = rootElement.getLocalName();
-            CSWRequestType requestType = getRequestType( rootElementString );
-            if ( requestType == null )
-                throw new IllegalArgumentException( rootElement + " is not a known request type by this CSW" );
 
-            // check if requested version is supported and offered (except for GetCapabilities)
-            Version requestVersion = getVersion( requestDoc.getRootElement().getAttributeValue( new QName( "version" ) ) );
-            if ( requestType != CSWRequestType.GetCapabilities ) {
-                checkVersion( requestVersion );
-            }
-            requestVersion = profile.checkVersion( requestVersion );
-
-            boolean supportedOperation = profile.supportsOperation( requestType );
-            if ( !supportedOperation ) {
-                throw new OWSException( requestType + " is not supported by this CSW service ", INVALID_PARAMETER_VALUE );
-            }
-            switch ( requestType ) {
-
-            case GetCapabilities:
-                GetCapabilitiesVersionXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesVersionXMLAdapter();
-                getCapabilitiesAdapter.setRootElement( rootElement );
-                GetCapabilities cswRequest = getCapabilitiesAdapter.parse();
-
-                doGetCapabilities( cswRequest, request, response, false );
-                break;
-            case DescribeRecord:
-                DescribeRecordXMLAdapter describeRecordAdapter = new DescribeRecordXMLAdapter();
-                describeRecordAdapter.setRootElement( requestDoc.getRootElement() );
-                DescribeRecord cswDRRequest = describeRecordAdapter.parse( requestVersion );
-                describeRecordHandler.doDescribeRecord( cswDRRequest, response, profile );
-                break;
-            case GetRecords:
-                GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
-                getRecordsAdapter.setRootElement( requestDoc.getRootElement() );
-                GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion, "application/xml",
-                                                                   "http://www.opengis.net/cat/csw/2.0.2" );
-                getRecordsHandler.doGetRecords( cswGRRequest, response, store );
-                break;
-            case GetRecordById:
-                GetRecordByIdXMLAdapter getRecordByIdAdapter = new GetRecordByIdXMLAdapter();
-                getRecordByIdAdapter.setRootElement( requestDoc.getRootElement() );
-                GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion, "application/xml",
-                                                                           "http://www.opengis.net/cat/csw/2.0.2" );
-                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
-                break;
-            case Transaction:
-                checkTransactionsEnabled( rootElementString );
-                TransactionXMLAdapter transAdapter = new TransactionXMLAdapter();
-                transAdapter.setRootElement( requestDoc.getRootElement() );
-                Transaction cswTRequest = transAdapter.parse( requestVersion );
-                transactionHandler.doTransaction( cswTRequest, response, store );
-                break;
-            default:
-                throw new OWSException( requestType + " as POST request is not supported by this CSW service yet",
-                                        INVALID_PARAMETER_VALUE );
-            }
+            doXML( rootElement, response );
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
             sendServiceException( e, response );
@@ -398,96 +345,117 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
     public void doSOAP( SOAPEnvelope soapDoc, HttpServletRequest request, HttpResponseBuffer response,
                         List<FileItem> multiParts, SOAPFactory factory )
                             throws OMException, ServletException {
-
-        LOG.trace( "doSOAP invoked" );
-
-        OMElement requestElement = soapDoc.getBody().getFirstElement();
-
+        SOAPVersion version = soapDoc.getVersion();
         try {
-            String rootElement = requestElement.getLocalName();
-            CSWRequestType requestType = getRequestType( rootElement );
-            if ( requestType == null )
-                throw new IllegalArgumentException( rootElement + " is not a known request type by this CSW" );
-
-            Version requestVersion = getVersion( requestElement.getAttributeValue( new QName( "version" ) ) );
-            // check if requested version is supported and offered (except for GetCapabilities)
-            // if ( requestType != CSWRequestType.GetCapabilities ) {
-            // checkVersion( requestVersion );
-            // }
-
-            requestVersion = profile.checkVersion( requestVersion );
-
-            boolean supportedOperation = profile.supportsOperation( requestType );
-            if ( !supportedOperation ) {
-                throw new OWSException( requestType + " is not supported by this CSW service ", INVALID_PARAMETER_VALUE );
+            if ( version instanceof SOAP11Version ) {
+                response.setContentType( "application/soap+xml" );
+                XMLStreamWriter xmlWriter = response.getXMLWriter();
+                String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
+                String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
+                xmlWriter.writeStartElement( "soap", "Envelope", soapEnvNS );
+                xmlWriter.writeNamespace( "xsi", xsiNS );
+                xmlWriter.writeAttribute( xsiNS, "schemaLocation",
+                                          "http://schemas.xmlsoap.org/soap/envelope/ http://schemas.xmlsoap.org/soap/envelope/" );
+                xmlWriter.writeStartElement( soapEnvNS, "Body" );
+            } else {
+                beginSOAPResponse( response );
             }
-
-            beginSOAPResponse( response );
-
-            switch ( requestType ) {
-            case GetCapabilities:
-                GetCapabilitiesVersionXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesVersionXMLAdapter();
-                getCapabilitiesAdapter.setRootElement( requestElement );
-                GetCapabilities cswRequest = getCapabilitiesAdapter.parse();
-                doGetCapabilities( cswRequest, request, response, true );
-                break;
-            case DescribeRecord:
-                DescribeRecordXMLAdapter describeRecordAdapter = new DescribeRecordXMLAdapter();
-                describeRecordAdapter.setRootElement( requestElement );
-                DescribeRecord cswDRRequest = describeRecordAdapter.parse( requestVersion );
-                describeRecordHandler.doDescribeRecord( cswDRRequest, response, profile );
-                break;
-            case GetRecords:
-                GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
-                getRecordsAdapter.setRootElement( requestElement );
-                GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion, "application/xml",
-                                                                   "http://www.opengis.net/cat/csw/2.0.2" );
-                getRecordsHandler.doGetRecords( cswGRRequest, response, store );
-                break;
-            case GetRecordById:
-                GetRecordByIdXMLAdapter getRecordByIdAdapter = new GetRecordByIdXMLAdapter();
-                getRecordByIdAdapter.setRootElement( requestElement );
-                GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion, "application/xml",
-                                                                           "http://www.opengis.net/cat/csw/2.0.2" );
-                getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
-                break;
-            case Transaction:
-                checkTransactionsEnabled( rootElement );
-                TransactionXMLAdapter transAdapter = new TransactionXMLAdapter();
-                transAdapter.setRootElement( requestElement );
-                Transaction cswTRequest = transAdapter.parse( requestVersion );
-                transactionHandler.doTransaction( cswTRequest, response, store );
-                break;
-            default:
-                throw new OWSException( requestType + " as SOAP request is not supported by this CSW service yet",
-                                        INVALID_PARAMETER_VALUE );
-            }
-            // endSOAPResponse( response );
-        } catch ( OWSException e ) {
-            sendSOAPException( soapDoc.getHeader(), factory, response, e, new OWSException120XMLAdapter(), null, null,
-                               request.getServerName(), request.getCharacterEncoding() );
+            doXML( soapDoc.getBody().getFirstElement(), response );
         } catch ( XMLStreamException e ) {
-            e.printStackTrace();
+            LOG.debug( e.getMessage(), e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
+                                                                             ControllerException.NO_APPLICABLE_CODE ),
+                               request, version );
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage(), e );
+            sendSoapException( soapDoc, factory, response, e, request, version );
         } catch ( IOException e ) {
-            e.printStackTrace();
+            LOG.debug( e.getMessage(), e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
+                                                                             ControllerException.NO_APPLICABLE_CODE ),
+                               request, version );
         } catch ( MissingParameterException e ) {
-            sendSOAPException( soapDoc.getHeader(), factory, response, new OWSException( e ),
-                               new OWSException120XMLAdapter(), null, null, request.getServerName(),
-                               request.getCharacterEncoding() );
-
+            LOG.debug( e.getMessage(), e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
+                                                                             OWSException.MISSING_PARAMETER_VALUE ),
+                               request, version );
         } catch ( InvalidParameterValueException e ) {
-            sendSOAPException( soapDoc.getHeader(), factory, response, new OWSException( e ),
-                               new OWSException120XMLAdapter(), null, null, request.getServerName(),
-                               request.getCharacterEncoding() );
+            LOG.debug( e.getMessage(), e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
+                                                                             OWSException.INVALID_PARAMETER_VALUE ),
+                               request, version );
         } catch ( FailedAuthentication e ) {
-            SOAPFault fault = factory.createSOAPFault();
-            SOAPFaultCode faultCode = factory.createSOAPFaultCode( fault );
-            faultCode.setText( e.getFaultCode11() );
+            LOG.debug( e.getMessage(), e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
+                                                                             ControllerException.NO_APPLICABLE_CODE ),
+                               request, version );
+        } catch ( Throwable t ) {
+            String msg = "An unexpected error occured: " + t.getMessage();
+            LOG.debug( msg, t );
+            sendSoapException( soapDoc, factory, response, new OWSException( msg, t,
+                                                                             ControllerException.NO_APPLICABLE_CODE ),
+                               request, version );
+        }
+    }
 
-            sendSOAPException( null, factory, response, null, new OWSException120XMLAdapter(), faultCode.getText(),
-                               e.getMessage(), request.getServerName(), request.getCharacterEncoding() );
+    private void doXML( OMElement requestElement, HttpResponseBuffer response )
+                            throws OWSException, XMLStreamException, IOException {
+        String rootElement = requestElement.getLocalName();
+        CSWRequestType requestType = getRequestType( rootElement );
+        if ( requestType == null )
+            throw new IllegalArgumentException( rootElement + " is not a known request type by this CSW" );
+
+        // check if requested version is supported and offered (except for GetCapabilities)
+        Version requestVersion = getVersion( requestElement.getAttributeValue( new QName( "version" ) ) );
+        if ( requestType != CSWRequestType.GetCapabilities ) {
+            checkVersion( requestVersion );
         }
 
+        requestVersion = profile.checkVersion( requestVersion );
+
+        boolean supportedOperation = profile.supportsOperation( requestType );
+        if ( !supportedOperation ) {
+            throw new OWSException( requestType + " is not supported by this CSW service ", INVALID_PARAMETER_VALUE );
+        }
+
+        switch ( requestType ) {
+        case GetCapabilities:
+            GetCapabilitiesVersionXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesVersionXMLAdapter();
+            getCapabilitiesAdapter.setRootElement( requestElement );
+            GetCapabilities cswRequest = getCapabilitiesAdapter.parse();
+            doGetCapabilities( cswRequest, response, true );
+            break;
+        case DescribeRecord:
+            DescribeRecordXMLAdapter describeRecordAdapter = new DescribeRecordXMLAdapter();
+            describeRecordAdapter.setRootElement( requestElement );
+            DescribeRecord cswDRRequest = describeRecordAdapter.parse( requestVersion );
+            describeRecordHandler.doDescribeRecord( cswDRRequest, response, profile );
+            break;
+        case GetRecords:
+            GetRecordsXMLAdapter getRecordsAdapter = new GetRecordsXMLAdapter();
+            getRecordsAdapter.setRootElement( requestElement );
+            GetRecords cswGRRequest = getRecordsAdapter.parse( requestVersion, "application/xml",
+                                                               "http://www.opengis.net/cat/csw/2.0.2" );
+            getRecordsHandler.doGetRecords( cswGRRequest, response, store );
+            break;
+        case GetRecordById:
+            GetRecordByIdXMLAdapter getRecordByIdAdapter = new GetRecordByIdXMLAdapter();
+            getRecordByIdAdapter.setRootElement( requestElement );
+            GetRecordById cswGRBIRequest = getRecordByIdAdapter.parse( requestVersion, "application/xml",
+                                                                       "http://www.opengis.net/cat/csw/2.0.2" );
+            getRecordByIdHandler.doGetRecordById( cswGRBIRequest, response, store );
+            break;
+        case Transaction:
+            checkTransactionsEnabled( rootElement );
+            TransactionXMLAdapter transAdapter = new TransactionXMLAdapter();
+            transAdapter.setRootElement( requestElement );
+            Transaction cswTRequest = transAdapter.parse( requestVersion );
+            transactionHandler.doTransaction( cswTRequest, response, store );
+            break;
+        default:
+            throw new OWSException( requestType + " as SOAP request is not supported by this CSW service yet",
+                                    INVALID_PARAMETER_VALUE );
+        }
     }
 
     @Override
@@ -532,11 +500,9 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
      * @throws IOException
      * @throws OWSException
      */
-    private void doGetCapabilities( GetCapabilities getCapabilitiesRequest, HttpServletRequest requestWrapper,
-                                    HttpResponseBuffer response, boolean isSoap )
+    private void doGetCapabilities( GetCapabilities getCapabilitiesRequest, HttpResponseBuffer response, boolean isSoap )
                             throws XMLStreamException, IOException, OWSException {
         Set<Sections> sections = getSections( getCapabilitiesRequest );
-        // TODO: ???
         Version negotiatedVersion = null;
         if ( getCapabilitiesRequest.getAcceptVersions() == null ) {
             negotiatedVersion = new Version( 2, 0, 2 );
@@ -635,5 +601,18 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         String mime = "application/vnd.ogc.se_xml";
         XMLExceptionSerializer<OWSException> serializer = new OWSException110XMLAdapter();
         return new Pair<XMLExceptionSerializer<OWSException>, String>( serializer, mime );
+    }
+
+    private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,
+                                    OWSException e, ServletRequest request, SOAPVersion version )
+                            throws OMException, ServletException {
+        XMLExceptionSerializer<OWSException> serializer;
+        if ( version instanceof SOAP11Version ) {
+            serializer = new OWSException110XMLAdapter();
+        } else {
+            serializer = new OWSException120XMLAdapter();
+        }
+        sendSOAPException( soapDoc.getHeader(), factory, response, e, serializer, null, null, request.getServerName(),
+                           request.getCharacterEncoding() );
     }
 }
