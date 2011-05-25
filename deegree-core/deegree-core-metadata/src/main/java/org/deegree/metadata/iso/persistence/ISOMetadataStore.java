@@ -263,4 +263,9 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         }
         return conn;
     }
+
+    @Override
+    public String getType() {
+        return "iso";
+    }
 }

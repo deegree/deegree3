@@ -113,4 +113,9 @@ public interface MetadataStore<T extends MetadataRecord> extends Resource {
      * @return the JDBC connection id, never <code>null</code>
      */
     public String getConnId();
+
+    /**
+     * @return the type of the store
+     */
+    public String getType();
 }

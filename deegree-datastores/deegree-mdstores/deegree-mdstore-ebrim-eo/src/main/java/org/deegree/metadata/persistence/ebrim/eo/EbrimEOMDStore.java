@@ -105,7 +105,6 @@ import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
-
 /**
  * {@link MetadataStore} implementation for accessing {@link EbrimEOMDRecord}s stored in spatial SQL databases
  * (currently only PostgreSQL / PostGIS is supported).
@@ -680,5 +679,10 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
     @Override
     public String getConnId() {
         return connId;
+    }
+
+    @Override
+    public String getType() {
+        return "ebrimeo";
     }
 }
