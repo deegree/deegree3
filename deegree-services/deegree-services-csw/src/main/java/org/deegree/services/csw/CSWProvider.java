@@ -35,19 +35,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.config.ResourceState;
+import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.csw.profile.ServiceProfile;
+import org.deegree.services.csw.profile.ServiceProfileManager;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -57,16 +62,10 @@ import org.deegree.services.controller.ImplementationMetadata;
  * @version $Revision$, $Date$
  */
 public class CSWProvider implements OWSProvider<CSWRequestType> {
+    
+    private static final Logger LOG = getLogger( CSWProvider.class );
 
-    protected static final ImplementationMetadata<CSWRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<CSWRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_202 };
-            handledNamespaces = new String[] { CSW_202_NS };
-            handledRequests = CSWRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = new String[] { "CSW" };
-        }
-    };
+    private ServiceProfile profile;
 
     @Override
     public String getConfigNamespace() {
@@ -80,7 +79,7 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
 
     @Override
     public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
-        return IMPLEMENTATION_METADATA;
+        return profile.getImplementationMetadata();
     }
 
     @Override
@@ -96,6 +95,23 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
 
     @Override
     public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub
+        LOG.info( "Init CSW Provider" );
+        MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
+        if ( mgr == null )
+            throw new IllegalArgumentException( "Could not find a MetadataStoreManager!" );
+        List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
+        for ( ResourceState<MetadataStore<?>> state : mgr.getStates() ) {
+            if ( state.getResource() != null ) {
+                availableStores.add( state.getResource() );
+            }
+        }
+        if ( availableStores.size() == 0 )
+            throw new IllegalArgumentException(
+                                                "There is no MetadataStore configured, ensure that exactly one store is available!" );
+        if ( availableStores.size() > 1 )
+            throw new IllegalArgumentException( "Number of MetadataStores must be one: configured are "
+                                                + availableStores.size() + " stores!" );
+        MetadataStore<?> store = availableStores.get( 0 );
+        profile = ServiceProfileManager.createProfile( store );
     }
 }

@@ -38,7 +38,7 @@ package org.deegree.services.csw;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-import static org.deegree.services.csw.CSWProvider.IMPLEMENTATION_METADATA;
+import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 
 import java.io.IOException;
 import java.net.URL;
@@ -65,6 +65,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -104,6 +105,8 @@ import org.deegree.services.csw.getrecordbyid.GetRecordByIdXMLAdapter;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.GetRecordsKVPAdapter;
 import org.deegree.services.csw.getrecords.GetRecordsXMLAdapter;
+import org.deegree.services.csw.profile.ServiceProfile;
+import org.deegree.services.csw.profile.ServiceProfileManager;
 import org.deegree.services.csw.transaction.Transaction;
 import org.deegree.services.csw.transaction.TransactionKVPAdapter;
 import org.deegree.services.csw.transaction.TransactionXMLAdapter;
@@ -159,6 +162,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
     private GetRecordByIdHandler getRecordByIdHandler;
 
+    private ServiceProfile profile;
+
     protected CSWController( URL configURL, ImplementationMetadata<CSWRequestType> serviceInfo ) {
         super( configURL, serviceInfo );
     }
@@ -167,8 +172,9 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
                       ImplementationMetadata<CSWRequestType> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
+
         LOG.info( "Initializing CSW controller." );
-        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, md, controllerConf );
         DeegreeCSW jaxbConfig = (DeegreeCSW) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
         LOG.info( "Initializing/looking up configured record stores." );
@@ -188,10 +194,10 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             throw new IllegalArgumentException( "Number of MetadataStores must be one: configured are "
                                                 + availableStores.size() + " stores!" );
         store = availableStores.get( 0 );
+        profile = ServiceProfileManager.createProfile( store );
+
         if ( jaxbConfig.getSupportedVersions() == null ) {
-            List<String> defaultVersion = new ArrayList<String>();
-            defaultVersion.add( CSWConstants.VERSION_202_STRING );
-            validateAndSetOfferedVersions( defaultVersion );
+            validateAndSetOfferedVersions( profile.getSupportedVersions() );
             LOG.info( "No SupportedVersion element provided. The version is set to default 2.0.2" );
         } else {
             validateAndSetOfferedVersions( jaxbConfig.getSupportedVersions().getVersion() );
@@ -203,6 +209,7 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
         } else {
             LOG.info( "Transactions are disabled!" );
         }
+        // TODO: enableInspireExtensions
         if ( jaxbConfig.getEnableInspireExtensions() != null ) {
             enableInspireExtensions = true;
             LOG.info( "Inspire is activated" );
@@ -227,15 +234,27 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             String rootElement = KVPUtils.getRequired( normalizedKVPParams, "REQUEST" );
             CSWRequestType requestType = getRequestType( rootElement );
             if ( requestType == null )
-                throw new IllegalArgumentException( rootElement + " is not a known request type by this CSW" );
+                throw new OWSException( rootElement + " is not a known request type by this CSW",
+                                        INVALID_PARAMETER_VALUE );
 
             Version requestVersion = getVersion( normalizedKVPParams.get( "ACCEPTVERSIONS" ) );
 
             String serviceAttr = KVPUtils.getRequired( normalizedKVPParams, "SERVICE" );
-            if ( !"CSW".equals( serviceAttr ) ) {
-                throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'CSW'.",
-                                        OWSException.INVALID_PARAMETER_VALUE, "service" );
+            if ( !ArrayUtils.contains( profile.getSupportedServiceNames(), serviceAttr ) ) {
+                StringBuilder sb = new StringBuilder();
+                sb.append( "Wrong service attribute: '" ).append( serviceAttr );
+                sb.append( "' -- must be " );
+                String[] serviceNames = profile.getSupportedServiceNames();
+                for ( int i = 0; i < serviceNames.length; i++ ) {
+                    sb.append( serviceNames[i] );
+                    if ( i < serviceNames.length - 1 ) {
+                        sb.append( ", " );
+                    }
+                }
+                sb.append( '.' );
+                throw new OWSException( sb.toString(), OWSException.INVALID_PARAMETER_VALUE, "service" );
             }
+
             if ( requestType != CSWRequestType.GetCapabilities ) {
                 checkVersion( requestVersion );
             }
