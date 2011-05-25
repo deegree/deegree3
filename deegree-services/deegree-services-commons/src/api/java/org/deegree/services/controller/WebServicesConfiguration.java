@@ -188,15 +188,17 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
 
         initRequestLogger();
 
-        @SuppressWarnings("unchecked")
-        Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class, workspace.getModuleClassLoader() ).iterator();
-        Map<String, OWSProvider<? extends Enum<?>>> providers = new HashMap<String, OWSProvider<? extends Enum<?>>>();
-        while ( iter.hasNext() ) {
-            OWSProvider<?> p = iter.next();
-            for ( String serviceName : p.getImplementationMetadata().getImplementedServiceName() ) {
-                providers.put( serviceName.toUpperCase(), p );
-            }
-        }
+        // @SuppressWarnings("unchecked")
+        // Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class, workspace.getModuleClassLoader()
+        // ).iterator();
+        // Map<String, OWSProvider<? extends Enum<?>>> providers = new HashMap<String, OWSProvider<? extends
+        // Enum<?>>>();
+        // while ( iter.hasNext() ) {
+        // OWSProvider<?> p = iter.next();
+        // for ( String serviceName : p.getImplementationMetadata().getImplementedServiceName() ) {
+        // providers.put( serviceName.toUpperCase(), p );
+        // }
+        // }
 
         this.workspace = workspace;
         ResourceManagerMetadata<OWS<?>> md = getMetadata();
