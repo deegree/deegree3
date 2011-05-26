@@ -274,6 +274,7 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
         if ( qName == null ) {
             String msg = Messages.getMessage( "WARN_PROPNAME_MAPPING", propName );
             LOG.debug( msg );
+            throw new FilterEvaluationException( msg );
         } else {
 
             Triple<Pair<String, String>, Boolean, BaseType> tableColumn = propToTableAndCol.get( qName );
