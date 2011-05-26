@@ -614,8 +614,14 @@ public class ParseIdentificationInfo extends XMLAdapter {
                         if ( geographicDescriptionCode_service == null ) {
                             OMElement geographicDescriptionCode_serviceElem = getElement( geographicElem,
                                                                                           new XPath(
-                                                                                                     "./gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
+                                                                                                     "./gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
                                                                                                      nsContextParseII ) );
+                            if ( geographicDescriptionCode_serviceElem == null ) {
+                                geographicDescriptionCode_serviceElem = getElement( geographicElem,
+                                                                                    new XPath(
+                                                                                               "./gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:RS_Identifier/gmd:code",
+                                                                                               nsContextParseII ) );
+                            }
                             geographicDescriptionCode_service = getNodeAsString( geographicDescriptionCode_serviceElem,
                                                                                  new XPath( "./gco:CharacterString",
                                                                                             nsContextParseII ), null );
