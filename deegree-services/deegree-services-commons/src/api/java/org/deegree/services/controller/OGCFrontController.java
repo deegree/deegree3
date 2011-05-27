@@ -908,9 +908,9 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( "You probably forgot to add a required .jar to the WEB-INF/lib directory." );
             LOG.error( "The resource that could not be found was '{}'.", e.getMessage() );
             LOG.debug( "Stack trace:", e );
-        } catch ( Exception e ) {
+        } catch ( Exception e ) {            
             LOG.error( "Initialization failed!" );
-            LOG.trace( "An unexpected error was caught, stack trace:", e );
+            LOG.error( "An unexpected error was caught, stack trace:", e );
         } finally {
             JAXBUtils.fixThreadLocalLeaks();
             CONTEXT.remove();
