@@ -204,8 +204,12 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
         ResourceManagerMetadata<OWS<?>> md = getMetadata();
         if ( md != null ) {
             for ( ResourceProvider p : md.getResourceProviders() ) {
-                ( (OWSProvider<?>) p ).init( workspace );
-                nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<OWS<?>>) p );
+                try {
+                    ( (OWSProvider<?>) p ).init( workspace );
+                    nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<OWS<?>>) p );
+                } catch ( Throwable t ) {
+                    LOG.error( "Initializing of service provider " + p.getClass() + " failed.", t );
+                }
             }
 
             dir = new File( workspace.getLocation(), md.getPath() );
