@@ -36,15 +36,22 @@
 
 package org.deegree.cs.transformations;
 
+import java.util.Collections;
+
 import javax.vecmath.Point3d;
+
+import junit.framework.Assert;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSManager;
 import org.junit.Test;
 
 /**
@@ -551,5 +558,19 @@ public class TransformationAccuracyTest extends TransformationAccuracy implement
 
         // do the testing
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_M );
+    }
+
+    @Test
+    public void testSwitchXYEPSG7423()
+                            throws IllegalArgumentException, TransformationException {
+        ICRS sourceCRS = CRSManager.getCRSRef( "urn:ogc:def:crs:EPSG::7423_XY" );
+        ICRS targetCRS = CRSManager.getCRSRef( "urn:ogc:def:crs:EPSG::7423" );
+
+        Point3d sourcePoint = new Point3d( 9.822340, 52.404600, 50.00 );
+        CoordinateTransformer transformer = new CoordinateTransformer( targetCRS );
+        Point3d targetPoint = transformer.transform( sourceCRS, Collections.singletonList( sourcePoint ) ).get( 0 );
+        Assert.assertEquals( sourcePoint.y, targetPoint.x, 0.00001);
+        Assert.assertEquals( sourcePoint.x, targetPoint.y, 0.00001);
+//        Assert.assertEquals( sourcePoint.z, targetPoint.z, 0.00001);
     }
 }
