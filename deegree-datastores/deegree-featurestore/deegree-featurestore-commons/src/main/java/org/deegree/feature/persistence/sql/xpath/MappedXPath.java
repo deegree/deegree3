@@ -81,9 +81,9 @@ public class MappedXPath {
 
     private final TableAliasManager aliasManager;
 
-    private String currentTable;
-
     private final List<Join> joins = new ArrayList<Join>();
+    
+    private String currentTableAlias;
 
     private PropertyNameMapping propMapping;
 
@@ -123,7 +123,7 @@ public class MappedXPath {
             steps.subList( 1, steps.size() );
         }
 
-        this.currentTable = aliasManager.getRootTableAlias();
+        this.currentTableAlias = aliasManager.getRootTableAlias();
         map( ftMapping.getMappings(), steps );
     }
 
@@ -179,7 +179,7 @@ public class MappedXPath {
             throw new UnmappableException( "Mappings to non-DBField primitives is currently not supported." );
         }
         DBField dbField = (DBField) me;
-        DBField valueField = new DBField( currentTable, dbField.getColumn() );
+        DBField valueField = new DBField( currentTableAlias, dbField.getColumn() );
         int sqlType = -1;
         PrimitiveType pt = primMapping.getType();
         propMapping = new PrimitivePropertyNameMapping( valueField, sqlType, joins, pt, false );
@@ -194,150 +194,17 @@ public class MappedXPath {
             throw new UnmappableException( "Mappings to non-DBField geometries is currently not supported." );
         }
         DBField dbField = (DBField) me;
-        DBField valueField = new DBField( currentTable, dbField.getColumn() );
+        DBField valueField = new DBField( currentTableAlias, dbField.getColumn() );
         int sqlType = -1;
         propMapping = new GeometryPropertyNameMapping( valueField, sqlType, joins, geomMapping.getCRS(),
                                                        geomMapping.getSrid() );
     }
 
-    private void followJoins( List<TableJoin> joinedTable ) {
-    }
-
-    // private void map( FeatureTypeMapping currentFt, List<MappableNameStep> steps )
-    // throws UnmappableException {
-    //
-    // FeatureType ft = schema.getFeatureType( currentFt.getFeatureType() );
-    // PropertyType pt = null;
-    //
-    // boolean propStep = true;
-    //
-    // // process all but the last step
-    // FeatureTypeMapping ftMapping = rootFt;
-    // for ( int i = startIdx; i < steps.size() - 1; i++ ) {
-    // if ( propStep ) {
-    // QName propName = steps.get( i );
-    // pt = ft.getPropertyDeclaration( propName );
-    // if ( pt == null ) {
-    // String msg = "Error in property name, step " + ( i + 1 ) + ": feature type '" + ft.getName()
-    // + "' does not define a property with name '" + propName + "'.";
-    // throw new UnmappableException( msg );
-    // }
-    // propStep = false;
-    // } else {
-    // if ( !( pt instanceof FeaturePropertyType ) ) {
-    // String msg = "Error in property name, step " + ( i + 1 ) + ": property '" + pt.getName()
-    // + "' is not a feature property type, but the path does not stop here.";
-    // throw new UnmappableException( msg );
-    // }
-    // FeaturePropertyType fpt = (FeaturePropertyType) pt;
-    // QName ftName = steps.get( i );
-    // ft = schema.getFeatureType( ftName );
-    // if ( ft == null ) {
-    // String msg = "Error in property name, step " + ( i + 1 ) + ": '" + ftName
-    // + "' is not a known feature type.";
-    // throw new UnmappableException( msg );
-    // }
-    // if ( fpt.getValueFt() != null && !schema.isSubType( fpt.getValueFt(), ft ) ) {
-    // String msg = "Error in property name, step " + ( i + 1 ) + ": '" + ftName
-    // + "' is not possible substitution for the value feature type (='"
-    // + fpt.getValueFt().getName() + "') of property '" + pt.getName() + "'.";
-    // throw new UnmappableException( msg );
-    // }
-    //
-    // FeatureTypeMapping valueFtMapping = schema.getFtMapping( fpt.getValueFt().getName() );
-    // if ( valueFtMapping == null ) {
-    // String msg = "Feature type '" + ft.getName() + "' is not mapped.";
-    // throw new UnmappableException( msg );
-    // }
-    //
-    // Mapping propMapping = ftMapping.getMapping( pt.getName() );
-    // if ( propMapping == null ) {
-    // String msg = "Property '" + pt.getName() + "' is not mapped.";
-    // throw new UnmappableException( msg );
-    // }
-    // MappingExpression mapping = null;
-    // if ( propMapping instanceof PrimitiveMapping ) {
-    // mapping = ( (PrimitiveMapping) propMapping ).getMapping();
-    // } else if ( propMapping instanceof GeometryMapping ) {
-    // mapping = ( (GeometryMapping) propMapping ).getMapping();
-    // } else {
-    // String msg = "Unhandled mapping type '" + propMapping.getClass() + "'.";
-    // throw new UnmappableException( msg );
-    // }
-    //
-    // // TODO
-    // addJoins( ftMapping, mapping, valueFtMapping );
-    //
-    // ftMapping = valueFtMapping;
-    // propStep = true;
-    // }
-    // }
-    //
-    // // last step
-    // if ( !propStep ) {
-    // String msg = "Error in property name, it does not end with a property step.";
-    // throw new UnmappableException( msg );
-    // }
-    // QName propName = steps.get( steps.size() - 1 );
-    // pt = ft.getPropertyDeclaration( propName );
-    // if ( pt == null ) {
-    // String msg = "Error in property name, step " + ( steps.size() ) + ": feature type '" + ft.getName()
-    // + "' does not define a property with name '" + propName + "'.";
-    // throw new UnmappableException( msg );
-    // }
-    // ftMapping = schema.getFtMapping( ft.getName() );
-    // if ( ftMapping == null ) {
-    // String msg = "Feature type '" + ft.getName() + "' is not mapped.";
-    // throw new UnmappableException( msg );
-    // }
-    // Mapping mapping = ftMapping.getMapping( propName );
-    // if ( mapping == null ) {
-    // String msg = "Property '" + propName + "' is not mapped.";
-    // throw new UnmappableException( msg );
-    // }
-    //
-    // if ( mapping.getJoinedTable() != null ) {
-    // // TODO multi column capability
-    // TableJoin jc = mapping.getJoinedTable().get( 0 );
-    // DBField from = new DBField( getCurrentTable().getTable(), jc.getFromColumns().get( 0 ) );
-    // DBField to = new DBField( jc.getToTable().toString(), jc.getToColumns().get( 0 ) );
-    // joins.add( new Join( from, to, null, -1 ) );
-    // }
-    //
-    // if ( mapping instanceof GeometryMapping ) {
-    // isSpatial = true;
-    // crs = ( (GeometryMapping) mapping ).getCRS();
-    // srid = ( (GeometryMapping) mapping ).getSrid();
-    // }
-    //
-    // MappingExpression propMapping = null;
-    // if ( mapping instanceof PrimitiveMapping ) {
-    // propMapping = ( (PrimitiveMapping) mapping ).getMapping();
-    // } else if ( mapping instanceof GeometryMapping ) {
-    // propMapping = ( (GeometryMapping) mapping ).getMapping();
-    // } else {
-    // String msg = "Unhandled mapping type '" + mapping.getClass() + "'.";
-    // throw new UnmappableException( msg );
-    // }
-    // if ( propMapping instanceof DBField ) {
-    // QTableName table = getCurrentTable();
-    // valueField = new DBField( table.toString(), ( (DBField) propMapping ).getColumn() );
-    // } else {
-    // throw new UnmappableException( "Unhandled mapping expression: " + propMapping.getClass() );
-    // }
-    // }
-
-    private void addJoins( FeatureTypeMapping source, MappingExpression prop, FeatureTypeMapping target )
-                            throws UnmappableException {
-
-        if ( prop instanceof DBField ) {
-            DBField dbField = (DBField) prop;
-            DBField from = new DBField( source.getFtTable().toString(), dbField.getColumn() );
-            // TODO
-            DBField to = new DBField( target.getFtTable().toString(), target.getFidMapping().getColumn() );
-            joins.add( new Join( from, to, null, -1 ) );
-        } else {
-            throw new UnmappableException( "Unhandled mapping expression: " + prop.getClass() );
-        }
+    private void followJoins( List<TableJoin> joinedTables ) {
+//        if ( joins != null ) {
+//            for ( TableJoin join : joinedTables ) {
+//
+//            }
+//        }
     }
 }

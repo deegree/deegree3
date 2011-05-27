@@ -58,7 +58,7 @@ public class GeometryStorageParams {
      * Creates a new {@link GeometryStorageParams} instance.
      * 
      * @param crs
-     *            coordinate reference system used for stored geometries, must not be <code>null</code>
+     *            coordinate reference system used for stored geometries or <code>null</code> (unspecified)
      * @param srid
      *            spatial reference identifier (database code), must not be <code>null</code>
      * @param dim
@@ -73,7 +73,7 @@ public class GeometryStorageParams {
     /**
      * Returns the coordinate reference system for stored geometries.
      * 
-     * @return coordinate reference system, never <code>null</code>
+     * @return coordinate reference system, can be <code>null</code> (unspecified)
      */
     public ICRS getCrs() {
         return crs;

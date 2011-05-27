@@ -360,6 +360,7 @@
     </annotation>
     <sequence>
       <element ref="sqlfs:Join" minOccurs="0" />
+      <element ref="sqlfs:CustomConverter" minOccurs="0" />
     </sequence>
     <attribute name="path" type="string" use="required">
       <annotation>
@@ -463,6 +464,32 @@
         <annotation>
           <documentation>Set to true, if orderColumns references a single column that contains natural numbers
             [1,2,3,...].</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="CustomConverter">
+    <complexType>
+      <annotation>
+        <documentation>Plugs-in a specialized DB-to-ObjectModel converter implementation</documentation>
+        <appinfo>
+          <jaxb:class name="CustomConverterJAXB" />
+        </appinfo>
+      </annotation>
+      <sequence>
+        <element name="Param" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="name" type="string" use="required" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>Qualified name of the Java class</documentation>
         </annotation>
       </attribute>
     </complexType>

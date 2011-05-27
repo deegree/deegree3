@@ -35,20 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.converter;
 
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
-
-import javax.xml.namespace.QName;
-
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
-import org.deegree.feature.persistence.sql.GeometryStorageParams;
-import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.filter.sql.DBField;
 
@@ -62,26 +52,10 @@ import org.deegree.filter.sql.DBField;
  */
 public class ConverterFactory {
 
-    private static final QName GML32_TIME_UNION = new QName( GML3_2_NS, "TimePositionUnion" );
-
-    private static final QName GML32_DOUBLE_LIST = new QName( GML3_2_NS, "doubleList" );
-
     public static ParticleConverter<?> buildConverter( PrimitiveMapping pm, AbstractSQLFeatureStore fs ) {
+
         PrimitiveType pt = pm.getType();
         String column = ( (DBField) pm.getMapping() ).getColumn();
-        XSSimpleTypeDefinition xsTypeDef = pt.getXSType();
-        if ( xsTypeDef != null && !( xsTypeDef.getAnonymous() ) ) {
-            QName typeName = new QName( xsTypeDef.getNamespace(), xsTypeDef.getName() );
-            if ( GML32_TIME_UNION.equals( typeName ) ) {
-                return new TimePositionUnionConverter( pt, column );
-            } else if ( GML32_DOUBLE_LIST.equals( typeName ) && column.equals( "origlocat" ) ) {
-                GeometryStorageParams geometryStorageParams = new GeometryStorageParams( null, null, DIM_3 );
-                GeometryMapping mapping = new GeometryMapping( null, pm.isVoidable(), pm.getMapping(), GEOMETRY,
-                                                               geometryStorageParams, null );
-                ParticleConverter<?> geomConverter = fs.getGeometryConverter( mapping );
-                return new DoubleListConverter( pt, (ParticleConverter<TypedObjectNode>) geomConverter );
-            }
-        }
         return new DefaultPrimitiveConverter( pt, column );
     }
 }

@@ -35,14 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.converter;
 
-import static org.deegree.commons.tom.primitive.BaseType.DATE;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.feature.persistence.sql.rules.Mapping;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
+/**
+ * Implementations are {@link ParticleConverter} that can be plugged into the maaping process via configuration.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public interface CustomParticleConverter<T extends TypedObjectNode> extends ParticleConverter<T> {
 
-public class TimePositionUnionConverter extends DefaultPrimitiveConverter {
-
-    public TimePositionUnionConverter( PrimitiveType pt, String column ) {
-        super( new PrimitiveType( DATE ), column );
-    }
+    /**
+     * Called during the init of the {@link SQLFeatureStore} that this converter is attached to.
+     * 
+     * @param mapping
+     *            mapping that this converter is attached to, never <code>null</code>
+     * @param fs
+     *            feature store, never <code>null</code>
+     */
+    public void init( Mapping mapping, SQLFeatureStore fs );
 }

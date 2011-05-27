@@ -52,6 +52,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -66,6 +67,7 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
+import org.deegree.feature.persistence.sql.converter.CustomParticleConverter;
 import org.deegree.feature.persistence.sql.expressions.StringConst;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
@@ -73,6 +75,7 @@ import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.jaxb.AbstractParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.ComplexParticleJAXB;
+import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB.ColumnJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FeatureParticleJAXB;
@@ -302,7 +305,11 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         if ( me instanceof DBField ) {
             List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
             LOG.debug( "Targeted primitive type: " + pt );
-            return new PrimitiveMapping( path, pt.second, me, pt.first, joinedTable, null );
+            CustomParticleConverter<TypedObjectNode> converter = null;
+            if ( config.getCustomConverter() != null ) {
+                converter = buildConverter( config.getCustomConverter() );
+            }
+            return new PrimitiveMapping( path, pt.second, me, pt.first, joinedTable, converter );
         } else if ( me instanceof StringConst ) {
             String s = me.toString();
             s = s.substring( 1, s.length() - 1 );
@@ -355,5 +362,17 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new CompoundMapping( path, elDecl.second, particles, joinedTable, elDecl.first );
+    }
+
+    private CustomParticleConverter<TypedObjectNode> buildConverter( CustomConverterJAXB config ) {
+        String className = config.getClazz();
+        LOG.info( "Instantiating configured custom particle converter (class=" + className + ")" );
+        try {
+            // TODO use workspace classloader
+            return (CustomParticleConverter<TypedObjectNode>) Class.forName( className ).newInstance();
+        } catch ( Throwable t ) {
+            String msg = "Unable to instantiate custom particle converter (class=" + className + "): " + t.getMessage();
+            throw new IllegalArgumentException( msg );
+        }
     }
 }

@@ -87,6 +87,7 @@ import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.converter.ConverterFactory;
+import org.deegree.feature.persistence.sql.converter.CustomParticleConverter;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
@@ -183,10 +184,13 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             ParticleConverter<?> converter = pm.getConverter();
             if ( converter == null ) {
                 converter = ConverterFactory.buildConverter( pm, this );
+            } else {
+                ( (CustomParticleConverter<?>) converter ).init( pm, this );
             }
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof GeometryMapping ) {
-            ParticleConverter<?> converter = getGeometryConverter( (GeometryMapping) particleMapping );
+            GeometryMapping geomMapping = (GeometryMapping) particleMapping;
+            ParticleConverter<?> converter = getGeometryConverter( geomMapping );
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) particleMapping;
@@ -227,15 +231,6 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     public ParticleConverter<?> getConverter( Mapping mapping ) {
         return particeMappingToConverter.get( mapping );
     }
-
-    /**
-     * Implementations must return a {@link ParticleConverter} for converting {@link Geometry} instances.
-     * 
-     * @param mapping
-     *            geometry mapping, never <code>null</code>
-     * @return particle converer, must not be <code>null</code>
-     */
-    public abstract ParticleConverter<Geometry> getGeometryConverter( GeometryMapping mapping );
 
     @Override
     public Envelope getEnvelope( QName ftName )

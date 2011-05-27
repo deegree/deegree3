@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
+import org.deegree.geometry.Geometry;
 
 /**
  * {@link FeatureStore} that is backed by a spatial SQL database and provides methods for setting up the required
@@ -61,4 +64,13 @@ public interface SQLFeatureStore extends FeatureStore {
      * @return the SQL statements for creating the database tables, never <code>null</code>
      */
     public String[] getDDL();
+
+    /**
+     * Implementations must return a {@link ParticleConverter} for converting {@link Geometry} instances.
+     * 
+     * @param mapping
+     *            geometry mapping, never <code>null</code>
+     * @return particle converter, must not be <code>null</code>
+     */
+    public ParticleConverter<Geometry> getGeometryConverter( GeometryMapping mapping );
 }

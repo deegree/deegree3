@@ -702,7 +702,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                     sql.append( column );
                     sql.append( "=" );
-                    ParticleConverter<PrimitiveValue> converter = ( (PrimitiveMapping) mapping ).getConverter();
+                    ParticleConverter<TypedObjectNode> converter = ( (PrimitiveMapping) mapping ).getConverter();
                     sql.append( converter.getSetSnippet() );
                 } else if ( mapping instanceof GeometryMapping ) {
                     MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
@@ -753,7 +753,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                             continue;
                         }
                         PrimitiveValue value = (PrimitiveValue) replacementProp.getValue();
-                        ParticleConverter<PrimitiveValue> converter = ( (PrimitiveMapping) mapping ).getConverter();
+                        ParticleConverter<TypedObjectNode> converter = ( (PrimitiveMapping) mapping ).getConverter();
                         converter.setParticle( stmt, value, i++ );
                     } else if ( mapping instanceof GeometryMapping ) {
                         MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
