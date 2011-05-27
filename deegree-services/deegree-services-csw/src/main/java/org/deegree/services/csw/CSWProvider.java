@@ -50,6 +50,7 @@ import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.csw.profile.CommonCSWProfile;
 import org.deegree.services.csw.profile.ServiceProfile;
 import org.deegree.services.csw.profile.ServiceProfileManager;
 import org.slf4j.Logger;
@@ -62,10 +63,13 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 public class CSWProvider implements OWSProvider<CSWRequestType> {
-    
+
     private static final Logger LOG = getLogger( CSWProvider.class );
 
-    private ServiceProfile profile;
+    // pre-initialized to avoid NPE in WebServicesConfiguration if no CSW is configured
+    private ServiceProfile profile = new CommonCSWProfile();
+
+    private DeegreeWorkspace ws;
 
     @Override
     public String getConfigNamespace() {
@@ -84,19 +88,7 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
 
     @Override
     public OWS<CSWRequestType> create( URL configURL ) {
-        return new CSWController( configURL, getImplementationMetadata() );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { MetadataStoreManager.class };
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        LOG.info( "Init CSW Provider" );
-        MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
+        MetadataStoreManager mgr = ws.getSubsystemManager( MetadataStoreManager.class );
         if ( mgr == null )
             throw new IllegalArgumentException( "Could not find a MetadataStoreManager!" );
         List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
@@ -113,5 +105,18 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
                                                 + availableStores.size() + " stores!" );
         MetadataStore<?> store = availableStores.get( 0 );
         profile = ServiceProfileManager.createProfile( store );
+        return new CSWController( configURL, getImplementationMetadata() );
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { MetadataStoreManager.class };
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        LOG.info( "Init CSW Provider" );
+        this.ws = workspace;
     }
 }
