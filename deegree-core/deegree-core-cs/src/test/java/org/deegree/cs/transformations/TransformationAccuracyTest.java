@@ -572,5 +572,6 @@ public class TransformationAccuracyTest extends TransformationAccuracy implement
         Assert.assertEquals( sourcePoint.y, targetPoint.x, 0.00001);
         Assert.assertEquals( sourcePoint.x, targetPoint.y, 0.00001);
 //        Assert.assertEquals( sourcePoint.z, targetPoint.z, 0.00001);
+//        System.out.println (targetPoint);
     }
 }
