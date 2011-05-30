@@ -36,9 +36,7 @@
 package org.deegree.filter.sql;
 
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.geometry.Geometry;
 
 /**
  * Implementations provide {@link PropertyName} to table/column mappings for {@link AbstractWhereBuilder}

@@ -37,13 +37,11 @@ package org.deegree.feature.persistence.sql;
 
 import org.deegree.feature.persistence.sql.xpath.MappedXPath;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
-import org.deegree.geometry.Geometry;
 
 /**
  * {@link PropertyNameMapper} for {@link SQLFeatureStore} implementations.
@@ -68,17 +66,5 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
     public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
         return new MappedXPath( schema, ftMapping, propName, aliasManager ).getPropertyNameMapping();
-    }
-
-    @Override
-    public Object getSQLValue( Literal<?> literal, PropertyName propName )
-                            throws FilterEvaluationException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public byte[] getSQLValue( Geometry literal, PropertyName propName )
-                            throws FilterEvaluationException {
-        throw new UnsupportedOperationException();
     }
 }

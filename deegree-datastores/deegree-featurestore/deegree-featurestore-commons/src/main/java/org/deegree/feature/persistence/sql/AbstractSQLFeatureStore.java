@@ -217,6 +217,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             String msg = "Unable to instantiate custom particle converter (class=" + className + "). "
                          + " Maybe directory 'modules' in your workspace is missing the JAR with the "
                          + " referenced converter class?! " + t.getMessage();
+            LOG.error( msg, t );            
             throw new IllegalArgumentException( msg );
         }
     }
