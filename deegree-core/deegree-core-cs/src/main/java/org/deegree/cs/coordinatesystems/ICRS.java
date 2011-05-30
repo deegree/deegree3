@@ -151,4 +151,12 @@ public interface ICRS extends CRSResource {
      */
     public String getAlias();
 
+    /**
+     * TODO: this methode should become redundant with the reworked identifer concept!
+     * 
+     * @param other
+     * @return true, if this and other are from the same type differes only in a flipped axis order.
+     */
+    boolean equalsWithFlippedAxis( Object other );
+
 }

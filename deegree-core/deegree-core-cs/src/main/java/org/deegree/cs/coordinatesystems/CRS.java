@@ -318,6 +318,35 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
     }
 
     /**
+     * Checks if the given axis match this.axisOrder[] in length, but flipped x/y ([0]/[1]) order.
+     * 
+     * @param otherAxis
+     *            the axis to check
+     * @return true if the given axis match this.axisOrder[] false otherwise.
+     */
+    private boolean matchAxisWithFlippedOrder( IAxis[] otherAxis ) {
+        IAxis[] allAxis = getAxis();
+        if ( otherAxis.length != allAxis.length || otherAxis.length < 2 ) {
+            return false;
+        }
+        IAxis aX = allAxis[0];
+        IAxis bY = otherAxis[0];
+        IAxis aY = allAxis[1];
+        IAxis bX = otherAxis[1];
+        if ( !aX.equals( bX ) && !aY.equals( bY ) ) {
+            return false;
+        }
+        for ( int i = 2; i < allAxis.length; ++i ) {
+            IAxis a = allAxis[i];
+            IAxis b = otherAxis[i];
+            if ( !a.equals( b ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Checks if the given axis match this.axisOrder[] in length and order.
      * 
      * @param otherAxis
@@ -348,6 +377,18 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
             final ICRS that = (CRS) other;
             return that.getType() == this.getType() && that.getDimension() == this.getDimension()
                    && matchAxis( that.getAxis() ) && super.equals( that ) && that.getDatum().equals( this.getDatum() );
+        }
+        return false;
+    }
+
+    public boolean equalsWithFlippedAxis( Object other ) {
+        if ( other instanceof CRSRef ) {
+            other = ( (CRSRef) other ).getReferencedObject();
+        }
+        if ( other != null && other instanceof ICRS ) {
+            final ICRS that = (CRS) other;
+            return that.getType() == this.getType() && that.getDimension() == this.getDimension()
+                   && matchAxisWithFlippedOrder( that.getAxis() ) && that.getDatum().equals( this.getDatum() );
         }
         return false;
     }

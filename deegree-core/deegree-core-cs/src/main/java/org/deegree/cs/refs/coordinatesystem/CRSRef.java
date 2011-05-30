@@ -49,8 +49,8 @@ import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IDatum;
 import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.components.IUnit;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.CRS.CRSType;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.CRSResourceRef;
 import org.deegree.cs.transformations.Transformation;
@@ -241,6 +241,11 @@ public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
             return ( (CRSRef) referencedObject ).getReferencedObject();
         }
         return referencedObject;
+    }
+
+    @Override
+    public boolean equalsWithFlippedAxis( Object other ) {
+        return getReferencedObject().equalsWithFlippedAxis( other );
     }
 
 }

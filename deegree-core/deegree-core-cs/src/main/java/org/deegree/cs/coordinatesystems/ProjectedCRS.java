@@ -246,4 +246,18 @@ public class ProjectedCRS extends CRS implements IProjectedCRS {
 
         return (int) ( code >>> 32 ) ^ (int) code;
     }
+
+    @Override
+    public boolean equalsWithFlippedAxis( Object other ) {
+        if ( other != null && other instanceof ICRS && this.getType().equals( ( (ICRS) other ).getType() ) ) {
+            final ProjectedCRS that;
+            if ( other instanceof CRSRef ) {
+                that = (ProjectedCRS) ( (CRSRef) other ).getReferencedObject();
+            } else {
+                that = (ProjectedCRS) other;
+            }
+            return super.equalsWithFlippedAxis( that ) && this.projection.equals( that.projection );
+        }
+        return false;
+    }
 }

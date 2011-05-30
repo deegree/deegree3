@@ -569,9 +569,8 @@ public class TransformationAccuracyTest extends TransformationAccuracy implement
         Point3d sourcePoint = new Point3d( 9.822340, 52.404600, 50.00 );
         CoordinateTransformer transformer = new CoordinateTransformer( targetCRS );
         Point3d targetPoint = transformer.transform( sourceCRS, Collections.singletonList( sourcePoint ) ).get( 0 );
-        Assert.assertEquals( sourcePoint.y, targetPoint.x, 0.00001);
-        Assert.assertEquals( sourcePoint.x, targetPoint.y, 0.00001);
-//        Assert.assertEquals( sourcePoint.z, targetPoint.z, 0.00001);
-//        System.out.println (targetPoint);
+        Assert.assertEquals( sourcePoint.y, targetPoint.x, 0 );
+        Assert.assertEquals( sourcePoint.x, targetPoint.y, 0 );
+        Assert.assertEquals( sourcePoint.z, targetPoint.z, 0 );
     }
 }

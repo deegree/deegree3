@@ -140,4 +140,14 @@ public class CompoundCRS extends CRS implements ICompoundCRS {
         return defaultHeight;
     }
 
+    @Override
+    public boolean equalsWithFlippedAxis( Object other ) {
+        boolean result = super.equalsWithFlippedAxis( other );
+        if ( !result )
+            return false;
+        CompoundCRS c = (CompoundCRS) other;
+        return getUnderlyingCRS().equalsWithFlippedAxis( c.getUnderlyingCRS() ) && getHeightAxis().equals( c.getHeightAxis() )
+               && getHeightUnits().equals( c.getHeightUnits() );
+    }
+
 }

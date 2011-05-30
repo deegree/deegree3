@@ -259,6 +259,17 @@ public class TransformationFactory {
         // check if the list of required transformations contains a 'direct'
         // transformation.
         Transformation result = getRequiredTransformation( toBeUsed, sourceCRS, targetCRS );
+
+        if ( result == null ) {
+            // create AxisFlipTransformation if only the axis order must be flipped
+            if ( sourceCRS.equalsWithFlippedAxis( targetCRS ) ) {
+                return new AxisFlipTransformation( sourceCRS, targetCRS,
+                                                   new CRSIdentifiable( new CRSCodeType( "tmp_" + sourceCRS.getCode()
+                                                                                         + "_flippedTo_"
+                                                                                         + targetCRS.getCode() ) ) );
+            }
+        }
+
         if ( result == null ) {
             // check if a 'direct' transformation could be loaded from the
             // configuration;
