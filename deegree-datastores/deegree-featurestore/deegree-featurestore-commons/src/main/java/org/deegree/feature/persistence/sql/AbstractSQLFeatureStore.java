@@ -138,7 +138,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
     private String jdbcConnId;
 
-    private final Map<Mapping, ParticleConverter<?>> particeMappingToConverter = new HashMap<Mapping, ParticleConverter<?>>();
+    protected final Map<Mapping, ParticleConverter<?>> particeMappingToConverter = new HashMap<Mapping, ParticleConverter<?>>();
 
     // TODO make this configurable
     private final FeatureStoreCache cache = new SimpleFeatureStoreCache( 10000 );
