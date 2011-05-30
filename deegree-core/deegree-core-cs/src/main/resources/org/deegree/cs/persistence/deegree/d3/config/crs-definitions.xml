@@ -62958,10 +62958,6 @@
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
                 <crs:Id>epsg:31468</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31468</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::31468</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::31468</crs:Id>
-                <crs:Id>urn:x-ogc-def:crs:epsg:31468</crs:Id>
                 <crs:Name>DHDN / Gauss-Kruger zone 4</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:AreaOfUse>10.5,47.27,13.5,55.06</crs:AreaOfUse>
@@ -62978,12 +62974,31 @@
                 </crs:Axis>
                 <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4314</crs:UsedGeographicCRS>
                 <crs:UsedProjection>epsg:16264</crs:UsedProjection>
+        </crs:ProjectedCRS>        
+        <crs:ProjectedCRS>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31468</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::31468</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::31468</crs:Id>
+                <crs:Id>urn:x-ogc-def:crs:epsg:31468</crs:Id>
+                <crs:Name>DHDN / Gauss-Kruger zone 4</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:AreaOfUse>10.5,47.27,13.5,55.06</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - former West Germany onshore between 10°30'E and 13°30'E - Bayern, Niedersachsen, Schleswig-Holstein.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>                
+                <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4314</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:16264</crs:UsedProjection>
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
                 <crs:Id>epsg:31469</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31469</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::31469</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::31469</crs:Id>
                 <crs:Name>DHDN / Gauss-Kruger zone 5</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:AreaOfUse>13.5,47.27,16.5,55.06</crs:AreaOfUse>
@@ -63001,6 +63016,27 @@
                 <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4314</crs:UsedGeographicCRS>
                 <crs:UsedProjection>epsg:16265</crs:UsedProjection>
         </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31469</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::31469</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::31469</crs:Id>
+                <crs:Name>DHDN / Gauss-Kruger zone 5</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:AreaOfUse>13.5,47.27,16.5,55.06</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - former West Germany onshore east of 13°30'E - Bayern.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>                
+                <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4314</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:16265</crs:UsedProjection>
+        </crs:ProjectedCRS>        
         <crs:ProjectedCRS>
                 <crs:Id>epsg:3147</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3147</crs:Id>
@@ -67492,10 +67528,6 @@
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
                 <crs:Id>epsg:31466</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31466</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::31466</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::31466</crs:Id>
-                <crs:Id>urn:x-ogc-def:crs:epsg:31466</crs:Id>
                 <crs:Name>DHDN / Gauss-Kruger zone 2</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:AreaOfUse>5.87,49.1,7.5,53.75</crs:AreaOfUse>
@@ -67514,11 +67546,29 @@
                 <crs:UsedProjection>epsg:16262</crs:UsedProjection>
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31466</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::31466</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::31466</crs:Id>
+                <crs:Id>urn:x-ogc-def:crs:epsg:31466</crs:Id>
+                <crs:Name>DHDN / Gauss-Kruger zone 2</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:AreaOfUse>5.87,49.1,7.5,53.75</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - west of 7°30'E - Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>                
+                <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4314</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:16262</crs:UsedProjection>
+        </crs:ProjectedCRS>        
+        <crs:ProjectedCRS>
                 <crs:Id>epsg:31467</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31467</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::31467</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::31467</crs:Id>
-                <crs:Id>urn:x-ogc-def:crs:epsg:31467</crs:Id>
                 <crs:Name>DHDN / Gauss-Kruger zone 3</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:AreaOfUse>7.5,47.27,10.5,55.06</crs:AreaOfUse>
@@ -67536,6 +67586,28 @@
                 <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4314</crs:UsedGeographicCRS>
                 <crs:UsedProjection>epsg:16263</crs:UsedProjection>
         </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#31467</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::31467</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::31467</crs:Id>
+                <crs:Id>urn:x-ogc-def:crs:epsg:31467</crs:Id>
+                <crs:Name>DHDN / Gauss-Kruger zone 3</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:AreaOfUse>7.5,47.27,10.5,55.06</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - former West Germany onshore between 7°30'E and 10°30'E - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rhineland-Pfalz, Schleswig-Holstein.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>                
+                <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4314</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:16263</crs:UsedProjection>
+        </crs:ProjectedCRS>     
         <crs:ProjectedCRS>
                 <crs:Id>DE_DHDN_LCC</crs:Id>
                 <crs:Name>DHDN - konforme konische Lambertprojetion</crs:Name>
@@ -68047,7 +68119,6 @@
                 <crs:DefaultHeight>0.0</crs:DefaultHeight>
         </crs:CompoundCRS>
         <crs:CompoundCRS>
-                <crs:Id>epsg:7423</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7423</crs:Id>
                 <crs:Id>urn:ogc:def:crs:epsg:7423</crs:Id>
                 <crs:Id>urn:ogc:def:crs:epsg::7423</crs:Id>
@@ -68069,6 +68140,7 @@
                 <crs:DefaultHeight>0.0</crs:DefaultHeight>
         </crs:CompoundCRS>
         <crs:CompoundCRS>
+                <crs:Id>epsg:7423</crs:Id>        
                 <crs:Id>urn:ogc:def:crs:epsg::7423_XY</crs:Id>
                 <crs:Name>ETRS89 + EVRF2007 height</crs:Name>
                 <crs:Version>2007-08-27</crs:Version>
