@@ -58,8 +58,10 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -90,6 +92,7 @@ import org.deegree.feature.persistence.sql.converter.ConverterFactory;
 import org.deegree.feature.persistence.sql.converter.CustomParticleConverter;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -152,7 +155,10 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
     private DefaultLockManager lockManager;
 
-    protected void init( MappedApplicationSchema schema, String jdbcConnId ) {
+    private DeegreeWorkspace workspace;
+
+    protected void init( MappedApplicationSchema schema, String jdbcConnId, DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
         this.jdbcConnId = jdbcConnId;
@@ -181,11 +187,12 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     protected void initConverter( Mapping particleMapping ) {
         if ( particleMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) particleMapping;
-            ParticleConverter<?> converter = pm.getConverter();
-            if ( converter == null ) {
+            ParticleConverter<?> converter = null;
+            if ( pm.getConverter() == null ) {
                 converter = ConverterFactory.buildConverter( pm, this );
             } else {
-                ( (CustomParticleConverter<?>) converter ).init( pm, this );
+                converter = instantiateConverter( pm.getConverter() );
+                ( (CustomParticleConverter<TypedObjectNode>) converter ).init( particleMapping, this );
             }
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof GeometryMapping ) {
@@ -197,6 +204,20 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             for ( Mapping childMapping : cm.getParticles() ) {
                 initConverter( childMapping );
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private CustomParticleConverter<TypedObjectNode> instantiateConverter( CustomConverterJAXB config ) {
+        String className = config.getClazz();
+        LOG.info( "Instantiating configured custom particle converter (class=" + className + ")" );
+        try {
+            return (CustomParticleConverter<TypedObjectNode>) workspace.getModuleClassLoader().loadClass( className ).newInstance();
+        } catch ( Throwable t ) {
+            String msg = "Unable to instantiate custom particle converter (class=" + className + "). "
+                         + " Maybe directory 'modules' in your workspace is missing the JAR with the "
+                         + " referenced converter class?! " + t.getMessage();
+            throw new IllegalArgumentException( msg );
         }
     }
 

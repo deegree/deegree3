@@ -305,11 +305,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         if ( me instanceof DBField ) {
             List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
             LOG.debug( "Targeted primitive type: " + pt );
-            CustomParticleConverter<TypedObjectNode> converter = null;
-            if ( config.getCustomConverter() != null ) {
-                converter = buildConverter( config.getCustomConverter() );
-            }
-            return new PrimitiveMapping( path, pt.second, me, pt.first, joinedTable, converter );
+            return new PrimitiveMapping( path, pt.second, me, pt.first, joinedTable, config.getCustomConverter() );
         } else if ( me instanceof StringConst ) {
             String s = me.toString();
             s = s.substring( 1, s.length() - 1 );
@@ -364,15 +360,5 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         return new CompoundMapping( path, elDecl.second, particles, joinedTable, elDecl.first );
     }
 
-    private CustomParticleConverter<TypedObjectNode> buildConverter( CustomConverterJAXB config ) {
-        String className = config.getClazz();
-        LOG.info( "Instantiating configured custom particle converter (class=" + className + ")" );
-        try {
-            // TODO use workspace classloader
-            return (CustomParticleConverter<TypedObjectNode>) Class.forName( className ).newInstance();
-        } catch ( Throwable t ) {
-            String msg = "Unable to instantiate custom particle converter (class=" + className + "): " + t.getMessage();
-            throw new IllegalArgumentException( msg );
-        }
-    }
+
 }

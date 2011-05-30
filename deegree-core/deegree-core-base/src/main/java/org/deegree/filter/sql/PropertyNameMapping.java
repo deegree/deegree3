@@ -38,11 +38,14 @@ package org.deegree.filter.sql;
 import java.util.Collections;
 import java.util.List;
 
+import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.filter.expression.PropertyName;
 
 /**
- * A {@link PropertyName} that's mapped to a {@link DBField} (can be connected via joins).
+ * A {@link PropertyName} that's mapped to database column(s).
  * 
+ * @see AbstractWhereBuilder
+ *  
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
@@ -55,6 +58,9 @@ public abstract class PropertyNameMapping {
     private final DBField valueField;
 
     private final List<Join> joins;
+
+    // TODO
+    private final ParticleConverter<?> converter = null;
 
     protected PropertyNameMapping( DBField valueField, int sqlType, List<Join> joins ) {
         this.valueField = valueField;
@@ -72,6 +78,10 @@ public abstract class PropertyNameMapping {
 
     public List<Join> getJoins() {
         return joins;
+    }
+
+    public ParticleConverter<?> getConverter() {
+        return converter;
     }
 
     public int getSQLType() {

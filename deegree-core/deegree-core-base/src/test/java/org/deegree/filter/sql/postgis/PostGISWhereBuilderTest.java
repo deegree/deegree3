@@ -184,17 +184,5 @@ public class PostGISWhereBuilderTest {
             }
             throw new UnmappableException( "Property '" + propName + "' is not mappable." );
         }
-
-        @Override
-        public Object getSQLValue( Literal<?> literal, PropertyName propName )
-                                throws FilterEvaluationException {
-            return null;
-        }
-
-        @Override
-        public byte[] getSQLValue( Geometry literal, PropertyName propName )
-                                throws FilterEvaluationException {
-            return null;
-        }
     }
 }

@@ -74,7 +74,6 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.AbstractWhereBuilder;
@@ -92,13 +91,10 @@ import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.gml.GMLObject;
 import org.postgis.PGboxbase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link AbstractSQLFeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
@@ -153,7 +149,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             throw new ResourceInitException( t.getMessage(), t );
         }
         String jdbcConnId = config.getJDBCConnId();
-        init( schema, jdbcConnId );
+        init( schema, jdbcConnId, workspace );
 
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
 
@@ -447,27 +443,6 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     protected AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
                             throws FilterEvaluationException, UnmappableException {
         PropertyNameMapper pgMapping = new PropertyNameMapper() {
-            @Override
-            public byte[] getSQLValue( Geometry literal, PropertyName propName )
-                                    throws FilterEvaluationException {
-
-                Envelope env = (Envelope) getCompatibleGeometry( literal, blobMapping.getCRS() );
-                org.deegree.geometry.primitive.Polygon polygon = GeometryUtils.envelopeToPolygon( env );
-                byte[] wkb = null;
-                try {
-                    wkb = WKBWriter.write( polygon );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-                return wkb;
-            }
-
-            @Override
-            public Object getSQLValue( Literal<?> literal, PropertyName propName )
-                                    throws FilterEvaluationException {
-                throw new UnsupportedOperationException();
-            }
-
             @Override
             public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {

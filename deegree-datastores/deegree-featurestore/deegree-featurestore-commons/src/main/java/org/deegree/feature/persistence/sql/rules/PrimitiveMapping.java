@@ -37,11 +37,10 @@ package org.deegree.feature.persistence.sql.rules;
 
 import java.util.List;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.MappingExpression;
 
@@ -59,7 +58,7 @@ public class PrimitiveMapping extends Mapping {
 
     private final MappingExpression mapping;
 
-    private final ParticleConverter<TypedObjectNode> converter;
+    private final CustomConverterJAXB converter;
 
     /**
      * 
@@ -74,7 +73,7 @@ public class PrimitiveMapping extends Mapping {
      *            table joins, can be <code>null</code> (no joins involved)
      */
     public PrimitiveMapping( PropertyName path, boolean voidable, MappingExpression mapping, PrimitiveType pt,
-                             List<TableJoin> tableChange, ParticleConverter<TypedObjectNode> converter ) {
+                             List<TableJoin> tableChange, CustomConverterJAXB converter ) {
         super( path, voidable, tableChange );
         this.pt = pt;
         this.mapping = mapping;
@@ -94,7 +93,7 @@ public class PrimitiveMapping extends Mapping {
         return mapping;
     }
 
-    public ParticleConverter<TypedObjectNode> getConverter() {
+    public CustomConverterJAXB getConverter() {
         return converter;
     }
 }

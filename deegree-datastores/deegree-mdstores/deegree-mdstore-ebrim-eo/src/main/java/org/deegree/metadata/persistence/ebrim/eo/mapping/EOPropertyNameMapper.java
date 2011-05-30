@@ -60,7 +60,6 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.GeometryPropertyNameMapping;
@@ -70,7 +69,6 @@ import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
-import org.deegree.geometry.Geometry;
 import org.deegree.metadata.ebrim.AliasedRIMType;
 import org.deegree.metadata.ebrim.RIMType;
 import org.deegree.metadata.persistence.ebrim.eo.EbrimEOMDStore;
@@ -86,7 +84,6 @@ import org.jaxen.expr.PathExpr;
 import org.jaxen.expr.Predicate;
 import org.jaxen.expr.VariableReferenceExpr;
 import org.slf4j.Logger;
-
 
 /**
  * {@link PropertyNameMapper} for the {@link EbrimEOMDStore}.
@@ -567,19 +564,5 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
         }
         // TODO namespace awareness
         return elName.getLocalPart().equals( step.getLocalName() );
-    }
-
-    @Override
-    public Object getSQLValue( Literal<?> literal, PropertyName propName )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public byte[] getSQLValue( Geometry literal, PropertyName propName )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

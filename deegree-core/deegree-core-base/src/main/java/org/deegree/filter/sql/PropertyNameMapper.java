@@ -66,33 +66,4 @@ public interface PropertyNameMapper {
      */
     public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException;
-
-    /**
-     * Returns the value object for the given {@link Literal}, adapted to the SQL type that is imposed by the relational
-     * mapping of the specified {@link PropertyName}.
-     * 
-     * @param literal
-     *            literal to be converted, never <code>null</code>
-     * @param propName
-     *            property name, never <code>null</code>
-     * @return value object for the column in the database, may be <code>null</code>
-     * @throws FilterEvaluationException
-     */
-    public Object getSQLValue( Literal<?> literal, PropertyName propName )
-                            throws FilterEvaluationException;
-
-    /**
-     * Returns the WKB for the given {@link Geometry} in the CRS that is imposed by the relational mapping of the
-     * specified {@link PropertyName}.
-     * 
-     * @param literal
-     *            literal to be converted, never <code>null</code>
-     * @param propName
-     *            property name, can be <code>null</code> (indicates that the default geometry property of the root
-     *            object is requested)
-     * @return value object for the column in the database, may be <code>null</code>
-     * @throws FilterEvaluationException
-     */
-    public byte[] getSQLValue( Geometry literal, PropertyName propName )
-                            throws FilterEvaluationException;
 }

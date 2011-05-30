@@ -56,12 +56,9 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.tom.primitive.SQLValueMangler;
-import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
@@ -69,15 +66,8 @@ import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.io.WKBWriter;
 import org.deegree.metadata.i18n.Messages;
-import org.jaxen.expr.Expr;
-import org.jaxen.expr.LocationPath;
-import org.jaxen.expr.NameStep;
 import org.slf4j.Logger;
-
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change
@@ -357,134 +347,6 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
                                                                                                                        false,
                                                                                                                        DECIMAL );
         propToTableAndCol.put( qName, mapping );
-    }
-
-    @Override
-    public Object getSQLValue( Literal<?> literal, PropertyName propName )
-                            throws FilterEvaluationException {
-
-        Object sqlValue = null;
-
-        if ( propName == null ) {
-            sqlValue = literal.getValue().toString();
-        } else {
-
-            Expr xpath = propName.getAsXPath();
-
-            if ( !( xpath instanceof LocationPath ) ) {
-                LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
-                           + "': the root expression is not a LocationPath." );
-                return null;
-            }
-            List<QName> steps = new ArrayList<QName>();
-
-            for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
-                if ( !( step instanceof NameStep ) ) {
-                    LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
-                               + "': contains an expression that is not a NameStep." );
-                    return null;
-                }
-                NameStep namestep = (NameStep) step;
-                if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
-                    LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
-                               + "': contains a NameStep with a predicate (needs implementation)." );
-                    return null;
-                }
-                String prefix = namestep.getPrefix();
-                String localPart = namestep.getLocalName();
-                String namespace = propName.getNsContext().translateNamespacePrefixToUri( prefix );
-                steps.add( new QName( namespace, localPart, prefix ) );
-            }
-            if ( steps.size() < 1 || steps.size() > 2 ) {
-                LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
-                           + "': must contain one or two NameSteps (needs implementation)." );
-                return null;
-            }
-
-            QName requestedProperty = null;
-            if ( steps.size() == 1 ) {
-                requestedProperty = steps.get( 0 );
-            } else {
-                requestedProperty = steps.get( 1 );
-            }
-
-            String column = getMapping( new PropertyName( requestedProperty ), null ).getTargetField().getColumn();
-
-            if ( column == null ) {
-                throw new FilterEvaluationException( Messages.getMessage( "ERROR_COLUMN_NOT_EXISTS", column ) );
-            }
-
-            PropertyNameMapping mapping = getMapping( new PropertyName( requestedProperty ), null );
-            if ( mapping instanceof PrimitivePropertyNameMapping ) {
-                PrimitivePropertyNameMapping primitiveMapping = (PrimitivePropertyNameMapping) mapping;
-                Object internalValue = XMLValueMangler.xmlToInternal( literal.getValue().toString(),
-                                                                      primitiveMapping.getType().getBaseType() );
-                sqlValue = SQLValueMangler.internalToSQL( internalValue );
-                LOG.debug( "sqlValue in mapping: " + sqlValue );
-            } else {
-                throw new FilterEvaluationException( "Cannot treat geometry column as literal." );
-            }
-        }
-        return sqlValue;
-    }
-
-    @Override
-    public byte[] getSQLValue( Geometry literal, PropertyName propName )
-                            throws FilterEvaluationException {
-        byte[] pgValue = null;
-
-        Expr xpath = propName.getAsXPath();
-
-        if ( !( xpath instanceof LocationPath ) ) {
-            LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
-                       + "': the root expression is not a LocationPath." );
-            return null;
-        }
-        List<QName> steps = new ArrayList<QName>();
-
-        for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
-            if ( !( step instanceof NameStep ) ) {
-                LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
-                           + "': contains an expression that is not a NameStep." );
-                return null;
-            }
-            NameStep namestep = (NameStep) step;
-            if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
-                LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
-                           + "': contains a NameStep with a predicate (needs implementation)." );
-                return null;
-            }
-            String prefix = namestep.getPrefix();
-            String localPart = namestep.getLocalName();
-            String namespace = propName.getNsContext().translateNamespacePrefixToUri( prefix );
-            steps.add( new QName( namespace, localPart, prefix ) );
-        }
-        if ( steps.size() < 1 || steps.size() > 2 ) {
-            LOG.debug( "Unable to map PropertyName '" + propName.getAsText()
-                       + "': must contain one or two NameSteps (needs implementation)." );
-            return null;
-        }
-
-        QName requestedProperty = null;
-        if ( steps.size() == 1 ) {
-            requestedProperty = steps.get( 0 );
-        } else {
-            requestedProperty = steps.get( 1 );
-        }
-
-        String column = getMapping( new PropertyName( requestedProperty ), null ).getTargetField().getColumn();
-
-        if ( column == null ) {
-            throw new FilterEvaluationException( Messages.getMessage( "ERROR_COLUMN_NOT_EXISTS", column ) );
-        }
-
-        try {
-            pgValue = WKBWriter.write( literal );
-        } catch ( ParseException e ) {
-            throw new FilterEvaluationException( e.getMessage() );
-        }
-        return pgValue;
-
     }
 
     /**

@@ -689,6 +689,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             Mapping mapping = ftMapping.getMapping( propName );
             if ( mapping != null ) {
                 String column = null;
+                ParticleConverter<TypedObjectNode> converter = (ParticleConverter<TypedObjectNode>) fs.getConverter( mapping );
                 if ( mapping instanceof PrimitiveMapping ) {
                     MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
                     if ( !( me instanceof DBField ) ) {
@@ -702,14 +703,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                     sql.append( column );
                     sql.append( "=" );
-                    ParticleConverter<TypedObjectNode> converter = ( (PrimitiveMapping) mapping ).getConverter();
+
                     sql.append( converter.getSetSnippet() );
                 } else if ( mapping instanceof GeometryMapping ) {
                     MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
                     if ( !( me instanceof DBField ) ) {
                         continue;
                     }
-                    ParticleConverter<Geometry> geomConverter = (ParticleConverter<Geometry>) fs.getConverter( mapping );
                     if ( !first ) {
                         sql.append( "," );
                     } else {
@@ -717,7 +717,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                     sql.append( column );
                     sql.append( "=" );
-                    sql.append( geomConverter.getSetSnippet() );
+                    sql.append( converter.getSetSnippet() );
                 } else {
                     LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
                     continue;
@@ -747,13 +747,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 QName propName = replacementProp.getType().getName();
                 Mapping mapping = ftMapping.getMapping( propName );
                 if ( mapping != null ) {
+                    ParticleConverter<TypedObjectNode> converter = (ParticleConverter<TypedObjectNode>) fs.getConverter( mapping );
                     if ( mapping instanceof PrimitiveMapping ) {
                         MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
                         if ( !( me instanceof DBField ) ) {
                             continue;
                         }
                         PrimitiveValue value = (PrimitiveValue) replacementProp.getValue();
-                        ParticleConverter<TypedObjectNode> converter = ( (PrimitiveMapping) mapping ).getConverter();
                         converter.setParticle( stmt, value, i++ );
                     } else if ( mapping instanceof GeometryMapping ) {
                         MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
@@ -761,7 +761,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                             continue;
                         }
                         Geometry value = (Geometry) replacementProp.getValue();
-                        ParticleConverter<Geometry> converter = (ParticleConverter<Geometry>) fs.getConverter( mapping );
                         converter.setParticle( stmt, value, i++ );
                     }
                 }
