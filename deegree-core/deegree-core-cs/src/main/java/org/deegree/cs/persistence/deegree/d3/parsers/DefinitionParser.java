@@ -141,6 +141,7 @@ public abstract class DefinitionParser {
                         this.readEntireFile = true;
                         // openReader();
                         this.configReader = null;
+                        openReader();
                     }
                 }
             }
