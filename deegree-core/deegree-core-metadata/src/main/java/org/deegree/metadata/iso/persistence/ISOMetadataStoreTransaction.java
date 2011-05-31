@@ -84,15 +84,14 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private AbstractWhereBuilder getWhereBuilder( OperatorFilter filter )
                             throws FilterEvaluationException, UnmappableException {
+        ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, useLegacyPredicates );
         if ( connectionType == PostgreSQL ) {
-            PostGISMappingsISODC mapping = new PostGISMappingsISODC();
             return new PostGISWhereBuilder( mapping, filter, null, false, useLegacyPredicates );
         }
         if ( connectionType == Type.MSSQL ) {
-            MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
             return new MSSQLWhereBuilder( mapping, filter, null, false, true );
         }
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override

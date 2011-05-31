@@ -118,13 +118,7 @@ class QueryHelper extends SqlHelper {
             StringBuilder outerSelect = new StringBuilder( "SELECT " );
             outerSelect.append( recordColumn );
             outerSelect.append( " FROM " );
-            if ( connectionType == PostgreSQL ) {
-                outerSelect.append( PostGISMappingsISODC.DatabaseTables.idxtb_main );
-            } else if ( connectionType == MSSQL ) {
-                outerSelect.append( MSSQLMappingsISODC.DatabaseTables.idxtb_main );
-            } else {
-                throw new IllegalArgumentException();
-            }
+            outerSelect.append( ISOPropertyNameMapper.DatabaseTables.idxtb_main );
             outerSelect.append( " WHERE " );
             outerSelect.append( idColumn );
             outerSelect.append( " IN (" );
@@ -241,15 +235,16 @@ class QueryHelper extends SqlHelper {
     private AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
                             throws FilterEvaluationException, UnmappableException {
         if ( connectionType == PostgreSQL ) {
-            PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+            // TODO only do this once, it's expensive!
+            boolean useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
+            ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, useLegacyPredicates );
             return new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false,
-                                            JDBCUtils.useLegayPostGISPredicates( conn, LOG ) );
+                                            useLegacyPredicates );
         }
         if ( connectionType == Type.MSSQL ) {
-            MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
+            ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, false );
             return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false, true );
         }
         return null;
     }
-
 }

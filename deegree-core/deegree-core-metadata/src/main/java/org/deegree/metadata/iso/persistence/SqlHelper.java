@@ -72,28 +72,15 @@ abstract class SqlHelper {
 
     SqlHelper( Type connectionType ) {
         this.connectionType = connectionType;
-        if ( connectionType == Type.PostgreSQL ) {
-            idColumn = PostGISMappingsISODC.CommonColumnNames.id.name();
-            fk_main = PostGISMappingsISODC.CommonColumnNames.fk_main.name();
-            recordColumn = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
-            fileIdColumn = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
-            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
-            crsTable = PostGISMappingsISODC.DatabaseTables.idxtb_crs.name();
-            keywordTable = PostGISMappingsISODC.DatabaseTables.idxtb_keyword.name();
-            opOnTable = PostGISMappingsISODC.DatabaseTables.idxtb_operatesondata.name();
-            constraintTable = PostGISMappingsISODC.DatabaseTables.idxtb_constraint.name();
-        }
-        if ( connectionType == Type.MSSQL ) {
-            idColumn = MSSQLMappingsISODC.CommonColumnNames.id.name();
-            fk_main = MSSQLMappingsISODC.CommonColumnNames.fk_main.name();
-            recordColumn = PostGISMappingsISODC.CommonColumnNames.recordfull.name();
-            fileIdColumn = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
-            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
-            crsTable = PostGISMappingsISODC.DatabaseTables.idxtb_crs.name();
-            keywordTable = PostGISMappingsISODC.DatabaseTables.idxtb_keyword.name();
-            opOnTable = PostGISMappingsISODC.DatabaseTables.idxtb_operatesondata.name();
-            constraintTable = PostGISMappingsISODC.DatabaseTables.idxtb_constraint.name();
-        }
+        idColumn = ISOPropertyNameMapper.CommonColumnNames.id.name();
+        fk_main = ISOPropertyNameMapper.CommonColumnNames.fk_main.name();
+        recordColumn = ISOPropertyNameMapper.CommonColumnNames.recordfull.name();
+        fileIdColumn = ISOPropertyNameMapper.CommonColumnNames.fileidentifier.name();
+        mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
+        crsTable = ISOPropertyNameMapper.DatabaseTables.idxtb_crs.name();
+        keywordTable = ISOPropertyNameMapper.DatabaseTables.idxtb_keyword.name();
+        opOnTable = ISOPropertyNameMapper.DatabaseTables.idxtb_operatesondata.name();
+        constraintTable = ISOPropertyNameMapper.DatabaseTables.idxtb_constraint.name();
     }
 
     protected StringBuilder getPreparedStatementDatasetIDs( AbstractWhereBuilder builder ) {

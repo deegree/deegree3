@@ -40,6 +40,7 @@ import static org.deegree.commons.tom.primitive.BaseType.DATE;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.cs.CRSUtils.EPSG_4326;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
@@ -54,10 +55,11 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
-import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
+import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
@@ -66,6 +68,8 @@ import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
+import org.deegree.filter.sql.mssql.MSSQLGeometryConverter;
+import org.deegree.filter.sql.postgis.PostGISGeometryConverter;
 import org.deegree.metadata.i18n.Messages;
 import org.slf4j.Logger;
 
@@ -80,9 +84,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class MSSQLMappingsISODC implements PropertyNameMapper {
+public class ISOPropertyNameMapper implements PropertyNameMapper {
 
-    private static final Logger LOG = getLogger( MSSQLMappingsISODC.class );
+    private static final Logger LOG = getLogger( ISOPropertyNameMapper.class );
 
     private static Map<QName, Triple<Pair<String, String>, Boolean, BaseType>> propToTableAndCol = new HashMap<QName, Triple<Pair<String, String>, Boolean, BaseType>>();
 
@@ -106,12 +110,12 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
         addStringProp( DCT_NS, "Abstract", DatabaseTables.idxtb_main, "abstract", true );
         addStringProp( "", "Abstract", DatabaseTables.idxtb_main, "abstract", true );
         addStringProp( CSW_202_NS, "Abstract", DatabaseTables.idxtb_main, "abstract", true );
-        addStringProp( APISO_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
-        addStringProp( DC_NS, "coverage", DatabaseTables.idxtb_main, "bbox", false );
-        addStringProp( OWS_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
-        addStringProp( OWS_NS, "boundingBox", DatabaseTables.idxtb_main, "bbox", false );
-        addStringProp( "", "boundingBox", DatabaseTables.idxtb_main, "bbox", false );
-        addStringProp( CSW_202_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addGeometryProp( APISO_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addGeometryProp( DC_NS, "coverage", DatabaseTables.idxtb_main, "bbox", false );
+        addGeometryProp( OWS_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addGeometryProp( OWS_NS, "boundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addGeometryProp( "", "boundingBox", DatabaseTables.idxtb_main, "bbox", false );
+        addGeometryProp( CSW_202_NS, "BoundingBox", DatabaseTables.idxtb_main, "bbox", false );
         addStringProp( APISO_NS, "type", DatabaseTables.idxtb_main, "type", false );
         addStringProp( APISO_NS, "Type", DatabaseTables.idxtb_main, "type", false );
         addStringProp( DC_NS, "Type", DatabaseTables.idxtb_main, "type", false );
@@ -254,6 +258,15 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
         idxtb_main, idxtb_constraint, idxtb_crs, idxtb_keyword, idxtb_operatesondata
     }
 
+    private final boolean useLegacyPredicates;
+
+    private final Type connectionType;
+
+    public ISOPropertyNameMapper( Type connectionType, boolean useLegacyPredicates ) {
+        this.connectionType = connectionType;
+        this.useLegacyPredicates = useLegacyPredicates;
+    }
+
     @Override
     public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException {
@@ -264,6 +277,7 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
         if ( qName == null ) {
             String msg = Messages.getMessage( "WARN_PROPNAME_MAPPING", propName );
             LOG.debug( msg );
+            throw new FilterEvaluationException( msg );
         } else {
 
             Triple<Pair<String, String>, Boolean, BaseType> tableColumn = propToTableAndCol.get( qName );
@@ -282,11 +296,23 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
                     String toColumn = fk_main;
                     joins.add( new Join( fromTable, fromTableAlias, fromColumn, toTable, toTableAlias, toColumn ) );
                 }
-                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(
-                                                                                      new PrimitiveType(
-                                                                                                         tableColumn.third ),
-                                                                                      tableColumn.first.second,
-                                                                                      tableColumn.second );
+                ParticleConverter<?> converter = null;
+                if ( tableColumn.third == null ) {
+                    switch ( connectionType ) {
+                    case PostgreSQL:
+                        converter = new PostGISGeometryConverter( tableColumn.first.second, EPSG_4326, "-1",
+                                                                  useLegacyPredicates );
+                        break;
+                    case MSSQL:
+                        converter = new MSSQLGeometryConverter( tableColumn.first.second, EPSG_4326, "0", true );
+                        break;
+                    default:
+                        throw new IllegalArgumentException();
+                    }
+                } else {
+                    converter = new DefaultPrimitiveConverter( new PrimitiveType( tableColumn.third ),
+                                                               tableColumn.first.second, tableColumn.second );
+                }
                 mapping = new PropertyNameMapping( converter, joins, tableColumn.first.second );
             } else {
                 String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
@@ -330,6 +356,18 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
                                                                                                                                                  column ),
                                                                                                                        concatenated,
                                                                                                                        STRING );
+        propToTableAndCol.put( qName, mapping );
+    }
+
+    private static void addGeometryProp( String propNs, String propName, DatabaseTables table, String column,
+                                         boolean concatenated ) {
+        QName qName = new QName( propNs, propName );
+        Triple<Pair<String, String>, Boolean, BaseType> mapping = new Triple<Pair<String, String>, Boolean, BaseType>(
+                                                                                                                       new Pair<String, String>(
+                                                                                                                                                 table.name(),
+                                                                                                                                                 column ),
+                                                                                                                       concatenated,
+                                                                                                                       null );
         propToTableAndCol.put( qName, mapping );
     }
 

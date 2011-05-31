@@ -51,8 +51,7 @@ import java.util.regex.Pattern;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.iso.persistence.MSSQLMappingsISODC;
-import org.deegree.metadata.iso.persistence.PostGISMappingsISODC;
+import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
@@ -80,14 +79,8 @@ class IdUtils {
     IdUtils( Connection conn, Type connectionType ) {
         this.conn = conn;
         idList = Collections.synchronizedList( new ArrayList<String>() );
-        if ( connectionType == Type.MSSQL ) {
-            mainTable = MSSQLMappingsISODC.DatabaseTables.idxtb_main.name();
-            fileIdColumn = MSSQLMappingsISODC.CommonColumnNames.fileidentifier.name();
-        }
-        if ( connectionType == Type.PostgreSQL ) {
-            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
-            fileIdColumn = PostGISMappingsISODC.CommonColumnNames.fileidentifier.name();
-        }
+        mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
+        fileIdColumn = ISOPropertyNameMapper.CommonColumnNames.fileidentifier.name();
     }
 
     /**

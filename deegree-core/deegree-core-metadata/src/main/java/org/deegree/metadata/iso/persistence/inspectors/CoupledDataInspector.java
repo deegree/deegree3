@@ -54,8 +54,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
-import org.deegree.metadata.iso.persistence.MSSQLMappingsISODC;
-import org.deegree.metadata.iso.persistence.PostGISMappingsISODC;
+import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
 import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
@@ -129,15 +128,10 @@ public class CoupledDataInspector implements RecordInspector<ISORecord> {
      */
     private boolean getCoupledDataMetadatasets( Connection conn, String resourceIdentifier, Type connectionType )
                             throws MetadataInspectorException {
-        String resourceIdCol;
-        String mainTable;
-        if ( connectionType == Type.MSSQL ) {
-            resourceIdCol = MSSQLMappingsISODC.CommonColumnNames.resourceid.name();
-            mainTable = MSSQLMappingsISODC.DatabaseTables.idxtb_main.name();
-        } else {
-            resourceIdCol = PostGISMappingsISODC.CommonColumnNames.resourceid.name();
-            mainTable = PostGISMappingsISODC.DatabaseTables.idxtb_main.name();
-        }
+
+        String resourceIdCol = ISOPropertyNameMapper.CommonColumnNames.resourceid.name();
+        String mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
+
         ResultSet rs = null;
         PreparedStatement stm = null;
         LOG.warn( "Check table / column names." );

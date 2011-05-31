@@ -45,6 +45,7 @@ import java.sql.Statement;
 import java.util.Set;
 
 import org.deegree.CoreTstProperties;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
@@ -124,10 +125,9 @@ public abstract class AbstractISOTest {
                     JDBCUtils.close( conn );
 
                 }
-
             }
-
         }
+        DeegreeWorkspace.getInstance().initAll();
     }
 
     private void setUpTables( Connection conn )
