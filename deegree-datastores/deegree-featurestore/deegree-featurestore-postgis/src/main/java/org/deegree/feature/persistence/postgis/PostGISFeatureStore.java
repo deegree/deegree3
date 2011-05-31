@@ -335,7 +335,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             }
             sql.append( " FROM " );
             sql.append( mapping.getFtTable() );
-            sql.append( " AS " );
+            sql.append( ' ' );
             sql.append( tableAlias );
             sql.append( " WHERE " );
             sql.append( mapping.getFidMapping().getColumns().get( 0 ).first );

@@ -651,7 +651,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             }
             sql.append( " FROM " );
             sql.append( ftMapping.getFtTable() );
-            sql.append( " AS " );
+            sql.append( ' ' );
             sql.append( tableAlias );
             sql.append( " WHERE " );
             boolean first = true;
@@ -737,7 +737,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
-            
+
             FeatureBuilder builder = null;
             if ( getSchema().getBlobMapping() != null ) {
                 builder = new FeatureBuilderBlob( this, getSchema().getBlobMapping() );
@@ -770,21 +770,21 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             if ( blobMapping == null ) {
                 // pure relational query
                 sql.append( ftMapping.getFtTable() );
-                sql.append( getAsClause() );
+                sql.append( ' ' );
                 sql.append( ftTableAlias );
             } else if ( wb.getWhere() == null && wb.getOrderBy() == null ) {
                 // pure BLOB query
                 sql.append( blobMapping.getTable() );
-                sql.append( getAsClause() );
+                sql.append( ' ' );
                 sql.append( blobTableAlias );
             } else {
                 // hybrid query
                 sql.append( blobMapping.getTable() );
-                sql.append( getAsClause() );
+                sql.append( ' ' );
                 sql.append( blobTableAlias );
                 sql.append( " LEFT OUTER JOIN " );
                 sql.append( ftMapping.getFtTable() );
-                sql.append( getAsClause() );
+                sql.append( ' ' );
                 sql.append( ftTableAlias );
                 sql.append( " ON " );
                 sql.append( blobTableAlias );
@@ -803,7 +803,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                     DBField to = join.getTo();
                     sql.append( " LEFT OUTER JOIN " );
                     sql.append( to.getTable() );
-                    sql.append( getAsClause() );
+                    sql.append( ' ' );
                     sql.append( to.getAlias() );
                     sql.append( " ON " );
                     sql.append( currentAlias );
@@ -893,10 +893,6 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         return result;
     }
 
-    protected String getAsClause() {
-        return " AS ";
-    }
-
     private FeatureResultSet queryMultipleFts( Query[] queries, Envelope looseBBox )
                             throws FeatureStoreException {
 
@@ -984,6 +980,10 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
     protected abstract AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
                             throws FilterEvaluationException, UnmappableException;
+
+    public SQLDialectHelper getDialect() {
+        return dialect;
+    }
 
     private class PostGISResultSetIterator extends ResultSetIterator<Feature> {
 

@@ -200,11 +200,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 FeatureMapping fm = (FeatureMapping) mapping;
                 MappingExpression column = fm.getMapping();
                 if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, tableAlias  + "." + ( (DBField) column ).getColumn() );
+                    addColumn( colToRsIdx, tableAlias + "." + ( (DBField) column ).getColumn() );
                 }
                 column = fm.getHrefMapping();
                 if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, tableAlias  + "." + ( (DBField) column ).getColumn() );
+                    addColumn( colToRsIdx, tableAlias + "." + ( (DBField) column ).getColumn() );
                 }
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
@@ -223,7 +223,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
 
-        Feature feature  = null;
+        Feature feature = null;
         try {
             String gmlId = ftMapping.getFidMapping().getPrefix();
             List<Pair<String, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
@@ -573,7 +573,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         sql.append( " FROM " );
         sql.append( jc.getToTable() );
-        sql.append( " AS " );
+        sql.append( ' ' );
         sql.append( tableAlias );
         sql.append( " WHERE " );
         first = true;
