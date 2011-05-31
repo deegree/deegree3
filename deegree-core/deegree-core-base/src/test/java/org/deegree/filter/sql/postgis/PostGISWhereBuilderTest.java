@@ -35,12 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.postgis;
 
-import static java.sql.Types.VARCHAR;
-import static org.deegree.commons.tom.primitive.BaseType.DATE;
-
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Types;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -54,7 +50,6 @@ import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
@@ -82,6 +77,7 @@ public class PostGISWhereBuilderTest {
         OperatorFilter filter = parse( "testfilter1.xml" );
         PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
         SQLExpression whereClause = wb.getWhere();
+        System.out.println(whereClause.toString());
         Assert.equals( "X1.NAME = 'Albert Camus'", whereClause.toString() );
     }
 
@@ -157,27 +153,27 @@ public class PostGISWhereBuilderTest {
             if ( propName.getAsText().equals( "app:name" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.STRING );
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "NAME", false );
-                return new PropertyNameMapping( converter, null, null );
+                return new PropertyNameMapping( converter, null, "NAME" );
             }
             if ( propName.getAsText().equals( "app:id" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.STRING );
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "ID", false );
-                return new PropertyNameMapping( converter, null, null );
+                return new PropertyNameMapping( converter, null, "ID" );
             }
             if ( propName.getAsText().equals( "app:subject" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.STRING );
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "SUBJECT", false );
-                return new PropertyNameMapping( converter, null, null );
+                return new PropertyNameMapping( converter, null, "SUBJECT" );
             }
             if ( propName.getAsText().equals( "app:dateOfBirth" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.DATE );
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "DATE_OF_BIRTH", false );
-                return new PropertyNameMapping( converter, null, null );
+                return new PropertyNameMapping( converter, null, "DATE_OF_BIRTH" );
             }
             if ( propName.getAsText().equals( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.STRING );
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "NAME", false );
-                return new PropertyNameMapping( converter, null, null );
+                return new PropertyNameMapping( converter, null, "NAME" );
             }
             throw new UnmappableException( "Property '" + propName + "' is not mappable." );
         }
