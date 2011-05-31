@@ -693,7 +693,7 @@ public abstract class AbstractWhereBuilder {
             if ( value instanceof PrimitiveValue ) {
                 PrimitiveValue pv = (PrimitiveValue) value;
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pv.getType(), null, false );
-                return new SQLArgument( pv, converter );
+                return new SQLArgument( pv, null );
             } else {
                 throw new UnmappableException( "Only primitive valued literals are currently supported." );
             }

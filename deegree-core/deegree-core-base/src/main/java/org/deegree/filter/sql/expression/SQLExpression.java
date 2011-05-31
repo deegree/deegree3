@@ -117,5 +117,10 @@ public interface SQLExpression {
      */
     public void cast( SQLExpression expr );
 
-    public ParticleConverter getConverter();
+    /**
+     * Returns the attached particle converter for this expression.
+     * 
+     * @return particle converter, can be <code>null</code>
+     */
+    public ParticleConverter<?> getConverter();
 }

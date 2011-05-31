@@ -43,6 +43,7 @@ import java.util.List;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -71,21 +72,46 @@ public class SQLArgument implements SQLExpression {
 
     private boolean isSpatial;
 
+    /**
+     * Creates a new primitive valued {@link SQLArgument}.
+     * 
+     * @param value
+     *            value, can be <code>null</code>
+     * @param converter
+     *            converter, can be <code>null</code>
+     */
     public SQLArgument( PrimitiveValue value, PrimitiveParticleConverter converter ) {
         this.value = value;
-        this.pt = value.getType();
+        if ( converter != null ) {
+            this.pt = value.getType();
+        }
         this.converter = converter;
         this.isSpatial = false;
     }
 
+    /**
+     * Creates a new spatial valued {@link SQLArgument}.
+     * 
+     * @param value
+     *            value, can be <code>null</code>
+     * @param converter
+     *            converter, can be <code>null</code>
+     */
     public SQLArgument( Geometry value, GeometryParticleConverter converter ) {
         this.value = value;
         this.converter = converter;
         this.isSpatial = true;
     }
 
-    public void setArgument( PreparedStatement stmt, int paramIndex ) throws SQLException {
-        ( (ParticleConverter<TypedObjectNode>) converter ).setParticle( stmt, value, paramIndex );
+    public void setArgument( PreparedStatement stmt, int paramIndex )
+                            throws SQLException {
+
+        if ( converter == null ) {
+            LOG.warn( "No inferred particle converter. Treating as STRING value." );
+            new DefaultPrimitiveConverter( pt, null, false ).setParticle( stmt, (PrimitiveValue) value, paramIndex );
+        } else {
+            ( (ParticleConverter<TypedObjectNode>) this.converter ).setParticle( stmt, value, paramIndex );
+        }
     }
 
     @Override
@@ -110,7 +136,14 @@ public class SQLArgument implements SQLExpression {
 
     @Override
     public StringBuilder getSQL() {
-        return new StringBuilder( converter.getSetSnippet() );
+        String sql = null;
+        if ( converter == null ) {
+            LOG.warn( "No inferred particle converter. Treating as STRING value." );
+            sql = new DefaultPrimitiveConverter( pt, null, false ).getSetSnippet();
+        } else {
+            sql = ( (ParticleConverter<TypedObjectNode>) this.converter ).getSetSnippet();
+        }
+        return new StringBuilder( sql );
     }
 
     @Override
@@ -143,6 +176,7 @@ public class SQLArgument implements SQLExpression {
         }
     }
 
+    @Override
     public ParticleConverter<? extends TypedObjectNode> getConverter() {
         return converter;
     }
