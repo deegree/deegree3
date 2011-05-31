@@ -90,7 +90,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         }
         if ( connectionType == Type.MSSQL ) {
             MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
-            return new MSSQLWhereBuilder( mapping, filter, null, false );
+            return new MSSQLWhereBuilder( mapping, filter, null, false, true );
         }
         return null;
     }

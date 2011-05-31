@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql;
 
-import java.util.Collections;
+import static java.util.Collections.emptyList;
+
 import java.util.List;
 
 import org.deegree.commons.tom.sql.ParticleConverter;
@@ -45,47 +46,53 @@ import org.deegree.filter.expression.PropertyName;
  * A {@link PropertyName} that's mapped to database column(s).
  * 
  * @see AbstractWhereBuilder
- *  
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class PropertyNameMapping {
+public class PropertyNameMapping {
 
-    private final int sqlType;
-
-    private final DBField valueField;
+    private final ParticleConverter<?> converter;
 
     private final List<Join> joins;
 
-    // TODO
-    private final ParticleConverter<?> converter = null;
-
-    protected PropertyNameMapping( DBField valueField, int sqlType, List<Join> joins ) {
-        this.valueField = valueField;
-        this.sqlType = sqlType;
+    /**
+     * Creates a new {@link PropertyNameMapping} instance.
+     * 
+     * @param converter
+     *            converter, must not be <code>null</code>
+     * @param joins
+     *            joins that are required to connect the root table to the tables where the targeted SQL particles are,
+     *            can also be emtpy or <code>null</code>
+     */
+    public PropertyNameMapping( ParticleConverter<?> converter, List<Join> joins ) {
+        this.converter = converter;
         if ( joins == null ) {
-            this.joins = Collections.emptyList();
+            this.joins = emptyList();
         } else {
             this.joins = joins;
         }
     }
 
-    public DBField getTargetField() {
-        return valueField;
-    }
-
+    /**
+     * Returns the joins that are required to connect the root table to the tables where the targeted SQL particles are
+     * stored.
+     * 
+     * @return joins, can be emtpy, but never <code>null</code>
+     */
     public List<Join> getJoins() {
         return joins;
     }
 
+    /**
+     * Returns the converter for transforming corresponding argument values to SQL argument values.
+     * 
+     * @return converter, never <code>null</code>
+     */
     public ParticleConverter<?> getConverter() {
         return converter;
-    }
-
-    public int getSQLType() {
-        return sqlType;
     }
 
     @Override
@@ -95,7 +102,7 @@ public abstract class PropertyNameMapping {
             s += join;
             s += ",";
         }
-        s += valueField;
+        s += converter;
         return s;
     }
 }

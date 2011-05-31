@@ -35,11 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
+import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
-import java.sql.Types;
-
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
@@ -48,9 +51,9 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
-import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.expression.SQLOperation;
 
 /**
@@ -70,7 +73,7 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
      * 
      */
     public H2WhereBuilder( OperatorFilter filter, SortProperty[] sort ) throws FilterEvaluationException {
-        super( filter, sort );
+        super( null, filter, sort );
         try {
             build( true );
         } catch ( UnmappableException e ) {
@@ -89,7 +92,11 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
                             throws UnmappableException, FilterEvaluationException {
         // TODO
         PrimitiveType pt = new PrimitiveType( STRING );
-        return new SQLColumn( null, expr.getAsQName().getLocalPart().toLowerCase(), true, pt, 0, null, null, false );
+        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(
+                                                                              pt,
+                                                                              expr.getAsQName().getLocalPart().toLowerCase(),
+                                                                              false );
+        return new SQLColumn( aliasManager.getRootTableAlias(), converter );
     }
 
     // avoid setting a Date on fields which are strings just containing ISO dates...
@@ -97,9 +104,16 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
     protected SQLExpression toProtoSQL( Literal<?> literal )
                             throws UnmappableException, FilterEvaluationException {
         if ( literal.getValue().toString().equals( "true" ) || literal.getValue().toString().equals( "false" ) ) {
-            return new SQLLiteral( literal.getValue(), Types.BOOLEAN );
+            PrimitiveType pt = new PrimitiveType( BOOLEAN );
+            PrimitiveValue value = new PrimitiveValue( literal.getValue().toString(), pt );
+            PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
+            SQLArgument argument = new SQLArgument( value, converter );
+            return argument;
         }
-        return new SQLLiteral( literal.getValue(), Types.VARCHAR );
+        PrimitiveType pt = new PrimitiveType( BaseType.STRING );
+        PrimitiveValue value = new PrimitiveValue( literal.getValue().toString(), pt );
+        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
+        SQLArgument argument = new SQLArgument( value, converter );
+        return argument;
     }
-
 }

@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveValue> {
+public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
 
     private static Logger LOG = LoggerFactory.getLogger( DefaultPrimitiveConverter.class );
 
@@ -71,10 +71,20 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
 
     protected final String column;
 
+    private final boolean isConcatenated;
+
     public DefaultPrimitiveConverter( PrimitiveType pt, String column ) {
         this.pt = pt;
         this.bt = pt.getBaseType();
         this.column = column;
+        this.isConcatenated = false;
+    }
+    
+    public DefaultPrimitiveConverter( PrimitiveType pt, String column, boolean isConcatenated ) {
+        this.pt = pt;
+        this.bt = pt.getBaseType();
+        this.column = column;
+        this.isConcatenated = isConcatenated;
     }
 
     @Override
@@ -115,6 +125,11 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
             return toTimeParticle( sqlValue );
         }
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PrimitiveType getType() {
+        return pt;
     }
 
     protected PrimitiveValue toBooleanParticle( Object sqlValue ) {
@@ -221,9 +236,15 @@ public class DefaultPrimitiveConverter implements ParticleConverter<PrimitiveVal
     }
 
     @Override
-    public void setParticle( PreparedStatement stmt, PrimitiveValue particle, int colIndex ) throws SQLException {
+    public void setParticle( PreparedStatement stmt, PrimitiveValue particle, int colIndex )
+                            throws SQLException {
         // TODO rework this
         Object sqlValue = SQLValueMangler.internalToSQL( particle );
         stmt.setObject( colIndex, sqlValue );
+    }
+
+    @Override
+    public boolean isConcatenated() {
+        return isConcatenated;
     }
 }

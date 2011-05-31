@@ -35,10 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.expression;
 
-import java.sql.Types;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
@@ -50,13 +51,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
  * @version $Revision$, $Date$
  */
 public interface SQLExpression {
-
-    /**
-     * Returns the type code from {@link Types}.
-     * 
-     * @return the type code
-     */
-    public int getSQLType();
 
     /**
      * Returns the primitive type of this expression.
@@ -95,30 +89,33 @@ public interface SQLExpression {
     public String getSRID();
 
     /**
-     * Returns the corresponding SQL snippet, with question marks for every {@link SQLLiteral} argument.
+     * Returns the corresponding SQL snippet, with question marks for every {@link SQLArgument} argument (as required
+     * for JDBC {@link PreparedStatement}s).
      * 
-     * @see #getLiterals()
+     * @see #getArguments()
      * 
      * @return the corresponding SQL snippet, never <code>null</code>
      */
     public StringBuilder getSQL();
 
     /**
-     * Returns the {@link SQLLiteral} that occur in the expression, in same order as in the SQL snippet.
+     * Returns the {@link SQLArgument} instances that occur in the expression, in same order as in the SQL snippet.
      * 
      * @see #getSQL()
      * 
      * @return the SQL literals, never <code>null</code>
      */
-    public List<SQLLiteral> getLiterals();
+    public List<SQLArgument> getArguments();
 
     /**
      * Propagates type information to this expression (=performs a type cast).
      * 
-     * @param pt
-     *            primitive type, must not be <code>null</code>
+     * @param expr
+     *            type information to be applied, must not be <code>null</code>
      * @throws IllegalArgumentException
      *             if the cast cannot be performed
      */
-    public void cast( PrimitiveType pt );
+    public void cast( SQLExpression expr );
+
+    public ParticleConverter getConverter();
 }

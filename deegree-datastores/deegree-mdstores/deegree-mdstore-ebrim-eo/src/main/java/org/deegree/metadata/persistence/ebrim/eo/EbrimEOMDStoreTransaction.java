@@ -65,7 +65,7 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
@@ -81,9 +81,9 @@ import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.EOPropertyNameMapper;
-import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapping;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.Table;
+import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapping;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapping.SlotType;
 import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
@@ -93,7 +93,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.io.ParseException;
-
 
 /**
  * {@link MetadataStoreTransaction} implementation for the {@link EbrimEOMDStore}.
@@ -171,11 +170,12 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
 
         try {
             QName[] typeNames = new QName[] { new QName( RIMType.RegistryPackage.name() ) };
-            EOPropertyNameMapper propMapper = new EOPropertyNameMapper( typeNames );
+            EOPropertyNameMapper propMapper = new EOPropertyNameMapper( typeNames, useLegacyPredicates );
             if ( !( constraint instanceof OperatorFilter ) ) {
                 throw new MetadataStoreException( "Delete using id filters is not supported yet." );
             }
-            AbstractWhereBuilder wb = new PostGISWhereBuilder( new EOPropertyNameMapper( typeNames ),
+            AbstractWhereBuilder wb = new PostGISWhereBuilder(
+                                                               new EOPropertyNameMapper( typeNames, useLegacyPredicates ),
                                                                (OperatorFilter) constraint, null, false,
                                                                useLegacyPredicates );
 
@@ -207,8 +207,8 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
             PreparedStatement stm = conn.prepareStatement( delete.toString() );
             int i = 1;
             if ( wb.getWhere() != null ) {
-                for ( SQLLiteral argument : wb.getWhere().getLiterals() ) {
-                    stm.setObject( i++, argument.getValue() );
+                for ( SQLArgument argument : wb.getWhere().getArguments() ) {
+                    argument.setArgument( stm, i++ );
                 }
             }
             LOG.debug( "Execute: " + stm.toString() );
@@ -242,9 +242,9 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
             ir.addPreparedArgument( "name", registryPackage.getName() );
             ir.addPreparedArgument( "description", registryPackage.getDesc() );
             ir.addPreparedArgument( "data", getAsByteArray( registryPackage.getElement() ) );
-            
+
             LOG.debug( "Execute statement " + ir.getSql() );
-System.out.println(id);
+            System.out.println( id );
             ir.performInsert( conn );
 
             for ( EOTYPE type : EOTYPE.values() ) {

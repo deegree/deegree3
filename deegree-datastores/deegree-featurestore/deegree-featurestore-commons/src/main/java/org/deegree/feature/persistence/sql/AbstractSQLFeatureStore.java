@@ -110,7 +110,7 @@ import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
-import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -217,7 +217,7 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             String msg = "Unable to instantiate custom particle converter (class=" + className + "). "
                          + " Maybe directory 'modules' in your workspace is missing the JAR with the "
                          + " referenced converter class?! " + t.getMessage();
-            LOG.error( msg, t );            
+            LOG.error( msg, t );
             throw new IllegalArgumentException( msg );
         }
     }
@@ -244,7 +244,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
     }
 
     /**
-     * Returns a {@link ParticleConverter} for the given {@link Mapping} instance.
+     * Returns a {@link ParticleConverter} for the given {@link Mapping} instance from the served
+     * {@link MappedApplicationSchema}.
      * 
      * @param mapping
      *            particle mapping, must not be <code>null</code>
@@ -639,7 +640,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             long begin = System.currentTimeMillis();
             conn = getConnection();
 
-            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
+            String tableAlias = "X1";
+            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias );
             List<String> columns = builder.getInitialSelectColumns();
             StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( columns.get( 0 ) );
@@ -649,6 +651,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             }
             sql.append( " FROM " );
             sql.append( ftMapping.getFtTable() );
+            sql.append( " AS " );
+            sql.append( tableAlias );
             sql.append( " WHERE " );
             boolean first = true;
             for ( IdAnalysis idKernel : idKernels ) {
@@ -728,20 +732,22 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             FeatureType ft = getSchema().getFeatureType( ftName );
             FeatureTypeMapping ftMapping = getMapping( ftName );
 
+            wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
+            String ftTableAlias = wb.getAliasManager().getRootTableAlias();
+
+            LOG.debug( "WHERE clause: " + wb.getWhere() );
+            LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
+            
             FeatureBuilder builder = null;
             if ( getSchema().getBlobMapping() != null ) {
                 builder = new FeatureBuilderBlob( this, getSchema().getBlobMapping() );
             } else {
-                builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
+                builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, ftTableAlias );
             }
             List<String> columns = builder.getInitialSelectColumns();
 
-            wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
-            LOG.debug( "WHERE clause: " + wb.getWhere() );
-            LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
-
             BlobMapping blobMapping = getSchema().getBlobMapping();
-            String ftTableAlias = wb.getAliasManager().getRootTableAlias();
+
             // TODO
             String blobTableAlias = ftTableAlias;
             String tableAlias = ftTableAlias;
@@ -755,16 +761,9 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             }
 
             StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( tableAlias );
-            sql.append( '.' );
             sql.append( columns.get( 0 ) );
             for ( int i = 1; i < columns.size(); i++ ) {
                 sql.append( ',' );
-                // TODO
-                if ( !columns.get( i ).contains( "(" ) ) {
-                    sql.append( tableAlias );
-                    sql.append( '.' );
-                }
                 sql.append( columns.get( i ) );
             }
             sql.append( " FROM " );
@@ -852,19 +851,19 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             if ( blobMapping != null ) {
                 stmt.setShort( i++, getSchema().getFtId( ftName ) );
                 if ( blobWb != null ) {
-                    for ( SQLLiteral o : blobWb.getWhere().getLiterals() ) {
-                        stmt.setObject( i++, o.getValue() );
+                    for ( SQLArgument o : blobWb.getWhere().getArguments() ) {
+                        o.setArgument( stmt, i++ );
                     }
                 }
             }
             if ( wb.getWhere() != null ) {
-                for ( SQLLiteral o : wb.getWhere().getLiterals() ) {
-                    stmt.setObject( i++, o.getValue() );
+                for ( SQLArgument o : wb.getWhere().getArguments() ) {
+                    o.setArgument( stmt, i++ );
                 }
             }
             if ( wb.getOrderBy() != null ) {
-                for ( SQLLiteral o : wb.getOrderBy().getLiterals() ) {
-                    stmt.setObject( i++, o.getValue() );
+                for ( SQLArgument o : wb.getOrderBy().getArguments() ) {
+                    o.setArgument( stmt, i++ );
                 }
             }
 
@@ -939,8 +938,8 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             stmt = conn.prepareStatement( sql.toString() );
             int firstFtArg = 1;
             if ( blobWb != null && blobWb.getWhere() != null ) {
-                for ( SQLLiteral o : blobWb.getWhere().getLiterals() ) {
-                    stmt.setObject( firstFtArg++, o.getValue() );
+                for ( SQLArgument o : blobWb.getWhere().getArguments() ) {
+                    o.setArgument( stmt, firstFtArg++ );
                 }
             }
             StringBuffer orderString = new StringBuffer();

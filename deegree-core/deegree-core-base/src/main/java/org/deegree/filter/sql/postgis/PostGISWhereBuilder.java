@@ -36,11 +36,13 @@
 package org.deegree.filter.sql.postgis;
 
 import static java.sql.Types.BOOLEAN;
-
-import java.sql.Types;
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
@@ -61,20 +63,16 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.ConstantPropertyNameMapping;
-import org.deegree.filter.sql.GeometryPropertyNameMapping;
-import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
-import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.expression.SQLOperation;
 import org.deegree.filter.sql.expression.SQLOperationBuilder;
 import org.deegree.filter.sql.islike.IsLikeString;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.io.WKTWriter;
 
 /**
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
@@ -112,7 +110,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     public PostGISWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
                                 boolean allowPartialMappings, boolean useLegacyPredicates )
                             throws FilterEvaluationException, UnmappableException {
-        super( filter, sortCrit );
+        super( mapper, filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         this.mapper = mapper;
         build( allowPartialMappings );
@@ -152,7 +150,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             sqlEncoded = "%|" + sqlEncoded + "|%";
         }
 
-        SQLOperationBuilder builder = new SQLOperationBuilder( op.getMatchCase() );
+        SQLOperationBuilder builder = new SQLOperationBuilder();
         if ( !op.getMatchCase() ) {
             builder.add( "LOWER(" );
         }
@@ -203,7 +201,11 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             builder.add( toProtoSQL( beyond.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
             // TODO uom handling
-            builder.add( new SQLLiteral( beyond.getDistance().getValue(), Types.NUMERIC ) );
+            PrimitiveType pt = new PrimitiveType( DECIMAL );
+            PrimitiveValue value = new PrimitiveValue( beyond.getDistance().getValue(), pt );
+            PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
+            SQLArgument argument = new SQLArgument( value, converter );
+            builder.add( argument );
             builder.add( ")" );
             break;
         }
@@ -258,7 +260,11 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
             // TODO uom handling
-            builder.add( new SQLLiteral( dWithin.getDistance().getValue(), Types.NUMERIC ) );
+            PrimitiveType pt = new PrimitiveType( DECIMAL );
+            PrimitiveValue value = new PrimitiveValue( dWithin.getDistance().getValue(), pt );
+            PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
+            SQLArgument argument = new SQLArgument( value, converter );
+            builder.add( argument );
             builder.add( ")" );
             break;
         }
@@ -339,26 +345,19 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
             if ( propMapping instanceof ConstantPropertyNameMapping ) {
-                // TODO
-                sql = new SQLLiteral( (PrimitiveValue) ( (ConstantPropertyNameMapping) propMapping ).getValue() );
+                // TODO get rid of ConstantPropertyNameMapping
+                PrimitiveType pt = new PrimitiveType( STRING );
+                PrimitiveValue value = new PrimitiveValue( ""
+                                                           + ( (ConstantPropertyNameMapping) propMapping ).getValue(),
+                                                           pt );
+                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
+                sql = new SQLArgument( value, converter );
             } else {
-                // TODO
-                String table = propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
-                                                                              : propMapping.getTargetField().getTable();
-                String column = propMapping.getTargetField().getColumn();
-                int sqlType = propMapping.getSQLType();
-                ICRS crs = null;
-                String srid = null;
-                boolean isConcatenated = false;
-                PrimitiveType pt = null;
-                if ( propMapping instanceof GeometryPropertyNameMapping ) {
-                    crs = ( (GeometryPropertyNameMapping) propMapping ).getCRS();
-                    srid = ( (GeometryPropertyNameMapping) propMapping ).getSRID();
-                } else if ( propMapping instanceof PrimitivePropertyNameMapping ) {
-                    pt = ( (PrimitivePropertyNameMapping) propMapping ).getType();
-                    isConcatenated = ( (PrimitivePropertyNameMapping) propMapping ).isConcatenated();
+                String tableAlias = aliasManager.getRootTableAlias();
+                if ( propMapping.getJoins() != null && !propMapping.getJoins().isEmpty() ) {
+                    tableAlias = propMapping.getJoins().get( propMapping.getJoins().size() - 1 ).getTo().getAlias();
                 }
-                sql = new SQLColumn( table, column, true, pt, sqlType, crs, srid, isConcatenated );
+                sql = new SQLColumn( tableAlias, propMapping.getConverter() );
             }
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
@@ -368,36 +367,6 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
     private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid )
                             throws FilterEvaluationException {
-
-        Geometry transformedGeom = geom;
-        if ( targetCRS != null && !targetCRS.equals( geom.getCoordinateSystem() ) ) {
-            try {
-                GeometryTransformer transformer = new GeometryTransformer( targetCRS );
-                transformedGeom = transformer.transform( geom );
-            } catch ( Exception e ) {
-                String msg = "Transforming of geometry literal to storage CRS failed: " + e.getMessage();
-                throw new FilterEvaluationException( msg );
-            }
-        }
-
-        SQLOperationBuilder builder = new SQLOperationBuilder();
-        if ( useLegacyPredicates ) {
-            builder.add( "SetSRID(GeomFromText(" );
-        } else {
-            builder.add( "SetSRID(ST_GeometryFromText(" );
-        }
-        String wkt = WKTWriter.write( transformedGeom );
-        builder.add( new SQLLiteral( wkt, Types.VARCHAR ) );
-        builder.add( ")," + srid + ")" );
-
-        // byte[] wkb = null;
-        // try {
-        // wkb = WKBWriter.write( transformedGeom );
-        // } catch ( ParseException e ) {
-        // String msg = "Transforming of geometry literal to WKB: " + e.getMessage();
-        // throw new FilterEvaluationException( msg );
-        // }
-        // return new SQLLiteral( wkb, Types.BINARY );
-        return builder.toOperation();
+        return new SQLArgument( geom, new PostGISGeometryConverter( null, targetCRS, "" + srid, useLegacyPredicates ) );
     }
 }

@@ -56,13 +56,14 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
-import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
@@ -279,9 +280,12 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
                     to.setAlias( aliasManager.generateNew() );
                     joins.add( new Join( from, to, null, 0 ) );
                 }
-                DBField valueField = new DBField( tableColumn.first.first, tableColumn.first.second );
-                mapping = new PrimitivePropertyNameMapping( valueField, tableColumn.third.getSQLType(), joins,
-                                                            new PrimitiveType( tableColumn.third ), tableColumn.second );
+                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(
+                                                                                      new PrimitiveType(
+                                                                                                         tableColumn.third ),
+                                                                                      tableColumn.first.second,
+                                                                                      tableColumn.second );
+                mapping = new PropertyNameMapping( converter, joins );
             } else {
                 String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
                 LOG.debug( msg );

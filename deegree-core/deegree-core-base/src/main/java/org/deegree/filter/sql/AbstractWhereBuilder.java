@@ -36,14 +36,16 @@
 package org.deegree.filter.sql;
 
 import static java.sql.Types.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
 import java.sql.ResultSet;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -66,8 +68,9 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.sql.expression.SQLArgument;
+import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
-import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.expression.SQLOperation;
 import org.deegree.filter.sql.expression.SQLOperationBuilder;
 import org.deegree.filter.sql.islike.IsLikeString;
@@ -107,6 +110,8 @@ public abstract class AbstractWhereBuilder {
     /** Keeps track of all successfully mapped property names. */
     protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
 
+    protected final PropertyNameMapper mapper;
+    
     protected final OperatorFilter filter;
 
     protected final SortProperty[] sortCrit;
@@ -122,6 +127,8 @@ public abstract class AbstractWhereBuilder {
     /**
      * Creates a new {@link AbstractWhereBuilder} instance.
      * 
+     * @param mapper
+     *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
@@ -129,8 +136,9 @@ public abstract class AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link PropertyName}s
      */
-    protected AbstractWhereBuilder( OperatorFilter filter, SortProperty[] sortCrit )
+    protected AbstractWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit )
                             throws FilterEvaluationException {
+        this.mapper = mapper;
         this.filter = filter;
         this.sortCrit = sortCrit;
     }
@@ -429,9 +437,9 @@ public abstract class AbstractWhereBuilder {
         PrimitiveType pt1 = expr1.getPrimitiveType();
         PrimitiveType pt2 = expr2.getPrimitiveType();
         if ( pt1 == null && pt2 != null ) {
-            expr1.cast( pt2 );
+            expr1.cast( expr2 );
         } else if ( pt1 != null && pt2 == null ) {
-            expr2.cast( pt1 );
+            expr2.cast( expr1 );
         } else if ( pt1 != null && pt2 != null ) {
             if ( pt1.getBaseType() != pt2.getBaseType() ) {
                 LOG.warn( "Comparison on different types (" + pt1 + "/" + pt2 + "). Relying on db type conversion." );
@@ -510,7 +518,11 @@ public abstract class AbstractWhereBuilder {
             builder.add( propName );
         }
         builder.add( " LIKE " );
-        builder.add( new SQLLiteral( sqlEncoded, Types.VARCHAR ) );
+        PrimitiveType pt = new PrimitiveType( STRING );
+        PrimitiveValue value = new PrimitiveValue( sqlEncoded, pt );
+        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, propName.isMultiValued() );
+        SQLArgument argument = new SQLArgument( value, converter );
+        builder.add( argument );
 
         return builder.toOperation();
     }
@@ -676,7 +688,18 @@ public abstract class AbstractWhereBuilder {
      */
     protected SQLExpression toProtoSQL( Literal<?> literal )
                             throws UnmappableException, FilterEvaluationException {
-        return new SQLLiteral( literal );
+        Object value = literal.getValue();
+        if ( value != null ) {
+            if ( value instanceof PrimitiveValue ) {
+                PrimitiveValue pv = (PrimitiveValue) value;
+                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pv.getType(), null, false );
+                return new SQLArgument( pv, converter );
+            } else {
+                throw new UnmappableException( "Only primitive valued literals are currently supported." );
+            }
+        }
+        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null, false );
+        return new SQLArgument( null, converter );
     }
 
     /**
@@ -690,8 +713,32 @@ public abstract class AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link PropertyName}s
      */
-    protected abstract SQLExpression toProtoSQL( PropertyName expr )
-                            throws UnmappableException, FilterEvaluationException;
+    protected SQLExpression toProtoSQL( PropertyName propName )
+                            throws UnmappableException, FilterEvaluationException {
+        SQLExpression sql = null;
+        PropertyNameMapping propMapping = mapper.getMapping( propName, aliasManager );
+        if ( propMapping != null ) {
+            propNameMappingList.add( propMapping );
+            if ( propMapping instanceof ConstantPropertyNameMapping ) {
+                // TODO get rid of ConstantPropertyNameMapping
+                PrimitiveType pt = new PrimitiveType( STRING );
+                PrimitiveValue value = new PrimitiveValue( ""
+                                                           + ( (ConstantPropertyNameMapping) propMapping ).getValue(),
+                                                           pt );
+                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
+                sql = new SQLArgument( value, converter );
+            } else {
+                String tableAlias = aliasManager.getRootTableAlias();
+                if ( propMapping.getJoins() != null && !propMapping.getJoins().isEmpty() ) {
+                    tableAlias = propMapping.getJoins().get( propMapping.getJoins().size() - 1 ).getTo().getAlias();
+                }
+                sql = new SQLColumn( tableAlias, propMapping.getConverter() );
+            }
+        } else {
+            throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
+        }
+        return sql;
+    }
 
     /**
      * Translates the given {@link SortProperty} array into an {@link SQLExpression}.

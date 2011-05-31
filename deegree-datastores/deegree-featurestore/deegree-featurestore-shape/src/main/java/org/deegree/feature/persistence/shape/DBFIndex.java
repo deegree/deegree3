@@ -67,8 +67,8 @@ import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.filter.sql.expression.SQLExpression;
-import org.deegree.filter.sql.expression.SQLLiteral;
 import org.slf4j.Logger;
 
 /**
@@ -248,7 +248,7 @@ public class DBFIndex {
      * @return null, if there was an error, else a pair of left overs (with possibly null values if everything could be
      *         mapped)
      * @throws FilterEvaluationException
-     * @throws UnmappableException 
+     * @throws UnmappableException
      */
     public Pair<Filter, SortProperty[]> query( List<Pair<Integer, Long>> available, Filter filter, SortProperty[] sort )
                             throws FilterEvaluationException {
@@ -291,17 +291,18 @@ public class DBFIndex {
                 stmt = conn.prepareStatement( "select record_number,file_index from dbf_index where " + clause );
 
                 int i = 1;
-                for ( SQLLiteral lit : generated.getLiterals() ) {
-                    Object o = lit.getValue();
-                    if ( o instanceof PrimitiveValue ) {
-                        o = ( (PrimitiveValue) o ).getValue();
-                    }
-                    if ( o instanceof ElementNode ) {
-                        stmt.setString( i++, o.toString() );
-                    } else {
-                        stmt.setObject( i++, o );
-                    }
-
+                for ( SQLArgument lit : generated.getArguments() ) {
+                    lit.setArgument( stmt, i++ );
+                    // TODO what about ElementNode?
+//                    Object o = lit.getValue();
+//                    if ( o instanceof PrimitiveValue ) {
+//                        o = ( (PrimitiveValue) o ).getValue();
+//                    }
+//                    if ( o instanceof ElementNode ) {
+//                        stmt.setString( i++, o.toString() );
+//                    } else {
+//                        stmt.setObject( i++, o );
+//                    }
                 }
             }
 

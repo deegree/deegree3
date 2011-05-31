@@ -43,19 +43,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.SQLPropertyNameMapper;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
@@ -70,6 +69,8 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.FilterEvaluationException;
@@ -78,19 +79,17 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.GeometryPropertyNameMapping;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.postgis.PostGISGeometryConverter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.io.WKBReader;
-import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.gml.GMLObject;
 import org.postgis.PGboxbase;
 import org.slf4j.Logger;
@@ -301,6 +300,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
         FeatureType ft = idAnalysis.getFeatureType();
         FeatureTypeMapping mapping = getSchema().getFtMapping( ft.getName() );
+        String tableAlias = "X1";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -335,6 +335,8 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             }
             sql.append( " FROM " );
             sql.append( mapping.getFtTable() );
+            sql.append( " AS " );
+            sql.append( tableAlias );
             sql.append( " WHERE " );
             sql.append( mapping.getFidMapping().getColumns().get( 0 ).first );
             sql.append( "=?" );
@@ -356,7 +358,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
 
             rs = stmt.executeQuery();
             if ( rs.next() ) {
-                result = new FeatureBuilderRelational( this, ft, mapping, conn ).buildFeature( rs );
+                result = new FeatureBuilderRelational( this, ft, mapping, conn, tableAlias ).buildFeature( rs );
             }
         } catch ( Exception e ) {
             String msg = "Error retrieving object by id (relational mode): " + e.getMessage();
@@ -374,68 +376,16 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
     }
 
     @Override
-    public ParticleConverter<Geometry> getGeometryConverter( final GeometryMapping gm ) {
-
+    public GeometryParticleConverter getGeometryConverter( final GeometryMapping gm ) {
         final String column = ( (DBField) gm.getMapping() ).getColumn();
-
-        return new ParticleConverter<Geometry>() {
-            @Override
-            public String getSelectSnippet( String tableAlias ) {
-                if ( tableAlias != null ) {
-                    return "ST_AsEWKB(" + tableAlias + "." + column + ")";
-                }
-                return "ST_AsEWKB(" + column + ")";
-            }
-
-            @Override
-            public Geometry toParticle( ResultSet rs, int colIndex )
-                                    throws SQLException {
-                byte[] wkb = rs.getBytes( colIndex );
-                if ( wkb == null ) {
-                    return null;
-                }
-                try {
-                    return WKBReader.read( wkb, gm.getCRS() );
-                } catch ( Throwable t ) {
-                    throw new IllegalArgumentException( t.getMessage(), t );
-                }
-            }
-
-            @Override
-            public String getSetSnippet() {
-                StringBuilder sb = new StringBuilder();
-                if ( useLegacyPredicates ) {
-                    sb.append( "SetSRID(GeomFromWKB(?)," );
-                } else {
-                    sb.append( "SetSRID(ST_GeomFromWKB(?)," );
-                }
-                sb.append( gm.getSrid() == null ? "-1" : gm.getSrid() );
-                sb.append( ")" );
-                return sb.toString();
-            }
-
-            @Override
-            public void setParticle( PreparedStatement stmt, Geometry particle, int paramIndex )
-                                    throws SQLException {
-                byte[] wkb = null;
-                if ( particle != null ) {
-                    try {
-                        Geometry compatible = getCompatibleGeometry( particle, gm.getCRS() );
-                        wkb = WKBWriter.write( compatible );
-                    } catch ( Throwable t ) {
-                        throw new IllegalArgumentException( t.getMessage(), t );
-                    }
-                }
-                stmt.setBytes( paramIndex, wkb );
-            }
-        };
+        return new PostGISGeometryConverter( column, gm.getCRS(), gm.getSrid(), useLegacyPredicates );
     }
 
     @Override
     protected AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
                                                     Connection conn )
                             throws FilterEvaluationException, UnmappableException {
-        return new PostGISWhereBuilder( new SQLPropertyNameMapper( getSchema(), getMapping( ft.getName() ) ), filter,
+        return new PostGISWhereBuilder( new SQLPropertyNameMapper( this, getMapping( ft.getName() ) ), filter,
                                         sortCrit, true, useLegacyPredicates );
     }
 
@@ -446,9 +396,12 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
             @Override
             public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {
-                return new GeometryPropertyNameMapping( new DBField( aliasManager.getRootTableAlias(),
-                                                                     blobMapping.getBBoxColumn() ), Types.OTHER, null,
-                                                        blobMapping.getCRS(), "-1" );
+                GeometryStorageParams geometryParams = new GeometryStorageParams( blobMapping.getCRS(), "-1",
+                                                                                  CoordinateDimension.DIM_2 );
+                GeometryMapping bboxMapping = new GeometryMapping( null, false,
+                                                                   new DBField( blobMapping.getBBoxColumn() ),
+                                                                   GeometryType.GEOMETRY, geometryParams, null );
+                return new PropertyNameMapping( getGeometryConverter( bboxMapping ), null );
             }
         };
         return new PostGISWhereBuilder( pgMapping, filter, null, true, useLegacyPredicates );

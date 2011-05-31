@@ -53,18 +53,18 @@ import org.deegree.filter.sql.UnmappableException;
  */
 public class SQLPropertyNameMapper implements PropertyNameMapper {
 
-    private final MappedApplicationSchema schema;
+    private final AbstractSQLFeatureStore fs;
 
     private final FeatureTypeMapping ftMapping;
 
-    public SQLPropertyNameMapper( MappedApplicationSchema schema, FeatureTypeMapping ftMapping ) {
-        this.schema = schema;
+    public SQLPropertyNameMapper( AbstractSQLFeatureStore fs, FeatureTypeMapping ftMapping ) {
+        this.fs = fs;
         this.ftMapping = ftMapping;
     }
 
     @Override
     public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
-        return new MappedXPath( schema, ftMapping, propName, aliasManager ).getPropertyNameMapping();
+        return new MappedXPath( fs, ftMapping, propName, aliasManager ).getPropertyNameMapping();
     }
 }

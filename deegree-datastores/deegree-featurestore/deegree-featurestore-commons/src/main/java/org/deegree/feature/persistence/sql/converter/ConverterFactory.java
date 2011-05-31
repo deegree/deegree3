@@ -56,6 +56,6 @@ public class ConverterFactory {
 
         PrimitiveType pt = pm.getType();
         String column = ( (DBField) pm.getMapping() ).getColumn();
-        return new DefaultPrimitiveConverter( pt, column );
+        return new DefaultPrimitiveConverter( pt, column, false );
     }
 }

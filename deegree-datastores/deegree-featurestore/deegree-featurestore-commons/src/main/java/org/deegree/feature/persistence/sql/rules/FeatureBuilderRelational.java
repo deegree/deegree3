@@ -110,6 +110,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final Connection conn;
 
+    private final String tableAlias;
+
     private final NamespaceBindings nsBindings;
 
     private final GMLVersion gmlVersion;
@@ -129,11 +131,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      *            JDBC connection (used for performing subsequent SELECTs), must not be <code>null</code>
      */
     public FeatureBuilderRelational( AbstractSQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping,
-                                     Connection conn ) {
+                                     Connection conn, String ftTableAlias ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;
         this.conn = conn;
+        this.tableAlias = ftTableAlias;
         this.nsBindings = new NamespaceBindings();
         for ( String prefix : fs.getNamespaceContext().keySet() ) {
             String ns = fs.getNamespaceContext().get( prefix );
@@ -149,7 +152,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     @Override
     public List<String> getInitialSelectColumns() {
         for ( Pair<String, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
-            addColumn( colToRsIdx, fidColumn.first );
+            addColumn( colToRsIdx, tableAlias + "." + fidColumn.first );
         }
         for ( Mapping mapping : ftMapping.getMappings() ) {
             addSelectColumns( mapping, colToRsIdx, true );
@@ -183,13 +186,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             ParticleConverter<?> particleConverter = fs.getConverter( mapping );
             if ( mapping instanceof PrimitiveMapping ) {
                 if ( particleConverter != null ) {
-                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( null ) );
+                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
                 } else {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else if ( mapping instanceof GeometryMapping ) {
                 if ( particleConverter != null ) {
-                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( null ) );
+                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
                 } else {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
@@ -197,11 +200,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 FeatureMapping fm = (FeatureMapping) mapping;
                 MappingExpression column = fm.getMapping();
                 if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, ( (DBField) column ).getColumn() );
+                    addColumn( colToRsIdx, tableAlias  + "." + ( (DBField) column ).getColumn() );
                 }
                 column = fm.getHrefMapping();
                 if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, ( (DBField) column ).getColumn() );
+                    addColumn( colToRsIdx, tableAlias  + "." + ( (DBField) column ).getColumn() );
                 }
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
@@ -220,32 +223,37 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
 
-        String gmlId = ftMapping.getFidMapping().getPrefix();
-        List<Pair<String, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
-        gmlId += rs.getObject( colToRsIdx.get( fidColumns.get( 0 ).first ) );
-        for ( int i = 1; i < fidColumns.size(); i++ ) {
-            gmlId += ftMapping.getFidMapping().getDelimiter()
-                     + rs.getObject( colToRsIdx.get( fidColumns.get( i ).first ) );
-        }
-        Feature feature = (Feature) fs.getCache().get( gmlId );
-        if ( feature == null ) {
-            LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
-            List<Property> props = new ArrayList<Property>();
-            for ( Mapping mapping : ftMapping.getMappings() ) {
-                PropertyName propName = mapping.getPath();
-                if ( propName.getAsQName() != null ) {
-                    PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName(), gmlVersion );
-                    addProperties( props, pt, mapping, rs );
-                } else {
-                    // TODO more complex mappings, e.g. "propname[1]"
-                    LOG.warn( "Omitting mapping '" + mapping
-                              + "'. Only simple property names (QNames) are currently supported here." );
-                }
+        Feature feature  = null;
+        try {
+            String gmlId = ftMapping.getFidMapping().getPrefix();
+            List<Pair<String, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
+            gmlId += rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
+            for ( int i = 1; i < fidColumns.size(); i++ ) {
+                gmlId += ftMapping.getFidMapping().getDelimiter()
+                         + rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
             }
-            feature = ft.newFeature( gmlId, props, null, null );
-            fs.getCache().add( feature );
-        } else {
-            LOG.debug( "Cache hit." );
+            feature = (Feature) fs.getCache().get( gmlId );
+            if ( feature == null ) {
+                LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
+                List<Property> props = new ArrayList<Property>();
+                for ( Mapping mapping : ftMapping.getMappings() ) {
+                    PropertyName propName = mapping.getPath();
+                    if ( propName.getAsQName() != null ) {
+                        PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName(), gmlVersion );
+                        addProperties( props, pt, mapping, rs );
+                    } else {
+                        // TODO more complex mappings, e.g. "propname[1]"
+                        LOG.warn( "Omitting mapping '" + mapping
+                                  + "'. Only simple property names (QNames) are currently supported here." );
+                    }
+                }
+                feature = ft.newFeature( gmlId, props, null, null );
+                fs.getCache().add( feature );
+            } else {
+                LOG.debug( "Cache hit." );
+            }
+        } catch ( Throwable t ) {
+            t.printStackTrace();
         }
         return feature;
     }
@@ -314,7 +322,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                String col = fs.getConverter( pm ).getSelectSnippet( null );
+                String col = fs.getConverter( pm ).getSelectSnippet( tableAlias );
                 int colIndex = colToRsIdx.get( col );
                 particle = fs.getConverter( mapping ).toParticle( rs, colIndex );
             }
@@ -322,7 +330,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                String col = fs.getConverter( pm ).getSelectSnippet( null );
+                String col = fs.getConverter( pm ).getSelectSnippet( tableAlias );
                 // TODO getObject seems not to work w/ oracle, the oracle.sql.BLOB does not yield correct results
                 int colIndex = colToRsIdx.get( col );
                 particle = fs.getConverter( mapping ).toParticle( rs, colIndex );
@@ -565,6 +573,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         sql.append( " FROM " );
         sql.append( jc.getToTable() );
+        sql.append( " AS " );
+        sql.append( tableAlias );
         sql.append( " WHERE " );
         first = true;
         for ( String keyColumn : jc.getToColumns() ) {

@@ -39,7 +39,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.utils.GeometryParticleConverter;
 
 /**
  * {@link SQLExpression} that represents a table column.
@@ -51,32 +54,34 @@ import org.deegree.cs.coordinatesystems.ICRS;
  */
 public class SQLColumn implements SQLExpression {
 
-    private int sqlType;
+    private final String table;
+
+    private final String column;
+
+    private PrimitiveType pt;
+
+    private ParticleConverter<?> converter;
+
+    private boolean isConcatenated;
 
     private boolean isSpatial;
-
-    private String column;
-
-    private String table;
 
     private String srid;
 
     private ICRS crs;
 
-    private boolean isConcatenated;
-
-    private PrimitiveType pt;
-
-    public SQLColumn( String table, String column, boolean spatial, PrimitiveType pt, int sqlType, ICRS crs,
-                      String srid, boolean isConcatenated ) {
-        this.table = table;
-        this.column = column;
-        this.pt = pt;
-        this.sqlType = sqlType;
-        this.isSpatial = spatial;
-        this.crs = crs;
-        this.srid = srid;
-        this.isConcatenated = isConcatenated;
+    public SQLColumn( String tableAlias, ParticleConverter<?> converter ) {
+        this.table = tableAlias;
+        this.column = converter.getSelectSnippet( null );
+        this.converter = converter;
+        if ( converter instanceof PrimitiveParticleConverter ) {
+            pt = ( (PrimitiveParticleConverter) converter ).getType();
+            isConcatenated = ( (PrimitiveParticleConverter) converter ).isConcatenated();
+        } else if ( converter instanceof GeometryParticleConverter ) {
+            isSpatial = true;
+            srid = ( (GeometryParticleConverter) converter ).getSrid();
+            crs = ( (GeometryParticleConverter) converter ).getCrs();
+        }
     }
 
     @Override
@@ -90,20 +95,22 @@ public class SQLColumn implements SQLExpression {
     }
 
     @Override
-    public int getSQLType() {
-        return sqlType;
-    }
-
-    @Override
     public PrimitiveType getPrimitiveType() {
         return pt;
     }
 
     @Override
-    public void cast( PrimitiveType pt ) {
-        if ( pt.getBaseType() != this.pt.getBaseType() ) {
+    public void cast( SQLExpression expr ) {
+        ParticleConverter<?> converter = expr.getConverter();
+        if ( !( converter instanceof PrimitiveParticleConverter )
+             || ( (PrimitiveParticleConverter) converter ).getType().getBaseType() != this.pt.getBaseType() ) {
             throw new UnsupportedOperationException( "Column type casts are not implemented yet." );
         }
+    }
+
+    @Override
+    public ParticleConverter<?> getConverter() {
+        return converter;
     }
 
     @Override
@@ -123,17 +130,14 @@ public class SQLColumn implements SQLExpression {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<SQLLiteral> getLiterals() {
+    public List<SQLArgument> getArguments() {
         return Collections.EMPTY_LIST;
     }
 
     @Override
     public StringBuilder getSQL() {
         StringBuilder sb = new StringBuilder();
-        if ( table != null ) {
-            sb.append( table ).append( "." );
-        }
-        sb.append( column );
+        sb.append( converter.getSelectSnippet( table ) );
         return sb;
     }
 }

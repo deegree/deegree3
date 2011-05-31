@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.cs.coordinatesystems.CRS;
 
 /**
@@ -52,19 +53,10 @@ import org.deegree.cs.coordinatesystems.CRS;
  */
 public class SQLOperation implements SQLExpression {
 
-    private int sqlType;
-
-    private boolean isSpatial;
-
     private List<Object> particles;
 
     public SQLOperation( List<Object> particles ) {
         this.particles = particles;
-    }
-
-    @Override
-    public int getSQLType() {
-        return sqlType;
     }
 
     @Override
@@ -87,14 +79,14 @@ public class SQLOperation implements SQLExpression {
     }
 
     @Override
-    public List<SQLLiteral> getLiterals() {
-        List<SQLLiteral> literals = new ArrayList<SQLLiteral>();
+    public List<SQLArgument> getArguments() {
+        List<SQLArgument> literals = new ArrayList<SQLArgument>();
         for ( Object particle : particles ) {
             if ( particle instanceof SQLExpression ) {
-                if ( particle instanceof SQLLiteral ) {
-                    literals.add( (SQLLiteral) particle );
+                if ( particle instanceof SQLArgument ) {
+                    literals.add( (SQLArgument) particle );
                 } else {
-                    literals.addAll( ( (SQLExpression) particle ).getLiterals() );
+                    literals.addAll( ( (SQLExpression) particle ).getArguments() );
                 }
             }
         }
@@ -131,7 +123,12 @@ public class SQLOperation implements SQLExpression {
     }
 
     @Override
-    public void cast( PrimitiveType pt ) {
-        throw new UnsupportedOperationException( "Operation casts are not implemented yet." );       
+    public void cast( SQLExpression expr ) {
+        throw new UnsupportedOperationException( "Operation casts are not implemented yet." );
+    }
+
+    @Override
+    public ParticleConverter getConverter() {
+        throw new UnsupportedOperationException();
     }
 }

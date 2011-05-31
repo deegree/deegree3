@@ -35,73 +35,57 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.expression;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.primitive.SQLValueMangler;
-import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.filter.expression.Literal;
-import org.deegree.filter.sql.UnmappableException;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLExpression} that represents a constant value, e.g. a string, a number or a geometry.
+ * {@link SQLExpression} that represents a constant argument value, e.g. a string, a number or a geometry.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class SQLLiteral implements SQLExpression {
+public class SQLArgument implements SQLExpression {
 
-    private Object value;
+    private static Logger LOG = LoggerFactory.getLogger( SQLArgument.class );
+
+    private TypedObjectNode value;
+
+    private ParticleConverter<? extends TypedObjectNode> converter;
 
     private PrimitiveType pt;
 
-    private int sqlType;
-
     private boolean isSpatial;
 
-    public SQLLiteral( PrimitiveValue value ) {
+    public SQLArgument( PrimitiveValue value, PrimitiveParticleConverter converter ) {
         this.value = value;
-        this.sqlType = -1;
+        this.pt = value.getType();
+        this.converter = converter;
         this.isSpatial = false;
-        // TODO SQL type conversion desparately needs to be outfactored (merge with ParticleConverter concept)
-        cast( value.getType() );
     }
 
-    public SQLLiteral( Object value, int sqlType ) {
+    public SQLArgument( Geometry value, GeometryParticleConverter converter ) {
         this.value = value;
-        this.sqlType = sqlType;
-        this.isSpatial = false;
+        this.converter = converter;
+        this.isSpatial = true;
     }
 
-    public SQLLiteral( Literal<?> literal ) throws UnmappableException {
-
-        this.value = literal.getValue();
-        if ( value != null ) {
-            if ( value instanceof PrimitiveValue ) {
-                // TODO what about differentiating column types?
-                value = ( (PrimitiveValue) value ).getAsText();
-            } else {
-                throw new UnmappableException( "Unhandled literal content '" + value.getClass() + "'" );
-            }
-        }
-
-        this.sqlType = -1;
-        this.isSpatial = false;
-    }
-
-    @Override
-    public int getSQLType() {
-        return sqlType;
-    }
-
-    public Object getValue() {
-        return value;
+    public void setArgument( PreparedStatement stmt, int paramIndex ) throws SQLException {
+        ( (ParticleConverter<TypedObjectNode>) converter ).setParticle( stmt, value, paramIndex );
     }
 
     @Override
@@ -120,23 +104,23 @@ public class SQLLiteral implements SQLExpression {
     }
 
     @Override
-    public List<SQLLiteral> getLiterals() {
+    public List<SQLArgument> getArguments() {
         return Collections.singletonList( this );
     }
 
     @Override
     public StringBuilder getSQL() {
-        return new StringBuilder( "?" );
+        return new StringBuilder( converter.getSetSnippet() );
     }
 
     @Override
     public ICRS getCRS() {
-        return isSpatial ? ( (Geometry) value ).getCoordinateSystem() : null;
+        return isSpatial ? ( (GeometryParticleConverter) converter ).getCrs() : null;
     }
 
     @Override
     public String getSRID() {
-        return null;
+        return isSpatial ? ( (GeometryParticleConverter) converter ).getSrid() : null;
     }
 
     @Override
@@ -145,12 +129,21 @@ public class SQLLiteral implements SQLExpression {
     }
 
     @Override
-    public void cast( PrimitiveType pt ) {
-        this.pt = pt;
-        if ( value != null ) {
-            String stringValue = value.toString();
-            Object o = XMLValueMangler.xmlToInternal( stringValue, pt.getBaseType() );
-            value = SQLValueMangler.internalToSQL( o );
+    public void cast( SQLExpression expr ) {
+        ParticleConverter<?> converter = expr.getConverter();
+        if ( converter instanceof PrimitiveParticleConverter ) {
+            PrimitiveParticleConverter ppc = (PrimitiveParticleConverter) converter;
+            this.pt = ppc.getType();
+            this.converter = converter;
+            if ( value != null ) {
+                value = new PrimitiveValue( value.toString(), pt );
+            }
+        } else {
+            LOG.warn( "Type casts for non-primitive values shouldn't occur." );
         }
+    }
+
+    public ParticleConverter<? extends TypedObjectNode> getConverter() {
+        return converter;
     }
 }

@@ -59,7 +59,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSUtils;
 import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -159,13 +159,13 @@ class TransactionHelper extends SqlHelper {
             preparedStatement = connection.prepareStatement( header.toString() );
             int i = 1;
             if ( builder.getWhere() != null ) {
-                for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
-                    preparedStatement.setObject( i++, o.getValue() );
+                for ( SQLArgument o : builder.getWhere().getArguments() ) {
+                    o.setArgument( preparedStatement, i++ );
                 }
             }
             if ( builder.getOrderBy() != null ) {
-                for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
-                    preparedStatement.setObject( i++, o.getValue() );
+                for ( SQLArgument o : builder.getOrderBy().getArguments() ) {
+                    o.setArgument( preparedStatement, i++ );
                 }
             }
             LOG.debug( Messages.getMessage( "INFO_TA_DELETE_FIND", preparedStatement.toString() ) );

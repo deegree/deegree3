@@ -50,8 +50,6 @@ public class SQLOperationBuilder {
 
     private int sqlType;
 
-    private boolean matchCase = true;
-
     private List<Object> particles = new ArrayList<Object>();
 
     public SQLOperationBuilder( int sqlType ) {
@@ -60,10 +58,6 @@ public class SQLOperationBuilder {
 
     public SQLOperationBuilder() {
         // nothing to do
-    }
-
-    public SQLOperationBuilder( boolean matchCase ) {
-        this.matchCase = matchCase;
     }
 
     public SQLOperationBuilder add( String s ) {

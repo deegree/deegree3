@@ -39,7 +39,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
@@ -53,10 +54,8 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.ConstantPropertyNameMapping;
 import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.GeometryPropertyNameMapping;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.MappingExpression;
-import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
@@ -75,6 +74,8 @@ public class MappedXPath {
 
     private static final Logger LOG = LoggerFactory.getLogger( MappedXPath.class );
 
+    private final AbstractSQLFeatureStore fs;
+
     private final MappedApplicationSchema schema;
 
     private final PropertyName propName;
@@ -82,23 +83,24 @@ public class MappedXPath {
     private final TableAliasManager aliasManager;
 
     private final List<Join> joins = new ArrayList<Join>();
-    
+
     private String currentTableAlias;
 
     private PropertyNameMapping propMapping;
 
     /**
-     * @param schema
+     * @param fs
      * @param ftMapping
      * @param propName
      * @param aliasManager
      * @throws UnmappableException
      *             if the propertyName can not be matched to the relational model
      */
-    public MappedXPath( MappedApplicationSchema schema, FeatureTypeMapping ftMapping, PropertyName propName,
+    public MappedXPath( AbstractSQLFeatureStore fs, FeatureTypeMapping ftMapping, PropertyName propName,
                         TableAliasManager aliasManager ) throws UnmappableException {
 
-        this.schema = schema;
+        this.fs = fs;
+        this.schema = fs.getSchema();
         this.aliasManager = aliasManager;
 
         // check for empty property name
@@ -136,10 +138,12 @@ public class MappedXPath {
 
         boolean matchFound = false;
         for ( Mapping mapping : mappedParticles ) {
+            System.out.println ("HUHU: " + mapping);
             List<MappableStep> mapSteps = MappableNameStep.extractSteps( mapping.getPath() );
             if ( mapSteps.isEmpty() ) {
                 matchFound = true;
             } else if ( !( steps.isEmpty() ) ) {
+                matchFound = true;
                 matchFound = mapSteps.get( 0 ).equals( steps.get( 0 ) );
             } else if ( mapSteps.get( 0 ) instanceof TextStep ) {
                 matchFound = true;
@@ -178,11 +182,8 @@ public class MappedXPath {
         if ( !( me instanceof DBField ) ) {
             throw new UnmappableException( "Mappings to non-DBField primitives is currently not supported." );
         }
-        DBField dbField = (DBField) me;
-        DBField valueField = new DBField( currentTableAlias, dbField.getColumn() );
-        int sqlType = -1;
-        PrimitiveType pt = primMapping.getType();
-        propMapping = new PrimitivePropertyNameMapping( valueField, sqlType, joins, pt, false );
+        ParticleConverter<?> converter = fs.getConverter( primMapping );
+        propMapping = new PropertyNameMapping( converter, joins );
     }
 
     private void map( GeometryMapping mapping, List<MappableStep> remaining )
@@ -193,18 +194,15 @@ public class MappedXPath {
         if ( !( me instanceof DBField ) ) {
             throw new UnmappableException( "Mappings to non-DBField geometries is currently not supported." );
         }
-        DBField dbField = (DBField) me;
-        DBField valueField = new DBField( currentTableAlias, dbField.getColumn() );
-        int sqlType = -1;
-        propMapping = new GeometryPropertyNameMapping( valueField, sqlType, joins, geomMapping.getCRS(),
-                                                       geomMapping.getSrid() );
+        ParticleConverter<?> converter = fs.getConverter( geomMapping );
+        propMapping = new PropertyNameMapping( converter, joins );
     }
 
     private void followJoins( List<TableJoin> joinedTables ) {
-//        if ( joins != null ) {
-//            for ( TableJoin join : joinedTables ) {
-//
-//            }
-//        }
+        // if ( joins != null ) {
+        // for ( TableJoin join : joinedTables ) {
+        //
+        // }
+        // }
     }
 }

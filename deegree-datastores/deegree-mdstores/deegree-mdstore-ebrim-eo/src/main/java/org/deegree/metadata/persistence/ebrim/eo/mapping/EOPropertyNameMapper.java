@@ -44,7 +44,6 @@ import static org.jaxen.saxpath.Axis.ATTRIBUTE;
 import static org.jaxen.saxpath.Axis.CHILD;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,18 +56,20 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.GeometryPropertyNameMapping;
 import org.deegree.filter.sql.Join;
-import org.deegree.filter.sql.PrimitivePropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.postgis.PostGISGeometryConverter;
+import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.metadata.ebrim.AliasedRIMType;
 import org.deegree.metadata.ebrim.RIMType;
 import org.deegree.metadata.persistence.ebrim.eo.EbrimEOMDStore;
@@ -121,15 +122,20 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
 
     private final List<Join> additionalJoins = new ArrayList<Join>();
 
+    private boolean useLegacyPredicates;
+
     /**
      * Creates a new {@link EOPropertyNameMapper} instance configured for the specified registry objects / aliases.
      * 
      * @param queryTypeNames
      *            queried type names, must not be <code>null</code>
+     * @param useLegacyPredicates
+     *            if true, legacy-style PostGIS spatial predicates are used (e.g. <code>Intersects</code> instead of
+     *            <code>ST_Intersects</code>)
      * @throws MetadataStoreException
      *             if any of the queried type names is not known / supported
      */
-    public EOPropertyNameMapper( QName[] queryTypeNames ) throws MetadataStoreException {
+    public EOPropertyNameMapper( QName[] queryTypeNames, boolean useLegacyPredicates ) throws MetadataStoreException {
         for ( QName queryTypeName : queryTypeNames ) {
             try {
                 List<AliasedRIMType> aliasedTypes = AliasedRIMType.valueOf( queryTypeName );
@@ -505,10 +511,11 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
     private void addMapping( PropertyName propName, List<Join> joins, AliasedRIMType type, String column,
                              SlotType dataType ) {
         String table = getTableAlias( joins, type );
-        DBField valueField = new DBField( table, column );
         PropertyNameMapping propMapping = null;
         if ( dataType == SlotType._geom ) {
-            propMapping = new GeometryPropertyNameMapping( valueField, Types.OTHER, joins, STORAGE_CRS, STORAGE_SRID );
+            GeometryParticleConverter converter = new PostGISGeometryConverter( column, STORAGE_CRS, STORAGE_SRID,
+                                                                                useLegacyPredicates );
+            propMapping = new PropertyNameMapping( converter, joins );
         } else {
             BaseType bt = null;
             boolean isConcatenated = false;
@@ -535,8 +542,9 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
                 break;
             }
             }
-            propMapping = new PrimitivePropertyNameMapping( valueField, bt.getSQLType(), joins,
-                                                            new PrimitiveType( bt ), isConcatenated );
+            PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( new PrimitiveType( bt ), column,
+                                                                                  isConcatenated );
+            propMapping = new PropertyNameMapping( converter, joins );
         }
 
         propNameToMapping.put( propName, propMapping );

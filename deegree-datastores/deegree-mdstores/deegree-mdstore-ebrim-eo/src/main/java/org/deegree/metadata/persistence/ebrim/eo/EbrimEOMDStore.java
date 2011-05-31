@@ -84,7 +84,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.Join;
-import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.ebrim.AdhocQuery;
@@ -337,7 +337,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
         ConnectionManager connManager = workspace.getSubsystemManager( ConnectionManager.class );
         Connection conn = getConnection( true );
         try {
-            EOPropertyNameMapper propMapper = new EOPropertyNameMapper( query.getQueryTypeNames() );
+            EOPropertyNameMapper propMapper = new EOPropertyNameMapper( query.getQueryTypeNames(), useLegacyPredicates );
             if ( query.getFilter() instanceof IdFilter ) {
                 throw new MetadataStoreException( "ID filters are currently not supported." );
             }
@@ -412,16 +412,14 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
             int i = 1;
             if ( wb.getWhere() != null ) {
-                for ( SQLLiteral argument : wb.getWhere().getLiterals() ) {
-                    Object value = argument.getValue();
-                    LOG.debug( "Setting argument " + i + ": " + value + "," + ( value != null ? value.getClass() : "" ) );
-                    stmt.setObject( i++, value );
+                for ( SQLArgument argument : wb.getWhere().getArguments() ) {
+                    argument.setArgument( stmt, i++ );
                 }
             }
 
             if ( wb.getOrderBy() != null ) {
-                for ( SQLLiteral argument : wb.getOrderBy().getLiterals() ) {
-                    stmt.setObject( i++, argument.getValue() );
+                for ( SQLArgument argument : wb.getOrderBy().getArguments() ) {
+                    argument.setArgument( stmt, i++ );
                 }
             }
 
@@ -445,7 +443,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
         ConnectionManager connManager = workspace.getSubsystemManager( ConnectionManager.class );
         Connection conn = getConnection( true );
         try {
-            EOPropertyNameMapper propMapper = new EOPropertyNameMapper( query.getQueryTypeNames() );
+            EOPropertyNameMapper propMapper = new EOPropertyNameMapper( query.getQueryTypeNames(), useLegacyPredicates );
             if ( query.getFilter() instanceof IdFilter ) {
                 throw new MetadataStoreException( "ID filters are currently not supported." );
             }
@@ -502,8 +500,8 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
             int i = 1;
             if ( wb.getWhere() != null ) {
-                for ( SQLLiteral argument : wb.getWhere().getLiterals() ) {
-                    stmt.setObject( i++, argument.getValue() );
+                for ( SQLArgument argument : wb.getWhere().getArguments() ) {
+                    argument.setArgument( stmt, i++ );
                 }
             }
 

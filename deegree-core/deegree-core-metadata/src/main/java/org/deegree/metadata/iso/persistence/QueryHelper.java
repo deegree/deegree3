@@ -43,19 +43,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.ParseException;
 import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.UnmappableException;
-import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.i18n.Messages;
@@ -139,34 +135,14 @@ class QueryHelper extends SqlHelper {
 
             int i = 1;
             if ( builder.getWhere() != null ) {
-                for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
-                    if ( o.getSQLType() == Types.TIMESTAMP ) {
-                        java.util.Date date = null;
-                        try {
-                            date = DateUtils.parseISO8601Date( o.getValue().toString() );
-                            Timestamp d = new Timestamp( date.getTime() );
-                            preparedStatement.setTimestamp( i++, d );
-                        } catch ( ParseException e ) {
-                            String msg = Messages.getMessage( "ERROR_PARSING", date, e.getMessage() );
-                            LOG.debug( msg );
-                            throw new MetadataStoreException( msg );
-                        }
-                    } else if ( o.getSQLType() == Types.BOOLEAN ) {
-                        String bool = o.getValue().toString();
-                        boolean b = false;
-                        if ( bool.equals( "true" ) ) {
-                            b = true;
-                        }
-                        preparedStatement.setBoolean( i++, b );
-                    } else {
-                        preparedStatement.setObject( i++, o.getValue() );
-                    }
+                for ( SQLArgument o : builder.getWhere().getArguments() ) {
+                    o.setArgument( preparedStatement, i++ );
                 }
             }
 
             if ( builder.getOrderBy() != null ) {
-                for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
-                    preparedStatement.setObject( i++, o.getValue() );
+                for ( SQLArgument o : builder.getOrderBy().getArguments() ) {
+                    o.setArgument( preparedStatement, i++ );
                 }
             }
             LOG.debug( preparedStatement.toString() );
@@ -205,28 +181,8 @@ class QueryHelper extends SqlHelper {
             preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
             int i = 1;
             if ( builder.getWhere() != null ) {
-                for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
-                    if ( o.getSQLType() == Types.TIMESTAMP ) {
-                        java.util.Date date = null;
-                        try {
-                            date = DateUtils.parseISO8601Date( o.getValue().toString() );
-                            Timestamp d = new Timestamp( date.getTime() );
-                            preparedStatement.setTimestamp( i++, d );
-                        } catch ( ParseException e ) {
-                            String msg = Messages.getMessage( "ERROR_PARSING", date, e.getMessage() );
-                            LOG.debug( msg );
-                            throw new MetadataStoreException( msg );
-                        }
-                    } else if ( o.getSQLType() == Types.BOOLEAN ) {
-                        String bool = o.getValue().toString();
-                        boolean b = false;
-                        if ( bool.equals( "true" ) ) {
-                            b = true;
-                        }
-                        preparedStatement.setBoolean( i++, b );
-                    } else {
-                        preparedStatement.setObject( i++, o.getValue() );
-                    }
+                for ( SQLArgument o : builder.getWhere().getArguments() ) {
+                    o.setArgument( preparedStatement, i++ );
                 }
             }
             LOG.debug( preparedStatement.toString() );
@@ -291,7 +247,7 @@ class QueryHelper extends SqlHelper {
         }
         if ( connectionType == Type.MSSQL ) {
             MSSQLMappingsISODC mapping = new MSSQLMappingsISODC();
-            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false );
+            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false, true );
         }
         return null;
     }
