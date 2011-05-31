@@ -37,7 +37,6 @@ package org.deegree.filter.sql.postgis;
 
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -62,12 +61,9 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.ConstantPropertyNameMapping;
 import org.deegree.filter.sql.PropertyNameMapper;
-import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLArgument;
-import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
 import org.deegree.filter.sql.expression.SQLOperation;
 import org.deegree.filter.sql.expression.SQLOperationBuilder;

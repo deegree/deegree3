@@ -50,7 +50,7 @@ public class ConstantPropertyNameMapping extends PropertyNameMapping {
     private TypedObjectNode value;
 
     public ConstantPropertyNameMapping( TypedObjectNode value ) {
-        super( null, null );
+        super( null, null, null );
         this.value = value;
     }
 

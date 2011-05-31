@@ -282,14 +282,14 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
                     String toTable = tableColumn.first.first;
                     String toTableAlias = aliasManager.generateNew();
                     String toColumn = fk_main;
-                    joins.add( new Join(fromTable, fromTableAlias, fromColumn, toTable, toTableAlias, toColumn) );
+                    joins.add( new Join( fromTable, fromTableAlias, fromColumn, toTable, toTableAlias, toColumn ) );
                 }
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(
-                                                                                     new PrimitiveType(
-                                                                                                        tableColumn.third ),
-                                                                                     tableColumn.first.second,
-                                                                                     tableColumn.second );
-               mapping = new PropertyNameMapping( converter, joins );
+                                                                                      new PrimitiveType(
+                                                                                                         tableColumn.third ),
+                                                                                      tableColumn.first.second,
+                                                                                      tableColumn.second );
+                mapping = new PropertyNameMapping( converter, joins, tableColumn.first.second );
             } else {
                 String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
                 LOG.debug( msg );

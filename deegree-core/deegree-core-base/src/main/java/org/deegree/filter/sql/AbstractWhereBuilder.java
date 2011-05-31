@@ -731,7 +731,7 @@ public abstract class AbstractWhereBuilder {
                 if ( propMapping.getJoins() != null && !propMapping.getJoins().isEmpty() ) {
                     tableAlias = propMapping.getJoins().get( propMapping.getJoins().size() - 1 ).getToTableAlias();
                 }
-                sql = new SQLColumn( tableAlias, propMapping.getConverter() );
+                sql = new SQLColumn( tableAlias, propMapping.getColumn(), propMapping.getConverter() );
             }
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );

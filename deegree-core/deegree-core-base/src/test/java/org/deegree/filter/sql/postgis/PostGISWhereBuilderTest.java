@@ -85,59 +85,59 @@ public class PostGISWhereBuilderTest {
         Assert.equals( "X1.NAME = 'Albert Camus'", whereClause.toString() );
     }
 
-//    @Test
-//    public void testFilter2()
-//                            throws Exception {
-//        OperatorFilter filter = parse( "testfilter2.xml" );
-//        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
-//        SQLExpression whereClause = wb.getWhere();
-//        Assert.equals( "(X1.DATE_OF_BIRTH > '1820-01-01' AND X1.NAME='Germany')", whereClause.toString() );
-//    }
-//
-//    @Test
-//    public void testFilter5()
-//                            throws Exception {
-//        OperatorFilter filter = parse( "testfilter5.xml" );
-//        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
-//        SQLExpression whereClause = wb.getWhere();
-//        System.out.println( whereClause );
-//    }
-//
-//    @Test
-//    public void testFilter6()
-//                            throws Exception {
-//        OperatorFilter filter = parse( "testfilter6.xml" );
-//        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
-//        SQLExpression whereClause = wb.getWhere();
-//        System.out.println( whereClause );
-//    }
-//
-//    @Test
-//    public void testFilter8()
-//                            throws Exception {
-//        OperatorFilter filter = parse( "testfilter8.xml" );
-//        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
-//        SQLExpression whereClause = wb.getWhere();
-//        System.out.println( whereClause );
-//    }
-//
-//    @Test
-//    public void testFilter11()
-//                            throws Exception {
-//        OperatorFilter filter = parse( "testfilter11.xml" );
-//        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
-//        SQLExpression whereClause = wb.getWhere();
-//        System.out.println( whereClause );
-//    }
-//
-//    @Test
-//    public void testFilter15()
-//                            throws Exception {
-//        OperatorFilter filter = parse( "testfilter15.xml" );
-//        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
-//        SQLExpression whereClause = wb.getWhere();
-//        System.out.println( whereClause );
-//    }
+    // @Test
+    // public void testFilter2()
+    // throws Exception {
+    // OperatorFilter filter = parse( "testfilter2.xml" );
+    // PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
+    // SQLExpression whereClause = wb.getWhere();
+    // Assert.equals( "(X1.DATE_OF_BIRTH > '1820-01-01' AND X1.NAME='Germany')", whereClause.toString() );
+    // }
+    //
+    // @Test
+    // public void testFilter5()
+    // throws Exception {
+    // OperatorFilter filter = parse( "testfilter5.xml" );
+    // PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
+    // SQLExpression whereClause = wb.getWhere();
+    // System.out.println( whereClause );
+    // }
+    //
+    // @Test
+    // public void testFilter6()
+    // throws Exception {
+    // OperatorFilter filter = parse( "testfilter6.xml" );
+    // PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
+    // SQLExpression whereClause = wb.getWhere();
+    // System.out.println( whereClause );
+    // }
+    //
+    // @Test
+    // public void testFilter8()
+    // throws Exception {
+    // OperatorFilter filter = parse( "testfilter8.xml" );
+    // PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
+    // SQLExpression whereClause = wb.getWhere();
+    // System.out.println( whereClause );
+    // }
+    //
+    // @Test
+    // public void testFilter11()
+    // throws Exception {
+    // OperatorFilter filter = parse( "testfilter11.xml" );
+    // PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
+    // SQLExpression whereClause = wb.getWhere();
+    // System.out.println( whereClause );
+    // }
+    //
+    // @Test
+    // public void testFilter15()
+    // throws Exception {
+    // OperatorFilter filter = parse( "testfilter15.xml" );
+    // PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, true, false );
+    // SQLExpression whereClause = wb.getWhere();
+    // System.out.println( whereClause );
+    // }
 
     private OperatorFilter parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -157,27 +157,27 @@ public class PostGISWhereBuilderTest {
             if ( propName.getAsText().equals( "app:name" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.STRING );
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "NAME", false );
-                return new PropertyNameMapping( converter, null );
+                return new PropertyNameMapping( converter, null, null );
             }
             if ( propName.getAsText().equals( "app:id" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.STRING );
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "ID", false );
-                return new PropertyNameMapping( converter, null );
+                return new PropertyNameMapping( converter, null, null );
             }
             if ( propName.getAsText().equals( "app:subject" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.STRING );
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "SUBJECT", false );
-                return new PropertyNameMapping( converter, null );                
+                return new PropertyNameMapping( converter, null, null );
             }
             if ( propName.getAsText().equals( "app:dateOfBirth" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.DATE );
-                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "DATE_OF_BIRTH", false );                
-                return new PropertyNameMapping( converter, null ); 
+                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "DATE_OF_BIRTH", false );
+                return new PropertyNameMapping( converter, null, null );
             }
-            if ( propName.getAsText().equals( "app:placeOfBirth/app:Place/app:country/app:Country/app:name") ) {
+            if ( propName.getAsText().equals( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) ) {
                 PrimitiveType pt = new PrimitiveType( BaseType.STRING );
-                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "NAME", false );                
-                return new PropertyNameMapping( converter, null ); 
+                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, "NAME", false );
+                return new PropertyNameMapping( converter, null, null );
             }
             throw new UnmappableException( "Property '" + propName + "' is not mappable." );
         }

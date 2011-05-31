@@ -401,7 +401,7 @@ public class PostGISFeatureStore extends AbstractSQLFeatureStore {
                 GeometryMapping bboxMapping = new GeometryMapping( null, false,
                                                                    new DBField( blobMapping.getBBoxColumn() ),
                                                                    GeometryType.GEOMETRY, geometryParams, null );
-                return new PropertyNameMapping( getGeometryConverter( bboxMapping ), null );
+                return new PropertyNameMapping( getGeometryConverter( bboxMapping ), null, blobMapping.getBBoxColumn() );
             }
         };
         return new PostGISWhereBuilder( pgMapping, filter, null, true, useLegacyPredicates );

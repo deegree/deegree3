@@ -70,9 +70,9 @@ public class SQLColumn implements SQLExpression {
 
     private ICRS crs;
 
-    public SQLColumn( String tableAlias, ParticleConverter<?> converter ) {
+    public SQLColumn( String tableAlias, String column, ParticleConverter<?> converter ) {
         this.table = tableAlias;
-        this.column = converter.getSelectSnippet( null );
+        this.column = column;
         this.converter = converter;
         if ( converter instanceof PrimitiveParticleConverter ) {
             pt = ( (PrimitiveParticleConverter) converter ).getType();
@@ -137,7 +137,7 @@ public class SQLColumn implements SQLExpression {
     @Override
     public StringBuilder getSQL() {
         StringBuilder sb = new StringBuilder();
-        sb.append( converter.getSelectSnippet( table ) );
+        sb.append( table == null ? column : ( table + "." + column ) );
         return sb;
     }
 }

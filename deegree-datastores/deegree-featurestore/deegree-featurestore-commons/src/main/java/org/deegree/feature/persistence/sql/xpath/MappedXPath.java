@@ -120,11 +120,11 @@ public class MappedXPath {
 
         List<MappableStep> steps = MappableStep.extractSteps( propName );
 
-        System.out.println(ftMapping);
-        System.out.println(ftMapping.getFeatureType());
-        System.out.println(steps);
-        System.out.println(steps.get(0));
-        
+        System.out.println( ftMapping );
+        System.out.println( ftMapping.getFeatureType() );
+        System.out.println( steps );
+        System.out.println( steps.get( 0 ) );
+
         // the first step may be the name of the feature type or the name of a property
         if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
             steps.subList( 1, steps.size() );
@@ -181,25 +181,25 @@ public class MappedXPath {
     private void map( PrimitiveMapping mapping, List<MappableStep> remaining )
                             throws UnmappableException {
 
-        PrimitiveMapping primMapping = (PrimitiveMapping) mapping;
+        PrimitiveMapping primMapping = mapping;
         MappingExpression me = primMapping.getMapping();
         if ( !( me instanceof DBField ) ) {
             throw new UnmappableException( "Mappings to non-DBField primitives is currently not supported." );
         }
         ParticleConverter<?> converter = fs.getConverter( primMapping );
-        propMapping = new PropertyNameMapping( converter, joins );
+        propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn() );
     }
 
     private void map( GeometryMapping mapping, List<MappableStep> remaining )
                             throws UnmappableException {
 
-        GeometryMapping geomMapping = (GeometryMapping) mapping;
+        GeometryMapping geomMapping = mapping;
         MappingExpression me = geomMapping.getMapping();
         if ( !( me instanceof DBField ) ) {
             throw new UnmappableException( "Mappings to non-DBField geometries is currently not supported." );
         }
         ParticleConverter<?> converter = fs.getConverter( geomMapping );
-        propMapping = new PropertyNameMapping( converter, joins );
+        propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn() );
     }
 
     private void followJoins( List<TableJoin> joinedTables ) {

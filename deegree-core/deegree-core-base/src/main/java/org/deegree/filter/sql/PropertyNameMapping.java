@@ -58,6 +58,8 @@ public class PropertyNameMapping {
 
     private final List<Join> joins;
 
+    private String column;
+
     /**
      * Creates a new {@link PropertyNameMapping} instance.
      * 
@@ -66,9 +68,12 @@ public class PropertyNameMapping {
      * @param joins
      *            joins that are required to connect the root table to the tables where the targeted SQL particles are,
      *            can also be emtpy or <code>null</code>
+     * @param column
+     *            may be null
      */
-    public PropertyNameMapping( ParticleConverter<?> converter, List<Join> joins ) {
+    public PropertyNameMapping( ParticleConverter<?> converter, List<Join> joins, String column ) {
         this.converter = converter;
+        this.column = column;
         if ( joins == null ) {
             this.joins = emptyList();
         } else {
@@ -93,6 +98,10 @@ public class PropertyNameMapping {
      */
     public ParticleConverter<?> getConverter() {
         return converter;
+    }
+
+    public String getColumn() {
+        return column;
     }
 
     @Override

@@ -96,7 +96,8 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
                                                                               pt,
                                                                               expr.getAsQName().getLocalPart().toLowerCase(),
                                                                               false );
-        return new SQLColumn( aliasManager.getRootTableAlias(), converter );
+        return new SQLColumn( aliasManager.getRootTableAlias(), expr.getAsQName().getLocalPart().toLowerCase(),
+                              converter );
     }
 
     // avoid setting a Date on fields which are strings just containing ISO dates...
