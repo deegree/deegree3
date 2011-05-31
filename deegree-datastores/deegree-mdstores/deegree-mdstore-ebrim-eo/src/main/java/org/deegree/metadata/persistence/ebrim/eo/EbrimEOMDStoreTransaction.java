@@ -244,7 +244,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
             ir.addPreparedArgument( "data", getAsByteArray( registryPackage.getElement() ) );
 
             LOG.debug( "Execute statement " + ir.getSql() );
-            System.out.println( id );
+            
             ir.performInsert( conn );
 
             for ( EOTYPE type : EOTYPE.values() ) {
