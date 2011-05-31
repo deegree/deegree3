@@ -37,7 +37,6 @@ package org.deegree.metadata.iso.persistence;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
 
@@ -71,7 +70,7 @@ abstract class SqlHelper {
 
     protected String opOnTable;
 
-    SqlHelper(Type connectionType) {
+    SqlHelper( Type connectionType ) {
         this.connectionType = connectionType;
         if ( connectionType == Type.PostgreSQL ) {
             idColumn = PostGISMappingsISODC.CommonColumnNames.id.name();
@@ -126,23 +125,13 @@ abstract class SqlHelper {
         getDatasetIDs.append( rootTableAlias );
 
         for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
-            String currentAlias = rootTableAlias;
             for ( Join join : mappedPropName.getJoins() ) {
-                DBField from = join.getFrom();
-                DBField to = join.getTo();
                 getDatasetIDs.append( " LEFT OUTER JOIN " );
-                getDatasetIDs.append( to.getTable() );
-                getDatasetIDs.append( " AS " );
-                getDatasetIDs.append( to.getAlias() );
+                getDatasetIDs.append( join.getToTable() );
+                getDatasetIDs.append( ' ' );
+                getDatasetIDs.append( join.getToTableAlias() );
                 getDatasetIDs.append( " ON " );
-                getDatasetIDs.append( currentAlias );
-                getDatasetIDs.append( "." );
-                getDatasetIDs.append( from.getColumn() );
-                getDatasetIDs.append( "=" );
-                currentAlias = to.getAlias();
-                getDatasetIDs.append( currentAlias );
-                getDatasetIDs.append( "." );
-                getDatasetIDs.append( to.getColumn() );
+                getDatasetIDs.append( join.getSQLJoinCondition() );
             }
         }
 

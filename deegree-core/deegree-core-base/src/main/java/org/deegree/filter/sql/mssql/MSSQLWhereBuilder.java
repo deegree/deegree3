@@ -264,34 +264,6 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
         return builder.toOperation();
     }
 
-    @Override
-    protected SQLExpression toProtoSQL( PropertyName propName )
-                            throws UnmappableException, FilterEvaluationException {
-        SQLExpression sql = null;
-        PropertyNameMapping propMapping = mapper.getMapping( propName, aliasManager );
-        if ( propMapping != null ) {
-            propNameMappingList.add( propMapping );
-            if ( propMapping instanceof ConstantPropertyNameMapping ) {
-                // TODO get rid of ConstantPropertyNameMapping
-                PrimitiveType pt = new PrimitiveType( STRING );
-                PrimitiveValue value = new PrimitiveValue( ""
-                                                           + ( (ConstantPropertyNameMapping) propMapping ).getValue(),
-                                                           pt );
-                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
-                sql = new SQLArgument( value, converter );
-            } else {
-                String tableAlias = aliasManager.getRootTableAlias();
-                if ( propMapping.getJoins() != null && !propMapping.getJoins().isEmpty() ) {
-                    tableAlias = propMapping.getJoins().get( propMapping.getJoins().size() - 1 ).getTo().getAlias();
-                }
-                sql = new SQLColumn( tableAlias, propMapping.getConverter() );
-            }
-        } else {
-            throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
-        }
-        return sql;
-    }
-
     private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid )
                             throws FilterEvaluationException {
         return new SQLArgument( geom, new MSSQLGeometryConverter( null, targetCRS, "" + srid, is2d ) );

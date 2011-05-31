@@ -138,7 +138,6 @@ public class MappedXPath {
 
         boolean matchFound = false;
         for ( Mapping mapping : mappedParticles ) {
-            System.out.println ("HUHU: " + mapping);
             List<MappableStep> mapSteps = MappableNameStep.extractSteps( mapping.getPath() );
             if ( mapSteps.isEmpty() ) {
                 matchFound = true;
@@ -199,10 +198,17 @@ public class MappedXPath {
     }
 
     private void followJoins( List<TableJoin> joinedTables ) {
-        // if ( joins != null ) {
-        // for ( TableJoin join : joinedTables ) {
-        //
-        // }
-        // }
+        if ( joinedTables != null ) {
+            for ( TableJoin joinedTable : joinedTables ) {
+                String fromTable = joinedTable.getFromTable().getTable();
+                String fromTableAlias = currentTableAlias;
+                String toTable = joinedTable.getToTable().getTable();
+                String toTableAlias = aliasManager.generateNew();
+                currentTableAlias = toTableAlias;
+                Join appliedJoin = new Join( fromTable, fromTableAlias, joinedTable.getFromColumns(), toTable,
+                                             toTableAlias, joinedTable.getToColumns() );
+                joins.add( appliedJoin );
+            }
+        }
     }
 }

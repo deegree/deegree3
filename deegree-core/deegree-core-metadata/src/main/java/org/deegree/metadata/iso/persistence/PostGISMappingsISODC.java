@@ -275,14 +275,14 @@ public class PostGISMappingsISODC implements PropertyNameMapper {
                 String id = CommonColumnNames.id.name();
                 String fk_main = CommonColumnNames.fk_main.name();
                 List<Join> joins = new ArrayList<Join>();
-                String aliasFirstFirst = aliasManager.getRootTableAlias();
                 if ( !tableColumn.first.first.equals( mainTable ) ) {
-                    DBField from = new DBField( mainTable, id );
-                    from.setAlias( aliasManager.getRootTableAlias() );
-                    DBField to = new DBField( tableColumn.first.first, fk_main );
-                    aliasFirstFirst = aliasManager.generateNew();
-                    to.setAlias( aliasFirstFirst );
-                    joins.add( new Join( from, to, null, 0 ) );
+                    String fromTable = mainTable;
+                    String fromTableAlias = aliasManager.getRootTableAlias();
+                    String fromColumn = id;
+                    String toTable = tableColumn.first.first;
+                    String toTableAlias = aliasManager.generateNew();
+                    String toColumn = fk_main;
+                    joins.add( new Join(fromTable, fromTableAlias, fromColumn, toTable, toTableAlias, toColumn) );
                 }
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(
                                                                                      new PrimitiveType(

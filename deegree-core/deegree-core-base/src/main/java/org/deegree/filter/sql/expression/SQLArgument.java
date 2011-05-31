@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.expression;
 
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -108,7 +110,9 @@ public class SQLArgument implements SQLExpression {
 
         if ( converter == null ) {
             LOG.warn( "No inferred particle converter. Treating as STRING value." );
-            new DefaultPrimitiveConverter( pt, null, false ).setParticle( stmt, (PrimitiveValue) value, paramIndex );
+            new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null, false ).setParticle( stmt,
+                                                                                                   (PrimitiveValue) value,
+                                                                                                   paramIndex );
         } else {
             ( (ParticleConverter<TypedObjectNode>) this.converter ).setParticle( stmt, value, paramIndex );
         }
@@ -139,7 +143,7 @@ public class SQLArgument implements SQLExpression {
         String sql = null;
         if ( converter == null ) {
             LOG.warn( "No inferred particle converter. Treating as STRING value." );
-            sql = new DefaultPrimitiveConverter( pt, null, false ).getSetSnippet();
+            sql = new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null, false ).getSetSnippet();
         } else {
             sql = ( (ParticleConverter<TypedObjectNode>) this.converter ).getSetSnippet();
         }

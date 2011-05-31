@@ -179,7 +179,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         if ( jc != null && initial ) {
             if ( initial ) {
                 for ( String column : jc.get( 0 ).getFromColumns() ) {
-                    addColumn( colToRsIdx, column );
+                    addColumn( colToRsIdx, tableAlias + "." + column );
                 }
             }
         } else {
@@ -612,7 +612,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             LOG.debug( "Preparing subsequent SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             int i = 1;
             for ( String keyColumn : jc.getFromColumns() ) {
-                Object key = rs.getObject( colToRsIdx.get( keyColumn ) );
+                Object key = rs.getObject( colToRsIdx.get( tableAlias + "." + keyColumn ) );
                 LOG.debug( "? = '{}' ({})", key, keyColumn );
                 stmt.setObject( i++, key );
             }

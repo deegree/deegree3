@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql;
 
+import static java.util.Collections.singletonList;
+
+import java.util.List;
+
 /**
  * The <code></code> class TODO add class documentation here.
  * 
@@ -45,25 +49,91 @@ package org.deegree.filter.sql;
  */
 public class Join {
 
-    private final DBField from;
+    private final String fromTable;
 
-    private final DBField to;
+    private final String fromTableAlias;
 
-    public Join( DBField from, DBField to, DBField pos, int num ) {
-        this.from = from;
-        this.to = to;
+    private final List<String> fromColumns;
+
+    private final String toTable;
+
+    private final String toTableAlias;
+
+    private final List<String> toColumns;
+
+    public Join( String fromTable, String fromTableAlias, String fromColumn, String toTable, String toTableAlias,
+                 String toColumn ) {
+        this.fromTable = fromTable;
+        this.fromTableAlias = fromTableAlias;
+        this.fromColumns = singletonList( fromColumn );
+        this.toTable = toTable;
+        this.toTableAlias = toTableAlias;
+        this.toColumns = singletonList( toColumn );
     }
 
-    public DBField getFrom() {
-        return from;
+    public Join( String fromTable, String fromTableAlias, List<String> fromColumns, String toTable,
+                 String toTableAlias, List<String> toColumns ) {
+        this.fromTable = fromTable;
+        this.fromTableAlias = fromTableAlias;
+        this.fromColumns = fromColumns;
+        this.toTable = toTable;
+        this.toTableAlias = toTableAlias;
+        this.toColumns = toColumns;
     }
 
-    public DBField getTo() {
-        return to;
+    public String getFromTable() {
+        return fromTable;
     }
 
-    @Override
-    public String toString() {
-        return from + "=" + to;
+    public String getFromTableAlias() {
+        return fromTableAlias;
+    }
+
+    public List<String> getFromColumns() {
+        return fromColumns;
+    }
+
+    public String getToTable() {
+        return toTable;
+    }
+
+    public String getToTableAlias() {
+        return toTableAlias;
+    }
+
+    public List<String> getToColumns() {
+        return toColumns;
+    }
+
+    public String getSQLJoinCondition() {
+        StringBuilder sb = new StringBuilder();
+
+        if ( fromColumns.size() > 1 ) {
+            sb.append( '(' );
+        }
+
+        sb.append( fromTableAlias );
+        sb.append( '.' );
+        sb.append( fromColumns.get( 0 ) );
+        sb.append( '=' );
+        sb.append( toTableAlias );
+        sb.append( '.' );
+        sb.append( toColumns.get( 0 ) );
+
+        for ( int i = 1; i < fromColumns.size(); i++ ) {
+            sb.append( " AND " );
+            sb.append( fromTableAlias );
+            sb.append( '.' );
+            sb.append( fromColumns.get( i ) );
+            sb.append( '=' );
+            sb.append( toTableAlias );
+            sb.append( '.' );
+            sb.append( toColumns.get( i ) );
+        }
+
+        if ( fromColumns.size() > 1 ) {
+            sb.append( ')' );
+        }
+        return sb.toString();
     }
 }

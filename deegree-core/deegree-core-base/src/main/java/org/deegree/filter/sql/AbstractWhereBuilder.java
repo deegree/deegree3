@@ -692,7 +692,6 @@ public abstract class AbstractWhereBuilder {
         if ( value != null ) {
             if ( value instanceof PrimitiveValue ) {
                 PrimitiveValue pv = (PrimitiveValue) value;
-                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pv.getType(), null, false );
                 return new SQLArgument( pv, null );
             } else {
                 throw new UnmappableException( "Only primitive valued literals are currently supported." );
@@ -730,7 +729,7 @@ public abstract class AbstractWhereBuilder {
             } else {
                 String tableAlias = aliasManager.getRootTableAlias();
                 if ( propMapping.getJoins() != null && !propMapping.getJoins().isEmpty() ) {
-                    tableAlias = propMapping.getJoins().get( propMapping.getJoins().size() - 1 ).getTo().getAlias();
+                    tableAlias = propMapping.getJoins().get( propMapping.getJoins().size() - 1 ).getToTableAlias();
                 }
                 sql = new SQLColumn( tableAlias, propMapping.getConverter() );
             }

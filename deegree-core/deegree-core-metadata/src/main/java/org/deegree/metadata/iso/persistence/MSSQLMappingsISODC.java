@@ -62,7 +62,6 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
@@ -275,10 +274,13 @@ public class MSSQLMappingsISODC implements PropertyNameMapper {
                 String fk_main = CommonColumnNames.fk_main.name();
                 List<Join> joins = new ArrayList<Join>();
                 if ( !tableColumn.first.first.equals( mainTable ) ) {
-                    DBField from = new DBField( mainTable, id );
-                    DBField to = new DBField( tableColumn.first.first, fk_main );
-                    to.setAlias( aliasManager.generateNew() );
-                    joins.add( new Join( from, to, null, 0 ) );
+                    String fromTable = mainTable;
+                    String fromTableAlias = aliasManager.getRootTableAlias();
+                    String fromColumn = id;
+                    String toTable = tableColumn.first.first;
+                    String toTableAlias = aliasManager.generateNew();
+                    String toColumn = fk_main;
+                    joins.add( new Join(fromTable, fromTableAlias, fromColumn, toTable, toTableAlias, toColumn) );
                 }
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(
                                                                                       new PrimitiveType(

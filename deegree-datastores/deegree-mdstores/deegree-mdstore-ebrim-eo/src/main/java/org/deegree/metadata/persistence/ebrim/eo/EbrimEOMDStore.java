@@ -373,17 +373,11 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                 } else {
                     idSelect.append( " FULL OUTER JOIN " );
                 }
-                idSelect.append( additionalJoin.getTo().getTable() );
-                idSelect.append( " AS " );
-                idSelect.append( additionalJoin.getTo().getAlias() );
+                idSelect.append( additionalJoin.getToTable() );
+                idSelect.append( ' ' );
+                idSelect.append( additionalJoin.getToTableAlias() );
                 idSelect.append( " ON " );
-                idSelect.append( additionalJoin.getFrom().getAlias() );
-                idSelect.append( "." );
-                idSelect.append( additionalJoin.getFrom().getColumn() );
-                idSelect.append( "=" );
-                idSelect.append( additionalJoin.getTo().getAlias() );
-                idSelect.append( "." );
-                idSelect.append( additionalJoin.getTo().getColumn() );
+                idSelect.append (additionalJoin.getSQLJoinCondition());
                 first = false;
             }
 
@@ -479,17 +473,11 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                 } else {
                     sql.append( " FULL OUTER JOIN " );
                 }
-                sql.append( additionalJoin.getTo().getTable() );
-                sql.append( " AS " );
-                sql.append( additionalJoin.getTo().getAlias() );
+                sql.append( additionalJoin.getToTable() );
+                sql.append( ' ' );
+                sql.append( additionalJoin.getToTableAlias() );
                 sql.append( " ON " );
-                sql.append( additionalJoin.getFrom().getAlias() );
-                sql.append( "." );
-                sql.append( additionalJoin.getFrom().getColumn() );
-                sql.append( "=" );
-                sql.append( additionalJoin.getTo().getAlias() );
-                sql.append( "." );
-                sql.append( additionalJoin.getTo().getColumn() );
+                sql.append (additionalJoin.getSQLJoinCondition());
                 first = false;
             }
             if ( wb.getWhere() != null ) {

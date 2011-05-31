@@ -62,7 +62,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
@@ -430,12 +429,12 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
                         throw new UnmappableException( msg );
                     }
                     }
-                    Table table = SlotMapper.getTable( childType );
-                    DBField from = new DBField( getTable( type ).name(), "internalId" );
-                    from.setAlias( getTableAlias( type ) );
-                    DBField to = new DBField( table.name(), "fk_registrypackage" );
-                    to.setAlias( "X" + aliasNo++ );
-                    Join join = new Join( from, to, null, 0 );
+
+                    String fromTable = getTable( type ).name();
+                    String fromAlias = getTableAlias( type );
+                    String toTable = SlotMapper.getTable( childType ).name();
+                    String toAlias = "X" + aliasNo++;
+                    Join join = new Join( fromTable, fromAlias, "internalId", toTable, toAlias, "fk_registrypackage" );
                     joins = Collections.singletonList( join );
                     additionalJoins.add( join );
                     addMapping( propName, null, remainingSteps.subList( 2, remainingSteps.size() ), joins );
@@ -553,7 +552,7 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
 
     private String getTableAlias( List<Join> joins, AliasedRIMType type ) {
         if ( joins != null ) {
-            return joins.get( joins.size() - 1 ).getTo().getAlias();
+            return joins.get( joins.size() - 1 ).getToTableAlias();
         }
         return getTableAlias( type );
     }

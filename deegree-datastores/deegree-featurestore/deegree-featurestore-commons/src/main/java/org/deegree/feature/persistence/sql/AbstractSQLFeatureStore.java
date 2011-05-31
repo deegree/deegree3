@@ -106,7 +106,6 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
@@ -797,23 +796,13 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             }
 
             for ( PropertyNameMapping mappedPropName : wb.getMappedPropertyNames() ) {
-                String currentAlias = ftTableAlias;
                 for ( Join join : mappedPropName.getJoins() ) {
-                    DBField from = join.getFrom();
-                    DBField to = join.getTo();
                     sql.append( " LEFT OUTER JOIN " );
-                    sql.append( to.getTable() );
+                    sql.append( join.getToTable() );
                     sql.append( ' ' );
-                    sql.append( to.getAlias() );
+                    sql.append( join.getToTableAlias() );
                     sql.append( " ON " );
-                    sql.append( currentAlias );
-                    sql.append( "." );
-                    sql.append( from.getColumn() );
-                    sql.append( "=" );
-                    currentAlias = to.getAlias();
-                    sql.append( currentAlias );
-                    sql.append( "." );
-                    sql.append( to.getColumn() );
+                    sql.append( join.getSQLJoinCondition() );
                 }
             }
 
