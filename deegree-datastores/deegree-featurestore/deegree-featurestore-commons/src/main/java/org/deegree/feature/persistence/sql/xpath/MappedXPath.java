@@ -187,7 +187,7 @@ public class MappedXPath {
             throw new UnmappableException( "Mappings to non-DBField primitives is currently not supported." );
         }
         ParticleConverter<?> converter = fs.getConverter( primMapping );
-        propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn() );
+        propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
     }
 
     private void map( GeometryMapping mapping, List<MappableStep> remaining )
@@ -199,7 +199,7 @@ public class MappedXPath {
             throw new UnmappableException( "Mappings to non-DBField geometries is currently not supported." );
         }
         ParticleConverter<?> converter = fs.getConverter( geomMapping );
-        propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn() );
+        propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
     }
 
     private void followJoins( List<TableJoin> joinedTables ) {

@@ -60,6 +60,8 @@ public class PropertyNameMapping {
 
     private String column;
 
+    private String tableAlias;
+
     /**
      * Creates a new {@link PropertyNameMapping} instance.
      * 
@@ -70,10 +72,13 @@ public class PropertyNameMapping {
      *            can also be emtpy or <code>null</code>
      * @param column
      *            may be null
+     * @param tableAlias
+     *            may be null
      */
-    public PropertyNameMapping( ParticleConverter<?> converter, List<Join> joins, String column ) {
+    public PropertyNameMapping( ParticleConverter<?> converter, List<Join> joins, String column, String tableAlias ) {
         this.converter = converter;
         this.column = column;
+        this.tableAlias = tableAlias;
         if ( joins == null ) {
             this.joins = emptyList();
         } else {
@@ -102,6 +107,10 @@ public class PropertyNameMapping {
 
     public String getColumn() {
         return column;
+    }
+
+    public String getTableAlias() {
+        return tableAlias;
     }
 
     @Override

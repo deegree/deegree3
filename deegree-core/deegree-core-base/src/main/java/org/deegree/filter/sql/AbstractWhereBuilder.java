@@ -111,7 +111,7 @@ public abstract class AbstractWhereBuilder {
     protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
 
     protected final PropertyNameMapper mapper;
-    
+
     protected final OperatorFilter filter;
 
     protected final SortProperty[] sortCrit;
@@ -727,11 +727,7 @@ public abstract class AbstractWhereBuilder {
                 PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
                 sql = new SQLArgument( value, converter );
             } else {
-                String tableAlias = aliasManager.getRootTableAlias();
-                if ( propMapping.getJoins() != null && !propMapping.getJoins().isEmpty() ) {
-                    tableAlias = propMapping.getJoins().get( propMapping.getJoins().size() - 1 ).getToTableAlias();
-                }
-                sql = new SQLColumn( tableAlias, propMapping.getColumn(), propMapping.getConverter() );
+                sql = new SQLColumn( propMapping.getTableAlias(), propMapping.getColumn(), propMapping.getConverter() );
             }
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );

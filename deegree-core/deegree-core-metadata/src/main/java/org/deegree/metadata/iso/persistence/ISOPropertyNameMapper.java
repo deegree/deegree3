@@ -272,6 +272,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
                             throws FilterEvaluationException {
 
         PropertyNameMapping mapping = null;
+        String tableAlias = aliasManager.getRootTableAlias();
 
         QName qName = propName.getAsQName();
         if ( qName == null ) {
@@ -279,9 +280,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
             LOG.debug( msg );
             throw new FilterEvaluationException( msg );
         } else {
-
             Triple<Pair<String, String>, Boolean, BaseType> tableColumn = propToTableAndCol.get( qName );
-
             if ( tableColumn != null ) {
                 String mainTable = DatabaseTables.idxtb_main.name();
                 String id = CommonColumnNames.id.name();
@@ -295,6 +294,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
                     String toTableAlias = aliasManager.generateNew();
                     String toColumn = fk_main;
                     joins.add( new Join( fromTable, fromTableAlias, fromColumn, toTable, toTableAlias, toColumn ) );
+                    tableAlias = toTableAlias;
                 }
                 ParticleConverter<?> converter = null;
                 if ( tableColumn.third == null ) {
@@ -313,7 +313,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
                     converter = new DefaultPrimitiveConverter( new PrimitiveType( tableColumn.third ),
                                                                tableColumn.first.second, tableColumn.second );
                 }
-                mapping = new PropertyNameMapping( converter, joins, tableColumn.first.second );
+                mapping = new PropertyNameMapping( converter, joins, tableColumn.first.second, tableAlias );
             } else {
                 String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
                 LOG.debug( msg );

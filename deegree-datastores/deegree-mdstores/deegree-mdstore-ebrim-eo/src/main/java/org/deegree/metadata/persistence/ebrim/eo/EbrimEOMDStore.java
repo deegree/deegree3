@@ -349,7 +349,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
             idSelect.append( propMapper.getTableAlias( returnType ) );
             idSelect.append( ".internalId) FROM " );
             idSelect.append( propMapper.getTable( returnType ) );
-            idSelect.append( " AS " );
+            idSelect.append( ' ' );
             idSelect.append( propMapper.getTableAlias( returnType ) );
             boolean first = true;
             for ( AliasedRIMType queryType : propMapper.getQueryTypes() ) {
@@ -360,7 +360,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                         idSelect.append( " FULL OUTER JOIN " );
                     }
                     idSelect.append( propMapper.getTable( queryType ).name() );
-                    idSelect.append( " AS " );
+                    idSelect.append( ' ' );
                     idSelect.append( propMapper.getTableAlias( queryType ) );
                     idSelect.append( " ON TRUE" );
                     first = false;
@@ -449,7 +449,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
             sql.append( propMapper.getTableAlias( returnType ) );
             sql.append( ".internalId)) FROM " );
             sql.append( propMapper.getTable( returnType ) );
-            sql.append( " AS " );
+            sql.append( ' ' );
             sql.append( propMapper.getTableAlias( returnType ) );
             boolean first = true;
             for ( AliasedRIMType queryType : propMapper.getQueryTypes() ) {
@@ -460,7 +460,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                         sql.append( " FULL OUTER JOIN " );
                     }
                     sql.append( propMapper.getTable( queryType ).name() );
-                    sql.append( " AS " );
+                    sql.append( ' ' );
                     sql.append( propMapper.getTableAlias( queryType ) );
                     sql.append( " ON TRUE" );
                     first = false;
