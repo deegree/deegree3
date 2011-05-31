@@ -514,7 +514,7 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
         if ( dataType == SlotType._geom ) {
             GeometryParticleConverter converter = new PostGISGeometryConverter( column, STORAGE_CRS, STORAGE_SRID,
                                                                                 useLegacyPredicates );
-            propMapping = new PropertyNameMapping( converter, joins );
+            propMapping = new PropertyNameMapping( converter, joins, column );
         } else {
             BaseType bt = null;
             boolean isConcatenated = false;
@@ -543,7 +543,7 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
             }
             PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( new PrimitiveType( bt ), column,
                                                                                   isConcatenated );
-            propMapping = new PropertyNameMapping( converter, joins );
+            propMapping = new PropertyNameMapping( converter, joins, column );
         }
 
         propNameToMapping.put( propName, propMapping );
