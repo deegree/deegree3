@@ -707,6 +707,164 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
         return conn;
     }
 
+    private FeatureResultSet queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter )
+                            throws FeatureStoreException {
+        LOG.debug( "Performing blob query by operator filter" );
+
+        AbstractWhereBuilder wb = null;
+        Connection conn = null;
+        FeatureResultSet result = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+
+            // FeatureType ft = getSchema().getFeatureType( ftName );
+            FeatureTypeMapping ftMapping = getMapping( ftName );
+
+            BlobMapping blobMapping = getSchema().getBlobMapping();
+
+            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
+
+            List<String> columns = builder.getInitialSelectColumns();
+
+            if ( query.getPrefilterBBox() != null ) {
+                OperatorFilter bboxFilter = new OperatorFilter( new BBOX( query.getPrefilterBBox() ) );
+                wb = getWhereBuilderBlob( bboxFilter, conn );
+                LOG.debug( "WHERE clause: " + wb.getWhere() );
+                // LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
+            }
+            String alias = wb != null ? wb.getAliasManager().getRootTableAlias() : "X1";
+
+            StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( columns.get( 0 ) );
+            for ( int i = 1; i < columns.size(); i++ ) {
+                sql.append( ',' );
+                sql.append( columns.get( i ) );
+            }
+            sql.append( " FROM " );
+            if ( ftMapping == null ) {
+                // pure BLOB query
+                sql.append( blobMapping.getTable() );
+                sql.append( ' ' );
+                sql.append( alias );
+                // } else {
+                // hybrid query
+                // sql.append( blobMapping.getTable() );
+                // sql.append( ' ' );
+                // sql.append( alias );
+                // sql.append( " LEFT OUTER JOIN " );
+                // sql.append( ftMapping.getFtTable() );
+                // sql.append( ' ' );
+                // sql.append( alias );
+                // sql.append( " ON " );
+                // sql.append( alias );
+                // sql.append( "." );
+                // sql.append( blobMapping.getInternalIdColumn() );
+                // sql.append( "=" );
+                // sql.append( alias );
+                // sql.append( "." );
+                // sql.append( ftMapping.getFidMapping().getColumn() );
+            }
+
+            if ( wb != null ) {
+                for ( PropertyNameMapping mappedPropName : wb.getMappedPropertyNames() ) {
+                    String currentAlias = alias;
+                    for ( Join join : mappedPropName.getJoins() ) {
+                        DBField from = join.getFrom();
+                        DBField to = join.getTo();
+                        sql.append( " LEFT OUTER JOIN " );
+                        sql.append( to.getTable() );
+                        sql.append( ' ' );
+                        sql.append( to.getAlias() );
+                        sql.append( " ON " );
+                        sql.append( currentAlias );
+                        sql.append( "." );
+                        sql.append( from.getColumn() );
+                        sql.append( "=" );
+                        currentAlias = to.getAlias();
+                        sql.append( currentAlias );
+                        sql.append( "." );
+                        sql.append( to.getColumn() );
+                    }
+                }
+            }
+            sql.append( " WHERE " );
+            sql.append( alias );
+            sql.append( "." );
+            sql.append( blobMapping.getTypeColumn() );
+            sql.append( "=?" );
+            if ( wb != null ) {
+                sql.append( " AND " );
+                sql.append( wb.getWhere().getSQL() );
+            }
+
+            // if ( wb != null && wb.getWhere() != null ) {
+            // if ( blobMapping != null ) {
+            // sql.append( " AND " );
+            // } else {
+            // sql.append( " WHERE " );
+            // }
+            // sql.append( wb.getWhere().getSQL() );
+            // }
+            // if ( wb != null && wb.getOrderBy() != null ) {
+            // sql.append( " ORDER BY " );
+            // sql.append( wb.getOrderBy().getSQL() );
+            // }
+
+            LOG.debug( "SQL: {}", sql );
+            long begin = System.currentTimeMillis();
+            stmt = conn.prepareStatement( sql.toString() );
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+
+            int i = 1;
+            // if ( blobMapping != null ) {
+            stmt.setShort( i++, getSchema().getFtId( ftName ) );
+            if ( wb != null ) {
+                for ( SQLArgument o : wb.getWhere().getArguments() ) {
+                    o.setArgument( stmt, i++ );
+                }
+            }
+            // }
+            // if ( wb != null && wb.getWhere() != null ) {
+            // for ( SQLArgument o : wb.getWhere().getArguments() ) {
+            // o.setArgument( stmt, i++ );
+            // }
+            // }
+            // if ( wb != null && wb.getOrderBy() != null ) {
+            // for ( SQLArgument o : wb.getOrderBy().getArguments() ) {
+            // o.setArgument( stmt, i++ );
+            // }
+            // }
+
+            begin = System.currentTimeMillis();
+
+            // TODO make this configurable?
+            stmt.setFetchSize( 1 );
+            rs = stmt.executeQuery();
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+
+            result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
+        } catch ( Exception e ) {
+            close( rs, stmt, conn, LOG );
+            String msg = "Error performing query by operator filter: " + e.getMessage();
+            LOG.error( msg, e );
+            throw new FeatureStoreException( msg, e );
+        }
+
+        if ( filter != null ) {
+            LOG.debug( "Applying in-memory post-filtering." );
+            result = new FilteredFeatureResultSet( result, filter );
+        }
+
+        if ( query.getSortProperties() != null ) {
+            LOG.debug( "Applying in-memory post-sorting." );
+            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
+        }
+        return result;
+    }
+
     /**
      * @param query
      * @param ftName
@@ -718,7 +876,10 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
         LOG.debug( "Performing query by operator filter" );
 
-        AbstractWhereBuilder blobWb = null;
+        if ( getSchema().getBlobMapping() != null ) {
+            return queryByOperatorFilterBlob( query, ftName, filter );
+        }
+
         AbstractWhereBuilder wb = null;
         Connection conn = null;
         FeatureResultSet result = null;
@@ -733,31 +894,13 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
 
             wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
             String ftTableAlias = wb.getAliasManager().getRootTableAlias();
-
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
 
-            FeatureBuilder builder = null;
-            if ( getSchema().getBlobMapping() != null ) {
-                builder = new FeatureBuilderBlob( this, getSchema().getBlobMapping() );
-            } else {
-                builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, ftTableAlias );
-            }
+            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, ftTableAlias );
             List<String> columns = builder.getInitialSelectColumns();
 
             BlobMapping blobMapping = getSchema().getBlobMapping();
-
-            // TODO
-            String blobTableAlias = ftTableAlias;
-            String tableAlias = ftTableAlias;
-            if ( blobMapping != null ) {
-                tableAlias = blobTableAlias;
-            }
-
-            if ( query.getPrefilterBBox() != null && blobMapping != null ) {
-                OperatorFilter bboxFilter = new OperatorFilter( new BBOX( query.getPrefilterBBox() ) );
-                blobWb = getWhereBuilderBlob( bboxFilter, conn );
-            }
 
             StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( columns.get( 0 ) );
@@ -766,34 +909,11 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                 sql.append( columns.get( i ) );
             }
             sql.append( " FROM " );
-            if ( blobMapping == null ) {
-                // pure relational query
-                sql.append( ftMapping.getFtTable() );
-                sql.append( ' ' );
-                sql.append( ftTableAlias );
-            } else if ( wb.getWhere() == null && wb.getOrderBy() == null ) {
-                // pure BLOB query
-                sql.append( blobMapping.getTable() );
-                sql.append( ' ' );
-                sql.append( blobTableAlias );
-            } else {
-                // hybrid query
-                sql.append( blobMapping.getTable() );
-                sql.append( ' ' );
-                sql.append( blobTableAlias );
-                sql.append( " LEFT OUTER JOIN " );
-                sql.append( ftMapping.getFtTable() );
-                sql.append( ' ' );
-                sql.append( ftTableAlias );
-                sql.append( " ON " );
-                sql.append( blobTableAlias );
-                sql.append( "." );
-                sql.append( blobMapping.getInternalIdColumn() );
-                sql.append( "=" );
-                sql.append( ftTableAlias );
-                sql.append( "." );
-                sql.append( ftMapping.getFidMapping().getColumn() );
-            }
+
+            // pure relational query
+            sql.append( ftMapping.getFtTable() );
+            sql.append( ' ' );
+            sql.append( ftTableAlias );
 
             for ( PropertyNameMapping mappedPropName : wb.getMappedPropertyNames() ) {
                 for ( Join join : mappedPropName.getJoins() ) {
@@ -803,18 +923,6 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
                     sql.append( join.getToTableAlias() );
                     sql.append( " ON " );
                     sql.append( join.getSQLJoinCondition() );
-                }
-            }
-
-            if ( blobMapping != null ) {
-                sql.append( " WHERE " );
-                sql.append( blobTableAlias );
-                sql.append( "." );
-                sql.append( blobMapping.getTypeColumn() );
-                sql.append( "=?" );
-                if ( query.getPrefilterBBox() != null ) {
-                    sql.append( " AND " );
-                    sql.append( blobWb.getWhere().getSQL() );
                 }
             }
 
@@ -837,14 +945,6 @@ public abstract class AbstractSQLFeatureStore implements SQLFeatureStore {
             LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             int i = 1;
-            if ( blobMapping != null ) {
-                stmt.setShort( i++, getSchema().getFtId( ftName ) );
-                if ( blobWb != null ) {
-                    for ( SQLArgument o : blobWb.getWhere().getArguments() ) {
-                        o.setArgument( stmt, i++ );
-                    }
-                }
-            }
             if ( wb.getWhere() != null ) {
                 for ( SQLArgument o : wb.getWhere().getArguments() ) {
                     o.setArgument( stmt, i++ );

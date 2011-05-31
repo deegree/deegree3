@@ -90,10 +90,11 @@ public class PostGISGeometryConverter implements GeometryParticleConverter {
 
     @Override
     public String getSelectSnippet( String tableAlias ) {
+        String asewkb = useLegacyPredicates ? "AsEWKB" : "ST_AsEWKB";
         if ( tableAlias != null ) {
-            return "ST_AsEWKB(" + tableAlias + "." + column + ")";
+            return asewkb + "(" + tableAlias + "." + column + ")";
         }
-        return "ST_AsEWKB(" + column + ")";
+        return asewkb + "(" + column + ")";
     }
 
     @Override

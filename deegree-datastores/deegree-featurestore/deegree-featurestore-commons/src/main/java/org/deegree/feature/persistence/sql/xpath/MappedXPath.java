@@ -120,6 +120,11 @@ public class MappedXPath {
 
         List<MappableStep> steps = MappableStep.extractSteps( propName );
 
+        System.out.println(ftMapping);
+        System.out.println(ftMapping.getFeatureType());
+        System.out.println(steps);
+        System.out.println(steps.get(0));
+        
         // the first step may be the name of the feature type or the name of a property
         if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
             steps.subList( 1, steps.size() );
