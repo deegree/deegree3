@@ -69,8 +69,6 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
      * @param filter
      * @param sort
      * @throws FilterEvaluationException
-     * @throws UnmappableException
-     * 
      */
     public H2WhereBuilder( OperatorFilter filter, SortProperty[] sort ) throws FilterEvaluationException {
         super( null, filter, sort );
@@ -96,8 +94,7 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
                                                                               pt,
                                                                               expr.getAsQName().getLocalPart().toLowerCase(),
                                                                               false );
-        return new SQLColumn( aliasManager.getRootTableAlias(), expr.getAsQName().getLocalPart().toLowerCase(),
-                              converter );
+        return new SQLColumn( null, expr.getAsQName().getLocalPart().toLowerCase(), converter );
     }
 
     // avoid setting a Date on fields which are strings just containing ISO dates...
