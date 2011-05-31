@@ -77,8 +77,14 @@ public class InputBBoxRenderer extends MenuRenderer {
 
     @Override
     public void decode( FacesContext context, UIComponent component ) {
-        String clientId = component.getClientId();
         HtmlInputBBox bbox = (HtmlInputBBox) component;
+
+        if ( bbox.isDisabled() ) {
+            return;
+        }
+
+        String clientId = component.getClientId();
+
         Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap();
         String crs = null;
         double minx = Double.NaN;
@@ -127,7 +133,7 @@ public class InputBBoxRenderer extends MenuRenderer {
             writer.writeAttribute( "class", styleClass, "styleClass" );
         }
 
-        boolean disabled = bbox.getDisabled();
+        boolean disabled = bbox.isDisabled();
         if ( bbox.isShowCRS() ) {
             encodeCRSSelect( writer, bbox, clientId, context, disabled );
         }

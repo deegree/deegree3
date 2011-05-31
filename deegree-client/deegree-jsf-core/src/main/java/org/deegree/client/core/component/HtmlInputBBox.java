@@ -172,7 +172,7 @@ public class HtmlInputBBox extends UISelectOne {
         getStateHelper().put( AdditionalPropertyKeys.disabled, disabled );
     }
 
-    public boolean getDisabled() {
+    public boolean isDisabled() {
         return (Boolean) getStateHelper().eval( AdditionalPropertyKeys.disabled, false );
     }
 
