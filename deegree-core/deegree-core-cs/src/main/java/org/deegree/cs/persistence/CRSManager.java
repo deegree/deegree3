@@ -93,6 +93,9 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
 
     private static Map<String, CRSStore> idToCRSStore = Collections.synchronizedMap( new HashMap<String, CRSStore>() );
 
+    // store ids in order of requesting, workspace stores should overwrite the default store! 
+    private static List<String> storeIds = Collections.synchronizedList( new LinkedList<String>() );
+
     private static Map<String, TransformationFactory> idToTransF = new HashMap<String, TransformationFactory>();
 
     private DeegreeWorkspace workspace;
@@ -114,7 +117,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
 
             URL defaultConfig = CRSManager.class.getResource( "default.xml" );
             try {
-                handleConfigFile( defaultConfig );
+                handleConfigFile( defaultConfig, false );
                 defaultInitialized = true;
             } catch ( Throwable t ) {
                 LOG.error( "The default configuration could not be loaded: " + t.getMessage() );
@@ -140,6 +143,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         LOG.info( "Clear CRS store and transformation map" );
         idToCRSStore.clear();
         idToTransF.clear();
+        storeIds.clear();
         defaultInitialized = false;
         new CRSManager().initDefault();
     }
@@ -170,7 +174,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             } );
             for ( File crsConfigFile : crsConfigFiles ) {
                 try {
-                    handleConfigFile( crsConfigFile.toURI().toURL() );
+                    handleConfigFile( crsConfigFile.toURI().toURL(), true );
                 } catch ( Throwable t ) {
                     LOG.error( "Unable to read config file '" + crsConfigFile + "'.", t );
                 }
@@ -181,7 +185,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         }
     }
 
-    private void handleConfigFile( URL crsConfigFile ) {
+    private void handleConfigFile( URL crsConfigFile, boolean prefer ) {
         String fileName = crsConfigFile.getFile();
         int fileNameStart = fileName.lastIndexOf( '/' ) + 1;
         // 4 is the length of ".xml"
@@ -189,7 +193,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         LOG.info( "Setting up crs store '" + crsId + "' from file '" + fileName + "'..." + "" );
         try {
             CRSStore crss = create( crsConfigFile.toURI().toURL() );
-            registerAndInit( crss, crsId );
+            registerAndInit( crss, crsId, prefer );
         } catch ( Exception e ) {
             LOG.error( "Error creating crs store: " + e.getMessage(), e );
         }
@@ -260,7 +264,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         return nsToProvider;
     }
 
-    private static void registerAndInit( CRSStore crss, String id )
+    private static void registerAndInit( CRSStore crss, String id, boolean prefer )
                             throws CRSStoreException {
         if ( id != null ) {
             if ( idToCRSStore.containsKey( id ) ) {
@@ -269,6 +273,11 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             LOG.info( "Registering global crs store with id '" + id + "', type: '" + crss.getClass().getName() + "'" );
             idToTransF.put( id, new TransformationFactory( crss ) );
             idToCRSStore.put( id, crss );
+            if ( prefer ) {
+                storeIds.add( 0, id );
+            } else {
+                storeIds.add( id );
+            }
             crss.init();
         }
     }
@@ -503,7 +512,8 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         if ( crsStore != null ) {
             return lookupStore( crsStore, name, forceXY );
         } else {
-            for ( CRSStore store : idToCRSStore.values() ) {
+            for ( String stId : storeIds ) {
+                CRSStore store = idToCRSStore.get( stId );
                 try {
                     ICRS crs = lookupStore( store, name, forceXY );
                     if ( crs != null ) {
@@ -536,7 +546,8 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         if ( crsStore != null ) {
             return lookupStore( crsStore, crsCodeType, false );
         } else {
-            for ( CRSStore store : idToCRSStore.values() ) {
+            for ( String sId : storeIds ) {
+                CRSStore store = idToCRSStore.get( sId );
                 try {
                     ICRS crs = lookupStore( store, crsCodeType, false );
                     if ( crs != null ) {
@@ -660,7 +671,8 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
     public synchronized static Transformation getTransformation( String storeId, String id ) {
         CRSStore crsStore = idToCRSStore.get( storeId );
         if ( crsStore == null ) {
-            for ( CRSStore store : idToCRSStore.values() ) {
+            for ( String sId : storeIds ) {
+                CRSStore store = idToCRSStore.get( sId );
                 Transformation transformation = getTransformation( store, id );
                 if ( transformation != null ) {
                     return transformation;
@@ -776,4 +788,5 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         // TODO Auto-generated method stub
 
     }
+
 }
