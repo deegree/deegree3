@@ -181,6 +181,10 @@ public class WorkspaceBean implements Serializable {
         if ( bean != null ) {
             bean.init();
         }
+        ConfigManager configManager = (ConfigManager) ctx.getExternalContext().getSessionMap().get( "configManager" );
+        if ( configManager != null ) {
+            configManager.refresh();
+        }
         return ctx.getViewRoot().getViewId();
     }
 

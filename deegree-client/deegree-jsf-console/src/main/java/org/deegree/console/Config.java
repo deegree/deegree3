@@ -195,6 +195,8 @@ public class Config implements Comparable<Config> {
             return;
         }
         state = resourceManager.getState( id );
+        WorkspaceBean ws = (WorkspaceBean) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
+        ws.setModified();
         if ( state.getLastException() != null ) {
             String msg = state.getLastException().getMessage();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
@@ -212,6 +214,8 @@ public class Config implements Comparable<Config> {
             return;
         }
         state = resourceManager.getState( id );
+        WorkspaceBean ws = (WorkspaceBean) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
+        ws.setModified();
         if ( state.getLastException() != null ) {
             String msg = state.getLastException().getMessage();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );

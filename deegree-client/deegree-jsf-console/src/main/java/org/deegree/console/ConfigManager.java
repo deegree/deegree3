@@ -103,6 +103,17 @@ public class ConfigManager {
         return rmMetadata;
     }
 
+    public void refresh() {
+        if ( currentResourceManager != null ) {
+            for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
+                ResourceManagerMetadata2 md = ResourceManagerMetadata2.getMetadata( mgr );
+                if ( md != null && md.getName().equals( currentResourceManager.getName() ) ) {
+                    currentResourceManager = md;
+                }
+            }
+        }
+    }
+
     public String getStartView() {
         ResourceManagerMetadata2 param1 = (ResourceManagerMetadata2) getParam1();
         this.currentResourceManager = param1;
