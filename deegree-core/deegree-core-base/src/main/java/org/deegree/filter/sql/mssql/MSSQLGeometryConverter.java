@@ -80,7 +80,7 @@ public class MSSQLGeometryConverter implements GeometryParticleConverter {
      * @param crs
      *            CRS of the stored geometries, can be <code>null</code>
      * @param srid
-     *            PostGIS spatial reference identifier, must not be <code>null</code>
+     *            MSSQL spatial reference identifier, must not be <code>null</code>
      * @param is2D
      */
     public MSSQLGeometryConverter( String column, ICRS crs, String srid, boolean is2D ) {
@@ -100,7 +100,7 @@ public class MSSQLGeometryConverter implements GeometryParticleConverter {
 
     public String getSetSnippet() {
         if ( is2d )
-            return "geometry::STGeomFromWKB(?, 0)";
+            return "geometry::STGeomFromWKB(?, " + srid + ")";
         return "geometry::Parse(?)";
     }
 

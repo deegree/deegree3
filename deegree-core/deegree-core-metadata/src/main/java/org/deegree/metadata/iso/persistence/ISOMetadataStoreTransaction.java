@@ -89,7 +89,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             return new PostGISWhereBuilder( mapping, filter, null, false, useLegacyPredicates );
         }
         if ( connectionType == Type.MSSQL ) {
-            return new MSSQLWhereBuilder( mapping, filter, null, false, true );
+            return new MSSQLWhereBuilder( mapping, filter, null, false );
         }
         throw new UnsupportedOperationException();
     }

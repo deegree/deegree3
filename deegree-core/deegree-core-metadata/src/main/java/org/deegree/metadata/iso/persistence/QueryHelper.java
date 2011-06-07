@@ -243,7 +243,7 @@ class QueryHelper extends SqlHelper {
         }
         if ( connectionType == Type.MSSQL ) {
             ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, false );
-            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false, true );
+            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false );
         }
         return null;
     }

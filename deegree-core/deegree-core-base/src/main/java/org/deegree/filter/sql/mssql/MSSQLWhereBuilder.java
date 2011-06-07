@@ -80,8 +80,6 @@ import org.deegree.geometry.Geometry;
  */
 public class MSSQLWhereBuilder extends AbstractWhereBuilder {
 
-    private boolean is2d;
-
     /**
      * Creates a new {@link MSSQLWhereBuilder} instance.
      * 
@@ -99,11 +97,9 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
     public MSSQLWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
-                              boolean allowPartialMappings, boolean is2d ) throws FilterEvaluationException,
-                            UnmappableException {
+                              boolean allowPartialMappings ) throws FilterEvaluationException, UnmappableException {
         super( mapper, filter, sortCrit );
         build( allowPartialMappings );
-        this.is2d = is2d;
     }
 
     /**
@@ -262,6 +258,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
 
     private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid )
                             throws FilterEvaluationException {
+        boolean is2d = targetCRS.getDimension() == 2;
         return new SQLArgument( geom, new MSSQLGeometryConverter( null, targetCRS, "" + srid, is2d ) );
     }
 }
