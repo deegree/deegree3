@@ -466,11 +466,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                         ResultSet rs2 = null;
                         try {
                             stmt = conn.createStatement();
-                            String sql = "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
-                                         + dbSchema.toLowerCase()
-                                         + "' AND f_table_name='"
-                                         + table.toLowerCase()
-                                         + "' AND f_geometry_column='" + column.toLowerCase() + "'";
+                            String sql = dialect.geometryMetadata( dbSchema, table, column );
                             rs2 = stmt.executeQuery( sql );
                             rs2.next();
                             if ( rs2.getInt( 2 ) != -1 ) {

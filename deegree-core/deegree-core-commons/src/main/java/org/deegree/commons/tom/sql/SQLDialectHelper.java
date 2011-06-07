@@ -35,9 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.sql;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -70,4 +67,14 @@ public interface SQLDialectHelper {
      * @return expr cast to type
      */
     String cast( String expr, String type );
+
+    /**
+     * @param dbSchema
+     * @param table
+     * @param column
+     * @return statement to determine the coordinate dimension, the srid and the geometry type of a given column (in
+     *         this order)
+     */
+    String geometryMetadata( String dbSchema, String table, String column );
+
 }

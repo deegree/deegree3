@@ -61,4 +61,10 @@ public class PostGISDialect implements SQLDialectHelper {
     public String cast( String expr, String type ) {
         return expr + "::" + type;
     }
+
+    public String geometryMetadata( String dbSchema, String table, String column ) {
+        return "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
+               + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase() + "' AND f_geometry_column='"
+               + column.toLowerCase() + "'";
+    }
 }
