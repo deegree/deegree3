@@ -73,7 +73,7 @@ public class FIDMapping {
      *            database columns that the feature ids are mapped to, must not be <code>null</code> (and contain at
      *            least one entry)
      * @param generator
-     *            generator for determining new ids, must not be <code>null</code>
+     *            generator for determining new ids, can be <code>null</code> (in this case, no inserts are possible)
      */
     public FIDMapping( String prefix, String delimiter, List<Pair<String, BaseType>> columns, IDGenerator generator ) {
         this.prefix = prefix;

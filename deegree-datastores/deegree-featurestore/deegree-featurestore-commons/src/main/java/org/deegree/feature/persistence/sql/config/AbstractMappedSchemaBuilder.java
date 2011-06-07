@@ -108,7 +108,7 @@ public class AbstractMappedSchemaBuilder {
     protected IDGenerator buildGenerator( FIDMappingJAXB fidMappingConfig ) {
 
         AbstractIDGeneratorType config = null;
-        if ( fidMappingConfig != null ) {
+        if ( fidMappingConfig != null && fidMappingConfig.getAbstractIDGenerator() != null) {
             config = fidMappingConfig.getAbstractIDGenerator().getValue();
         }
         if ( config == null || config instanceof AutoIdGenerator ) {
