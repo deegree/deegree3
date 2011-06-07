@@ -185,9 +185,16 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                             throws IOException {
         SortedSet<ModuleInfo> modules = new TreeSet<ModuleInfo>();
         for ( URL classpathURL : classpathURLs ) {
-            ModuleInfo moduleInfo = extractModuleInfo( classpathURL );
-            if ( moduleInfo != null ) {
-                modules.add( moduleInfo );
+            if ( classpathURL.getFile().toLowerCase().endsWith( ".zip" ) ) {
+                continue;
+            }
+            try {
+                ModuleInfo moduleInfo = extractModuleInfo( classpathURL );
+                if ( moduleInfo != null ) {
+                    modules.add( moduleInfo );
+                }
+            } catch ( Throwable e ) {
+                LOG.warn( "Could not extract module info from {}.", classpathURL );
             }
         }
         return modules;
