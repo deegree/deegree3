@@ -43,8 +43,6 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.client.core.utils.MessageUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -58,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 @FacesComponent(value = "HtmlInputFile")
 public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
-   
+
     /**
      * <p>
      * The standard component type for this component.
@@ -67,7 +65,7 @@ public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
     public static final String COMPONENT_TYPE = "HtmlInputFile";
 
     private static enum AdditionalPropertyKeys {
-        styleClass, target
+        styleClass, target, style
     }
 
     public HtmlInputFile() {
@@ -89,6 +87,21 @@ public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
      */
     public void setStyleClass( String styleClass ) {
         getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
+    }
+
+    /**
+     * @return
+     */
+    public String getStyle() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.style, null );
+
+    }
+
+    /**
+     * @param style
+     */
+    public void setStyle( String style ) {
+        getStateHelper().put( AdditionalPropertyKeys.style, style );
     }
 
     /**
@@ -115,8 +128,7 @@ public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
             return;
         }
         if ( isRequired() && isUploadedFileEmpty( value ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 FacesMessage.SEVERITY_ERROR,
+            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputFile.REQUIRED",
                                                                  getClientId() );
             context.addMessage( getClientId( context ), message );

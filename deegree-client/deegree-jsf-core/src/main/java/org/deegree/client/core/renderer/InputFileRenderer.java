@@ -90,6 +90,11 @@ public class InputFileRenderer extends Renderer {
         if ( styleClass != null ) {
             writer.writeAttribute( "class", styleClass, "styleClass" );
         }
+        String style = input.getStyle();
+        if ( style != null ) {
+            writer.writeAttribute( "style", style, "style" );
+        }
+
         writer.endElement( "input" );
         writer.flush();
     }
