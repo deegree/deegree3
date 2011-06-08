@@ -66,9 +66,9 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
@@ -102,7 +102,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( FeatureBuilderRelational.class );
 
-    private final AbstractSQLFeatureStore fs;
+    private final SQLFeatureStore fs;
 
     private final FeatureType ft;
 
@@ -130,8 +130,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      * @param conn
      *            JDBC connection (used for performing subsequent SELECTs), must not be <code>null</code>
      */
-    public FeatureBuilderRelational( AbstractSQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping,
-                                     Connection conn, String ftTableAlias ) {
+    public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
+                                     String ftTableAlias ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;
@@ -331,7 +331,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
                 String col = fs.getConverter( pm ).getSelectSnippet( tableAlias );
-                // TODO getObject seems not to work w/ oracle, the oracle.sql.BLOB does not yield correct results
                 int colIndex = colToRsIdx.get( col );
                 particle = fs.getConverter( mapping ).toParticle( rs, colIndex );
             }

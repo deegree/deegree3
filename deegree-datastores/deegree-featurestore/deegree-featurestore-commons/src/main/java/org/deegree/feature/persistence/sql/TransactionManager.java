@@ -38,13 +38,12 @@ package org.deegree.feature.persistence.sql;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 
 /**
- * Manages transactions for {@link AbstractSQLFeatureStore} implementations.
+ * Manages transactions for the {@link SQLFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -53,7 +52,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
  */
 public class TransactionManager {
 
-    private final AbstractSQLFeatureStore fs;
+    private final SQLFeatureStore fs;
 
     private final String jdbcConnId;
 
@@ -61,7 +60,7 @@ public class TransactionManager {
 
     private Thread transactionHolder;
 
-    public TransactionManager( AbstractSQLFeatureStore fs, String jdbcConnId ) {
+    public TransactionManager( SQLFeatureStore fs, String jdbcConnId ) {
         this.fs = fs;
         this.jdbcConnId = jdbcConnId;
     }

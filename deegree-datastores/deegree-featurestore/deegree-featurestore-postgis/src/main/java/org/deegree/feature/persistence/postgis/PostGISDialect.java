@@ -35,16 +35,45 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
-import org.deegree.commons.tom.sql.SQLDialectHelper;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.PropertyNameMapper;
+import org.deegree.filter.sql.SQLDialect;
+import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.postgis.PostGISGeometryConverter;
+import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.standard.DefaultEnvelope;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.postgis.PGboxbase;
 
 /**
+ * {@link SQLDialect} for PostgreSQL / PostGIS databases.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISDialect implements SQLDialectHelper {
+public class PostGISDialect implements SQLDialect {
+
+    private final boolean useLegacyPredicates;
+
+    public PostGISDialect( boolean useLegacyPredicates ) {
+        this.useLegacyPredicates = useLegacyPredicates;
+    }
 
     public String getDefaultSchema() {
         return "public";
@@ -66,5 +95,69 @@ public class PostGISDialect implements SQLDialectHelper {
         return "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
                + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase() + "' AND f_geometry_column='"
                + column.toLowerCase() + "'";
+    }
+
+    @Override
+    public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
+                                                 SortProperty[] sortCrit, boolean allowPartialMappings )
+                            throws UnmappableException, FilterEvaluationException {
+        return new PostGISWhereBuilder( mapper, filter, sortCrit, allowPartialMappings, useLegacyPredicates );
+    }
+
+    @Override
+    public String getUndefinedSrid() {
+        return "-1";
+    }
+
+    @Override
+    public String getBBoxAggregateSnippet( String column ) {
+        StringBuilder sql = new StringBuilder();
+        if ( useLegacyPredicates ) {
+            sql.append( "extent" );
+        } else {
+            sql.append( "ST_Extent" );
+        }
+        sql.append( "(" );
+        sql.append( column );
+        sql.append( ")::BOX2D FROM " );
+        return sql.toString();
+    }
+
+    @Override
+    public Envelope getBBoxAggregateValue( ResultSet rs, int colIdx, ICRS crs )
+                            throws SQLException {
+        Envelope env = null;
+        PGboxbase pgBox = (PGboxbase) rs.getObject( colIdx );
+        if ( pgBox != null ) {
+            org.deegree.geometry.primitive.Point min = buildPoint( pgBox.getLLB(), crs );
+            org.deegree.geometry.primitive.Point max = buildPoint( pgBox.getURT(), crs );
+            env = new DefaultEnvelope( null, crs, null, min, max );
+        }
+        return env;
+    }
+
+    private org.deegree.geometry.primitive.Point buildPoint( org.postgis.Point p, ICRS crs ) {
+        double[] coords = new double[p.getDimension()];
+        coords[0] = p.getX();
+        coords[1] = p.getY();
+        if ( p.getDimension() > 2 ) {
+            coords[2] = p.getZ();
+        }
+        return new DefaultPoint( null, crs, null, coords );
+    }
+
+    @Override
+    public String[] getDDL( Object schema ) {
+        return new PostGISDDLCreator( (MappedApplicationSchema) schema ).getDDL();
+    }
+
+    @Override
+    public GeometryParticleConverter getGeometryConverter( String column, ICRS crs, String srid, boolean is2D ) {
+        return new PostGISGeometryConverter( column, crs, srid, useLegacyPredicates );
+    }
+
+    @Override
+    public PrimitiveParticleConverter getPrimitiveConverter( String column, PrimitiveType pt ) {
+        return new DefaultPrimitiveConverter( pt, column );
     }
 }

@@ -36,8 +36,6 @@
 package org.deegree.feature.persistence.sql;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.ServiceLoader;
 
 import javax.xml.bind.JAXBException;
 
@@ -50,6 +48,7 @@ import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
+import org.deegree.filter.sql.SQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +76,6 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
 
     private DeegreeWorkspace workspace;
 
-    private HashMap<Type, SQLDialectProvider<? extends SQLFeatureStore>> providers = new HashMap<Type, SQLDialectProvider<? extends SQLFeatureStore>>();
-
     @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
@@ -102,30 +99,31 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
                 throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId() + "' defined." );
             }
             LOG.debug( "Connection type is {}.", connType );
-            SQLDialectProvider<? extends SQLFeatureStore> provider = providers.get( connType );
-            if ( provider != null ) {
-                LOG.debug( "Found SQL provider {}", provider.getClass().getSimpleName() );
-                return provider.create( cfg, configURL, workspace );
-            }
-            throw new ResourceInitException( "No SQL feature store provider for connection type '" + connType
-                                             + "' available." );
+
+            SQLDialectManager dialectMgr = workspace.getSubsystemManager( SQLDialectManager.class );
+            SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId() );
+            return new SQLFeatureStore( cfg, configURL, dialect );
         } catch ( JAXBException e ) {
             LOG.trace( "Stack trace: ", e );
             throw new ResourceInitException( "Error when parsing configuration: " + e.getLocalizedMessage(), e );
         }
     }
 
+    /**
+     * Returns the SQL statements for creating the database tables.
+     * 
+     * @return the SQL statements for creating the database tables, never <code>null</code>
+     */
+    public String[] getDDL() {
+        return null;
+    }
+
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
-        for ( SQLDialectProvider<? extends SQLFeatureStore> p : ServiceLoader.load( SQLDialectProvider.class,
-                                                                                    workspace.getModuleClassLoader() ) ) {
-            LOG.info( "Registering SQL dialect provider '{}' for connection type '{}'", p.getClass(), p.getSupportedType() );
-            providers.put( p.getSupportedType(), p );
-        }
     }
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ConnectionManager.class };
+        return new Class[] { ConnectionManager.class, SQLDialectManager.class };
     }
 }

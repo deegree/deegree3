@@ -35,21 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import java.net.URL;
-
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
+import org.deegree.filter.sql.SQLDialect;
 
 /**
- * Implementations provide {@link AbstractSQLFeatureStore} implementations for a specific (spatial) SQL dialect.
+ * Implementations provide {@link SQLDialect} implementations.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface SQLDialectProvider<T extends SQLFeatureStore> {
+public interface SQLDialectProvider {
 
     /**
      * @return the db type which is supported by this feature store provider
@@ -57,10 +57,10 @@ public interface SQLDialectProvider<T extends SQLFeatureStore> {
     Type getSupportedType();
 
     /**
-     * @param config
-     * @param configURL
-     * @param workspace
-     * @return a new SQL feature store
+     * @param connId
+     * @param ws
+     * @return new SQL dialect instance configured for the given JDBC connection id
+     * @throws ResourceInitException 
      */
-    T create( SQLFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace );
+    SQLDialect create( String connId, DeegreeWorkspace ws ) throws ResourceInitException;
 }

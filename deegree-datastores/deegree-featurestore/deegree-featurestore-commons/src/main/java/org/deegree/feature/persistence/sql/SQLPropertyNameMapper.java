@@ -44,7 +44,7 @@ import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 
 /**
- * {@link PropertyNameMapper} for {@link SQLFeatureStore} implementations.
+ * {@link PropertyNameMapper} for the {@link SQLFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -53,11 +53,11 @@ import org.deegree.filter.sql.UnmappableException;
  */
 public class SQLPropertyNameMapper implements PropertyNameMapper {
 
-    private final AbstractSQLFeatureStore fs;
+    private final SQLFeatureStore fs;
 
     private final FeatureTypeMapping ftMapping;
 
-    public SQLPropertyNameMapper( AbstractSQLFeatureStore fs, FeatureTypeMapping ftMapping ) {
+    public SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping ) {
         this.fs = fs;
         this.ftMapping = ftMapping;
     }

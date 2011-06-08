@@ -36,23 +36,34 @@
 package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
+import static org.deegree.commons.utils.JDBCUtils.close;
 
-import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.persistence.sql.SQLDialectProvider;
-import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
+import org.deegree.filter.sql.SQLDialect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLDialectProvider} for the {@link PostGISFeatureStore}.
+ * {@link SQLDialectProvider} for PostgreSQL / PostGIS databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStoreProvider implements SQLDialectProvider<PostGISFeatureStore> {
+public class PostGISDialectProvider implements SQLDialectProvider {
+
+    private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
 
     @Override
     public Type getSupportedType() {
@@ -60,7 +71,21 @@ public class PostGISFeatureStoreProvider implements SQLDialectProvider<PostGISFe
     }
 
     @Override
-    public PostGISFeatureStore create( SQLFeatureStoreJAXB config, URL configURL, DeegreeWorkspace workspace ) {
-        return new PostGISFeatureStore( config, configURL, workspace );
+    public SQLDialect create( String connId, DeegreeWorkspace ws )
+                            throws ResourceInitException {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        boolean useLegacyPredicates = false;
+        try {
+            conn = ConnectionManager.getConnection( connId );
+            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new ResourceInitException( e.getMessage(), e );
+        } finally {
+            close( rs, stmt, conn, LOG );
+        }
+        return new PostGISDialect( useLegacyPredicates );
     }
 }

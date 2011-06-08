@@ -62,7 +62,6 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.tom.sql.SQLDialectHelper;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -95,6 +94,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
+import org.deegree.filter.sql.SQLDialect;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +122,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     // caches the column information
     private Map<String, LinkedHashMap<String, ColumnMetadata>> tableNameToColumns = new HashMap<String, LinkedHashMap<String, ColumnMetadata>>();
 
-    private final SQLDialectHelper dialect;
+    private final SQLDialect dialect;
 
     /**
      * Creates a new {@link MappedSchemaBuilderTable} instance.
@@ -134,7 +134,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
      * @throws SQLException
      * @throws FeatureStoreException
      */
-    public MappedSchemaBuilderTable( String jdbcConnId, List<FeatureTypeJAXB> ftDecls, SQLDialectHelper dialect )
+    public MappedSchemaBuilderTable( String jdbcConnId, List<FeatureTypeJAXB> ftDecls, SQLDialect dialect )
                             throws SQLException, FeatureStoreException {
         this.dialect = dialect;
         conn = ConnectionManager.getConnection( jdbcConnId );

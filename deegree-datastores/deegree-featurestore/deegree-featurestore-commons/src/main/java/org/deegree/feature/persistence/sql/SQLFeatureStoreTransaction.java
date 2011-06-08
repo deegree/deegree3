@@ -110,7 +110,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private static final Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreTransaction.class );
 
-    private final AbstractSQLFeatureStore fs;
+    private final SQLFeatureStore fs;
 
     private final MappedApplicationSchema schema;
 
@@ -134,7 +134,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
      *            <code>autocommit</code> set to <code>false</code>
      * @param schema
      */
-    SQLFeatureStoreTransaction( AbstractSQLFeatureStore store, TransactionManager taManager, Connection conn,
+    SQLFeatureStoreTransaction( SQLFeatureStore store, TransactionManager taManager, Connection conn,
                                 MappedApplicationSchema schema ) {
         this.fs = store;
         this.taManager = taManager;

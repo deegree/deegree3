@@ -40,9 +40,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.deegree.commons.tom.sql.ParticleConverter;
-import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.ConstantMapping;
@@ -74,7 +74,7 @@ public class MappedXPath {
 
     private static final Logger LOG = LoggerFactory.getLogger( MappedXPath.class );
 
-    private final AbstractSQLFeatureStore fs;
+    private final SQLFeatureStore fs;
 
     private final MappedApplicationSchema schema;
 
@@ -96,7 +96,7 @@ public class MappedXPath {
      * @throws UnmappableException
      *             if the propertyName can not be matched to the relational model
      */
-    public MappedXPath( AbstractSQLFeatureStore fs, FeatureTypeMapping ftMapping, PropertyName propName,
+    public MappedXPath( SQLFeatureStore fs, FeatureTypeMapping ftMapping, PropertyName propName,
                         TableAliasManager aliasManager ) throws UnmappableException {
 
         this.fs = fs;

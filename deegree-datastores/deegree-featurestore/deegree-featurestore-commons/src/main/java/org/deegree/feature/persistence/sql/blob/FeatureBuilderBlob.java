@@ -42,8 +42,8 @@ import java.util.List;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.sql.AbstractSQLFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,7 @@ public class FeatureBuilderBlob implements FeatureBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( FeatureBuilderBlob.class );
 
-    private final AbstractSQLFeatureStore fs;
+    private final SQLFeatureStore fs;
 
     private final BlobMapping blobMapping;
 
@@ -75,7 +75,7 @@ public class FeatureBuilderBlob implements FeatureBuilder {
      * @param blobMapping
      *            blob mapping parameters, must not be <code>null</code>
      */
-    public FeatureBuilderBlob( AbstractSQLFeatureStore fs, BlobMapping blobMapping ) {
+    public FeatureBuilderBlob( SQLFeatureStore fs, BlobMapping blobMapping ) {
         this.fs = fs;
         this.blobMapping = blobMapping;
         this.codec = blobMapping.getCodec();

@@ -81,6 +81,7 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreProvider;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
@@ -299,8 +300,8 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
-                                                                                                                              configURL );
+            SQLFeatureStore fs = (SQLFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
+                                                                                                                          configURL );
             fs.init( workspace );
 
             ApplicationSchema schema = fs.getSchema();
@@ -325,7 +326,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "inspire-hybrid.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "inspire-hybrid",
+            SQLFeatureStore fs = (SQLFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "inspire-hybrid",
                                                                                                                               configURL );
             fs.init( workspace );
 
@@ -352,7 +353,7 @@ public class PostGISFeatureStoreTest {
                                      "file:/home/schneider/.deegree/deegree-inspire-node-1.1/datasources/feature/inspire-au.xml" );
 
             SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
-            PostGISFeatureStore fs = (PostGISFeatureStore) provider.create( configURL );
+            SQLFeatureStore fs = (SQLFeatureStore) provider.create( configURL );
             try {
                 fs.init( null );
             } catch ( Throwable t ) {
@@ -387,7 +388,7 @@ public class PostGISFeatureStoreTest {
                                              "postgres", 1, 10 );
             URL configURL = PostGISFeatureStoreTest.class.getResource( "inspire-hybrid.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "inspire-hybrid",
+            SQLFeatureStore fs = (SQLFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "inspire-hybrid",
                                                                                                                               configURL );
 
             URL datasetURL = PostGISFeatureStoreTest.class.getResource( "../../../gml/feature/testdata/features/inspire_addresses1.gml" );
@@ -452,7 +453,7 @@ public class PostGISFeatureStoreTest {
             ConnectionManager.addConnection( "philosopher-db", jdbcURL, jdbcUser, jdbcPass, 1, 10 );
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
+            SQLFeatureStore fs = (SQLFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init( workspace );
 
@@ -479,7 +480,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
+            SQLFeatureStore fs = (SQLFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init( workspace );
 
@@ -518,7 +519,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
+            SQLFeatureStore fs = (SQLFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init( workspace );
 
@@ -553,7 +554,7 @@ public class PostGISFeatureStoreTest {
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            PostGISFeatureStore fs = (PostGISFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
+            SQLFeatureStore fs = (SQLFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "philosopher",
                                                                                                                               configURL );
             fs.init( workspace );
 

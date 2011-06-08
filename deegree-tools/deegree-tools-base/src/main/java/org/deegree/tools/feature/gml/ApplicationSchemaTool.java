@@ -52,10 +52,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -70,8 +70,8 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
@@ -368,7 +368,7 @@ public class ApplicationSchemaTool {
                 URL configURL = new File( inputFileName ).toURI().toURL();
                 FeatureStoreManager mgr = new FeatureStoreManager();
                 mgr.startup( DeegreeWorkspace.getInstance() );
-                PostGISFeatureStore fs = (PostGISFeatureStore) mgr.create( "deegree_postgis", configURL );
+                SQLFeatureStore fs = (SQLFeatureStore) mgr.create( "deegree_postgis", configURL );
                 String[] sql = fs.getDDL();
                 for ( String string : sql ) {
                     System.out.println( string + ";" );

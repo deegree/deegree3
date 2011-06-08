@@ -69,8 +69,6 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.geometry.standard.points.PointsList;
-import org.postgis.LineString;
-import org.postgis.PGgeometry;
 
 /**
  * <code>GeometryUtils</code>

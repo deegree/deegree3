@@ -53,7 +53,6 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
-import org.deegree.commons.tom.sql.SQLDialectHelper;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
@@ -73,6 +72,7 @@ import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHin
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.StorageCRS;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.sql.MappingExpression;
+import org.deegree.filter.sql.SQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +88,7 @@ public class AbstractMappedSchemaBuilder {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractMappedSchemaBuilder.class );
 
-    public static MappedApplicationSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialectHelper dialect )
+    public static MappedApplicationSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect )
                             throws SQLException, FeatureStoreException {
         if ( config.getGMLSchema() == null || config.getGMLSchema().isEmpty() ) {
             MappedSchemaBuilderTable builder = new MappedSchemaBuilderTable( config.getJDBCConnId(),
