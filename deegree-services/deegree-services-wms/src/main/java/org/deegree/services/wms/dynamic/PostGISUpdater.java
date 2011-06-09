@@ -124,6 +124,12 @@ public class PostGISUpdater extends LayerUpdater {
         try {
             conn = getConnection( connid );
             String tableName = sourcetable;
+
+            String schema = this.schema;
+            if ( tableName.indexOf( "." ) != -1 ) {
+                schema = tableName.substring( 0, tableName.indexOf( "." ) );
+            }
+
             if ( tableName.indexOf( "." ) != -1 ) {
                 tableName = tableName.substring( tableName.indexOf( "." ) + 1 );
             }
@@ -146,7 +152,7 @@ public class PostGISUpdater extends LayerUpdater {
                 }
             }
             sb.delete( sb.length() - 2, sb.length() );
-            sb.append( " from " ).append( schema ).append( "." ).append( sourcetable ).append( " where \"" ).append( geom );
+            sb.append( " from " ).append( schema ).append( "." ).append( tableName ).append( " where \"" ).append( geom );
             sb.append( "\" && st_geomfromtext(?, " ).append( srid ).append( ")" );
 
             String sourcequery = sb.toString();
