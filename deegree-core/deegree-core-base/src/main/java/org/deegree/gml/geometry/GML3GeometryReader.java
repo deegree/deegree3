@@ -1025,6 +1025,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         if ( xmlStream.getEventType() == START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "pos".equals( name ) ) {
+                crs = determineActiveCRS( xmlStream, defaultCRS );
                 double[] coords = parseDoubleList( xmlStream );
                 point = geomFac.createPoint( gid, coords, crs );
             } else if ( "coordinates".equals( name ) ) {
