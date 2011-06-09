@@ -3,14 +3,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-aixm</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre6</version>
+  <version>3.1-pre7-SNAPSHOT</version>
   <name>deegree 3 AIXM Demo</name>
   <url>http://www.deegree.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspace-parent</artifactId>
-    <version>3.1-pre6</version>
+    <version>3.1-pre7-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -48,23 +48,23 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre6</version>
+      <version>3.1-pre7-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1-pre6</version>
+      <version>3.1-pre7-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1-pre6</version>
+      <version>3.1-pre7-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-memory</artifactId>
-      <version>3.1-pre6</version>
+      <version>3.1-pre7-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
