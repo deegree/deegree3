@@ -4,19 +4,19 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-processproviders</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre6-SNAPSHOT</version>
+  <version>3.1-pre6</version>
   <name>deegree-wps</name>
   <url>http://www.deegree.org</url>
 
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-processproviders</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-processproviders</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre6/deegree-processproviders</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre6/deegree-processproviders</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre6-SNAPSHOT</version>
+    <version>3.1-pre6</version>
     <relativePath />
   </parent>
 

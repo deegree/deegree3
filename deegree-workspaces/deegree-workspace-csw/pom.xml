@@ -4,14 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-csw</artifactId>
   <packaging>deegree-workspace</packaging>
-  <version>3.1-pre6-SNAPSHOT</version>
+  <version>3.1-pre6</version>
   <name>deegree 3 CSW Demo</name>
   <url>http://maven.apache.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspace-parent</artifactId>
-    <version>3.1-pre6-SNAPSHOT</version>
+    <version>3.1-pre6</version>
   </parent>
 
   <repositories>
@@ -31,12 +31,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-csw</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre6</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre6-SNAPSHOT</version>
+      <version>3.1-pre6</version>
       <type>deegree-workspace</type>
     </dependency>
   </dependencies>
