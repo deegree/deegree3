@@ -37,7 +37,10 @@ package org.deegree.feature.persistence.sql.xpath;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -46,6 +49,7 @@ import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.ConstantMapping;
+import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -84,6 +88,8 @@ public class MappedXPath {
 
     private final List<Join> joins = new ArrayList<Join>();
 
+    private String currentTable;
+    
     private String currentTableAlias;
 
     private PropertyNameMapping propMapping;
@@ -120,17 +126,13 @@ public class MappedXPath {
 
         List<MappableStep> steps = MappableStep.extractSteps( propName );
 
-        System.out.println( ftMapping );
-        System.out.println( ftMapping.getFeatureType() );
-        System.out.println( steps );
-        System.out.println( steps.get( 0 ) );
-
         // the first step may be the name of the feature type or the name of a property
         if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
             steps.subList( 1, steps.size() );
         }
 
-        this.currentTableAlias = aliasManager.getRootTableAlias();
+        currentTable = ftMapping.getFtTable().getTable();
+        currentTableAlias = aliasManager.getRootTableAlias();
         map( ftMapping.getMappings(), steps );
     }
 
@@ -160,10 +162,14 @@ public class MappedXPath {
                     map( (PrimitiveMapping) mapping, steps );
                 } else if ( mapping instanceof GeometryMapping ) {
                     map( (GeometryMapping) mapping, steps );
+                } else if ( mapping instanceof FeatureMapping ) {
+                    map( (FeatureMapping) mapping, steps );
                 } else if ( mapping instanceof ConstantMapping<?> ) {
                     map( (ConstantMapping<?>) mapping, steps );
                 } else {
-                    throw new UnmappableException( "Handling of '" + mapping.getClass() + " not implemented yet." );
+                	String msg = "Handling of '" + mapping.getClass() + " not implemented yet.";
+                	LOG.warn (msg);
+                    throw new UnmappableException( msg );
                 }
                 break;
             }
@@ -202,17 +208,49 @@ public class MappedXPath {
         propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
     }
 
+	private void map(FeatureMapping mapping, List<MappableStep> remaining) throws UnmappableException {
+		followJoins(mapping.getJoinedTable());
+		if (remaining.size() < 2) {
+			throw new UnmappableException ("Not enough steps.");
+		}
+		MappableStep ftStep = remaining.get(0);
+		if (!(ftStep instanceof ElementStep)) {
+			throw new UnmappableException ("Must provide a feature type name.");
+		}
+		QName ftName = ((ElementStep) ftStep).getNodeName();
+		FeatureTypeMapping ftMapping = schema.getFtMapping(ftName);
+		if (ftMapping == null) {
+			throw new UnmappableException("Feature type '" + ftName + " is not mapped to a table.");
+		}
+		
+        String fromTable = currentTable;
+        String fromTableAlias = currentTableAlias;
+        String fromColumn = mapping.getMapping().toString();
+        String toTable = ftMapping.getFtTable().getTable();
+        String toTableAlias = aliasManager.generateNew();
+
+        String toColumn = ftMapping.getFidMapping().getColumn();
+        Join appliedJoin = new Join( fromTable, fromTableAlias, Collections.singletonList(fromColumn), toTable,
+                                     toTableAlias, Collections.singletonList(toColumn) );
+        joins.add( appliedJoin );
+        currentTable = toTable;
+        currentTableAlias = toTableAlias;
+      
+        map( ftMapping.getMappings(), remaining.subList(1, remaining.size()) );
+	}
+
     private void followJoins( List<TableJoin> joinedTables ) {
         if ( joinedTables != null ) {
             for ( TableJoin joinedTable : joinedTables ) {
-                String fromTable = joinedTable.getFromTable().getTable();
+                String fromTable = currentTable;
                 String fromTableAlias = currentTableAlias;
                 String toTable = joinedTable.getToTable().getTable();
                 String toTableAlias = aliasManager.generateNew();
-                currentTableAlias = toTableAlias;
                 Join appliedJoin = new Join( fromTable, fromTableAlias, joinedTable.getFromColumns(), toTable,
                                              toTableAlias, joinedTable.getToColumns() );
                 joins.add( appliedJoin );
+                currentTable = toTable;
+                currentTableAlias = toTableAlias;
             }
         }
     }

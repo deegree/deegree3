@@ -152,6 +152,8 @@ public class SQLFeatureStore implements FeatureStore {
 
     private final SQLDialect dialect;
 
+    private final boolean allowInMemoryFiltering = true;
+
     private MappedApplicationSchema schema;
 
     private TransactionManager taManager;
@@ -1204,7 +1206,7 @@ public class SQLFeatureStore implements FeatureStore {
                                                   Connection conn )
                             throws FilterEvaluationException, UnmappableException {
         PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ) );
-        return dialect.getWhereBuilder( mapper, filter, sortCrit, true );
+        return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
     }
 
     private AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
@@ -1223,7 +1225,7 @@ public class SQLFeatureStore implements FeatureStore {
                                                 aliasManager.getRootTableAlias() );
             }
         };
-        return dialect.getWhereBuilder( mapper, filter, null, true );
+        return dialect.getWhereBuilder( mapper, filter, null, allowInMemoryFiltering );
     }
 
     public SQLDialect getDialect() {
