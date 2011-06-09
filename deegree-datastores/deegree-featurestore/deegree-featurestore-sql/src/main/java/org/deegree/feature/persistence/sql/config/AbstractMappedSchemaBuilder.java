@@ -72,7 +72,7 @@ import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHin
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.StorageCRS;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.sql.MappingExpression;
-import org.deegree.filter.sql.SQLDialect;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

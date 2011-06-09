@@ -48,7 +48,7 @@ import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
-import org.deegree.filter.sql.SQLDialect;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

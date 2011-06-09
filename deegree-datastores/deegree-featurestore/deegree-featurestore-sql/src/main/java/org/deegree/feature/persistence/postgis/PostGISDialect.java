@@ -48,7 +48,6 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.PropertyNameMapper;
-import org.deegree.filter.sql.SQLDialect;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.postgis.PostGISGeometryConverter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
@@ -56,6 +55,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.deegree.sqldialect.SQLDialect;
 import org.postgis.PGboxbase;
 
 /**

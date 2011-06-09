@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql;
+package org.deegree.sqldialect;
 
 import java.io.File;
 import java.util.HashMap;
@@ -49,7 +49,6 @@ import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.filter.sql.SQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

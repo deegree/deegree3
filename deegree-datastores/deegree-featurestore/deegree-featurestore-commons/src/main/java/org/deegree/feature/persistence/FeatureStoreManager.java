@@ -49,8 +49,8 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.TempFileManager;
-import org.deegree.feature.persistence.sql.SQLDialectManager;
 import org.deegree.filter.function.FunctionManager;
+import org.deegree.sqldialect.SQLDialectManager;
 import org.slf4j.Logger;
 
 /**

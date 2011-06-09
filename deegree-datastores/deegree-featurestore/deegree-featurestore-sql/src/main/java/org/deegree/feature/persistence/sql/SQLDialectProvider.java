@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,59 +33,34 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
-
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
-import static org.deegree.commons.utils.JDBCUtils.close;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+package org.deegree.feature.persistence.sql;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.feature.persistence.sql.SQLDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLDialectProvider} for PostgreSQL / PostGIS databases.
+ * Implementations provide {@link SQLDialect} implementations.
  * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISDialectProvider implements SQLDialectProvider {
+public interface SQLDialectProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
+    /**
+     * @return the db type which is supported by this feature store provider
+     */
+    Type getSupportedType();
 
-    @Override
-    public Type getSupportedType() {
-        return PostgreSQL;
-    }
-
-    @Override
-    public SQLDialect create( String connId, DeegreeWorkspace ws )
-                            throws ResourceInitException {
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        boolean useLegacyPredicates = false;
-        try {
-            conn = ConnectionManager.getConnection( connId );
-            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new ResourceInitException( e.getMessage(), e );
-        } finally {
-            close( rs, stmt, conn, LOG );
-        }
-        return new PostGISDialect( useLegacyPredicates );
-    }
+    /**
+     * @param connId
+     * @param ws
+     * @return new SQL dialect instance configured for the given JDBC connection id
+     * @throws ResourceInitException 
+     */
+    SQLDialect create( String connId, DeegreeWorkspace ws ) throws ResourceInitException;
 }

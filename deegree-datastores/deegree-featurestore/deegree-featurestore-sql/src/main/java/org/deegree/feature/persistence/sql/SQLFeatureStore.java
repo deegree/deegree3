@@ -119,7 +119,6 @@ import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
-import org.deegree.filter.sql.SQLDialect;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLArgument;
@@ -128,6 +127,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReferenceResolver;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**

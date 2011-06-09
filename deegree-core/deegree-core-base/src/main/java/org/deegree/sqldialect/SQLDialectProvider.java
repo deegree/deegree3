@@ -33,12 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql;
+package org.deegree.sqldialect;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.filter.sql.SQLDialect;
 
 /**
  * Implementations provide {@link SQLDialect} implementations.

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql;
+package org.deegree.sqldialect;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,11 +44,14 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.PropertyNameMapper;
+import org.deegree.filter.sql.UnmappableException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 
 /**
- * Implementations provide the vendor-specific behavior for a spatial DBMS.
+ * Implementations provide the vendor-specific behavior for a spatial DBMS to be supported by deegree.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
