@@ -48,8 +48,8 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.feature.persistence.sql.SQLDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SQLDialectProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
