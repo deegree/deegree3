@@ -119,7 +119,7 @@ public class PostGISDialect implements SQLDialect {
         }
         sql.append( "(" );
         sql.append( column );
-        sql.append( ")::BOX2D FROM " );
+        sql.append( ")::BOX2D" );
         return sql.toString();
     }
 

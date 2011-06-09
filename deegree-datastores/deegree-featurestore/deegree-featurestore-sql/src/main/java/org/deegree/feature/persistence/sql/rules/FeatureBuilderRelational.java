@@ -78,7 +78,6 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.FeatureReference;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -197,14 +196,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
-                FeatureMapping fm = (FeatureMapping) mapping;
-                MappingExpression column = fm.getMapping();
-                if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, tableAlias + "." + ( (DBField) column ).getColumn() );
-                }
-                column = fm.getHrefMapping();
-                if ( column instanceof DBField ) {
-                    addColumn( colToRsIdx, tableAlias + "." + ( (DBField) column ).getColumn() );
+                if ( particleConverter != null ) {
+                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
+                } else {
+                    LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
@@ -318,44 +313,32 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
 
         TypedObjectNode particle = null;
+
+        ParticleConverter<?> converter = fs.getConverter(mapping);
+        
         if ( mapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                String col = fs.getConverter( pm ).getSelectSnippet( tableAlias );
+                String col = converter.getSelectSnippet( tableAlias );
                 int colIndex = colToRsIdx.get( col );
-                particle = fs.getConverter( mapping ).toParticle( rs, colIndex );
+                particle = converter.toParticle( rs, colIndex );
             }
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
             if ( me instanceof DBField ) {
-                String col = fs.getConverter( pm ).getSelectSnippet( tableAlias );
+                String col = converter.getSelectSnippet( tableAlias );
                 int colIndex = colToRsIdx.get( col );
-                particle = fs.getConverter( mapping ).toParticle( rs, colIndex );
+                particle = converter.toParticle( rs, colIndex );
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;
             MappingExpression me = fm.getMapping();
             if ( me instanceof DBField ) {
-                Object value = rs.getObject( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
-                if ( value != null ) {
-                    // TODO
-                    String ref;
-                    if ( value.toString().startsWith( "http" ) ) {
-                        ref = value.toString();
-                    } else {
-                        ref = "#" + value;
-                    }
-                    particle = new FeatureReference( fs.getResolver(), ref, null );
-                }
-            }
-            me = fm.getHrefMapping();
-            if ( me instanceof DBField ) {
-                String value = rs.getString( colToRsIdx.get( ( (DBField) me ).getColumn() ) );
-                if ( value != null ) {
-                    particle = new FeatureReference( fs.getResolver(), value, null );
-                }
+                String col = converter.getSelectSnippet( tableAlias );
+                int colIndex = colToRsIdx.get( col );
+                particle = converter.toParticle( rs, colIndex );
             }
         } else if ( mapping instanceof ConstantMapping<?> ) {
             particle = ( (ConstantMapping<?>) mapping ).getValue();

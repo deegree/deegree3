@@ -92,12 +92,14 @@ import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.config.AbstractMappedSchemaBuilder;
 import org.deegree.feature.persistence.sql.converter.CustomParticleConverter;
+import org.deegree.feature.persistence.sql.converter.FeatureParticleConverter;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
+import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.Mappings;
@@ -131,8 +133,9 @@ import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
- * {@link FeatureStore} that is backed by a spatial SQL database and provides methods for setting up the required
- * tables.
+ * {@link FeatureStore} that is backed by a spatial SQL database.
+ * 
+ * @see SQLDialect
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -141,7 +144,7 @@ import org.slf4j.Logger;
  */
 public class SQLFeatureStore implements FeatureStore {
 
-    static final Logger LOG = getLogger( SQLFeatureStore.class );
+    private static final Logger LOG = getLogger( SQLFeatureStore.class );
 
     private final SQLFeatureStoreJAXB config;
 
@@ -244,11 +247,19 @@ public class SQLFeatureStore implements FeatureStore {
             GeometryMapping geomMapping = (GeometryMapping) particleMapping;
             ParticleConverter<?> converter = getGeometryConverter( geomMapping );
             particeMappingToConverter.put( particleMapping, converter );
+        } else if ( particleMapping instanceof FeatureMapping ) {
+        	FeatureMapping geomMapping = (FeatureMapping) particleMapping;
+        	String fkColumn = geomMapping.getMapping().toString();
+        	String hrefColumn = geomMapping.getHrefMapping().toString();
+            ParticleConverter<?> converter = new FeatureParticleConverter(fkColumn, hrefColumn, getResolver());
+            particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) particleMapping;
             for ( Mapping childMapping : cm.getParticles() ) {
                 initConverter( childMapping );
             }
+        } else {
+        	LOG.warn ("Unhandled particle mapping type {}", particleMapping);
         }
     }
 
@@ -394,7 +405,7 @@ public class SQLFeatureStore implements FeatureStore {
         Envelope env = null;
         StringBuilder sql = new StringBuilder( "SELECT " );
         sql.append( dialect.getBBoxAggregateSnippet( column ) );
-        sql.append( "FROM " );
+        sql.append( " FROM " );
         sql.append( blobMapping.getTable() );
         sql.append( " WHERE " );
         sql.append( blobMapping.getTypeColumn() );
@@ -420,7 +431,7 @@ public class SQLFeatureStore implements FeatureStore {
         return env;
     }
 
-    public void clearEnvelopeCache() {
+    void clearEnvelopeCache() {
         ftToBBox.clear();
     }
 
@@ -593,7 +604,7 @@ public class SQLFeatureStore implements FeatureStore {
         return transformedLiteral;
     }
 
-    protected short getFtId( QName ftName ) {
+    short getFtId( QName ftName ) {
         return getSchema().getFtId( ftName );
     }
 
@@ -877,11 +888,8 @@ public class SQLFeatureStore implements FeatureStore {
         try {
             conn = getConnection();
 
-            // FeatureType ft = getSchema().getFeatureType( ftName );
             FeatureTypeMapping ftMapping = getMapping( ftName );
-
             BlobMapping blobMapping = getSchema().getBlobMapping();
-
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
 
             List<String> columns = builder.getInitialSelectColumns();
@@ -1005,20 +1013,14 @@ public class SQLFeatureStore implements FeatureStore {
             result = new FilteredFeatureResultSet( result, filter );
         }
 
-        if ( query.getSortProperties() != null ) {
+        if (query.getSortProperties().length > 0 ) {
             LOG.debug( "Applying in-memory post-sorting." );
             result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
         }
         return result;
     }
 
-    /**
-     * @param query
-     * @param ftName
-     * @param filter
-     * @throws FeatureStoreException
-     */
-    FeatureResultSet queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
+    private FeatureResultSet queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing query by operator filter" );

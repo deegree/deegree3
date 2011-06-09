@@ -98,7 +98,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link FeatureStoreTransaction} implementation for {@link AbstractSQLFeatureStore} implementations.
+ * {@link FeatureStoreTransaction} implementation for {@link SQLFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -185,7 +185,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performDelete( QName ftName, OperatorFilter filter, Lock lock )
                             throws FeatureStoreException {
-
         // TODO implement this more efficiently
         return performDelete( getIdFilter( ftName, filter ), lock );
     }

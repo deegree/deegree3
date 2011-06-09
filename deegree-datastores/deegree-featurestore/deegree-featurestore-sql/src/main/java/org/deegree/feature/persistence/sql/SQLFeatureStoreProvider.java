@@ -45,7 +45,6 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.sqldialect.SQLDialect;
@@ -55,10 +54,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link FeatureStoreProvider} for {@link AbstractSQLFeatureStore} implementations.
+ * {@link FeatureStoreProvider} for {@link SQLFeatureStore} implementations.
  * <p>
  * This {@link FeatureStoreProvider} needs registered {@link SQLDialectProvider} implementations in order to actually
- * create {@link FeatureStore} instances.
+ * create {@link SQLFeatureStore} instances.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
