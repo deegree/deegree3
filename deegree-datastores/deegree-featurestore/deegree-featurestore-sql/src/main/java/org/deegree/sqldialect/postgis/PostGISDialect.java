@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.sqldialect.postgis;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
