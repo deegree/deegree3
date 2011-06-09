@@ -98,7 +98,7 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-featurestore-postgis</artifactId>
+      <artifactId>deegree-featurestore-sql</artifactId>
       <version>3.1-pre7-SNAPSHOT</version>
     </dependency>
     <dependency>

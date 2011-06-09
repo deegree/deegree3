@@ -33,10 +33,10 @@
 
   <modules>
     <module>deegree-featurestore-commons</module>
-    <module>deegree-featurestore-shape</module>
     <module>deegree-featurestore-memory</module>
+    <module>deegree-featurestore-shape</module>
     <module>deegree-featurestore-simplesql</module>
-    <module>deegree-featurestore-postgis</module>
+    <module>deegree-featurestore-sql</module>
   </modules>
 
 </project>
