@@ -35,12 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.se.parser;
 
-import static java.awt.Color.decode;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromSvg;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.getUOM;
@@ -289,7 +289,7 @@ public class PostgreSQLReader {
 
                 String color = rs.getString( "color" );
                 if ( color != null ) {
-                    res.color = decode( color );
+                    res.color = decodeWithAlpha( color );
                 }
                 Double width = (Double) rs.getObject( "width" );
                 if ( width != null ) {
@@ -386,7 +386,7 @@ public class PostgreSQLReader {
 
                 String color = rs.getString( "color" );
                 if ( color != null ) {
-                    res.color = decode( color );
+                    res.color = decodeWithAlpha( color );
                 }
                 Integer graphic = (Integer) rs.getObject( "graphic_id" );
                 if ( graphic != null ) {
