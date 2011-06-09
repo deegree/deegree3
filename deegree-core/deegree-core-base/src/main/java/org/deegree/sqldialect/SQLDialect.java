@@ -51,7 +51,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 
 /**
- * Implementations provide the vendor-specific behavior for a spatial DBMS to be supported by deegree.
+ * Implementations provide the vendor-specific behavior for a spatial DBMS so it can be supported by deegree.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
