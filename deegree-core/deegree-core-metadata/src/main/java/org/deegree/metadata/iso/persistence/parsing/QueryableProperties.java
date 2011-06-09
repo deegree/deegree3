@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
-import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.iso.types.BoundingBox;
+import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Constraint;
 import org.deegree.metadata.iso.types.Format;
 import org.deegree.metadata.iso.types.Keyword;
@@ -76,7 +76,7 @@ public class QueryableProperties {
 
     private List<BoundingBox> boundingBox;
 
-    private List<CRSCodeType> crs;
+    private List<CRS> crs;
 
     // ---</common queryable properties>
 
@@ -340,7 +340,7 @@ public class QueryableProperties {
     /**
      * @return the crs
      */
-    public List<CRSCodeType> getCrs() {
+    public List<CRS> getCrs() {
         return crs;
     }
 
@@ -348,7 +348,7 @@ public class QueryableProperties {
      * @param crs
      *            the crs to set
      */
-    public void setCrs( List<CRSCodeType> crs ) {
+    public void setCrs( List<CRS> crs ) {
         this.crs = crs;
     }
 

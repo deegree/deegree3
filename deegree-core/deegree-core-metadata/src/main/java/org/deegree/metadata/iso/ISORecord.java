@@ -74,6 +74,7 @@ import org.deegree.metadata.filter.XPathElementFilter;
 import org.deegree.metadata.iso.persistence.parsing.ISOQPParsing;
 import org.deegree.metadata.iso.persistence.parsing.ParsedProfileElement;
 import org.deegree.metadata.iso.types.BoundingBox;
+import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Format;
 import org.deegree.metadata.iso.types.Keyword;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
@@ -312,9 +313,9 @@ public class ISORecord implements MetadataRecord {
 
         List<BoundingBox> bboxList = pElem.getQueryableProperties().getBoundingBox();
         if ( pElem.getQueryableProperties().getCrs().isEmpty() ) {
-            List<CRSCodeType> newCRSList = new LinkedList<CRSCodeType>();
+            List<CRS> newCRSList = new LinkedList<CRS>();
             for ( BoundingBox b : bboxList ) {
-                newCRSList.add( new CRSCodeType( "4326", "EPSG" ) );
+                newCRSList.add( new CRS( "4326", "EPSG", null ) );
             }
 
             pElem.getQueryableProperties().setCrs( newCRSList );
@@ -323,8 +324,10 @@ public class ISORecord implements MetadataRecord {
         Envelope[] env = new Envelope[bboxList.size()];
         int counter = 0;
         for ( BoundingBox box : bboxList ) {
-            CRSCodeType bboxCRS = pElem.getQueryableProperties().getCrs().get( counter );
-            ICRS crs = CRSManager.getCRSRef( bboxCRS.toString() );
+            CRS bboxCRS = pElem.getQueryableProperties().getCrs().get( counter );
+            // convert to the deegree CRSCodeType - this is not nice! 
+            CRSCodeType crsCT = new CRSCodeType( bboxCRS.getCrsId(), bboxCRS.getAuthority() );
+            ICRS crs = CRSManager.getCRSRef( crsCT.toString() );
             env[counter++] = new GeometryFactory().createEnvelope( box.getWestBoundLongitude(),
                                                                    box.getSouthBoundLatitude(),
                                                                    box.getEastBoundLongitude(),

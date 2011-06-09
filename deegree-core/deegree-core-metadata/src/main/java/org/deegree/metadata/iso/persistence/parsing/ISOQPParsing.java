@@ -51,8 +51,8 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.cs.CRSCodeType;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Format;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -272,7 +272,7 @@ public final class ISOQPParsing extends XMLAdapter {
                                                               "./gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
                                                               nsContextISOParsing ) );
 
-        List<CRSCodeType> crsList = new LinkedList<CRSCodeType>();
+        List<CRS> crsList = new LinkedList<CRS>();
         for ( OMElement crsElement : crsElements ) {
             String nilReasonCRS = getNodeAsString( crsElement, new XPath( "./gmd:code/@gco:nilReason",
                                                                           nsContextISOParsing ), null );
@@ -280,29 +280,16 @@ public final class ISOQPParsing extends XMLAdapter {
             String nilReasonAuth = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/@gco:nilReason",
                                                                            nsContextISOParsing ), null );
 
-            // OMElement e = getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContextISOParsing ) );
-            //
-            // LOG.debug( "elem: " + e );
-
             if ( nilReasonCRS == null && nilReasonAuth == null ) {
                 String crs = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
                                                                      nsContextISOParsing ), null );
-
                 String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
                                                                               nsContextISOParsing ), null );
-
                 String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
                                                                             nsContextISOParsing ), null );
-
-                if ( crsAuthority != null ) {
-                    crsList.add( new CRSCodeType( crs, crsAuthority ) );
-                } else if ( crs != null ) {
-
-                    crsList.add( new CRSCodeType( crs ) );
-                }
+                crsList.add( new CRS( crs, crsAuthority, crsVersion ) );
             }
         }
-
         qp.setCrs( crsList );
 
         /*---------------------------------------------------------------

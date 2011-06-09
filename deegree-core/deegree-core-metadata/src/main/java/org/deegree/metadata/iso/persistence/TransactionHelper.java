@@ -56,7 +56,6 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.jdbc.TransactionRow;
 import org.deegree.commons.jdbc.UpdateRow;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSUtils;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.expression.SQLArgument;
@@ -68,6 +67,7 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.parsing.QueryableProperties;
 import org.deegree.metadata.iso.types.BoundingBox;
+import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Constraint;
 import org.deegree.metadata.iso.types.Format;
 import org.deegree.metadata.iso.types.Keyword;
@@ -428,23 +428,23 @@ class TransactionHelper extends SqlHelper {
 
     private void updateCRSTable( boolean isUpdate, Connection conn, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
-        List<CRSCodeType> crss = qp.getCrs();
+        List<CRS> crss = qp.getCrs();
         if ( crss != null && crss.size() > 0 ) {
-            for ( CRSCodeType crs : crss ) {
+            for ( CRS crs : crss ) {
                 InsertRow ir = new InsertRow( new QTableName( crsTable ), null );
                 try {
                     int localId = updateTable( isUpdate, conn, operatesOnId, crsTable );
                     ir.addPreparedArgument( idColumn, localId );
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "authority",
-                                            ( crs.getCodeSpace() != null && crs.getCodeSpace().length() > 0 ) ? crs.getCodeSpace()
+                                            ( crs.getAuthority() != null && crs.getAuthority().length() > 0 ) ? crs.getAuthority()
                                                                                                              : null );
                     ir.addPreparedArgument( "crsid",
-                                            ( crs.getCode() != null && crs.getCode().length() > 0 ) ? crs.getCode()
-                                                                                                   : null );
+                                            ( crs.getCrsId() != null && crs.getCrsId().length() > 0 ) ? crs.getCrsId()
+                                                                                                     : null );
                     ir.addPreparedArgument( "version",
-                                            ( crs.getCodeVersion() != null && crs.getCodeVersion().length() > 0 ) ? crs.getCodeVersion()
-                                                                                                                 : null );
+                                            ( crs.getVersion() != null && crs.getVersion().length() > 0 ) ? crs.getVersion()
+                                                                                                         : null );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
                     String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
