@@ -20,7 +20,7 @@
     <complexType>
       <sequence>
         <element name="JDBCConnId" type="string" />
-        <element name="AllowMemoryFiltering" minOccurs="0">
+        <element name="DisablePostFiltering" minOccurs="0">
           <complexType />
         </element>
         <choice>

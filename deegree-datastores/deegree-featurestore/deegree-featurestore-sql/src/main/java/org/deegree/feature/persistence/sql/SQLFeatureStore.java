@@ -191,7 +191,7 @@ public class SQLFeatureStore implements FeatureStore {
         this.configURL = configURL;
         this.dialect = dialect;
         this.jdbcConnId = config.getJDBCConnId();
-        this.allowInMemoryFiltering = config.getAllowMemoryFiltering() != null;
+        this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
     }
 
     @Override
