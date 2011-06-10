@@ -175,7 +175,7 @@ public class MappedXPath {
             }
         }
         if ( !matchFound ) {
-            String msg = "No mapping for PropertyName '" + propName + "' available.";
+            String msg = "No mapping for PropertyName '" + propName.getAsText() + "' available.";
             throw new UnmappableException( msg );
         }
     }

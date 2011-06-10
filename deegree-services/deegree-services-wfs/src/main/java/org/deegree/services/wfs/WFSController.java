@@ -431,7 +431,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException110( new OWSException( e ), response );
-        } catch ( Exception e ) {
+        } catch ( Throwable e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException110( new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE ),
@@ -558,7 +558,7 @@ public class WFSController extends AbstractOGCServiceController<WFSRequestType> 
             LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e ), response );
-        } catch ( Exception e ) {
+        } catch ( Throwable e ) {
             LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE ),

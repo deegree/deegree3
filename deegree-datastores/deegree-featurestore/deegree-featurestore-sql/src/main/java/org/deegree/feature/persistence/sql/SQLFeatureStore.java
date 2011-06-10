@@ -152,7 +152,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     private final SQLDialect dialect;
 
-    private final boolean allowInMemoryFiltering = true;
+    private final boolean allowInMemoryFiltering;
 
     private MappedApplicationSchema schema;
 
@@ -191,6 +191,7 @@ public class SQLFeatureStore implements FeatureStore {
         this.configURL = configURL;
         this.dialect = dialect;
         this.jdbcConnId = config.getJDBCConnId();
+        this.allowInMemoryFiltering = config.getAllowMemoryFiltering() != null;
     }
 
     @Override
@@ -378,7 +379,7 @@ public class SQLFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.createStatement();
-            LOG.debug ("Executing envelope SELECT: " + sql);
+            LOG.debug( "Executing envelope SELECT: " + sql );
             rs = stmt.executeQuery( sql.toString() );
             rs.next();
             ICRS crs = mapping.getCRS();
@@ -625,11 +626,7 @@ public class SQLFeatureStore implements FeatureStore {
                 String msg = "Feature type '" + ftName + "' is not served by this feature store.";
                 throw new FeatureStoreException( msg );
             }
-            try {
-                result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
-            } catch ( Throwable t ) {
-                t.printStackTrace();
-            }
+            result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
         } else {
             // must be an id filter based query
             if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
@@ -680,7 +677,7 @@ public class SQLFeatureStore implements FeatureStore {
                 FeatureResultSet rs;
                 try {
                     rs = query( queries[i++] );
-                } catch ( Exception e ) {
+                } catch ( Throwable e ) {
                     LOG.debug( e.getMessage(), e );
                     throw new RuntimeException( e.getMessage(), e );
                 }
