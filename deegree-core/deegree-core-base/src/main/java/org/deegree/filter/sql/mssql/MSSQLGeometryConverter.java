@@ -35,22 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.mssql;
 
-import java.io.UnsupportedEncodingException;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link GeometryParticleConverter} for PostGIS databases.
@@ -61,6 +60,8 @@ import com.vividsolutions.jts.io.ParseException;
  * @version $Revision$, $Date$
  */
 public class MSSQLGeometryConverter implements GeometryParticleConverter {
+
+    private static final Logger LOG = getLogger( MSSQLGeometryConverter.class );
 
     private final String column;
 
@@ -117,12 +118,8 @@ public class MSSQLGeometryConverter implements GeometryParticleConverter {
                 }
                 return new WKTReader( crs ).read( sqlValue.toString() );
             }
-        } catch ( UnsupportedEncodingException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( ParseException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch ( Throwable e ) {
+            throw new SQLException( e );
         }
         return null;
     }
@@ -132,12 +129,14 @@ public class MSSQLGeometryConverter implements GeometryParticleConverter {
                             throws SQLException {
         if ( particle == null ) {
             stmt.setObject( paramIndex, null );
-        } else if ( is2d ) {
+            return;
+        }
+        particle = getCompatibleGeometry( particle );
+        if ( is2d ) {
             try {
                 stmt.setBytes( paramIndex, WKBWriter.write( particle ) );
-            } catch ( ParseException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch ( Throwable e ) {
+                throw new SQLException( e );
             }
         } else {
             stmt.setString( paramIndex, WKTWriter.write( particle ) );
@@ -153,4 +152,28 @@ public class MSSQLGeometryConverter implements GeometryParticleConverter {
     public ICRS getCrs() {
         return crs;
     }
+
+    private Geometry getCompatibleGeometry( Geometry literal )
+                            throws SQLException {
+        if ( crs == null ) {
+            return literal;
+        }
+
+        Geometry transformedLiteral = literal;
+        if ( literal != null ) {
+            ICRS literalCRS = literal.getCoordinateSystem();
+            if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
+                LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
+                           + crs.getAlias() );
+                try {
+                    GeometryTransformer transformer = new GeometryTransformer( crs );
+                    transformedLiteral = transformer.transform( literal );
+                } catch ( Throwable e ) {
+                    throw new SQLException( e.getMessage() );
+                }
+            }
+        }
+        return transformedLiteral;
+    }
+
 }

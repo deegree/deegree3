@@ -158,7 +158,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
         }
 
         ICRS storageCRS = propNameExpr.getCRS();
-        int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : -1;
+        int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : 0;
 
         switch ( op.getSubType() ) {
         case BBOX: {
@@ -256,9 +256,8 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
         return builder.toOperation();
     }
 
-    private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid )
-                            throws FilterEvaluationException {
-        boolean is2d = targetCRS.getDimension() == 2;
-        return new SQLArgument( geom, new MSSQLGeometryConverter( null, targetCRS, "" + srid, is2d ) );
+    private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid ) {
+        // always use is2d = true (else srid handling will not function properly in mssql)
+        return new SQLArgument( geom, new MSSQLGeometryConverter( null, targetCRS, "" + srid, true ) );
     }
 }
