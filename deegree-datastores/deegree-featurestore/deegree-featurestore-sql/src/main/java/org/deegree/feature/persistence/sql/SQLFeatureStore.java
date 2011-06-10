@@ -250,10 +250,10 @@ public class SQLFeatureStore implements FeatureStore {
             ParticleConverter<?> converter = getGeometryConverter( geomMapping );
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof FeatureMapping ) {
-        	FeatureMapping geomMapping = (FeatureMapping) particleMapping;
-        	String fkColumn = geomMapping.getMapping().toString();
-        	String hrefColumn = geomMapping.getHrefMapping().toString();
-            ParticleConverter<?> converter = new FeatureParticleConverter(fkColumn, hrefColumn, getResolver());
+            FeatureMapping geomMapping = (FeatureMapping) particleMapping;
+            String fkColumn = geomMapping.getMapping().toString();
+            String hrefColumn = geomMapping.getHrefMapping().toString();
+            ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver() );
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) particleMapping;
@@ -261,7 +261,7 @@ public class SQLFeatureStore implements FeatureStore {
                 initConverter( childMapping );
             }
         } else {
-        	LOG.warn ("Unhandled particle mapping type {}", particleMapping);
+            LOG.warn( "Unhandled particle mapping type {}", particleMapping );
         }
     }
 
@@ -330,13 +330,8 @@ public class SQLFeatureStore implements FeatureStore {
                 // TODO what should be favored for hybrid mappings?
                 if ( blobMapping != null ) {
                     env = getEnvelope( ftName, blobMapping );
-                } else {
+                } else if ( schema.getFtMapping( ft.getName() ) != null ) {
                     FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
-                    if ( ftMapping == null ) {
-                        String msg = "Unable to determine envelope for feature type '" + ftName
-                                     + "': neither feature type nor BLOB mapping defined.";
-                        throw new FeatureStoreException( msg );
-                    }
                     env = getEnvelope( ftMapping );
                 }
                 ftToBBox.put( ft, env );
@@ -374,7 +369,7 @@ public class SQLFeatureStore implements FeatureStore {
         Envelope env = null;
         StringBuilder sql = new StringBuilder( "SELECT " );
         sql.append( dialect.getBBoxAggregateSnippet( column ) );
-        sql.append( "FROM " );
+        sql.append( " FROM " );
         sql.append( ftMapping.getFtTable() );
 
         Connection conn = null;
@@ -383,6 +378,7 @@ public class SQLFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.createStatement();
+            LOG.debug ("Executing envelope SELECT: " + sql);
             rs = stmt.executeQuery( sql.toString() );
             rs.next();
             ICRS crs = mapping.getCRS();
@@ -630,8 +626,8 @@ public class SQLFeatureStore implements FeatureStore {
                 throw new FeatureStoreException( msg );
             }
             try {
-            result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
-            } catch (Throwable t ){
+                result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
+            } catch ( Throwable t ) {
                 t.printStackTrace();
             }
         } else {
@@ -1015,7 +1011,7 @@ public class SQLFeatureStore implements FeatureStore {
             result = new FilteredFeatureResultSet( result, filter );
         }
 
-        if (query.getSortProperties().length > 0 ) {
+        if ( query.getSortProperties().length > 0 ) {
             LOG.debug( "Applying in-memory post-sorting." );
             result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
         }
