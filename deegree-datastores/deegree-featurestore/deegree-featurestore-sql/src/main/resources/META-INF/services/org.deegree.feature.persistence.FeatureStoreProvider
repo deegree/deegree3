@@ -1,1 +1,1 @@
-org.deegree.feature.persistence.sql.SQLFeatureStore
+org.deegree.feature.persistence.sql.SQLFeatureStoreProvider
