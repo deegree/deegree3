@@ -64,7 +64,7 @@ public class SQLDialectManager extends AbstractBasicResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( SQLDialectManager.class );
 
-    private static ServiceLoader<SQLDialectProvider> loader;
+    private ServiceLoader<SQLDialectProvider> loader;
 
     private Map<Type, SQLDialectProvider> typeToDialectProvider;
 
