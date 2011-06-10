@@ -62,8 +62,6 @@ import com.vividsolutions.jts.io.ParseException;
  */
 public class MSSQLGeometryConverter implements GeometryParticleConverter {
 
-    private static Logger LOG = LoggerFactory.getLogger( MSSQLGeometryConverter.class );
-
     private final String column;
 
     private final ICRS crs;
