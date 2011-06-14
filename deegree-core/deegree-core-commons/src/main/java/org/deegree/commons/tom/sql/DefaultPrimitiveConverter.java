@@ -79,7 +79,7 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         this.column = column;
         this.isConcatenated = false;
     }
-    
+
     public DefaultPrimitiveConverter( PrimitiveType pt, String column, boolean isConcatenated ) {
         this.pt = pt;
         this.bt = pt.getBaseType();
@@ -95,7 +95,8 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         return column;
     }
 
-    public String getSetSnippet() {
+    @Override
+    public String getSetSnippet( PrimitiveValue particle ) {
         return "?";
     }
 

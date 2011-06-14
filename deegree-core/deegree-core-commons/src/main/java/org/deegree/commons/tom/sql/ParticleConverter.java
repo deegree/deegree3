@@ -74,11 +74,17 @@ public interface ParticleConverter<T extends TypedObjectNode> {
                             throws SQLException;
 
     /**
-     * Returns a {@link PreparedStatement} fragment for setting the particle value in an SQL statement.
+     * Returns a {@link PreparedStatement} fragment for setting the given particle value in an SQL statement.
+     * <p>
+     * The value may be set in a literal SQL fashion (e.g. '2007-08-09') or as a {@link PreparedStatement} placeholder
+     * ('?').
+     * </p>
      * 
+     * @param particle
+     *            particle value, can be <code>null</<code>
      * @return SQL fragment (e.g. <code>?</code>), may be <code>null</code>
      */
-    public String getSetSnippet();
+    public String getSetSnippet( T particle );
 
     /**
      * Converts the given particle and sets the designated SQL parameter in the given {@link PreparedStatement}.

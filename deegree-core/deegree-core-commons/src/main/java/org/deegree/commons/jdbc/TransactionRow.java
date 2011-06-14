@@ -113,7 +113,7 @@ public abstract class TransactionRow {
 
     public <T extends TypedObjectNode> void addPreparedArgument( String column, T particle,
                                                                  ParticleConverter<T> converter ) {
-        columnToLiteral.put( column.toLowerCase(), converter.getSetSnippet() );
+        columnToLiteral.put( column.toLowerCase(), converter.getSetSnippet( particle ) );
         columnToObject.put( column.toLowerCase(), new ParticleConversion<T>( converter, particle ) );
     }
 
