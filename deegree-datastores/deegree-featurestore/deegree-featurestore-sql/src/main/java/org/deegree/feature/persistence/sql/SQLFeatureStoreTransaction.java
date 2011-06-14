@@ -503,7 +503,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 } else {
                     PrimitiveValue primitiveValue = getPrimitiveValue( value );
                     String column = ( (DBField) me ).getColumn();
-                    Object sqlValue = SQLValueMangler.internalToSQL( primitiveValue.getValue() );
+                    Object sqlValue = SQLValueMangler.internalToSQL( primitiveValue );
                     insertNode.getRow().addPreparedArgument( column, sqlValue );
                 }
             } else if ( mapping instanceof GeometryMapping ) {
