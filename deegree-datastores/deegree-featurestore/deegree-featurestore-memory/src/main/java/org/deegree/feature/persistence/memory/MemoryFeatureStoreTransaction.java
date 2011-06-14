@@ -46,6 +46,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.cs.exceptions.TransformationException;
@@ -379,11 +380,18 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         // TODO Do not modify the incoming feature, but create a new one.
         for ( Property prop : feature.getProperties() ) {
             List<TypedObjectNode> children = prop.getChildren();
-            List<TypedObjectNode> newChildren = new ArrayList<TypedObjectNode>( children.size() );
-            for ( TypedObjectNode child : children ) {
-                newChildren.add( transformGeometries( child, transformer ) );
+            if ( children != null && !children.isEmpty() ) {
+                List<TypedObjectNode> newChildren = new ArrayList<TypedObjectNode>( children.size() );
+                for ( TypedObjectNode child : children ) {
+                    newChildren.add( transformGeometries( child, transformer ) );
+                }
+                prop.setChildren( newChildren );
+            } else {
+                TypedObjectNode value = prop.getValue();
+                if ( value != null ) {
+                    prop.setValue( transformGeometries( value, transformer ) );
+                }
             }
-            prop.setChildren( newChildren );
         }
         feature.getGMLProperties().setBoundedBy( null );
         return feature;
@@ -391,7 +399,9 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private TypedObjectNode transformGeometries( TypedObjectNode value, GeometryTransformer transformer )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
-        if ( value instanceof GenericXMLElement ) {
+        if ( value == null ) {
+            // nothing to do
+        } else if ( value instanceof GenericXMLElement ) {
             GenericXMLElement generic = (GenericXMLElement) value;
             List<TypedObjectNode> newChildren = new ArrayList<TypedObjectNode>( generic.getChildren().size() );
             for ( int i = 0; i < generic.getChildren().size(); i++ ) {
@@ -411,6 +421,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             generic.setChildren( newChildren );
         } else if ( value instanceof Geometry ) {
             value = transformGeometry( (Geometry) value, transformer );
+        } else if ( value instanceof PrimitiveValue ) {
+            // nothing to do
         }
         return value;
     }
