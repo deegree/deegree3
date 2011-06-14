@@ -77,6 +77,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
+import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
@@ -235,7 +236,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     PropertyName propName = mapping.getPath();
                     if ( propName.getAsQName() != null ) {
                         PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName(), gmlVersion );
-                        addProperties( props, pt, mapping, rs );
+                        String idPrefix = gmlId + "_" + toIdPrefix( propName );
+                        addProperties( props, pt, mapping, rs, idPrefix );
                     } else {
                         // TODO more complex mappings, e.g. "propname[1]"
                         LOG.warn( "Omitting mapping '" + mapping
@@ -253,10 +255,19 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return feature;
     }
 
-    private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs )
+    private String toIdPrefix( PropertyName propName ) {
+        String s = propName.getAsText();
+        s = s.replace( "/", "_" );
+        s = s.replace( ":", "_" );
+        s = s.toUpperCase();
+        return s;
+    }
+
+    private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs,
+                                String idPrefix )
                             throws SQLException {
 
-        List<TypedObjectNode> particles = buildParticles( propMapping, rs, colToRsIdx );
+        List<TypedObjectNode> particles = buildParticles( propMapping, rs, colToRsIdx, idPrefix );
         if ( particles.isEmpty() && pt.getMinOccurs() > 0 ) {
             if ( pt.isNillable() ) {
                 Map<QName, PrimitiveValue> attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
@@ -278,7 +289,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
-                                                  LinkedHashMap<String, Integer> colToRsIdx )
+                                                  LinkedHashMap<String, Integer> colToRsIdx, String idPrefix )
                             throws SQLException {
 
         if ( mapping.getJoinedTable() != null ) {
@@ -288,8 +299,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 Pair<ResultSet, LinkedHashMap<String, Integer>> p = getJoinedResultSet( mapping.getJoinedTable().get( 0 ),
                                                                                         mapping, rs, colToRsIdx );
                 rs2 = p.first;
+                int i = 0;
                 while ( rs2.next() ) {
-                    TypedObjectNode particle = buildParticle( mapping, rs2, p.second );
+                    TypedObjectNode particle = buildParticle( mapping, rs2, p.second, idPrefix + "_" + ( i++ ) );
                     if ( particle != null ) {
                         values.add( particle );
                     }
@@ -302,20 +314,21 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
             return values;
         }
-        TypedObjectNode particle = buildParticle( mapping, rs, colToRsIdx );
+        TypedObjectNode particle = buildParticle( mapping, rs, colToRsIdx, idPrefix );
         if ( particle != null ) {
             return Collections.singletonList( particle );
         }
         return Collections.emptyList();
     }
 
-    private TypedObjectNode buildParticle( Mapping mapping, ResultSet rs, LinkedHashMap<String, Integer> colToRsIdx )
+    private TypedObjectNode buildParticle( Mapping mapping, ResultSet rs, LinkedHashMap<String, Integer> colToRsIdx,
+                                           String idPrefix )
                             throws SQLException {
 
         TypedObjectNode particle = null;
 
-        ParticleConverter<?> converter = fs.getConverter(mapping);
-        
+        ParticleConverter<?> converter = fs.getConverter( mapping );
+
         if ( mapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
@@ -331,6 +344,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 String col = converter.getSelectSnippet( tableAlias );
                 int colIndex = colToRsIdx.get( col );
                 particle = converter.toParticle( rs, colIndex );
+                Geometry geom = ((Geometry) particle);
+                geom.setId( idPrefix );
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;
@@ -352,7 +367,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
             for ( Mapping particleMapping : cm.getParticles() ) {
 
-                List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx );
+                // TODO idPrefix
+                List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx, idPrefix );
 
                 if ( !particleMapping.isVoidable() ) {
                     boolean found = false;
