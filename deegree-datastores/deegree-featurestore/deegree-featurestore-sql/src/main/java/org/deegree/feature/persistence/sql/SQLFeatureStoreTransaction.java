@@ -351,7 +351,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( "," );
                 sql.append( blobMapping.getBBoxColumn() );
                 sql.append( ") VALUES(?,?,?," );
-                sql.append( blobGeomConverter.getSetSnippet() );
+                sql.append( blobGeomConverter.getSetSnippet( null ) );
                 sql.append( ")" );
                 LOG.debug( "Inserting: {}", sql );
                 blobInsertStmt = conn.prepareStatement( sql.toString() );
@@ -703,7 +703,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     sql.append( column );
                     sql.append( "=" );
 
-                    sql.append( converter.getSetSnippet() );
+                    // TODO communicate value for non-prepared statement converters
+                    sql.append( converter.getSetSnippet( null ) );
                 } else if ( mapping instanceof GeometryMapping ) {
                     MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
                     if ( !( me instanceof DBField ) ) {
@@ -716,7 +717,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                     sql.append( column );
                     sql.append( "=" );
-                    sql.append( converter.getSetSnippet() );
+                    // TODO communicate value for non-prepared statement converters
+                    sql.append( converter.getSetSnippet( null ) );
                 } else {
                     LOG.warn( "Updating of " + mapping.getClass() + " is currently not implemented. Omitting." );
                     continue;

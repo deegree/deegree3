@@ -112,7 +112,7 @@ public class PostGISGeometryConverter implements GeometryParticleConverter {
     }
 
     @Override
-    public String getSetSnippet() {
+    public String getSetSnippet( Geometry particle ) {
         StringBuilder sb = new StringBuilder();
         if ( useLegacyPredicates ) {
             sb.append( "SetSRID(GeomFromWKB(?)," );

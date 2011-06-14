@@ -55,25 +55,26 @@ import org.deegree.gml.feature.FeatureReference;
  */
 public class FeatureParticleConverter implements ParticleConverter<Feature> {
 
-	private final String fkColumn;
+    private final String fkColumn;
 
-	private final String hrefColumn;
+    private final String hrefColumn;
 
-	private final GMLReferenceResolver resolver;
+    private final GMLReferenceResolver resolver;
 
-	public FeatureParticleConverter (String fkColumn, String hrefColumn, GMLReferenceResolver resolver) {
-		this.fkColumn = fkColumn;
-		this.hrefColumn = hrefColumn;
-		this.resolver = resolver;
-	}
-	
-	@Override
-	public String getSelectSnippet(String tableAlias) {
-		return tableAlias + "." + fkColumn;
-	}
+    public FeatureParticleConverter( String fkColumn, String hrefColumn, GMLReferenceResolver resolver ) {
+        this.fkColumn = fkColumn;
+        this.hrefColumn = hrefColumn;
+        this.resolver = resolver;
+    }
 
-	@Override
-	public Feature toParticle(ResultSet rs, int colIndex) throws SQLException {
+    @Override
+    public String getSelectSnippet( String tableAlias ) {
+        return tableAlias + "." + fkColumn;
+    }
+
+    @Override
+    public Feature toParticle( ResultSet rs, int colIndex )
+                            throws SQLException {
         Object value = rs.getObject( colIndex );
         if ( value != null ) {
             // TODO
@@ -86,21 +87,22 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
             return new FeatureReference( resolver, ref, null );
         }
 
-//        value = rs.getObject( colIndex + 1);
-//        if ( value != null ) {
-//            return new FeatureReference( resolver, value.toString(), null );
-//        }        
-		return null;
-	}
+        // value = rs.getObject( colIndex + 1);
+        // if ( value != null ) {
+        // return new FeatureReference( resolver, value.toString(), null );
+        // }
+        return null;
+    }
 
-	@Override
-	public String getSetSnippet() {
-		return "?,?";
-	}
+    @Override
+    public String getSetSnippet( Feature particle ) {
+        return "?,?";
+    }
 
-	@Override
-	public void setParticle(PreparedStatement stmt, Feature particle, int paramIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void setParticle( PreparedStatement stmt, Feature particle, int paramIndex )
+                            throws SQLException {
+        // TODO Auto-generated method stub
+
+    }
 }

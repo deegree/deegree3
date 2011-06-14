@@ -97,7 +97,7 @@ public class MSSQLGeometryConverter implements GeometryParticleConverter {
         return tableAlias + "." + column + ".ToString()";
     }
 
-    public String getSetSnippet() {
+    public String getSetSnippet( Geometry particle ) {
         if ( is2d )
             return "geometry::STGeomFromWKB(?, " + srid + ")";
         return "geometry::Parse(?)";

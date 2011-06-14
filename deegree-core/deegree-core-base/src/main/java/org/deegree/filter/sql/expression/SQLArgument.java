@@ -143,9 +143,9 @@ public class SQLArgument implements SQLExpression {
         String sql = null;
         if ( converter == null ) {
             LOG.warn( "No inferred particle converter. Treating as STRING value." );
-            sql = new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null, false ).getSetSnippet();
+            sql = new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null, false ).getSetSnippet( (PrimitiveValue) value );
         } else {
-            sql = ( (ParticleConverter<TypedObjectNode>) this.converter ).getSetSnippet();
+            sql = ( (ParticleConverter<TypedObjectNode>) this.converter ).getSetSnippet( value );
         }
         return new StringBuilder( sql );
     }
