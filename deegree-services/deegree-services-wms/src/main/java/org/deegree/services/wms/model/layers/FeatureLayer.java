@@ -176,15 +176,10 @@ public class FeatureLayer extends Layer {
             return;
         }
         ICRS crs = ( (ShapeFeatureStore) datastore ).getStorageCRS();
-        // try {
         LinkedList<ICRS> ss = getSrs();
         if ( !ss.contains( crs ) && !crs.getCode().equals( getUndefined() ) ) {
             ss.addFirst( crs );
         }
-        // } catch ( UnknownCRSException e ) {
-        // LOG.warn( "SRS '{}' of shape datastore '{}' is not known.", crs.getName(), file );
-        // LOG.trace( "Stack trace:", e );
-        // }
     }
 
     @Override
