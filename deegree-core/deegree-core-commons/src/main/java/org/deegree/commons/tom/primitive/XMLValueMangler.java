@@ -43,8 +43,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 
-import org.apache.xerces.xs.XSConstants;
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Time;
@@ -144,6 +142,8 @@ public class XMLValueMangler {
                 case DATE:
                     if ( o instanceof java.util.Date ) {
                         xml = formatISO8601DateWOTime( (java.util.Date) o );
+                    } else if ( o instanceof Date ) {
+                        xml = "" + ( (Date) o ).toString();
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
@@ -193,6 +193,5 @@ public class XMLValueMangler {
         }
         return xml;
     }
-
 
 }
