@@ -143,7 +143,7 @@ public class XMLValueMangler {
                     if ( o instanceof java.util.Date ) {
                         xml = formatISO8601DateWOTime( (java.util.Date) o );
                     } else if ( o instanceof Date ) {
-                        xml = "" + ( (Date) o ).toString();
+                        xml = "" + o.toString();
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
@@ -152,6 +152,8 @@ public class XMLValueMangler {
                 case DATE_TIME:
                     if ( o instanceof java.util.Date ) {
                         xml = formatISO8601DateWOMS( (java.util.Date) o );
+                    } else if ( o instanceof DateTime ) {
+                        xml = "" + o.toString();
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
@@ -160,6 +162,8 @@ public class XMLValueMangler {
                 case TIME: {
                     if ( o instanceof java.util.Date ) {
                         xml = formatISO8601Time( (java.util.Date) o );
+                    } else if ( o instanceof Time ) {
+                        xml = "" + o.toString();
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
