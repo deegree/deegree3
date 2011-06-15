@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-services-wms</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre7-SNAPSHOT</version>
+  <version>3.1-pre7</version>
   <name>deegree-services-wms</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-wms</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-wms</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-services/deegree-services-wms</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-services/deegree-services-wms</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre7-SNAPSHOT</version>
+    <version>3.1-pre7</version>
     <relativePath />
   </parent>
 
@@ -57,12 +57,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-rendering-2d</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre7</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-filterfunctions</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre7</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -72,17 +72,17 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-commons</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre7</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-simplesql</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre7</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-shape</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre7</version>
     </dependency>
   </dependencies>
 

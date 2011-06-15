@@ -3,18 +3,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-processprovider-sextante</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre7-SNAPSHOT</version>
+  <version>3.1-pre7</version>
   <name>deegree-processprovider-sextante</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante</connection>
-    <developerConnection>scm:svn:svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante</developerConnection>
-    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/deegree-processproviders/deegree-processprovider-sextante?root=deegree</url>
+    <connection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-processproviders/deegree-processprovider-sextante</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-processproviders/deegree-processprovider-sextante</developerConnection>
+    <url>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-processproviders/deegree-processprovider-sextante?root=deegree</url>
   </scm>
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre7-SNAPSHOT</version>
+    <version>3.1-pre7</version>
   </parent>
   
   <repositories>
@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wps</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre7</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

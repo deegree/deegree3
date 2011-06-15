@@ -2,18 +2,18 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-tomcat</artifactId>
-  <version>3.1-pre7-SNAPSHOT</version>
+  <version>3.1-pre7</version>
   <name>deegree Tomcat</name>
   <url>http://maven.apache.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-misc/deegree-tomcat</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-misc/deegree-tomcat</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-misc/deegree-tomcat</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-misc/deegree-tomcat</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre7-SNAPSHOT</version>
+    <version>3.1-pre7</version>
   </parent>
 
   <repositories>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-javacheck</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre7</version>
     </dependency>
   </dependencies>
 
