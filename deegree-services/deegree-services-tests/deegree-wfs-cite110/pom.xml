@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wfs-cite110</artifactId>
   <packaging>war</packaging>
-  <version>3.1-pre7-SNAPSHOT</version>
+  <version>3.1-pre8-SNAPSHOT</version>
   <name>deegree-wfs-cite110 Webapp</name>
   <url>http://www.deegree.org</url>
 
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-test-parent</artifactId>
-    <version>3.1-pre7-SNAPSHOT</version>
+    <version>3.1-pre8-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -37,12 +37,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-memory</artifactId>
-      <version>3.1-pre7-SNAPSHOT</version>
+      <version>3.1-pre8-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
