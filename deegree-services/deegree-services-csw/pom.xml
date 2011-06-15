@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-services-csw</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre7</version>
+  <version>3.1-pre8-SNAPSHOT</version>
   <name>deegree-services-csw</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-services/deegree-services-csw</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre7/deegree-services/deegree-services-csw</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-csw</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-csw</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre7</version>
+    <version>3.1-pre8-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -57,12 +57,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-metadata</artifactId>
-      <version>3.1-pre7</version>
+      <version>3.1-pre8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-commons</artifactId>
-      <version>3.1-pre7</version>
+      <version>3.1-pre8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
