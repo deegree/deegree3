@@ -291,7 +291,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
                                                   LinkedHashMap<String, Integer> colToRsIdx, String idPrefix )
                             throws SQLException {
-
+       
         if ( mapping.getJoinedTable() != null ) {
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
             ResultSet rs2 = null;
@@ -325,8 +325,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                            String idPrefix )
                             throws SQLException {
 
-        TypedObjectNode particle = null;
-
+        TypedObjectNode particle = null;        
         ParticleConverter<?> converter = fs.getConverter( mapping );
 
         if ( mapping instanceof PrimitiveMapping ) {
@@ -401,7 +400,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                         if ( predicates.size() == 1 ) {
                             Expr predicate = ( (Predicate) predicates.get( 0 ) ).getExpr();
                             if ( predicate instanceof NumberExpr ) {
-                                LOG.warn( "Number predicate. Assuming natural ordering." );
+                                LOG.debug( "Number predicate. Assuming natural ordering." );
                             } else {
                                 continue;
                             }
@@ -462,7 +461,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 QName elName = getName( mapping.getPath() );
                 particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
             } else if ( escalateVoid ) {
-                if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
+                if (cm.isVoidable()) {
+                    LOG.debug( "Materializing void by omitting particle." );
+                } else if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
+                    LOG.debug( "Materializing void by nilling particle." );
                     QName elName = getName( mapping.getPath() );
                     // required attributes must still be present even if element is nilled...
                     Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
@@ -491,8 +493,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     }
                     nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
                     particle = new GenericXMLElement( elName, cm.getElementDecl(), nilAttrs, null );
-                } else if ( !cm.isVoidable() ) {
-                    LOG.info( "Escalating void to parent particle." );
                 }
             } else {
                 if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
