@@ -40,6 +40,8 @@ import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSAttributeDeclaration;
@@ -62,6 +64,8 @@ import org.jaxen.expr.AllNodeStep;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
+import org.jaxen.expr.NumberExpr;
+import org.jaxen.expr.Predicate;
 import org.jaxen.expr.TextNodeStep;
 import org.jaxen.saxpath.Axis;
 
@@ -101,7 +105,8 @@ public class XPathSchemaWalker {
                 if ( step.getAxis() == Axis.CHILD ) {
                     // TODO check predicates
                     QName qName = getQName( step );
-                    currentEl = getTargetElement( currentEl, qName );
+                    int num = getNumber( step );
+                    currentEl = getTargetElement( currentEl, qName, num );
                     if ( currentEl == null ) {
                         throw new IllegalArgumentException( "Unable to match XPath '" + propName
                                                             + "' to application schema. Step '" + qName
@@ -123,6 +128,20 @@ public class XPathSchemaWalker {
         return currentEl;
     }
 
+    private int getNumber (NameStep step) {
+        int num = 0;
+        if ( !step.getPredicates().isEmpty() ) {
+            List<?> predicates = step.getPredicates();
+            if ( predicates.size() == 1 ) {
+                Expr predicate = ( (Predicate) predicates.get( 0 ) ).getExpr();
+                if ( predicate instanceof NumberExpr ) {
+                    num = ((NumberExpr) predicate).getNumber().intValue();
+                }
+            }
+        }
+        return num; 
+    }
+    
     public Pair<PrimitiveType, Boolean> getTargetType( Pair<XSElementDeclaration, Boolean> context,
                                                        PropertyName propName ) {
 
@@ -138,7 +157,8 @@ public class XPathSchemaWalker {
                 if ( step.getAxis() == Axis.CHILD ) {
                     // TODO check predicates
                     QName qName = getQName( step );
-                    currentEl = getTargetElement( currentEl, qName );
+                    int num = getNumber( step );
+                    currentEl = getTargetElement( currentEl, qName, num );
                     if ( currentEl == null ) {
                         throw new IllegalArgumentException( "Unable to match XPath '" + propName
                                                             + "' to application schema. Step '" + qName
@@ -226,7 +246,7 @@ public class XPathSchemaWalker {
     }
 
     private Pair<XSElementDeclaration, Boolean> getTargetElement( Pair<XSElementDeclaration, Boolean> context,
-                                                                  QName elName ) {
+                                                                  QName elName, int num ) {
         XSTypeDefinition typeDef = context.getFirst().getTypeDefinition();
         if ( !( typeDef instanceof XSComplexTypeDefinition ) ) {
             throw new IllegalArgumentException( "XPath refers to a simple type definition." );
@@ -235,10 +255,10 @@ public class XPathSchemaWalker {
         if ( particle == null ) {
             throw new IllegalArgumentException( "XPath refers to an empty type definition." );
         }
-        return getTargetElementTerm( new Pair<XSTerm, Boolean>( particle.getTerm(), null ), elName );
+        return getTargetElementTerm( new Pair<XSTerm, Boolean>( particle.getTerm(), null ), elName, num );
     }
 
-    private Pair<XSElementDeclaration, Boolean> getTargetElementTerm( Pair<XSTerm, Boolean> term, QName elName ) {
+    private Pair<XSElementDeclaration, Boolean> getTargetElementTerm( Pair<XSTerm, Boolean> term, QName elName, int num ) {
         if ( term.first instanceof XSElementDeclaration ) {
             XSElementDeclaration elDecl = (XSElementDeclaration) term.first;
             for ( XSElementDeclaration substitution : appSchema.getXSModel().getSubstitutions( elDecl, null, true,
@@ -253,7 +273,8 @@ public class XPathSchemaWalker {
             XSObjectList ol = mg.getParticles();
             for ( int i = 0; i < ol.getLength(); i++ ) {
                 XSParticle o = (XSParticle) ol.item( i );
-                Pair<XSElementDeclaration, Boolean> elDecl = getTargetElementTerm( new Pair<XSTerm,Boolean>(o.getTerm(), o.getMinOccurs() == 0), elName );
+                boolean voidable = o.getMinOccurs() == 0 || o.getMinOccurs() < num;
+                Pair<XSElementDeclaration, Boolean> elDecl = getTargetElementTerm( new Pair<XSTerm,Boolean>(o.getTerm(), voidable), elName, num );
                 if ( elDecl != null ) {
                     return elDecl;
                 }
