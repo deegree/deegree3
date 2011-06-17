@@ -161,8 +161,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         // TODO
         GeometryStorageParams geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( "EPSG:4326" ), "-1",
                                                                           CoordinateDimension.DIM_2 );
-        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null, null,
-                                            geometryParams );
+        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, null, null, null, geometryParams );
     }
 
     private void process( FeatureTypeJAXB ftDecl )

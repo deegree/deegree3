@@ -75,8 +75,6 @@ public class MappedApplicationSchema extends ApplicationSchema {
 
     private final Map<QName, FeatureTypeMapping> ftNameToFtMapping = new HashMap<QName, FeatureTypeMapping>();
 
-    private final Map<QName, DataTypeMapping> dtNameToDtMapping = new HashMap<QName, DataTypeMapping>();
-
     private final GeometryStorageParams geometryParams;
 
     private final IdAnalyzer idAnalyzer;
@@ -96,10 +94,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * @param xsModel
      *            the underlying GML schema infoset, may be <code>null</code>
      * @param ftMappings
-     *            relational mapping information for the feature types, can be <code>null</code> (for BLOB-only
-     *            mappings)
-     * @param dtMappings
-     *            relational mapping information for the non-feature data types, can be <code>null</code>
+     *            relational mapping information for feature types, can be <code>null</code> (for BLOB-only mappings)
      * @param bboxMapping
      *            BBOX mapping parameters, may be <code>null</code> (for relational-only mappings)
      * @param blobMapping
@@ -109,19 +104,13 @@ public class MappedApplicationSchema extends ApplicationSchema {
      */
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                                     Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel,
-                                    FeatureTypeMapping[] ftMappings, DataTypeMapping[] dtMappings,
-                                    BBoxTableMapping bboxMapping, BlobMapping blobMapping,
-                                    GeometryStorageParams geometryParams ) {
+                                    FeatureTypeMapping[] ftMappings, BBoxTableMapping bboxMapping,
+                                    BlobMapping blobMapping, GeometryStorageParams geometryParams ) {
 
         super( fts, ftToSuperFt, prefixToNs, xsModel );
         if ( ftMappings != null ) {
             for ( FeatureTypeMapping ftMapping : ftMappings ) {
                 ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );
-            }
-        }
-        if ( dtMappings != null ) {
-            for ( DataTypeMapping dtMapping : dtMappings ) {
-                dtNameToDtMapping.put( dtMapping.getElementName(), dtMapping );
             }
         }
         this.geometryParams = geometryParams;
@@ -165,15 +154,6 @@ public class MappedApplicationSchema extends ApplicationSchema {
      */
     public FeatureTypeMapping getFtMapping( QName ftName ) {
         return ftNameToFtMapping.get( ftName );
-    }
-
-    /**
-     * Returns all relational data type mappings.
-     * 
-     * @return relational mappings, never <code>null</code>
-     */
-    public Map<QName, DataTypeMapping> getDtMappings() {
-        return dtNameToDtMapping;
     }
 
     /**

@@ -291,7 +291,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
                                                   LinkedHashMap<String, Integer> colToRsIdx, String idPrefix )
                             throws SQLException {
-       
+
         if ( mapping.getJoinedTable() != null ) {
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
             ResultSet rs2 = null;
@@ -325,7 +325,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                            String idPrefix )
                             throws SQLException {
 
-        TypedObjectNode particle = null;        
+        TypedObjectNode particle = null;
         ParticleConverter<?> converter = fs.getConverter( mapping );
 
         if ( mapping instanceof PrimitiveMapping ) {
@@ -343,8 +343,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 String col = converter.getSelectSnippet( tableAlias );
                 int colIndex = colToRsIdx.get( col );
                 particle = converter.toParticle( rs, colIndex );
-                Geometry geom = ((Geometry) particle);
-                geom.setId( idPrefix );
+                Geometry geom = ( (Geometry) particle );
+                if ( geom != null ) {
+                    geom.setId( idPrefix );
+                }
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;
@@ -461,7 +463,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 QName elName = getName( mapping.getPath() );
                 particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
             } else if ( escalateVoid ) {
-                if (cm.isVoidable()) {
+                if ( cm.isVoidable() ) {
                     LOG.debug( "Materializing void by omitting particle." );
                 } else if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
                     LOG.debug( "Materializing void by nilling particle." );

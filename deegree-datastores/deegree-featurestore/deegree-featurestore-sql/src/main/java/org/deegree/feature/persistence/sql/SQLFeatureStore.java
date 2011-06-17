@@ -530,7 +530,7 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     /**
-     * Returns a resolver instance for retrieving objects that are stored in this feature store.
+     * Returns a resolver instance for resolving references to objects that are stored in this feature store.
      * 
      * @return resolver, never <code>null</code>
      */
@@ -710,19 +710,6 @@ public class SQLFeatureStore implements FeatureStore {
         try {
             conn = getConnection();
 
-            // create temp table with ids
-            // stmt = conn.createStatement();
-            // stmt.executeUpdate( "CREATE TEMP TABLE temp_ids (fid TEXT)" );
-            // stmt.close();
-
-            // fill temp table
-            // PreparedStatement insertFid = conn.prepareStatement( "INSERT INTO temp_ids (fid) VALUES (?)" );
-            // for ( String fid : filter.getMatchingIds() ) {
-            // insertFid.setString( 1, fid );
-            // insertFid.addBatch();
-            // }
-            // insertFid.executeBatch();
-
             StringBuilder sb = new StringBuilder( filter.getMatchingIds().size() * 2 );
             sb.append( "?" );
             for ( int i = 1; i < filter.getMatchingIds().size(); ++i ) {
@@ -743,18 +730,6 @@ public class SQLFeatureStore implements FeatureStore {
             String msg = "Error performing id query: " + e.getMessage();
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
-            // } finally {
-            // if ( conn != null ) {
-            // try {
-            // // drop temp table
-            // stmt = conn.createStatement();
-            // stmt.executeUpdate( "DROP TABLE temp_ids " );
-            // stmt.close();
-            // } catch ( SQLException e ) {
-            // String msg = "Error dropping temp table.";
-            // LOG.debug( msg, e );
-            // }
-            // }
         }
 
         // sort features

@@ -71,7 +71,6 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
-import org.deegree.feature.persistence.sql.DataTypeMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
@@ -122,8 +121,6 @@ public class AppSchemaMapper {
 
     private final MappingContextManager mcManager;
 
-    private List<DataTypeMapping> dtMappings = new ArrayList<DataTypeMapping>();
-
     private final MappedApplicationSchema mappedSchema;
 
     private final HashMap<String, String> nsToPrefix;
@@ -172,9 +169,7 @@ public class AppSchemaMapper {
         BBoxTableMapping bboxMapping = createBlobMapping ? generateBBoxMapping() : null;
         BlobMapping blobMapping = createBlobMapping ? generateBlobMapping() : null;
 
-        DataTypeMapping[] dtMappings = this.dtMappings.toArray( new DataTypeMapping[this.dtMappings.size()] );
-
-        this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, dtMappings,
+        this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings,
                                                          bboxMapping, blobMapping, geometryParams );
     }
 
@@ -284,11 +279,6 @@ public class AppSchemaMapper {
         }
         MappingExpression mapping = new DBField( propMc.getColumn() );
         return new PrimitiveMapping( path, false, mapping, pt.getPrimitiveType(), jc, null );
-    }
-
-    private DBField getNilMapping( MappingContext ctx ) {
-        QName nilAttrName = new QName( CommonNamespaces.XSINS, "nil", "xsi" );
-        return new DBField( mcManager.mapOneToOneAttribute( ctx, nilAttrName ).getColumn() );
     }
 
     private GeometryMapping generatePropMapping( GeometryPropertyType pt, MappingContext mc ) {

@@ -142,7 +142,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         CoordinateDimension dim = CoordinateDimension.DIM_2;
         if ( storageCRS.getDim() != null && !storageCRS.getDim().isEmpty() ) {
             String s = storageCRS.getDim().get( 0 );
-            if (s.equals( "3D" )) {
+            if ( s.equals( "3D" ) ) {
                 dim = CoordinateDimension.DIM_3;
             }
         }
@@ -179,7 +179,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             prefixToNs.put( prefix, nsBindings.getNamespaceURI( prefix ) );
         }
         GMLSchemaInfoSet xsModel = gmlSchema.getXSModel();
-        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, bboxMapping,
+        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping,
                                             blobMapping, geometryParams );
     }
 
