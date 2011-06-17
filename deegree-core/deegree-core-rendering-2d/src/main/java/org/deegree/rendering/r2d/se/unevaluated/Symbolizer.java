@@ -111,8 +111,7 @@ public class Symbolizer<T extends Styling<T>> {
      */
     public Symbolizer( T base, Continuation<T> next, Expression geometry, String name, String file, int line, int col ) {
         if ( geometry == null ) {
-            LOG.debug(
-                       "In file '{}', line {}, column {}: no geometry property defined, using first geometry property as default.",
+            LOG.debug( "In file '{}', line {}, column {}: no geometry property defined, using first geometry property as default.",
                        new Object[] { file, line, col } );
         }
         this.base = base;
@@ -197,9 +196,9 @@ public class Symbolizer<T extends Styling<T>> {
                             geoms.add( geom );
                         } else {
                             LOG.warn( "The geometry expression in file '{}', line {}, column {} "
-                                      + "evaluated to something where no geometry"
-                                      + " could be found. Actual type was '{}'.", new Object[] { file, line, col,
-                                                                                                node.getClass() } );
+                                                              + "evaluated to something where no geometry"
+                                                              + " could be found. Actual type was '{}'.",
+                                      new Object[] { file, line, col, node.getClass() } );
                         }
                     }
                     if ( geoms.isEmpty() ) {
@@ -263,4 +262,12 @@ public class Symbolizer<T extends Styling<T>> {
     public T getBase() {
         return evaluated == null ? base : evaluated;
     }
+
+    /**
+     * @return may be null, in which case a default geometry would be used when evaluating
+     */
+    public Expression getGeometryExpression() {
+        return geometry;
+    }
+
 }

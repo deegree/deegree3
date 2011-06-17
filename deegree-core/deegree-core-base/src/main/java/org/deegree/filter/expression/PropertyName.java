@@ -219,4 +219,20 @@ public class PropertyName implements Expression {
     public Expression[] getParams() {
         return new Expression[0];
     }
+
+    // TODO hashcode/equals unfortunately seem not to work on the xpath object
+    // at least using the text is a better bet than using object identity
+    @Override
+    public boolean equals( Object other ) {
+        if ( other == null || !( other instanceof PropertyName ) ) {
+            return false;
+        }
+        return text.equals( ( (PropertyName) other ).text );
+    }
+
+    @Override
+    public int hashCode() {
+        return text.hashCode();
+    }
+
 }

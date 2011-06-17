@@ -55,8 +55,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -64,8 +66,8 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -83,6 +85,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
@@ -101,6 +104,7 @@ import org.deegree.protocol.wms.dims.DimensionInterval;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.rendering.r2d.utils.Styles;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
@@ -253,6 +257,20 @@ public class FeatureLayer extends Layer {
                             throws MissingDimensionValue, InvalidDimensionValue {
         final Envelope bbox = gm.getBoundingBox();
 
+        Set<Expression> exprs = new HashSet<Expression>();
+
+        final PropertyName geomProp;
+
+        for ( Style s : gm.getStyles() ) {
+            exprs.addAll( Styles.getGeometryExpressions( s ) );
+        }
+
+        if ( exprs.size() == 1 && exprs.iterator().next() instanceof PropertyName ) {
+            geomProp = (PropertyName) exprs.iterator().next();
+        } else {
+            geomProp = null;
+        }
+
         final Pair<Filter, LinkedList<String>> dimFilter = getDimensionFilter( gm.getDimensions() );
         final Filter filter = gm.getFilterForLayer( this.getName(), dimFilter == null ? null : dimFilter.first, style );
         if ( style != null ) {
@@ -270,13 +288,14 @@ public class FeatureLayer extends Layer {
             queries.addAll( map( datastore.getSchema().getFeatureTypes( null, false, false ),
                                  new Mapper<Query, FeatureType>() {
                                      public Query apply( FeatureType u ) {
-                                         return new Query( u.getName(), Filters.addBBoxConstraint( bbox, filter ),
+                                         return new Query( u.getName(), Filters.addBBoxConstraint( bbox, filter,
+                                                                                                   geomProp ),
                                                            round( gm.getScale() ), maxFeatures, gm.getResolution() );
                                      }
                                  } ) );
         } else {
-            Query query = new Query( featureType, Filters.addBBoxConstraint( bbox, filter ), round( gm.getScale() ),
-                                     maxFeatures, gm.getResolution() );
+            Query query = new Query( featureType, Filters.addBBoxConstraint( bbox, filter, geomProp ),
+                                     round( gm.getScale() ), maxFeatures, gm.getResolution() );
             queries.add( query );
         }
         return dimFilter == null ? new LinkedList<String>() : dimFilter.second;

@@ -181,9 +181,8 @@ public class SymbologyParser {
     private static boolean require( XMLStreamReader in, String elementName ) {
         if ( !( in.getLocalName().equals( elementName ) && in.isStartElement() ) ) {
             Location loc = in.getLocation();
-            LOG.error( "Expected a '{}' element at line {} column {}.", new Object[] { elementName,
-                                                                                      loc.getLineNumber(),
-                                                                                      loc.getColumnNumber() } );
+            LOG.error( "Expected a '{}' element at line {} column {}.",
+                       new Object[] { elementName, loc.getLineNumber(), loc.getColumnNumber() } );
             return false;
         }
         return true;
@@ -621,7 +620,7 @@ public class SymbologyParser {
         } else if ( in.getLocalName().equals( "InlineContent" ) ) {
             String format = in.getAttributeValue( null, "encoding" );
             if ( format.equalsIgnoreCase( "base64" ) ) {
-                ByteArrayInputStream bis = new ByteArrayInputStream( Base64.decodeBase64(in.getElementText() ) );
+                ByteArrayInputStream bis = new ByteArrayInputStream( Base64.decodeBase64( in.getElementText() ) );
                 return new Triple<InputStream, String, Continuation<StringBuffer>>( bis, null, null );
             }
             if ( format.equalsIgnoreCase( "xml" ) ) {
@@ -637,8 +636,7 @@ public class SymbologyParser {
         return null;
     }
 
-    private Triple<BufferedImage, String, Continuation<List<BufferedImage>>> parseExternalGraphic(
-                                                                                                   final XMLStreamReader in )
+    private Triple<BufferedImage, String, Continuation<List<BufferedImage>>> parseExternalGraphic( final XMLStreamReader in )
                             throws IOException, XMLStreamException {
         // TODO color replacement
 
@@ -1088,8 +1086,8 @@ public class SymbologyParser {
                                                                         getUOM( in.getAttributeValue( null, "uom" ) ) );
                 }
                 if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
-                    baseOrEvaluated.imageOutline = parsePolygonSymbolizer( in, getUOM( in.getAttributeValue( null,
-                                                                                                             "uom" ) ) );
+                    baseOrEvaluated.imageOutline = parsePolygonSymbolizer( in,
+                                                                           getUOM( in.getAttributeValue( null, "uom" ) ) );
                 }
                 in.nextTag();
             } else if ( in.isStartElement() ) {
@@ -1411,8 +1409,7 @@ public class SymbologyParser {
                 Pair<String, Continuation<StringBuffer>> res = updateOrContinue( in, "Label", new StringBuffer(),
                                                                                  new Updater<StringBuffer>() {
                                                                                      @Override
-                                                                                     public void update(
-                                                                                                         StringBuffer obj,
+                                                                                     public void update( StringBuffer obj,
                                                                                                          String val ) {
                                                                                          obj.append( val );
                                                                                      }
@@ -1489,8 +1486,7 @@ public class SymbologyParser {
                                 }, contn ).second;
                             } else if ( in.isStartElement() ) {
                                 Location loc = in.getLocation();
-                                LOG.error(
-                                           "Found unknown element '{}' at line {}, column {}, skipping.",
+                                LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
                                            new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
                                 skipElement( in );
                             }
@@ -1826,8 +1822,7 @@ public class SymbologyParser {
         Common common = new Common( in.getLocation() );
         QName featureTypeName = null;
 
-        while ( !( in.isEndElement() && ( in.getLocalName().equals( "FeatureTypeStyle" ) || in.getLocalName().equals(
-                                                                                                                      "CoverageStyle" ) ) ) ) {
+        while ( !( in.isEndElement() && ( in.getLocalName().equals( "FeatureTypeStyle" ) || in.getLocalName().equals( "CoverageStyle" ) ) ) ) {
             in.nextTag();
 
             checkCommon( common, in );
@@ -1958,6 +1953,13 @@ public class SymbologyParser {
                 LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), filter.toString() );
                 LOG.debug( "Stack trace:", e );
             }
+        }
+
+        /**
+         * @return the symbolizers
+         */
+        public List<Symbolizer<?>> getSymbolizers() {
+            return syms;
         }
 
     }

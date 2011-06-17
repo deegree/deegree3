@@ -75,9 +75,11 @@ public class Filters {
      *            bounding box, can be <code>null</code>
      * @param filter
      *            filter expression, can be <code>null</code>
+     * @param propName
+     *            can be <code>null</code>
      * @return combined filter or <code>null</code> (if bbox and filter are <code>null</code>)
      */
-    public static Filter addBBoxConstraint( Envelope bbox, Filter filter ) {
+    public static Filter addBBoxConstraint( Envelope bbox, Filter filter, PropertyName propName ) {
 
         if ( bbox == null ) {
             return filter;
@@ -89,7 +91,7 @@ public class Filters {
         }
 
         Filter bboxFilter = null;
-        BBOX bboxOperator = new BBOX( bbox );
+        BBOX bboxOperator = propName == null ? new BBOX( bbox ) : new BBOX( propName, bbox );
         if ( filter == null ) {
             bboxFilter = new OperatorFilter( bboxOperator );
         } else {

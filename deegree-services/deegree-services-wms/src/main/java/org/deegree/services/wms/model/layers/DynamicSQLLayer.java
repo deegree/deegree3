@@ -138,7 +138,7 @@ public class DynamicSQLLayer extends Layer {
             GenericFeatureType ft = datastore.getFeatureType();
             PropertyName propName = new PropertyName( ft.getDefaultGeometryPropertyDeclaration().getName() );
             OperatorFilter fil = new OperatorFilter( new Intersects( propName, clickBox ) );
-            Filter filter = Filters.addBBoxConstraint( clickBox, fil );
+            Filter filter = Filters.addBBoxConstraint( clickBox, fil, propName );
             rs = datastore.query( new Query( ft.getName(), filter, -1, fi.getFeatureCount(), -1 ) );
             FeatureCollection col = rs.toCollection();
             return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
@@ -177,7 +177,7 @@ public class DynamicSQLLayer extends Layer {
         final double resolution = gm.getResolution();
         try {
             rs = datastore.query( new Query( datastore.getFeatureType().getName(),
-                                             Filters.addBBoxConstraint( gm.getBoundingBox(), null ),
+                                             Filters.addBBoxConstraint( gm.getBoundingBox(), null, null ),
                                              round( gm.getScale() ), maxFeatures, resolution ) );
 
             for ( Feature f : rs ) {
