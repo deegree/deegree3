@@ -384,7 +384,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writer.writeEndElement();
 
         writer.writeStartElement( "GetLegendGraphic" );
-        writeInfoFormats( writer );
+        writeImageFormats( writer );
         writeDCP( writer, true, false );
         writer.writeEndElement();
 

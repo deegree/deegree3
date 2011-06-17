@@ -432,7 +432,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeEndElement();
 
         writer.writeStartElement( SLDNS, "GetLegendGraphic" );
-        writeInfoFormats( writer );
+        writeImageFormats( writer );
         writeDCP( writer, true, false );
         writer.writeEndElement();
 
