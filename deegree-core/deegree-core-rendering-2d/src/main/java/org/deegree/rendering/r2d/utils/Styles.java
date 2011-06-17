@@ -57,6 +57,10 @@ public class Styles {
     public static List<Expression> getGeometryExpressions( Style style ) {
         List<Expression> list = new ArrayList<Expression>();
 
+        if ( style == null ) {
+            return list;
+        }
+
         // do not use full generics here, else compilation will fail
         // it's always fun to see how easy the compiler can be defeated...
         LinkedList<Pair> rules = (LinkedList) style.getRules();
