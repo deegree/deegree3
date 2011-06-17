@@ -103,14 +103,14 @@ public class Java2DTextRenderer implements TextRenderer {
         renderer.graphics.setFont( font );
         AffineTransform transform = renderer.graphics.getTransform();
         renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
-        FontRenderContext frc = renderer.graphics.getFontRenderContext();
-        TextLayout layout;
-        synchronized ( frc ) {
-            // assuming synchronizing over the font render context will fix issue
+        FontRenderContext frc;
+        synchronized ( FontRenderContext.class ) {
+            // apparently getting the font render context is not threadsafe (despite having different graphics here)
+            // so do this globally synchronized to fix:
             // http://tracker.deegree.org/deegree-core/ticket/200
-            // synchronizing over the font would be my next guess
-            layout = new TextLayout( text, font, frc );
+            frc = renderer.graphics.getFontRenderContext();
         }
+        TextLayout layout = new TextLayout( text, font, frc );
         double width = layout.getBounds().getWidth();
         double height = layout.getBounds().getHeight();
         double px = x - styling.anchorPointX * width;
