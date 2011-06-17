@@ -39,11 +39,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser.FilterContinuation;
-import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 
@@ -59,8 +57,10 @@ public class Styles {
     public static List<Expression> getGeometryExpressions( Style style ) {
         List<Expression> list = new ArrayList<Expression>();
 
-        LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.getRules();
-        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
+        // do not use full generics here, else compilation will fail
+        // it's always fun to see how easy the compiler can be defeated...
+        LinkedList<Pair> rules = (LinkedList) style.getRules();
+        for ( Pair rule : rules ) {
             if ( rule.first instanceof FilterContinuation ) {
                 for ( Symbolizer<?> s : ( (FilterContinuation) rule.first ).getSymbolizers() ) {
                     Expression expr = s.getGeometryExpression();
