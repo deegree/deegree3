@@ -750,7 +750,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 if ( mapping != null ) {
                     ParticleConverter<TypedObjectNode> converter = (ParticleConverter<TypedObjectNode>) fs.getConverter( mapping );
                     if ( mapping instanceof PrimitiveMapping ) {
-                        MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
+                        MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
                         if ( !( me instanceof DBField ) ) {
                             continue;
                         }
