@@ -54,12 +54,11 @@ public class InsertRowNode {
 
     private final List<InsertRowNode> relatedRows = new ArrayList<InsertRowNode>();
 
-    public InsertRowNode( QTableName table, TableJoin parentRelation ) {
-        // TODO
-        this.row = new InsertRow( table, parentRelation == null ? null : "id" );
+    public InsertRowNode( QTableName table, TableJoin parentRelation, String autogenColumn ) {
+        this.row = new InsertRow( table, autogenColumn );
         this.parentRelation = parentRelation;
     }
-
+    
     /**
      * @return the row
      */
@@ -81,7 +80,7 @@ public class InsertRowNode {
         return relatedRows;
     }
 
-    public void performInsert( Connection conn )
+    public Map<String, Object> performInsert( Connection conn )
                             throws SQLException {
 
         Map<String, Object> keys = row.performInsert( conn );
@@ -103,6 +102,7 @@ public class InsertRowNode {
             }
             relatedRow.performInsert( conn );
         }
+        return keys;
     }
 
     @Override

@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -55,11 +56,13 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -72,7 +75,9 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.insert.InsertRowNode;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
@@ -459,12 +464,20 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     private String insertFeatureRelational( Feature feature, FeatureTypeMapping ftMapping, IDGenMode mode )
                             throws SQLException, FeatureStoreException, FilterEvaluationException {
 
-        InsertRowNode node = new InsertRowNode( ftMapping.getFtTable(), null );
+        InsertRowNode node;
 
         String fid = feature.getId();
         FIDMapping fidMapping = ftMapping.getFidMapping();
         if ( mode == IDGenMode.USE_EXISTING ) {
+            node = new InsertRowNode( ftMapping.getFtTable(), null, null );
             node.getRow().addPreparedArgument( fidMapping.getColumn(), fid );
+        } else if ( mode == IDGenMode.GENERATE_NEW ) {
+            IDGenerator gen = fidMapping.getIdGenerator();
+            if ( gen instanceof AutoIDGenerator ) {
+                node = new InsertRowNode( ftMapping.getFtTable(), null, fidMapping.getColumn() );
+            } else {
+                node = new InsertRowNode( ftMapping.getFtTable(), null, null );
+            }
         } else {
             throw new UnsupportedOperationException();
         }
@@ -473,7 +486,27 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             buildInsertRows( feature, particleMapping, node );
         }
         LOG.debug( "Built row {}", node );
-        node.performInsert( conn );
+        Map<String, Object> keys = node.performInsert( conn );
+
+        if ( mode == IDGenMode.GENERATE_NEW ) {
+            IDGenerator gen = fidMapping.getIdGenerator();
+            if ( gen instanceof AutoIDGenerator ) {
+                StringBuilder sb = new StringBuilder( fidMapping.getPrefix() );
+                boolean first = true;
+                for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
+                    if ( !first ) {
+                        sb.append( fidMapping.getDelimiter() );
+                        first = false;
+                    }
+                    Object value = keys.get( fidColumn.first );
+                    if ( value == null ) {
+                        throw new FeatureStoreException( "No generated key for column '" + fidColumn.first + "'." );
+                    }
+                    sb.append( value );
+                }
+                fid = sb.toString();
+            }
+        }
         return fid;
     }
 
@@ -493,7 +526,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         for ( TypedObjectNode value : values ) {
             InsertRowNode insertNode = node;
             if ( jc != null ) {
-                insertNode = new InsertRowNode( jc.get( 0 ).getToTable(), jc.get( 0 ) );
+                insertNode = new InsertRowNode( jc.get( 0 ).getToTable(), jc.get( 0 ), jc.get( 0 ) == null ? null
+                                                                                                          : "id" );
                 node.getRelatedRows().add( insertNode );
             }
             if ( mapping instanceof PrimitiveMapping ) {
