@@ -788,7 +788,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         } finally {
             JDBCUtils.close( stmt );
         }
-        LOG.debug( "Updated" + updated + " features." );
+        LOG.debug( "Updated {} features.", updated );
         return updated;
     }
 
