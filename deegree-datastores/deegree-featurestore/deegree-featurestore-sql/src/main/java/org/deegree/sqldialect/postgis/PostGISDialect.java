@@ -75,6 +75,16 @@ public class PostGISDialect implements SQLDialect {
         this.useLegacyPredicates = useLegacyPredicates;
     }
 
+    @Override
+    public int getMaxColumnNameLength() {
+        return 63;
+    }
+
+    @Override
+    public int getMaxTableNameLength() {
+        return 63;
+    }
+
     public String getDefaultSchema() {
         return "public";
     }

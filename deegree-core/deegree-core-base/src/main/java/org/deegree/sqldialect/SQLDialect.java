@@ -62,6 +62,20 @@ import org.deegree.geometry.utils.GeometryParticleConverter;
 public interface SQLDialect {
 
     /**
+     * Returns the maximum number of characters allowed for column names.
+     * 
+     * @return maximum number of characters
+     */
+    int getMaxColumnNameLength();
+
+    /**
+     * Returns the maximum number of characters allowed for table names.
+     * 
+     * @return maximum number of characters
+     */
+    int getMaxTableNameLength();
+
+    /**
      * @return the default table schema to use for the database (eg. for requesting table metadata)
      */
     String getDefaultSchema();
