@@ -40,6 +40,7 @@ import static org.deegree.client.core.utils.ActionParams.getParam1;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +59,7 @@ import lombok.Setter;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.utils.ProxyUtils;
 import org.slf4j.Logger;
 
 /**
@@ -91,6 +93,16 @@ public class ConfigManager {
     @Setter
     private String newConfigId;
 
+    @Getter
+    private Config proxyConfig;
+
+    public ConfigManager() {
+        File proxyLocation = new File( getServiceWorkspace().getLocation(), "proxy.xml" );
+        URL example = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
+        URL schema = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
+        proxyConfig = new Config( proxyLocation, schema, example, "/console/jsf/proxy" );
+    }
+
     public List<ResourceManagerMetadata2> getResourceManagers() {
         List<ResourceManagerMetadata2> rmMetadata = new ArrayList<ResourceManagerMetadata2>();
         for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
@@ -112,6 +124,10 @@ public class ConfigManager {
                 }
             }
         }
+        File proxyLocation = new File( getServiceWorkspace().getLocation(), "proxy.xml" );
+        URL example = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
+        URL schema = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
+        proxyConfig = new Config( proxyLocation, schema, example, "/console/jsf/proxy" );
     }
 
     public String getStartView() {
