@@ -450,12 +450,12 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     PropertyType findConcretePropertyType( QName elemName, PropertyType pt ) {
-        LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
+        // LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
 
         for ( PropertyType substitutionPt : pt.getSubstitutions() ) {
             // TODO !substitutionPt.isAbstract()
             if ( elemName.equals( substitutionPt.getName() ) ) {
-                LOG.debug( "Yep. Substitutable for '" + substitutionPt.getName() + "'" );
+                // LOG.debug( "Yep. Substitutable for '" + substitutionPt.getName() + "'" );
                 return substitutionPt;
             }
         }
