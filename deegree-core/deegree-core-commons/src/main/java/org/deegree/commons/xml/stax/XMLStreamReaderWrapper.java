@@ -386,7 +386,7 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
     }
 
     @Override
-    public QName getName() {
+    public final QName getName() {
         return reader.getName();
     }
 
