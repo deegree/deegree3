@@ -449,17 +449,17 @@ public class GMLFeatureReader extends XMLAdapter {
         return schema;
     }
 
-    PropertyType findConcretePropertyType( QName elemName, PropertyType pt ) {
+    final PropertyType findConcretePropertyType( final QName elemName, final PropertyType pt ) {
         // LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
 
-        for ( PropertyType substitutionPt : pt.getSubstitutions() ) {
+        for ( final PropertyType substitutionPt : pt.getSubstitutions() ) {
             // TODO !substitutionPt.isAbstract()
             if ( elemName.equals( substitutionPt.getName() ) ) {
                 // LOG.debug( "Yep. Substitutable for '" + substitutionPt.getName() + "'" );
                 return substitutionPt;
             }
         }
-        LOG.debug( "Nope." );
+        // LOG.debug( "Nope." );
         return null;
     }
 
