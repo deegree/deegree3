@@ -52,8 +52,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
@@ -79,6 +82,7 @@ import org.deegree.services.wms.controller.WMSController130;
 import org.deegree.services.wms.model.Dimension;
 import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;
+import org.w3c.dom.Element;
 
 /**
  * <code>Capabilities130XMLAdapter</code>
@@ -141,8 +145,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeNamespace( "xlink", XLNNS );
         writer.writeNamespace( "sld", SLDNS );
 
-        writer.writeAttribute(
-                               XSINS,
+        writer.writeAttribute( XSINS,
                                "schemaLocation",
                                "http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd "
                                                        + "http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd" );
@@ -155,6 +158,25 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeEndDocument();
     }
 
+    private void writeExtendedCapabilities( XMLStreamWriter writer ) {
+        List<Object> caps = controller.getExtendedCapabilities();
+        if ( caps != null ) {
+            XMLInputFactory fac = XMLInputFactory.newInstance();
+            for ( Object c : caps ) {
+                try {
+                    Element node = (Element) c;
+                    node = (Element) node.getChildNodes().item( 0 );
+                    XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( node ) );
+                    reader.next();
+                    XMLAdapter.writeElement( writer, reader );
+                } catch ( Throwable e ) {
+                    LOG.warn( "Could not export extended capabilities snippet" );
+                    LOG.trace( "Stack trace", e );
+                }
+            }
+        }
+    }
+
     private void writeCapability( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( WMSNS, "Capability" );
@@ -165,6 +187,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writeElement( writer, "Format", "INIMAGE" );
         writeElement( writer, "Format", "BLANK" );
         writer.writeEndElement();
+
+        writeExtendedCapabilities( writer );
+
         writeLayers( writer, service.getRootLayer() );
 
         writer.writeEndElement();
@@ -311,8 +336,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeAttribute( "units", dim.getUnits() == null ? "CRS:88" : dim.getUnits() );
             writer.writeAttribute( "unitSymbol", dim.getUnitSymbol() == null ? "" : dim.getUnitSymbol() );
             if ( dim.getDefaultValue() != null ) {
-                writer.writeAttribute( "default", formatDimensionValueList( dim.getDefaultValue(),
-                                                                            "time".equals( entry.getKey() ) ) );
+                writer.writeAttribute( "default",
+                                       formatDimensionValueList( dim.getDefaultValue(), "time".equals( entry.getKey() ) ) );
             }
             if ( dim.getNearestValue() ) {
                 writer.writeAttribute( "nearestValue", "1" );
