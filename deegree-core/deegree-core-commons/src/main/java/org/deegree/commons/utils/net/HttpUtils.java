@@ -87,6 +87,9 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.slf4j.Logger;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 /**
  * <code>HttpUtils</code>
  * 
@@ -167,6 +170,14 @@ public class HttpUtils {
      * Returns a decoded String.
      */
     public static final Worker<String> UTF8STRING = getStringWorker( "UTF-8" );
+
+    public static final Worker<JsonElement> JSON = new Worker<JsonElement>() {
+        @Override
+        public JsonElement work( InputStream in )
+                                throws IOException {
+            return new JsonParser().parse( new InputStreamReader( in, "UTF-8" ) );
+        }
+    };
 
     /**
      * Returns a BufferedImage.
