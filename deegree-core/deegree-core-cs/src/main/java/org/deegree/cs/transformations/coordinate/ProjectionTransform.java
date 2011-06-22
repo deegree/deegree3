@@ -125,8 +125,7 @@ public class ProjectionTransform extends Transformation {
         this(
               projectedCRS,
               new CRSIdentifiable(
-                                   CRSCodeType.valueOf( createFromTo(
-                                                                      projectedCRS.getGeographicCRS().getCode().toString(),
+                                   CRSCodeType.valueOf( createFromTo( projectedCRS.getGeographicCRS().getCode().toString(),
                                                                       projectedCRS.getCode().toString() ) ) ) );
     }
 
@@ -134,14 +133,14 @@ public class ProjectionTransform extends Transformation {
     public List<Point3d> doTransform( List<Point3d> srcPts )
                             throws TransformationException {
         // List<Point3d> result = new ArrayList<Point3d>( srcPts.size() );
-        if ( LOG.isDebugEnabled() ) {
-            StringBuilder sb = new StringBuilder( isInverseTransform() ? "An inverse" : "A" );
-            sb.append( " projection transform with incoming points: " );
-            sb.append( srcPts );
-            sb.append( " and following projection: " );
-            sb.append( projectedCRS.getProjection().getImplementationName() );
-            LOG.debug( sb.toString() );
-        }
+        // if ( LOG.isDebugEnabled() ) {
+        // StringBuilder sb = new StringBuilder( isInverseTransform() ? "An inverse" : "A" );
+        // sb.append( " projection transform with incoming points: " );
+        // sb.append( srcPts );
+        // sb.append( " and following projection: " );
+        // sb.append( projectedCRS.getProjection().getImplementationName() );
+        // LOG.debug( sb.toString() );
+        // }
         if ( isInverseTransform() ) {
             doInverseTransform( srcPts );
         } else {
