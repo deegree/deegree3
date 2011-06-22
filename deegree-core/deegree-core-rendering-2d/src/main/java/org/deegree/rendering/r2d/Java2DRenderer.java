@@ -133,7 +133,7 @@ import com.sun.media.jai.codec.MemoryCacheSeekableStream;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(warn = "log info about problems with the renderer setup, or broken geometries coming in, or problematic usage of the renderer", debug = "log what's funny about rendering, eg. when null geometries are rendered, general info about the renderer, also log stack traces, use for debugging/improving your styles", trace = "log geometries and styles being rendered, only use for debugging the code")
+@LoggingNotes(warn = "log info about problems with the renderer setup, or broken geometries coming in, or problematic usage of the renderer", debug = "log what's funny about rendering, eg. when null geometries are rendered, general info about the renderer, also log stack traces, use for debugging/improving your styles")
 public class Java2DRenderer implements Renderer {
 
     private static final Logger LOG = getLogger( Java2DRenderer.class );
@@ -528,15 +528,15 @@ public class Java2DRenderer implements Renderer {
             return;
         }
 
-        if ( LOG.isTraceEnabled() ) {
-            String s;
-            try {
-                s = geom.toString();
-            } catch ( UnsupportedOperationException e ) {
-                s = "(WKT representation of " + geom.getClass().getSimpleName() + " is not available)";
-            }
-            LOG.trace( "Drawing " + s + " with " + styling );
-        }
+        // if ( LOG.isTraceEnabled() ) {
+        // String s;
+        // try {
+        // s = geom.toString();
+        // } catch ( UnsupportedOperationException e ) {
+        // s = "(WKT representation of " + geom.getClass().getSimpleName() + " is not available)";
+        // }
+        // LOG.trace( "Drawing " + s + " with " + styling );
+        // }
 
         if ( geom instanceof Point ) {
             geom = transform( geom );
@@ -572,7 +572,7 @@ public class Java2DRenderer implements Renderer {
             }
         }
         if ( geom instanceof MultiGeometry<?> ) {
-            LOG.trace( "Breaking open multi geometry." );
+            // LOG.trace( "Breaking open multi geometry." );
             MultiGeometry<?> mc = (MultiGeometry<?>) geom;
             for ( Geometry g : mc ) {
                 render( styling, g );
@@ -616,7 +616,7 @@ public class Java2DRenderer implements Renderer {
             return;
         }
 
-        LOG.trace( "Drawing {} with {}", geom, styling );
+        // LOG.trace( "Drawing {} with {}", geom, styling );
 
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with line styling." );
@@ -645,7 +645,7 @@ public class Java2DRenderer implements Renderer {
             }
         }
         if ( geom instanceof MultiGeometry<?> ) {
-            LOG.trace( "Breaking open multi geometry." );
+            // LOG.trace( "Breaking open multi geometry." );
             MultiGeometry<?> mc = (MultiGeometry<?>) geom;
             for ( Geometry g : mc ) {
                 render( styling, g );
@@ -696,12 +696,12 @@ public class Java2DRenderer implements Renderer {
             geom = envelopeToPolygon( (Envelope) geom );
         }
         if ( geom instanceof Surface ) {
-            LOG.trace( "Drawing {} with {}", geom, styling );
+            // LOG.trace( "Drawing {} with {}", geom, styling );
             geom = transform( geom );
             render( styling, (Surface) geom );
         }
         if ( geom instanceof MultiGeometry<?> ) {
-            LOG.trace( "Breaking open multi geometry." );
+            // LOG.trace( "Breaking open multi geometry." );
             for ( Geometry g : (MultiGeometry<?>) geom ) {
                 render( styling, g );
             }
