@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-featurestore-shape</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre8</version>
+  <version>3.1-pre9-SNAPSHOT</version>
   <name>deegree-featurestore-shape</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre8/deegree-datastores/deegree-featurestore/deegree-featurestore-shape</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre8/deegree-datastores/deegree-featurestore/deegree-featurestore-shape</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-shape</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-shape</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre8</version>
+    <version>3.1-pre9-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
-      <version>3.1-pre8</version>
+      <version>3.1-pre9-SNAPSHOT</version>
     </dependency>
   <!--   <dependency> -->
   <!--     <groupId>org.antlr</groupId> -->

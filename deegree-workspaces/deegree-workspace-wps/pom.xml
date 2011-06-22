@@ -3,14 +3,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-wps</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre8</version>
+  <version>3.1-pre9-SNAPSHOT</version>
   <name>deegree 3 WPS Demo</name>
   <url>http://maven.apache.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspace-parent</artifactId>
-    <version>3.1-pre8</version>
+    <version>3.1-pre9-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -48,13 +48,13 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre8</version>
+      <version>3.1-pre9-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-processprovider-sextante</artifactId>
-      <version>3.1-pre8</version>
+      <version>3.1-pre9-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -184,7 +184,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wps</artifactId>
-      <version>3.1-pre8</version>
+      <version>3.1-pre9-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
