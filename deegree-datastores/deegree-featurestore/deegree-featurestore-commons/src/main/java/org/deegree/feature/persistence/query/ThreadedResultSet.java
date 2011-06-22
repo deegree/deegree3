@@ -150,11 +150,11 @@ public class ThreadedResultSet implements FeatureResultSet {
                         if ( !featureQueue.offer( f ) ) {
                             // wait until we get notified that queue needs to be filled up again
                             synchronized ( this ) {
-                                LOG.debug( "Producer thread going to sleep: fill=" + featureQueue.size() );
+                                // LOG.debug( "Producer thread going to sleep: fill=" + featureQueue.size() );
                                 sleeping = true;
                                 wait();
                                 sleeping = false;
-                                LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
+                                // LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
                             }
                         } else {
                             f = null;
@@ -173,7 +173,7 @@ public class ThreadedResultSet implements FeatureResultSet {
         private boolean hasNext() {
             int fill = featureQueue.size();
             if ( sleeping && fill < minFill ) {
-                LOG.debug( "Queue below min fill. Waking producer thread." );
+                // LOG.debug( "Queue below min fill. Waking producer thread." );
                 synchronized ( this ) {
                     notify();
                 }
@@ -182,7 +182,7 @@ public class ThreadedResultSet implements FeatureResultSet {
                 return true;
             }
             while ( true ) {
-                LOG.debug( "Queue empty. Checking if more features are coming from producer." );
+                // LOG.debug( "Queue empty. Checking if more features are coming from producer." );
                 if ( finished && featureQueue.isEmpty() ) {
                     return false;
                 }
