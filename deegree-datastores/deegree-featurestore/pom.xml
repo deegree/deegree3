@@ -37,6 +37,7 @@
     <module>deegree-featurestore-shape</module>
     <module>deegree-featurestore-simplesql</module>
     <module>deegree-featurestore-sql</module>
+    <module>deegree-featurestore-geocouch</module>
   </modules>
 
 </project>
