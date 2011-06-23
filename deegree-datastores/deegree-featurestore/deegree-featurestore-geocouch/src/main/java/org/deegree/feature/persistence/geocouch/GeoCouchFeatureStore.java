@@ -80,8 +80,11 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
+import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.logical.And;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLObject;
@@ -91,7 +94,6 @@ import org.slf4j.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializer;
 
 /**
  * {@link FeatureStore} implementation that uses GeoCouch as backend.
@@ -134,7 +136,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 JsonObject indexes = new JsonObject();
                 spatial.add( "spatial", indexes );
                 for ( FeatureType type : schema.getFeatureTypes() ) {
-                    String name = type.getName().getLocalPart().toString();
+                    String name = type.getName().toString();
                     String indexFunc = "function(doc){" + "if(doc.bbox){" + "emit({" + "type: \'Point\',"
                                        + "bbox: doc.bbox," + "coordinates: [0, 0]" + "}, doc._id);" + "}};";
                     indexes.addProperty( name, indexFunc );
@@ -235,8 +237,8 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 Point max = box.getMax();
 
                 for ( TypeName name : query.getTypeNames() ) {
-                    String idxname = name.getFeatureTypeName().getLocalPart().toString();
-                    String url = couchUrl + "_design/main/_spatial/" + idxname + "?bbox=";
+                    String idxname = name.getFeatureTypeName().toString();
+                    String url = couchUrl + "_design/main/_spatial/" + URLEncoder.encode(idxname, "UTF-8") + "?bbox=";
                     url += min.get0() + "," + min.get1() + "," + max.get0() + "," + max.get1();
                     JsonObject obj = HttpUtils.get( JSON, url, null ).getAsJsonObject();
                     JsonElement elem = obj.get( "rows" );
@@ -250,6 +252,26 @@ public class GeoCouchFeatureStore implements FeatureStore {
 
                 BlobCodec codec = new BlobCodec( schema.getXSModel().getVersion(), Compression.NONE );
                 result = new IteratorResultSet( new IDIterator( ids.iterator(), codec ) );
+
+                // mangle filter to exclude bbox
+                if ( filter.getOperator() instanceof BBOX ) {
+                    filter = null;
+                } else if ( filter.getOperator() instanceof And ) {
+                    And and = (And) filter.getOperator();
+                    List<Operator> ops = new ArrayList<Operator>();
+                    for ( Operator o : and.getParams() ) {
+                        if ( !( o instanceof BBOX ) )
+                            ops.add( o );
+                    }
+                    if ( ops.isEmpty() ) {
+                        filter = null;
+                    }
+                    if ( ops.size() == 1 ) {
+                        filter = new OperatorFilter( ops.get( 0 ) );
+                    } else {
+                        filter = new OperatorFilter( new And( ops.toArray( new Operator[ops.size()] ) ) );
+                    }
+                }
             }
         } catch ( Throwable e ) {
             String msg = "Error performing query by operator filter: " + e.getMessage();
