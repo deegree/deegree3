@@ -126,16 +126,9 @@ public class GeoCouchFeatureStore implements FeatureStore {
         try {
             JsonObject obj = HttpUtils.get( HttpUtils.JSON, couchUrl + "_design/main", null ).getAsJsonObject();
             if ( obj.get( "spatial" ) == null ) {
+                // set up index
                 HttpClient client = new DefaultHttpClient();
                 HttpPut put = new HttpPut( couchUrl + "_design/main" );
-                // function(doc) {
-                // if (doc.bbox) {
-                // emit({
-                // type: "Point",
-                // bbox: doc.bbox,
-                // coordinates: [0, 0]
-                // }, [doc._id, doc.bbox]);
-                // }};"
 
                 JsonObject spatial = new JsonObject();
                 JsonObject indexes = new JsonObject();
@@ -143,11 +136,10 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 for ( FeatureType type : schema.getFeatureTypes() ) {
                     String name = type.getName().getLocalPart().toString();
                     String indexFunc = "function(doc){" + "if(doc.bbox){" + "emit({" + "type: \'Point\',"
-                                       + "bbox: doc.bbox," + "coordinates[0, 0]" + "}, doc._id);\"" + "}}";
+                                       + "bbox: doc.bbox," + "coordinates: [0, 0]" + "}, doc._id);" + "}};";
                     indexes.addProperty( name, indexFunc );
                 }
 
-                System.out.println( spatial.toString() );
                 put.setEntity( new StringEntity( spatial.toString() ) );
                 HttpResponse resp = client.execute( put );
                 System.out.println( IOUtils.toString( resp.getEntity().getContent() ) );
@@ -156,9 +148,6 @@ public class GeoCouchFeatureStore implements FeatureStore {
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Error connecting to GeoCouch.", e );
         }
-
-        // http://127.0.0.1:5984/inspire/_design/main/
-        // possibly check for 404
     }
 
     @Override
@@ -251,7 +240,6 @@ public class GeoCouchFeatureStore implements FeatureStore {
                     url += min.get0() + "," + min.get1() + "," + max.get0() + "," + max.get1();
                     JsonObject obj = HttpUtils.get( JSON, url, null ).getAsJsonObject();
                     JsonElement elem = obj.get( "rows" );
-                    System.out.println(obj);
                     if ( elem == null )
                         throw new FeatureStoreException( "fail bbox query" );
                     JsonArray a = elem.getAsJsonArray();
