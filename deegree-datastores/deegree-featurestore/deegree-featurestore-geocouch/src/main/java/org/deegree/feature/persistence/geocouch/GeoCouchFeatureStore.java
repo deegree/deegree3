@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.geocouch;
 
-import static org.deegree.commons.utils.net.HttpUtils.JSON;
+import static org.apache.commons.io.IOUtils.readLines;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -46,6 +47,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -91,8 +94,6 @@ import org.deegree.gml.GMLObject;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.slf4j.Logger;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -137,8 +138,9 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 spatial.add( "spatial", indexes );
                 for ( FeatureType type : schema.getFeatureTypes() ) {
                     String name = type.getName().toString();
-                    String indexFunc = "function(doc){" + "if(doc.bbox){" + "emit({" + "type: \'Point\',"
-                                       + "bbox: doc.bbox," + "coordinates: [0, 0]" + "}, doc._id);" + "}};";
+                    String indexFunc = "function(doc){" + "if(doc.bbox && doc.feature_type == '" + name + "'){"
+                                       + "emit({" + "type: \'Point\'," + "bbox: doc.bbox," + "coordinates: [0, 0]"
+                                       + "}, doc._id);" + "}};";
                     indexes.addProperty( name, indexFunc );
                 }
 
@@ -236,17 +238,19 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 Point min = box.getMin();
                 Point max = box.getMax();
 
+                Pattern p = Pattern.compile( "\"id\"[:]\"([^\"]*)" );
+                Matcher m = p.matcher( "nix" );
+
                 for ( TypeName name : query.getTypeNames() ) {
                     String idxname = name.getFeatureTypeName().toString();
-                    String url = couchUrl + "_design/main/_spatial/" + URLEncoder.encode(idxname, "UTF-8") + "?bbox=";
+                    String url = couchUrl + "_design/main/_spatial/" + URLEncoder.encode( idxname, "UTF-8" ) + "?bbox=";
                     url += min.get0() + "," + min.get1() + "," + max.get0() + "," + max.get1();
-                    JsonObject obj = HttpUtils.get( JSON, url, null ).getAsJsonObject();
-                    JsonElement elem = obj.get( "rows" );
-                    if ( elem == null )
-                        throw new FeatureStoreException( "fail bbox query" );
-                    JsonArray a = elem.getAsJsonArray();
-                    for ( int i = 0; i < a.size(); ++i ) {
-                        ids.add( a.get( i ).getAsJsonObject().get( "id" ).getAsString() );
+                    List<String> lines = readLines( HttpUtils.get( STREAM, url, null ) );
+                    for ( String line : lines ) {
+                        m.reset( line );
+                        if ( m.find() ) {
+                            ids.add( m.group( 1 ) );
+                        }
                     }
                 }
 
@@ -254,9 +258,9 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 result = new IteratorResultSet( new IDIterator( ids.iterator(), codec ) );
 
                 // mangle filter to exclude bbox
-                if ( filter.getOperator() instanceof BBOX ) {
+                if ( filter != null && filter.getOperator() instanceof BBOX ) {
                     filter = null;
-                } else if ( filter.getOperator() instanceof And ) {
+                } else if ( filter != null && filter.getOperator() instanceof And ) {
                     And and = (And) filter.getOperator();
                     List<Operator> ops = new ArrayList<Operator>();
                     for ( Operator o : and.getParams() ) {
@@ -272,6 +276,8 @@ public class GeoCouchFeatureStore implements FeatureStore {
                         filter = new OperatorFilter( new And( ops.toArray( new Operator[ops.size()] ) ) );
                     }
                 }
+            } else {
+
             }
         } catch ( Throwable e ) {
             String msg = "Error performing query by operator filter: " + e.getMessage();
