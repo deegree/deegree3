@@ -172,8 +172,11 @@ public class FormBean {
             }
             executeForm.getChildren().clear();
             try {
-                addInputParams( fc, executeForm, process.getInputTypes() );
-                setOutputParams( fc, executeForm, process.getOutputTypes() );
+                // collect all outputFormatIds
+                List<String> outputFormatIds = new ArrayList<String>();
+                HtmlPanelGrid outputPanel = setOutputParams( fc, process.getOutputTypes(), outputFormatIds );
+                addInputParams( fc, executeForm, process.getInputTypes(), outputFormatIds );
+                executeForm.getChildren().add( outputPanel );
             } catch ( OWSException e ) {
                 FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_WARN, "WARN.EXCEPTION", e.getMessage() );
                 fc.addMessage( "WPSBean.selectProcess.EXCEPTION", msg );
@@ -196,7 +199,7 @@ public class FormBean {
         }
     }
 
-    private void addInputParams( FacesContext fc, UIComponent parent, InputType[] inputs ) {
+    private void addInputParams( FacesContext fc, UIComponent parent, InputType[] inputs, List<String> outputFormatIds ) {
         HtmlPanelGrid inputGrid = new HtmlPanelGrid();
         inputGrid.setId( getUniqueId() );
         inputGrid.setColumns( 4 );
@@ -253,7 +256,8 @@ public class FormBean {
                 for ( int j = 0; j < occ; j++ ) {
                     if ( ( (ComplexInputType) input ).getDefaultFormat().getMimeType() != null
                          && ( (ComplexInputType) input ).getDefaultFormat().getMimeType().contains( "xml" ) ) {
-                        gridC.getChildren().add( getXMLInput( fc, (ComplexInputType) input, minOccurs, maxOccurs, j ) );
+                        gridC.getChildren().add( getXMLInput( fc, (ComplexInputType) input, minOccurs, maxOccurs, j,
+                                                              outputFormatIds ) );
                     } else {
                         gridC.getChildren().add( getBinaryInput( fc, (ComplexInputType) input, minOccurs, maxOccurs, j ) );
                     }
@@ -354,7 +358,8 @@ public class FormBean {
         return fieldset;
     }
 
-    private HtmlFieldset getXMLInput( FacesContext fc, ComplexInputType input, int minOccurs, int maxOccurs, int index ) {
+    private HtmlFieldset getXMLInput( FacesContext fc, ComplexInputType input, int minOccurs, int maxOccurs, int index,
+                                      List<String> outputFormatIds ) {
 
         HtmlFieldset fieldset = new HtmlFieldset();
         String id = input.getId().toString() + index;
@@ -448,6 +453,22 @@ public class FormBean {
                                                                                                      Object.class );
 
         format.setValueExpression( "value", valueFVE );
+        String ofIds = null;
+        if ( outputFormatIds != null && !outputFormatIds.isEmpty() ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append( '[' );
+            boolean first = true;
+            for ( String outputFormatId : outputFormatIds ) {
+                if ( !first ) {
+                    sb.append( ',' );
+                }
+                sb.append( '\'' ).append( outputFormatId ).append( '\'' );
+                first = false;
+            }
+            sb.append( ']' );
+            ofIds = sb.toString();
+        }
+        format.setOnchange( "inputFormatChanged('" + formatId + ( ofIds != null ? ( "', " + ofIds ) : "" ) + ");" );
         ComplexFormat[] supportedFormats = input.getSupportedFormats();
         for ( ComplexFormat complexFormat : supportedFormats ) {
             UISelectItem item = new UISelectItem();
@@ -676,7 +697,7 @@ public class FormBean {
     // }
     // }
 
-    private void setOutputParams( FacesContext fc, UIComponent parent, OutputType[] outputs ) {
+    private HtmlPanelGrid setOutputParams( FacesContext fc, OutputType[] outputs, List<String> outputFormatIds ) {
         // if ( outputs.length > 1 ) {
         HtmlPanelGrid outputGrid = new HtmlPanelGrid();
         outputGrid.setId( getUniqueId() );
@@ -733,16 +754,17 @@ public class FormBean {
         formatGrid.getFacets().put( "header", formatText );
 
         for ( int i = 0; i < outputs.length; i++ ) {
-            addOutputFormat( fc, outputs[i], formatGrid );
+            addOutputFormat( fc, outputs[i], formatGrid, outputFormatIds );
         }
         outputGrid.getChildren().add( formatGrid );
         // TODO!
         // outputGrid.getChildren().add( createInfoBt( "", ) );
-        parent.getChildren().add( outputGrid );
+        // parent.getChildren().add( outputGrid );
         // }
+        return outputGrid;
     }
 
-    private void addOutputFormat( FacesContext fc, OutputType output, UIComponent parent ) {
+    private void addOutputFormat( FacesContext fc, OutputType output, UIComponent parent, List<String> outputFormatIds ) {
         if ( output instanceof ComplexOutputType ) {
             HtmlOutputText formatText = new HtmlOutputText();
             formatText.setStyleClass( "formatForLabel" );
@@ -750,7 +772,9 @@ public class FormBean {
             parent.getChildren().add( formatText );
 
             HtmlSelectFormat format = new HtmlSelectFormat();
-            format.setId( output.getId() + "_format" );
+            String id = output.getId() + "_format";
+            outputFormatIds.add( id );
+            format.setId( id );
             format.setStyleClass( INPUT_CLASS + " selectFormat" );
             format.setDefaultFormat( ( (ComplexOutputType) output ).getDefaultFormat() );
             format.setConverter( new ComplexFormatConverter() );

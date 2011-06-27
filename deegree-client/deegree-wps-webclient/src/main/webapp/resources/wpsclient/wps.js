@@ -21,6 +21,16 @@ function loadReference(textFieldId, cbId, formatID) {
 
 }
 
+function inputFormatChanged(inputFormatID, outputFormatIDs) {
+	if (outputFormatIDs != null) {
+		for ( var j = 0; j < outputFormatIDs.length; j++) {
+			var outputFormatSelect = document.getElementById("emptyForm:"
+					+ outputFormatIDs[j]);
+			// alert(outputFormatSelect.id);
+		}
+	}
+}
+
 function handleXMLOutput(requestRef) {
 	alert("nothing to do");
 }

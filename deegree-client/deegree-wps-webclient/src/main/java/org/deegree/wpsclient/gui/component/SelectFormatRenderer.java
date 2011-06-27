@@ -101,7 +101,12 @@ public class SelectFormatRenderer extends MenuRenderer {
         writer.startElement( "select", null );
         writer.writeAttribute( "id", clientId + FORMAT_SUFFIX, "id" );
         writer.writeAttribute( "name", clientId, "id" );
-        writer.writeAttribute( "onChange", getOnChangeBehaviour( clientId ), "js" );
+        String js = "";
+        if ( formatComp.getOnchange() != null ) {
+            js = formatComp.getOnchange();
+        }
+        js = js + getOnChangeBehaviour( clientId );
+        writer.writeAttribute( "onChange", js, "js" );
 
         Iterator<SelectItem> items = RenderKitUtils.getSelectItems( context, formatComp );
         renderOptions( context, formatComp, items );

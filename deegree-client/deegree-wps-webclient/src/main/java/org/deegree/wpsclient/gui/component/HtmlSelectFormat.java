@@ -60,13 +60,21 @@ public class HtmlSelectFormat extends UISelectOne {
     public static final String COMPONENT_TYPE = "HtmlSelectFormat";
 
     private static enum AdditionalPropertyKeys {
-        styleClass, defaultFormat, supportedFormats
+        styleClass, defaultFormat, supportedFormats, onchange
     }
 
     public HtmlSelectFormat() {
         setRendererType( "org.deegree.SelectFormat" );
     }
 
+    public String getOnchange() {
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.onchange, null );
+    }
+
+    public void setOnchange( String onchange ) {
+        getStateHelper().put( AdditionalPropertyKeys.onchange, onchange );
+    }
+    
     public String getStyleClass() {
         return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, null );
     }
