@@ -363,17 +363,17 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 for ( OMElement spatialResolutionElem : spatialResolution ) {
                     int denominator = getNodeAsInt( spatialResolutionElem,
                                                     new XPath(
-                                                               "./gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer",
+                                                               "./gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer",
                                                                nsContextParseII ), -1 );
                     qp.setDenominator( denominator );
                     // TODO put here the constraint that there can a denominator be available iff distanceValue and
                     // distanceUOM are not set and vice versa!!
                     float distanceValue = getNodeAsFloat( spatialResolutionElem,
-                                                          new XPath( "./gmd:distance/gco:Distance", nsContextParseII ),
+                                                          new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance", nsContextParseII ),
                                                           -1 );
                     qp.setDistanceValue( distanceValue );
                     String distanceUOM = getNodeAsString( spatialResolutionElem,
-                                                          new XPath( "./gmd:distance/gco:Distance/@uom",
+                                                          new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance/@uom",
                                                                      nsContextParseII ), null );
                     qp.setDistanceUOM( distanceUOM );
                 }
