@@ -297,6 +297,7 @@ public class PostgreSQLReader {
                 }
                 String widthExpr = (String) rs.getObject( "widthexpr" );
                 if ( widthExpr != null ) {
+                    res.width = -1;
                     contn = getContn( widthExpr, contn, new Updater<Styling<?>>() {
                         public void update( Styling<?> obj, String val ) {
                             if ( obj instanceof LineStyling ) {
