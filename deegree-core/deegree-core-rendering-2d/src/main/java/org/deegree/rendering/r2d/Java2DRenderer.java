@@ -743,12 +743,12 @@ public class Java2DRenderer implements Renderer {
     final double considerUOM( final double in, final UOM uom ) {
         switch ( uom ) {
         case Pixel:
-            return in;
+            return in * 0.28 / pixelSize;
         case Foot:
             // TODO properly convert the res to foot
-            return in / res * ( 0.28 / pixelSize );
+            return in / res;
         case Metre:
-            return in / res * ( 0.28 / pixelSize );
+            return in / res;
         case mm:
             return in / pixelSize;
         }
