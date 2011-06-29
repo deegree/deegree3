@@ -199,7 +199,7 @@ public class SymbologyParser {
         if ( !require( in, "OnlineResource" ) ) {
             return null;
         }
-        String url = in.getAttributeValue( null, "href" );
+        String url = in.getAttributeValue( XLNNS, "href" );
         URL resolved = StAXParsingHelper.resolve( url, in );
         in.nextTag();
         in.require( END_ELEMENT, null, "OnlineResource" );
@@ -1802,6 +1802,8 @@ public class SymbologyParser {
                 URL url = SymbologyParser.parseOnlineResource( in );
                 XMLStreamReader newReader = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                                  url.openStream() );
+                while ( !newReader.isStartElement() )
+                    newReader.next();
                 return parseFeatureTypeOrCoverageStyle( newReader );
             } catch ( MalformedURLException e ) {
                 LOG.warn( "An URL referencing a FeatureType or CoverageStyle could not be resolved." );
