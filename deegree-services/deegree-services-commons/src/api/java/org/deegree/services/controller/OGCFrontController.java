@@ -36,8 +36,6 @@
 package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
-import static java.lang.Character.isDigit;
-import static java.lang.System.setProperty;
 import static org.deegree.commons.modules.ModuleInfo.getModulesInfo;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -153,7 +151,7 @@ import org.slf4j.Logger;
 @LoggingNotes(debug = "logs the server startup, incoming requests and timing info, also enables enhanced request logging in $HOME/.deegree")
 public class OGCFrontController extends HttpServlet {
 
-    private static Logger LOG = null;
+    private static final Logger LOG = getLogger( OGCFrontController.class );
 
     private static final long serialVersionUID = -1379869403008798932L;
 
@@ -865,26 +863,6 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void init( ServletConfig config )
                             throws ServletException {
-
-        // copied from deegree2
-        if ( LOG == null ) {
-            // hack to figure out and set the context path name
-            // for a laugh, see http://marc.info/?l=tomcat-user&m=109215904113904&w=2 and the related thread
-            // http://marc.info/?t=109215871400004&r=1&w=2
-            String path = getServletContext().getRealPath( "" );
-            String[] ps = path.split( "[/\\\\]" );
-            path = ps[ps.length - 1];
-            // heuristics are always a charm (and work best for tomcat in this case)
-            if ( isDigit( path.charAt( 0 ) ) && path.indexOf( "-" ) != -1 ) {
-                path = path.split( "-", 2 )[1];
-            }
-            // note that setting this changes it on a JVM GLOBAL BASIS, so it WILL GET OVERWRITTEN in subsequent
-            // deegree startups! (However, since the log4j.properties will only be read on startup, this hack is
-            // useful anyway)
-            setProperty( "context.name", path );
-
-            LOG = getLogger( OGCFrontController.class );
-        }
 
         instance = this;
 
