@@ -3,13 +3,13 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2</version>
   <name>deegree-maven-plugin</name>
   <url>http://www.deegree.org</url>
 
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/deegree-misc/deegree-maven-plugin</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/deegree-misc/deegree-maven-plugin</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/deegree-maven-plugin-1.2</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/deegree-maven-plugin-1.2</url>
   </scm>
 
   <parent>
