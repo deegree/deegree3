@@ -125,7 +125,7 @@ public class InputBBoxRenderer extends MenuRenderer {
         ResponseWriter writer = context.getResponseWriter();
         String clientId = component.getClientId();
 
-        writer.startElement( "span", component );
+        writer.startElement( "table", component );
         writer.writeAttribute( "id", clientId, "id" );
         writer.writeAttribute( "name", clientId, "id" );
         String styleClass = bbox.getStyleClass();
@@ -139,23 +139,28 @@ public class InputBBoxRenderer extends MenuRenderer {
         }
         encodeCoordFields( writer, bbox, clientId, disabled );
 
-        writer.endElement( "span" );
+        writer.endElement( "table" );
     }
 
     private void encodeCRSSelect( ResponseWriter writer, HtmlInputBBox bbox, String clientId, FacesContext context,
                                   boolean disabled )
                             throws IOException {
-        writer.startElement( "span", null );
-        writer.writeAttribute( "style", "display:block;", null );
+        writer.startElement( "tr", null );
 
-        writer.startElement( "span", null );
-        writer.writeAttribute( "style", "margin-right: 5px;", null );
+        writer.startElement( "td", null );
+        if ( bbox.getLabelColumnClass() != null ) {
+            writer.writeAttribute( "class", bbox.getLabelColumnClass(), null );
+        }
         String crsText = bbox.getCrsLabel();
         if ( crsText == null ) {
             writer.writeText( crsText, null );
         }
-        writer.endElement( "span" );
+        writer.endElement( "td" );
 
+        writer.startElement( "td", null );
+        if ( bbox.getInputColumnClass() != null ) {
+            writer.writeAttribute( "class", bbox.getInputColumnClass(), null );
+        }
         writer.startElement( "select", null );
         writer.writeAttribute( "id", clientId + ":" + CRS_ID_SUFFIX, "id" );
         writer.writeAttribute( "name", clientId + ":" + CRS_ID_SUFFIX, "id" );
@@ -168,8 +173,9 @@ public class InputBBoxRenderer extends MenuRenderer {
         Iterator<SelectItem> items = RenderKitUtils.getSelectItems( context, bbox );
         renderOptions( context, bbox, items );
         writer.endElement( "select" );
+        writer.endElement( "td" );
 
-        writer.endElement( "span" );
+        writer.endElement( "tr" );
     }
 
     private void encodeCoordFields( ResponseWriter writer, HtmlInputBBox bbox, String clientId, boolean disabled )
@@ -180,46 +186,49 @@ public class InputBBoxRenderer extends MenuRenderer {
         if ( value != null && !Double.isNaN( value.getMinx() ) ) {
             minx = value.getMinx();
         }
-        addFieldRow( writer, clientId + ":" + MINX_ID_SUFFIX, bbox.getMinxLabel(), minx, disabled, bbox.getOnchange(),
-                     false );
+        addFieldRow( writer, bbox, clientId + ":" + MINX_ID_SUFFIX, bbox.getMinxLabel(), minx, disabled,
+                     bbox.getOnchange() );
 
         // min y
         double minY = -90;
         if ( value != null && !Double.isNaN( value.getMinY() ) ) {
             minY = value.getMinY();
         }
-        addFieldRow( writer, clientId + ":" + MINY_ID_SUFFIX, bbox.getMinyLabel(), minY, disabled, bbox.getOnchange(),
-                     false );
+        addFieldRow( writer, bbox, clientId + ":" + MINY_ID_SUFFIX, bbox.getMinyLabel(), minY, disabled,
+                     bbox.getOnchange() );
 
         // max x
         double maxx = 180;
         if ( value != null && Double.isNaN( value.getMaxX() ) ) {
             maxx = value.getMaxX();
         }
-        addFieldRow( writer, clientId + ":" + MAXX_ID_SUFFIX, bbox.getMaxxLabel(), maxx, disabled, bbox.getOnchange(),
-                     false );
+        addFieldRow( writer, bbox, clientId + ":" + MAXX_ID_SUFFIX, bbox.getMaxxLabel(), maxx, disabled,
+                     bbox.getOnchange() );
 
         // max y
         double maxy = 90;
         if ( value != null && Double.isNaN( value.getMaxY() ) ) {
             maxy = value.getMaxY();
         }
-        addFieldRow( writer, clientId + ":" + MAXY_ID_SUFFIX, bbox.getMaxyLabel(), maxy, disabled, bbox.getOnchange(),
-                     true );
+        addFieldRow( writer, bbox, clientId + ":" + MAXY_ID_SUFFIX, bbox.getMaxyLabel(), maxy, disabled,
+                     bbox.getOnchange() );
     }
 
-    private void addFieldRow( ResponseWriter writer, String id, String label, double value, boolean disabled,
-                              String onchange, boolean last )
+    private void addFieldRow( ResponseWriter writer, HtmlInputBBox bbox, String id, String label, double value,
+                              boolean disabled, String onchange )
                             throws IOException {
-        writer.startElement( "span", null );
-        if ( !last )
-            writer.writeAttribute( "style", "display:block;", null );
-
-        writer.startElement( "span", null );
-        writer.writeAttribute( "style", "margin-right: 5px;", null );
+        writer.startElement( "tr", null );
+        writer.startElement( "td", null );
+        if ( bbox.getLabelColumnClass() != null ) {
+            writer.writeAttribute( "class", bbox.getLabelColumnClass(), null );
+        }
         writer.writeText( label, null );
-        writer.endElement( "span" );
+        writer.endElement( "td" );
 
+        writer.startElement( "td", null );
+        if ( bbox.getInputColumnClass() != null ) {
+            writer.writeAttribute( "class", bbox.getInputColumnClass(), null );
+        }
         writer.startElement( "input", null );
         writer.writeAttribute( "id", id, "id" );
         writer.writeAttribute( "name", id, "id" );
@@ -231,8 +240,9 @@ public class InputBBoxRenderer extends MenuRenderer {
             writer.writeAttribute( "onChange", onchange, "onchange" );
         }
         writer.endElement( "input" );
+        writer.endElement( "td" );
 
-        writer.endElement( "span" );
+        writer.endElement( "tr" );
     }
 
     @Override
