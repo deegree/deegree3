@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-sos-cite100</artifactId>
   <packaging>war</packaging>
-  <version>3.1-pre8-SNAPSHOT</version>
+  <version>3.1-pre9-SNAPSHOT</version>
   <name>deegree-sos-cite100 Webapp</name>
   <url>http://www.deegree.org</url>
 
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-test-parent</artifactId>
-    <version>3.1-pre8-SNAPSHOT</version>
+    <version>3.1-pre9-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-sos</artifactId>
-      <version>3.1-pre8-SNAPSHOT</version>
+      <version>3.1-pre9-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>

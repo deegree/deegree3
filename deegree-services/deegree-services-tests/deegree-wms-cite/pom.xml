@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wms-cite</artifactId>
   <packaging>war</packaging>
-  <version>3.1-pre8-SNAPSHOT</version>
+  <version>3.1-pre9-SNAPSHOT</version>
   <name>deegree-wms-cite Webapp</name>
   <url>http://www.deegree.org</url>
 
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-test-parent</artifactId>
-    <version>3.1-pre8-SNAPSHOT</version>
+    <version>3.1-pre9-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -54,7 +54,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
-      <version>3.1-pre8-SNAPSHOT</version>
+      <version>3.1-pre9-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>xalan</groupId>
