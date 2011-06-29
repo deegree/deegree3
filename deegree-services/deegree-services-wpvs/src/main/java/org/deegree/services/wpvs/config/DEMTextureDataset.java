@@ -50,7 +50,7 @@ import javax.xml.stream.XMLInputFactory;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
@@ -268,7 +268,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      * @param tileProviders
      */
     private Envelope fillFromCoverage( String coverageStoreId, List<TextureTileProvider> tileProviders ) {
-        AbstractCoverage coverage = workspace.getSubsystemManager( CoverageBuilderManager.class ).get( coverageStoreId );
+        Coverage coverage = workspace.getSubsystemManager( CoverageBuilderManager.class ).get( coverageStoreId );
         if ( coverage == null ) {
             LOG.warn( "The coverage builder with id: " + coverageStoreId
                       + " could not create a coverage, ignoring dataset." );
@@ -314,8 +314,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
         Style style;
         try {
             styleStream = styleFile.openStream();
-            style = SymbologyParser.INSTANCE.parse( XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                                         styleFile.toExternalForm(),
+            style = SymbologyParser.INSTANCE.parse( XMLInputFactory.newInstance().createXMLStreamReader( styleFile.toExternalForm(),
                                                                                                          styleStream ) );
         } catch ( Exception e ) {
             throw new IOException( "Could not read symbology encoding file because: " + e.getLocalizedMessage(), e );

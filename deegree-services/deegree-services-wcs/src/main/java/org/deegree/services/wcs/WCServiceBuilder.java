@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
@@ -161,7 +160,7 @@ public class WCServiceBuilder {
     private WCSCoverage extractCoverage( Coverage coverage )
                             throws ServiceInitException {
         String id = coverage.getCoverageStoreId();
-        AbstractCoverage cov = getServiceWorkspace().getSubsystemManager( CoverageBuilderManager.class ).get( id );
+        org.deegree.coverage.Coverage cov = getServiceWorkspace().getSubsystemManager( CoverageBuilderManager.class ).get( id );
         if ( cov == null ) {
             throw new ServiceInitException( "No coverage store with id '" + id + "' is known." );
         }
@@ -249,18 +248,15 @@ public class WCServiceBuilder {
 
     private WCSCoverage buildCoverage( Coverage coverage, MultiResolutionRaster mrr ) {
         CoverageOptions options = buildOptions( coverage.getNativeFormat(), coverage.getSupportOptions() );
-        RangeSet rs = RangeSetBuilder.createBandRangeSetFromRaster(
-                                                                    "generated",
+        RangeSet rs = RangeSetBuilder.createBandRangeSetFromRaster( "generated",
                                                                     "Automatically generated dataset, created from the native raster types.",
-                                                                    mrr.getRaster( mrr.getResolutions().get(
-                                                                                                             mrr.getResolutions().size() - 1 ) ) );
+                                                                    mrr.getRaster( mrr.getResolutions().get( mrr.getResolutions().size() - 1 ) ) );
         return new MultiResolutionCoverage( coverage.getName(), coverage.getLabel(), mrr, options, rs );
     }
 
     private SimpleCoverage buildCoverage( Coverage coverage, AbstractRaster raster ) {
         CoverageOptions options = buildOptions( coverage.getNativeFormat(), coverage.getSupportOptions() );
-        RangeSet rs = RangeSetBuilder.createBandRangeSetFromRaster(
-                                                                    "generated",
+        RangeSet rs = RangeSetBuilder.createBandRangeSetFromRaster( "generated",
                                                                     "Automatically generated dataset, created from the native raster types.",
                                                                     raster );
 

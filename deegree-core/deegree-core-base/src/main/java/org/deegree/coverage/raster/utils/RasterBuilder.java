@@ -51,10 +51,14 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageBuilder;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
@@ -67,10 +71,10 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.jaxb.AbstractRasterType;
-import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
-import org.deegree.coverage.raster.io.jaxb.RasterConfig;
 import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterDirectory;
+import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
+import org.deegree.coverage.raster.io.jaxb.RasterConfig;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -92,9 +96,11 @@ public class RasterBuilder implements CoverageBuilder {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/coverage/raster/3.0.0/raster.xsd";
+    private static final URL CONFIG_SCHEMA = RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/raster.xsd" );
 
     private final static Logger LOG = LoggerFactory.getLogger( RasterBuilder.class );
+
+    private DeegreeWorkspace workspace;
 
     /**
      * Create a {@link MultiResolutionRaster} with the origin or the world coordinate of each raster file, defined by
@@ -180,7 +186,7 @@ public class RasterBuilder implements CoverageBuilder {
     public AbstractCoverage buildCoverage( URL configURL )
                             throws IOException {
         try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL );
+            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL, workspace );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
@@ -577,6 +583,27 @@ public class RasterBuilder implements CoverageBuilder {
 
     @Override
     public URL getConfigSchema() {
-        return RasterBuilder.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
+    }
+
+    @Override
+    public Coverage create( URL configUrl )
+                            throws ResourceInitException {
+        try {
+            return buildCoverage( configUrl );
+        } catch ( IOException e ) {
+            throw new ResourceInitException( "IO-Error while creating coverage store.", e );
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] {};
     }
 }

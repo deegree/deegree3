@@ -53,10 +53,14 @@ import java.net.URLConnection;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageBuilder;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
@@ -86,9 +90,11 @@ public class WMSBuilder implements CoverageBuilder {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.protocol.wms.raster.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/coverage/wms/3.0.0/wms.xsd";
+    private static final URL CONFIG_SCHEMA = WMSBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/wms/3.0.0/wms.xsd" );
 
     private static final Logger LOG = getLogger( WMSBuilder.class );
+
+    private DeegreeWorkspace workspace;
 
     @Override
     public String getConfigNamespace() {
@@ -99,7 +105,7 @@ public class WMSBuilder implements CoverageBuilder {
     public AbstractCoverage buildCoverage( URL configURL )
                             throws IOException {
         try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL );
+            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL, workspace );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
@@ -247,6 +253,27 @@ public class WMSBuilder implements CoverageBuilder {
 
     @Override
     public URL getConfigSchema() {
-        return WMSBuilder.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
+    }
+
+    @Override
+    public Coverage create( URL configUrl )
+                            throws ResourceInitException {
+        try {
+            return buildCoverage( configUrl );
+        } catch ( IOException e ) {
+            throw new ResourceInitException( "IO-Error while constructing WMS coverage store.", e );
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] {};
     }
 }

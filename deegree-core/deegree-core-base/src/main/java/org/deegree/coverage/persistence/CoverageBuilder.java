@@ -38,10 +38,11 @@ package org.deegree.coverage.persistence;
 import java.io.IOException;
 import java.net.URL;
 
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.Coverage;
 
-public interface CoverageBuilder extends ResourceProvider {
+public interface CoverageBuilder extends ExtendedResourceProvider<Coverage> {
 
     /**
      * Creates a new {@link AbstractCoverage} instance from the given configuration document.

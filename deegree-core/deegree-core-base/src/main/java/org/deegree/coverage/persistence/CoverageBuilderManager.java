@@ -35,36 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.deegree.commons.config.AbstractBasicResourceManager;
+import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.DefaultResourceManagerMetadata;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.coverage.AbstractCoverage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.coverage.Coverage;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -74,153 +52,17 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class CoverageBuilderManager extends AbstractBasicResourceManager implements ResourceManager {
+public class CoverageBuilderManager extends AbstractResourceManager<Coverage> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CoverageBuilderManager.class );
+    private CoverageResourceManagerMetadata metadata;
 
-    private static ServiceLoader<CoverageBuilder> covBuilderLoader = ServiceLoader.load( CoverageBuilder.class );
+    @Override
+    public void startup( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        metadata = new CoverageResourceManagerMetadata( workspace );
 
-    static Map<String, CoverageBuilder> nsToBuilder = new ConcurrentHashMap<String, CoverageBuilder>();
-
-    private Map<String, AbstractCoverage> idToCov = Collections.synchronizedMap( new HashMap<String, AbstractCoverage>() );
-
-    /**
-     * Load all available {@link CoverageBuilder}s
-     * 
-     */
-    static {
-        try {
-            for ( CoverageBuilder builder : covBuilderLoader ) {
-                if ( builder != null ) {
-                    LOG.debug( "Service loader found CoverageBuilder: " + builder + ", namespace: "
-                               + builder.getConfigNamespace() );
-                    if ( nsToBuilder.containsKey( builder.getConfigNamespace() ) ) {
-                        LOG.error( "Multiple coverage builders for config namespace: '" + builder.getConfigNamespace()
-                                   + "' on classpath -- omitting provider '" + builder.getClass().getName() + "'." );
-                        continue;
-                    }
-                    nsToBuilder.put( builder.getConfigNamespace(), builder );
-                }
-            }
-        } catch ( Exception e ) {
-            LOG.error( e.getMessage(), e );
-        }
-    }
-
-    /**
-     * Initializes the {@link CoverageBuilderManager} by loading all coverage configurations from the given directory
-     * (given while constructing).
-     * 
-     */
-    public void startup( DeegreeWorkspace workspace ) {
-        File coverageConfigLocation = new File( workspace.getLocation(), "datasources" + File.separator + "coverage" );
-        if ( !coverageConfigLocation.exists() ) {
-            LOG.info( "No 'datasources/coverage' directory -- skipping initialization of coverage stores." );
-            return;
-        }
-
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up coverages from '{}'", coverageConfigLocation );
-        LOG.info( "--------------------------------------------------------------------------------" );
-
-        File[] csConfigFiles = null;
-        if ( coverageConfigLocation.isFile() ) {
-            String ext = FileUtils.getFileExtension( coverageConfigLocation );
-            if ( "xml".equalsIgnoreCase( ext ) ) {
-                csConfigFiles = new File[] { coverageConfigLocation };
-            }
-        } else {
-            csConfigFiles = coverageConfigLocation.listFiles( (FilenameFilter) new SuffixFileFilter( ".xml" ) );
-        }
-        if ( csConfigFiles == null ) {
-            LOG.warn( "Did not find any coverage configuration files in directory: "
-                      + coverageConfigLocation.getAbsolutePath() + " no global coverage will be available." );
-            return;
-        }
-        for ( File csConfigFile : csConfigFiles ) {
-            if ( csConfigFile != null ) {
-                String csId = FileUtils.getFilename( csConfigFile );
-                LOG.info( "Setting up coverage '" + csId + "' from file '" + csConfigFile.getName() + "'..." + "" );
-                if ( idToCov.containsKey( csId ) ) {
-                    String msg = "Duplicate definition of feature store with id '" + csId + "'.";
-                    LOG.warn( msg );
-                } else {
-                    try {
-                        AbstractCoverage cs = create( csConfigFile.toURI().toURL() );
-                        if ( cs != null ) {
-                            LOG.info( "Registering global coverage with id '" + csId + "', type: '"
-                                      + cs.getClass().getCanonicalName() + "'" );
-                            idToCov.put( csId, cs );
-                        } else {
-                            LOG.info( "Coverage with id '" + csId + "', could not be loaded (null)." );
-                        }
-                    } catch ( Exception e ) {
-                        LOG.error( "Error initializing coverage builder: " + e.getMessage(), e );
-                    }
-                }
-            }
-        }
-        LOG.info( "" );
-    }
-
-    /**
-     * Returns the {@link AbstractCoverage} instance with the specified identifier.
-     * 
-     * @param id
-     *            identifier of the coverage instance
-     * @return the corresponding {@link AbstractCoverage} instance or null if no such instance has been created
-     */
-    public AbstractCoverage get( String id ) {
-        return idToCov.get( id );
-    }
-
-    /**
-     * Returns all active {@link AbstractCoverage}s.
-     * 
-     * @return the {@link AbstractCoverage}s instance, may be empty but never <code>null</code>
-     */
-    public Collection<AbstractCoverage> getAll() {
-        return idToCov.values();
-    }
-
-    /**
-     * Returns an uninitialized {@link AbstractCoverage} instance from the 'coverage' configuration document.
-     * <p>
-     * If the configuration specifies an identifier, the instance is also registered as global {@link AbstractCoverage}.
-     * </p>
-     * 
-     * @param configURL
-     *            URL of the configuration document, must not be <code>null</code>
-     * @return corresponding {@link AbstractCoverage} instance, initialized and ready to be used
-     * @throws IOException
-     *             if the building of the coverage failed.
-     * @throws CoverageBuilderException
-     *             if the creation fails, e.g. due to a configuration error
-     */
-    private static synchronized AbstractCoverage create( URL configURL )
-                            throws CoverageBuilderException, IOException {
-
-        String namespace = null;
-        try {
-            InputStream is = configURL.openStream();
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
-            StAXParsingHelper.nextElement( xmlReader );
-            namespace = xmlReader.getNamespaceURI();
-            is.close();
-        } catch ( Exception e ) {
-            String msg = "Error determining configuration namespace for file '" + configURL + "'";
-            LOG.error( msg );
-            throw new CoverageBuilderException( msg );
-        }
-        LOG.debug( "Config namespace: '" + namespace + "'" );
-        CoverageBuilder builder = nsToBuilder.get( namespace );
-        if ( builder == null ) {
-            String msg = "No coverage builder for namespace '" + namespace + "' (file: '" + configURL
-                         + "') registered. Skipping it.";
-            LOG.error( msg );
-            throw new CoverageBuilderException( msg );
-        }
-        return builder.buildCoverage( configURL );
+        // stores startup
+        super.startup( workspace );
     }
 
     @SuppressWarnings("unchecked")
@@ -228,43 +70,14 @@ public class CoverageBuilderManager extends AbstractBasicResourceManager impleme
         return new Class[] { ProxyUtils.class };
     }
 
-    public void shutdown() {
-        idToCov.clear();
+    public ResourceManagerMetadata<Coverage> getMetadata() {
+        return metadata;
     }
 
-    public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "coverage stores";
-            }
-
-            public String getPath() {
-                return "datasources/coverage/";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                return new LinkedList<ResourceProvider>( nsToBuilder.values() );
-            }
-        };
+    static class CoverageResourceManagerMetadata extends DefaultResourceManagerMetadata<Coverage> {
+        CoverageResourceManagerMetadata( DeegreeWorkspace workspace ) {
+            super( "coverage stores", "datasources/coverage/", CoverageBuilder.class, workspace );
+        }
     }
 
-    @Override
-    public ResourceState activate( String id ) {
-        return null;
-    }
-
-    @Override
-    public ResourceState deactivate( String id ) {
-        return null;
-    }
-
-    @Override
-    protected ResourceProvider getProvider( File file ) {
-        return null;
-    }
-
-    @Override
-    protected void remove( String id ) {
-        // TODO Auto-generated method stub
-    }
 }

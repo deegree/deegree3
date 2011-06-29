@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage;
 
+import org.deegree.commons.config.Resource;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SampleResolution;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
@@ -63,7 +64,7 @@ import org.deegree.geometry.Envelope;
  * 
  * @version $Revision$, $Date$
  */
-public interface Coverage {
+public interface Coverage extends Resource {
 
     /**
      * Returns the (spatial) domain of this coverage.
