@@ -203,6 +203,7 @@ public class Log4jMojo extends AbstractMojo {
             out.println( "log4j.appender.stdout.layout.ConversionPattern=[%d{HH:mm:ss}] %5p: [%c{1}] %m%n" );
             out.println();
             out.println( "## example log file appender" );
+            out.println( "## ${context.name} as variable in log file names is NOT supported any more (it breaks more often than not)" );
             out.println();
             out.println( "#log.dir=${catalina.base}/logs" );
             out.println( "#log4j.appender.logfile=org.apache.log4j.RollingFileAppender" );
@@ -212,6 +213,7 @@ public class Log4jMojo extends AbstractMojo {
             out.println( "#log4j.appender.logfile.MaxBackupIndex=1" );
             out.println( "#log4j.appender.logfile.layout=org.apache.log4j.PatternLayout" );
             out.println( "#log4j.appender.logfile.layout.ConversionPattern=%d %-5p [%c] %m%n" );
+            out.println();
 
             // out.println( "# The log level for the org.reflections package (to avoid superfluous messages)." );
             // out.println( "log4j.logger.org.reflections = WARN" );
