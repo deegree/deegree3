@@ -1,0 +1,34 @@
+<SQLFeatureStore xmlns:topp="http://www.openplans.org/topp" xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  configVersion="3.1.0"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd">
+  <JDBCConnId>deegree-test</JDBCConnId>
+  <FeatureType table="states" name="topp:states">
+    <FIDMapping>
+      <Column name="gid" type="integer" />
+      <AutoIdGenerator />
+    </FIDMapping>
+    <GeometryProperty mapping="the_geom_value" name="topp:the_geom" type="MultiPolygon" />
+    <SimpleProperty mapping="STATE_NAME" name="topp:STATE_NAME" type="string" />
+    <SimpleProperty mapping="STATE_FIPS"  name="topp:STATE_FIPS" type="string" />
+    <SimpleProperty mapping="SUB_REGION" name="topp:SUB_REGION" type="string" />
+    <SimpleProperty mapping="STATE_ABBR" name="topp:STATE_ABBR" type="string" />
+    <SimpleProperty mapping="LAND_KM" name="topp:LAND_KM" type="double" />
+    <SimpleProperty mapping="WATER_KM" name="topp:WATER_KM" type="double" />
+    <SimpleProperty mapping="PERSONS" name="topp:PERSONS" type="double" />
+    <SimpleProperty mapping="FAMILIES" name="topp:FAMILIES" type="double" />
+    <SimpleProperty mapping="HOUSHOLD" name="topp:HOUSHOLD" type="double" />
+    <SimpleProperty mapping="MALE" name="topp:MALE" type="double" />
+    <SimpleProperty mapping="FEMALE" name="topp:FEMALE" type="double" />
+    <SimpleProperty mapping="WORKERS" name="topp:WORKERS" type="double" />
+    <SimpleProperty mapping="DRVALONE" name="topp:DRVALONE"  type="double" />
+    <SimpleProperty mapping="CARPOOL" name="topp:CARPOOL" type="double" />
+    <SimpleProperty mapping="PUBTRANS" name="topp:PUBTRANS" type="double" />
+    <SimpleProperty mapping="EMPLOYED" name="topp:EMPLOYED" type="double" />
+    <SimpleProperty mapping="UNEMPLOY" name="topp:UNEMPLOY"  type="double" />
+    <SimpleProperty mapping="SERVICE" name="topp:SERVICE" type="double" />
+    <SimpleProperty mapping="MANUAL" name="topp:MANUAL" type="double" />
+    <SimpleProperty mapping="P_MALE" name="topp:P_MALE" type="double" />
+    <SimpleProperty mapping="P_FEMALE" name="topp:P_FEMALE" type="double" />
+    <SimpleProperty mapping="SAMP_POP" name="topp:SAMP_POP"  type="double" />
+  </FeatureType>
+</SQLFeatureStore>

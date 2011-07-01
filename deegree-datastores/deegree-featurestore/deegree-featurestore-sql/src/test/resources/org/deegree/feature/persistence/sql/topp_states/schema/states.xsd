@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:topp="http://www.openplans.org/topp"
+  elementFormDefault="qualified" targetNamespace="http://www.openplans.org/topp">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/2.1.2/feature.xsd" />
+  <xsd:complexType name="statesType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="the_geom" type="gml:MultiPolygonPropertyType" />
+          <xsd:element minOccurs="0" name="STATE_NAME" type="xsd:string" />
+          <xsd:element minOccurs="0" name="STATE_FIPS" type="xsd:string" />
+          <xsd:element minOccurs="0" name="SUB_REGION" type="xsd:string" />
+          <xsd:element minOccurs="0" name="STATE_ABBR" type="xsd:string" />
+          <xsd:element minOccurs="0" name="LAND_KM" type="xsd:double" />
+          <xsd:element minOccurs="0" name="WATER_KM" type="xsd:double" />
+          <xsd:element minOccurs="0" name="PERSONS" type="xsd:double" />
+          <xsd:element minOccurs="0" name="FAMILIES" type="xsd:double" />
+          <xsd:element minOccurs="0" name="HOUSHOLD" type="xsd:double" />
+          <xsd:element minOccurs="0" name="MALE" type="xsd:double" />
+          <xsd:element minOccurs="0" name="FEMALE" type="xsd:double" />
+          <xsd:element minOccurs="0" name="WORKERS" type="xsd:double" />
+          <xsd:element minOccurs="0" name="DRVALONE" type="xsd:double" />
+          <xsd:element minOccurs="0" name="CARPOOL" type="xsd:double" />
+          <xsd:element minOccurs="0" name="PUBTRANS" type="xsd:double" />
+          <xsd:element minOccurs="0" name="EMPLOYED" type="xsd:double" />
+          <xsd:element minOccurs="0" name="UNEMPLOY" type="xsd:double" />
+          <xsd:element minOccurs="0" name="SERVICE" type="xsd:double" />
+          <xsd:element minOccurs="0" name="MANUAL" type="xsd:double" />
+          <xsd:element minOccurs="0" name="P_MALE" type="xsd:double" />
+          <xsd:element minOccurs="0" name="P_FEMALE" type="xsd:double" />
+          <xsd:element minOccurs="0" name="SAMP_POP" type="xsd:double" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="states" substitutionGroup="gml:_Feature" type="topp:statesType" />
+</xsd:schema>

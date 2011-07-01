@@ -36,11 +36,13 @@
 package org.deegree.sqldialect.postgis;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
@@ -109,7 +111,10 @@ public class PostGISDialect implements SQLDialect {
         return expr + "::" + type;
     }
 
-    public String geometryMetadata( String dbSchema, String table, String column ) {
+    @Override
+    public String geometryMetadata( QTableName qTable, String column ) {
+        String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
+        String table = qTable.getTable();        
         return "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
                + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase() + "' AND f_geometry_column='"
                + column.toLowerCase() + "'";
@@ -213,5 +218,12 @@ public class PostGISDialect implements SQLDialect {
                                   String table ) {
         currentStmt.append( column );
         currentStmt.append( " serial" );
+    }
+
+    @Override
+    public ResultSet getTableColumnMetadata( DatabaseMetaData md, QTableName qTable ) throws SQLException {
+        String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
+        String table = qTable.getTable();
+        return md.getColumns( null, schema.toLowerCase(), table.toLowerCase(), null );
     }
 }

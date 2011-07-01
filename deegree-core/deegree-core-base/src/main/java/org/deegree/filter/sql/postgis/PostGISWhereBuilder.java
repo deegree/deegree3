@@ -180,9 +180,20 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         switch ( op.getSubType() ) {
         case BBOX: {
             BBOX bbox = (BBOX) op;
+            builder.add( " (" );
             builder.add( propNameExpr );
             builder.add( " && " );
             builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
+            builder.add( " AND " );
+            if ( useLegacyPredicates ) {
+                builder.add( "intersects(" );
+            } else {
+                builder.add( "ST_Intersects(" );
+            }
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
+            builder.add( "))" );
             break;
         }
         case BEYOND: {

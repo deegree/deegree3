@@ -36,10 +36,12 @@
 package org.deegree.sqldialect;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -102,13 +104,12 @@ public interface SQLDialect {
     String cast( String expr, String type );
 
     /**
-     * @param dbSchema
-     * @param table
+     * @param qTable
      * @param column
      * @return statement to determine the coordinate dimension, the srid and the geometry type of a given column (in
      *         this order)
      */
-    String geometryMetadata( String dbSchema, String table, String column );
+    String geometryMetadata( QTableName qTable, String column );
 
     /**
      * Returns an {@link AbstractWhereBuilder} instance for the given parameters.
@@ -192,4 +193,7 @@ public interface SQLDialect {
 
     public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, String column,
                                   String table );
+
+    public ResultSet getTableColumnMetadata( DatabaseMetaData md, QTableName table )
+                            throws SQLException;
 }

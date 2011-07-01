@@ -159,9 +159,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         Map<String, String> prefixToNs = null;
         GMLSchemaInfoSet xsModel = null;
         // TODO
-        GeometryStorageParams geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( "EPSG:4326" ), "-1",
+        GeometryStorageParams geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( "EPSG:4326" ),
+                                                                          dialect.getUndefinedSrid(),
                                                                           CoordinateDimension.DIM_2 );
-        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null, geometryParams );
+        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null,
+                                            geometryParams );
     }
 
     private void process( FeatureTypeJAXB ftDecl )
@@ -216,7 +218,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             }
 
             DBField dbField = new DBField( md.column );
-            QName ptName = makeFullyQualified( new QName( md.column ), ftName.getPrefix(), ftName.getNamespaceURI() );
+            QName ptName = makeFullyQualified( new QName( md.column.toLowerCase() ), ftName.getPrefix(),
+                                               ftName.getNamespaceURI() );
             if ( md.geomType == null ) {
                 try {
                     BaseType type = BaseType.valueOf( md.sqlType );
@@ -443,21 +446,26 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             columnNameToMD = new LinkedHashMap<String, ColumnMetadata>();
             ResultSet rs = null;
             try {
-                LOG.debug( "Analyzing metadata for table {}", qTable );
-                String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : dialect.getDefaultSchema();
-                String table = qTable.getTable();
-                rs = md.getColumns( null, dbSchema, table.toLowerCase(), "%" );
+                LOG.info( "Analyzing metadata for table {}", qTable );
+                rs = dialect.getTableColumnMetadata( md, qTable );
                 while ( rs.next() ) {
                     String column = rs.getString( 4 );
                     int sqlType = rs.getInt( 5 );
                     String sqlTypeName = rs.getString( 6 );
                     boolean isNullable = "YES".equals( rs.getString( 18 ) );
-                    boolean isAutoincrement = "YES".equals( rs.getString( 23 ) );
+                    boolean isAutoincrement = false;
+                    try {
+                        isAutoincrement = "YES".equals( rs.getString( 23 ) );
+                    } catch ( Throwable t ) {
+                        // thanks to Larry
+                    }
                     LOG.debug( "Found column '" + column + "', typeName: '" + sqlTypeName + "', typeCode: '" + sqlType
                                + "', isNullable: '" + isNullable + "', isAutoincrement:' " + isAutoincrement + "'" );
 
-                    if ( sqlTypeName.equals( "geometry" ) ) {
-                        String srid = "-1";
+                    // type name works for PostGIS, MSSQL and Oracle
+                    if ( sqlTypeName.toLowerCase().contains( "geometry" ) ) {
+
+                        String srid = dialect.getUndefinedSrid();
                         ICRS crs = CRSManager.getCRSRef( "EPSG:4326", true );
                         CoordinateDimension dim = DIM_2;
                         GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
@@ -465,16 +473,18 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                         ResultSet rs2 = null;
                         try {
                             stmt = conn.createStatement();
-                            String sql = dialect.geometryMetadata( dbSchema, table, column );
+                            String sql = dialect.geometryMetadata( qTable, column );
                             rs2 = stmt.executeQuery( sql );
                             rs2.next();
                             if ( rs2.getInt( 2 ) != -1 ) {
                                 crs = CRSManager.lookup( "EPSG:" + rs2.getInt( 2 ), true );
+                                srid = "" + rs2.getInt( 2 );
+                            } else {
+                                srid = dialect.getUndefinedSrid();
                             }
                             if ( rs2.getInt( 1 ) == 3 ) {
                                 dim = DIM_3;
                             }
-                            srid = "" + rs2.getInt( 2 );
                             geomType = getGeometryType( rs2.getString( 3 ) );
                             LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
                                        + ", dim: " + dim + "" );
