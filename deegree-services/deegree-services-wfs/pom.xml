@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-services-wfs</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre9-SNAPSHOT</version>
+  <version>3.1-pre9</version>
   <name>deegree-services-wfs</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-wfs</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-wfs</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre9/deegree-services/deegree-services-wfs</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre9/deegree-services/deegree-services-wfs</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre9-SNAPSHOT</version>
+    <version>3.1-pre9</version>
   </parent>
 
   <repositories>
@@ -56,17 +56,17 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-filterfunctions</artifactId>
-      <version>3.1-pre9-SNAPSHOT</version>
+      <version>3.1-pre9</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-commons</artifactId>
-      <version>3.1-pre9-SNAPSHOT</version>
+      <version>3.1-pre9</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
-      <version>3.1-pre9-SNAPSHOT</version>
+      <version>3.1-pre9</version>
     </dependency>
   </dependencies>
 
