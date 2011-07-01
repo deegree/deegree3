@@ -62,6 +62,19 @@
           <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.9</version>        
+        <configuration>
+          <systemProperties>
+            <property>
+              <name>deegree.testdb.dir</name>
+              <value>${deegree.testdb.dir}</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>      
     </plugins>
   </build>
 
@@ -71,6 +84,29 @@
       <artifactId>deegree-featurestore-commons</artifactId>
       <version>3.1-pre9-SNAPSHOT</version>
     </dependency>
-
   </dependencies>
+  
+  <profiles>
+    <profile>
+      <id>mssql</id>
+      <dependencies>
+        <dependency>
+          <artifactId>latlon-sqldialect-mssql</artifactId>
+          <groupId>de.latlon</groupId>
+          <version>3.1-pre9-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oracle</id>
+      <dependencies>
+        <dependency>
+          <artifactId>latlon-sqldialect-oracle</artifactId>
+          <groupId>de.latlon</groupId>
+          <version>3.1-pre9-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
+    </profile>    
+  </profiles>
+
 </project>

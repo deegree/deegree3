@@ -44,12 +44,14 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.sqldialect.SQLDialect;
 
 /**
  * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedApplicationSchema} instances.
@@ -65,6 +67,8 @@ public abstract class AbstractDDLCreator {
 
     private final boolean hasBlobTable;
 
+    private final SQLDialect dialect;
+
     protected QTableName currentFtTable;
 
     /**
@@ -72,9 +76,12 @@ public abstract class AbstractDDLCreator {
      * 
      * @param schema
      *            mapped application schema, must not be <code>null</code>
+     * @param dialect
+     *            SQL dialect, must not be <code>null</code>
      */
-    public AbstractDDLCreator( MappedApplicationSchema schema ) {
+    public AbstractDDLCreator( MappedApplicationSchema schema, SQLDialect dialect ) {
         this.schema = schema;
+        this.dialect = dialect;
         hasBlobTable = schema.getBlobMapping() != null;
     }
 
@@ -117,7 +124,7 @@ public abstract class AbstractDDLCreator {
 
         StringBuffer sql = new StringBuffer( "CREATE TABLE " );
         ddls.add( sql );
-        sql.append( ftMapping.getFtTable() );
+        sql.append( currentFtTable );
         sql.append( " (" );
         List<String> pkColumns = new ArrayList<String>();
         if ( hasBlobTable ) {
@@ -125,12 +132,20 @@ public abstract class AbstractDDLCreator {
             pkColumns.add( "id" );
         } else {
             FIDMapping fidMapping = ftMapping.getFidMapping();
-            for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
-                sql.append( "\n    " );
-                sql.append( fidColumn.first );
-                sql.append( " " );
-                sql.append( getDBType( fidColumn.second ) );
-                pkColumns.add( fidColumn.first );
+            if ( fidMapping.getIdGenerator() instanceof AutoIDGenerator ) {
+                for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
+                    sql.append( "\n    " );
+                    dialect.createAutoColumn( sql, ddls, fidColumn.first, currentFtTable.toString() );
+                    pkColumns.add( fidColumn.first );
+                }
+            } else {
+                for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
+                    sql.append( "\n    " );
+                    sql.append( fidColumn.first );
+                    sql.append( " " );
+                    sql.append( getDBType( fidColumn.second ) );
+                    pkColumns.add( fidColumn.first );
+                }
             }
         }
         for ( Mapping mapping : ftMapping.getMappings() ) {

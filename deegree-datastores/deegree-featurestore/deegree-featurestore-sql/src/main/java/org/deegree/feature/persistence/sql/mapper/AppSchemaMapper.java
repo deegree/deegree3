@@ -39,6 +39,7 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -77,6 +78,7 @@ import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
@@ -127,6 +129,8 @@ public class AppSchemaMapper {
 
     private final GeometryStorageParams geometryParams;
 
+    private final boolean mapGMLProps;
+
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
      * 
@@ -140,10 +144,12 @@ public class AppSchemaMapper {
      *            parameters for storing geometries, must not be <code>null</code>
      */
     public AppSchemaMapper( ApplicationSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
-                            GeometryStorageParams geometryParams, int maxLength ) {
+                            GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
+                            boolean mapGMLProps ) {
 
         this.appSchema = appSchema;
         this.geometryParams = geometryParams;
+        this.mapGMLProps = mapGMLProps;
 
         List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
         FeatureType[] fts = appSchema.getFeatureTypes( null, false, false ).toArray( new FeatureType[ftList.size()] );
@@ -161,7 +167,7 @@ public class AppSchemaMapper {
         }
         nsToPrefix.putAll( xsModel.getNamespacePrefixes() );
 
-        mcManager = new MappingContextManager( nsToPrefix, maxLength );
+        mcManager = new MappingContextManager( nsToPrefix, maxLength, usePrefixedSQLIdentifiers );
         if ( createRelationalMapping ) {
             ftMappings = generateFtMappings( fts );
         }
@@ -211,15 +217,30 @@ public class AppSchemaMapper {
         // TODO
         QTableName table = new QTableName( mc.getTable() );
         // TODO
-        IDGenerator generator = new UUIDGenerator();
+
+        FIDMapping fidMapping = null;
         String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
-        Pair<String, BaseType> fidColumn = new Pair<String, BaseType>( "attr_gml_id", STRING );
-        FIDMapping fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
+        if ( mapGMLProps ) {
+            IDGenerator generator = new UUIDGenerator();
+            Pair<String, BaseType> fidColumn = new Pair<String, BaseType>( "attr_gml_id", STRING );
+            fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
+        } else {
+            IDGenerator generator = new AutoIDGenerator();
+            Pair<String, BaseType> fidColumn = new Pair<String, BaseType>( "gid", INTEGER );
+            fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
+        }
 
         List<Mapping> mappings = new ArrayList<Mapping>();
-        for ( PropertyType pt : ft.getPropertyDeclarations( appSchema.getXSModel().getVersion() ) ) {
-            mappings.add( generatePropMapping( pt, mc ) );
+        if ( mapGMLProps ) {
+            for ( PropertyType pt : ft.getPropertyDeclarations( ft.getSchema().getXSModel().getVersion() ) ) {
+                mappings.add( generatePropMapping( pt, mc ) );
+            }
+        } else {
+            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+                mappings.add( generatePropMapping( pt, mc ) );
+            }
         }
+
         return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings );
     }
 

@@ -35,13 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -66,7 +64,6 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.cs.CRSUtils;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -79,12 +76,10 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreProvider;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
-import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
@@ -102,7 +97,6 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
-import org.deegree.sqldialect.postgis.PostGISDDLCreator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -116,46 +110,47 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStoreTest {
+public class PostGISFeatureStoreTst {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreTst.class );
 
     private static final boolean enable = false;
 
-    @Test
-    public void testMappingInspireAU()
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException, IOException, XMLStreamException, FactoryConfigurationError {
-
-        ApplicationSchema appSchema = getInspireSchemaAU();
-        if ( appSchema == null ) {
-            return;
-        }
-
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true,
-                                                      new GeometryStorageParams( CRSUtils.EPSG_4326, "-1", DIM_2 ), -1 );
-        MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
-        SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter( mappedSchema );
-        File file = new File( "/tmp/inspire-ad.xml" );
-        FileOutputStream fos = new FileOutputStream( file );
-        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
-        xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig( xmlWriter,
-                                  "testconn",
-                                  Collections.singletonList( "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
-        xmlWriter.close();
-        IOUtils.closeQuietly( fos );
-        System.out.println( "Wrote to file " + file );
-
-        file = new File( "/tmp/inspire-ad.sql" );
-        PrintWriter writer = new PrintWriter( file );
-        String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
-        for ( String stmt : createStmts ) {
-            writer.println( stmt + ";" );
-        }
-        IOUtils.closeQuietly( writer );
-        System.out.println( "Wrote to file " + file );
-    }
+    // @Test
+    // public void testMappingInspireAU()
+    // throws ClassCastException, ClassNotFoundException, InstantiationException,
+    // IllegalAccessException, IOException, XMLStreamException, FactoryConfigurationError {
+    //
+    // ApplicationSchema appSchema = getInspireSchemaAU();
+    // if ( appSchema == null ) {
+    // return;
+    // }
+    //
+    // AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true,
+    // new GeometryStorageParams( CRSUtils.EPSG_4326, "-1", DIM_2 ), -1, true, true );
+    // MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
+    // SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter( mappedSchema );
+    // File file = new File( "/tmp/inspire-ad.xml" );
+    // FileOutputStream fos = new FileOutputStream( file );
+    // XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( fos );
+    // xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
+    // configWriter.writeConfig( xmlWriter,
+    // "testconn",
+    // Collections.singletonList(
+    // "file:/home/schneider/.deegree/inspire-test/schemas/inspire/annex1/AdministrativeUnits.xsd" ) );
+    // xmlWriter.close();
+    // IOUtils.closeQuietly( fos );
+    // System.out.println( "Wrote to file " + file );
+    //
+    // file = new File( "/tmp/inspire-ad.sql" );
+    // PrintWriter writer = new PrintWriter( file );
+    // String[] createStmts = new PostGISDDLCreator( mappedSchema ).getDDL();
+    // for ( String stmt : createStmts ) {
+    // writer.println( stmt + ";" );
+    // }
+    // IOUtils.closeQuietly( writer );
+    // System.out.println( "Wrote to file " + file );
+    // }
 
     // @Test
     // public void testMappingBoreholeML()
@@ -387,12 +382,12 @@ public class PostGISFeatureStoreTest {
         if ( enable ) {
             ConnectionManager.addConnection( "inspire", "jdbc:postgresql://macchiato:5432/inspire", "postgres",
                                              "postgres", 1, 10 );
-            URL configURL = PostGISFeatureStoreTest.class.getResource( "inspire-hybrid.xml" );
+            URL configURL = PostGISFeatureStoreTst.class.getResource( "inspire-hybrid.xml" );
             DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
             SQLFeatureStore fs = (SQLFeatureStore) workspace.getSubsystemManager( FeatureStoreManager.class ).create( "inspire-hybrid",
                                                                                                                       configURL );
 
-            URL datasetURL = PostGISFeatureStoreTest.class.getResource( "../../../gml/feature/testdata/features/inspire_addresses1.gml" );
+            URL datasetURL = PostGISFeatureStoreTst.class.getResource( "../../../gml/feature/testdata/features/inspire_addresses1.gml" );
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, datasetURL );
             gmlReader.setApplicationSchema( fs.getSchema() );
             gmlReader.getIdContext().resolveLocalRefs();
@@ -587,7 +582,7 @@ public class PostGISFeatureStoreTest {
 
     private Filter parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL url = PostGISFeatureStoreTest.class.getResource( resourceName );
+        URL url = PostGISFeatureStoreTst.class.getResource( resourceName );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         xmlStream.nextTag();

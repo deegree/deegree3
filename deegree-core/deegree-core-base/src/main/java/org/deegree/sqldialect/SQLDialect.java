@@ -35,8 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
@@ -163,4 +165,31 @@ public interface SQLDialect {
     GeometryParticleConverter getGeometryConverter( String column, ICRS crs, String srid, boolean is2d );
 
     PrimitiveParticleConverter getPrimitiveConverter( String column, PrimitiveType pt );
+
+    /**
+     * Creates a new (spatially-enabled) database using the specified administrator connection.
+     * 
+     * @param adminConn
+     *            administrator JDBC connection, must not be <code>null</code>
+     * @param dbName
+     *            name of the database to be created, must not be <code>null</code>
+     * @throws SQLException
+     */
+    public void createDB( Connection adminConn, String dbName )
+                            throws SQLException;
+
+    /**
+     * Drops the specified database.
+     * 
+     * @param adminConn
+     *            administrator JDBC connection, must not be <code>null</code>
+     * @param dbName
+     *            name of the database to be created, must not be <code>null</code>
+     * @throws SQLException
+     */
+    public void dropDB( Connection adminConn, String dbName )
+                            throws SQLException;
+
+    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, String column,
+                                  String table );
 }

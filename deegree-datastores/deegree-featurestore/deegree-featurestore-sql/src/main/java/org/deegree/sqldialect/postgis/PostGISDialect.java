@@ -35,12 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.postgis;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.filter.FilterEvaluationException;
@@ -57,6 +61,8 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.SQLDialect;
 import org.postgis.PGboxbase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link SQLDialect} for PostgreSQL / PostGIS databases.
@@ -68,6 +74,8 @@ import org.postgis.PGboxbase;
  * @version $Revision$, $Date$
  */
 public class PostGISDialect implements SQLDialect {
+
+    private static Logger LOG = LoggerFactory.getLogger( PostGISDialect.class );
 
     private final boolean useLegacyPredicates;
 
@@ -158,7 +166,7 @@ public class PostGISDialect implements SQLDialect {
 
     @Override
     public String[] getDDL( Object schema ) {
-        return new PostGISDDLCreator( (MappedApplicationSchema) schema ).getDDL();
+        return new PostGISDDLCreator( (MappedApplicationSchema) schema, this ).getDDL();
     }
 
     @Override
@@ -169,5 +177,41 @@ public class PostGISDialect implements SQLDialect {
     @Override
     public PrimitiveParticleConverter getPrimitiveConverter( String column, PrimitiveType pt ) {
         return new DefaultPrimitiveConverter( pt, column );
+    }
+
+    @Override
+    public void createDB( Connection adminConn, String dbName )
+                            throws SQLException {
+
+        String sql = "CREATE DATABASE \"" + dbName + "\" WITH template=template_postgis";
+
+        Statement stmt = null;
+        try {
+            stmt = adminConn.createStatement();
+            stmt.executeUpdate( sql );
+        } finally {
+            JDBCUtils.close( null, stmt, null, LOG );
+        }
+    }
+
+    @Override
+    public void dropDB( Connection adminConn, String dbName )
+                            throws SQLException {
+
+        String sql = "DROP DATABASE \"" + dbName + "\"";
+        Statement stmt = null;
+        try {
+            stmt = adminConn.createStatement();
+            stmt.executeUpdate( sql );
+        } finally {
+            JDBCUtils.close( null, stmt, null, LOG );
+        }
+    }
+
+    @Override
+    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, String column,
+                                  String table ) {
+        currentStmt.append( column );
+        currentStmt.append( " serial" );
     }
 }

@@ -170,7 +170,12 @@ public class DeegreeWorkspace {
         }
     }
 
-    private void load() {
+    /**
+     * Initializes the managers available on the classpath, but does not actually read the configurations.
+     * 
+     * @throws ResourceInitException
+     */
+    public void initManagers() {
         initClassloader();
 
         // setup managers
@@ -372,7 +377,7 @@ public class DeegreeWorkspace {
     public synchronized void initAll()
                             throws ResourceInitException {
         TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
-        load();
+        initManagers();
         for ( ResourceManager m : managers ) {
             m.startup( this );
         }

@@ -70,9 +70,11 @@ public class PostGISDDLCreator extends AbstractDDLCreator {
      * 
      * @param schema
      *            mapped application schema, must not be <code>null</code>
+     * @param dialect
+     *            SQL dialect, must not be <code>null</code>
      */
-    public PostGISDDLCreator( MappedApplicationSchema schema ) {
-        super( schema );
+    public PostGISDDLCreator( MappedApplicationSchema schema, PostGISDialect dialect ) {
+        super( schema, dialect );
     }
 
     @Override

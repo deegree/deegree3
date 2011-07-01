@@ -44,7 +44,7 @@ import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MappingContextManager {
+class MappingContextManager {
 
     private static Logger LOG = LoggerFactory.getLogger( MappingContextManager.class );
 
@@ -54,26 +54,29 @@ public class MappingContextManager {
 
     private final Map<String, String> nsToPrefix;
 
-    public MappingContextManager( Map<String, String> nsToPrefix, int maxLength ) {
+    private final boolean usePrefix;
+
+    MappingContextManager( Map<String, String> nsToPrefix, int maxLength, boolean usePrefix ) {
         this.nsToPrefix = nsToPrefix;
         this.maxLength = maxLength == -1 ? 64 : maxLength;
+        this.usePrefix = usePrefix;
     }
 
-    public MappingContext newContext( QName name, String idColumn ) {
+    MappingContext newContext( QName name, String idColumn ) {
         return new MappingContext( getSQLIdentifier( "", toString( name ) ), idColumn );
     }
 
-    public MappingContext mapOneToOneElement( MappingContext mc, QName childElement ) {
+    MappingContext mapOneToOneElement( MappingContext mc, QName childElement ) {
         String newColumn = getSQLIdentifier( mc.getColumn(), toString( childElement ) );
         return new MappingContext( mc.getTable(), mc.getIdColumn(), newColumn );
     }
 
-    public MappingContext mapOneToOneAttribute( MappingContext mc, QName attribute ) {
+    MappingContext mapOneToOneAttribute( MappingContext mc, QName attribute ) {
         String newColumn = getSQLIdentifier( mc.getColumn(), "attr_" + toString( attribute ) );
         return new MappingContext( mc.getTable(), mc.getIdColumn(), newColumn );
     }
 
-    public MappingContext mapOneToManyElements( MappingContext mc, QName childElement ) {
+    MappingContext mapOneToManyElements( MappingContext mc, QName childElement ) {
         String newTable = getSQLIdentifier( mc.getTable(), toString( childElement ) );
         return new MappingContext( newTable, "id", mc.getColumn() );
     }
@@ -98,7 +101,11 @@ public class MappingContextManager {
                 LOG.warn( "No prefix for namespace {}!?", qName.getNamespaceURI() );
                 nsPrefix = "app";
             }
-            name = toSQL( nsPrefix.toLowerCase() ) + "_" + toSQL( qName.getLocalPart() );
+            if ( usePrefix ) {
+                name = toSQL( nsPrefix.toLowerCase() ) + "_" + toSQL( qName.getLocalPart() );
+            } else {
+                name = toSQL( qName.getLocalPart() );
+            }
         }
         return name;
     }
