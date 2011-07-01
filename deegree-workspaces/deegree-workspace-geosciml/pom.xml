@@ -3,14 +3,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-geosciml</artifactId>
   <packaging>deegree-workspace</packaging>
-  <version>3.1-pre9</version>
+  <version>3.1-pre10-SNAPSHOT</version>
   <name>deegree 3 GeoSciML Demo</name>
   <url>http://www.deegree.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspace-parent</artifactId>
-    <version>3.1-pre9</version>
+    <version>3.1-pre10-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre9</version>
+      <version>3.1-pre10-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
   </dependencies>
