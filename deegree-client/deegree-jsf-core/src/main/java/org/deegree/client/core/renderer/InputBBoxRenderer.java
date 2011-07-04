@@ -67,9 +67,9 @@ public class InputBBoxRenderer extends MenuRenderer {
 
     private static final String CRS_ID_SUFFIX = "crs";
 
-    private static final String MINX_ID_SUFFIX = "miny";
+    private static final String MINX_ID_SUFFIX = "minx";
 
-    private static final String MINY_ID_SUFFIX = "minx";
+    private static final String MINY_ID_SUFFIX = "miny";
 
     private static final String MAXX_ID_SUFFIX = "maxx";
 
