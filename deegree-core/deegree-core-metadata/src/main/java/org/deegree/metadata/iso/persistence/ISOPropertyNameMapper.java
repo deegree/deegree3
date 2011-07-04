@@ -36,7 +36,7 @@
 package org.deegree.metadata.iso.persistence;
 
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BaseType.DATE;
+import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
@@ -342,7 +342,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
                                                                                                                                                  table.name(),
                                                                                                                                                  column ),
                                                                                                                        false,
-                                                                                                                       DATE );
+                                                                                                                       DATE_TIME );
         propToTableAndCol.put( qName, mapping );
 
     }
