@@ -462,7 +462,7 @@ public class FormBean {
                 if ( !first ) {
                     sb.append( ',' );
                 }
-                sb.append( '\'' ).append( outputFormatId ).append( '\'' );
+                sb.append( '\'' ).append( outputFormatId ).append( SelectFormatRenderer.FORMAT_SUFFIX ).append( '\'' );
                 first = false;
             }
             sb.append( ']' );
