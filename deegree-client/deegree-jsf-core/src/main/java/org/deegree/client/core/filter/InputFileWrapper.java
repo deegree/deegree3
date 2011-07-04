@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.filter;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -69,6 +70,7 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
             ServletFileUpload upload = new ServletFileUpload();
             DiskFileItemFactory factory = new DiskFileItemFactory();
             upload.setFileItemFactory( factory );
+            String encoding = request.getCharacterEncoding();
             List<FileItem> fileItems = upload.parseRequest( request );
             formParameters = new HashMap<String, String[]>();
             for ( int i = 0; i < fileItems.size(); i++ ) {
@@ -81,9 +83,9 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
                         for ( int j = 0; j < strings.length; j++ ) {
                             values[j] = strings[j];
                         }
-                        values[strings.length] = item.getString();
+                        values[strings.length] = item.getString( encoding );
                     } else {
-                        values = new String[] { item.getString() };
+                        values = new String[] { item.getString( encoding ) };
                     }
                     formParameters.put( item.getFieldName(), values );
                 } else if ( item.getName() != null && item.getName().length() > 0 && item.getSize() > 0 ) {
@@ -93,6 +95,10 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
         } catch ( FileUploadException fe ) {
             ServletException servletEx = new ServletException();
             servletEx.initCause( fe );
+            throw servletEx;
+        } catch ( UnsupportedEncodingException e ) {
+            ServletException servletEx = new ServletException();
+            servletEx.initCause( e );
             throw servletEx;
         }
     }
