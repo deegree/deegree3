@@ -245,7 +245,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * Creates an {@link ArcString} curve segment.
      * 
      * @param points
-     *            control points, must contain <code>2 * k + 1</code> points
+     *            control points, must contain <code>2 * k + 1</code> points (k >= 1)
      * @return created {@link ArcString}
      */
     public ArcString createArcString( Points points ) {

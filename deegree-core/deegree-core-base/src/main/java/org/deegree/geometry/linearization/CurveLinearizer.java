@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -58,10 +58,12 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.segments.Arc;
+import org.deegree.geometry.primitive.segments.ArcString;
 import org.deegree.geometry.primitive.segments.Circle;
 import org.deegree.geometry.primitive.segments.CubicSpline;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.slf4j.Logger;
@@ -70,16 +72,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides methods for the linearization of {@link Curve}s and {@link CurveSegment}s.
  * <p>
- * Currently, the following {@link CurveSegment} variants are handled correctly:
+ * Currently, the following {@link CurveSegment} variants are handled:
  * <ul>
  * <li>{@link Arc}</li>
+ * <li>{@link ArcString}</li>
  * <li>{@link Circle}</li>
  * <li>{@link CubicSpline}</li>
- * <li>{@link LineStringSegment} (trivial)</li>
+ * <li>{@link LineStringSegment}</li>
  * </ul>
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -90,12 +94,15 @@ public class CurveLinearizer {
 
     private static final double EPSILON = 1E-12;
 
-    private GeometryFactory geomFac;
+    private final GeometryFactory geomFac;
 
     private final static double TWO_PI = Math.PI * 2;
 
     /**
+     * Creates a new {@link CurveLinearizer} instance.
+     * 
      * @param geomFac
+     *            geometry factory to be used for creating {@link LineString}s and {@link LineStringSegments}, must not be <code>null</code>
      */
     public CurveLinearizer( GeometryFactory geomFac ) {
         this.geomFac = geomFac;
@@ -108,8 +115,10 @@ public class CurveLinearizer {
      * input is a {@link Ring}, a ring geometry will be returned.
      * 
      * @param curve
+     *            curve to be linearized, must not be <code>null</code>
      * @param crit
-     * @return linearized version of the input curve
+     *            linearization criterion, must not be <code>null</code>
+     * @return linearized version of the input curve, never <code>null</code>
      */
     public Curve linearize( Curve curve, LinearizationCriterion crit ) {
         Curve linearizedCurve = null;
@@ -146,10 +155,10 @@ public class CurveLinearizer {
      * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link CurveSegment}.
      * 
      * @param segment
-     *            the segment to be linearized
+     *            segment to be linearized, must not be <code>null</code>
      * @param crit
-     *            determines the interpolation quality / number of interpolation points
-     * @return linearized version of the input segment
+     *            determines the interpolation quality / number of interpolation points, must not be <code>null</code>
+     * @return linearized version of the input segment, never <code>null</code>
      */
     public LineStringSegment linearize( CurveSegment segment, LinearizationCriterion crit ) {
         LineStringSegment lineSegment = null;
@@ -166,7 +175,10 @@ public class CurveLinearizer {
             lineSegment = linearizeCubicSpline( (CubicSpline) segment, crit );
             break;
         }
-        case ARC_STRING:
+        case ARC_STRING: {
+            lineSegment = linearizeArcString( (ArcString) segment, crit );
+            break;
+        }
         case ARC_BY_BULGE:
         case ARC_BY_CENTER_POINT:
         case ARC_STRING_BY_BULGE:
@@ -196,10 +208,10 @@ public class CurveLinearizer {
      * </ul>
      * 
      * @param arc
-     *            curve segment to be linearized
+     *            segment to be linearized, must not be <code>null</code>
      * @param crit
-     *            determines the interpolation quality / number of interpolation points
-     * @return linearized version of the input segment
+     *            determines the interpolation quality / number of interpolation points, must not be <code>null</code>
+     * @return linearized version of the input segment, never <code>null</code>
      */
     public LineStringSegment linearizeArc( Arc arc, LinearizationCriterion crit ) {
 
@@ -242,6 +254,65 @@ public class CurveLinearizer {
     }
 
     /**
+     * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link ArcString}.
+     * <p>
+     * If one of the arc elements is collinear, it will be added as a straight segment.
+     * </p> 
+     * 
+     * @param arcString
+     *            curve segment to be linearized, must not be <code>null</code>
+     * @param crit
+     *            determines the interpolation quality / number of interpolation points, must not be <code>null</code>
+     * @return linearized version of the input string, never <code>null</code>
+     */
+    public LineStringSegment linearizeArcString( ArcString arcString, LinearizationCriterion crit ) {
+
+    	List<Point> points = new ArrayList<Point>();
+
+        Points srcpnts = arcString.getControlPoints();
+        Point a = null;
+        Point b = null;
+        Point c = null;
+        Points pnts = null;
+        
+        // insert first point
+        if ( srcpnts.size() > 0 ) {
+            points.add( srcpnts.get(0));
+        }
+        
+        for ( int i = 0, j = ( srcpnts.size() - 2 ); i < j; i += 2 ) {
+            a = srcpnts.get( i );
+            b = srcpnts.get( i + 1 );
+            c = srcpnts.get( i + 2 );
+            if ( areCollinear( a, b, c ) ) {
+                pnts = new PointsArray( a, b, c );
+            } else if ( crit instanceof NumPointsCriterion ) {
+                int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
+                pnts = interpolate( a, b, c, numPoints, false );
+            } else if ( crit instanceof MaxErrorCriterion ) {
+                double error = ( (MaxErrorCriterion) crit ).getMaxError();
+                int numPoints = calcNumPoints( a, b, c, false, error );
+                int maxNumPoints = ( (MaxErrorCriterion) crit ).getMaxNumPoints();
+                if ( maxNumPoints > 0 && maxNumPoints < numPoints ) {
+                    numPoints = maxNumPoints;
+                }
+                LOG.debug( "Using " + numPoints + " for segment linearization." );
+                pnts = interpolate( a, b, c, numPoints, false );
+            } else {
+                String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
+                throw new IllegalArgumentException( msg );
+            }
+            
+            // add point 2..n
+            for ( int m = 1, n = pnts.size(); m < n; m++ ) {
+                points.add( pnts.get( m ) );
+            }
+        }
+
+        return geomFac.createLineStringSegment( new PointsArray( points.toArray( new Point[points.size()] ) ) );
+    }
+
+    /**
      * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link CubicSpline}.
      * <p>
      * A cubic spline consists of n polynomials of degree 3: S<sub>j</sub>(x) = a<sub>j</sub> +
@@ -255,10 +326,10 @@ public class CurveLinearizer {
      * visited 19/08/09)
      * 
      * @param spline
-     *            curve segment to be linearized
+     *            curve segment to be linearized, must not be <code>null</code>
      * @param crit
-     *            determines the interpolation quality / number of interpolation points
-     * @return linearized version of the input segment
+     *            determines the interpolation quality / number of interpolation points, must not be <code>null</code>
+     * @return linearized version of the input segment, never <code>null</code>
      */
     public LineStringSegment linearizeCubicSpline( CubicSpline spline, LinearizationCriterion crit ) {
 
@@ -336,7 +407,7 @@ public class CurveLinearizer {
             numPoints = ( (MaxErrorCriterion) crit ).getMaxNumPoints();
             if ( numPoints <= 0 ) {
                 throw new UnsupportedOperationException(
-                                                         "Linearization of the cubic spline with MaxErrorCriterion is not supported, unless the number of points is provided." );
+                                                         "Linearization of the cubic spline with MaxErrorCriterion is currently not supported, unless the number of points is provided." );
                 // TODO it is mathematically hard to get an expression of the numOfPoints with respect to the error;
                 // there would be two work-arounds as I can see them: 1) through a trial-and-error procedure determine
                 // how small should the sampling interval be, so that the difference in value is less than the
@@ -371,7 +442,6 @@ public class CurveLinearizer {
         return vectorb;
     }
 
-    @SuppressWarnings("null")
     private double[] solveLinearEquation( double[][] matrixA, double[] vectorb ) {
 
         RealMatrix coefficients = new Array2DRowRealMatrix( matrixA, false );
@@ -594,6 +664,7 @@ public class CurveLinearizer {
      * <p>
      * Credits go to <a href="http://en.wikipedia.org/wiki/Circumradius#Coordinates_of_circumcenter">wikipedia</a>
      * (visited on 13/08/09).
+     * </p>
      * 
      * @param p0
      *            first point
@@ -758,10 +829,14 @@ public class CurveLinearizer {
      * <p>
      * NOTE: Only this method should be used throughout the whole linearization process for testing collinearity to
      * avoid inconsistent results (the necessary EPSILON would differ).
+     * </p>
      * 
      * @param p0
+     *            first point, must not be <code>null</code>
      * @param p1
+     *            second point, must not be <code>null</code>
      * @param p2
+     *            third point, must not be <code>null</code>
      * @return true if the points are collinear, false otherwise
      */
     public static boolean areCollinear( Point p0, Point p1, Point p2 ) {
