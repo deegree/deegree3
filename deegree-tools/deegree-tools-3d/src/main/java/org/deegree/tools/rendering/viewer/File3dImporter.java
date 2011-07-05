@@ -37,7 +37,9 @@ package org.deegree.tools.rendering.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidParameterException;
 import java.util.List;
 
@@ -46,7 +48,10 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.tools.rendering.manager.buildings.importers.CityGMLImporter;
@@ -70,14 +75,26 @@ public class File3dImporter {
         }
         fileName = fileName.trim();
 
-        // TODO determine CityGML type (OpenGIS or citygml.org)
-        final CityGMLImporter openFile = new CityGMLImporter( null, null, null, false );
+        CityGMLImporter openFile2;
+        XMLInputFactory fac = XMLInputFactory.newInstance();
+        InputStream in = null;
+        try {
+            XMLStreamReader reader = fac.createXMLStreamReader( in = new FileInputStream( fileName ) );
+            reader.next();
+            String ns = "http://www.opengis.net/citygml/1.0";
+            openFile2 = new CityGMLImporter( null, null, null, reader.getNamespaceURI().equals( ns ) );
+        } catch ( Throwable t ) {
+            openFile2 = new CityGMLImporter( null, null, null, false );
+        } finally {
+            IOUtils.closeQuietly( in );
+        }
+
+        final CityGMLImporter openFile = openFile2;
 
         final JDialog dialog = new JDialog( parent, "Loading", true );
 
         dialog.getContentPane().setLayout( new BorderLayout() );
-        dialog.getContentPane().add(
-                                     new JLabel( "<HTML>Loading file:<br>" + fileName + "<br>Please wait!</HTML>",
+        dialog.getContentPane().add( new JLabel( "<HTML>Loading file:<br>" + fileName + "<br>Please wait!</HTML>",
                                                  SwingConstants.CENTER ), BorderLayout.NORTH );
         final JProgressBar progressBar = new JProgressBar();
         progressBar.setStringPainted( true );

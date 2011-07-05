@@ -56,9 +56,9 @@ import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
  */
 public class Footprint {
 
-    public final static double EPS10 = 1e-10;
+    public final static double EPS10 = -1e10;
 
-    public final static double EP10 = 1e+10;
+    public final static double EP10 = 1e10;
 
     private List<Ring> worldCoordinateRingList;
 
@@ -85,7 +85,7 @@ public class Footprint {
         List<Point> pointList;
         int size = 0;
         for ( float[] f : footprintPointsList ) {
-            size += f.length / 3;
+            size += f.length / 2;
         }
         double minX = EP10;
         double minY = EP10;
@@ -94,14 +94,14 @@ public class Footprint {
 
         for ( float[] f : footprintPointsList ) {
             pointList = new ArrayList<Point>();
-            int polygonSize = f.length / 3;
+            int polygonSize = f.length / 2;
 
             double[] x = new double[polygonSize];
             double[] y = new double[polygonSize];
             int count = 0;
 
             // get all points in 2D, so z-axis is omitted
-            for ( int i = 0; i < f.length; i += 3 ) {
+            for ( int i = 0; i < f.length; i += 2 ) {
                 x[count] = f[i];
                 y[count] = f[i + 1];
                 if ( minX > x[count] ) {

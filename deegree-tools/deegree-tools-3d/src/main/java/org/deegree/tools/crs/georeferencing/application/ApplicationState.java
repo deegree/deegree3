@@ -52,6 +52,10 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.multi.MultiPoint;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -226,27 +230,27 @@ public class ApplicationState {
         for ( GeometryQualityModel g : File3dImporter.gm ) {
 
             ArrayList<SimpleAccessGeometry> h = g.getQualityModelParts();
-            boolean isfirstOccurrence = false;
-            float minimalZ = 0;
 
             for ( SimpleAccessGeometry b : h ) {
-                float[] a = b.getHorizontalGeometries( b.getGeometry() );
-                if ( a != null ) {
-                    if ( isfirstOccurrence == false ) {
-                        minimalZ = a[2];
-                        geometryThatIsTaken.add( a );
-                        isfirstOccurrence = true;
-                    } else {
-                        if ( minimalZ < a[2] ) {
-                            // nix
-                        } else {
-                            geometryThatIsTaken.remove( geometryThatIsTaken.size() - 1 );
-                            minimalZ = a[2];
-                            geometryThatIsTaken.add( a );
-                        }
-                    }
-
+                float[] fs = b.getGeometry();
+                List<Point> ps = new ArrayList<Point>();
+                GeometryFactory fac = new GeometryFactory();
+                for ( int i = 0; i < fs.length; i += 3 ) {
+                    ps.add( fac.createPoint( null, fs[i], fs[i + 1], null ) );
                 }
+                MultiPoint mp = fac.createMultiPoint( null, null, ps );
+                LineString hull = (LineString) mp.getConvexHull();
+                Points pts = hull.getControlPoints();
+                float[] a = new float[pts.size() * 2 + 2];
+                int idx = 0;
+                for ( Point p : pts ) {
+                    a[idx++] = (float) p.get0();
+                    a[idx++] = (float) p.get1();
+                }
+                a[idx++] = a[0];
+                a[idx++] = a[1];
+
+                geometryThatIsTaken.add( a );
             }
 
         }

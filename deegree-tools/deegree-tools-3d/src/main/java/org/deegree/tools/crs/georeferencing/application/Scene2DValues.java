@@ -524,7 +524,7 @@ public class Scene2DValues {
             grEnv = GREnvelopeParameterCalculator.newInstance( envelope.getMin().get0(), envelope.getMax().get1(),
                                                                envelope.getSpan0(), newHeight );
         }
-        if ( envelope.getCoordinateSystem().equals(  CRSManager.getCRSRef( "EPSG:4326" ) )
+        if ( envelope.getCoordinateSystem().equals( CRSManager.getCRSRef( "EPSG:4326" ) )
              || envelope.getCoordinateSystem().equals( CRSManager.getCRSRef( "CRS:84" ) ) ) {
             return geom.createEnvelope( grEnv.getMinX(), grEnv.getMinY(), grEnv.getMaxX(), grEnv.getMaxY(),
                                         envelope.getCoordinateSystem() );
