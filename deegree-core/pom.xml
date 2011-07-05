@@ -42,6 +42,7 @@
     <module>deegree-core-observation</module>
     <module>deegree-core-metadata</module>
     <module>deegree-core-3d</module>
+    <module>deegree-core-layer</module>
   </modules>
 
 </project>
