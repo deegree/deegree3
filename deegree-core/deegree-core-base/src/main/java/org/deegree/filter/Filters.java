@@ -121,6 +121,8 @@ public class Filters {
                 } else {
                     p.first = new OperatorFilter( new And( Arrays.copyOfRange( ops, 1, ops.length - 1 ) ) );
                 }
+            } else {
+                p.first = filter;
             }
         } else {
             p.first = filter;
