@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.cache;
 
+import java.io.IOException;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.persistence.FeatureStore;
@@ -58,15 +60,38 @@ public interface BBoxCache {
      * 
      * @param ftName
      *            name of the feature type, must not be <code>null</code>
-     * @return the envelope (using the storage CRS), or <code>null</code> if the feature type does not have an envelope
+     * @return the envelope (using the storage CRS), or <code>null</code>, if the feature type does not have an envelope
      *         (no geometry properties or no instances)
-     * @throws IllegalArgumentException if the cache does not contain information on the specified feature type
+     * @throws IllegalArgumentException
+     *             if the cache does not contain information on the specified feature type
      */
     Envelope get( QName ftName );
 
-	boolean contains (QName ftName);
-    
-    void update (QName ftName, Envelope bbox);
-    
-    void persist ();
+    /**
+     * Updates the envelope for the specified type.
+     * 
+     * @param ftName
+     *            name of the feature type, must not be <code>null</code>
+     * @param bbox
+     *            new envelope (using the storage CRS), or <code>null</code>, if the feature type does not have an
+     *            envelope (no geometry properties or no instances)
+     */
+    void set( QName ftName, Envelope bbox );
+
+    /**
+     * Returns true, if the the specified feature type is known to the cache.
+     * 
+     * @param ftName
+     *            name of the feature type, must not be <code>null</code>
+     * @return true, if the feature type is known, false otherwise
+     */
+    boolean contains( QName ftName );
+
+    /**
+     * Ensures that the cache is persisted.
+     * 
+     * @throws IOException
+     */
+    void persist()
+                            throws IOException;
 }

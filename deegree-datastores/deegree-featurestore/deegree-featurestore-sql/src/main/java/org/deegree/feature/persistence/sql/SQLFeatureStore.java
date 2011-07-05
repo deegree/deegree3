@@ -49,7 +49,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -69,6 +68,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -76,7 +76,9 @@ import org.deegree.feature.Features;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
@@ -167,10 +169,13 @@ public class SQLFeatureStore implements FeatureStore {
     // TODO make this configurable
     private final FeatureStoreCache cache = new SimpleFeatureStoreCache( 10000 );
 
+    private BBoxCache bboxCache;
+
     private final FeatureStoreGMLIdResolver resolver = new FeatureStoreGMLIdResolver( this );
 
     // cache for feature type bounding boxes
-    private final Map<FeatureType, Envelope> ftToBBox = Collections.synchronizedMap( new HashMap<FeatureType, Envelope>() );
+    // private final Map<FeatureType, Envelope> ftToBBox = Collections.synchronizedMap( new HashMap<FeatureType,
+    // Envelope>() );
 
     private Map<String, String> nsContext;
 
@@ -221,6 +226,14 @@ public class SQLFeatureStore implements FeatureStore {
         } catch ( Throwable e ) {
             LOG.warn( "Lock manager initialization failed, locking will not be available." );
             LOG.trace( "Stack trace:", e );
+        }
+
+        // TODO make this configurable
+        FeatureStoreManager fsMgr = workspace.getSubsystemManager( FeatureStoreManager.class );
+        if ( fsMgr != null ) {
+            this.bboxCache = fsMgr.getBBoxCache();
+        } else {
+            LOG.warn( "Unmanaged feature store." );
         }
     }
 
@@ -324,26 +337,49 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public Envelope getEnvelope( QName ftName )
                             throws FeatureStoreException {
+        if ( !bboxCache.contains( ftName ) ) {
+            Envelope bbox = calcEnvelope( ftName );
+            bboxCache.set( ftName, bbox );
+        }
+        return bboxCache.get( ftName );
+    }
+
+    @Override
+    public Envelope calcEnvelope( QName ftName )
+                            throws FeatureStoreException {
+
         Envelope env = null;
-        FeatureType ft = schema.getFeatureType( ftName );
-        if ( ft != null ) {
-            if ( !ftToBBox.containsKey( ft ) ) {
-                // TODO what should be favored for hybrid mappings?
-                if ( blobMapping != null ) {
-                    env = getEnvelope( ftName, blobMapping );
-                } else if ( schema.getFtMapping( ft.getName() ) != null ) {
-                    FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
-                    env = getEnvelope( ftMapping );
-                }
-                ftToBBox.put( ft, env );
-            } else {
-                env = ftToBBox.get( ft );
-            }
+        Connection conn = null;
+        try {
+            conn = ConnectionManager.getConnection( getConnId() );
+            calcEnvelope( ftName, conn );
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
+        } finally {
+            JDBCUtils.close( conn );
         }
         return env;
     }
 
-    private Envelope getEnvelope( FeatureTypeMapping ftMapping )
+    Envelope calcEnvelope( QName ftName, Connection conn )
+                            throws FeatureStoreException {
+        Envelope env = null;
+        FeatureType ft = schema.getFeatureType( ftName );
+        if ( ft != null ) {
+            // TODO what should be favored for hybrid mappings?
+            if ( blobMapping != null ) {
+                env = calcEnvelope( ftName, blobMapping, conn );
+            } else if ( schema.getFtMapping( ft.getName() ) != null ) {
+                FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
+                env = calcEnvelope( ftMapping, conn );
+            }
+        }
+        bboxCache.set( ftName, env );
+        return env;
+    }
+
+    private Envelope calcEnvelope( FeatureTypeMapping ftMapping, Connection conn )
                             throws FeatureStoreException {
 
         LOG.trace( "Determining BBOX for feature type '{}' (relational mode)", ftMapping.getFeatureType() );
@@ -373,11 +409,9 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( " FROM " );
         sql.append( ftMapping.getFtTable() );
 
-        Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.createStatement();
             LOG.debug( "Executing envelope SELECT: " + sql );
             rs = stmt.executeQuery( sql.toString() );
@@ -388,12 +422,12 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
         } finally {
-            close( rs, stmt, conn, LOG );
+            close( rs, stmt, null, LOG );
         }
         return env;
     }
 
-    private Envelope getEnvelope( QName ftName, BlobMapping blobMapping )
+    private Envelope calcEnvelope( QName ftName, BlobMapping blobMapping, Connection conn )
                             throws FeatureStoreException {
 
         LOG.debug( "Determining BBOX for feature type '{}' (BLOB mode)", ftName );
@@ -411,11 +445,9 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( "=" );
         sql.append( ftId );
 
-        Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = ConnectionManager.getConnection( getConnId() );
             stmt = conn.createStatement();
             rs = stmt.executeQuery( sql.toString() );
             rs.next();
@@ -425,13 +457,13 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
         } finally {
-            close( rs, stmt, conn, LOG );
+            close( rs, stmt, null, LOG );
         }
         return env;
     }
 
-    void clearEnvelopeCache() {
-        ftToBBox.clear();
+    BBoxCache getBBoxCache() {
+        return bboxCache;
     }
 
     @Override

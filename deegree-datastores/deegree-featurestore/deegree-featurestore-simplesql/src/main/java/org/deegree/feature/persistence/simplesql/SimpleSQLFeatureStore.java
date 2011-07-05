@@ -191,7 +191,13 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         // nothing to do
     }
 
-    public Envelope getEnvelope( QName ftName ) {
+    @Override
+    public Envelope getEnvelope( QName ftName )
+                            throws FeatureStoreException {
+        return calcEnvelope( ftName );
+    }
+    
+    public Envelope calcEnvelope( QName ftName ) {
         synchronized ( cachedEnvelope ) {
             long current = currentTimeMillis();
             if ( cachedEnvelope.first != null && ( current - cachedEnvelope.first ) < 1000 ) {
@@ -290,7 +296,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
                 Envelope bbox = q.getPrefilterBBox();
                 if ( bbox == null ) {
-                    bbox = getEnvelope( ftName );
+                    bbox = calcEnvelope( ftName );
                 }
 
                 Object scaleHint = q.getHint( HINT_SCALE );

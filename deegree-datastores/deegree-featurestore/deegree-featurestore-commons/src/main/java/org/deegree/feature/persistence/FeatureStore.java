@@ -71,17 +71,21 @@ public interface FeatureStore extends Resource {
      * 
      * @return true, if the store is functional, false otherwise
      */
-    public boolean isAvailable();
+    boolean isAvailable();
 
     /**
      * Returns the application schema that this {@link FeatureStore} serves.
      * 
      * @return the served application schema, never <code>null</code>
      */
-    public ApplicationSchema getSchema();
+    ApplicationSchema getSchema();
 
     /**
      * Returns the envelope for all stored features of the given type.
+     * <p>
+     * NOTE: This method may return incorrect (cached) results. Use {@link #calcEnvelope(QName)} to force the
+     * recalculation of the {@link Envelope}.
+     * </p>
      * 
      * @param ftName
      *            name of the feature type, must not be <code>null</code> and must be served by this store
@@ -89,7 +93,23 @@ public interface FeatureStore extends Resource {
      *         (no geometry properties or no instances)
      * @throws FeatureStoreException
      */
-    public Envelope getEnvelope( QName ftName )
+    Envelope getEnvelope( QName ftName )
+                            throws FeatureStoreException;
+
+    /**
+     * Recalculates the envelope for all stored features of the given type.
+     * <p>
+     * NOTE: This method may potentially be expensive. Depending on the implementation, it may involve fetching all
+     * features of the specified type.
+     * </p>
+     * 
+     * @param ftName
+     *            name of the feature type, must not be <code>null</code> and must be served by this store
+     * @return the envelope (using the storage CRS), or <code>null</code> if the feature type does not have an envelope
+     *         (no geometry properties or no instances)
+     * @throws FeatureStoreException
+     */
+    Envelope calcEnvelope( QName ftName )
                             throws FeatureStoreException;
 
     /**
@@ -103,7 +123,7 @@ public interface FeatureStore extends Resource {
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    public FeatureResultSet query( Query query )
+    FeatureResultSet query( Query query )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**
@@ -117,7 +137,7 @@ public interface FeatureStore extends Resource {
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    public FeatureResultSet query( Query[] queries )
+    FeatureResultSet query( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**
@@ -131,7 +151,7 @@ public interface FeatureStore extends Resource {
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    public int queryHits( Query query )
+    int queryHits( Query query )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**
@@ -145,7 +165,7 @@ public interface FeatureStore extends Resource {
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    public int queryHits( Query[] queries )
+    int queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**
@@ -158,7 +178,7 @@ public interface FeatureStore extends Resource {
      * @throws FeatureStoreException
      *             if the query could not be performed
      */
-    public GMLObject getObjectById( String id )
+    GMLObject getObjectById( String id )
                             throws FeatureStoreException;
 
     /**
@@ -169,7 +189,7 @@ public interface FeatureStore extends Resource {
      * @throws FeatureStoreException
      *             if the transactional access could not be acquired or is not implemented for this {@link FeatureStore}
      */
-    public FeatureStoreTransaction acquireTransaction()
+    FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException;
 
     /**
@@ -180,6 +200,6 @@ public interface FeatureStore extends Resource {
      * @throws FeatureStoreException
      *             if the lock manager could not be acquired
      */
-    public LockManager getLockManager()
+    LockManager getLockManager()
                             throws FeatureStoreException;
 }

@@ -86,6 +86,7 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
@@ -161,12 +162,17 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
         LOG.debug( "Committing transaction." );
         try {
+            // TODO only recalculate if necessary
+            for ( FeatureType ft : getStore().getSchema().getFeatureTypes( null, false, false ) ) {
+                Envelope bbox = fs.calcEnvelope( ft.getName(), conn );
+                System.out.println (bbox);
+                fs.getBBoxCache().set( ft.getName(), bbox );
+            }
+            fs.getBBoxCache().persist();
             conn.commit();
-            fs.clearEnvelopeCache();
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            LOG.debug( e.getMessage(), e.getNextException() );
-            throw new FeatureStoreException( "Unable to commit SQL transaction: " + e.getMessage() );
+        } catch ( Throwable t ) {
+            LOG.debug( t.getMessage(), t );
+            throw new FeatureStoreException( "Unable to commit SQL transaction: " + t.getMessage() );
         } finally {
             taManager.releaseTransaction( this );
         }

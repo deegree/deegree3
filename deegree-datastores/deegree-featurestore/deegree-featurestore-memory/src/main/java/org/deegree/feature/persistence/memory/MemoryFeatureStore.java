@@ -274,9 +274,15 @@ public class MemoryFeatureStore implements FeatureStore {
                             throws FeatureStoreException {
         return lockManager;
     }
+    
+    @Override
+    public Envelope getEnvelope( QName ftName )
+                            throws FeatureStoreException {
+        return calcEnvelope( ftName );
+    }
 
     @Override
-    public Envelope getEnvelope( QName ftName ) {
+    public Envelope calcEnvelope( QName ftName ) {
         Envelope ftEnv = null;
         FeatureType ft = schema.getFeatureType( ftName );
         if ( ft != null ) {

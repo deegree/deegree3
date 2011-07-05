@@ -173,6 +173,13 @@ public class GeoCouchFeatureStore implements FeatureStore {
     @Override
     public Envelope getEnvelope( QName ftName )
                             throws FeatureStoreException {
+        // TODO use cache
+        return null;
+    }
+
+    @Override
+    public Envelope calcEnvelope( QName ftName )
+                            throws FeatureStoreException {
         return null;
     }
 

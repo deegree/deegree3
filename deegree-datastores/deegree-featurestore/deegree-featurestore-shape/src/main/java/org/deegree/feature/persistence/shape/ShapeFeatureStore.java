@@ -564,11 +564,14 @@ public class ShapeFeatureStore implements FeatureStore {
         return query( queries ).toCollection().size();
     }
 
-    /**
-     * @return the envelope of the shape file
-     */
     @Override
-    public Envelope getEnvelope( QName ftName ) {
+    public Envelope getEnvelope( QName ftName )
+                            throws FeatureStoreException {
+        return calcEnvelope( ftName );
+    }
+    
+    @Override
+    public Envelope calcEnvelope( QName ftName ) {
         checkForUpdate();
         if ( shp == null ) {
             return null;

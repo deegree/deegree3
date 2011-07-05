@@ -39,6 +39,7 @@ import static org.deegree.commons.jdbc.ConnectionManager.addConnection;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -49,6 +50,8 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.TempFileManager;
+import org.deegree.feature.persistence.cache.BBoxCache;
+import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.sqldialect.SQLDialectManager;
 import org.slf4j.Logger;
@@ -65,12 +68,24 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
 
     private static final Logger LOG = getLogger( FeatureStoreManager.class );
 
+    private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
+
+    private BBoxPropertiesCache bboxCache;
+
     private FeatureStoreManagerMetadata metadata;
 
     @Override
     public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
+
         metadata = new FeatureStoreManagerMetadata( workspace );
+
+        try {
+            File dir = new File( workspace.getLocation(), metadata.getPath() );
+            bboxCache = new BBoxPropertiesCache( new File( dir, BBOX_CACHE_FILE ) );
+        } catch ( IOException e ) {
+            LOG.error( "Unable to initialize global envelope cache: " + e.getMessage(), e );
+        }
 
         ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         // lockdb stuff
@@ -88,10 +103,11 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
             // TODO: mgr.
             addConnection( "LOCK_DB", "jdbc:h2:" + lockDb, "SA", "", 0, 10 );
         }
+
         // stores startup
         super.startup( workspace );
     }
-
+  
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class, SQLDialectManager.class };
@@ -113,4 +129,7 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
         // workspace.getSubsystemManager( ConnectionManager.class ).deactivate( "LOCK_DB" );
     }
 
+    public BBoxCache getBBoxCache() {
+        return bboxCache;
+    }
 }

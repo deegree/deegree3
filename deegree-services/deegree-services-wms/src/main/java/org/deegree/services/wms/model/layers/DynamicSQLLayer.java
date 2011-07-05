@@ -121,7 +121,7 @@ public class DynamicSQLLayer extends Layer {
 
     @Override
     public Envelope getBbox() {
-        return datastore.getEnvelope( getFeatureType().getName() );
+        return datastore.calcEnvelope( getFeatureType().getName() );
     }
 
     @Override
