@@ -38,7 +38,6 @@ package org.deegree.layers;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -220,24 +219,6 @@ public abstract class AbstractLayer implements Layer {
     @Override
     public void setChildren( List<Layer> children ) {
         this.children = new LinkedList<Layer>( children );
-    }
-
-    /**
-     * @param gm
-     * @param style
-     * @return a buffered image containing the map, and warning headers
-     * @throws MissingDimensionValue
-     * @throws InvalidDimensionValue
-     */
-    @Override
-    public Pair<BufferedImage, LinkedList<String>> paintMap( RenderingInfo gm, Style style )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        // BufferedImage img = prepareImage( gm );
-        // Graphics2D g = img.createGraphics();
-        // LinkedList<String> list = paintMap( g, gm, style );
-        // g.dispose();
-        // return new Pair<BufferedImage, LinkedList<String>>( img, list );
-        return null;
     }
 
     @Override

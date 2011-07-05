@@ -36,8 +36,7 @@
 
 package org.deegree.layers;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.awt.image.renderable.RenderContext;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -97,28 +96,16 @@ public interface Layer {
     void setChildren( List<Layer> children );
 
     /**
-     * Method to acquire an image directly.
-     * 
-     * @param info
-     * @param style
-     * @return a buffered image containing the map, and warning headers
-     * @throws MissingDimensionValue
-     * @throws InvalidDimensionValue
-     */
-    Pair<BufferedImage, LinkedList<String>> paintMap( RenderingInfo info, Style style )
-                            throws MissingDimensionValue, InvalidDimensionValue;
-
-    /**
      * Method to paint on a graphics object.
      * 
-     * @param g
+     * @param context
      * @param info
      * @param style
      * @return a list of warning headers (currently only used for dimension warnings)
      * @throws MissingDimensionValue
      * @throws InvalidDimensionValue
      */
-    LinkedList<String> paintMap( Graphics2D g, RenderingInfo info, Style style )
+    LinkedList<String> paintMap( RenderContext context, RenderingInfo info, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue;
 
     /**
