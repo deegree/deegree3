@@ -36,8 +36,14 @@
 package org.deegree.maven;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -65,6 +71,8 @@ public class EclipseProjectLinker extends AbstractMojo {
                             throws MojoExecutionException, MojoFailureException {
 
         String eclipseWorkspace = System.getProperty( "eclipse.workspace" );
+        String formatter = System.getProperty( "eclipse.formatter" );
+
         if ( eclipseWorkspace == null ) {
             throw new MojoExecutionException( "Need property 'eclipse.workspace'." );
         }
@@ -81,5 +89,34 @@ public class EclipseProjectLinker extends AbstractMojo {
         } catch ( IOException e ) {
             throw new MojoExecutionException( "Unable to execute cmd: " + cmd );
         }
+
+        if ( formatter != null ) {
+            File prefs = new File( project.getBasedir(), ".settings/org.eclipse.jdt.core.prefs" );
+            prefs.getParentFile().mkdirs();
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                Properties props = new Properties();
+                if ( prefs.exists() ) {
+                    props.load( in = new FileInputStream( prefs ) );
+                    in.close();
+                }
+
+                Properties fmt = new Properties();
+                fmt.load( in = EclipseProjectLinker.class.getResourceAsStream( "/" + formatter
+                                                                               + "_formatter.properties" ) );
+                in.close();
+
+                props.putAll( fmt );
+
+                props.store( out = new FileOutputStream( prefs ), null );
+            } catch ( IOException e ) {
+                throw new MojoExecutionException( "Could not read/write eclipse preferences.", e );
+            } finally {
+                IOUtils.closeQuietly( in );
+                IOUtils.closeQuietly( out );
+            }
+        }
     }
+
 }
