@@ -35,7 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.renderer;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -49,6 +53,7 @@ import javax.faces.render.FacesRenderer;
 
 import org.deegree.client.core.component.HtmlInputBBox;
 import org.deegree.client.core.model.BBox;
+import org.slf4j.Logger;
 
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.MenuRenderer;
@@ -64,6 +69,8 @@ import com.sun.faces.renderkit.html_basic.MenuRenderer;
 
 @FacesRenderer(componentFamily = "javax.faces.SelectOne", rendererType = "org.deegree.InputBBox")
 public class InputBBoxRenderer extends MenuRenderer {
+
+    private static final Logger LOG = getLogger( InputBBoxRenderer.class );
 
     private static final String CRS_ID_SUFFIX = "crs";
 
@@ -92,21 +99,23 @@ public class InputBBoxRenderer extends MenuRenderer {
         double maxx = Double.NaN;
         double maxy = Double.NaN;
 
+        NumberFormat nf = NumberFormat.getInstance();
+
         for ( String key : requestMap.keySet() ) {
             try {
                 if ( ( clientId + ":" + CRS_ID_SUFFIX ).equals( key ) ) {
                     crs = (String) requestMap.get( key );
                 } else if ( ( clientId + ":" + MINX_ID_SUFFIX ).equals( key ) ) {
-                    minx = Double.parseDouble( requestMap.get( key ) );
+                    minx = nf.parse( requestMap.get( key ) ).doubleValue();
                 } else if ( ( clientId + ":" + MINY_ID_SUFFIX ).equals( key ) ) {
-                    miny = Double.parseDouble( requestMap.get( key ) );
+                    miny = nf.parse( requestMap.get( key ) ).doubleValue();
                 } else if ( ( clientId + ":" + MAXX_ID_SUFFIX ).equals( key ) ) {
-                    maxx = Double.parseDouble( requestMap.get( key ) );
+                    maxx = nf.parse( requestMap.get( key ) ).doubleValue();
                 } else if ( ( clientId + ":" + MAXY_ID_SUFFIX ).equals( key ) ) {
-                    maxy = Double.parseDouble( requestMap.get( key ) );
+                    maxy = nf.parse( requestMap.get( key ) ).doubleValue();
                 }
-            } catch ( NumberFormatException e ) {
-                // NOTHING TO DO
+            } catch ( ParseException e ) {
+                LOG.warn( "Could not decode: ", e.getMessage() );
             }
         }
         bbox.setSubmittedValue( new BBox( crs, minx, miny, maxx, maxy ) );
