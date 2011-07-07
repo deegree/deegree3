@@ -61,6 +61,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.test.TestDBProperties;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -116,7 +117,7 @@ public class TOPPStatesTest {
 
     private static final QName SAMP_POP = QName.valueOf( "{http://www.openplans.org/topp}SAMP_POP" );
 
-    private final TestDBSettings settings;
+    private final TestDBProperties settings;
 
     private DeegreeWorkspace ws;
 
@@ -124,7 +125,7 @@ public class TOPPStatesTest {
 
     private SQLFeatureStore fs;
 
-    public TOPPStatesTest( TestDBSettings settings ) {
+    public TOPPStatesTest( TestDBProperties settings ) {
         this.settings = settings;
     }
 
@@ -298,12 +299,12 @@ public class TOPPStatesTest {
     }
 
     @Parameters
-    public static Collection<TestDBSettings[]> data()
+    public static Collection<TestDBProperties[]> data()
                             throws IllegalArgumentException, IOException {
-        List<TestDBSettings[]> settings = new ArrayList<TestDBSettings[]>();
+        List<TestDBProperties[]> settings = new ArrayList<TestDBProperties[]>();
         try {
-            for ( TestDBSettings testDBSettings : TestDBSettings.getAll() ) {
-                settings.add( new TestDBSettings[] { testDBSettings } );
+            for ( TestDBProperties testDBSettings : TestDBProperties.getAll() ) {
+                settings.add( new TestDBProperties[] { testDBSettings } );
             }
         } catch ( Throwable t ) {
             LOG.error( "Access to test databases not configured properly: " + t.getMessage() );

@@ -33,32 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql;
+package org.deegree.commons.utils.test;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * Provides convenient access to test database configurations defined in {@link TestProperties}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class TestDBSettings {
+public class TestDBProperties {
 
-    private static Logger LOG = LoggerFactory.getLogger( TestDBSettings.class );
+    private static Logger LOG = LoggerFactory.getLogger( TestDBProperties.class );
 
-    private static final String TESTDB_PROPERTY = "deegree.testdb.dir";
+    private static final String TESTDB_PROPERTY_PREFIX = "testdb.";
 
     private final String id;
 
@@ -76,15 +75,16 @@ public class TestDBSettings {
 
     private final String pass;
 
-    private TestDBSettings( String id, Properties props ) throws IllegalArgumentException {
+    private TestDBProperties( String id, Properties props ) throws IllegalArgumentException {
         this.id = id;
-        this.adminUrl = props.getProperty( "adminurl" );
-        this.adminUser = props.getProperty( "adminuser" );
-        this.adminPass = props.getProperty( "adminpass" );
-        this.dbName = props.getProperty( "name" );
-        this.url = props.getProperty( "url" );
-        this.user = props.getProperty( "user" );
-        this.pass = props.getProperty( "pass" );
+        String prefix = TESTDB_PROPERTY_PREFIX + id + ".";
+        this.adminUrl = props.getProperty( prefix + "adminurl" );
+        this.adminUser = props.getProperty( prefix + "adminuser" );
+        this.adminPass = props.getProperty( prefix + "adminpass" );
+        this.dbName = props.getProperty( prefix + "name" );
+        this.url = props.getProperty( prefix + "url" );
+        this.user = props.getProperty( prefix + "user" );
+        this.pass = props.getProperty( prefix + "pass" );
     }
 
     public String getId() {
@@ -119,44 +119,30 @@ public class TestDBSettings {
         return pass;
     }
 
-    public static List<TestDBSettings> getAll()
+    public static List<TestDBProperties> getAll()
                             throws IllegalArgumentException, IOException {
 
-        String propValue = System.getProperty( TESTDB_PROPERTY );
-        if ( propValue == null || propValue.isEmpty() ) {
-            String msg = "Required system property '" + TESTDB_PROPERTY + "' is not set.";
-            throw new IllegalArgumentException( msg );
-        }
+        List<TestDBProperties> settings = new ArrayList<TestDBProperties>();
 
-        File dir = new File( propValue );
-        if ( !dir.exists() ) {
-            String msg = "Directory '" + propValue + "' specified by system property '" + TESTDB_PROPERTY
-                         + "' does not point to an existing directory.";
-            throw new IllegalArgumentException( msg );
-        }
+        Properties props = TestProperties.getProperties();
+        Set<String> ids = new HashSet<String>();
 
-        if ( !dir.isDirectory() ) {
-            String msg = "Directory '" + propValue + "' specified by system property '" + TESTDB_PROPERTY
-                         + "' does not point to a directory.";
-            throw new IllegalArgumentException( msg );
-        }
-
-        File[] files = dir.listFiles( new FileFilter() {
-            @Override
-            public boolean accept( File pathname ) {
-                return pathname.isFile() && pathname.getName().endsWith( ".properties" );
+        for ( Object key : props.keySet() ) {
+            String propName = (String) key;
+            if ( propName.startsWith( TESTDB_PROPERTY_PREFIX ) ) {
+                String s = propName.substring( TESTDB_PROPERTY_PREFIX.length() );
+                int pos = s.indexOf( '.' );
+                if ( pos != -1 ) {
+                    String id = s.substring( 0, pos );
+                    if ( !ids.contains( id ) ) {
+                        LOG.info( "Found test DB config '{}'", id );
+                        settings.add( new TestDBProperties( id, props ) );
+                        ids.add( id );
+                    }
+                } else {
+                    LOG.error( "Skipping test db configuration property {}. Unexpected format.", propName );
+                }
             }
-        } );
-
-        List<TestDBSettings> settings = new ArrayList<TestDBSettings>( files.length );
-        for ( File propsFile : files ) {
-            String id = propsFile.getName().substring( 0, propsFile.getName().length() - ".properties".length() );
-            LOG.info( "Using test db config '" + id + "' from '" + propsFile + "'" );
-            Properties props = new Properties();
-            FileReader reader = new FileReader( propsFile );
-            props.load( reader );
-            reader.close();
-            settings.add( new TestDBSettings( id, props ) );
         }
         return settings;
     }

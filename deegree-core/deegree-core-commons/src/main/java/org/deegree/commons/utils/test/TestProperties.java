@@ -33,46 +33,52 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.commons.utils.test;
 
 import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
-import org.deegree.CoreTstProperties;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TstSettings {
+/**
+ * Encapsulates access to the global test configuration file <code>${user.home}/.deegree-test.properties</code>.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class TestProperties {
 
-    private static Logger LOG = LoggerFactory.getLogger( CoreTstProperties.class );
+    private static Logger LOG = LoggerFactory.getLogger( TestProperties.class );
 
     private static final Properties props = new Properties();
 
+    private static final String DEEGREE_TEST_PROPERTIES = ".deegree-test.properties";
+
     static {
-        File file = new File( DeegreeWorkspace.getWorkspaceRoot(), ".testsettings" + File.separatorChar
-                                                                   + "deegree-featurestore-postgis.properties" );
+        String userHome = System.getProperty( "user.home" );
+        File file = new File( userHome, DEEGREE_TEST_PROPERTIES );
         if ( file.exists() ) {
-            LOG.info( "Using test properties from file {}.", file );
+            LOG.info( "Reading test properties from file {}.", file );
             try {
                 props.load( new FileReader( file ) );
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
         } else {
-            LOG.info( "File {} does not exist. Some tests will be skipped.", file );
+            LOG.info( "File {} does not exist. Some tests may be skipped.", file );
         }
     }
 
     /**
-     * Returns the property with the given name.
+     * Returns the properties from <code>${user.home}/.deegree-test.properties</code>.
      * 
-     * @param key
-     *            name of the property
-     * @return the property with the given name, or <code>null</code> if it is not available
+     * @return the properties, can be empty, but never <code>null/<code>
      */
-    public static String getProperty( String key ) {
-        return props.getProperty( key );
+    public static Properties getProperties() {
+        return props;
     }
 }
