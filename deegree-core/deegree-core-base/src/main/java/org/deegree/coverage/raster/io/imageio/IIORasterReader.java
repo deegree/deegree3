@@ -124,7 +124,7 @@ public class IIORasterReader implements RasterReader {
     public AbstractRaster load( File file, RasterIOOptions options )
                             throws IOException {
         LOG.debug( "reading " + file + " with ImageIO" );
-        reader = new IIORasterDataReader( file, options );
+        reader = new IIORasterDataReader( file, options, 0 );
         AbstractRaster r = loadFromReader( reader, options );
         return r;
     }
@@ -132,7 +132,7 @@ public class IIORasterReader implements RasterReader {
     @Override
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
-        reader = new IIORasterDataReader( stream, options );
+        reader = new IIORasterDataReader( stream, options, 0 );
         return loadFromReader( reader, options );
     }
 
