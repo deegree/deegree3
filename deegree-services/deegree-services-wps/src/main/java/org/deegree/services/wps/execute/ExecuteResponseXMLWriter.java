@@ -256,15 +256,9 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
 
         if ( input instanceof EmbeddedComplexInput ) {
             writer.writeStartElement( WPS_NS, "Data" );
-
-            XMLStreamReader reader = ( (EmbeddedComplexInput) input ).getValueAsElement().getXMLStreamReaderWithoutCaching();
-
-            // skip start document event
-            reader.next();
-
-            // "wps:ComplexData" element
+            XMLStreamReader reader = ( (EmbeddedComplexInput) input ).getComplexDataAsXMLStream();
+            // copy "wps:ComplexData" element
             writeElement( writer, reader );
-
             writer.writeEndElement();
         } else if ( input instanceof ReferencedComplexInput ) {
             writer.writeStartElement( WPS_NS, "Reference" );
@@ -638,8 +632,7 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
         }
 
         // NOTE: Providing the encoding attribute doesn't make any sense for inline XML output (always defined by the
-        // surrounding
-        // document)
+        // surrounding document)
 
         XMLStreamReader reader = output.getStreamReader();
 

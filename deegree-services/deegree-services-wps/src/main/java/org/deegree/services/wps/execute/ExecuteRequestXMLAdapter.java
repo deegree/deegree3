@@ -36,6 +36,7 @@
 
 package org.deegree.services.wps.execute;
 
+import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 import static org.deegree.protocol.wps.WPSConstants.WPS_PREFIX;
 
@@ -52,15 +53,22 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -117,10 +125,13 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 
     private static NamespaceBindings nsContext;
 
+    private static final XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+
     static {
         nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( OWS_PREFIX, OWS110_NS );
         nsContext.addNamespace( WPS_PREFIX, WPS_100_NS );
+        xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, true );
     }
 
     private Map<CodeType, WPSProcess> idToProcess;
@@ -467,7 +478,32 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 
         format = validateAndAugmentFormat( format, definition, eCustomizer );
 
-        return new EmbeddedComplexInput( definition, title, summary, format, complexDataElement );
+        StreamBufferStore store = new StreamBufferStore(10);
+        LOG.debug( "Storing embedded ComplexInput as XML" );
+        XMLStreamReader xmlReader = complexDataElement.getXMLStreamReaderWithoutCaching();
+        XMLStreamWriter xmlWriter = null;
+        try {
+            xmlWriter = xmlOutputFactory.createXMLStreamWriter( store );
+            StAXParsingHelper.skipStartDocument( xmlReader );
+            XMLAdapter.writeElement( xmlWriter, xmlReader );
+        } catch ( Throwable t ) {
+            String msg = "Unable to extract embedded complex input: " + t.getMessage();
+            throw new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
+        } finally {
+            try {
+                xmlReader.close();
+            } catch ( XMLStreamException e ) {
+                // nothing to do
+            }
+            try {
+                xmlWriter.close();
+            } catch ( XMLStreamException e ) {
+                // nothing to do
+            }
+            IOUtils.closeQuietly( store );
+        }
+
+        return new EmbeddedComplexInput( definition, title, summary, format, store );
     }
 
     private ReferencedComplexInput parseInputReference( ComplexInputDefinition definition, OMElement referenceElement,

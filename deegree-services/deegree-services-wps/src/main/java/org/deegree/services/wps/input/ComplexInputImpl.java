@@ -36,13 +36,6 @@
 
 package org.deegree.services.wps.input;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
@@ -110,39 +103,4 @@ public abstract class ComplexInputImpl extends ProcessletInputImpl implements Co
     public String getSchema() {
         return schema;
     }
-
-    /**
-     * Returns an {@link InputStream} for accessing the complex value as a raw stream of bytes (usually for binary
-     * input).
-     * <p>
-     * NOTE: Never use this method if the input parameter is encoded in XML -- use {@link #getValueAsXMLStream()} or
-     * {@link #getValueAsElement()} instead. Otherwise erroneous behaviour has to be expected (if the input value is
-     * given embedded in the execute request document).
-     * </p>
-     * 
-     * @see #getValueAsXMLStream()
-     * @see #getValueAsElement()
-     * @return the input value as a raw stream of bytes
-     * @throws IOException
-     *             if accessing the value fails
-     */
-    public abstract InputStream getValueAsBinaryStream()
-                            throws IOException;
-
-    public abstract XMLStreamReader getValueAsXMLStream()
-                            throws IOException, XMLStreamException;
-
-    /**
-     * Returns an {@link OMElement} for accessing the complex value as an XML element node.
-     * <p>
-     * NOTE: Never use this method if the input parameter is a binary value -- use {@link #getValueAsBinaryStream()}
-     * instead.
-     * </p>
-     * 
-     * @return the input value as an XML element node
-     * @throws IOException
-     *             if accessing the value fails
-     */
-    public abstract OMElement getValueAsElement()
-                            throws IOException;
 }

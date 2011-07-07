@@ -39,12 +39,14 @@ package org.deegree.services.wps.input;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.slf4j.Logger;
@@ -62,7 +64,7 @@ public class EmbeddedComplexInput extends ComplexInputImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger( EmbeddedComplexInput.class );
 
-    private OMElement dataElement;
+    private final StreamBufferStore store;
 
     /**
      * Creates a new {@link ComplexInputImpl} instance from a <code>wps:ComplexData</code> embedded in an execute
@@ -76,30 +78,46 @@ public class EmbeddedComplexInput extends ComplexInputImpl {
      *            optional narrative description supplied with the input parameter, may be null
      * @param format
      *            the XML schema, format, and encoding of the complex value
-     * @param dataElement
-     *            <code>wps:ComplexData</code> element from execute request document
+     * @param store
+     *            stores the <code>wps:ComplexData</code> element from execute request document
      */
     public EmbeddedComplexInput( ComplexInputDefinition definition, LanguageString title, LanguageString summary,
-                                 ComplexFormatType format, OMElement dataElement ) {
+                                 ComplexFormatType format, StreamBufferStore store ) {
         super( definition, title, summary, format );
-        this.dataElement = dataElement;
-    }
-
-    @Override
-    public OMElement getValueAsElement() {
-        return dataElement;
+        this.store = store;
     }
 
     @Override
     public InputStream getValueAsBinaryStream() {
 
-        String textValue = dataElement.getText();
+        XMLStreamReader xmlStream = null;
+        String textValue = null;
+        try {
+            try {
+                xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( store.getInputStream() );
+            } catch ( Throwable t ) {
+                throw new RuntimeException( t.getMessage() );
+            }
+            StAXParsingHelper.skipStartDocument( xmlStream );
+            textValue = xmlStream.getElementText();
+        } catch ( XMLStreamException e ) {
+            LOG.error( e.getMessage(), e );
+            throw new RuntimeException( e.getMessage() );
+        } finally {
+            if ( xmlStream != null ) {
+                try {
+                    xmlStream.close();
+                } catch ( XMLStreamException e ) {
+                    // nothing to do
+                }
+            }
+        }
 
         ByteArrayInputStream is = null;
 
         if ( "base64".equals( getEncoding() ) ) {
             LOG.debug( "Performing base64 decoding of embedded ComplexInput: " + textValue );
-            is = new ByteArrayInputStream( Base64.decode( textValue ) );
+            is = new ByteArrayInputStream( Base64.decodeBase64( textValue ) );
         } else {
             LOG.warn( "Unsupported encoding '" + getEncoding() + "'." );
             is = new ByteArrayInputStream( textValue.getBytes() );
@@ -111,15 +129,32 @@ public class EmbeddedComplexInput extends ComplexInputImpl {
     @Override
     public XMLStreamReader getValueAsXMLStream()
                             throws XMLStreamException {
-        XMLStreamReader xmlReader = dataElement.getFirstElement().getXMLStreamReaderWithoutCaching();
-        xmlReader.next();
+        XMLStreamReader xmlReader = null;
+        try {
+            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( store.getInputStream() );
+        } catch ( Throwable t ) {
+            throw new RuntimeException( t.getMessage() );
+        }
+        StAXParsingHelper.skipStartDocument( xmlReader );
+        StAXParsingHelper.nextElement( xmlReader );
+        return xmlReader;
+    }
+
+    public XMLStreamReader getComplexDataAsXMLStream()
+                            throws XMLStreamException {
+        XMLStreamReader xmlReader = null;
+        try {
+            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( store.getInputStream() );
+        } catch ( Throwable t ) {
+            throw new RuntimeException( t.getMessage() );
+        }
+        StAXParsingHelper.skipStartDocument( xmlReader );
         return xmlReader;
     }
 
     @Override
     public String toString() {
-        return super.toString() + " (EmbeddedComplexInput/ComplexData), value (element name)='"
-               + dataElement.getQName() + "'" + ", mimeType='" + getMimeType() + "', encoding='" + getEncoding()
-               + "', schema='" + getSchema() + "'";
+        return super.toString() + " (EmbeddedComplexInput/ComplexData), stored=" + store + "'" + ", mimeType='"
+               + getMimeType() + "', encoding='" + getEncoding() + "', schema='" + getSchema() + "'";
     }
 }

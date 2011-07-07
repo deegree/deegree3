@@ -43,7 +43,6 @@ import java.net.URL;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -80,12 +79,6 @@ public class ReferencedComplexInput extends ComplexInputImpl {
                                    ComplexFormatType format, InputReference reference ) {
         super( definition, title, summary, format );
         this.reference = reference;
-    }
-
-    @Override
-    public OMElement getValueAsElement()
-                            throws IOException {
-        return new XMLAdapter( getValueAsBinaryStream() ).getRootElement();
     }
 
     @Override
