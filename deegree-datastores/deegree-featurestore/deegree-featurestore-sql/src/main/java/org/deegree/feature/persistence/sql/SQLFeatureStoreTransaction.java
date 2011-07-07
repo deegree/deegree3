@@ -165,10 +165,14 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             // TODO only recalculate if necessary
             for ( FeatureType ft : getStore().getSchema().getFeatureTypes( null, false, false ) ) {
                 Envelope bbox = fs.calcEnvelope( ft.getName(), conn );
-                System.out.println (bbox);
+                System.out.println( bbox );
                 fs.getBBoxCache().set( ft.getName(), bbox );
             }
-            fs.getBBoxCache().persist();
+            try {
+                fs.getBBoxCache().persist();
+            } catch ( Throwable t ) {
+                LOG.debug( "Unable to persist bbox cache: " + t.getMessage() );
+            }
             conn.commit();
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
