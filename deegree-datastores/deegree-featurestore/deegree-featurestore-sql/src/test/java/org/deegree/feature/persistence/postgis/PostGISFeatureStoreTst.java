@@ -57,11 +57,11 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.CoreTstProperties;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
@@ -438,9 +438,9 @@ public class PostGISFeatureStoreTst {
                             FactoryConfigurationError, UnknownCRSException, TransformationException,
                             ResourceInitException {
 
-        String jdbcURL = CoreTstProperties.getProperty( "postgis_philosopher_db" );
-        String jdbcUser = CoreTstProperties.getProperty( "postgis_philosopher_user" );
-        String jdbcPass = CoreTstProperties.getProperty( "postgis_philosopher_pass" );
+        String jdbcURL = TestProperties.getProperty( "postgis_philosopher_db" );
+        String jdbcUser = TestProperties.getProperty( "postgis_philosopher_user" );
+        String jdbcPass = TestProperties.getProperty( "postgis_philosopher_pass" );
         if ( jdbcURL == null ) {
             return;
         }

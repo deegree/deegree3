@@ -58,11 +58,9 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.deegree.CoreTstProperties;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -100,7 +98,6 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
     private static final Logger LOG = getLogger( ISOMetadatStoreTransactionTest.class );
 
-
     @Test
     public void testInsert()
                             throws MetadataStoreException, FactoryConfigurationError, IOException,
@@ -114,11 +111,11 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-        String test_folder = CoreTstProperties.getProperty( "test_folder" );
+        String test_folder = TestProperties.getProperty( "test_folder" );
 
         File folder = new File( test_folder );
         File[] fileArray = folder.listFiles();
-        
+
         if ( fileArray == null ) {
             LOG.error( "test folder does not exist: " + test_folder );
             return;

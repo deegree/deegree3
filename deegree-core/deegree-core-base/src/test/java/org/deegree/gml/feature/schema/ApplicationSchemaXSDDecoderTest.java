@@ -43,7 +43,7 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
-import org.deegree.CoreTstProperties;
+import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -111,7 +111,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = CoreTstProperties.getProperty( "schema_geosciml" );
+        String schemaURL = TestProperties.getProperty( "schema_geosciml" );
         if ( schemaURL == null ) {
             return;
         }
@@ -180,7 +180,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = CoreTstProperties.getProperty( "schema_xplan2" );
+        String schemaURL = TestProperties.getProperty( "schema_xplan2" );
         if ( schemaURL == null ) {
             return;
         }
@@ -195,7 +195,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = CoreTstProperties.getProperty( "schema_nas511" );
+        String schemaURL = TestProperties.getProperty( "schema_nas511" );
         if ( schemaURL == null ) {
             return;
         }
@@ -218,7 +218,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
             return;
         }

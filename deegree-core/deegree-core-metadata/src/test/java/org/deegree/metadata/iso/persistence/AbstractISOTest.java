@@ -44,11 +44,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
 
-import org.deegree.CoreTstProperties;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.metadata.persistence.MetadataResultSet;
@@ -94,9 +94,9 @@ public abstract class AbstractISOTest {
     @Before
     public void setUp()
                             throws Exception {
-        jdbcURL = CoreTstProperties.getProperty( "iso_store_url" );
-        jdbcUser = CoreTstProperties.getProperty( "iso_store_user" );
-        jdbcPass = CoreTstProperties.getProperty( "iso_store_pass" );
+        jdbcURL = TestProperties.getProperty( "iso_store_url" );
+        jdbcUser = TestProperties.getProperty( "iso_store_user" );
+        jdbcPass = TestProperties.getProperty( "iso_store_pass" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
             Set<String> connIds = ConnectionManager.getConnectionIds();

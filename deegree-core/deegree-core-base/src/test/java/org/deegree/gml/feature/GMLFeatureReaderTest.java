@@ -53,9 +53,9 @@ import javax.xml.stream.XMLStreamReader;
 import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.deegree.CoreTstProperties;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.TransformationException;
@@ -354,7 +354,7 @@ public class GMLFeatureReaderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
             return;
         }
@@ -376,7 +376,7 @@ public class GMLFeatureReaderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
             return;
         }
@@ -400,7 +400,7 @@ public class GMLFeatureReaderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
             return;
         }
@@ -422,7 +422,7 @@ public class GMLFeatureReaderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
         if ( schemaURL == null ) {
             return;
         }

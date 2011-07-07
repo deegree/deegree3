@@ -63,13 +63,11 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.metadata.ebrim.RegistryObject;
 import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.ebrim.eo.EbrimEOMDStoreTransaction;
 import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Test;
 import org.slf4j.Logger;
-
 
 /**
  * TODO add class documentation here

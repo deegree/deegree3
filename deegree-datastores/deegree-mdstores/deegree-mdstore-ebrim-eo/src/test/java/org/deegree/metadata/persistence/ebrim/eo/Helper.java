@@ -47,7 +47,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -58,6 +61,8 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * @version $Revision: $, $Date: $
  */
 public class Helper {
+
+    private static Logger LOG = LoggerFactory.getLogger( Helper.class );
 
     public static void setUpTables( Connection conn )
                             throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {
@@ -107,15 +112,17 @@ public class Helper {
     }
 
     // TODO: extrenalize connection configuration
-    public static Connection getConnection() {
-        try {
-            Connection conn = DriverManager.getConnection( "jdbc:postgresql://localhost:5432/cswebrimeo", "postgres",
-                                                           "postgres" );
-            conn.setAutoCommit( false );
-            return conn;
-        } catch ( SQLException e ) {
-            System.out.println( e.getMessage() );
+    public static Connection getConnection()
+                            throws SQLException {
+        String jdbcUrl = TestProperties.getProperty( "deegree-mdstore-ebrim-eo.url" );
+        if ( jdbcUrl == null ) {
+            LOG.info( "Skipping test, property 'deegree-mdstore-ebrim-eo.url' not set." );
+            return null;
         }
-        return null;
+        String jdbcUser = TestProperties.getProperty( "deegree-mdstore-ebrim-eo.user" );
+        String jdbcPass = TestProperties.getProperty( "deegree-mdstore-ebrim-eo.pass" );
+        Connection conn = DriverManager.getConnection( jdbcUrl, jdbcUser, jdbcPass );
+        conn.setAutoCommit( false );
+        return conn;
     }
 }

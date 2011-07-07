@@ -50,7 +50,7 @@ import java.util.Arrays;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.CoreTstProperties;
+import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -104,7 +104,7 @@ public class WPSClientTest {
     public void testMetadata()
                             throws OWSException, IOException {
 
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -167,7 +167,7 @@ public class WPSClientTest {
     @Test
     public void testProcessDescription_1()
                             throws OWSException, IOException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -197,7 +197,7 @@ public class WPSClientTest {
     @Test
     public void testProcessDescription_2()
                             throws OWSException, IOException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -225,7 +225,7 @@ public class WPSClientTest {
     @Test
     public void testProcessDescription_3()
                             throws OWSException, IOException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -312,7 +312,7 @@ public class WPSClientTest {
     @Test
     public void testGetProcess()
                             throws OWSException, IOException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -326,7 +326,7 @@ public class WPSClientTest {
     @Test
     public void testExecute_1()
                             throws Exception {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -356,7 +356,7 @@ public class WPSClientTest {
     public void testExecute_2()
                             throws Exception {
 
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -382,7 +382,7 @@ public class WPSClientTest {
     @Test
     public void testExecute_3()
                             throws OWSException, IOException, XMLStreamException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -411,7 +411,7 @@ public class WPSClientTest {
     @Test
     public void testExecute_4()
                             throws OWSException, IOException, XMLStreamException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -440,7 +440,7 @@ public class WPSClientTest {
     @Test
     public void testExecuteRawOutput()
                             throws OWSException, IOException, XMLStreamException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -468,7 +468,7 @@ public class WPSClientTest {
     @Test
     public void testExecuteInputsByRef()
                             throws OWSException, IOException, XMLStreamException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -540,7 +540,7 @@ public class WPSClientTest {
     @Test
     public void testExecuteAsync()
                             throws OWSException, IOException, XMLStreamException, InterruptedException {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
         }
@@ -617,7 +617,7 @@ public class WPSClientTest {
     @Test(expected = OWSException.class)
     public void testFailedExecute()
                             throws Exception {
-        String demoWPSURL = CoreTstProperties.getProperty( "demo_wps_url" );
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             throw new OWSException( null, null );
         }
