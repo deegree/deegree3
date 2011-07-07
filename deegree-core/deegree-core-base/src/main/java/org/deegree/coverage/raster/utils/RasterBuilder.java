@@ -264,13 +264,17 @@ public class RasterBuilder implements CoverageBuilder {
                 crs = parentCrs;
             }
             RasterDirectory directory = config.getRasterDirectory();
-            String file = config.getRasterFile();
+            String file = config.getRasterFile().getValue();
+            Integer imageIndex = config.getRasterFile().getImageIndex();
             try {
                 RasterIOOptions rOptions = new RasterIOOptions();
                 rOptions.copyOf( options );
                 if ( config.getOriginLocation() != null ) {
                     rOptions.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
                                   config.getOriginLocation().toString().toUpperCase() );
+                }
+                if ( imageIndex != null ) {
+                    rOptions.add( RasterIOOptions.IMAGE_INDEX, imageIndex.toString() );
                 }
                 if ( directory != null ) {
                     File rasterFiles = new File( adapter.resolve( directory.getValue().trim() ).toURI() );

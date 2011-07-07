@@ -123,8 +123,9 @@ public class IIORasterReader implements RasterReader {
 
     public AbstractRaster load( File file, RasterIOOptions options )
                             throws IOException {
+        String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
         LOG.debug( "reading " + file + " with ImageIO" );
-        reader = new IIORasterDataReader( file, options, 0 );
+        reader = new IIORasterDataReader( file, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ) );
         AbstractRaster r = loadFromReader( reader, options );
         return r;
     }
@@ -132,7 +133,8 @@ public class IIORasterReader implements RasterReader {
     @Override
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
-        reader = new IIORasterDataReader( stream, options, 0 );
+        String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
+        reader = new IIORasterDataReader( stream, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ) );
         return loadFromReader( reader, options );
     }
 
@@ -144,7 +146,13 @@ public class IIORasterReader implements RasterReader {
         setID( opts );
 
         OriginLocation definedRasterOrigLoc = opts.getRasterOriginLocation();
-        MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc );
+        String imageIndex = opts.get( RasterIOOptions.IMAGE_INDEX );
+        int factor = 0;
+        if ( imageIndex != null ) {
+            factor = Integer.parseInt( imageIndex );
+        }
+        factor = 1 << factor;
+        MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc, factor );
         ICRS crs = metaDataReader.getCRS();
         rasterReference = metaDataReader.getRasterReference();
 

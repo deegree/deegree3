@@ -97,6 +97,11 @@ public class RasterIOOptions implements Serializable {
     public static final String CRS = "CRS";
 
     /**
+     * which image index to use (eg. for tiffs with overviews)
+     */
+    public static final String IMAGE_INDEX = "IMAGE_INDEX";
+    
+    /**
      * This key will get the local raster cache directory to be used inside the raster cache directory for the given
      * raster. For example the raster cache directory is /tmp/ and the LOCAL_RASTER_CACHE_DIR is set to 'some_name' all
      * raster caches will reside in /tmp/some_name/

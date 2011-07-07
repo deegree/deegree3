@@ -67,13 +67,16 @@ public class MetaDataReader {
 
     private static Logger LOG = LoggerFactory.getLogger( MetaDataReader.class );
 
+    private final int factor;
+
     /**
      * @param metaData
      *            a ImageIO meta data object
      * @param definedRasterOrigLoc
      */
-    public MetaDataReader( IIOMetadata metaData, OriginLocation definedRasterOrigLoc ) {
+    public MetaDataReader( IIOMetadata metaData, OriginLocation definedRasterOrigLoc, int factor ) {
         this.metaData = metaData;
+        this.factor = factor;
         if ( metaData != null ) {
             init( definedRasterOrigLoc );
         }
@@ -129,18 +132,21 @@ public class MetaDataReader {
             if ( tiePoints != null && scale != null ) {
 
                 if ( definedRasterOrigLoc != null ) {
-                    rasterReference = new RasterGeoReference( definedRasterOrigLoc, scale[0], -scale[1], tiePoints[3],
-                                                              tiePoints[4], crs );
+                    rasterReference = new RasterGeoReference( definedRasterOrigLoc, scale[0] * factor, -scale[1]
+                                                                                                       * factor,
+                                                              tiePoints[3], tiePoints[4], crs );
                 } else {
                     if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
                         // rb: this might not always be right, see examples at
                         // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
                         // search for PixelIsArea/PixelIsPoint to determine center/outer
-                        rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0],
-                                                                  -scale[1], tiePoints[3], tiePoints[4], crs );
+                        rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0]
+                                                                                                            * factor,
+                                                                  -scale[1] * factor, tiePoints[3], tiePoints[4], crs );
                     } else {
-                        rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0],
-                                                                  -scale[1], tiePoints[3], tiePoints[4], crs );
+                        rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0]
+                                                                                                           * factor,
+                                                                  -scale[1] * factor, tiePoints[3], tiePoints[4], crs );
                     }
                 }
             }

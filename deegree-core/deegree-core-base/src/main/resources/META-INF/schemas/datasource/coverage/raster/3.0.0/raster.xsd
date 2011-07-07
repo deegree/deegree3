@@ -57,7 +57,15 @@
     <sequence>
       <element name="StorageCRS" minOccurs="0" type="string" />
       <choice minOccurs="0">
-        <element name="RasterFile" type="string" />
+        <element name="RasterFile">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="imageIndex" type="int" use="optional" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
         <element name="RasterDirectory">
           <complexType>
             <simpleContent>

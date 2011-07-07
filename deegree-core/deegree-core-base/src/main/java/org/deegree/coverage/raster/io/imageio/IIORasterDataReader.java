@@ -245,7 +245,7 @@ public class IIORasterDataReader implements RasterDataReader {
         synchronized ( LOCK ) {
             if ( metaData == null && !metadataReadFailed && findReaderForIO() ) {
                 try {
-                    metaData = reader.getImageMetadata( imageIndex );
+                    metaData = reader.getImageMetadata( 0 );
                 } catch ( IOException e ) {
                     LOG.debug( "couldn't open metadata:" + e.getMessage(), e );
                     this.metadataReadFailed = true;
