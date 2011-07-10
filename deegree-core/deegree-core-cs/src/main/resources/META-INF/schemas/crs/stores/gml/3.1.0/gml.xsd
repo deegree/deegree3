@@ -28,7 +28,14 @@
 					<choice>
 						<element name="GMLFile" type="string" />
 						<sequence>
-							<element name="GMLResourceClass" type="string" />
+							<element name="GMLResourceClass" type="string">
+								<annotation>
+									<documentation><![CDATA[
+										must have an constructur like: GMLResourceClass(GMLCRSStore
+										store, Map<String , String> params )]]>
+									</documentation>
+								</annotation>
+							</element>
 							<element ref="crs:Param" maxOccurs="unbounded" />
 						</sequence>
 					</choice>
