@@ -137,9 +137,8 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
                 } catch ( Throwable t ) {
                     LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, t.getMessage() ),
                                t );
-                } finally {
-                    LOG.info( "The configured class: " + resourceClassName + " was not instantiated." );
-                }
+                } 
+                LOG.info( "The configured class: " + resourceClassName + " was instantiated." );
             }
             if ( resource == null ) {
                 LOG.info( "Trying to instantiate the default GMLFileResource" );
