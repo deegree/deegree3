@@ -42,9 +42,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -287,8 +287,13 @@ public class StyleRegistry extends TimerTask {
                     }
                     put( layerName, style, false );
                     if ( sty.getLegendGraphicFile() != null ) {
-                        File legend = new File( adapter.resolve( sty.getLegendGraphicFile() ).toURI() );
-                        style.setLegendFile( legend );
+                        URL url = adapter.resolve( sty.getLegendGraphicFile() );
+                        if ( url.toURI().getScheme().equals( "file" ) ) {
+                            File legend = new File( url.toURI() );
+                            style.setLegendFile( legend );
+                        } else {
+                            style.setLegendURL( url );
+                        }
                     }
                 }
             } catch ( MalformedURLException e ) {
@@ -336,7 +341,7 @@ public class StyleRegistry extends TimerTask {
                 String namedLayer = sty.getNamedLayer();
                 LOG.debug( "Will read styles from SLD '{}', for named layer '{}'.", file, namedLayer );
                 Map<String, String> map = new HashMap<String, String>();
-                Map<String, File> legends = new HashMap<String, File>();
+                Map<String, Pair<File, URL>> legends = new HashMap<String, Pair<File, URL>>();
                 String name = null, lastName = null;
                 for ( JAXBElement<String> elem : sty.getNameAndUserStyleAndLegendConfigurationFile() ) {
                     if ( elem.getName().getLocalPart().equals( "Name" ) ) {
@@ -351,8 +356,13 @@ public class StyleRegistry extends TimerTask {
                             putLegend( layerName, style, false );
                         }
                     } else if ( elem.getName().getLocalPart().equals( "LegendGraphicFile" ) ) {
-                        File legend = new File( adapter.resolve( elem.getValue() ).toURI() );
-                        legends.put( lastName, legend );
+                        URL url = adapter.resolve( elem.getValue() );
+                        if ( url.toURI().getScheme().equals( "file" ) ) {
+                            File legend = new File( url.toURI() );
+                            legends.put( lastName, new Pair<File, URL>( legend, null ) );
+                        } else {
+                            legends.put( lastName, new Pair<File, URL>( null, url ) );
+                        }
                     } else if ( elem.getName().getLocalPart().equals( "UserStyle" ) ) {
                         if ( name == null ) {
                             name = elem.getValue();
@@ -370,7 +380,12 @@ public class StyleRegistry extends TimerTask {
                 Pair<LinkedList<Filter>, LinkedList<Style>> parsedStyles = getStyles( in, namedLayer, map );
                 for ( Style s : parsedStyles.second ) {
                     put( layerName, s, false );
-                    s.setLegendFile( legends.get( s.getName() ) );
+                    Pair<File, URL> p = legends.get( s.getName() );
+                    if ( p != null && p.first != null ) {
+                        s.setLegendFile( p.first );
+                    } else if ( p != null ) {
+                        s.setLegendURL( p.second );
+                    }
                 }
             } catch ( MalformedURLException e ) {
                 LOG.trace( "Stack trace", e );
@@ -385,10 +400,6 @@ public class StyleRegistry extends TimerTask {
             } catch ( URISyntaxException e ) {
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
-            } catch ( IOException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be closed: '{}'.",
-                          new Object[] { sty.getFile(), layerName, e.getLocalizedMessage() } );
             } finally {
                 closeQuietly( is );
             }

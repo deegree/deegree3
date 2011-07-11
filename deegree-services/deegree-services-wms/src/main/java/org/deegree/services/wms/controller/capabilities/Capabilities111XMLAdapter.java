@@ -276,11 +276,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         Style def = service.getStyles().get( layer.getName(), null );
         if ( def != null ) {
             if ( def.getName() != null && !def.getName().isEmpty() ) {
-                writeStyle( writer, "default", def.getName(), service.getLegendSize( def ), layer.getName(),
-                            def.getName() ); // TODO
+                writeStyle( writer, "default", def.getName(), service.getLegendSize( def ), layer.getName(), def ); // TODO
                 // title/description/whatever
             } else {
-                writeStyle( writer, "default", "default", service.getLegendSize( def ), layer.getName(), def.getName() ); // TODO
+                writeStyle( writer, "default", "default", service.getLegendSize( def ), layer.getName(), def ); // TODO
                 // title/description/whatever
             }
         }
@@ -292,7 +291,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             visited.add( s );
             String name = s.getName();
             if ( name != null && !name.isEmpty() ) {
-                writeStyle( writer, name, name, service.getLegendSize( s ), layer.getName(), name ); // TODO
+                writeStyle( writer, name, name, service.getLegendSize( s ), layer.getName(), s ); // TODO
                 // title/description/whatever
             }
         }
@@ -316,7 +315,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
     }
 
     private void writeStyle( XMLStreamWriter writer, String name, String title, Pair<Integer, Integer> legendSize,
-                             String layerName, String styleName )
+                             String layerName, Style style )
                             throws XMLStreamException {
         writer.writeStartElement( "Style" );
         writeElement( writer, "Name", name );
@@ -329,9 +328,14 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeStartElement( "OnlineResource" );
             writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
-            String style = styleName == null ? "" : ( "&style=" + styleName );
-            writer.writeAttribute( XLNNS, "href", getUrl + "?request=GetLegendGraphic&version=1.1.1&service=WMS&layer="
-                                                  + layerName + style + "&format=image/png" );
+            if ( style.getLegendURL() == null ) {
+                String styleName = style.getName() == null ? "" : ( "&style=" + style.getName() );
+                writer.writeAttribute( XLNNS, "href", getUrl
+                                                      + "?request=GetLegendGraphic&version=1.1.1&service=WMS&layer="
+                                                      + layerName + styleName + "&format=image/png" );
+            } else {
+                writer.writeAttribute( XLNNS, "href", style.getLegendURL().toExternalForm() );
+            }
             writer.writeEndElement();
             writer.writeEndElement();
         }
