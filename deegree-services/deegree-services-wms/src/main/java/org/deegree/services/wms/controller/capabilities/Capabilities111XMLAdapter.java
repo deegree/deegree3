@@ -301,10 +301,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( hint.first != NEGATIVE_INFINITY || hint.second != POSITIVE_INFINITY ) {
             double fac = 0.00028;
             writer.writeStartElement( "ScaleHint" );
-            writer.writeAttribute( "min", Double.toString( hint.first == NEGATIVE_INFINITY ? MIN_VALUE : hint.first
-                                                                                                         * fac ) );
-            writer.writeAttribute( "max", Double.toString( hint.second == POSITIVE_INFINITY ? MAX_VALUE : hint.second
-                                                                                                          * fac ) );
+            writer.writeAttribute( "min",
+                                   Double.toString( hint.first == NEGATIVE_INFINITY ? MIN_VALUE : hint.first * fac ) );
+            writer.writeAttribute( "max",
+                                   Double.toString( hint.second == POSITIVE_INFINITY ? MAX_VALUE : hint.second * fac ) );
             writer.writeEndElement();
         }
 
@@ -434,10 +434,15 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
+        String url = getUrl;
+        if ( provider != null && provider.getServiceContact() != null
+             && provider.getServiceContact().getOnlineResource() != null ) {
+            url = provider.getServiceContact().getOnlineResource();
+        }
         writer.writeStartElement( "OnlineResource" );
         writer.writeNamespace( XLINK_PREFIX, XLNNS );
         writer.writeAttribute( XLNNS, "type", "simple" );
-        writer.writeAttribute( XLNNS, "href", getUrl );
+        writer.writeAttribute( XLNNS, "href", url );
         writer.writeEndElement();
 
         if ( provider != null ) {

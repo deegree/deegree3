@@ -507,9 +507,14 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
+        String url = getUrl;
+        if ( provider != null && provider.getServiceContact() != null
+             && provider.getServiceContact().getOnlineResource() != null ) {
+            url = provider.getServiceContact().getOnlineResource();
+        }
         writer.writeStartElement( WMSNS, "OnlineResource" );
         writer.writeAttribute( XLNNS, "type", "simple" );
-        writer.writeAttribute( XLNNS, "href", getUrl );
+        writer.writeAttribute( XLNNS, "href", url );
         writer.writeEndElement();
 
         if ( provider != null ) {
