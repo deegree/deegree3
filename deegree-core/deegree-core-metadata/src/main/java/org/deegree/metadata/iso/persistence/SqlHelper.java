@@ -86,20 +86,20 @@ abstract class SqlHelper {
     protected StringBuilder getPreparedStatementDatasetIDs( AbstractWhereBuilder builder ) {
 
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
-        String orderByclause = null;
-        if ( builder.getOrderBy() != null ) {
-            int length = builder.getOrderBy().getSQL().length();
-            orderByclause = builder.getOrderBy().getSQL().toString().substring( 0, length - 4 );
-        }
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
         getDatasetIDs.append( "SELECT DISTINCT " );
         getDatasetIDs.append( rootTableAlias );
         getDatasetIDs.append( '.' );
         getDatasetIDs.append( idColumn );
-        if ( orderByclause != null ) {
+
+        // for SELECT DISTINCT, all ORDER BY columns have to be SELECTed as well
+        if ( builder.getOrderBy() != null ) {
+            // hack to re-use the ORDER BY column list 
+            String orderByClause = builder.getOrderBy().getSQL().toString().replaceAll( " ASC| DESC", "" );
             getDatasetIDs.append( ',' );
-            getDatasetIDs.append( orderByclause );
+            getDatasetIDs.append( orderByClause );
         }
+
         return getDatasetIDs;
     }
 
