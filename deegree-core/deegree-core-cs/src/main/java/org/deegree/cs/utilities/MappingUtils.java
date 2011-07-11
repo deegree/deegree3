@@ -86,6 +86,7 @@ public class MappingUtils {
      * <li>EPSG::${epsgCode}</li>
      * <li>EPSG:${epsgCode}</li>
      * <li>Any string containing EPSG:${epsgCode} or EPSG::${epsgCode}
+     * <li>Any string ending with EPSG/?/${epsgCode}
      * </ul>
      * 
      * @param compare
@@ -106,8 +107,9 @@ public class MappingUtils {
                     || ( X_OGC + operationName + ":" + EPSG_DOUBLE + epsgCode ).equalsIgnoreCase( compare )
                     || ( OGC + operationName + ":" + EPSG_SINGLE + epsgCode ).equalsIgnoreCase( compare )
                     || ( OGC + operationName + ":" + EPSG_DOUBLE + epsgCode ).equalsIgnoreCase( compare )
-                    || ( compare.toUpperCase().contains( EPSG_SINGLE + epsgCode ) ) || ( compare.toUpperCase().contains( EPSG_DOUBLE
-                                                                                                                         + epsgCode ) ) );
+                    || ( compare.toUpperCase().contains( EPSG_SINGLE + epsgCode ) )
+                    || ( compare.toUpperCase().contains( EPSG_DOUBLE + epsgCode ) ) || ( compare.toUpperCase().matches( "[\\w/\\:.]*/EPSG/[\\w.]*/"
+                                                                                                                        + epsgCode ) ) );
 
     }
 
