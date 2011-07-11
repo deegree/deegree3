@@ -47,6 +47,7 @@ import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.AbstractWhereBuilder;
@@ -86,44 +87,60 @@ class QueryHelper extends SqlHelper {
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query, conn );
 
-            StringBuilder mainSelect = getPreparedStatementDatasetIDs( builder );
+            StringBuilder idSelect = getPreparedStatementDatasetIDs( builder );
 
             if ( query != null && query.getStartPosition() != 1 && connectionType == MSSQL ) {
-                String oldHeader = mainSelect.toString();
-                mainSelect = mainSelect.append( " from (" ).append( oldHeader );
-                mainSelect.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
+                String oldHeader = idSelect.toString();
+                idSelect = idSelect.append( " from (" ).append( oldHeader );
+                idSelect.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
             }
 
-            getPSBody( builder, mainSelect );
+            getPSBody( builder, idSelect );
             if ( builder.getOrderBy() != null ) {
-                mainSelect.append( " ORDER BY " );
-                mainSelect.append( builder.getOrderBy().getSQL() );
+                idSelect.append( " ORDER BY " );
+                idSelect.append( builder.getOrderBy().getSQL() );
             }
             if ( query != null && query.getStartPosition() != 1 && connectionType == PostgreSQL ) {
-                mainSelect.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
+                idSelect.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
             if ( query != null && query.getStartPosition() != 1 && connectionType == MSSQL ) {
-                mainSelect.append( ") as X1 where X1.rownum > " );
-                mainSelect.append( query.getStartPosition() - 1 );
+                idSelect.append( ") as X1 where X1.rownum > " );
+                idSelect.append( query.getStartPosition() - 1 );
             }
             // take a look in the wiki before changing this!
             if ( connectionType == PostgreSQL && query != null && query.getMaxRecords() > -1 ) {
-                mainSelect.append( " LIMIT " ).append( query.getMaxRecords() );
+                idSelect.append( " LIMIT " ).append( query.getMaxRecords() );
             }
-
-            StringBuilder innerSelect = new StringBuilder( "SELECT in1.id FROM (" );
-            innerSelect.append( mainSelect );
-            innerSelect.append( " ) as in1" );
 
             StringBuilder outerSelect = new StringBuilder( "SELECT " );
             outerSelect.append( recordColumn );
             outerSelect.append( " FROM " );
             outerSelect.append( ISOPropertyNameMapper.DatabaseTables.idxtb_main );
-            outerSelect.append( " WHERE " );
-            outerSelect.append( idColumn );
-            outerSelect.append( " IN (" );
-            outerSelect.append( innerSelect );
-            outerSelect.append( ")" );
+            outerSelect.append( " A INNER JOIN (" );
+            outerSelect.append( idSelect );
+            outerSelect.append( ") B ON A.id=B.id" );
+
+            // append sort criteria in the outer again, because IN statement looses ordering from inner ORDER BY
+            if ( builder.getOrderBy() != null ) {
+                outerSelect.append( " ORDER BY " );
+
+                // check that all sort columns belong to root table
+                String sortCols = builder.getOrderBy().getSQL().toString();
+                String rootTableQualifier = builder.getAliasManager().getRootTableAlias() + ".";
+                int columnCount = StringUtils.count( sortCols, "," ) + 1;
+                int rootAliasCount = StringUtils.count( sortCols, rootTableQualifier );
+
+                if ( rootAliasCount < columnCount ) {
+                    String msg = "Sorting based on properties not stored in the root table is currently not supported.";
+                    throw new MetadataStoreException( msg );
+                }
+
+                String colRegEx = builder.getAliasManager().getRootTableAlias() + ".\\S+";
+                for ( int i = 1; i <= columnCount; i++ ) {
+                    sortCols = sortCols.replaceFirst( colRegEx, "crit" + i );
+                }
+                outerSelect.append( sortCols );
+            }
 
             preparedStatement = conn.prepareStatement( outerSelect.toString() );
 

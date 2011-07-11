@@ -94,10 +94,14 @@ abstract class SqlHelper {
 
         // for SELECT DISTINCT, all ORDER BY columns have to be SELECTed as well
         if ( builder.getOrderBy() != null ) {
-            // hack to re-use the ORDER BY column list 
-            String orderByClause = builder.getOrderBy().getSQL().toString().replaceAll( " ASC| DESC", "" );
+            // hack to transform the ORDER BY column list in select list
+            String orderColList = builder.getOrderBy().getSQL().toString();
+            int i = 1;
+            while ( orderColList.contains( " ASC" ) || orderColList.contains( "DESC" ) ) {
+                orderColList = orderColList.replaceFirst( " ASC| DESC", " AS crit" + ( i++ ) );
+            }
             getDatasetIDs.append( ',' );
-            getDatasetIDs.append( orderByClause );
+            getDatasetIDs.append( orderColList );
         }
 
         return getDatasetIDs;
