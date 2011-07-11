@@ -86,6 +86,7 @@ import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
@@ -151,6 +152,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private String fidPrefix;
 
+    private final List<Mapping> mappings;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 
@@ -169,12 +172,16 @@ public class ShapeFeatureStore implements FeatureStore {
      *            whether to copy the dbf into a h2 database for indexing
      * @param cache
      *            used for caching retrieved feature instances, can be <code>null</code> (will create a default cache)
+     * @param mappings
+     *            may be null, in which case the original DBF names and 'geometry' will be used
      */
     public ShapeFeatureStore( String shpName, ICRS crs, Charset encoding, String ftNamespace, String localFtName,
-                              String ftPrefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache ) {
+                              String ftPrefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache,
+                              List<Mapping> mappings ) {
         this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
+        this.mappings = mappings;
 
         localFtName = localFtName == null ? new File( shpName ).getName() : localFtName;
         if ( localFtName.endsWith( ".shp" ) ) {
@@ -185,7 +192,8 @@ public class ShapeFeatureStore implements FeatureStore {
         fidPrefix = localFtName.toUpperCase() + "_";
 
         // TODO allow null namespaces / empty prefix
-        // NOTE: verify that the WFS code for dealing with that (e.g. repairing unqualified names) works with that first
+        // NOTE: verify that the WFS code for dealing with that (e.g. repairing
+        // unqualified names) works with that first
         ftNamespace = ( ftNamespace != null && !ftNamespace.isEmpty() ) ? ftNamespace : "http://www.deegree.org/app";
         ftPrefix = ( ftPrefix != null && !ftPrefix.isEmpty() ) ? ftPrefix : "app";
 
@@ -273,11 +281,12 @@ public class ShapeFeatureStore implements FeatureStore {
         String namespace = ftName.getNamespaceURI();
 
         try {
-            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName, shp.getGeometryType() );
+            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName, shp.getGeometryType(),
+                                 mappings );
 
             if ( generateAlphanumericIndexes ) {
                 // set up index
-                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes() );
+                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
             }
 
             ft = dbf.getFeatureType();
@@ -381,10 +390,11 @@ public class ShapeFeatureStore implements FeatureStore {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
                     LOG.debug( "Re-opening the dbf file {}", shpName );
-                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName, shp.getGeometryType() );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName, shp.getGeometryType(),
+                                         mappings );
                     if ( generateAlphanumericIndexes ) {
                         // set up index
-                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes() );
+                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
                     }
                     ft = dbf.getFeatureType();
                     schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );
@@ -569,7 +579,7 @@ public class ShapeFeatureStore implements FeatureStore {
                             throws FeatureStoreException {
         return calcEnvelope( ftName );
     }
-    
+
     @Override
     public Envelope calcEnvelope( QName ftName ) {
         checkForUpdate();

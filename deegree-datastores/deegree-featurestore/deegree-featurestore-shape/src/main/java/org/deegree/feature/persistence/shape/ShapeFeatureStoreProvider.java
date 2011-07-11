@@ -40,12 +40,14 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -53,6 +55,8 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig;
+import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig.Mapping.GeometryProperty;
+import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig.Mapping.SimpleProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +76,7 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
 
-    private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/3.0.0/shape.xsd" );
+    private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/3.1.0/shape.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -102,7 +106,8 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
             String srs = config.getStorageCRS();
             ICRS crs = null;
             if ( srs != null ) {
-                // rb: if it is null, the shape feature store will try to read the prj files.
+                // rb: if it is null, the shape feature store will try to read
+                // the prj files.
                 // srs = "EPSG:4326";
                 // } else {
                 srs = srs.trim();
@@ -134,11 +139,26 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
                 }
             }
 
-            // TODO make cache configurable
+            List<Mapping> mappings = null;
+            if ( config.getMapping() != null ) {
+                mappings = new ArrayList<Mapping>();
+                for ( Object o : config.getMapping().getSimplePropertyOrGeometryProperty() ) {
+                    if ( o instanceof GeometryProperty ) {
+                        GeometryProperty g = (GeometryProperty) o;
+                        mappings.add( new Mapping( null, g.getName(), false ) );
+                    }
+                    if ( o instanceof SimpleProperty ) {
+                        SimpleProperty f = (SimpleProperty) o;
+                        mappings.add( new Mapping( f.getMapping(), f.getName(), f.isGenerateIndex() ) );
+                    }
+                }
+            }
+
             Boolean genIdx = config.isGenerateAlphanumericIndexes();
             fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getFeatureTypeNamespace(),
                                         config.getFeatureTypeName(), config.getFeatureTypePrefix(), genIdx == null
-                                                                                                    || genIdx, null );
+                                                                                                    || genIdx, null,
+                                        mappings );
 
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
@@ -156,4 +176,19 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};
     }
+
+    static class Mapping {
+        String fieldname;
+
+        String propname;
+
+        boolean index;
+
+        Mapping( String fieldname, String propname, boolean index ) {
+            this.fieldname = fieldname;
+            this.propname = propname;
+            this.index = index;
+        }
+    }
+
 }

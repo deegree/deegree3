@@ -55,11 +55,14 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.GenericFeatureType;
@@ -85,6 +88,8 @@ public class DBFReader {
 
     private HashMap<String, Field> fields = new HashMap<String, Field>();
 
+    private Map<String, PropertyType> properties = null;
+
     private LinkedList<String> fieldOrder = new LinkedList<String>();
 
     private final Charset encoding;
@@ -108,9 +113,12 @@ public class DBFReader {
      *            declarations (must not be null)
      * @param geomType
      *            the geometry type of the .shp
+     * @param mappings
+     *            may be null, in which case the dbf names will be used
      * @throws IOException
      */
-    public DBFReader( RandomAccessFile in, Charset encoding, QName ftName, GeometryType geomType ) throws IOException {
+    public DBFReader( RandomAccessFile in, Charset encoding, QName ftName, GeometryType geomType, List<Mapping> mappings )
+                            throws IOException {
         this.encoding = encoding;
         this.file = in;
         channel = file.getChannel();
@@ -164,6 +172,17 @@ public class DBFReader {
         String namespace = ftName.getNamespaceURI();
         String prefix = ftName.getPrefix();
 
+        Map<String, Mapping> map = null;
+        if ( mappings != null ) {
+            map = new HashMap<String, Mapping>();
+            properties = new HashMap<String, PropertyType>();
+            for ( Mapping m : mappings ) {
+                if ( m.fieldname != null ) {
+                    map.put( m.fieldname, m );
+                }
+            }
+        }
+
         int read;
         while ( ( read = getUnsigned( buffer ) ) != 13 ) {
             while ( read != 0 && buf.size() < 10 ) {
@@ -189,7 +208,13 @@ public class DBFReader {
             LOG.trace( "Field length is " + fieldLength + ", type is " + type );
 
             // using the prefix here is vital for repairing of unqualified property names in WFS...
-            QName ptName = new QName( namespace, name, prefix );
+            QName ptName;
+            if ( map != null && map.get( name ) != null ) {
+
+                ptName = new QName( namespace, map.get( name ).propname, prefix );
+            } else {
+                ptName = new QName( namespace, name, prefix );
+            }
             switch ( type ) {
             case 'C':
                 if ( fieldPrecision > 0 ) {
@@ -233,6 +258,9 @@ public class DBFReader {
             fields.put( name, new Field( type, pt, fieldLength ) );
             fieldOrder.add( name );
             types.add( pt );
+            if ( map != null ) {
+                properties.put( name, pt );
+            }
 
             skipBytes( buffer, 13 );
             if ( getUnsigned( buffer ) == 1 ) {
@@ -240,11 +268,22 @@ public class DBFReader {
             }
         }
 
-        types.add( new GeometryPropertyType( new QName( namespace, "geometry", prefix ), 0, 1, null, null, geomType,
-                                             DIM_2_OR_3, BOTH ) ); // TODO
-        // properly
-        // determine the
-        // dimension from SHP type
+        if ( map != null ) {
+            types.clear();
+            for ( Mapping m : mappings ) {
+                if ( m.fieldname == null ) {
+                    types.add( new GeometryPropertyType( new QName( namespace, m.propname, prefix ), 0, 1, null, null,
+                                                         geomType, DIM_2_OR_3, BOTH ) );
+                } else {
+                    types.add( properties.get( m.fieldname ) );
+                }
+            }
+        } else {
+            types.add( new GeometryPropertyType( new QName( namespace, "geometry", prefix ), 0, 1, null, null,
+                                                 geomType, DIM_2_OR_3, BOTH ) );
+        }
+        // TODO
+        // properly determine the dimension from SHP type
         featureType = new GenericFeatureType( ftName, types, false );
 
     }
@@ -284,6 +323,12 @@ public class DBFReader {
             Property property = null;
 
             byte[] bs = new byte[field.length];
+
+            if ( properties != null && !properties.containsKey( name ) ) {
+                buffer.position( buffer.position() + field.length );
+                continue;
+            }
+
             switch ( field.type ) {
             case 'C': {
                 buffer.get( bs );

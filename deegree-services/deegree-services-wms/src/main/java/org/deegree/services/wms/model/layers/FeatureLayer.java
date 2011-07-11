@@ -167,7 +167,7 @@ public class FeatureLayer extends Layer {
                             throws FileNotFoundException, IOException {
         super( service, name, title, parent );
         // TODO what about the charset here?
-        datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null );
+        datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null, null );
         try {
             datastore.init( null );
         } catch ( ResourceInitException e ) {

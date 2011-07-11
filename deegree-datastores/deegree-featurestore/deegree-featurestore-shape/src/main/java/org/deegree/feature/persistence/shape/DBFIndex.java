@@ -50,13 +50,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.property.PropertyType;
@@ -91,16 +92,30 @@ public class DBFIndex {
      * @param envelopes
      * @throws IOException
      */
-    public DBFIndex( DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes )
-                            throws IOException {
+    public DBFIndex( DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
+                     List<Mapping> mappings ) throws IOException {
         StringBuilder create = new StringBuilder( "create table dbf_index (record_number integer,file_index bigint" );
+
+        Map<String, Mapping> fieldMap = null;
+        if ( mappings != null ) {
+            fieldMap = new HashMap<String, Mapping>();
+            for ( Mapping m : mappings ) {
+                if ( m.propname != null ) {
+                    fieldMap.put( m.propname, m );
+                }
+            }
+        }
 
         ArrayList<String> fields = new ArrayList<String>();
 
         for ( PropertyType pt : dbf.getFields() ) {
             if ( pt instanceof SimplePropertyType ) {
-                create.append( ", " );
                 SimplePropertyType spt = (SimplePropertyType) pt;
+                if ( fieldMap != null && !fieldMap.containsKey( spt.getName().getLocalPart() ) ) {
+                    continue;
+                }
+
+                create.append( ", " );
                 String sqlType = null;
                 switch ( spt.getPrimitiveType().getBaseType() ) {
                 case BOOLEAN:
@@ -151,6 +166,9 @@ public class DBFIndex {
             stmt.close();
 
             for ( String field : fields ) {
+                if ( fieldMap != null && !fieldMap.get( field ).index ) {
+                    continue;
+                }
                 stmt = conn.prepareStatement( "create index " + field + "_index on dbf_index (" + field + ")" );
                 stmt.executeUpdate();
                 stmt.close();
@@ -165,6 +183,9 @@ public class DBFIndex {
                 HashMap<SimplePropertyType, Property> entry = dbf.getEntry( i );
                 sb.append( "insert into dbf_index (record_number,file_index" );
                 for ( SimplePropertyType spt : entry.keySet() ) {
+                    if ( fieldMap != null && !fieldMap.containsKey( spt.getName().getLocalPart() ) ) {
+                        continue;
+                    }
                     sb.append( "," );
                     qms.append( ",?" );
                     sb.append( spt.getName().getLocalPart().toLowerCase() );
@@ -177,6 +198,9 @@ public class DBFIndex {
                 Pair<float[], Long> p = iter.next();
                 stmt.setLong( 2, p.second );
                 for ( SimplePropertyType spt : entry.keySet() ) {
+                    if ( fieldMap != null && !fieldMap.containsKey( spt.getName().getLocalPart() ) ) {
+                        continue;
+                    }
                     PrimitiveValue primVal = ( (SimpleProperty) entry.get( spt ) ).getValue();
                     if ( primVal.getValue() == null ) {
                         switch ( spt.getPrimitiveType().getBaseType() ) {
@@ -294,15 +318,15 @@ public class DBFIndex {
                 for ( SQLArgument lit : generated.getArguments() ) {
                     lit.setArgument( stmt, i++ );
                     // TODO what about ElementNode?
-//                    Object o = lit.getValue();
-//                    if ( o instanceof PrimitiveValue ) {
-//                        o = ( (PrimitiveValue) o ).getValue();
-//                    }
-//                    if ( o instanceof ElementNode ) {
-//                        stmt.setString( i++, o.toString() );
-//                    } else {
-//                        stmt.setObject( i++, o );
-//                    }
+                    // Object o = lit.getValue();
+                    // if ( o instanceof PrimitiveValue ) {
+                    // o = ( (PrimitiveValue) o ).getValue();
+                    // }
+                    // if ( o instanceof ElementNode ) {
+                    // stmt.setString( i++, o.toString() );
+                    // } else {
+                    // stmt.setObject( i++, o );
+                    // }
                 }
             }
 
