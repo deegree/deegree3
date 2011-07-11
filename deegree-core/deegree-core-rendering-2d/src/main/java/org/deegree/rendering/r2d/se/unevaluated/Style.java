@@ -44,6 +44,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -114,6 +115,8 @@ public class Style {
     private QName featureType;
 
     private File legendFile;
+
+    private URL legendUrl;
 
     /**
      * @param rules
@@ -224,10 +227,11 @@ public class Style {
                     if ( geom instanceof Point || geom instanceof MultiPoint ) {
                         list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultPointStyle, geometries,
                                                                                      null ) );
-                    } else if ( geom instanceof Curve || geom instanceof MultiCurve<?> || geom instanceof MultiLineString ) {
+                    } else if ( geom instanceof Curve || geom instanceof MultiCurve<?>
+                                || geom instanceof MultiLineString ) {
                         list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultLineStyle, geometries, null ) );
-                    } else if ( geom instanceof Surface || geom instanceof MultiSurface<?> || geom instanceof MultiPolygon
-                                || geom instanceof Envelope ) {
+                    } else if ( geom instanceof Surface || geom instanceof MultiSurface<?>
+                                || geom instanceof MultiPolygon || geom instanceof Envelope ) {
                         list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultPolygonStyle, geometries,
                                                                                      null ) );
                     } else {
@@ -400,11 +404,19 @@ public class Style {
         legendFile = file;
     }
 
+    public void setLegendURL( URL url ) {
+        legendUrl = url;
+    }
+
     /**
      * @return the legend file or null, if not set
      */
     public File getLegendFile() {
         return legendFile;
+    }
+
+    public URL getLegendURL() {
+        return legendUrl;
     }
 
     static class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
