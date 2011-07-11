@@ -38,6 +38,7 @@ package org.deegree.cs.persistence;
 import java.net.URL;
 import java.util.ServiceLoader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.cs.exceptions.CRSStoreException;
 
@@ -57,8 +58,9 @@ public interface CRSStoreProvider extends ResourceProvider {
      * 
      * @param configURL
      *            location of the configuration document, must not be <code>null</code>
+     * @param workspace
      * @return new crs store instance, configured, not initialized yet
      */
-    public CRSStore getCRSStore( URL configURL )
+    public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
                             throws CRSStoreException;
 }

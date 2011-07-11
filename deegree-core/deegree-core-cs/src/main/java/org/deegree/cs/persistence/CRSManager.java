@@ -228,7 +228,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             LOG.error( msg );
             throw new CRSStoreException( msg );
         }
-        return provider.getCRSStore( configURL );
+        return provider.getCRSStore( configURL, workspace );
     }
 
     /**

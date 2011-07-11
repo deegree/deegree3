@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/stores/gml/gml.xsd">
   <!-- ONE of -->
   <GMLFile>...</GMLFile>
-  <!-- or (must have an constructur as: GMLResourceClass(GMLCRSStore store, Map<String, String> params ) -->
+  <!-- or (must have an constructur as: GMLResourceClass(GMLCRSStore store, Map<String, List<String>> params ) -->
   <GMLResourceClass>...</GMLResourceClass>
   <!-- if GMLResourceClass [0..*] -->
   <Param>

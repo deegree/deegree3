@@ -43,6 +43,7 @@ import java.net.URL;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.exceptions.CRSStoreException;
@@ -82,7 +83,7 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
     }
 
     @Override
-    public CRSStore getCRSStore( URL configURL )
+    public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
                             throws CRSStoreException {
         try {
             PROJ4CRSStoreConfig config = (PROJ4CRSStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,

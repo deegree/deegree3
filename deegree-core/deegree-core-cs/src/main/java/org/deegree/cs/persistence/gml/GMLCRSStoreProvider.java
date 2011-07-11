@@ -47,6 +47,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.exceptions.CRSStoreException;
@@ -87,7 +88,7 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
     }
 
     @Override
-    public CRSStore getCRSStore( URL configURL )
+    public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
                             throws CRSStoreException {
         try {
             GMLCRSStoreConfig config = (GMLCRSStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
@@ -100,12 +101,20 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
             if ( resourceClassName != null && resourceClassName.trim().length() > 0 ) {
                 try {
                     List<Param> configParams = config.getParam();
-                    Map<String, String> params = new HashMap<String, String>();
+                    Map<String, List<String>> params = new HashMap<String, List<String>>();
                     for ( Param param : configParams ) {
                         params.put( param.getName(), param.getValue() );
                     }
                     // use reflection to instantiate the configured resource.
-                    Class<?> t = Class.forName( resourceClassName );
+
+                    Class<?> t;
+                    try {
+                        t = Class.forName( resourceClassName );
+                    } catch ( Exception e ) {
+                        LOG.debug( "Could not find class from classname '" + resourceClassName
+                                   + "'. Search in the additional modules in the workspace." );
+                        t = Class.forName( resourceClassName, false, workspace.getModuleClassLoader() );
+                    }
                     LOG.debug( "Trying to load configured CRS provider from classname: " + resourceClassName );
                     Constructor<?> constructor = t.getConstructor( GMLCRSStore.class, Map.class );
                     if ( constructor == null ) {
@@ -137,7 +146,7 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
                 } catch ( Throwable t ) {
                     LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, t.getMessage() ),
                                t );
-                } 
+                }
                 LOG.info( "The configured class: " + resourceClassName + " was instantiated." );
             }
             if ( resource == null ) {

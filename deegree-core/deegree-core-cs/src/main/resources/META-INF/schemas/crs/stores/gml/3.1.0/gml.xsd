@@ -32,7 +32,7 @@
 								<annotation>
 									<documentation><![CDATA[
 										must have an constructur like: GMLResourceClass(GMLCRSStore
-										store, Map<String , String> params )]]>
+										store, Map<String, List<String>> params )]]>
 									</documentation>
 								</annotation>
 							</element>
@@ -47,7 +47,7 @@
 		<complexType>
 			<sequence>
 				<element name="Name" type="string" />
-				<element name="Value" type="string" />
+				<element name="Value" type="string" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>

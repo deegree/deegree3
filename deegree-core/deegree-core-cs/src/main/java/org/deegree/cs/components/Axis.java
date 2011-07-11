@@ -149,13 +149,13 @@ public class Axis extends CRSIdentifiable implements IAxis {
         this.orientation = AO_OTHER;
         if ( orientation != null ) {
             String tmp = orientation.trim().toLowerCase();
-            if ( tmp.contains( "north" ) ) {
+            if ( tmp.contains( "north" ) || tmp.contains( "nord" ) ) {
                 this.orientation = AO_NORTH;
-            } else if ( tmp.contains( "south" ) ) {
+            } else if ( tmp.contains( "south" ) || tmp.contains( "süd" ) ) {
                 this.orientation = AO_SOUTH;
-            } else if ( tmp.contains( "east" ) ) {
+            } else if ( tmp.contains( "east" ) || tmp.contains( "ost" ) ) {
                 this.orientation = AO_EAST;
-            } else if ( tmp.contains( "west" ) ) {
+            } else if ( tmp.contains( "west" ) || tmp.contains( "west" ) ) {
                 this.orientation = AO_WEST;
             } else if ( tmp.contains( "front" ) ) {
                 this.orientation = AO_FRONT;
@@ -219,10 +219,7 @@ public class Axis extends CRSIdentifiable implements IAxis {
 
     @Override
     public String toString() {
-        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append(
-                                                                                                   getOrientationAsString() ).append(
-                                                                                                                                      " units: " ).append(
-                                                                                                                                                           units ).toString();
+        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append( getOrientationAsString() ).append( " units: " ).append( units ).toString();
     }
 
     @Override

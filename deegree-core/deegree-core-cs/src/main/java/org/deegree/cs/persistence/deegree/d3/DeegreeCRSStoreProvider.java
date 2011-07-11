@@ -44,6 +44,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.exceptions.CRSStoreException;
@@ -85,7 +86,7 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
         return singletonMap( "example", DeegreeCRSStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
     }
 
-    public CRSStore getCRSStore( URL configURL )
+    public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
                             throws CRSStoreException {
         DeegreeCRSStore crsStore = null;
         try {
