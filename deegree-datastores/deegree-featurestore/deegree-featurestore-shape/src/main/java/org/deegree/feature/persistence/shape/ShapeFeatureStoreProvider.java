@@ -149,7 +149,11 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
                     }
                     if ( o instanceof SimpleProperty ) {
                         SimpleProperty f = (SimpleProperty) o;
-                        mappings.add( new Mapping( f.getMapping(), f.getName(), f.isGenerateIndex() ) );
+                        String name = f.getName();
+                        if ( name == null ) {
+                            name = f.getMapping();
+                        }
+                        mappings.add( new Mapping( f.getMapping(), name, f.isGenerateIndex() ) );
                     }
                 }
             }

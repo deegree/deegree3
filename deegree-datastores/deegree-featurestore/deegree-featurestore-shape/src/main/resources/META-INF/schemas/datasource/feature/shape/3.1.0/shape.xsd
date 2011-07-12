@@ -33,7 +33,7 @@
                 <element name="SimpleProperty">
                   <complexType>
                     <attribute name="mapping" type="string" use="required" />
-                    <attribute name="name" type="string" use="required" />
+                    <attribute name="name" type="string" use="optional" />
                     <attribute name="generateIndex" type="boolean" use="optional" default="true" />
                   </complexType>
                 </element>
