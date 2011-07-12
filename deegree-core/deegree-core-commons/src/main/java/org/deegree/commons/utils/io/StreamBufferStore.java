@@ -73,6 +73,8 @@ public class StreamBufferStore extends OutputStream {
 
     private File tmpFile;
 
+    private File targetFile;
+
     /**
      * Creates a new {@link StreamBufferStore} instance that switches to file storage when
      * {@link StreamBufferStore#DEFAULT_LIMIT} bytes have been written.
@@ -91,6 +93,21 @@ public class StreamBufferStore extends OutputStream {
     public StreamBufferStore( int limit ) {
         this.limit = limit;
         os = new ByteArrayOutputStream( limit );
+    }
+
+    /**
+     * Creates a new {@link StreamBufferStore} instance that switches to file storage when the specified number of bytes
+     * have been written.
+     * 
+     * @param limit
+     *            number of bytes when switching to file will occur
+     * @param targetFile
+     *            file to use if written bytes exceed limit, must not be <code>null</code>
+     */
+    public StreamBufferStore( int limit, File targetFile ) {
+        this.limit = limit;
+        os = new ByteArrayOutputStream( limit );
+        this.targetFile = targetFile;
     }
 
     /**
@@ -200,7 +217,11 @@ public class StreamBufferStore extends OutputStream {
     private void switchToFile()
                             throws IOException {
         LOG.debug( "Memory limit of " + limit + " bytes reached. Switching to file-based storage." );
-        tmpFile = File.createTempFile( "store", ".tmp" );
+        if ( targetFile == null ) {
+            tmpFile = File.createTempFile( "store", ".tmp" );
+        } else {
+            tmpFile = targetFile;
+        }
         LOG.debug( "Using file: " + tmpFile );
         OutputStream fileOs = new BufferedOutputStream( new FileOutputStream( tmpFile ) );
         ( (ByteArrayOutputStream) os ).writeTo( fileOs );

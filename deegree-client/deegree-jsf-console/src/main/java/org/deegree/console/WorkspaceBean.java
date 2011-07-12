@@ -99,7 +99,7 @@ public class WorkspaceBean implements Serializable {
     private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
 
     // only used when no module version information is available
-    private static final String DEFAULT_VERSION = "3.1-pre9-SNAPSHOT";
+    private static final String DEFAULT_VERSION = "3.1-pre10-SNAPSHOT";
 
     @Getter
     private String lastMessage = "Workspace initialized.";
@@ -292,8 +292,9 @@ public class WorkspaceBean implements Serializable {
     public List<String> getRemoteWorkspaces() {
         InputStream in = null;
         try {
-            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, getDownloadBaseUrl(), null, null,
-                                                                           null );
+            String url = getDownloadBaseUrl();
+            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, url, null, null, null );
+            LOG.debug( "Retrieving list of remote workspaces from {} ", url );
             in = p.getFirst();
             if ( p.second.getStatusLine().getStatusCode() != 200 ) {
                 throw new Exception( "Server responded with HTTP status code "
@@ -324,7 +325,7 @@ public class WorkspaceBean implements Serializable {
     }
 
     private String getVersion() {
-        String version = DEFAULT_VERSION;
+        String version = null;
         Collection<ModuleInfo> modules = ModuleInfo.getModulesInfo();
         if ( !modules.isEmpty() ) {
             if ( !( "${project.version}" ).equals( modules.iterator().next().getVersion() ) ) {
@@ -334,6 +335,9 @@ public class WorkspaceBean implements Serializable {
             }
         } else {
             LOG.warn( "No valid version information for modules available. Defaulting to " + DEFAULT_VERSION );
+        }
+        if (version == null) {
+            version = DEFAULT_VERSION;
         }
         return version;
     }
