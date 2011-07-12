@@ -403,7 +403,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writeElement( writer, WMSNS, "Format", "image/png" );
             writer.writeStartElement( WMSNS, "OnlineResource" );
             writer.writeAttribute( XLNNS, "type", "simple" );
-            if ( style.getLegendURL() == null ) {
+            if ( style.getLegendURL() == null || style.prefersGetLegendGraphicUrl() ) {
                 String styleName = style.getName() == null ? "" : ( "&style=" + style.getName() );
                 writer.writeAttribute( XLNNS, "href", getUrl
                                                       + "?request=GetLegendGraphic&version=1.3.0&service=WMS&layer="

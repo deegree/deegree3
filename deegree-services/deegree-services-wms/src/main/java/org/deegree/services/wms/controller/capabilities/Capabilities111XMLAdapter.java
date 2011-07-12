@@ -328,7 +328,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeStartElement( "OnlineResource" );
             writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
-            if ( style.getLegendURL() == null ) {
+            if ( style.getLegendURL() == null || style.prefersGetLegendGraphicUrl() ) {
                 String styleName = style.getName() == null ? "" : ( "&style=" + style.getName() );
                 writer.writeAttribute( XLNNS, "href", getUrl
                                                       + "?request=GetLegendGraphic&version=1.1.1&service=WMS&layer="

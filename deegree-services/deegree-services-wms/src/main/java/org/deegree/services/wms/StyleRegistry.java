@@ -66,6 +66,7 @@ import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.jaxb.wms.DirectStyleType;
 import org.deegree.services.jaxb.wms.SLDStyleType;
+import org.deegree.services.jaxb.wms.SLDStyleType.LegendGraphicFile;
 import org.slf4j.Logger;
 
 /**
@@ -287,13 +288,14 @@ public class StyleRegistry extends TimerTask {
                     }
                     put( layerName, style, false );
                     if ( sty.getLegendGraphicFile() != null ) {
-                        URL url = adapter.resolve( sty.getLegendGraphicFile() );
+                        URL url = adapter.resolve( sty.getLegendGraphicFile().getValue() );
                         if ( url.toURI().getScheme().equals( "file" ) ) {
                             File legend = new File( url.toURI() );
                             style.setLegendFile( legend );
                         } else {
                             style.setLegendURL( url );
                         }
+                        style.setPrefersGetLegendGraphicUrl( sty.getLegendGraphicFile().isOutputGetLegendGraphicUrl() );
                     }
                 }
             } catch ( MalformedURLException e ) {
@@ -342,12 +344,13 @@ public class StyleRegistry extends TimerTask {
                 LOG.debug( "Will read styles from SLD '{}', for named layer '{}'.", file, namedLayer );
                 Map<String, String> map = new HashMap<String, String>();
                 Map<String, Pair<File, URL>> legends = new HashMap<String, Pair<File, URL>>();
+                Map<String, Boolean> glgUrls = new HashMap<String, Boolean>();
                 String name = null, lastName = null;
-                for ( JAXBElement<String> elem : sty.getNameAndUserStyleAndLegendConfigurationFile() ) {
+                for ( JAXBElement<?> elem : sty.getNameAndUserStyleAndLegendConfigurationFile() ) {
                     if ( elem.getName().getLocalPart().equals( "Name" ) ) {
-                        name = elem.getValue();
+                        name = elem.getValue().toString();
                     } else if ( elem.getName().getLocalPart().equals( "LegendConfigurationFile" ) ) {
-                        File legendFile = new File( adapter.resolve( elem.getValue() ).toURI() );
+                        File legendFile = new File( adapter.resolve( elem.getValue().toString() ).toURI() );
                         Style style = loadNoImport( layerName, legendFile, true );
                         if ( style != null ) {
                             if ( name != null ) {
@@ -356,20 +359,22 @@ public class StyleRegistry extends TimerTask {
                             putLegend( layerName, style, false );
                         }
                     } else if ( elem.getName().getLocalPart().equals( "LegendGraphicFile" ) ) {
-                        URL url = adapter.resolve( elem.getValue() );
+                        LegendGraphicFile lgf = (LegendGraphicFile) elem.getValue();
+                        URL url = adapter.resolve( lgf.getValue() );
                         if ( url.toURI().getScheme().equals( "file" ) ) {
                             File legend = new File( url.toURI() );
                             legends.put( lastName, new Pair<File, URL>( legend, null ) );
                         } else {
                             legends.put( lastName, new Pair<File, URL>( null, url ) );
                         }
+                        glgUrls.put( lastName, lgf.isOutputGetLegendGraphicUrl() );
                     } else if ( elem.getName().getLocalPart().equals( "UserStyle" ) ) {
                         if ( name == null ) {
-                            name = elem.getValue();
+                            name = elem.getValue().toString();
                         }
                         LOG.debug( "Will load user style with name '{}', it will be known as '{}'.", elem.getValue(),
                                    name );
-                        map.put( elem.getValue(), name );
+                        map.put( elem.getValue().toString(), name );
                         lastName = name;
                         name = null;
                     }
@@ -386,6 +391,7 @@ public class StyleRegistry extends TimerTask {
                     } else if ( p != null ) {
                         s.setLegendURL( p.second );
                     }
+                    s.setPrefersGetLegendGraphicUrl( glgUrls.get( s.getName() ) != null && glgUrls.get( s.getName() ) );
                 }
             } catch ( MalformedURLException e ) {
                 LOG.trace( "Stack trace", e );
