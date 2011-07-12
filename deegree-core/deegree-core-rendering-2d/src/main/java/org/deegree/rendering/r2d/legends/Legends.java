@@ -43,6 +43,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -162,10 +164,18 @@ public class Legends {
      * @param g
      */
     public void paintLegend( Style style, int width, int height, Graphics2D g ) {
+        URL url = style.getLegendURL();
         File file = style.getLegendFile();
-        if ( file != null ) {
+        if ( url == null && file != null ) {
             try {
-                BufferedImage legend = ImageIO.read( file );
+                url = file.toURI().toURL();
+            } catch ( MalformedURLException e ) {
+                // nothing to do
+            }
+        }
+        if ( url != null ) {
+            try {
+                BufferedImage legend = ImageIO.read( url );
                 g.drawImage( legend, 0, 0, width, height, null );
                 g.dispose();
                 return;
@@ -187,13 +197,23 @@ public class Legends {
     }
 
     public Pair<Integer, Integer> getLegendSize( Style style ) {
+        URL url = style.getLegendURL();
         File file = style.getLegendFile();
-        if ( file != null ) {
+        if ( url == null ) {
+            if ( file != null ) {
+                try {
+                    url = file.toURI().toURL();
+                } catch ( MalformedURLException e ) {
+                    // nothing to do
+                }
+            }
+        }
+        if ( url != null ) {
             try {
-                BufferedImage legend = ImageIO.read( file );
+                BufferedImage legend = ImageIO.read( url );
                 return new Pair<Integer, Integer>( legend.getWidth(), legend.getHeight() );
             } catch ( IOException e ) {
-                LOG.warn( "Legend file {} could not be read, using dynamic legend: {}", file, e.getLocalizedMessage() );
+                LOG.warn( "Legend file {} could not be read, using dynamic legend: {}", url, e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
             }
         }
