@@ -44,6 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRSUtils;
@@ -90,6 +91,20 @@ public abstract class AbstractLayer implements Layer {
     HashMap<String, Dimension<Object>> dimensions = new HashMap<String, Dimension<Object>>();
 
     private LayerMetadata metadata;
+
+    public static final Mapper<String, Layer> LAYER_NAME = new Mapper<String, Layer>() {
+        @Override
+        public String apply( Layer u ) {
+            return u.getMetadata().getName();
+        }
+    };
+
+    public static final Mapper<LayerMetadata, Layer> LAYER_METADATA = new Mapper<LayerMetadata, Layer>() {
+        @Override
+        public LayerMetadata apply( Layer u ) {
+            return u.getMetadata();
+        }
+    };
 
     protected AbstractLayer( LayerMetadata md, Layer parent ) {
         this.metadata = md;
