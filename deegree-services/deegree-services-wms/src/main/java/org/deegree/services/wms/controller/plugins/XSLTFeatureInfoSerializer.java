@@ -17,14 +17,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
-
-import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 
 public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
 
@@ -58,7 +57,8 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
             }
             Source source = new StreamSource( new ByteArrayInputStream( bos.toByteArray() ) );
             Source xslt = new StreamSource( new File( this.xslt.toURI() ) );
-            Transformer t = TransformerFactory.newInstance().newTransformer( xslt );
+            TransformerFactory fac = TransformerFactory.newInstance();
+            Transformer t = fac.newTransformer( xslt );
             Result result = new StreamResult( outputStream );
             t.transform( source, result );
         } catch ( Throwable e ) {
