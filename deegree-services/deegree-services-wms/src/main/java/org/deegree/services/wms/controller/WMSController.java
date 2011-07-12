@@ -232,7 +232,9 @@ public class WMSController extends AbstractOGCServiceController<WMSRequestType> 
                     } else {
                         XSLTFile xsltFile = t.getXSLTFile();
                         GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
-                        XSLTFeatureInfoSerializer xslt = new XSLTFeatureInfoSerializer( version, xsltFile.getValue() );
+                        XSLTFeatureInfoSerializer xslt = new XSLTFeatureInfoSerializer(
+                                                                                        version,
+                                                                                        controllerConf.resolve( xsltFile.getValue() ) );
                         featureInfoSerializers.put( format, xslt );
                     }
                 }

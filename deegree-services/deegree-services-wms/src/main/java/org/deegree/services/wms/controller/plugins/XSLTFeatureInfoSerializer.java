@@ -2,7 +2,9 @@ package org.deegree.services.wms.controller.plugins;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.OutputStream;
+import java.net.URL;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -23,9 +25,9 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
 
     private final GMLVersion gmlVersion;
 
-    private final String xslt;
+    private final URL xslt;
 
-    public XSLTFeatureInfoSerializer( GMLVersion version, String xslt ) {
+    public XSLTFeatureInfoSerializer( GMLVersion version, URL xslt ) {
         this.gmlVersion = version;
         this.xslt = xslt;
     }
@@ -40,7 +42,7 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
             writer.write( col );
             bos.close();
             Source source = new StreamSource( new ByteArrayInputStream( bos.toByteArray() ) );
-            Source xslt = new StreamSource( this.xslt );
+            Source xslt = new StreamSource( new File( this.xslt.toURI() ) );
             Transformer t = TransformerFactory.newInstance().newTransformer( xslt );
             Result result = new StreamResult( outputStream );
             t.transform( source, result );
