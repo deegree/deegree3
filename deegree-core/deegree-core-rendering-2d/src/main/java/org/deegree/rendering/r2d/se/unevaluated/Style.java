@@ -118,6 +118,8 @@ public class Style {
 
     private URL legendUrl;
 
+    private boolean prefersGetLegendGraphicUrl;
+
     /**
      * @param rules
      * @param labels
@@ -417,6 +419,14 @@ public class Style {
 
     public URL getLegendURL() {
         return legendUrl;
+    }
+
+    public void setPrefersGetLegendGraphicUrl( boolean prefers ) {
+        this.prefersGetLegendGraphicUrl = prefers;
+    }
+
+    public boolean prefersGetLegendGraphicUrl() {
+        return prefersGetLegendGraphicUrl;
     }
 
     static class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
