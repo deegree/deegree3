@@ -42,6 +42,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -136,6 +137,7 @@ public class DeegreeWorkspace {
     private void initClassloader() {
         // setup classloader
         File modules = new File( dir, "modules" );
+        File classes = new File( modules, "classes/" );
         moduleClassLoader = Thread.currentThread().getContextClassLoader();
         if ( modules.exists() ) {
             File[] fs = modules.listFiles();
@@ -144,6 +146,14 @@ public class DeegreeWorkspace {
                 LOG.info( "deegree modules (additional)" );
                 LOG.info( "--------------------------------------------------------------------------------" );
                 List<URL> urls = new ArrayList<URL>( fs.length );
+                if ( classes.isDirectory() ) {
+                    LOG.info( "Added modules/classes/." );
+                    try {
+                        urls.add( classes.toURI().toURL() );
+                    } catch ( MalformedURLException e ) {
+                        LOG.warn( "Could not add modules/classes/ to classpath." );
+                    }
+                }
                 for ( int i = 0; i < fs.length; ++i ) {
                     if ( fs[i].isFile() ) {
                         try {
