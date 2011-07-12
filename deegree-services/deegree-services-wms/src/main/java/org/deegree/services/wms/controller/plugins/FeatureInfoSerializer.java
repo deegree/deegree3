@@ -38,6 +38,7 @@ package org.deegree.services.wms.controller.plugins;
 import java.io.OutputStream;
 
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.types.ApplicationSchema;
 
 /**
  * <code>FeatureInfoSerializer</code>
@@ -53,6 +54,6 @@ public interface FeatureInfoSerializer {
      * @param col
      * @param outputStream
      */
-    void serialize( FeatureCollection col, OutputStream outputStream );
+    void serialize( ApplicationSchema schema, FeatureCollection col, OutputStream outputStream );
 
 }

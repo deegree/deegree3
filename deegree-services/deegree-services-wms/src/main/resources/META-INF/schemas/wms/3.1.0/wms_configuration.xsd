@@ -176,7 +176,18 @@
       <element name="GetFeatureInfoFormat" minOccurs="0" maxOccurs="unbounded">
         <complexType>
           <sequence>
-            <element name="File" type="string" />
+            <choice>
+              <element name="File" type="string" />
+              <element name="XSLTFile">
+                <complexType>
+                  <simpleContent>
+                    <extension base="string">
+                      <attribute name="gmlVersion" type="wms:GMLVersionType" default="GML_32" use="optional" />
+                    </extension>
+                  </simpleContent>
+                </complexType>
+              </element>
+            </choice>
             <element name="Format" type="string" />
           </sequence>
         </complexType>
@@ -492,6 +503,15 @@
     <restriction base="string">
       <enumeration value="3.0.0" />
       <enumeration value="3.1.0" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="GMLVersionType">
+    <restriction base="string">
+      <enumeration value="GML_2" />
+      <enumeration value="GML_30" />
+      <enumeration value="GML_31" />
+      <enumeration value="GML_32" />
     </restriction>
   </simpleType>
 
