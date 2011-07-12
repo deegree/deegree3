@@ -67,7 +67,7 @@ public class ExecuteRequest extends WPSRequest {
      * @param language
      *            RFC 4646 language code of the human-readable text, may be null
      * @param processDef
-     *            identifier of the process to be executed
+     *            definition of the process to be executed
      * @param dataInputs
      *            input (or parameter) values provided to the process, may be null
      * @param responseForm

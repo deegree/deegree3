@@ -59,11 +59,11 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.TempFileManager;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
@@ -87,6 +87,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.DeegreeWPS;
+import org.deegree.services.jaxb.wps.DefaultExecutionManager;
 import org.deegree.services.wps.capabilities.CapabilitiesXMLWriter;
 import org.deegree.services.wps.describeprocess.DescribeProcessResponseXMLAdapter;
 import org.deegree.services.wps.execute.ExecuteRequest;
@@ -133,9 +134,9 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
 
     private static final CodeType ALL_PROCESSES_IDENTIFIER = new CodeType( "ALL" );
 
-    private StorageManager storageManager;
+    private ProcessManager processManager;
 
-    private ProcessManager service;
+    private StorageManager storageManager;
 
     private ExecutionManager executeHandler;
 
@@ -151,16 +152,45 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
         LOG.info( "Initializing WPS." );
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
-        storageManager = new StorageManager( TempFileManager.getBaseDir() );
-
         DeegreeWPS sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
                                                        controllerConf.getRootElement() );
 
-        this.service = workspace.getSubsystemManager( ProcessManager.class );
+        String storage = "../var/wps";
+        int trackedExecutions = 100;
+        int inputDiskSwitchLimit = 1024 * 1024;
+        if ( sc.getAbstractExecutionManager() != null ) {
+            LOG.info( "Explicit ExecutionManager config." );
+            DefaultExecutionManager execManagerConfig = (DefaultExecutionManager) sc.getAbstractExecutionManager().getValue();
+            if ( execManagerConfig.getStorageDir() != null && !execManagerConfig.getStorageDir().isEmpty() ) {
+                storage = execManagerConfig.getStorageDir();
+            }
+            if ( execManagerConfig.getTrackedExecutions() != null ) {
+                trackedExecutions = execManagerConfig.getTrackedExecutions().intValue();
+            }
+            if ( execManagerConfig.getInputDiskSwitchLimit() != null ) {
+                inputDiskSwitchLimit = execManagerConfig.getInputDiskSwitchLimit().intValue();
+            }
+        }
+
+        File storageDir = null;
+        try {
+            File base = new File( new URL( controllerConf.getSystemId() ).toURI() ).getParentFile();
+            storageDir = new File( storage );
+            if ( !storageDir.isAbsolute() ) {
+                storageDir = new File( base, storage ).getCanonicalFile();
+            }
+            FileUtils.forceMkdir( storageDir );
+        } catch ( Throwable t ) {
+            String msg = "Storage directory error: " + t.getMessage();
+            throw new ResourceInitException( msg );
+        }
+        storageManager = new StorageManager( storageDir, inputDiskSwitchLimit );
+
+        this.processManager = workspace.getSubsystemManager( ProcessManager.class );
 
         validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
 
-        executeHandler = new ExecutionManager( this, storageManager );
+        executeHandler = new ExecutionManager( this, storageManager, trackedExecutions );
     }
 
     @Override
@@ -194,7 +224,8 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 doDescribeProcess( describeProcessRequest, response );
                 break;
             case Execute:
-                ExecuteRequest executeRequest = ExecuteRequestKVPAdapter.parse100( kvpParamsUC, service.getProcesses() );
+                ExecuteRequest executeRequest = ExecuteRequestKVPAdapter.parse100( kvpParamsUC,
+                                                                                   processManager.getProcesses() );
                 doExecute( executeRequest, response );
                 break;
             case GetOutput:
@@ -246,7 +277,8 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 break;
             case Execute:
                 // TODO switch to StaX-based parsing
-                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcesses() );
+                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( processManager.getProcesses(),
+                                                                                        storageManager );
                 executeAdapter.load( xmlStream );
                 ExecuteRequest executeRequest = executeAdapter.parse100();
                 doExecute( executeRequest, response );
@@ -300,7 +332,8 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
                 break;
             case Execute:
                 // TODO switch to StaX-based parsing
-                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcesses() );
+                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( processManager.getProcesses(),
+                                                                                        storageManager );
                 executeAdapter.setRootElement( requestElement );
                 // executeAdapter.setSystemId( soapDoc.getSystemId() );
                 ExecuteRequest executeRequest = executeAdapter.parse100();
@@ -336,7 +369,7 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
      * @return the underlying {@link ProcessManager}, never <code>null</code>
      */
     public ProcessManager getProcessManager() {
-        return service;
+        return processManager;
     }
 
     /**
@@ -390,7 +423,7 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
         response.setContentType( "text/xml; charset=UTF-8" );
         XMLStreamWriter xmlWriter = response.getXMLWriter();
         WSDL serviceWSDL = new WSDL( "services" + File.separatorChar + "wps.wsdl" );
-        CapabilitiesXMLWriter.export100( xmlWriter, service.getProcesses(), mainMetadataConf, serviceWSDL );
+        CapabilitiesXMLWriter.export100( xmlWriter, processManager.getProcesses(), mainMetadataConf, serviceWSDL );
 
         LOG.trace( "doGetCapabilities finished" );
     }
@@ -405,10 +438,10 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
         for ( CodeType identifier : request.getIdentifiers() ) {
             LOG.debug( "Looking up process '" + identifier + "'" );
             if ( ALL_PROCESSES_IDENTIFIER.equals( identifier ) ) {
-                processes.addAll( service.getProcesses().values() );
+                processes.addAll( processManager.getProcesses().values() );
                 break;
             }
-            WPSProcess process = service.getProcess( identifier );
+            WPSProcess process = processManager.getProcess( identifier );
             if ( process != null ) {
                 processes.add( process );
             } else {
@@ -459,7 +492,7 @@ public class WPService extends AbstractOGCServiceController<WPSRequestType> {
         long start = System.currentTimeMillis();
 
         CodeType processId = request.getProcessId();
-        WPSProcess process = service.getProcess( processId );
+        WPSProcess process = processManager.getProcess( processId );
         if ( process == null ) {
             String msg = "Internal error. Process '" + processId + "' not found.";
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );

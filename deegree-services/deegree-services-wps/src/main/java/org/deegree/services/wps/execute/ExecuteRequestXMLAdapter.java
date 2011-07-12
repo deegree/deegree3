@@ -98,6 +98,7 @@ import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.LiteralInputImpl;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.input.ReferencedComplexInput;
+import org.deegree.services.wps.storage.StorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,16 +135,20 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, true );
     }
 
-    private Map<CodeType, WPSProcess> idToProcess;
+    private final Map<CodeType, WPSProcess> idToProcess;
+
+    private final StorageManager storageManager;
 
     /**
      * Creates a new {@link ExecuteRequestXMLAdapter} for parsing execute requests for the submitted processes.
      * 
      * @param idToProcess
      *            key: process identifier, value: process
+     * @param storageManager 
      */
-    public ExecuteRequestXMLAdapter( Map<CodeType, WPSProcess> idToProcess ) {
+    public ExecuteRequestXMLAdapter( Map<CodeType, WPSProcess> idToProcess, StorageManager storageManager ) {
         this.idToProcess = idToProcess;
+        this.storageManager = storageManager;
     }
 
     /**
@@ -478,7 +483,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 
         format = validateAndAugmentFormat( format, definition, eCustomizer );
 
-        StreamBufferStore store = new StreamBufferStore(10);
+        StreamBufferStore store = storageManager.newInputSink();
         LOG.debug( "Storing embedded ComplexInput as XML" );
         XMLStreamReader xmlReader = complexDataElement.getXMLStreamReaderWithoutCaching();
         XMLStreamWriter xmlWriter = null;

@@ -36,6 +36,7 @@
 
 package org.deegree.services.wps;
 
+import static org.deegree.protocol.wps.WPSConstants.ExecutionState.FAILED;
 import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
 import static org.deegree.services.controller.ows.OWSException.OPTION_NOT_SUPPORTED;
 
@@ -64,7 +65,6 @@ import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralOutputDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
-import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
@@ -101,14 +101,14 @@ public class ExecutionManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( ExecutionManager.class );
 
-    private StorageManager storageManager;
+    private final StorageManager storageManager;
 
-    private ExecutorService exec;
+    private final ExecutorService exec;
 
     // number of executions to keep track of
-    private static int MAX_ENTRIES = 100;
+    private final int maxEntries;
 
-    // A list of all processes that have been run or are currently running.
+    // list of all processes that have been run or are currently running
     private ConcurrentLinkedQueue<ProcessExecution> processStateList = new ConcurrentLinkedQueue<ProcessExecution>();
 
     // key: response document of the process (currently running), value: status object
@@ -122,10 +122,13 @@ public class ExecutionManager {
      * @param storageManager
      *            used for creating storage locations for web-accessible resources (response documents / process
      *            outputs)
+     * @param maxExecutions
+     *            number of executions to keep track of
      */
-    ExecutionManager( WPService master, StorageManager storageManager ) {
+    ExecutionManager( WPService master, StorageManager storageManager, int maxExecutions ) {
         this.storageManager = storageManager;
         this.exec = Executors.newCachedThreadPool();
+        this.maxEntries = maxExecutions;
     }
 
     /**
@@ -138,7 +141,7 @@ public class ExecutionManager {
         ProcessExecution result = new ProcessExecution( request, responseStorage, serviceInstance, outputParams,
                                                         outputs );
         synchronized ( processStateList ) {
-            if ( processStateList.size() == MAX_ENTRIES ) {
+            if ( processStateList.size() == maxEntries ) {
                 processStateList.poll();
             }
             processStateList.add( result );
@@ -150,8 +153,8 @@ public class ExecutionManager {
      * Returns a collection of information on all processes, including processes that haven't run, are running and have
      * already stopped.
      * 
-     * @return Returns a collection of information on all processes, including processes that haven't run, are running
-     *         and have already stopped. The returned result should not be modified.
+     * @return information on all processes, including processes that haven't run, are running and have already stopped.
+     *         The returned result should not be modified.
      */
     public Collection<ProcessExecution> getAllProcesses() {
         return processStateList;
@@ -160,7 +163,7 @@ public class ExecutionManager {
     /**
      * Returns a collection of information on all running processes.
      * 
-     * @return Returns a collection of information on all running processes. The returned result should not be modified.
+     * @return information on all running processes. The returned result should not be modified.
      */
     public Collection<ProcessExecution> getRunningProcesses() {
         return responseDocumentIdToState.values();
@@ -211,7 +214,7 @@ public class ExecutionManager {
 
         ProcessExecution state = createProcessletExecution( request, null, null, null, outputParams );
         executeProcess( process.getProcesslet(), inputs, outputParams, state );
-        if ( state.getExecutionState() == ExecutionState.FAILED ) {
+        if ( state.getExecutionState() == FAILED ) {
             OWSException e = state.getFailedException();
             if ( e == null ) {
                 e = new OWSException( "The execution of the process: " + process + " failed for unknown reasons.",
@@ -353,8 +356,9 @@ public class ExecutionManager {
                 location.sendResource( response );
             } else {
                 try {
-                    response.sendError( 404, "No stored (or pending) WPS response document with id '"
-                                             + location.getId() + "' found." );
+                    response.sendError( 404,
+                                        "No stored (or pending) WPS response document with id '" + location.getId()
+                                                                + "' found." );
                 } catch ( IOException e1 ) {
                     e1.printStackTrace();
                 }
@@ -498,29 +502,31 @@ public class ExecutionManager {
             // register the storage location of the response document from the lookup map
             responseDocumentIdToState.put( responseStorage, state );
 
-            executeProcess( process, request.getDataInputs(), outputs, state );
-
-            LOG.debug( "Storing final response document at " + responseStorage );
-
-            // write final ExecuteResponse document
             try {
-                ExecuteResponse executeResponse = new ExecuteResponse( responseStorage, serviceInstance, state,
-                                                                       outputParams, outputs, request );
+                executeProcess( process, request.getDataInputs(), outputs, state );
 
-                XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
-                XMLStreamWriter writer = factory.createXMLStreamWriter( new OutputStreamWriter(
-                                                                                                responseStorage.getOutputStream(),
-                                                                                                "UTF-8" ) );
-                ExecuteResponseXMLWriter.export100( writer, executeResponse );
-                writer.flush();
-            } catch ( Exception e ) {
-                String msg = "Generating ExecuteResponse document failed: " + e.getMessage();
-                LOG.error( msg, e );
+                LOG.debug( "Storing final response document at " + responseStorage );
+
+                // write final ExecuteResponse document
+                try {
+                    ExecuteResponse executeResponse = new ExecuteResponse( responseStorage, serviceInstance, state,
+                                                                           outputParams, outputs, request );
+
+                    XMLOutputFactory factory = XMLOutputFactory.newInstance();
+                    factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
+                    XMLStreamWriter writer = factory.createXMLStreamWriter( new OutputStreamWriter(
+                                                                                                    responseStorage.getOutputStream(),
+                                                                                                    "UTF-8" ) );
+                    ExecuteResponseXMLWriter.export100( writer, executeResponse );
+                    writer.flush();
+                } catch ( Exception e ) {
+                    String msg = "Generating ExecuteResponse document failed: " + e.getMessage();
+                    LOG.error( msg, e );
+                }
+            } finally {
+                // deregister the storage location of the response document
+                responseDocumentIdToState.remove( responseStorage );
             }
-
-            // deregister the storage location of the response document
-            responseDocumentIdToState.remove( responseStorage );
         }
     }
 }

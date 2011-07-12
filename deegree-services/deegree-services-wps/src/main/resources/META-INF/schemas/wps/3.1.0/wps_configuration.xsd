@@ -19,8 +19,26 @@
             </sequence>
           </complexType>
         </element>
+        <element ref="wps:AbstractExecutionManager" minOccurs="0" />
       </sequence>
-      <attribute name="configVersion" use="required" fixed="3.0.0" />
+      <attribute name="configVersion" use="required">
+        <simpleType>
+          <restriction base="string">
+            <enumeration value="3.0.0" />
+            <enumeration value="3.1.0" />
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="AbstractExecutionManager" abstract="true" />
+  <element name="DefaultExecutionManager" substitutionGroup="wps:AbstractExecutionManager">
+    <complexType>
+      <sequence>
+        <element name="StorageDir" type="string" minOccurs="0" />
+        <element name="TrackedExecutions" type="integer" minOccurs="0" default="100"/>
+        <element name="InputDiskSwitchLimit" type="integer" minOccurs="0" default="1048576"/>
+      </sequence>
     </complexType>
   </element>
   <simpleType name="WPSVersionType">

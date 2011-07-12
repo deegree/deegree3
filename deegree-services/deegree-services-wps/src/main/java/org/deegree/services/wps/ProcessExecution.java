@@ -36,6 +36,12 @@
 
 package org.deegree.services.wps;
 
+import static org.deegree.protocol.wps.WPSConstants.ExecutionState.ACCEPTED;
+import static org.deegree.protocol.wps.WPSConstants.ExecutionState.FAILED;
+import static org.deegree.protocol.wps.WPSConstants.ExecutionState.PAUSED;
+import static org.deegree.protocol.wps.WPSConstants.ExecutionState.STARTED;
+import static org.deegree.protocol.wps.WPSConstants.ExecutionState.SUCCEEDED;
+
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -60,7 +66,15 @@ import org.deegree.services.wps.storage.StorageLocation;
  */
 public class ProcessExecution implements ProcessletExecutionInfo {
 
-    private ExecuteRequest request;
+    private final ExecuteRequest request;
+
+    private final StorageLocation responseStorage;
+
+    private final URL serviceInstance;
+
+    private final List<RequestedOutput> outputParams;
+
+    private final ProcessletOutputs outputs;
 
     private ExecutionState processState;
 
@@ -79,14 +93,6 @@ public class ProcessExecution implements ProcessletExecutionInfo {
     private long finishTime = -1;
 
     private int percentCompleted;
-
-    private StorageLocation responseStorage;
-
-    private URL serviceInstance;
-
-    private List<RequestedOutput> outputParams;
-
-    private ProcessletOutputs outputs;
 
     /**
      * Creates a new {@link ProcessExecution} for a {@link Processlet} that has been accepted for execution.
@@ -107,7 +113,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
         this.serviceInstance = serviceInstance;
         this.outputParams = outputParams;
         this.outputs = outputs;
-        this.processState = ExecutionState.ACCEPTED;
+        this.processState = ACCEPTED;
     }
 
     /**
@@ -214,7 +220,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
      * Sets the processing state to {@link ExecutionState#STARTED}.
      */
     void setStarted() {
-        this.processState = ExecutionState.STARTED;
+        this.processState = STARTED;
         this.startTime = System.currentTimeMillis();
     }
 
@@ -225,7 +231,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
      *            additional human-readable client information, may be null
      */
     void setSucceeded( String msg ) {
-        this.processState = ExecutionState.SUCCEEDED;
+        this.processState = SUCCEEDED;
         this.finishTime = System.currentTimeMillis();
         this.succeededMessage = msg;
     }
@@ -237,7 +243,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
      *            additional human-readable client information, may be null
      */
     void setPaused( String msg ) {
-        this.processState = ExecutionState.PAUSED;
+        this.processState = PAUSED;
         this.pausedMessage = msg;
     }
 
@@ -248,7 +254,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
      *            exception that describes the reason for the failure
      */
     void setFailed( OWSException e ) {
-        this.processState = ExecutionState.FAILED;
+        this.processState = FAILED;
         this.failedException = e;
     }
 
