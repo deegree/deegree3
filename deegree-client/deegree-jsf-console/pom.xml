@@ -108,7 +108,7 @@
     </dependency>    
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-metadata</artifactId>
+      <artifactId>deegree-mdstore-iso</artifactId>
       <version>3.1-pre10-SNAPSHOT</version>
     </dependency>
     <dependency>

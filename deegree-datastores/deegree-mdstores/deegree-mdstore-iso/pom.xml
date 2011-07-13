@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-mdstore-ebrim-eo</artifactId>
+  <artifactId>deegree-mdstore-iso</artifactId>
   <packaging>jar</packaging>
   <version>3.1-pre10-SNAPSHOT</version>
-  <name>deegree-mdstore-ebrim-eo</name>
+  <name>deegree-mdstore-iso</name>
   <url>http://www.deegree.org</url>
 
   <parent>
@@ -42,7 +43,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>datasource/metadata/ebrim/eo/3.1.0/ebrim-eo.xsd</schemaFiles>
+          <schemaFiles>datasource/metadata/iso19115/3.0.0/iso19115.xsd</schemaFiles>
           <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>
@@ -59,6 +60,6 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
       <version>3.1-pre10-SNAPSHOT</version>
-    </dependency>    
+    </dependency>
   </dependencies>
 </project>

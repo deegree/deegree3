@@ -71,13 +71,12 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.filter.XPathElementFilter;
-import org.deegree.metadata.iso.persistence.parsing.ISOQPParsing;
-import org.deegree.metadata.iso.persistence.parsing.ParsedProfileElement;
+import org.deegree.metadata.iso.parsing.ISOQPParsing;
+import org.deegree.metadata.iso.parsing.ParsedProfileElement;
 import org.deegree.metadata.iso.types.BoundingBox;
 import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Format;
 import org.deegree.metadata.iso.types.Keyword;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
@@ -116,8 +115,6 @@ public class ISORecord implements MetadataRecord {
     private OMElement root;
 
     private ParsedProfileElement pElem;
-
-    private final static String STOPWORD = " ";
 
     private static String[] summaryLocalParts = new String[14];
 
@@ -221,91 +218,6 @@ public class ISORecord implements MetadataRecord {
         }
 
         return s;
-    }
-
-    public String getAnyText( AnyText anyText ) {
-        String anyTextString = null;
-        if ( anyText == null || anyText.getCore() != null ) {
-            StringBuilder sb = new StringBuilder();
-
-            for ( String s : getAbstract() ) {
-                sb.append( s ).append( STOPWORD );
-            }
-            for ( String f : getFormat() ) {
-                sb.append( f ).append( STOPWORD );
-            }
-            if ( getIdentifier() != null ) {
-                sb.append( getIdentifier() ).append( STOPWORD );
-            }
-            if ( getLanguage() != null ) {
-                sb.append( getLanguage() ).append( STOPWORD );
-            }
-            if ( getModified() != null ) {
-                sb.append( getModified().getDate() ).append( STOPWORD );
-            }
-            for ( String f : getRelation() ) {
-                sb.append( f ).append( STOPWORD );
-            }
-            for ( String f : getTitle() ) {
-                sb.append( f ).append( STOPWORD );
-            }
-            if ( getType() != null ) {
-                sb.append( getType() ).append( STOPWORD );
-            }
-            for ( String f : getSubject() ) {
-                sb.append( f ).append( STOPWORD );
-            }
-            sb.append( isHasSecurityConstraints() ).append( STOPWORD );
-            for ( String f : getRights() ) {
-                sb.append( f ).append( STOPWORD );
-            }
-            if ( getContributor() != null ) {
-                sb.append( getContributor() ).append( STOPWORD );
-            }
-            if ( getPublisher() != null ) {
-                sb.append( getPublisher() ).append( STOPWORD );
-            }
-            if ( getSource() != null ) {
-                sb.append( getSource() ).append( STOPWORD );
-            }
-            if ( getCreator() != null ) {
-                sb.append( getCreator() ).append( STOPWORD );
-            }
-            if ( getParentIdentifier() != null ) {
-                sb.append( getParentIdentifier() ).append( STOPWORD );
-            }
-            anyTextString = sb.toString();
-        } else if ( anyText.getAll() != null ) {
-            StringBuilder sb = new StringBuilder();
-            try {
-                XMLStreamReader xmlStream = getAsXMLStream();
-                while ( xmlStream.hasNext() ) {
-                    xmlStream.next();
-                    if ( xmlStream.getEventType() == XMLStreamConstants.CHARACTERS && !xmlStream.isWhiteSpace() ) {
-                        sb.append( xmlStream.getText() ).append( STOPWORD );
-                    }
-                }
-            } catch ( XMLStreamException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            anyTextString = sb.toString();
-
-        } else if ( anyText.getCustom() != null ) {
-            List<String> xpathList = anyText.getCustom().getXPath();
-            if ( xpathList != null && !xpathList.isEmpty() ) {
-                XPath[] path = new XPath[xpathList.size()];
-                int counter = 0;
-                for ( String x : xpathList ) {
-                    path[counter++] = new XPath( x, ns );
-                }
-                anyTextString = generateAnyText( path ).toString();
-            }
-        } else {
-            anyTextString = "";
-        }
-        return anyTextString;
-
     }
 
     @Override
@@ -620,24 +532,6 @@ public class ISORecord implements MetadataRecord {
         }
         filter.close();
 
-    }
-
-    private StringBuilder generateAnyText( XPath[] xpath ) {
-        StringBuilder sb = new StringBuilder();
-        List<String> textNodes = new ArrayList<String>();
-
-        for ( XPath x : xpath ) {
-
-            String[] tmp = new XMLAdapter().getNodesAsStrings( root, x );
-            for ( String s : tmp ) {
-                textNodes.add( s );
-            }
-        }
-        for ( String s : textNodes ) {
-            sb.append( s ).append( STOPWORD );
-        }
-
-        return sb;
     }
 
     public void update( PropertyName propName, String s ) {
