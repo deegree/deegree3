@@ -43,6 +43,7 @@
 
   <modules>
     <module>deegree-sqldialect-commons</module>
+    <module>deegree-sqldialect-postgis</module>
   </modules>
 
 </project>
