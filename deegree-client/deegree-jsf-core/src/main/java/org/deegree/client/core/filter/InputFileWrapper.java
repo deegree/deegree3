@@ -77,15 +77,21 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
                 FileItem item = fileItems.get( i );
                 if ( item.isFormField() ) {
                     String[] values;
+                    String v;
+                    if ( encoding != null ) {
+                        v = item.getString( encoding );
+                    } else {
+                        v = item.getString();
+                    }
                     if ( formParameters.containsKey( item.getFieldName() ) ) {
                         String[] strings = formParameters.get( item.getFieldName() );
                         values = new String[strings.length + 1];
                         for ( int j = 0; j < strings.length; j++ ) {
                             values[j] = strings[j];
                         }
-                        values[strings.length] = item.getString( encoding );
+                        values[strings.length] = v;
                     } else {
-                        values = new String[] { item.getString( encoding ) };
+                        values = new String[] { v };
                     }
                     formParameters.put( item.getFieldName(), values );
                 } else if ( item.getName() != null && item.getName().length() > 0 && item.getSize() > 0 ) {
