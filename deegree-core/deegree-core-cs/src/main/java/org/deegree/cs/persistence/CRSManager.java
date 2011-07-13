@@ -93,7 +93,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
 
     private static Map<String, CRSStore> idToCRSStore = Collections.synchronizedMap( new HashMap<String, CRSStore>() );
 
-    // store ids in order of requesting, workspace stores should overwrite the default store! 
+    // store ids in order of requesting, workspace stores should overwrite the default store!
     private static List<String> storeIds = Collections.synchronizedList( new LinkedList<String>() );
 
     private static Map<String, TransformationFactory> idToTransF = new HashMap<String, TransformationFactory>();
@@ -172,9 +172,16 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
                     return name.toLowerCase().endsWith( ".xml" );
                 }
             } );
+
             for ( File crsConfigFile : crsConfigFiles ) {
                 try {
-                    handleConfigFile( crsConfigFile.toURI().toURL(), true );
+                    boolean prefer = true;
+                    if ( "default.xml".equals( crsConfigFile.getName() ) ) {
+                        prefer = false;
+                        remove( "default" );
+                        LOG.info( "CRS store " + crsConfigFile + " overwrites internal configuration!" );
+                    }
+                    handleConfigFile( crsConfigFile.toURI().toURL(), prefer );
                 } catch ( Throwable t ) {
                     LOG.error( "Unable to read config file '" + crsConfigFile + "'.", t );
                 }
@@ -785,8 +792,11 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
 
     @Override
     protected void remove( String id ) {
-        // TODO Auto-generated method stub
-
+        if ( id != null ) {
+            storeIds.remove( id );
+            idToCRSStore.remove( id );
+            idToTransF.remove( id );
+        }
     }
 
 }
