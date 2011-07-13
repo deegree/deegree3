@@ -60,11 +60,19 @@ public class RendererUtils {
     public static void writeClickImage( FacesContext context, ResponseWriter writer, String className, String library,
                                         String resourceName, String js, boolean disabled )
                             throws IOException {
+        writeClickImage( context, writer, className, library, resourceName, js, null, disabled );
+    }
+
+    public static void writeClickImage( FacesContext context, ResponseWriter writer, String className, String library,
+                                        String resourceName, String js, String title, boolean disabled )
+                            throws IOException {
         writer.startElement( "span", null );
         writer.writeAttribute( "class", className, null );
         writer.startElement( "input", null );
         if ( disabled )
             writer.writeAttribute( "disabled", "disabled", null );
+        if ( title != null )
+            writer.writeAttribute( "title", title, null );
         if ( js != null )
             writer.writeAttribute( "onclick", js, null );
         writer.writeAttribute( "type", "image", null );
