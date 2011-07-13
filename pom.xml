@@ -31,7 +31,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-featurestore-sql</artifactId>
+      <artifactId>deegree-sqldialect-commons</artifactId>
       <version>3.1-pre10-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -48,6 +48,12 @@
       <groupId>com.oracle</groupId>
       <artifactId>sdoutl</artifactId>
       <version>11.2.0.1.0</version>
+    </dependency>
+    <!-- TODO: get rid of this dependency -->
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-sql</artifactId>
+      <version>3.1-pre10-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
