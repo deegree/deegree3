@@ -468,7 +468,8 @@ public class FormBean {
             sb.append( ']' );
             ofIds = sb.toString();
         }
-        format.setOnchange( "inputFormatChanged('" + formatId + ( ofIds != null ? ( "', " + ofIds ) : "" ) + ");" );
+        format.setOnchange( "inputFormatChanged('" + formatId + SelectFormatRenderer.FORMAT_SUFFIX
+                            + ( ofIds != null ? ( "', " + ofIds ) : "" ) + ");" );
         ComplexFormat[] supportedFormats = input.getSupportedFormats();
         for ( ComplexFormat complexFormat : supportedFormats ) {
             UISelectItem item = new UISelectItem();
