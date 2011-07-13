@@ -71,6 +71,11 @@
       <artifactId>deegree-featurestore-commons</artifactId>
       <version>3.1-pre10-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-sqldialect-commons</artifactId>
+      <version>3.1-pre10-SNAPSHOT</version>
+    </dependency>    
   </dependencies>
   
   <profiles>
@@ -84,16 +89,6 @@
         </dependency>
       </dependencies>
     </profile>
-    <profile>
-      <id>oracle</id>
-      <dependencies>
-        <dependency>
-          <artifactId>latlon-sqldialect-oracle</artifactId>
-          <groupId>de.latlon</groupId>
-          <version>3.1-pre9-SNAPSHOT</version>
-        </dependency>
-      </dependencies>
-    </profile>    
   </profiles>
 
 </project>

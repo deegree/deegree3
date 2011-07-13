@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/postgis/PostGISGeometryConverter.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
+package org.deegree.sqldialect.postgis;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,9 +52,9 @@ import org.slf4j.LoggerFactory;
  * {@link GeometryParticleConverter} for PostGIS databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31055 $, $Date: 2011-06-14 17:19:48 +0200 (Di, 14. Jun 2011) $
  */
 public class PostGISGeometryConverter implements GeometryParticleConverter {
 

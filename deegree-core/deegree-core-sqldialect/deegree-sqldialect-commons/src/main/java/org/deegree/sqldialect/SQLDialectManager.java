@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/sqldialect/SQLDialectManager.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,9 +56,9 @@ import org.slf4j.LoggerFactory;
  * Manager for {@link SQLDialect} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: aschmitz $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31043 $, $Date: 2011-06-10 10:24:36 +0200 (Fr, 10. Jun 2011) $
  */
 public class SQLDialectManager extends AbstractBasicResourceManager {
 

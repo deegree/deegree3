@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-sql/src/main/java/org/deegree/sqldialect/postgis/PostGISDialectProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,9 +57,9 @@ import org.slf4j.LoggerFactory;
  * {@link SQLDialectProvider} for PostgreSQL / PostGIS databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31034 $, $Date: 2011-06-09 16:47:31 +0200 (Do, 09. Jun 2011) $
  */
 public class PostGISDialectProvider implements SQLDialectProvider {
 

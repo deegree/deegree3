@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/postgis/PostGISWhereBuilder.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
+package org.deegree.sqldialect.postgis;
 
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
@@ -74,9 +74,9 @@ import org.deegree.geometry.Geometry;
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31186 $, $Date: 2011-07-01 18:01:58 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISWhereBuilder extends AbstractWhereBuilder {
 

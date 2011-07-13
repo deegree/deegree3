@@ -54,11 +54,11 @@ import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
 import org.slf4j.Logger;
 
 /**

@@ -69,8 +69,8 @@ import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.mssql.MSSQLGeometryConverter;
-import org.deegree.filter.sql.postgis.PostGISGeometryConverter;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.sqldialect.postgis.PostGISGeometryConverter;
 import org.slf4j.Logger;
 
 /**

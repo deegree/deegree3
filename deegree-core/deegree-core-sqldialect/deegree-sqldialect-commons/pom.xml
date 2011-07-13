@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-core-sqldialect</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>deegree-sqldialect-commons</artifactId>
+  <packaging>jar</packaging>
   <version>3.1-pre10-SNAPSHOT</version>
-  <name>deegree-core-sqldialect</name>
+  <name>deegree-sqldialect-commons</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-sqldialect</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-sqldialect</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-sqldialect/deegree-sqldialect-commons</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-sqldialect/deegree-sqldialect-commons</url>
   </scm>
 
   <parent>
@@ -32,17 +32,11 @@
     </repository>
   </repositories>
 
-  <profiles>
-    <profile>
-      <id>oracle</id>
-      <modules>
-        <module>deegree-sqldialect-oracle</module>
-      </modules>
-    </profile>
-  </profiles>
-
-  <modules>
-    <module>deegree-sqldialect-commons</module>
-  </modules>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-base</artifactId>
+      <version>3.1-pre10-SNAPSHOT</version>
+    </dependency>  
+  </dependencies>
 </project>

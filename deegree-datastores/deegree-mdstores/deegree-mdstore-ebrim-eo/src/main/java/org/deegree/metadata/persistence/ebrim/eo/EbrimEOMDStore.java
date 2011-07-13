@@ -85,7 +85,6 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.Join;
 import org.deegree.filter.sql.expression.SQLArgument;
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.ebrim.AdhocQuery;
 import org.deegree.metadata.ebrim.AliasedRIMType;
@@ -103,6 +102,7 @@ import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.Table;
 import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
 import org.slf4j.Logger;
 
 /**

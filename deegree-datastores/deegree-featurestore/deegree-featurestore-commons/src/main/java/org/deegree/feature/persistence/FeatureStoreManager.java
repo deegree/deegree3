@@ -53,7 +53,6 @@ import org.deegree.commons.utils.TempFileManager;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
 import org.deegree.filter.function.FunctionManager;
-import org.deegree.sqldialect.SQLDialectManager;
 import org.slf4j.Logger;
 
 /**
@@ -107,10 +106,10 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
         // stores startup
         super.startup( workspace );
     }
-  
+
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class, SQLDialectManager.class };
+        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class };
     }
 
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {

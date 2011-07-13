@@ -66,7 +66,6 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.expression.SQLArgument;
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.metadata.MetadataRecord;
@@ -89,6 +88,7 @@ import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

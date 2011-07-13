@@ -18,7 +18,6 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.mssql.MSSQLWhereBuilder;
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
@@ -33,6 +32,7 @@ import org.deegree.metadata.persistence.transaction.MetadataProperty;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

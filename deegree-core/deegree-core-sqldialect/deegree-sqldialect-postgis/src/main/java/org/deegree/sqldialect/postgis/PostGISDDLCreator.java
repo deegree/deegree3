@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-sql/src/main/java/org/deegree/sqldialect/postgis/PostGISDDLCreator.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,9 +57,9 @@ import org.slf4j.LoggerFactory;
  * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedApplicationSchema} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31176 $, $Date: 2011-07-01 11:31:06 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISDDLCreator extends AbstractDDLCreator {
 

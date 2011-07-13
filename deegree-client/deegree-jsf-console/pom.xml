@@ -103,6 +103,11 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-sqldialect-postgis</artifactId>
+      <version>3.1-pre10-SNAPSHOT</version>
+    </dependency>    
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-core-metadata</artifactId>
       <version>3.1-pre10-SNAPSHOT</version>
     </dependency>

@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-sql/src/main/java/org/deegree/sqldialect/postgis/PostGISDialect.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -55,8 +55,6 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.PropertyNameMapper;
 import org.deegree.filter.sql.UnmappableException;
-import org.deegree.filter.sql.postgis.PostGISGeometryConverter;
-import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -71,9 +69,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31186 $, $Date: 2011-07-01 18:01:58 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISDialect implements SQLDialect {
 
