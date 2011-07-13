@@ -15,25 +15,13 @@
     <relativePath />
   </parent>
 
-  <distributionManagement>
-    <repository>
-      <id>latlon-releases</id>
-      <url>http://artefacts.lat-lon/libs-release-local</url>
-    </repository>
-    <snapshotRepository>
-      <id>latlon-snapshots</id>
-      <url>http://artefacts.lat-lon/libs-snapshot-local</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <repositories>
     <repository>
-      <id>deegree-restricted</id>
-      <url>http://artefacts.deegree.org/ext-libs-restricted</url>
-     </repository>
-    <repository>
-      <id>latlon-repo</id>
-      <url>http://artefacts.lat-lon/repo</url>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
