@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
@@ -33,13 +34,18 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
 
     private final URL xslt;
 
-    public XSLTFeatureInfoSerializer( GMLVersion version, URL xslt ) {
+    private final DeegreeWorkspace workspace;
+
+    public XSLTFeatureInfoSerializer( GMLVersion version, URL xslt, DeegreeWorkspace workspace ) {
         this.gmlVersion = version;
         this.xslt = xslt;
+        this.workspace = workspace;
     }
 
     @Override
     public void serialize( ApplicationSchema schema, FeatureCollection col, OutputStream outputStream ) {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader( workspace.getModuleClassLoader() );
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
@@ -64,6 +70,8 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
         } catch ( Throwable e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } finally {
+            Thread.currentThread().setContextClassLoader( loader );
         }
     }
 

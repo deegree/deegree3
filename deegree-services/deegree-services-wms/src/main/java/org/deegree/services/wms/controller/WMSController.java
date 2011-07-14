@@ -234,7 +234,8 @@ public class WMSController extends AbstractOGCServiceController<WMSRequestType> 
                         GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
                         XSLTFeatureInfoSerializer xslt = new XSLTFeatureInfoSerializer(
                                                                                         version,
-                                                                                        controllerConf.resolve( xsltFile.getValue() ) );
+                                                                                        controllerConf.resolve( xsltFile.getValue() ),
+                                                                                        workspace );
                         featureInfoSerializers.put( format, xslt );
                     }
                 }
