@@ -213,14 +213,13 @@ public class TOPPStatesTest {
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
 
         // create tables
-        String[] ddl = DDLCreator.newInstance( mappedSchema, fs.getDialect() ).getDDL();
+        String[] ddl = DDLCreator.newInstance( mappedSchema, dialect ).getDDL();
 
         Connection conn = ConnectionManager.getConnection( "deegree-test" );
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
             for ( String sql : ddl ) {
-                System.out.println( sql );
                 stmt.execute( sql );
             }
         } finally {
