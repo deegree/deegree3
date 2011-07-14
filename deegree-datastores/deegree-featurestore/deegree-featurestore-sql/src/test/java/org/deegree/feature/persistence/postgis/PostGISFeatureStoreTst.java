@@ -80,6 +80,7 @@ import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreProvider;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
+import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
@@ -356,7 +357,7 @@ public class PostGISFeatureStoreTst {
                 t.printStackTrace();
             }
 
-            String[] createStmts = fs.getDDL();
+            String[] createStmts = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
 
             Connection conn = null;
             Statement stmt = null;

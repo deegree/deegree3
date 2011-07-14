@@ -44,13 +44,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
@@ -81,6 +81,11 @@ public class OracleDialect implements SQLDialect {
     public OracleDialect( String user, String version ) {
         this.user = user;
         this.version = version;
+    }
+
+    @Override
+    public Type getDBType() {
+        return Type.Oracle;
     }
 
     @Override
@@ -144,11 +149,6 @@ public class OracleDialect implements SQLDialect {
             LOG.trace( "Stack trace:", e );
         }
         return new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 );
-    }
-
-    @Override
-    public String[] getDDL( Object schema ) {
-        return new OracleDDLCreator( (MappedApplicationSchema) schema, this ).getDDL();
     }
 
     @Override

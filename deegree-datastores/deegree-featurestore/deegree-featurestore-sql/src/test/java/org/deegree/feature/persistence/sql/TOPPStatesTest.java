@@ -71,6 +71,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -212,7 +213,7 @@ public class TOPPStatesTest {
         MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
 
         // create tables
-        String[] ddl = dialect.getDDL( mappedSchema );
+        String[] ddl = DDLCreator.newInstance( mappedSchema, fs.getDialect() ).getDDL();
 
         Connection conn = ConnectionManager.getConnection( "deegree-test" );
         Statement stmt = null;

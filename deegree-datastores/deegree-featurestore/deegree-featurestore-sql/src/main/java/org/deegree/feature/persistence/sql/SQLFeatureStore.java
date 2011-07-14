@@ -1232,10 +1232,6 @@ public class SQLFeatureStore implements FeatureStore {
         return dialect;
     }
 
-    public String[] getDDL() {
-        return dialect.getDDL( schema );
-    }
-
     private class FeatureResultSetIterator extends ResultSetIterator<Feature> {
 
         private final FeatureBuilder builder;

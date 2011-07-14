@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.sqldialect.oracle;
+package org.deegree.feature.persistence.sql.ddl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
-import org.deegree.feature.persistence.sql.AbstractDDLCreator;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -50,6 +49,7 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.filter.sql.DBField;
 import org.deegree.filter.sql.MappingExpression;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 348 $, $Date: 2011-07-01 18:02:24 +0200 (Fr, 01. Jul 2011) $
  */
-public class OracleDDLCreator extends AbstractDDLCreator {
+public class OracleDDLCreator extends DDLCreator {
 
     private static Logger LOG = LoggerFactory.getLogger( OracleDDLCreator.class );
 
@@ -73,7 +73,7 @@ public class OracleDDLCreator extends AbstractDDLCreator {
      * @param dialect
      *            SQL dialect, must not be <code>null</code>
      */
-    public OracleDDLCreator( MappedApplicationSchema schema, OracleDialect dialect ) {
+    public OracleDDLCreator( MappedApplicationSchema schema, SQLDialect dialect ) {
         super( schema, dialect );
     }
 

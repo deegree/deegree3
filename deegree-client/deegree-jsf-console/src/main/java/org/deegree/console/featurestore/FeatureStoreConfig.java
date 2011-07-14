@@ -61,6 +61,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
@@ -102,7 +103,7 @@ public class FeatureStoreConfig implements Serializable {
         }
         SQLFeatureStore fs = (SQLFeatureStore) getFeatureStoreManager().get( getId() );
         String connId = fs.getConnId();
-        String[] sql = fs.getDDL();
+        String[] sql = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
         SQLExecution execution = new SQLExecution( connId, sql, "/console/featurestore/buttons" );
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );

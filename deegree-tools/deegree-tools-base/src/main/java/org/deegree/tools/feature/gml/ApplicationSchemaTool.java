@@ -72,6 +72,7 @@ import org.deegree.commons.tools.CommandUtils;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
@@ -369,7 +370,7 @@ public class ApplicationSchemaTool {
                 FeatureStoreManager mgr = new FeatureStoreManager();
                 mgr.startup( DeegreeWorkspace.getInstance() );
                 SQLFeatureStore fs = (SQLFeatureStore) mgr.create( "deegree_postgis", configURL );
-                String[] sql = fs.getDDL();
+                String[] sql = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
                 for ( String string : sql ) {
                     System.out.println( string + ";" );
                 }

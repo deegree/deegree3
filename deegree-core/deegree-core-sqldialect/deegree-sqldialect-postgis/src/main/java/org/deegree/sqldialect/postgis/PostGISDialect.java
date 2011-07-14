@@ -42,13 +42,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
@@ -83,6 +83,11 @@ public class PostGISDialect implements SQLDialect {
         this.useLegacyPredicates = useLegacyPredicates;
     }
 
+    @Override
+    public Type getDBType() {
+        return Type.PostgreSQL;
+    }
+    
     @Override
     public int getMaxColumnNameLength() {
         return 63;
@@ -165,11 +170,6 @@ public class PostGISDialect implements SQLDialect {
             coords[2] = p.getZ();
         }
         return new DefaultPoint( null, crs, null, coords );
-    }
-
-    @Override
-    public String[] getDDL( Object schema ) {
-        return new PostGISDDLCreator( (MappedApplicationSchema) schema, this ).getDDL();
     }
 
     @Override

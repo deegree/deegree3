@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql;
+package org.deegree.feature.persistence.sql.ddl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +43,8 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.persistence.sql.FeatureTypeMapping;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
@@ -61,7 +63,7 @@ import org.deegree.sqldialect.SQLDialect;
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractDDLCreator {
+public abstract class DDLCreator {
 
     protected final MappedApplicationSchema schema;
 
@@ -72,14 +74,14 @@ public abstract class AbstractDDLCreator {
     protected QTableName currentFtTable;
 
     /**
-     * Creates a new {@link AbstractDDLCreator} instance for the given {@link MappedApplicationSchema}.
+     * Creates a new {@link DDLCreator} instance for the given {@link MappedApplicationSchema}.
      * 
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
      *            SQL dialect, must not be <code>null</code>
      */
-    public AbstractDDLCreator( MappedApplicationSchema schema, SQLDialect dialect ) {
+    protected DDLCreator( MappedApplicationSchema schema, SQLDialect dialect ) {
         this.schema = schema;
         this.dialect = dialect;
         hasBlobTable = schema.getBlobMapping() != null;
@@ -210,4 +212,19 @@ public abstract class AbstractDDLCreator {
 
     protected abstract String getDBType( BaseType type );
 
+    // TODO get rid of this (DDLCreator should be the only needed implementation)
+    public static DDLCreator newInstance( MappedApplicationSchema appSchema, SQLDialect dialect ) {
+        switch ( dialect.getDBType() ) {
+        case PostgreSQL: {
+            return new PostGISDDLCreator( appSchema, dialect );
+        }
+        case MSSQL: {
+            return new MSSQLDDLCreator( appSchema, dialect );
+        }
+        case Oracle: {
+            return new OracleDDLCreator( appSchema, dialect );
+        }
+        }
+        throw new IllegalArgumentException( "Nod DDLCreator for DB type '" + dialect.getDBType() + "' available." );
+    }
 }

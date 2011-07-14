@@ -74,6 +74,7 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
+import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
@@ -319,7 +320,7 @@ public class MappingWizardSQL {
         FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
         resourceState = fsMgr.activate( resourceState.getId() );
         SQLFeatureStore store = (SQLFeatureStore) resourceState.getResource();
-        String[] createStmts = store.getDDL();
+        String[] createStmts = DDLCreator.newInstance( store.getSchema(), store.getDialect() ).getDDL();
         resourceState = fsMgr.deactivate( resourceState.getId() );
         SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/sql/wizard5" );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
