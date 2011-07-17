@@ -159,6 +159,8 @@ public class GetMap {
 
     private double resolution;
 
+    private Map<String, String> parameterMap = new HashMap<String, String>();
+
     /**
      * @param map
      * @param version
@@ -172,6 +174,7 @@ public class GetMap {
         if ( version.equals( VERSION_130 ) ) {
             parse130( map, service );
         }
+        parameterMap.putAll( map );
         try {
             scale = Utils.calcScaleWMS130( width, height, bbox, crs );
             LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
@@ -841,6 +844,14 @@ public class GetMap {
      */
     public Map<Layer, Integer> getMaxFeatures() {
         return maxFeatures;
+    }
+
+    /**
+     * @return the KVP map of parameters. May not be accurate/empty, especially if this object has been created by some
+     *         other means than a KVP request.
+     */
+    public Map<String, String> getParameterMap() {
+        return parameterMap;
     }
 
     /**

@@ -110,6 +110,8 @@ public class GetFeatureInfo {
 
     private MapService service;
 
+    private HashMap<String, String> parameterMap = new HashMap<String, String>();
+
     /**
      * @param map
      * @param version
@@ -124,6 +126,7 @@ public class GetFeatureInfo {
         if ( version.equals( VERSION_130 ) ) {
             parse130( map );
         }
+        parameterMap.putAll( map );
     }
 
     /**
@@ -439,6 +442,13 @@ public class GetFeatureInfo {
      */
     public int getY() {
         return y;
+    }
+
+    /**
+     * @return the original parameter map (might be empty if not constructed via request)
+     */
+    public Map<String, String> getParameterMap() {
+        return parameterMap;
     }
 
 }

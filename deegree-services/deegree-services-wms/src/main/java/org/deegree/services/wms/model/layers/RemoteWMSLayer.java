@@ -123,7 +123,8 @@ public class RemoteWMSLayer extends Layer {
     @Override
     public LinkedList<String> paintMap( Graphics2D g, GetMap gm, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
-        List<BufferedImage> images = wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(), gm.getHeight() );
+        List<BufferedImage> images = wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(),
+                                                      gm.getParameterMap() );
         if ( images == null ) {
             return new LinkedList<String>();
         }
@@ -137,7 +138,8 @@ public class RemoteWMSLayer extends Layer {
     public Pair<BufferedImage, LinkedList<String>> paintMap( GetMap gm, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
         if ( wmsStore.isSimple() ) {
-            List<BufferedImage> images = wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(), gm.getHeight() );
+            List<BufferedImage> images = wmsStore.getMap( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(),
+                                                          gm.getParameterMap() );
             return new Pair<BufferedImage, LinkedList<String>>( images.get( 0 ), new LinkedList<String>() );
         }
 
@@ -149,7 +151,7 @@ public class RemoteWMSLayer extends Layer {
     @Override
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style ) {
         FeatureCollection col = wmsStore.getFeatureInfo( fi.getEnvelope(), fi.getWidth(), fi.getHeight(), fi.getX(),
-                                                         fi.getY(), fi.getFeatureCount() );
+                                                         fi.getY(), fi.getFeatureCount(), fi.getParameterMap() );
         return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
     }
 
