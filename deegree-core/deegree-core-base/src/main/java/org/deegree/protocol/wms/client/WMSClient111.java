@@ -60,11 +60,9 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -82,8 +80,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
-import org.deegree.commons.utils.CollectionUtils;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -515,8 +511,13 @@ public class WMSClient111 {
         return result;
     }
 
+    /**
+     * @param hardParameters
+     *            parameters to override in the request, may be null
+     * @throws IOException
+     */
     public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,
-                                             Envelope bbox, ICRS srs, int count )
+                                             Envelope bbox, ICRS srs, int count, Map<String, String> hardParameters )
                             throws IOException {
         String url = getAddress( GetFeatureInfo, true );
         if ( url == null ) {
@@ -527,11 +528,35 @@ public class WMSClient111 {
             url += url.indexOf( "?" ) == -1 ? "?" : "&";
         }
         String lays = join( ",", queryLayers );
-        url += "request=GetFeatureInfo&version=1.1.1&service=WMS&layers=" + lays + "&query_layers=" + lays
-               + "&styles=&width=" + width + "&height=" + height + "&bbox=" + bbox.getMin().get0() + ","
-               + bbox.getMin().get1() + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs="
-               + srs.getAlias() + "&format=" + getFormats( GetMap ).getFirst() + "&info_format=application/vnd.ogc.gml"
-               + "&x=" + x + "&y=" + y + "&feature_count=" + count;
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put( "request", "GetFeatureInfo" );
+        map.put( "version", "1.1.1" );
+        map.put( "service", "WMS" );
+        map.put( "layers", lays );
+        map.put( "query_layers", lays );
+        map.put( "styles", "" );
+        map.put( "width", Integer.toString( width ) );
+        map.put( "height", Integer.toString( height ) );
+        map.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
+                         + bbox.getMax().get1() );
+        map.put( "srs", srs.getAlias() );
+        map.put( "format", getFormats( GetMap ).getFirst() );
+        map.put( "info_format", "application/vnd.ogc.gml" );
+        map.put( "x", Integer.toString( x ) );
+        map.put( "y", Integer.toString( y ) );
+        map.put( "feature_count", Integer.toString( count ) );
+        if ( hardParameters != null ) {
+            for ( Entry<String, String> e : hardParameters.entrySet() ) {
+                if ( map.containsKey( e.getKey().toLowerCase() ) ) {
+                    LOG.debug( "Overriding preset parameter {}.", e.getKey() );
+                    map.put( e.getKey().toLowerCase(), e.getValue() );
+                } else
+                    map.put( e.getKey(), e.getValue() );
+            }
+        }
+
+        url += toQueryString( map );
 
         URL theUrl = new URL( url );
         LOG.debug( "Connecting to URL " + theUrl );
@@ -745,18 +770,6 @@ public class WMSClient111 {
                                                     boolean errorsInImage, boolean validate,
                                                     List<String> validationErrors )
                                 throws IOException {
-            layers = new ArrayList<String>( layers );
-            layers = CollectionUtils.map( layers, new Mapper<String, String>() {
-                public String apply( String u ) {
-                    try {
-                        return URLEncoder.encode( u, "UTF-8" );
-                    } catch ( UnsupportedEncodingException e ) {
-                        // eat it
-                    }
-                    return u;
-                }
-            } );
-
             if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
                 return getTiledMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
                                     validationErrors );
