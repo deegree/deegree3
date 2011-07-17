@@ -50,6 +50,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +143,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 LinkedList<String> errors = new LinkedList<String>();
                 Pair<BufferedImage, String> pair = client.getMap( singletonList( layer ), width, height, envelope,
                                                                   origCrs, opts.imageFormat, opts.transparent, false,
-                                                                  -1, true, errors );
+                                                                  -1, true, errors, opts.hardParametersGetMap );
                 LOG.debug( "Parameters that have been replaced for this request: " + errors );
                 if ( pair.first == null ) {
                     LOG.debug( "Error from remote WMS: " + pair.second );
@@ -169,7 +170,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
             Pair<BufferedImage, String> pair = client.getMap( singletonList( layer ), newWidth, newHeight, bbox,
                                                               CRSManager.getCRSRef( opts.defaultCRS ),
                                                               opts.imageFormat, opts.transparent, false, -1, true,
-                                                              errors );
+                                                              errors, opts.hardParametersGetMap );
 
             LOG.debug( "Parameters that have been replaced for this request: {}", errors );
             if ( pair.first == null ) {
@@ -224,7 +225,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                     LinkedList<String> errors = new LinkedList<String>();
                     Pair<BufferedImage, String> pair = client.getMap( layerOrder, width, height, envelope, origCrs,
                                                                       options.imageFormat, options.transparent, false,
-                                                                      -1, true, errors );
+                                                                      -1, true, errors, options.hardParametersGetMap );
                     LOG.debug( "Parameters that have been replaced for this request: " + errors );
                     if ( pair.first == null ) {
                         LOG.debug( "Error from remote WMS: " + pair.second );
@@ -251,7 +252,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
                                                                   CRSManager.getCRSRef( options.defaultCRS ),
                                                                   options.imageFormat, options.transparent, false, -1,
-                                                                  true, errors );
+                                                                  true, errors, options.hardParametersGetMap );
 
                 LOG.debug( "Parameters that have been replaced for this request: {}", errors );
                 if ( pair.first == null ) {
@@ -358,6 +359,14 @@ public class RemoteWMSStore implements RemoteOWSStore {
         public boolean transparent = true, alwaysUseDefaultCRS = false;
 
         public String imageFormat = "image/png", defaultCRS = "EPSG:4326";
+
+        public Map<String, String> defaultParametersGetMap = new HashMap<String, String>();
+
+        public Map<String, String> hardParametersGetMap = new HashMap<String, String>();
+
+        public Map<String, String> defaultParametersGetFeatureInfo = new HashMap<String, String>();
+
+        public Map<String, String> hardParametersGetFeatureInfo = new HashMap<String, String>();
     }
 
     public void destroy() {

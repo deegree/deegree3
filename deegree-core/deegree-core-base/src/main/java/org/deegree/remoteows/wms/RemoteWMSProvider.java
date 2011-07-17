@@ -57,8 +57,11 @@ import org.deegree.remoteows.RemoteOWSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
 import org.deegree.remoteows.wms.jaxb.AuthenticationType;
 import org.deegree.remoteows.wms.jaxb.HTTPBasicAuthenticationType;
+import org.deegree.remoteows.wms.jaxb.ParameterScopeType;
+import org.deegree.remoteows.wms.jaxb.ParameterUseType;
 import org.deegree.remoteows.wms.jaxb.RemoteWMSStore;
 import org.deegree.remoteows.wms.jaxb.RequestOptionsType;
+import org.deegree.remoteows.wms.jaxb.RequestOptionsType.Parameter;
 import org.deegree.remoteows.wms.jaxb.RequestedLayerType;
 import org.slf4j.Logger;
 
@@ -100,6 +103,44 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             if ( ropts.getDefaultCRS() != null ) {
                 opts.defaultCRS = ropts.getDefaultCRS().getValue();
                 opts.alwaysUseDefaultCRS = ropts.getDefaultCRS().isUseAlways();
+            }
+            if ( ropts.getParameter() != null ) {
+                for ( Parameter p : ropts.getParameter() ) {
+                    String name = p.getName();
+                    String value = p.getValue();
+                    ParameterUseType use = p.getUse();
+                    ParameterScopeType scope = p.getScope();
+                    switch ( use ) {
+                    case ALLOW_OVERRIDE:
+                        switch ( scope ) {
+                        case GET_MAP:
+                            opts.defaultParametersGetMap.put( name, value );
+                            break;
+                        case GET_FEATURE_INFO:
+                            opts.defaultParametersGetFeatureInfo.put( name, value );
+                            break;
+                        default:
+                            opts.defaultParametersGetMap.put( name, value );
+                            opts.defaultParametersGetFeatureInfo.put( name, value );
+                            break;
+                        }
+                        break;
+                    case FIXED:
+                        switch ( scope ) {
+                        case GET_MAP:
+                            opts.hardParametersGetMap.put( name, value );
+                            break;
+                        case GET_FEATURE_INFO:
+                            opts.hardParametersGetFeatureInfo.put( name, value );
+                            break;
+                        default:
+                            opts.hardParametersGetMap.put( name, value );
+                            opts.hardParametersGetFeatureInfo.put( name, value );
+                            break;
+                        }
+                        break;
+                    }
+                }
             }
         }
         return ropts != null;

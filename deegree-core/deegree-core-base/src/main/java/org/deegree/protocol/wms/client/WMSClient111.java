@@ -41,6 +41,7 @@ import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyPassword;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyUser;
+import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.XML;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
@@ -65,8 +66,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
@@ -479,9 +483,22 @@ public class WMSClient111 {
                                                String format, boolean transparent, boolean errorsInImage, int timeout,
                                                boolean validate, List<String> validationErrors )
                             throws IOException {
+        return getMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, timeout, validate,
+                       validationErrors, null );
+    }
 
+    /**
+     * @param hardParameters
+     *            parameters to override in the request, may be null
+     * @throws IOException
+     */
+    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, ICRS srs,
+                                               String format, boolean transparent, boolean errorsInImage, int timeout,
+                                               boolean validate, List<String> validationErrors,
+                                               Map<String, String> hardParameters )
+                            throws IOException {
         Worker worker = new Worker( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
-                                    validationErrors );
+                                    validationErrors, hardParameters );
 
         Pair<BufferedImage, String> result;
         try {
@@ -698,8 +715,11 @@ public class WMSClient111 {
 
         private List<String> validationErrors;
 
+        private final Map<String, String> hardParameters;
+
         Worker( List<String> layers, int width, int height, Envelope bbox, ICRS srs, String format,
-                boolean transparent, boolean errorsInImage, boolean validate, List<String> validationErrors ) {
+                boolean transparent, boolean errorsInImage, boolean validate, List<String> validationErrors,
+                Map<String, String> hardParameters ) {
             this.layers = layers;
             this.width = width;
             this.height = height;
@@ -710,6 +730,7 @@ public class WMSClient111 {
             this.errorsInImage = errorsInImage;
             this.validate = validate;
             this.validationErrors = validationErrors;
+            this.hardParameters = hardParameters;
         }
 
         @Override
@@ -724,19 +745,18 @@ public class WMSClient111 {
                                                     boolean errorsInImage, boolean validate,
                                                     List<String> validationErrors )
                                 throws IOException {
-        	layers = new ArrayList<String>( layers );
-        	layers = CollectionUtils.map( layers, new Mapper<String, String>(){
-				public String apply( String u ) {
-					try {
-						return URLEncoder.encode( u, "UTF-8" );
-					} catch ( UnsupportedEncodingException e ) {
-						// eat it
-					}
-					return u;
-				}
-        	} );
-        	
-        	
+            layers = new ArrayList<String>( layers );
+            layers = CollectionUtils.map( layers, new Mapper<String, String>() {
+                public String apply( String u ) {
+                    try {
+                        return URLEncoder.encode( u, "UTF-8" );
+                    } catch ( UnsupportedEncodingException e ) {
+                        // eat it
+                    }
+                    return u;
+                }
+            } );
+
             if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
                 return getTiledMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
                                     validationErrors );
@@ -762,10 +782,31 @@ public class WMSClient111 {
                 if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
                     url += url.indexOf( "?" ) == -1 ? "?" : "&";
                 }
-                url += "request=GetMap&version=1.1.1&service=WMS&layers=" + join( ",", layers ) + "&styles=&width="
-                       + width + "&height=" + height + "&bbox=" + bbox.getMin().get0() + "," + bbox.getMin().get1()
-                       + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs=" + srs.getAlias()
-                       + "&format=" + format + "&transparent=" + transparent;
+
+                Map<String, String> map = new HashMap<String, String>();
+                map.put( "request", "GetMap" );
+                map.put( "version", "1.1.1" );
+                map.put( "service", "WMS" );
+                map.put( "layers", join( ",", layers ) );
+                map.put( "styles", "" );
+                map.put( "width", Integer.toString( width ) );
+                map.put( "height", Integer.toString( height ) );
+                map.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
+                                 + bbox.getMax().get1() );
+                map.put( "srs", srs.getAlias() );
+                map.put( "format", format );
+                map.put( "transparent", Boolean.toString( transparent ) );
+                if ( hardParameters != null ) {
+                    for ( Entry<String, String> e : hardParameters.entrySet() ) {
+                        if ( map.containsKey( e.getKey().toLowerCase() ) ) {
+                            LOG.debug( "Overriding preset parameter {}.", e.getKey() );
+                            map.put( e.getKey().toLowerCase(), e.getValue() );
+                        } else
+                            map.put( e.getKey(), e.getValue() );
+                    }
+                }
+
+                url += toQueryString( map );
 
                 URL theUrl = new URL( url );
                 LOG.debug( "Connecting to URL " + theUrl );

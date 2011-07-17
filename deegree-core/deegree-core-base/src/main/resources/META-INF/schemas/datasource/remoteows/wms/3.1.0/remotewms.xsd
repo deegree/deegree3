@@ -74,7 +74,33 @@
           </simpleContent>
         </complexType>
       </element>
+      <element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="name" type="string" use="required" />
+              <attribute name="use" type="wms:ParameterUseType" use="optional" default="allowOverride" />
+              <attribute name="scope" type="wms:ParameterScopeType" use="optional" default="All" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
     </sequence>
   </complexType>
+
+  <simpleType name="ParameterUseType">
+    <restriction base="string">
+      <enumeration value="allowOverride" />
+      <enumeration value="fixed" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="ParameterScopeType">
+    <restriction base="string">
+      <enumeration value="GetMap" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="All" />
+    </restriction>
+  </simpleType>
 
 </schema>
