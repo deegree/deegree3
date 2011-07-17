@@ -64,8 +64,6 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
@@ -197,10 +195,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
         } catch ( IOException e ) {
             LOG.info( "Error when loading image from remote WMS: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace", e );
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "Unable to find crs, this is not supposed to happen." );
-            LOG.trace( "Stack trace", e );
-        } catch ( TransformationException e ) {
+        } catch ( Throwable e ) {
             LOG.warn( "Unable to transform bbox from {} to {}", origCrsName, opts.defaultCRS );
             LOG.trace( "Stack trace", e );
         }
@@ -280,10 +275,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
             } catch ( IOException e ) {
                 LOG.info( "Error when loading image from remote WMS: {}", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace", e );
-            } catch ( UnknownCRSException e ) {
-                LOG.warn( "Unable to find crs, this is not supposed to happen." );
-                LOG.trace( "Stack trace", e );
-            } catch ( TransformationException e ) {
+            } catch ( Throwable e ) {
                 LOG.warn( "Unable to transform bbox from {} to {}", origCrsName, options.defaultCRS );
                 LOG.trace( "Stack trace", e );
             }
@@ -310,7 +302,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
         try {
             return client.getFeatureInfo( layerOrder, width, height, x, y, envelope, envelope.getCoordinateSystem(),
                                           count, options.hardParametersGetFeatureInfo );
-        } catch ( IOException e ) {
+        } catch ( Throwable e ) {
             LOG.info( "Error when loading features from remote WMS: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace", e );
         }
@@ -330,13 +322,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
             if ( bbox != null ) {
                 try {
                     bbox = new GeometryTransformer( "EPSG:4326" ).transform( bbox );
-                } catch ( IllegalArgumentException e ) {
-                    LOG.info( "Cannot transform bounding box from {} to EPSG:4326.", bbox.getCoordinateSystem() );
-                    LOG.trace( "Stack trace: ", e );
-                } catch ( TransformationException e ) {
-                    LOG.info( "Cannot transform bounding box from {} to EPSG:4326.", bbox.getCoordinateSystem() );
-                    LOG.trace( "Stack trace: ", e );
-                } catch ( UnknownCRSException e ) {
+                } catch ( Throwable e ) {
                     LOG.info( "Cannot transform bounding box from {} to EPSG:4326.", bbox.getCoordinateSystem() );
                     LOG.trace( "Stack trace: ", e );
                 }
