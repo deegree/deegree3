@@ -72,6 +72,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.jaxb.AbstractRasterType;
 import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterDirectory;
+import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterFile;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
 import org.deegree.coverage.raster.io.jaxb.RasterConfig;
@@ -264,8 +265,11 @@ public class RasterBuilder implements CoverageBuilder {
                 crs = parentCrs;
             }
             RasterDirectory directory = config.getRasterDirectory();
-            String file = config.getRasterFile().getValue();
-            Integer imageIndex = config.getRasterFile().getImageIndex();
+            RasterFile rasterFile = config.getRasterFile();
+            String file = rasterFile == null ? null : rasterFile.getValue();
+            Integer imageIndex = null;
+            if ( rasterFile != null )
+                imageIndex = rasterFile.getImageIndex();
             try {
                 RasterIOOptions rOptions = new RasterIOOptions();
                 rOptions.copyOf( options );
