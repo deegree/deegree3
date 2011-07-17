@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -131,9 +132,11 @@ public class RemoteWMSStore implements RemoteOWSStore {
     }
 
     private BufferedImage getMap( final String layer, final Envelope envelope, final int width, final int height,
-                                  LayerOptions opts ) {
+                                  LayerOptions opts, Map<String, String> originalParameters ) {
         ICRS origCrs = envelope.getCoordinateSystem();
         String origCrsName = origCrs.getAlias();
+        Map<String, String> extraParams = new HashMap<String, String>();
+        handleParameters( extraParams, originalParameters, opts.defaultParametersGetMap, opts.hardParametersGetMap );
         try {
             if ( ( !opts.alwaysUseDefaultCRS && client.getCoordinateSystems( layer ).contains( origCrsName ) )
                  || origCrsName.equals( opts.defaultCRS ) ) {
@@ -141,7 +144,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 LinkedList<String> errors = new LinkedList<String>();
                 Pair<BufferedImage, String> pair = client.getMap( singletonList( layer ), width, height, envelope,
                                                                   origCrs, opts.imageFormat, opts.transparent, false,
-                                                                  -1, true, errors, opts.hardParametersGetMap );
+                                                                  -1, true, errors, extraParams );
                 LOG.debug( "Parameters that have been replaced for this request: " + errors );
                 if ( pair.first == null ) {
                     LOG.debug( "Error from remote WMS: " + pair.second );
@@ -168,7 +171,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
             Pair<BufferedImage, String> pair = client.getMap( singletonList( layer ), newWidth, newHeight, bbox,
                                                               CRSManager.getCRSRef( opts.defaultCRS ),
                                                               opts.imageFormat, opts.transparent, false, -1, true,
-                                                              errors, opts.hardParametersGetMap );
+                                                              errors, extraParams );
 
             LOG.debug( "Parameters that have been replaced for this request: {}", errors );
             if ( pair.first == null ) {
@@ -202,14 +205,41 @@ public class RemoteWMSStore implements RemoteOWSStore {
         return null;
     }
 
+    private static void handleParameters( Map<String, String> map, Map<String, String> originals,
+                                          Map<String, String> defaults, Map<String, String> hards ) {
+        // handle default params
+        for ( String def : defaults.keySet() ) {
+            String key = def.toUpperCase();
+            if ( originals.containsKey( key ) ) {
+                map.put( key, originals.get( key ) );
+            } else {
+                map.put( def, defaults.get( def ) );
+            }
+        }
+        // handle preset params
+        for ( Entry<String, String> e : hards.entrySet() ) {
+            if ( map.containsKey( e.getKey().toLowerCase() ) ) {
+                map.put( e.getKey().toLowerCase(), e.getValue() );
+            } else
+                map.put( e.getKey(), e.getValue() );
+        }
+    }
+
     /**
      * @param envelope
      * @param width
      * @param height
+     * @param originalParameters
+     *            if not null, will be used to copy some optional/vendor parameters according to the configuration
      * @return a singleton list if #isSimple returns true, or a list of one image per layer
      */
-    public List<BufferedImage> getMap( final Envelope envelope, final int width, final int height ) {
+    public List<BufferedImage> getMap( final Envelope envelope, final int width, final int height,
+                                       final Map<String, String> originalParameters ) {
+        Map<String, String> extraParameters = new HashMap<String, String>();
         if ( options != null ) {
+            handleParameters( extraParameters, originalParameters, options.defaultParametersGetMap,
+                              options.hardParametersGetMap );
+
             ICRS origCrs = envelope.getCoordinateSystem();
             String origCrsName = origCrs.getAlias();
             try {
@@ -220,7 +250,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                     LinkedList<String> errors = new LinkedList<String>();
                     Pair<BufferedImage, String> pair = client.getMap( layerOrder, width, height, envelope, origCrs,
                                                                       options.imageFormat, options.transparent, false,
-                                                                      -1, true, errors, options.hardParametersGetMap );
+                                                                      -1, true, errors, extraParameters );
                     LOG.debug( "Parameters that have been replaced for this request: " + errors );
                     if ( pair.first == null ) {
                         LOG.debug( "Error from remote WMS: " + pair.second );
@@ -247,7 +277,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                 Pair<BufferedImage, String> pair = client.getMap( layerOrder, newWidth, newHeight, bbox,
                                                                   CRSManager.getCRSRef( options.defaultCRS ),
                                                                   options.imageFormat, options.transparent, false, -1,
-                                                                  true, errors, options.hardParametersGetMap );
+                                                                  true, errors, extraParameters );
 
                 LOG.debug( "Parameters that have been replaced for this request: {}", errors );
                 if ( pair.first == null ) {
@@ -284,7 +314,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
         ArrayList<BufferedImage> list = new ArrayList<BufferedImage>();
         for ( String l : layerOrder ) {
-            list.add( getMap( l, envelope, width, height, layers.get( l ) ) );
+            list.add( getMap( l, envelope, width, height, layers.get( l ), originalParameters ) );
         }
         return list;
     }
@@ -298,10 +328,15 @@ public class RemoteWMSStore implements RemoteOWSStore {
      * @param count
      * @return null, if reading the feature collection failed
      */
-    public FeatureCollection getFeatureInfo( Envelope envelope, int width, int height, int x, int y, int count ) {
+    public FeatureCollection getFeatureInfo( Envelope envelope, int width, int height, int x, int y, int count,
+                                             Map<String, String> originalParameters ) {
+        // TODO implement for !isSimple()
         try {
+            Map<String, String> extraParams = new HashMap<String, String>();
+            handleParameters( extraParams, originalParameters, options.defaultParametersGetFeatureInfo,
+                              options.hardParametersGetFeatureInfo );
             return client.getFeatureInfo( layerOrder, width, height, x, y, envelope, envelope.getCoordinateSystem(),
-                                          count, options.hardParametersGetFeatureInfo );
+                                          count, extraParams );
         } catch ( Throwable e ) {
             LOG.info( "Error when loading features from remote WMS: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace", e );
