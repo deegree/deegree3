@@ -65,6 +65,12 @@
         <wms:Title>parameters</wms:Title>
         <wms:RemoteWMSStoreId>parameters</wms:RemoteWMSStoreId>
       </wms:RequestableLayer>
+      
+      <wms:RequestableLayer>
+        <wms:Name>parametersext</wms:Name>
+        <wms:Title>parametersext</wms:Title>
+        <wms:RemoteWMSStoreId>parametersext</wms:RemoteWMSStoreId>
+      </wms:RequestableLayer>
 
       <wms:RequestableLayer>
         <wms:Name>transformedgif</wms:Name>
