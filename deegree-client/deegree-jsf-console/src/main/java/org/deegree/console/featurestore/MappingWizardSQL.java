@@ -79,6 +79,8 @@ import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SQLDialectManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,6 +150,17 @@ public class MappingWizardSQL {
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
         ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
         this.connectionType = mgr.getType( jdbcId );
+        SQLDialectManager dialectMgr = ws.getSubsystemManager( SQLDialectManager.class );
+        if ( dialectMgr != null ) {
+            try {
+                SQLDialect dialect = dialectMgr.create( jdbcId );
+                columnNameLength = dialect.getMaxColumnNameLength();
+                tableNameLength = dialect.getMaxTableNameLength();
+            } catch ( Throwable t ) {
+                FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "SQLDialect error: " + t.getMessage(), null );
+                FacesContext.getCurrentInstance().addMessage( null, fm );
+            }
+        }
     }
 
     public String getMode() {
