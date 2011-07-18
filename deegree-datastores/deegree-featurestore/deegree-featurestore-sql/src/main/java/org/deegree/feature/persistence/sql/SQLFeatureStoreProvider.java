@@ -102,6 +102,9 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
             LOG.debug( "Connection type is {}.", connType );
 
             SQLDialectManager dialectMgr = workspace.getSubsystemManager( SQLDialectManager.class );
+            if (dialectMgr == null) {
+                throw new ResourceInitException ("SQLDialectManager not found in workspace / classpath.");
+            }
             SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId() );
             return new SQLFeatureStore( cfg, configURL, dialect );
         } catch ( JAXBException e ) {
