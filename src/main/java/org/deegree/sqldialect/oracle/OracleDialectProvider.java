@@ -1,10 +1,12 @@
-//$HeadURL: svn+ssh://criador.lat-lon.de/srv/svn/deegree-intern/trunk/latlon-sqldialect-oracle/src/main/java/de/latlon/deegree/sqldialect/oracle/OracleDialectProvider.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +21,11 @@
  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  Contact information:
+
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
 
  lat/lon GmbH
  Aennchenstr. 19, 53177 Bonn
@@ -35,9 +42,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
-import static org.deegree.commons.utils.JDBCUtils.close;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,6 +53,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectProvider;
 import org.slf4j.Logger;
@@ -58,9 +63,10 @@ import org.slf4j.LoggerFactory;
  * {@link SQLDialectProvider} for Oracle spatial databases.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: schmitz $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 301 $, $Date: 2011-06-14 11:20:48 +0200 (Di, 14. Jun 2011) $
+ * @version $Revision$, $Date$
  */
 public class OracleDialectProvider implements SQLDialectProvider {
 
@@ -68,36 +74,54 @@ public class OracleDialectProvider implements SQLDialectProvider {
 
     @Override
     public Type getSupportedType() {
-        return Oracle;
+        return Type.Oracle;
     }
 
     @Override
     public SQLDialect create( String connId, DeegreeWorkspace ws )
                             throws ResourceInitException {
+        String schema = null;
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
-        String username = null;
-        String version = null;
+
+        // default to 10.0
+        int major = 10;
+        int minor = 0;
+
         try {
             conn = ConnectionManager.getConnection( connId );
-            username = conn.getMetaData().getUserName();
             stmt = conn.createStatement();
-            rs = stmt.executeQuery( "select banner from v$version where banner like 'Oracle%'" );
+
+            // this function / parameters exists since oracle version 8
+            rs = stmt.executeQuery( "SELECT sys_context('USERENV', 'CURRENT_SCHEMA') FROM DUAL" );
+
+            if ( rs.next() )
+                schema = rs.getString( 1 );
+
+            JDBCUtils.close( rs );
+
+            // tested with oracle 9, 10, 11
+            rs = stmt.executeQuery( "SELECT version FROM product_component_version WHERE product LIKE 'Oracle%'" );
+
             if ( rs.next() ) {
-                Pattern p = Pattern.compile( "(\\d+)[.]\\d+[.]\\d+[.]\\d+[.]\\d+" );
+                Pattern p = Pattern.compile( "^(\\d+)\\.(\\d+)\\." );
                 Matcher m = p.matcher( rs.getString( 1 ) );
                 if ( m.find() ) {
-                    version = m.group( 1 );
+                    major = Integer.valueOf( m.group( 1 ) );
+                    minor = Integer.valueOf( m.group( 2 ) );
                 }
             }
-            LOG.info( "Instantiating Oracle dialect for version {}.", version );
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new ResourceInitException( e.getMessage(), e );
+
+            LOG.info( "Instantiating Oracle dialect for version {}.{}", major, minor );
+        } catch ( SQLException se ) {
+            LOG.warn( "Failed loading default schema/database verion for connection {}", connId );
+            LOG.debug( se.getMessage(), se );
+            throw new ResourceInitException( se.getMessage(), se );
         } finally {
-            close( rs, stmt, conn, LOG );
+            JDBCUtils.close( rs, stmt, conn, null );
         }
-        return new OracleDialect( username, version );
+
+        return new OracleDialect( schema, major, minor );
     }
 }
