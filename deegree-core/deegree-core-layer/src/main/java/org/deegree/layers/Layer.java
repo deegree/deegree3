@@ -36,7 +36,6 @@
 
 package org.deegree.layers;
 
-import java.awt.image.renderable.RenderContext;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +45,8 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.rendering.r2d.context.RenderContext;
+import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 
 /**

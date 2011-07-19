@@ -39,9 +39,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
+import org.deegree.rendering.r2d.context.RenderingInfo;
 
 /**
  * 
@@ -59,8 +59,8 @@ public class DefaultOutputFormatProvider implements OutputFormatProvider {
     }
 
     @Override
-    public RenderContext getRenderers( int width, int height, Envelope envelope, double pixelSize ) {
-        return new DefaultRenderContext( width, height, envelope, pixelSize );
+    public RenderContext getRenderers( RenderingInfo info ) {
+        return new DefaultRenderContext( info );
     }
 
 }

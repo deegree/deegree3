@@ -32,8 +32,12 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.layers;
+ ----------------------------------------------------------------------------*/
+package org.deegree.rendering.r2d.context;
+
+import java.awt.Color;
+
+import org.deegree.geometry.Envelope;
 
 /**
  * 
@@ -44,5 +48,57 @@ package org.deegree.layers;
  */
 public class RenderingInfo {
 
-}
+    private String format;
 
+    private int width, height;
+
+    private boolean transparent;
+
+    private Color bgcolor;
+
+    private Envelope envelope;
+
+    private double pixelSize;
+
+    public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
+                          double pixelSize ) {
+        this.format = format;
+        this.width = width;
+        this.height = height;
+        this.transparent = transparent;
+        this.bgcolor = bgcolor;
+    }
+
+    public void setFormat( String format ) {
+        this.format = format;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public boolean getTransparent() {
+        return transparent;
+    }
+
+    public Color getBgColor() {
+        return bgcolor;
+    }
+
+    public Envelope getEnvelope() {
+        return envelope;
+    }
+
+    public double getPixelSize() {
+        return pixelSize;
+    }
+
+}

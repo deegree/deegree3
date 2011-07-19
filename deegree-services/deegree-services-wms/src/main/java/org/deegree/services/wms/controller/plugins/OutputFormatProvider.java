@@ -37,8 +37,8 @@ package org.deegree.services.wms.controller.plugins;
 
 import java.util.Collection;
 
-import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r2d.context.RenderContext;
+import org.deegree.rendering.r2d.context.RenderingInfo;
 
 /**
  * 
@@ -55,12 +55,9 @@ public interface OutputFormatProvider {
     Collection<String> getSupportedOutputFormats();
 
     /**
-     * @param width
-     * @param height
-     * @param envelope
-     * @param pixelSize
+     * @param info
      * @return the render context that produces the output formats
      */
-    RenderContext getRenderers( int width, int height, Envelope envelope, double pixelSize );
+    RenderContext getRenderers( RenderingInfo info );
 
 }

@@ -35,13 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.context;
 
-import org.deegree.geometry.Envelope;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
+import org.deegree.rendering.r2d.utils.ImageUtils;
 
 /**
  * 
@@ -52,16 +55,24 @@ import org.deegree.rendering.r2d.TextRenderer;
  */
 public class DefaultRenderContext implements RenderContext {
 
+    private BufferedImage image;
+
+    private Graphics2D graphics;
+
     private Java2DRenderer renderer;
 
     private Java2DTextRenderer textRenderer;
 
     private Java2DRasterRenderer rasterRenderer;
 
-    public DefaultRenderContext( int width, int height, Envelope envelope, double pixelSize ) {
-        renderer = new Java2DRenderer( null, width, height, envelope, pixelSize );
+    public DefaultRenderContext( RenderingInfo info ) {
+        image = ImageUtils.prepareImage( info.getFormat(), info.getWidth(), info.getHeight(), info.getTransparent(),
+                                         info.getBgColor() );
+        graphics = image.createGraphics();
+        renderer = new Java2DRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope(),
+                                       info.getPixelSize() );
         textRenderer = new Java2DTextRenderer( renderer );
-        rasterRenderer = new Java2DRasterRenderer( null );
+        rasterRenderer = new Java2DRasterRenderer( graphics );
     }
 
     @Override
