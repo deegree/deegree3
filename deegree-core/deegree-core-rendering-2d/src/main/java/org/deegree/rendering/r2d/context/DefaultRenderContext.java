@@ -35,8 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.context;
 
+import static javax.imageio.ImageIO.write;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
@@ -65,8 +70,13 @@ public class DefaultRenderContext implements RenderContext {
 
     private Java2DRasterRenderer rasterRenderer;
 
+    private OutputStream out;
+
+    private String format;
+
     public DefaultRenderContext( RenderingInfo info ) {
-        image = ImageUtils.prepareImage( info.getFormat(), info.getWidth(), info.getHeight(), info.getTransparent(),
+        format = info.getFormat();
+        image = ImageUtils.prepareImage( format, info.getWidth(), info.getHeight(), info.getTransparent(),
                                          info.getBgColor() );
         graphics = image.createGraphics();
         renderer = new Java2DRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope(),
@@ -88,6 +98,32 @@ public class DefaultRenderContext implements RenderContext {
     @Override
     public RasterRenderer getRasterRenderer() {
         return rasterRenderer;
+    }
+
+    @Override
+    public void setOutput( OutputStream out ) {
+        this.out = out;
+    }
+
+    @Override
+    public boolean close()
+                            throws IOException {
+        try {
+            graphics.dispose();
+            if ( out != null ) {
+                String format = this.format.substring( this.format.indexOf( "/" ) + 1 );
+                if ( format.equals( "x-ms-bmp" ) ) {
+                    format = "bmp";
+                }
+                if ( format.equals( "png; subtype=8bit" ) || format.equals( "png; mode=8bit" ) ) {
+                    format = "png";
+                }
+                return write( image, format, out );
+            }
+        } finally {
+            closeQuietly( out );
+        }
+        return false;
     }
 
 }
