@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://criador.lat-lon.de/srv/svn/deegree-intern/trunk/latlon-sqldialect-oracle/src/main/java/de/latlon/deegree/sqldialect/oracle/OracleGeometryConverter.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle;
 
-import static oracle.spatial.geometry.JGeometry.store;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,15 +42,14 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import oracle.jdbc.OracleConnection;
-import oracle.spatial.geometry.JGeometry;
 import oracle.sql.STRUCT;
 
 import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.deegree.sqldialect.oracle.sdo.SDOGeometryConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +57,10 @@ import org.slf4j.LoggerFactory;
  * TODO add class documentation here
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 303 $, $Date: 2011-06-14 17:20:13 +0200 (Di, 14. Jun 2011) $
+ * @version $Revision$, $Date$
  */
 public class OracleGeometryConverter implements GeometryParticleConverter {
 
@@ -73,6 +71,8 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
     private final ICRS crs;
 
     private final String srid;
+
+    private int isrid;
 
     /**
      * Creates a new {@link OracleGeometryConverter} instance.
@@ -88,6 +88,13 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
         this.column = column;
         this.crs = crs;
         this.srid = srid;
+        this.isrid = 0;
+        try {
+            if ( srid != null )
+                this.isrid = Integer.valueOf( srid );
+        } catch ( NumberFormatException nfe ) {
+            // TODO handle it smoother
+        }
     }
 
     @Override
@@ -111,11 +118,9 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
             return null;
         }
         try {
-            String srid = this.srid;
-            srid = srid == null ? "0" : srid;
-            return new JGeometryAdapter( crs, Integer.parseInt( srid ) ).toGeometry( JGeometry.load( (STRUCT) sqlValue ) );
+            return new SDOGeometryConverter().toGeometry( (STRUCT) sqlValue, crs );
         } catch ( Throwable t ) {
-            t.printStackTrace();
+            LOG.trace( t.getMessage(), t );
             throw new IllegalArgumentException();
         }
     }
@@ -124,19 +129,19 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
     public void setParticle( PreparedStatement stmt, Geometry particle, int paramIndex )
                             throws SQLException {
         try {
-            OracleConnection oraConn = getOracleConnection( stmt.getConnection() );
             if ( particle == null ) {
-                stmt.setNull( paramIndex, Types.STRUCT, "SDO_GEOMETRY" );
+                stmt.setNull( paramIndex, Types.STRUCT, "MDSYS.SDO_GEOMETRY" );
             } else {
                 Geometry compatible = getCompatibleGeometry( particle );
-                if ( compatible instanceof Envelope ) {
-                    compatible = compatible.getConvexHull();
-                }
-                JGeometry jGeometry = null;
-                String srid = this.srid;
-                srid = srid == null ? "0" : srid;
-                jGeometry = new JGeometryAdapter( crs, Integer.parseInt( srid ) ).toJGeometry( compatible );
-                STRUCT struct = store( jGeometry, oraConn );
+                // TODO clarify if this was only a wkt/wkb requirement ?!
+                // (background Envelope -> Optimized Rectangles in Oracle are preferred and faster for SDO_RELATE
+                // filters )
+                //
+                // if ( compatible instanceof Envelope ) {
+                // compatible = compatible.getConvexHull();
+                // }
+                OracleConnection ocon = getOracleConnection( stmt.getConnection() );
+                Object struct = new SDOGeometryConverter().fromGeometry( ocon, isrid, compatible, true );
                 stmt.setObject( paramIndex, struct );
             }
         } catch ( Throwable t ) {
@@ -145,12 +150,17 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
         }
     }
 
-    private OracleConnection getOracleConnection( Connection conn ) {
-        OracleConnection oraconn = null;
-        if ( conn instanceof DelegatingConnection ) {
-            oraconn = (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate();
+    private OracleConnection getOracleConnection( Connection conn )
+                            throws SQLException {
+        OracleConnection ocon = null;
+        if ( conn instanceof OracleConnection ) {
+            ocon = (OracleConnection) conn;
+        } else if ( conn instanceof DelegatingConnection ) {
+            ocon = (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate();
+        } else {
+            ocon = conn.unwrap( OracleConnection.class );
         }
-        return oraconn;
+        return ocon;
     }
 
     private Geometry getCompatibleGeometry( Geometry literal )

@@ -1,10 +1,12 @@
-//$HeadURL: svn+ssh://criador.lat-lon.de/srv/svn/deegree-intern/trunk/latlon-sqldialect-oracle/src/main/java/de/latlon/deegree/sqldialect/oracle/OracleDialect.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +21,11 @@
  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  Contact information:
+
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
 
  lat/lon GmbH
  Aennchenstr. 19, 53177 Bonn
@@ -66,21 +73,30 @@ import org.slf4j.Logger;
 /**
  * {@link SQLDialect} for Oracle Spatial databases.
  * 
+ * @see Oracle(R) Database SQL Reference 10g Release 2 (10.2) B14200-02 Chapter 2
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 348 $, $Date: 2011-07-01 18:02:24 +0200 (Fr, 01. Jul 2011) $
+ * @version $Revision$, $Date$
  */
 public class OracleDialect implements SQLDialect {
 
     private static final Logger LOG = getLogger( OracleDialect.class );
 
-    private final String user, version;
+    private final String schema;
 
-    public OracleDialect( String user, String version ) {
-        this.user = user;
-        this.version = version;
+    private final int versionMajor;
+
+    @SuppressWarnings("unused")
+    private final int versionMinor;
+
+    public OracleDialect( String schema, int major, int minor ) {
+        this.schema = schema;
+        this.versionMajor = major;
+        this.versionMinor = minor;
     }
 
     @Override
@@ -89,17 +105,27 @@ public class OracleDialect implements SQLDialect {
     }
 
     @Override
+    /**
+     * Returns the maximum number of characters allowed for column names.
+     * 
+     * @return maximum number of characters
+     */
     public int getMaxColumnNameLength() {
         return 30;
     }
 
     @Override
+    /**
+     * Returns the maximum number of characters allowed for table names.
+     * 
+     * @return maximum number of characters
+     */
     public int getMaxTableNameLength() {
         return 30;
     }
 
     public String getDefaultSchema() {
-        return user;
+        return schema;
     }
 
     public String stringPlus() {
@@ -107,7 +133,8 @@ public class OracleDialect implements SQLDialect {
     }
 
     public String stringIndex( String pattern, String string ) {
-        return "INSTR(" + pattern + "," + string + ")";
+        // INSTR ( string , substring [, position [, occurrence ]] )
+        return "INSTR(" + string + "," + pattern + ")";
     }
 
     public String cast( String expr, String type ) {
@@ -116,26 +143,45 @@ public class OracleDialect implements SQLDialect {
 
     @Override
     public String geometryMetadata( QTableName qTable, String column ) {
-        // TODO: Andreas!!!!!!!!!
-        return "SELECT 2, -1, 'GEOMETRY' from DUAL";
+        // return "SELECT 2, -1, 'GEOMETRY' FROM DUAL";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( "SELECT COUNT(1), X1.SRID, 'GEOMETRY' FROM " );
+
+        if ( qTable.getSchema() != null )
+            sb.append( "ALL_SDO_GEOM_METADATA " );
+        else
+            sb.append( "USER_SDO_GEOM_METADATA " );
+
+        sb.append( "X1, TABLE( X1.DIMINFO ) X2 WHERE " );
+
+        if ( qTable.getSchema() != null )
+            sb.append( "OWNER='" ).append( qTable.getSchema() ).append( "' AND " );
+
+        sb.append( "TABLE_NAME='" ).append( qTable.getTable() ).append( "' AND " );
+        sb.append( "COLUMN_NAME='" ).append( column ).append( "' GROUP BY X1.TABLE_NAME, X1.COLUMN_NAME, X1.SRID" );
+        return sb.toString();
     }
 
     @Override
     public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
                                                  SortProperty[] sortCrit, boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException {
-        return new OracleWhereBuilder( mapper, filter, sortCrit, allowPartialMappings );
+        return new OracleWhereBuilder( mapper, filter, sortCrit, allowPartialMappings, versionMajor );
     }
 
     @Override
     public String getUndefinedSrid() {
-        return null;
+        return "-1";
     }
 
     @Override
     public String getBBoxAggregateSnippet( String column ) {
-        if ( version.equals( "11" ) ) {
-            return "SDO_AGGR_MBR(sdo_cs.make_2d(" + column + "))";
+        // The use of sdo_aggr_mbr is a bit problematic, since it could be slow and SDO_TUNE.EXTENT_OF is deprecated and
+        // cannot be used inside a select on a table
+
+        if ( 11 == versionMajor ) {
+            return "SDO_AGGR_MBR(SDO_CS.MAKE_2D(" + column + "))";
         }
         return "SDO_AGGR_MBR(" + column + ")";
     }
@@ -195,6 +241,7 @@ public class OracleDialect implements SQLDialect {
         currentStmt.append( column );
         currentStmt.append( " integer not null" );
         // TODO Markus!!!!!!!!!
+        // TODO maybe very problematic, since object names from table_column_postfix can be to long
         additionalSmts.add( new StringBuffer( "create sequence " ).append( table ).append( "_" ).append( column ).append( "_seq start with 1 increment by 1 nomaxvalue" ) );
         additionalSmts.add( new StringBuffer( "create or replace trigger " ).append( table ).append( "_" ).append( column ).append( "_trigger before insert on " ).append( table ).append( " for each row begin select " ).append( table ).append( "_" ).append( column ).append( "_seq.nextval into :new." ).append( column ).append( " from dual; end;" ) );
     }
@@ -204,6 +251,10 @@ public class OracleDialect implements SQLDialect {
                             throws SQLException {
         String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
         String table = qTable.getTable();
-        return md.getColumns( null, schema.toUpperCase(), table.toUpperCase(), null );
+
+        if ( versionMajor < 11 )
+            return md.getColumns( null, schema.toUpperCase(), table.toUpperCase(), null );
+        else
+            return md.getColumns( null, schema, table, null );
     }
 }
