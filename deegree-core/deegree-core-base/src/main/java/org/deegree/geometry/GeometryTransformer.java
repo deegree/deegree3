@@ -488,10 +488,13 @@ public class GeometryTransformer extends Transformer {
             try {
                 result = validDomain.contains( inSource );
             } catch ( UnsupportedOperationException e ) {
-                LOG.debug( "Could not determine valid domain because it is not supported: " + e.getMessage(), e );
+                LOG.info( "Could not determine valid domain because it is not supported: " + e.getMessage(), e );
+                result = true;
+            } catch ( IllegalArgumentException e ) {
+                LOG.info( "Could not determine valid domain because it is not supported: " + e.getMessage(), e );
                 result = true;
             } catch ( Throwable t ) {
-                LOG.debug( "No valid domain checking available: " + t.getMessage(), t );
+                LOG.info( "No valid domain checking available: " + t.getMessage(), t );
                 result = false;
             }
         }
