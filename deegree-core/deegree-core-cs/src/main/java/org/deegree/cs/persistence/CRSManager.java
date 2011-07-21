@@ -685,8 +685,10 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
                     return transformation;
                 }
             }
+        } else {
+            return getTransformation( crsStore, id );
         }
-        return getTransformation( crsStore, id );
+        return null;
     }
 
     /**
