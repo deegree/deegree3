@@ -68077,6 +68077,46 @@
             <crs:UsedGeographicCRS>http://www.opengis.net/gml/srs/epsg.xml#4312</crs:UsedGeographicCRS>
             <crs:UsedProjection>projection_for_epsg:31256</crs:UsedProjection>
         </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+            <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4839</crs:Id>
+            <crs:Id>urn:ogc:def:crs:epsg::4839</crs:Id>
+            <crs:Id>urn:opengis:def:crs:epsg::4839</crs:Id>
+            <crs:Name>ETRS89 / LCC Germany (N-E)</crs:Name>
+            <crs:Version>2007-02-02T00:00</crs:Version>
+            <crs:AreaOfUse>5.75,47.27,15.03,55.03 </crs:AreaOfUse>
+            <crs:AreaOfUse>Germany - onshore</crs:AreaOfUse>
+            <crs:Axis>
+                  <crs:Name>y</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>east</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:Axis>
+                  <crs:Name>x</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>north</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4258</crs:UsedGeographicCRS>
+            <crs:UsedProjection>lcc-de</crs:UsedProjection>
+        </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+            <crs:Id>epsg:4839</crs:Id>
+            <crs:Name>ETRS89 / LCC Germany (N-E)</crs:Name>
+            <crs:Version>2007-02-02T00:00</crs:Version>
+            <crs:AreaOfUse>5.75,47.27,15.03,55.03 </crs:AreaOfUse>
+            <crs:AreaOfUse>Germany - onshore</crs:AreaOfUse>
+            <crs:Axis>
+                  <crs:Name>x</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>north</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:Axis>
+                  <crs:Name>y</crs:Name>
+                  <crs:Units>metre</crs:Units>
+                  <crs:AxisOrientation>east</crs:AxisOrientation>
+            </crs:Axis>
+            <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4258</crs:UsedGeographicCRS>
+            <crs:UsedProjection>lcc-de</crs:UsedProjection>
+        </crs:ProjectedCRS>
         <crs:CompoundCRS>
                 <crs:Id>epsg:4979</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4979</crs:Id>
