@@ -34,21 +34,21 @@
       <artifactId>deegree-sqldialect-commons</artifactId>
       <version>3.1-pre10-SNAPSHOT</version>
     </dependency>
-	<!-- This module can be build with one of the following dependencies -->
+    <!-- This module can be build with one of the following dependencies -->
+    <dependency>
+      <groupId>com.oracle</groupId>
+      <artifactId>ojdbc6</artifactId>
+      <version>[11.1.0.1,11.2.0.2]</version>
+    </dependency>
+    <!-- 
     <dependency>
       <groupId>com.oracle</groupId>
       <artifactId>ojdbc14</artifactId>
       <version>[10.1.0.1,10.2.0.5]</version>
     </dependency>
-    <!-- 
     <dependency>
       <groupId>com.oracle</groupId>
       <artifactId>ojdbc5</artifactId>
-      <version>[11.1.0.1,11.2.0.2]</version>
-    </dependency>
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
       <version>[11.1.0.1,11.2.0.2]</version>
     </dependency>
     -->
