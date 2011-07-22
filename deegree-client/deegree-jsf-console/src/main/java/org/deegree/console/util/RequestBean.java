@@ -263,6 +263,7 @@ public class RequestBean implements Serializable {
                 DURL u = new DURL( targetUrl );
                 DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
                 HttpPost post = new HttpPost( targetUrl );
+                post.setHeader( "Content-Type", "text/xml;charset=UTF-8" );
                 post.setEntity( new InputStreamEntity( is, -1 ) );
                 HttpResponse response = client.execute( post );
                 Header[] headers = response.getHeaders( "Content-Type" );
