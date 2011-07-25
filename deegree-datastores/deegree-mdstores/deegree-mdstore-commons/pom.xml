@@ -4,14 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-mdstore-commons</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre10-SNAPSHOT</version>
+  <version>3.1-pre10</version>
   <name>deegree-mdstore-commons</name>
   <url>http://www.deegree.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre10-SNAPSHOT</version>
+    <version>3.1-pre10</version>
     <relativePath />
   </parent>
 
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-metadata</artifactId>
-      <version>3.1-pre10-SNAPSHOT</version>
+      <version>3.1-pre10</version>
     </dependency>
   </dependencies>
 </project>

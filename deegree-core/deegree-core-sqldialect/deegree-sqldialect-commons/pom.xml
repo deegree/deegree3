@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-sqldialect-commons</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre10-SNAPSHOT</version>
+  <version>3.1-pre10</version>
   <name>deegree-sqldialect-commons</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-sqldialect/deegree-sqldialect-commons</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-sqldialect/deegree-sqldialect-commons</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre10/deegree-core/deegree-core-sqldialect/deegree-sqldialect-commons</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre10/deegree-core/deegree-core-sqldialect/deegree-sqldialect-commons</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre10-SNAPSHOT</version>
+    <version>3.1-pre10</version>
     <relativePath />
   </parent>
 
@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1-pre10-SNAPSHOT</version>
+      <version>3.1-pre10</version>
     </dependency>  
   </dependencies>
 </project>

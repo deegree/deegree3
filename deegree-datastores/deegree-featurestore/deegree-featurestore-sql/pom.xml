@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-featurestore-sql</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre10-SNAPSHOT</version>
+  <version>3.1-pre10</version>
   <name>deegree-featurestore-sql</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-sql</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-sql</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre10/deegree-datastores/deegree-featurestore/deegree-featurestore-sql</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre10/deegree-datastores/deegree-featurestore/deegree-featurestore-sql</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre10-SNAPSHOT</version>
+    <version>3.1-pre10</version>
     <relativePath />
   </parent>
 
@@ -70,12 +69,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
-      <version>3.1-pre10-SNAPSHOT</version>
+      <version>3.1-pre10</version>
     </dependency>
     <dependency>
       <artifactId>deegree-sqldialect-postgis</artifactId>
       <groupId>org.deegree</groupId>
-      <version>3.1-pre10-SNAPSHOT</version>
+      <version>3.1-pre10</version>
     </dependency>
   </dependencies>
 
