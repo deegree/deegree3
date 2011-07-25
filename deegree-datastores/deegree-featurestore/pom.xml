@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-featurestore</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre10</version>
+  <version>3.1-pre11-SNAPSHOT</version>
   <name>deegree-featurestore</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre10/deegree-datastores/deegree-featurestore</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre10/deegree-datastores/deegree-featurestore</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre10</version>
+    <version>3.1-pre11-SNAPSHOT</version>
   </parent>
 
   <repositories>
