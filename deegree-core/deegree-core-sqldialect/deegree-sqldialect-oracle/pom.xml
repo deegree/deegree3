@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-sqldialect-oracle</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre10-SNAPSHOT</version>
+  <version>3.1-pre11-SNAPSHOT</version>
   <name>deegree-sqldialect-oracle</name>
   <url>http://www.deegree.org</url>
 
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-commons</artifactId>
-      <version>3.1-pre10-SNAPSHOT</version>
+      <version>3.1-pre11-SNAPSHOT</version>
     </dependency>
     <!-- This module can be build with one of the following dependencies -->
     <dependency>
