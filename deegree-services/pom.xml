@@ -16,6 +16,7 @@
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
     <version>3.1-pre11-SNAPSHOT</version>
+    <relativePath/>
   </parent>
 
   <profiles>
