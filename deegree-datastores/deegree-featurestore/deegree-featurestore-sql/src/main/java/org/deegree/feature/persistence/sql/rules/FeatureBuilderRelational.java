@@ -292,7 +292,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                                   LinkedHashMap<String, Integer> colToRsIdx, String idPrefix )
                             throws SQLException {
 
-        if ( mapping.getJoinedTable() != null ) {
+        if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
             ResultSet rs2 = null;
             try {
@@ -350,8 +350,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;
-            MappingExpression me = fm.getMapping();
-            if ( me instanceof DBField ) {
+            if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
                 String col = converter.getSelectSnippet( tableAlias );
                 int colIndex = colToRsIdx.get( col );
                 particle = converter.toParticle( rs, colIndex );

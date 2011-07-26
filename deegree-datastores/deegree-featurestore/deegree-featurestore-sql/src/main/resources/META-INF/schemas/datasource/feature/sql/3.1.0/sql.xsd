@@ -11,7 +11,8 @@
   </annotation>
   <element name="SQLFeatureStore">
     <annotation>
-      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS)
+      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS or Oracle
+        Spatial)
       </documentation>
       <appinfo>
         <jaxb:class name="SQLFeatureStoreJAXB" />
@@ -219,19 +220,22 @@
           <attribute name="crs" type="string">
             <annotation>
               <documentation>deegree CRS identifier used for the geometry property, e.g. 'EPSG:4326' (if omitted, it is
-                automatically derived from the PostGIS srid)</documentation>
+                automatically derived from the PostGIS srid)
+              </documentation>
             </annotation>
           </attribute>
           <attribute name="srid" type="integer">
             <annotation>
               <documentation>PostGIS SRID of the column (if omitted, it is automatically determined from table
-                geometry_columns)</documentation>
+                geometry_columns)
+              </documentation>
             </annotation>
           </attribute>
           <attribute name="dim">
             <annotation>
               <documentation>Dimensionality of the geometry coordinates (if omitted, it is automatically determined from
-                table geometry_columns)</documentation>
+                table geometry_columns)
+              </documentation>
             </annotation>
             <simpleType>
               <restriction base="NMTOKENS">
@@ -370,11 +374,6 @@
         <documentation>(Relative) XPath targeted by this mapping.</documentation>
       </annotation>
     </attribute>
-    <attribute name="mapping" type="string">
-      <annotation>
-        <documentation>Mapping expression.</documentation>
-      </annotation>
-    </attribute>
   </complexType>
   <element name="Primitive" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
@@ -385,7 +384,13 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="sqlfs:AbstractParticleType" />
+        <extension base="sqlfs:AbstractParticleType">
+          <attribute name="mapping" type="string">
+            <annotation>
+              <documentation>Mapping expression.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
       </complexContent>
     </complexType>
   </element>
@@ -398,7 +403,13 @@
         </appinfo>
       </annotation>
       <complexContent>
-        <extension base="sqlfs:AbstractParticleType" />
+        <extension base="sqlfs:AbstractParticleType">
+          <attribute name="mapping" type="string">
+            <annotation>
+              <documentation>Mapping expression.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
       </complexContent>
     </complexType>
   </element>
@@ -412,11 +423,9 @@
       </annotation>
       <complexContent>
         <extension base="sqlfs:AbstractParticleType">
-          <attribute name="hrefMapping" type="string" use="optional">
-            <annotation>
-              <documentation>Mapping expression.</documentation>
-            </annotation>
-          </attribute>
+          <sequence>
+            <element ref="sqlfs:Href" minOccurs="0" />
+          </sequence>
         </extension>
       </complexContent>
     </complexType>
@@ -436,6 +445,20 @@
           </sequence>
         </extension>
       </complexContent>
+    </complexType>
+  </element>
+  <element name="Href">
+    <complexType>
+      <annotation>
+        <documentation>Defines the storage for URIs that reference internal or external objects (e.g. '#FEATURE_1' or
+          'http://www.deegree.org/features#FEATURE_1'")
+        </documentation>
+      </annotation>
+      <attribute name="mapping" type="string" use="required">
+        <annotation>
+          <documentation>Column that stores URIs</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
   <element name="Join">
@@ -466,7 +489,8 @@
       <attribute name="numbered" type="boolean" use="optional">
         <annotation>
           <documentation>Set to true, if orderColumns references a single column that contains natural numbers
-            [1,2,3,...].</documentation>
+            [1,2,3,...].
+          </documentation>
         </annotation>
       </attribute>
     </complexType>

@@ -89,7 +89,7 @@ public class MappedXPath {
     private final List<Join> joins = new ArrayList<Join>();
 
     private String currentTable;
-    
+
     private String currentTableAlias;
 
     private PropertyNameMapping propMapping;
@@ -155,20 +155,24 @@ public class MappedXPath {
                 matchFound = true;
             }
             if ( matchFound ) {
-                followJoins( mapping.getJoinedTable() );
                 if ( mapping instanceof CompoundMapping ) {
+                    followJoins( mapping.getJoinedTable() );
                     map( ( (CompoundMapping) mapping ).getParticles(), steps.subList( 1, steps.size() ) );
                 } else if ( mapping instanceof PrimitiveMapping ) {
+                    followJoins( mapping.getJoinedTable() );
                     map( (PrimitiveMapping) mapping, steps );
                 } else if ( mapping instanceof GeometryMapping ) {
+                    followJoins( mapping.getJoinedTable() );
                     map( (GeometryMapping) mapping, steps );
                 } else if ( mapping instanceof FeatureMapping ) {
+                    // not following joins
                     map( (FeatureMapping) mapping, steps );
                 } else if ( mapping instanceof ConstantMapping<?> ) {
+                    followJoins( mapping.getJoinedTable() );
                     map( (ConstantMapping<?>) mapping, steps );
                 } else {
-                	String msg = "Handling of '" + mapping.getClass() + " not implemented yet.";
-                	LOG.warn (msg);
+                    String msg = "Handling of '" + mapping.getClass() + " not implemented yet.";
+                    LOG.warn( msg );
                     throw new UnmappableException( msg );
                 }
                 break;
@@ -208,36 +212,38 @@ public class MappedXPath {
         propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
     }
 
-	private void map(FeatureMapping mapping, List<MappableStep> remaining) throws UnmappableException {
-		followJoins(mapping.getJoinedTable());
-		if (remaining.size() < 2) {
-			throw new UnmappableException ("Not enough steps.");
-		}
-		MappableStep ftStep = remaining.get(0);
-		if (!(ftStep instanceof ElementStep)) {
-			throw new UnmappableException ("Must provide a feature type name.");
-		}
-		QName ftName = ((ElementStep) ftStep).getNodeName();
-		FeatureTypeMapping ftMapping = schema.getFtMapping(ftName);
-		if (ftMapping == null) {
-			throw new UnmappableException("Feature type '" + ftName + " is not mapped to a table.");
-		}
-		
+    private void map( FeatureMapping mapping, List<MappableStep> remaining )
+                            throws UnmappableException {
+//        followJoins( mapping.getJoinedTable() );
+        if ( remaining.size() < 2 ) {
+            throw new UnmappableException( "Not enough steps." );
+        }
+        MappableStep ftStep = remaining.get( 0 );
+        if ( !( ftStep instanceof ElementStep ) ) {
+            throw new UnmappableException( "Must provide a feature type name." );
+        }
+        QName ftName = ( (ElementStep) ftStep ).getNodeName();
+        FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
+        if ( ftMapping == null ) {
+            throw new UnmappableException( "Feature type '" + ftName + " is not mapped to a table." );
+        }
+
         String fromTable = currentTable;
         String fromTableAlias = currentTableAlias;
-        String fromColumn = mapping.getMapping().toString();
+        // TODO
+        String fromColumn = mapping.getJoinedTable().get( 0 ).getFromColumns().get( 0 );
         String toTable = ftMapping.getFtTable().getTable();
         String toTableAlias = aliasManager.generateNew();
 
         String toColumn = ftMapping.getFidMapping().getColumn();
-        Join appliedJoin = new Join( fromTable, fromTableAlias, Collections.singletonList(fromColumn), toTable,
-                                     toTableAlias, Collections.singletonList(toColumn) );
+        Join appliedJoin = new Join( fromTable, fromTableAlias, Collections.singletonList( fromColumn ), toTable,
+                                     toTableAlias, Collections.singletonList( toColumn ) );
         joins.add( appliedJoin );
         currentTable = toTable;
         currentTableAlias = toTableAlias;
-      
-        map( ftMapping.getMappings(), remaining.subList(1, remaining.size()) );
-	}
+
+        map( ftMapping.getMappings(), remaining.subList( 1, remaining.size() ) );
+    }
 
     private void followJoins( List<TableJoin> joinedTables ) {
         if ( joinedTables != null ) {

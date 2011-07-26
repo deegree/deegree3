@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
@@ -260,14 +259,26 @@ public class SQLFeatureStore implements FeatureStore {
             }
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof GeometryMapping ) {
-            GeometryMapping geomMapping = (GeometryMapping) particleMapping;
-            ParticleConverter<?> converter = getGeometryConverter( geomMapping );
+            GeometryMapping gm = (GeometryMapping) particleMapping;
+            ParticleConverter<?> converter = getGeometryConverter( gm );
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof FeatureMapping ) {
-            FeatureMapping geomMapping = (FeatureMapping) particleMapping;
-            String fkColumn = geomMapping.getMapping().toString();
-            String hrefColumn = geomMapping.getHrefMapping().toString();
-            ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver() );
+            FeatureMapping fm = (FeatureMapping) particleMapping;
+            String fkColumn = null;
+            if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
+                // TODO more complex joins
+                fkColumn = fm.getJoinedTable().get( fm.getJoinedTable().size() - 1 ).getFromColumns().get( 0 );
+            }
+            String hrefColumn = null;
+            if ( fm.getHrefMapping() != null ) {
+                hrefColumn = fm.getHrefMapping().toString();
+            }
+            FeatureType valueFt = null;
+            if ( fm.getValueFtName() != null ) {
+                valueFt = schema.getFeatureType( fm.getValueFtName() );
+            }
+            ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver(),
+                                                                           valueFt, schema );
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) particleMapping;
@@ -849,8 +860,8 @@ public class SQLFeatureStore implements FeatureStore {
             int i = 1;
             for ( IdAnalysis idKernel : idKernels ) {
                 for ( Object o : idKernel.getIdKernels() ) {
-                    // TODO
-                    PrimitiveValue value = new PrimitiveValue( o, new PrimitiveType( STRING ) );
+                    PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( i - 1 ).getSecond() );
+                    PrimitiveValue value = new PrimitiveValue( o, pt );
                     Object sqlValue = SQLValueMangler.internalToSQL( value );
                     stmt.setObject( i++, sqlValue );
                 }

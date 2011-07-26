@@ -54,6 +54,8 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.sqldialect.SQLDialect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedApplicationSchema} instances.
@@ -64,6 +66,8 @@ import org.deegree.sqldialect.SQLDialect;
  * @version $Revision$, $Date$
  */
 public abstract class DDLCreator {
+
+    private static Logger LOG = LoggerFactory.getLogger( DDLCreator.class );
 
     protected final MappedApplicationSchema schema;
 
@@ -180,8 +184,8 @@ public abstract class DDLCreator {
     private List<StringBuffer> process( StringBuffer sql, QTableName table, Mapping mapping ) {
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
-        List<TableJoin> jc = mapping.getJoinedTable();
-        if ( jc != null ) {
+        if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {
+            List<TableJoin> jc = mapping.getJoinedTable();
             sql = createJoinedTable( table, jc.get( 0 ), ddls );
             table = jc.get( 0 ).getToTable();
             if ( !ddls.contains( sql ) ) {
@@ -204,7 +208,7 @@ public abstract class DDLCreator {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
         }
 
-        if ( jc != null ) {
+        if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {
             sql.append( "\n)" );
         }
         return ddls;

@@ -520,7 +520,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return fid;
     }
 
-    private void buildInsertRows( TypedObjectNode particle, Mapping mapping, InsertRowNode node )
+    private void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertRowNode node )
                             throws FilterEvaluationException, FeatureStoreException {
 
         List<TableJoin> jc = mapping.getJoinedTable();
@@ -535,7 +535,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         int childIdx = 1;
         for ( TypedObjectNode value : values ) {
             InsertRowNode insertNode = node;
-            if ( jc != null ) {
+            if ( jc != null && !( mapping instanceof FeatureMapping ) ) {
                 insertNode = new InsertRowNode( jc.get( 0 ).getToTable(), jc.get( 0 ), jc.get( 0 ) == null ? null
                                                                                                           : "id" );
                 node.getRelatedRows().add( insertNode );
@@ -575,17 +575,16 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
 
                 if ( fid != null ) {
-                    MappingExpression me = ( (FeatureMapping) mapping ).getMapping();
-                    if ( !( me instanceof DBField ) ) {
+                    if ( jc.isEmpty() ) {
                         LOG.debug( "Skipping feature mapping (fk). Not mapped to database column." );
                     } else {
-                        String column = ( (DBField) me ).getColumn();
+                        String column = jc.get( 0 ).getFromColumns().get( 0 );
                         Object sqlValue = SQLValueMangler.internalToSQL( fid );
                         insertNode.getRow().addPreparedArgument( column, sqlValue );
                     }
                 }
                 if ( href != null ) {
-                    MappingExpression me = ( (FeatureMapping) mapping ).getMapping();
+                    MappingExpression me = ( (FeatureMapping) mapping ).getHrefMapping();
                     if ( !( me instanceof DBField ) ) {
                         LOG.debug( "Skipping feature mapping (href). Not mapped to database column." );
                     } else {

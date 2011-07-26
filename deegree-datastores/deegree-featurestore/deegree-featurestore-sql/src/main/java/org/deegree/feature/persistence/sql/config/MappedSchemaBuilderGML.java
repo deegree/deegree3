@@ -334,10 +334,9 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     private FeatureMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                          FeatureParticleJAXB config ) {
         PropertyName path = new PropertyName( config.getPath(), nsBindings );
-        MappingExpression me = parseMappingExpression( config.getMapping() );
         MappingExpression hrefMe = null;
-        if ( config.getHrefMapping() != null ) {
-            hrefMe = parseMappingExpression( config.getHrefMapping() );
+        if ( config.getHref() != null ) {
+            hrefMe = parseMappingExpression( config.getHref().getMapping() );
         }
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         QName ptName = new QName( elDecl.first.getNamespace(), elDecl.first.getName() );
@@ -345,7 +344,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl.first, ptName,
                                                                                                   0, 1, null );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new FeatureMapping( path, elDecl.second, me, hrefMe, pt.getFTName(), joinedTable );
+        return new FeatureMapping( path, elDecl.second, hrefMe, pt.getFTName(), joinedTable );
     }
 
     private CompoundMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,

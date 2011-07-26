@@ -42,6 +42,8 @@ import java.sql.SQLException;
 
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.feature.FeatureReference;
 
@@ -57,14 +59,31 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
 
     private final String fkColumn;
 
+    // TODO handle the HrefMapping
     private final String hrefColumn;
 
     private final GMLReferenceResolver resolver;
 
-    public FeatureParticleConverter( String fkColumn, String hrefColumn, GMLReferenceResolver resolver ) {
+    private final FeatureType valueFt;
+
+    private final MappedApplicationSchema schema;
+
+    private final String fidPrefix;
+
+    public FeatureParticleConverter( String fkColumn, String hrefColumn, GMLReferenceResolver resolver,
+                                     FeatureType valueFt, MappedApplicationSchema schema ) {
         this.fkColumn = fkColumn;
         this.hrefColumn = hrefColumn;
         this.resolver = resolver;
+        this.valueFt = valueFt;
+        this.schema = schema;
+        
+        if ( valueFt != null && schema.getSubtypes( valueFt ).length == 0
+             && schema.getFtMapping( valueFt.getName() ) != null ) {
+            fidPrefix = schema.getFtMapping( valueFt.getName() ).getFidMapping().getPrefix();
+        } else {
+            fidPrefix = null;
+        }
     }
 
     @Override
@@ -75,8 +94,12 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
     @Override
     public Feature toParticle( ResultSet rs, int colIndex )
                             throws SQLException {
+
         Object value = rs.getObject( colIndex );
         if ( value != null ) {
+            if ( fidPrefix != null ) {
+                return new FeatureReference( resolver, "#" + fidPrefix + value, null );
+            }
             // TODO
             String ref;
             if ( value.toString().startsWith( "http" ) ) {

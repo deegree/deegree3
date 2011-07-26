@@ -241,12 +241,13 @@ public class SQLFeatureStoreConfigWriter {
             FeatureMapping gm = (FeatureMapping) particle;
             writer.writeStartElement( CONFIG_NS, "Feature" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
-            writer.writeAttribute( "mapping", gm.getMapping().toString() );
-            if ( gm.getHrefMapping() != null ) {
-                writer.writeAttribute( "hrefMapping", gm.getHrefMapping().toString() );
-            }
-            if ( particle.getJoinedTable() != null ) {
+            if ( particle.getJoinedTable() != null && !particle.getJoinedTable().isEmpty() ) {
                 writeJoinedTable( writer, particle.getJoinedTable().get( 0 ) );
+            }
+            if ( gm.getHrefMapping() != null ) {
+                writer.writeStartElement( CONFIG_NS, "Href" );
+                writer.writeAttribute( "mapping", gm.getHrefMapping().toString() );
+                writer.writeEndElement();
             }
             writer.writeEndElement();
         } else if ( particle instanceof CompoundMapping ) {
@@ -268,10 +269,12 @@ public class SQLFeatureStoreConfigWriter {
     private void writeJoinedTable( XMLStreamWriter writer, TableJoin jc )
                             throws XMLStreamException {
         writer.writeStartElement( CONFIG_NS, "Join" );
-        writer.writeAttribute( "table", jc.getToTable().toString() );
+        if ( jc.getToTable() != null ) {
+            writer.writeAttribute( "table", jc.getToTable().toString() );
+        }
         writer.writeAttribute( "fromColumns", StringUtils.concat( jc.getFromColumns(), "," ) );
         writer.writeAttribute( "toColumns", StringUtils.concat( jc.getToColumns(), "," ) );
-        if ( jc.getOrderColumns() != null ) {
+        if ( jc.getOrderColumns() != null && !jc.getOrderColumns().isEmpty() ) {
             writer.writeAttribute( "orderColumns", StringUtils.concat( jc.getOrderColumns(), "," ) );
         }
         if ( jc.isNumberedOrder() ) {

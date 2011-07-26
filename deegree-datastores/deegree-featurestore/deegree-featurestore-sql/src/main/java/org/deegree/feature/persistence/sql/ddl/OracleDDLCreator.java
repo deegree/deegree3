@@ -236,10 +236,10 @@ public class OracleDDLCreator extends DDLCreator {
 
     @Override
     protected void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping ) {
-        MappingExpression me = mapping.getMapping();
-        if ( me instanceof DBField ) {
+        String col = mapping.getJoinedTable().get( mapping.getJoinedTable().size() -1 ).getFromColumns().get( 0 );
+        if ( col != null ) {
             sql.append( ",\n    " );
-            sql.append( ( (DBField) me ).getColumn() );
+            sql.append( col );
             sql.append( " varchar(2000)" );
         }
         MappingExpression hrefMe = mapping.getHrefMapping();

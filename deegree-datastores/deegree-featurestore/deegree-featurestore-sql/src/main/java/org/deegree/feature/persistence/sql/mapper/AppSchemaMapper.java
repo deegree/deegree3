@@ -323,6 +323,7 @@ public class AppSchemaMapper {
         List<TableJoin> jc = null;
         MappingContext fkMC = null;
         MappingContext hrefMC = null;
+
         if ( pt.getMaxOccurs() == 1 ) {
             fkMC = mcManager.mapOneToOneElement( mc, pt.getName() );
             String ns = pt.getName().getNamespaceURI();
@@ -335,8 +336,22 @@ public class AppSchemaMapper {
             fkMC = mcManager.mapOneToOneElement( mc, new QName( "fk" ) );
             hrefMC = mcManager.mapOneToOneElement( mc, new QName( "href" ) );
         }
-        return new FeatureMapping( path, pt.getMinOccurs() == 0, new DBField( fkMC.getColumn() ),
-                                   new DBField( hrefMC.getColumn() ), pt.getFTName(), jc );
+
+        FeatureType valueFt = pt.getValueFt();
+        if ( valueFt != null && valueFt.getSchema().getSubtypes( valueFt ).length == 1 ) {
+
+            TableJoin ftJoin = generateFtJoin( fkMC, valueFt );
+            if ( ftJoin != null ) {
+                jc = new ArrayList<TableJoin>( jc );
+                jc.add( ftJoin );
+            } else {
+                jc = Collections.singletonList( ftJoin );
+            }
+        } else {
+            LOG.warn( "Ambigous feature property type '" + pt.getName() + "'. Not creating a Join mapping." );
+        }
+
+        return new FeatureMapping( path, pt.getMinOccurs() == 0, new DBField( hrefMC.getColumn() ), pt.getFTName(), jc );
     }
 
     private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
@@ -398,6 +413,19 @@ public class AppSchemaMapper {
         List<String> orderColumns = Collections.singletonList( "num" );
         TableJoin join = new TableJoin( fromTable, toTable, fromColumns, toColumns, orderColumns, true );
         return Collections.singletonList( join );
+    }
+
+    private TableJoin generateFtJoin( MappingContext from, FeatureType valueFt ) {
+        TableJoin ftJoin = null;
+        if ( valueFt != null && valueFt.getSchema().getSubtypes( valueFt ).length == 1 ) {
+            LOG.warn( "Ambigous feature join." );
+        }
+        QTableName fromTable = new QTableName( from.getTable() );
+        QTableName toTable = new QTableName( "?" );
+        List<String> fromColumns = Collections.singletonList( from.getColumn() );
+        List<String> toColumns = Collections.singletonList( "gml_id" );
+        ftJoin = new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false );
+        return ftJoin;
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
@@ -506,9 +534,14 @@ public class AppSchemaMapper {
         } else if ( opt instanceof FeaturePropertyType ) {
             QName valueFtName = ( (FeaturePropertyType) opt ).getFTName();
             MappingContext fkMC = mcManager.mapOneToOneElement( mc, new QName( "fk" ) );
+            List<TableJoin> jc = Collections.emptyList();
+            TableJoin ftJoin = generateFtJoin( fkMC, ( (FeaturePropertyType) opt ).getValueFt() );
+            if ( ftJoin != null ) {
+                jc = new ArrayList<TableJoin>( jc );
+                jc.add( ftJoin );
+            }
             MappingContext hrefMC = mcManager.mapOneToOneElement( mc, new QName( "href" ) );
-            particles.add( new FeatureMapping( path, true, new DBField( fkMC.getColumn() ),
-                                               new DBField( hrefMC.getColumn() ), valueFtName, null ) );
+            particles.add( new FeatureMapping( path, true, new DBField( hrefMC.getColumn() ), valueFtName, jc ) );
         } else {
             LOG.warn( "Unhandled object property type '" + opt.getClass() + "'." );
         }
