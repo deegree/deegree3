@@ -188,6 +188,8 @@ public class GMLCRSStore extends AbstractCRSStore {
                 result = parseCompoundCRS( rootElement );
             } else if ( "GeodeticCRS".equalsIgnoreCase( localName ) ) {
                 result = parseGeodeticCRS( rootElement );
+            } else if ( "VerticalCRS".equalsIgnoreCase( localName ) ) {
+                result = parseVerticalCRS( rootElement );
             } else {
                 LOG.warn( "The given coordinate system:" + localName
                           + " is currently not supported by the deegree gml provider." );
@@ -573,16 +575,14 @@ public class GMLCRSStore extends AbstractCRSStore {
         OMElement first = compRefSysProp.get( 0 );
         OMElement second = compRefSysProp.get( 1 );
         // | " + PRE + "VerticalCRS"
-        OMElement xlinkedElem1 = retrieveAndResolveXLink( first );
-        OMElement xlinkedElem2 = retrieveAndResolveXLink( second );
 
-        OMElement crsElement1 = null;
-        OMElement crsElement2 = null;
+        OMElement crsElement1 = retrieveAndResolveXLink( first );
+        OMElement crsElement2 = retrieveAndResolveXLink( second );
 
-        if ( xlinkedElem1 == null ) {
+        if ( crsElement1 == null ) {
             crsElement1 = adapter.getRequiredElement( first, new XPath( "*[1]", nsContext ) );
         }
-        if ( xlinkedElem2 == null ) {
+        if ( crsElement2 == null ) {
             crsElement2 = adapter.getRequiredElement( first, new XPath( "*[2]", nsContext ) );
         }
 
