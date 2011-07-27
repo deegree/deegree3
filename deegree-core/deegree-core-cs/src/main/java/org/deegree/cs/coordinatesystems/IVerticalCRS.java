@@ -46,7 +46,7 @@ import org.deegree.cs.components.IVerticalDatum;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface IVerticalCRS {
+public interface IVerticalCRS extends ICRS{
 
     /**
      * @return the vertical datum of this crs
