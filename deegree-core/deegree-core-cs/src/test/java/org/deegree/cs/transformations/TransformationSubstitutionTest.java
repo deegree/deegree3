@@ -295,6 +295,66 @@ public class TransformationSubstitutionTest implements CRSDefines {
      * @throws TransformationException
      */
     @Test
+    public void substituteHelmertWithNTv2GeographicLatLon_AxisXY()
+                            throws IllegalArgumentException, TransformationException {
+        TransformationFactory factory = getFactory();
+
+        ProjectedCRS projected_31467_lat_lon = new ProjectedCRS( projection_31467, geographic_4314_lat_lon,
+                                                                 axis_projection,
+                                                                 new EPSGCode[] { new EPSGCode( 31467 ) },
+                                                                 null /* names */, null/* version */,
+                                                                 null/* description */,
+                                                                 new String[] { "7.5,47.27,10.5,55.06" } );
+
+        Transformation created = factory.createFromCoordinateSystems( projected_31467_lat_lon, projected_25832_lat_lon );
+        Assert.assertNotNull( created );
+        Assert.assertTrue( created instanceof ConcatenatedTransform );
+        Assert.assertEquals( projected_31467_lat_lon, created.getSourceCRS() );
+        Assert.assertEquals( projected_25832_lat_lon, created.getTargetCRS() );
+
+        URL beta2007 = DeegreeReferenceResolver.class.getResource( "config/ntv2/beta2007.gsb" );
+        Transformation sub = new NTv2Transformation(
+                                                     geographic_4314_lat_lon,
+                                                     geographic_4258_lat_lon,
+                                                     new CRSIdentifiable(
+                                                                          new CRSCodeType(
+                                                                                           "urn:ogc:def:coordinateOperation:EPSG::15948" ) ),
+                                                     beta2007 );
+
+        List<Transformation> transList = new ArrayList<Transformation>();
+        transList.add( sub );
+        Transformation replaced = factory.createFromCoordinateSystems( projected_31467_lat_lon,
+                                                                       projected_25832_lat_lon, transList );
+        Assert.assertNotNull( replaced );
+        Assert.assertTrue( replaced instanceof ConcatenatedTransform );
+        // equals only tests on the id's.
+        Assert.assertNotSame( created, replaced );
+
+        List<String> implNames = filterImplementationNames( replaced );
+        Assert.assertTrue(implNames.size() > 3);
+        Assert.assertEquals( "Projection-Transform", implNames.get( 0 ) );
+        Assert.assertEquals( "NTv2", implNames.get( 2 ) );
+    }
+
+    private List<String> filterImplementationNames( Transformation transformation ) {
+        List<String> imNames = new ArrayList<String>();
+        if ( transformation instanceof ConcatenatedTransform ) {
+            imNames.addAll( filterImplementationNames( ( (ConcatenatedTransform) transformation ).getFirstTransform() ) );
+            imNames.addAll( filterImplementationNames( ( (ConcatenatedTransform) transformation ).getSecondTransform() ) );
+        } else {
+            imNames.add( transformation.getImplementationName() );
+        }
+        return imNames;
+    }
+
+    /**
+     * Test if the substitute of usage of the helmert transformation chain can be replaced by a
+     * {@link NTv2Transformation}.
+     * 
+     * @throws IllegalArgumentException
+     * @throws TransformationException
+     */
+    @Test
     public void substituteNTv2WithHelmert()
                             throws IllegalArgumentException, TransformationException {
 

@@ -221,7 +221,7 @@ public class MappingUtils {
                     Transformation prev = chain.getFirst();
                     // align the axis of source crs of the given transformation to the targetcrs of the previous one.
                     if ( prev != null ) {
-                        Transformation allign = MatrixTransform.createAllignMatrixTransform( prev.getSourceCRS(),
+                        Transformation allign = MatrixTransform.createAllignMatrixTransform( prev.getTargetCRS(),
                                                                                              tbu.getSourceCRS() );
                         if ( !TransformationFactory.isIdentity( allign ) ) {
                             resultChain.add( allign );
