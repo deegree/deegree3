@@ -43,6 +43,7 @@
 package org.deegree.sqldialect.oracle;
 
 import static java.sql.Types.BOOLEAN;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -109,7 +110,7 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
     public OracleWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
                                boolean allowPartialMappings, int databaseMajorVersion )
                             throws FilterEvaluationException, UnmappableException {
-        super( mapper, filter, sortCrit );
+        super(Oracle, mapper, filter, sortCrit );
         this.databaseMajorVersion = databaseMajorVersion;
         build( allowPartialMappings );
     }
