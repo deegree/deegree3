@@ -88,7 +88,7 @@ import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
  * 
  * @version $Revision$, $Date$
  */
-public class OracleWhereBuilder extends AbstractWhereBuilder {
+class OracleWhereBuilder extends AbstractWhereBuilder {
 
     private int databaseMajorVersion;
 
@@ -107,10 +107,10 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
      * @throws UnmappableException
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
-    public OracleWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
-                               boolean allowPartialMappings, int databaseMajorVersion )
-                            throws FilterEvaluationException, UnmappableException {
-        super(Oracle, mapper, filter, sortCrit );
+    OracleWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
+                        boolean allowPartialMappings, int databaseMajorVersion ) throws FilterEvaluationException,
+                            UnmappableException {
+        super( Oracle, mapper, filter, sortCrit );
         this.databaseMajorVersion = databaseMajorVersion;
         build( allowPartialMappings );
     }
