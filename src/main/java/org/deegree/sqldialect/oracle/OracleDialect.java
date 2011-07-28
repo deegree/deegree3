@@ -167,7 +167,7 @@ public class OracleDialect implements SQLDialect {
     public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
                                                  SortProperty[] sortCrit, boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException {
-        return new OracleWhereBuilder( mapper, filter, sortCrit, allowPartialMappings, versionMajor );
+        return new OracleWhereBuilder(this, mapper, filter, sortCrit, allowPartialMappings, versionMajor );
     }
 
     @Override
