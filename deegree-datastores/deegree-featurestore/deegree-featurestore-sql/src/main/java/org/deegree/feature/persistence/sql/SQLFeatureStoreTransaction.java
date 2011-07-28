@@ -93,13 +93,13 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.MappingExpression;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.sqldialect.filter.DBField;
+import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -92,10 +92,10 @@ import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.MappingExpression;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.filter.DBField;
+import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

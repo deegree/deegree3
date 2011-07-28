@@ -64,12 +64,12 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.Join;
-import org.deegree.filter.sql.PropertyNameMapper;
-import org.deegree.filter.sql.PropertyNameMapping;
-import org.deegree.filter.sql.TableAliasManager;
-import org.deegree.filter.sql.mssql.MSSQLGeometryConverter;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.sqldialect.filter.Join;
+import org.deegree.sqldialect.filter.PropertyNameMapper;
+import org.deegree.sqldialect.filter.PropertyNameMapping;
+import org.deegree.sqldialect.filter.TableAliasManager;
+import org.deegree.sqldialect.filter.mssql.MSSQLGeometryConverter;
 import org.deegree.sqldialect.postgis.PostGISGeometryConverter;
 import org.slf4j.Logger;
 

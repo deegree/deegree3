@@ -44,7 +44,7 @@ import java.util.Map;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.filter.sql.DBField;
+import org.deegree.sqldialect.filter.DBField;
 
 public class InsertRowNode {
 

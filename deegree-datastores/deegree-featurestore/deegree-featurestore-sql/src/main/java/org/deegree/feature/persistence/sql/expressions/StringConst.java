@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.expressions;
 
-import org.deegree.filter.sql.MappingExpression;
+import org.deegree.sqldialect.filter.MappingExpression;
 
 
 /**

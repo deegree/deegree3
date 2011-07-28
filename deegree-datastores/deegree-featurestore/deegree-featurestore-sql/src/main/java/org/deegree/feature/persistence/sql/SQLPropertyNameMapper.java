@@ -38,10 +38,10 @@ package org.deegree.feature.persistence.sql;
 import org.deegree.feature.persistence.sql.xpath.MappedXPath;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.PropertyNameMapper;
-import org.deegree.filter.sql.PropertyNameMapping;
-import org.deegree.filter.sql.TableAliasManager;
-import org.deegree.filter.sql.UnmappableException;
+import org.deegree.sqldialect.filter.PropertyNameMapper;
+import org.deegree.sqldialect.filter.PropertyNameMapping;
+import org.deegree.sqldialect.filter.TableAliasManager;
+import org.deegree.sqldialect.filter.UnmappableException;
 
 /**
  * {@link PropertyNameMapper} for the {@link SQLFeatureStore}.

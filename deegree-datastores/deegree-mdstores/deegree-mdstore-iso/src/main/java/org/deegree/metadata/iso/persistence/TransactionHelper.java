@@ -57,8 +57,6 @@ import org.deegree.commons.jdbc.TransactionRow;
 import org.deegree.commons.jdbc.UpdateRow;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSUtils;
-import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.expression.SQLArgument;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -74,6 +72,8 @@ import org.deegree.metadata.iso.types.Keyword;
 import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.filter.AbstractWhereBuilder;
+import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.slf4j.Logger;
 
 import com.vividsolutions.jts.io.ParseException;

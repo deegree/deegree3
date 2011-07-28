@@ -95,11 +95,11 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.MappingExpression;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
+import org.deegree.sqldialect.filter.DBField;
+import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

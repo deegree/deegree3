@@ -42,7 +42,7 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.MappingExpression;
+import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
  * {@link Mapping} for {@link Feature}-valued particles.

@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
-import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.MappingExpression;
+import org.deegree.sqldialect.filter.DBField;
+import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
  * Various static methods for performing standard tasks on {@link Mapping} objects.

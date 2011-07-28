@@ -36,9 +36,9 @@
 package org.deegree.metadata.iso.persistence;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.Join;
-import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.sqldialect.filter.AbstractWhereBuilder;
+import org.deegree.sqldialect.filter.Join;
+import org.deegree.sqldialect.filter.PropertyNameMapping;
 
 /**
  * TODO add class documentation here

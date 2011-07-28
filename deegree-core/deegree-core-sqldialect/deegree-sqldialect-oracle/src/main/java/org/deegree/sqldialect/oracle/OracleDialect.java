@@ -61,13 +61,13 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.PropertyNameMapper;
-import org.deegree.filter.sql.UnmappableException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.filter.AbstractWhereBuilder;
+import org.deegree.sqldialect.filter.PropertyNameMapper;
+import org.deegree.sqldialect.filter.UnmappableException;
 import org.slf4j.Logger;
 
 /**

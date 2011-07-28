@@ -67,9 +67,9 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.sql.UnmappableException;
-import org.deegree.filter.sql.expression.SQLArgument;
-import org.deegree.filter.sql.expression.SQLExpression;
+import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.slf4j.Logger;
 
 /**

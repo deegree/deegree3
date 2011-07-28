@@ -1,4 +1,3 @@
+org.deegree.filter.function.FunctionManager
 org.deegree.coverage.persistence.CoverageBuilderManager
 org.deegree.remoteows.RemoteOWSManager
-org.deegree.filter.function.FunctionManager
-org.deegree.filter.sql.function.SQLFunctionManager

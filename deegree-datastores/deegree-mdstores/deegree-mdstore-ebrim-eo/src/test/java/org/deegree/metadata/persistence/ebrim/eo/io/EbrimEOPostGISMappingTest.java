@@ -38,7 +38,7 @@ package org.deegree.metadata.persistence.ebrim.eo.io;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.sql.UnmappableException;
+import org.deegree.sqldialect.filter.UnmappableException;
 import org.junit.Test;
 
 /**

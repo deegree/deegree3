@@ -41,7 +41,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.sql.UnmappableException;
+import org.deegree.sqldialect.filter.UnmappableException;
 import org.jaxen.expr.AllNodeStep;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;

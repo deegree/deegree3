@@ -47,9 +47,9 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
-import org.deegree.filter.sql.DBField;
-import org.deegree.filter.sql.MappingExpression;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.filter.DBField;
+import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

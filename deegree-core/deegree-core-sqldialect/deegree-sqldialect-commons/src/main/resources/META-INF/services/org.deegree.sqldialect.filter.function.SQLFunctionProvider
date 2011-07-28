@@ -1,0 +1,3 @@
+org.deegree.sqldialect.filter.function.SQLArea
+org.deegree.sqldialect.filter.function.SQLLower
+org.deegree.sqldialect.filter.function.SQLUpper

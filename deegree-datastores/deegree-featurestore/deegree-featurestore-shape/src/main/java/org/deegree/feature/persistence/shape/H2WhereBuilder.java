@@ -51,12 +51,12 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.SpatialOperator;
-import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.UnmappableException;
-import org.deegree.filter.sql.expression.SQLArgument;
-import org.deegree.filter.sql.expression.SQLColumn;
-import org.deegree.filter.sql.expression.SQLExpression;
-import org.deegree.filter.sql.expression.SQLOperation;
+import org.deegree.sqldialect.filter.AbstractWhereBuilder;
+import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.filter.expression.SQLColumn;
+import org.deegree.sqldialect.filter.expression.SQLExpression;
+import org.deegree.sqldialect.filter.expression.SQLOperation;
 
 /**
  * 

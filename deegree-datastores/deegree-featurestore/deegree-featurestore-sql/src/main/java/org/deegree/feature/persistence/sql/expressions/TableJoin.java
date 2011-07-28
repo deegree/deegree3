@@ -38,7 +38,7 @@ package org.deegree.feature.persistence.sql.expressions;
 import java.util.List;
 
 import org.deegree.commons.jdbc.QTableName;
-import org.deegree.filter.sql.MappingExpression;
+import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
  * Defines a join between two tables with optional ordering.

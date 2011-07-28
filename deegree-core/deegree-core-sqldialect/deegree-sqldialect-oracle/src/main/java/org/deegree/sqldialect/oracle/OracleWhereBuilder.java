@@ -68,14 +68,14 @@ import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
-import org.deegree.filter.sql.AbstractWhereBuilder;
-import org.deegree.filter.sql.PropertyNameMapper;
-import org.deegree.filter.sql.UnmappableException;
-import org.deegree.filter.sql.expression.SQLArgument;
-import org.deegree.filter.sql.expression.SQLExpression;
-import org.deegree.filter.sql.expression.SQLOperation;
-import org.deegree.filter.sql.expression.SQLOperationBuilder;
 import org.deegree.geometry.Geometry;
+import org.deegree.sqldialect.filter.AbstractWhereBuilder;
+import org.deegree.sqldialect.filter.PropertyNameMapper;
+import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.filter.expression.SQLExpression;
+import org.deegree.sqldialect.filter.expression.SQLOperation;
+import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 
 /**
  * {@link AbstractWhereBuilder} implementation for Oracle Spatial databases.

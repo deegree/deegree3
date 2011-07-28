@@ -38,7 +38,7 @@ package org.deegree.feature.persistence.sql.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.filter.sql.MappingExpression;
+import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
  * The <code></code> class TODO add class documentation here.
