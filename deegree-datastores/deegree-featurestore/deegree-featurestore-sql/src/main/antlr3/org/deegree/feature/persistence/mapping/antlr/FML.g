@@ -8,8 +8,8 @@ options {
 @header {
   package org.deegree.feature.persistence.mapping.antlr;
   import java.util.Collections;
-  import org.deegree.filter.sql.MappingExpression;
-  import org.deegree.filter.sql.DBField;
+  import org.deegree.sqldialect.filter.MappingExpression;
+  import org.deegree.sqldialect.filter.DBField;
   import org.deegree.feature.persistence.sql.expressions.Function;
   import org.deegree.feature.persistence.sql.expressions.StringConst;
 }
