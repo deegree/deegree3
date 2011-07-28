@@ -41,6 +41,8 @@ import java.util.List;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.cs.coordinatesystems.CRS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link SQLExpression} that represents an operation, e.g. an addition, an intersects predicate or a distance
@@ -53,6 +55,8 @@ import org.deegree.cs.coordinatesystems.CRS;
  */
 public class SQLOperation implements SQLExpression {
 
+    private static final Logger LOG = LoggerFactory.getLogger( SQLOperation.class );
+    
     private List<Object> particles;
 
     public SQLOperation( List<Object> particles ) {
@@ -124,7 +128,7 @@ public class SQLOperation implements SQLExpression {
 
     @Override
     public void cast( SQLExpression expr ) {
-        throw new UnsupportedOperationException( "Operation casts are not implemented yet." );
+        LOG.warn ("Operation casts are not implemented yet. Depending on DB type handling.");
     }
 
     @Override

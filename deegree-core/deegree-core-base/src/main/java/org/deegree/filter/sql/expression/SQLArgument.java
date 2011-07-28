@@ -184,4 +184,8 @@ public class SQLArgument implements SQLExpression {
     public ParticleConverter<? extends TypedObjectNode> getConverter() {
         return converter;
     }
+    
+    public TypedObjectNode getValue () {
+        return value;
+    }
 }

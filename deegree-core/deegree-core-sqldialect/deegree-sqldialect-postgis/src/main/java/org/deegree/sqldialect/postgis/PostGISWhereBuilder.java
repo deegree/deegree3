@@ -36,6 +36,7 @@
 package org.deegree.sqldialect.postgis;
 
 import static java.sql.Types.BOOLEAN;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -106,7 +107,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     public PostGISWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
                                 boolean allowPartialMappings, boolean useLegacyPredicates )
                             throws FilterEvaluationException, UnmappableException {
-        super( mapper, filter, sortCrit );
+        super( PostgreSQL, mapper, filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         this.mapper = mapper;
         build( allowPartialMappings );

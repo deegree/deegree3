@@ -35,16 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 
 /**
  * Generic {@link Function} implementation that can be used to represent an arbitrary function, but that doesn't offer
- * any evaluation capabilities (added by subclassing).
+ * any evaluation capabilities (this is added by subclassing).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -97,11 +99,55 @@ public class Function implements Expression {
         return params;
     }
 
+    /**
+     * Evaluates the function for the given arguments (without a context object).
+     * <p>
+     * The double-dimension of input arguments is due to the fact that input arguments usually stem from
+     * XPath-evaluation performed on a {@link TypedObjectNode} (e.g. a {@link Feature}). Therefore, multiple values per
+     * input may occur. The outer list contains one entry per parameter, the inner array contain the values for each
+     * parameter. Depending on the type of function it may return multiple outputs as well.
+     * </p>
+     * 
+     * @param args
+     *            input arguments, must match the parameter signature, can be empty, but never <code>null</code>
+     * @return output values, can be empty, but never <code>null</code>
+     * @throws FilterEvaluationException
+     */
+    public TypedObjectNode[] evaluate( List<TypedObjectNode[]> args )
+                            throws FilterEvaluationException {
+        throw new FilterEvaluationException( "Evaluation of function '" + getName()
+                                             + "' is not implemented (or not supported without a context object." );
+    }
+
+    /**
+     * Evaluates the function for the given arguments and context.
+     * <p>
+     * If the function requires information from the context object for performing the computation, this method must be
+     * overridden.
+     * </p>
+     * 
+     * @param obj
+     *            context object, must not be <code>null</code>
+     * @param args
+     *            input arguments, must match the parameter signature, can be empty, but never <code>null</code>
+     * @return output values, can be empty, but never <code>null</code>
+     * @throws FilterEvaluationException
+     */
+    protected <T> TypedObjectNode[] evaluate( T obj, List<TypedObjectNode[]> args )
+                            throws FilterEvaluationException {
+        return evaluate( args );
+    }
+
     @Override
     public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        throw new FilterEvaluationException( "Evaluation of function '" + getName()
-                                             + "' is not available (GenericFunction)." );
+
+        List<TypedObjectNode[]> args = new ArrayList<TypedObjectNode[]>( params.size() );
+        for ( Expression param : params ) {
+            TypedObjectNode[] inputs = param.evaluate( obj, xpathEvaluator );
+            args.add( inputs );
+        }
+        return evaluate( obj, args );
     }
 
     @Override

@@ -42,6 +42,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
@@ -62,6 +64,7 @@ import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
+import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.logical.LogicalOperator;
@@ -73,7 +76,10 @@ import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
 import org.deegree.filter.sql.expression.SQLOperation;
 import org.deegree.filter.sql.expression.SQLOperationBuilder;
+import org.deegree.filter.sql.function.SQLFunctionManager;
+import org.deegree.filter.sql.function.SQLFunctionProvider;
 import org.deegree.filter.sql.islike.IsLikeString;
+import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,6 +133,8 @@ public abstract class AbstractWhereBuilder {
     /**
      * Creates a new {@link AbstractWhereBuilder} instance.
      * 
+     * @param dbType
+     *            database type, must not be <code>null</code>
      * @param mapper
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
@@ -136,8 +144,8 @@ public abstract class AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link PropertyName}s
      */
-    protected AbstractWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit )
-                            throws FilterEvaluationException {
+    protected AbstractWhereBuilder( Type dbType, PropertyNameMapper mapper, OperatorFilter filter,
+                                    SortProperty[] sortCrit ) throws FilterEvaluationException {
         this.mapper = mapper;
         this.filter = filter;
         this.sortCrit = sortCrit;
@@ -626,9 +634,8 @@ public abstract class AbstractWhereBuilder {
             break;
         }
         case FUNCTION: {
-            String msg = "Translating of functions into SQL-WHERE constraints is not implemented.";
-            LOG.warn( msg );
-            throw new UnmappableException( msg );
+            sql = toProtoSQL( (Function) expr );
+            break;
         }
         case LITERAL: {
             sql = toProtoSQL( (Literal<?>) expr );
@@ -668,6 +675,66 @@ public abstract class AbstractWhereBuilder {
         if ( assertNotMultiValued ) {
             assertNotMultiValued( sql );
         }
+        return sql;
+    }
+
+    /**
+     * Translates the given {@link Function} into an {@link SQLExpression}.
+     * 
+     * @param function
+     *            function to be translated, must not be <code>null</code>
+     * @return corresponding SQL expression, or <code>null</code> if function can not be mapped to an SQL function
+     *         call
+     * @throws UnmappableException
+     *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
+     */
+    protected SQLExpression toProtoSQL( Function function )
+                            throws UnmappableException, FilterEvaluationException {
+
+        SQLExpression sql = null;
+        List<SQLExpression> params = new ArrayList<SQLExpression>( function.getParameters().size() );
+        boolean isConstant = true;
+        for ( Expression param : function.getParameters() ) {
+            SQLExpression sqlParam = toProtoSQL( param );
+            if ( !( sqlParam instanceof SQLArgument ) ) {
+                isConstant = false;
+            }
+            params.add( sqlParam );
+        }
+        SQLFunctionProvider sqlFunction = SQLFunctionManager.getFunctionProvider( function.getName() );
+        if ( sqlFunction != null ) {
+            // let the DB evaluate the function
+            sql = sqlFunction.toProtoSQL( params );
+        } else if ( isConstant ) {
+            // evaluate function in memory
+            List<TypedObjectNode[]> args = new ArrayList<TypedObjectNode[]>();
+            for ( SQLExpression sqlExpr : params ) {
+                SQLArgument sqlArg = (SQLArgument) sqlExpr;
+                args.add( new TypedObjectNode[] { sqlArg.getValue() } );
+            }
+            TypedObjectNode[] outputs = function.evaluate( args );
+            TypedObjectNode value = null;
+            if ( outputs.length > 0 ) {
+                // TODO should we support multiple values here?
+                value = outputs[0];
+            }
+            if ( value instanceof Geometry ) {
+                return new SQLArgument( (Geometry) value, null );
+            } else if ( value instanceof PrimitiveValue ) {
+                return new SQLArgument( (PrimitiveValue) value, null );
+            } else {
+                return new SQLArgument( (PrimitiveValue) null, null );
+            }
+        } else {
+            // not constant and no SQLFunction available
+            String msg = "Unable to translate function to SQL function call. No SQLFunction implementation for function '"
+                         + function.getName() + "' available.";
+            LOG.warn( msg );
+            throw new UnmappableException( msg );
+        }
+
         return sql;
     }
 

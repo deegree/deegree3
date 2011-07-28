@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.other;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
@@ -43,9 +44,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.function.FunctionProvider;
 
 /**
@@ -73,21 +72,27 @@ public class ExtraProp implements FunctionProvider {
     @Override
     public Function create( List<Expression> params ) {
         return new Function( NAME, params ) {
+
             @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+            public <T> TypedObjectNode[] evaluate( T obj, List<TypedObjectNode[]> args )
                                     throws FilterEvaluationException {
-                if ( obj instanceof Feature && getParams()[0] instanceof Literal<?> ) {
-                    Feature f = (Feature) obj;
-                    String propName = ( (PrimitiveValue) ( (Literal<?>) getParams()[0] ).getValue() ).getAsText();
-                    ExtraProps extraProps = f.getExtraProperties();
-                    if ( extraProps != null ) {
-                        TypedObjectNode ton = extraProps.getProperty( propName );
-                        if ( ton != null ) {
-                            return new TypedObjectNode[] { ton };
+
+                TypedObjectNode[] inputs = args.get( 0 );
+                List<TypedObjectNode> outputs = new ArrayList<TypedObjectNode>( inputs.length );
+                for ( TypedObjectNode input : inputs ) {
+                    if ( obj instanceof Feature ) {
+                        Feature f = (Feature) obj;
+                        String propName = ( (PrimitiveValue) input ).getAsText();
+                        ExtraProps extraProps = f.getExtraProperties();
+                        if ( extraProps != null ) {
+                            TypedObjectNode ton = extraProps.getProperty( propName );
+                            if ( ton != null ) {
+                                outputs.add( ton );
+                            }
                         }
                     }
                 }
-                return new TypedObjectNode[0];
+                return outputs.toArray( new TypedObjectNode[outputs.size()] );
             }
         };
     }

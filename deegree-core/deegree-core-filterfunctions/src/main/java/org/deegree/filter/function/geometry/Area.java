@@ -35,22 +35,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.geometry;
 
+import static org.deegree.commons.tom.primitive.BaseType.DOUBLE;
 import static org.deegree.filter.utils.FilterUtils.getGeometryValue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Surface;
 
 /**
+ * {@link FunctionProvider} for the <code>Area</code> function (calculates the area of a {@link Surface}).
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -75,19 +77,19 @@ public class Area implements FunctionProvider {
     public Function create( List<Expression> params ) {
         return new Function( NAME, params ) {
             @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+            public TypedObjectNode[] evaluate( List<TypedObjectNode[]> args )
                                     throws FilterEvaluationException {
-                TypedObjectNode[] inputs = getParams()[0].evaluate( obj, xpathEvaluator );
+                TypedObjectNode[] inputs = args.get( 0 );
                 List<TypedObjectNode> areas = new ArrayList<TypedObjectNode>( inputs.length );
-                for ( TypedObjectNode val : inputs ) {
-                    Geometry geom = getGeometryValue( val );
+                for ( TypedObjectNode input : inputs ) {
+                    Geometry geom = getGeometryValue( input );
                     if ( geom != null && geom instanceof Surface ) {
-                        areas.add( new PrimitiveValue( ( (Surface) geom ).getArea( null ).getValue() ) );
+                        areas.add( new PrimitiveValue( ( (Surface) geom ).getArea( null ).getValue(),
+                                                       new PrimitiveType( DOUBLE ) ) );
                     }
                 }
                 return areas.toArray( new TypedObjectNode[areas.size()] );
             }
         };
     }
-
 }

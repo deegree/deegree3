@@ -10,3 +10,5 @@ org.deegree.filter.function.geometry.MoveGeometry
 org.deegree.filter.function.other.IDiv
 org.deegree.filter.function.other.IMod
 org.deegree.filter.function.other.ExtraProp
+org.deegree.filter.function.other.Upper
+org.deegree.filter.function.other.Lower

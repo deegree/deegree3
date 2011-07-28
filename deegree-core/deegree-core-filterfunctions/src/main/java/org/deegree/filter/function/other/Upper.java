@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-filterfunctions/src/main/java/org/deegree/filter/function/other/IMod.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,31 +33,32 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function.geometry;
+package org.deegree.filter.function.other;
 
-import static org.deegree.filter.utils.FilterUtils.getGeometryValue;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
-import org.deegree.geometry.Geometry;
 
 /**
- * Returns the centroid for each input geometry. Other inputs are ignored.
+ * Uppercasing function.
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schmitz@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: aschmitz $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 30121 $, $Date: 2011-03-22 10:08:12 +0100 (Di, 22. Mär 2011) $
  */
-public class Centroid implements FunctionProvider {
+public class Upper implements FunctionProvider {
 
-    private static final String NAME = "Centroid";
+    private static final String NAME = "Upper";
 
     @Override
     public String getName() {
@@ -78,10 +79,13 @@ public class Centroid implements FunctionProvider {
                 TypedObjectNode[] inputs = args.get( 0 );
                 List<TypedObjectNode> outputs = new ArrayList<TypedObjectNode>( inputs.length );
                 for ( TypedObjectNode input : inputs ) {
-                    Geometry geom = getGeometryValue( input );
-                    if ( geom != null ) {
-                        outputs.add( geom.getCentroid() );
+                    String s = null;
+                    if ( input instanceof PrimitiveValue ) {
+                        s = ( (PrimitiveValue) input ).getAsText();
+                    } else {
+                        s = input.toString();
                     }
+                    outputs.add( new PrimitiveValue( s.toUpperCase(), new PrimitiveType( STRING ) ) );
                 }
                 return outputs.toArray( new TypedObjectNode[outputs.size()] );
             }

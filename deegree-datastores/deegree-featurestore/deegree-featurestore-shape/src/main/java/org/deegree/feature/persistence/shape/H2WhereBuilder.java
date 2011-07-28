@@ -35,9 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
+import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
+import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -71,7 +73,7 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
      * @throws FilterEvaluationException
      */
     public H2WhereBuilder( OperatorFilter filter, SortProperty[] sort ) throws FilterEvaluationException {
-        super( null, filter, sort );
+        super(H2, null, filter, sort );
         try {
             build( true );
         } catch ( UnmappableException e ) {

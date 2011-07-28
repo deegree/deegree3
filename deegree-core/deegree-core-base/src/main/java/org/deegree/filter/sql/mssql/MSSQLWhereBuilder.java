@@ -36,6 +36,7 @@
 package org.deegree.filter.sql.mssql;
 
 import static java.sql.Types.BOOLEAN;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -98,7 +99,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
      */
     public MSSQLWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
                               boolean allowPartialMappings ) throws FilterEvaluationException, UnmappableException {
-        super( mapper, filter, sortCrit );
+        super( MSSQL, mapper, filter, sortCrit );
         build( allowPartialMappings );
     }
 
