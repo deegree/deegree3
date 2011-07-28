@@ -174,8 +174,8 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
             if ( !( constraint instanceof OperatorFilter ) ) {
                 throw new MetadataStoreException( "Delete using id filters is not supported yet." );
             }
-            AbstractWhereBuilder wb = new PostGISWhereBuilder(
-                                                               new EOPropertyNameMapper( typeNames, useLegacyPredicates ),
+            AbstractWhereBuilder wb = new PostGISWhereBuilder( null, new EOPropertyNameMapper( typeNames,
+                                                                                               useLegacyPredicates ),
                                                                (OperatorFilter) constraint, null, false,
                                                                useLegacyPredicates );
 
@@ -244,7 +244,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
             ir.addPreparedArgument( "data", getAsByteArray( registryPackage.getElement() ) );
 
             LOG.debug( "Execute statement " + ir.getSql() );
-            
+
             ir.performInsert( conn );
 
             for ( EOTYPE type : EOTYPE.values() ) {

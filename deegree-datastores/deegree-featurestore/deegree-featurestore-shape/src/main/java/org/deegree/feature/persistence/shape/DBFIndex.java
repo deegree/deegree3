@@ -288,7 +288,7 @@ public class DBFIndex {
         H2WhereBuilder where = null;
         SQLExpression generated = null;
         if ( filter instanceof OperatorFilter ) {
-            where = new H2WhereBuilder( (OperatorFilter) filter, sort );
+            where = new H2WhereBuilder( null, (OperatorFilter) filter, sort );
             generated = where.getWhere();
             if ( generated == null ) {
                 return null;

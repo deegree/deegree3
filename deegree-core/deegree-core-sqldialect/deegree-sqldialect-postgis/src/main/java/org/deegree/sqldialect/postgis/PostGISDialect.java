@@ -87,7 +87,7 @@ public class PostGISDialect implements SQLDialect {
     public Type getDBType() {
         return Type.PostgreSQL;
     }
-    
+
     @Override
     public int getMaxColumnNameLength() {
         return 63;
@@ -117,7 +117,7 @@ public class PostGISDialect implements SQLDialect {
     @Override
     public String geometryMetadata( QTableName qTable, String column ) {
         String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
-        String table = qTable.getTable();        
+        String table = qTable.getTable();
         return "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
                + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase() + "' AND f_geometry_column='"
                + column.toLowerCase() + "'";
@@ -127,7 +127,7 @@ public class PostGISDialect implements SQLDialect {
     public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
                                                  SortProperty[] sortCrit, boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException {
-        return new PostGISWhereBuilder( mapper, filter, sortCrit, allowPartialMappings, useLegacyPredicates );
+        return new PostGISWhereBuilder( this, mapper, filter, sortCrit, allowPartialMappings, useLegacyPredicates );
     }
 
     @Override
@@ -219,7 +219,8 @@ public class PostGISDialect implements SQLDialect {
     }
 
     @Override
-    public ResultSet getTableColumnMetadata( DatabaseMetaData md, QTableName qTable ) throws SQLException {
+    public ResultSet getTableColumnMetadata( DatabaseMetaData md, QTableName qTable )
+                            throws SQLException {
         String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
         String table = qTable.getTable();
         return md.getColumns( null, schema.toLowerCase(), table.toLowerCase(), null );

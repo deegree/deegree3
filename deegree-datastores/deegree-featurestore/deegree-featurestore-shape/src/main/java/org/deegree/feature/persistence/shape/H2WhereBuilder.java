@@ -35,11 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -51,6 +49,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
@@ -68,12 +67,15 @@ import org.deegree.sqldialect.filter.expression.SQLOperation;
 public class H2WhereBuilder extends AbstractWhereBuilder {
 
     /**
+     * @param dialect
+     *            SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
      * @param filter
      * @param sort
      * @throws FilterEvaluationException
      */
-    public H2WhereBuilder( OperatorFilter filter, SortProperty[] sort ) throws FilterEvaluationException {
-        super(H2, null, filter, sort );
+    public H2WhereBuilder( SQLDialect dialect, OperatorFilter filter, SortProperty[] sort )
+                            throws FilterEvaluationException {
+        super( dialect, null, filter, sort );
         try {
             build( true );
         } catch ( UnmappableException e ) {

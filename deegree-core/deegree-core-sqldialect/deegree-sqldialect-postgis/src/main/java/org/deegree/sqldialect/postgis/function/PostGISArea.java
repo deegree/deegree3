@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.sqldialect.filter.function;
+package org.deegree.sqldialect.postgis.function;
 
 import static java.sql.Types.VARCHAR;
 
@@ -41,8 +41,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
+import org.deegree.sqldialect.filter.function.SQLFunctionProvider;
 
 /**
  * {@link SQLFunctionProvider} for the <code>Area</code> function.
@@ -52,9 +54,9 @@ import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
  * 
  * @version $Revision: 30337 $, $Date: 2011-04-04 14:21:18 +0200 (Mo, 04. Apr 2011) $
  */
-public class SQLArea implements SQLFunctionProvider {
+public class PostGISArea implements SQLFunctionProvider {
 
-    private static final String NAME = "Lower";
+    private static final String NAME = "Area";
 
     @Override
     public String getName() {
@@ -67,7 +69,7 @@ public class SQLArea implements SQLFunctionProvider {
     }
 
     @Override
-    public SQLExpression toProtoSQL( List<SQLExpression> args ) {
+    public SQLExpression toProtoSQL( List<SQLExpression> args, SQLDialect dialect ) {
         if ( args.size() != 1 ) {
             throw new IllegalArgumentException( "Unable to map function '" + NAME
                                                 + "' to SQL. Expected a single argument." );

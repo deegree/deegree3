@@ -42,7 +42,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -72,6 +71,7 @@ import org.deegree.filter.logical.Not;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.geometry.Geometry;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.filter.expression.SQLColumn;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
@@ -110,17 +110,19 @@ public abstract class AbstractWhereBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractWhereBuilder.class );
 
-    /** Keeps track of all generated table aliases. */
-    protected final TableAliasManager aliasManager = new TableAliasManager();
-
-    /** Keeps track of all successfully mapped property names. */
-    protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
+    protected final SQLDialect dialect;
 
     protected final PropertyNameMapper mapper;
 
     protected final OperatorFilter filter;
 
     protected final SortProperty[] sortCrit;
+
+    /** Keeps track of all generated table aliases. */
+    protected final TableAliasManager aliasManager = new TableAliasManager();
+
+    /** Keeps track of all successfully mapped property names. */
+    protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
 
     protected SQLExpression whereClause;
 
@@ -133,8 +135,8 @@ public abstract class AbstractWhereBuilder {
     /**
      * Creates a new {@link AbstractWhereBuilder} instance.
      * 
-     * @param dbType
-     *            database type, must not be <code>null</code>
+     * @param dialect
+     *            SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
      * @param mapper
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
@@ -144,8 +146,9 @@ public abstract class AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link PropertyName}s
      */
-    protected AbstractWhereBuilder( Type dbType, PropertyNameMapper mapper, OperatorFilter filter,
+    protected AbstractWhereBuilder( SQLDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
                                     SortProperty[] sortCrit ) throws FilterEvaluationException {
+        this.dialect = dialect;
         this.mapper = mapper;
         this.filter = filter;
         this.sortCrit = sortCrit;
@@ -683,8 +686,7 @@ public abstract class AbstractWhereBuilder {
      * 
      * @param function
      *            function to be translated, must not be <code>null</code>
-     * @return corresponding SQL expression, or <code>null</code> if function can not be mapped to an SQL function
-     *         call
+     * @return corresponding SQL expression, or <code>null</code> if function can not be mapped to an SQL function call
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
@@ -706,7 +708,7 @@ public abstract class AbstractWhereBuilder {
         SQLFunctionProvider sqlFunction = SQLFunctionManager.getFunctionProvider( function.getName() );
         if ( sqlFunction != null ) {
             // let the DB evaluate the function
-            sql = sqlFunction.toProtoSQL( params );
+            sql = sqlFunction.toProtoSQL( params, dialect );
         } else if ( isConstant ) {
             // evaluate function in memory
             List<TypedObjectNode[]> args = new ArrayList<TypedObjectNode[]>();

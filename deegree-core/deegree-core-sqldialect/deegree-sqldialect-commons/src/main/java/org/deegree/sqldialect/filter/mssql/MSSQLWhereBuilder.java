@@ -36,7 +36,6 @@
 package org.deegree.sqldialect.filter.mssql;
 
 import static java.sql.Types.BOOLEAN;
-import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -62,6 +61,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Geometry;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
@@ -97,9 +97,10 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
      * @throws UnmappableException
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
-    public MSSQLWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
-                              boolean allowPartialMappings ) throws FilterEvaluationException, UnmappableException {
-        super( MSSQL, mapper, filter, sortCrit );
+    public MSSQLWhereBuilder( SQLDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
+                              SortProperty[] sortCrit, boolean allowPartialMappings ) throws FilterEvaluationException,
+                            UnmappableException {
+        super( dialect, mapper, filter, sortCrit );
         build( allowPartialMappings );
     }
 

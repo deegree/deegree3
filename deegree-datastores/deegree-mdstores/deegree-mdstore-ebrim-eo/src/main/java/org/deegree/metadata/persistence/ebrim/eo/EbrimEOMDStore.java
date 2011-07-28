@@ -342,7 +342,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                 throw new MetadataStoreException( "ID filters are currently not supported." );
             }
 
-            AbstractWhereBuilder wb = new PostGISWhereBuilder( propMapper, (OperatorFilter) query.getFilter(),
+            AbstractWhereBuilder wb = new PostGISWhereBuilder( null, propMapper, (OperatorFilter) query.getFilter(),
                                                                query.getSorting(), false, useLegacyPredicates );
             AliasedRIMType returnType = propMapper.getReturnType( query.getReturnTypeNames() );
             StringBuilder idSelect = new StringBuilder( "SELECT DISTINCT(" );
@@ -377,7 +377,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                 idSelect.append( ' ' );
                 idSelect.append( additionalJoin.getToTableAlias() );
                 idSelect.append( " ON " );
-                idSelect.append (additionalJoin.getSQLJoinCondition());
+                idSelect.append( additionalJoin.getSQLJoinCondition() );
                 first = false;
             }
 
@@ -442,7 +442,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                 throw new MetadataStoreException( "ID filters are currently not supported." );
             }
 
-            AbstractWhereBuilder wb = new PostGISWhereBuilder( propMapper, (OperatorFilter) query.getFilter(),
+            AbstractWhereBuilder wb = new PostGISWhereBuilder( null, propMapper, (OperatorFilter) query.getFilter(),
                                                                query.getSorting(), false, useLegacyPredicates );
             AliasedRIMType returnType = propMapper.getReturnType( query.getReturnTypeNames() );
             StringBuilder sql = new StringBuilder( "SELECT COUNT(DISTINCT(" );
@@ -477,7 +477,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                 sql.append( ' ' );
                 sql.append( additionalJoin.getToTableAlias() );
                 sql.append( " ON " );
-                sql.append (additionalJoin.getSQLJoinCondition());
+                sql.append( additionalJoin.getSQLJoinCondition() );
                 first = false;
             }
             if ( wb.getWhere() != null ) {

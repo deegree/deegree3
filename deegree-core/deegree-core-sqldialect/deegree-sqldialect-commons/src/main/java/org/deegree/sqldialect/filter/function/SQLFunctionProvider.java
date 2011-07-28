@@ -40,6 +40,7 @@ import java.util.Set;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.filter.expression.Function;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 
 /**
@@ -71,7 +72,9 @@ public interface SQLFunctionProvider {
      * 
      * @param args
      *            SQL arguments, can be empty, but never <code>null</code>
+     * @param dialect
+     *            SQL dialect, can be <code>null</code> (TODO shouldn't be)
      * @return corresponding SQL expression, never <code>null</code>
      */
-    public SQLExpression toProtoSQL( List<SQLExpression> args );
+    public SQLExpression toProtoSQL( List<SQLExpression> args, SQLDialect dialect );
 }

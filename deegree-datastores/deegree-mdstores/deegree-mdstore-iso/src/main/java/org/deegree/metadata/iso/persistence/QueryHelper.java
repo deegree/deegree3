@@ -255,12 +255,12 @@ class QueryHelper extends SqlHelper {
             // TODO only do this once, it's expensive!
             boolean useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
             ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, useLegacyPredicates );
-            return new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false,
-                                            useLegacyPredicates );
+            return new PostGISWhereBuilder( null, mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
+                                            false, useLegacyPredicates );
         }
         if ( connectionType == Type.MSSQL ) {
             ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, false );
-            return new MSSQLWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false );
+            return new MSSQLWhereBuilder( null, mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false );
         }
         return null;
     }

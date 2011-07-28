@@ -43,7 +43,6 @@
 package org.deegree.sqldialect.oracle;
 
 import static java.sql.Types.BOOLEAN;
-import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -95,6 +94,8 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
     /**
      * Creates a new {@link OracleWhereBuilder} instance.
      * 
+     * @param dialect
+     *            SQL dialect, must not be <code>null</code>
      * @param mapping
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
@@ -107,10 +108,10 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
      * @throws UnmappableException
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
-    OracleWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
-                        boolean allowPartialMappings, int databaseMajorVersion ) throws FilterEvaluationException,
-                            UnmappableException {
-        super( Oracle, mapper, filter, sortCrit );
+    OracleWhereBuilder( OracleDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
+                        SortProperty[] sortCrit, boolean allowPartialMappings, int databaseMajorVersion )
+                            throws FilterEvaluationException, UnmappableException {
+        super( dialect, mapper, filter, sortCrit );
         this.databaseMajorVersion = databaseMajorVersion;
         build( allowPartialMappings );
     }
