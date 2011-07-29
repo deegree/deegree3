@@ -56,6 +56,7 @@ import java.util.Map;
 import java_cup.runtime.Symbol;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
@@ -84,6 +85,7 @@ import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BoundingBoxType;
 import org.deegree.services.jaxb.wms.DimensionType;
+import org.deegree.services.jaxb.wms.KeywordsType;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
@@ -114,7 +116,7 @@ public abstract class Layer {
 
     private String authorityURL, authorityIdentifier;
 
-    private LinkedList<LanguageStringType> keywords;
+    private LinkedList<Pair<CodeType, LanguageStringType>> keywords;
 
     private Envelope bbox;
 
@@ -141,7 +143,7 @@ public abstract class Layer {
         this.name = name;
         this.title = title;
         this.parent = parent;
-        keywords = new LinkedList<LanguageStringType>();
+        keywords = new LinkedList<Pair<CodeType, LanguageStringType>>();
         srs = new LinkedList<ICRS>();
         children = new LinkedList<Layer>();
     }
@@ -152,8 +154,15 @@ public abstract class Layer {
         title = layer.getTitle();
         abstract_ = layer.getAbstract();
         dataMetadataSetId = layer.getDataMetadataSetId();
-        keywords = layer.getKeywords() == null ? new LinkedList<LanguageStringType>()
-                                              : new LinkedList<LanguageStringType>( layer.getKeywords().getKeyword() );
+        KeywordsType kwType = layer.getKeywords();
+        keywords = new LinkedList<Pair<CodeType, LanguageStringType>>();
+        if ( kwType != null ) {
+            org.deegree.services.jaxb.wms.CodeType jaxbct = kwType.getType();
+            CodeType ct = new CodeType( jaxbct.getValue(), jaxbct.getCodeSpace() );
+            for ( LanguageStringType lst : kwType.getKeyword() ) {
+                keywords.add( new Pair<CodeType, LanguageStringType>( ct, lst ) );
+            }
+        }
         bbox = parseBoundingBox( layer.getBoundingBox() );
         srs = parseCoordinateSystems( layer.getCRS() );
         if ( srs == null ) {
@@ -413,7 +422,7 @@ public abstract class Layer {
     /**
      * @return the live keywords list
      */
-    public LinkedList<LanguageStringType> getKeywords() {
+    public LinkedList<Pair<CodeType, LanguageStringType>> getKeywords() {
         return keywords;
     }
 
@@ -421,8 +430,8 @@ public abstract class Layer {
      * @param keywords
      *            the keywords to set (will be copied)
      */
-    public void setKeywords( Collection<LanguageStringType> keywords ) {
-        this.keywords = new LinkedList<LanguageStringType>( keywords );
+    public void setKeywords( Collection<Pair<CodeType, LanguageStringType>> keywords ) {
+        this.keywords = new LinkedList<Pair<CodeType, LanguageStringType>>( keywords );
     }
 
     /**

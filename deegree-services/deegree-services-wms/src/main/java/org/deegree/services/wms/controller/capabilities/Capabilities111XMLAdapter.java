@@ -55,6 +55,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -176,8 +177,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
         if ( !layer.getKeywords().isEmpty() ) {
             writer.writeStartElement( "KeywordList" );
-            for ( LanguageStringType lanString : layer.getKeywords() ) {
-                writeElement( writer, "Keyword", lanString.getValue() );
+            for ( Pair<CodeType, LanguageStringType> p : layer.getKeywords() ) {
+                writeElement( writer, "Keyword", p.second.getValue() );
             }
             writer.writeEndElement();
         }

@@ -72,6 +72,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.jaxb.metadata.AddressType;
+import org.deegree.services.jaxb.metadata.CodeType;
 import org.deegree.services.jaxb.metadata.ServiceContactType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
@@ -212,8 +213,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         if ( !layer.getKeywords().isEmpty() ) {
             writer.writeStartElement( WMSNS, "KeywordList" );
-            for ( LanguageStringType lanString : layer.getKeywords() ) {
-                writeElement( writer, WMSNS, "Keyword", lanString.getValue() );
+            for ( Pair<org.deegree.commons.tom.ows.CodeType, LanguageStringType> p : layer.getKeywords() ) {
+                writer.writeStartElement( WMSNS, "Keyword" );
+                if ( p.first != null ) {
+                    writer.writeAttribute( "vocabulary", p.first.getCodeSpace() );
+                }
+                writer.writeCharacters( p.second.getValue() );
+                writer.writeEndElement();
             }
             writer.writeEndElement();
         }
@@ -540,8 +546,14 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeStartElement( WMSNS, "KeywordList" );
 
             for ( org.deegree.services.jaxb.metadata.KeywordsType key : keywords ) {
+                CodeType type = key.getType();
                 for ( org.deegree.services.jaxb.metadata.LanguageStringType lanString : key.getKeyword() ) {
-                    writeElement( writer, WMSNS, "Keyword", lanString.getValue() );
+                    writer.writeStartElement( WMSNS, "Keyword" );
+                    if ( type != null ) {
+                        writer.writeAttribute( "vocabulary", type.getCodeSpace() );
+                    }
+                    writer.writeCharacters( lanString.getValue() );
+                    writer.writeEndElement();
                 }
             }
 
