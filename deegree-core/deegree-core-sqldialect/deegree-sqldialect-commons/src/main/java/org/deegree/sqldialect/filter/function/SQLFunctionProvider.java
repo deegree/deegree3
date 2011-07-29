@@ -38,6 +38,8 @@ package org.deegree.sqldialect.filter.function;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.filter.expression.Function;
 import org.deegree.sqldialect.SQLDialect;
@@ -52,6 +54,22 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
  * @version $Revision: $, $Date: $
  */
 public interface SQLFunctionProvider {
+
+    /**
+     * Called by {@link SQLFunctionManager} once when this {@link SQLFunctionProvider} is being taken into service.
+     * 
+     * @param ws
+     *            workspace context, never <code>null</code>
+     * @throws ResourceInitException
+     *             if the initialization fails
+     */
+    public void init( DeegreeWorkspace ws )
+                            throws ResourceInitException;
+
+    /**
+     * Called by {@link SQLFunctionManager} once when this {@link SQLFunctionProvider} is being taken out of service.
+     */
+    public void destroy();
 
     /**
      * Returns the name of the provided function.
@@ -77,4 +95,5 @@ public interface SQLFunctionProvider {
      * @return corresponding SQL expression, never <code>null</code>
      */
     public SQLExpression toProtoSQL( List<SQLExpression> args, SQLDialect dialect );
+
 }

@@ -114,6 +114,13 @@ public class SQLFunctionManager extends AbstractBasicResourceManager {
     }
 
     public void shutdown() {
+        for ( SQLFunctionProvider fp : functionLoader ) {
+            try {
+                fp.destroy();
+            } catch ( Throwable t ) {
+                LOG.error( "Destroying of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
+            }
+        }
         functionLoader = null;
         if ( nameToFunction != null ) {
             nameToFunction.clear();
@@ -121,9 +128,16 @@ public class SQLFunctionManager extends AbstractBasicResourceManager {
         nameToFunction = null;
     }
 
-    public void startup( DeegreeWorkspace workspace )
+    public void startup( DeegreeWorkspace ws )
                             throws ResourceInitException {
-        functionLoader = ServiceLoader.load( SQLFunctionProvider.class, workspace.getModuleClassLoader() );
+        functionLoader = ServiceLoader.load( SQLFunctionProvider.class, ws.getModuleClassLoader() );
+        for ( SQLFunctionProvider fp : functionLoader ) {
+            try {
+                fp.init( ws );
+            } catch ( Throwable t ) {
+                LOG.error( "Initialization of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
+            }
+        }
     }
 
     @Override

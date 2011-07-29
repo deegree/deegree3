@@ -39,6 +39,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -106,4 +108,14 @@ public class GeometryFromWKT implements FunctionProvider {
         };
     }
 
+    @Override
+    public void init( DeegreeWorkspace ws )
+                            throws ResourceInitException {
+        // nothing to do
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
+    }    
 }

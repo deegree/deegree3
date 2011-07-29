@@ -40,6 +40,8 @@ import static org.deegree.commons.utils.math.MathUtils.round;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
@@ -125,4 +127,15 @@ public class IMod implements FunctionProvider {
             }
         };
     }
+    
+    @Override
+    public void init( DeegreeWorkspace ws )
+                            throws ResourceInitException {
+        // nothing to do
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
+    }     
 }

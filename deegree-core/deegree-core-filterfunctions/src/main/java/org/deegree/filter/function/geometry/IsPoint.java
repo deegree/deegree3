@@ -3,6 +3,8 @@ package org.deegree.filter.function.geometry;
 
 import java.util.List;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
@@ -66,4 +68,15 @@ public class IsPoint implements FunctionProvider {
             }
         };
     }
+    
+    @Override
+    public void init( DeegreeWorkspace ws )
+                            throws ResourceInitException {
+        // nothing to do
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
+    }     
 }

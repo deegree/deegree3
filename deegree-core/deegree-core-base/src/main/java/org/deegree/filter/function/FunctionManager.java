@@ -115,17 +115,33 @@ public class FunctionManager extends AbstractBasicResourceManager {
         return null;
     }
 
+    @Override
+    public void startup( DeegreeWorkspace ws )
+                            throws ResourceInitException {
+        functionLoader = ServiceLoader.load( FunctionProvider.class, ws.getModuleClassLoader() );
+        for ( FunctionProvider fp : functionLoader ) {
+            try {
+                fp.init( ws );
+            } catch ( Throwable t ) {
+                LOG.error( "Initialization of FunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
+            }
+        }
+    }
+
+    @Override
     public void shutdown() {
+        for ( FunctionProvider fp : functionLoader ) {
+            try {
+                fp.destroy();
+            } catch ( Throwable t ) {
+                LOG.error( "Destroying of FunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
+            }
+        }
         functionLoader = null;
         if ( nameToFunction != null ) {
             nameToFunction.clear();
         }
         nameToFunction = null;
-    }
-
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        functionLoader = ServiceLoader.load( FunctionProvider.class, workspace.getModuleClassLoader() );
     }
 
     @Override

@@ -40,6 +40,8 @@ import static java.sql.Types.VARCHAR;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
@@ -84,5 +86,16 @@ public class SQLLower implements SQLFunctionProvider {
         builder.add( arg );
         builder.add( ")" );
         return builder.toOperation();
+    }
+
+    @Override
+    public void init( DeegreeWorkspace ws )
+                            throws ResourceInitException {
+        // nothing to do
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
     }
 }

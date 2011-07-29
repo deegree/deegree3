@@ -37,6 +37,8 @@ package org.deegree.filter.function;
 
 import java.util.List;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.filter.Expression;
 import org.deegree.filter.expression.Function;
 
@@ -49,6 +51,22 @@ import org.deegree.filter.expression.Function;
  * @version $Revision$, $Date$
  */
 public interface FunctionProvider {
+
+    /**
+     * Called by {@link FunctionManager} once when this {@link FunctionProvider} is being taken into service.
+     * 
+     * @param ws
+     *            workspace context, never <code>null</code>
+     * @throws ResourceInitException
+     *             if the initialization fails
+     */
+    public void init( DeegreeWorkspace ws )
+                            throws ResourceInitException;
+
+    /**
+     * Called by {@link FunctionManager} once when this {@link FunctionProvider} is being taken out of service.
+     */
+    public void destroy();
 
     /**
      * Returns the name of the provided function.
