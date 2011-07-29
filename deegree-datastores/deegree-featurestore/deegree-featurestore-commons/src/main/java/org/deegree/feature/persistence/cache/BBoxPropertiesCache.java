@@ -130,6 +130,14 @@ public class BBoxPropertiesCache implements BBoxCache {
     @Override
     public void set( QName ftName, Envelope bbox ) {
         ftNameToEnvelope.put( ftName.toString(), bbox );
+        
+        // TODO really do this every time?
+        try {
+            persist();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override

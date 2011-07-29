@@ -349,8 +349,7 @@ public class SQLFeatureStore implements FeatureStore {
     public Envelope getEnvelope( QName ftName )
                             throws FeatureStoreException {
         if ( !bboxCache.contains( ftName ) ) {
-            Envelope bbox = calcEnvelope( ftName );
-            bboxCache.set( ftName, bbox );
+            calcEnvelope( ftName );
         }
         return bboxCache.get( ftName );
     }
@@ -363,7 +362,7 @@ public class SQLFeatureStore implements FeatureStore {
         Connection conn = null;
         try {
             conn = ConnectionManager.getConnection( getConnId() );
-            calcEnvelope( ftName, conn );
+            env = calcEnvelope( ftName, conn );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
