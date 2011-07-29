@@ -110,6 +110,10 @@ public abstract class Layer {
 
     private String abstract_;
 
+    private String dataMetadataSetId;
+
+    private String authorityURL, authorityIdentifier;
+
     private LinkedList<LanguageStringType> keywords;
 
     private Envelope bbox;
@@ -147,6 +151,7 @@ public abstract class Layer {
         name = layer.getName();
         title = layer.getTitle();
         abstract_ = layer.getAbstract();
+        dataMetadataSetId = layer.getDataMetadataSetId();
         keywords = layer.getKeywords() == null ? new LinkedList<LanguageStringType>()
                                               : new LinkedList<LanguageStringType>( layer.getKeywords().getKeyword() );
         bbox = parseBoundingBox( layer.getBoundingBox() );
@@ -176,7 +181,7 @@ public abstract class Layer {
                 if ( sym.value instanceof Exception ) {
                     final String msg = ( (Exception) sym.value ).getMessage();
                     LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
-                              + " '{}' occurred while parsing the extent/default values.",
+                                                      + " '{}' occurred while parsing the extent/default values.",
                               new Object[] { type.getName(), name, msg } );
                     continue;
                 }
@@ -188,7 +193,7 @@ public abstract class Layer {
                     if ( sym.value instanceof Exception ) {
                         final String msg = ( (Exception) sym.value ).getMessage();
                         LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
-                                  + " '{}' occurred while parsing the extent/default values.",
+                                                          + " '{}' occurred while parsing the extent/default values.",
                                   new Object[] { type.getName(), name, msg } );
                         continue;
                     }
@@ -197,7 +202,7 @@ public abstract class Layer {
                 defaultList = (LinkedList<?>) sym.value;
             } catch ( Exception e ) {
                 LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
-                          + " '{}' occurred while parsing the extent/default values.",
+                                                  + " '{}' occurred while parsing the extent/default values.",
                           new Object[] { type.getName(), name, e.getLocalizedMessage() } );
                 continue;
             }
@@ -212,7 +217,8 @@ public abstract class Layer {
                                                 (List<?>) parseTyped( list, true ) );
                 } catch ( ParseException e ) {
                     LOG.warn( "The TIME dimension has not been added for layer {} because the error"
-                              + " '{}' occurred while parsing the extent/default values.", name,
+                                                      + " '{}' occurred while parsing the extent/default values.",
+                              name,
                               e.getLocalizedMessage() );
                 }
             } else if ( type.isIsElevation() ) {
@@ -250,6 +256,26 @@ public abstract class Layer {
      */
     public void setInternalName( String name ) {
         internalName = name;
+    }
+
+    public String getDataMetadataSetId() {
+        return dataMetadataSetId;
+    }
+
+    public String getAuthorityURL() {
+        return authorityURL;
+    }
+
+    public String getAuthorityIdentifier() {
+        return authorityIdentifier;
+    }
+
+    public void setAuthorityURL( String authorityURL ) {
+        this.authorityURL = authorityURL;
+    }
+
+    public void setAuthorityIdentifier( String authorityIdentifier ) {
+        this.authorityIdentifier = authorityIdentifier;
     }
 
     private static Envelope parseBoundingBox( BoundingBoxType box ) {

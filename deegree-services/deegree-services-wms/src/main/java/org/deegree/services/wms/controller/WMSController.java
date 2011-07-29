@@ -43,6 +43,7 @@ import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
+import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
@@ -75,6 +76,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import java_cup.runtime.Symbol;
@@ -94,6 +96,7 @@ import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -108,14 +111,21 @@ import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDEncoder;
+import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.persistence.MetadataResultSet;
+import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -180,6 +190,8 @@ public class WMSController extends AbstractOGCServiceController<WMSRequestType> 
 
     private List<Object> extendedCaps;
 
+    private String metadataURL;
+
     public WMSController( URL configURL, ImplementationMetadata serviceInfo ) {
         super( configURL, serviceInfo );
     }
@@ -189,6 +201,72 @@ public class WMSController extends AbstractOGCServiceController<WMSRequestType> 
      */
     public MapService getMapService() {
         return service;
+    }
+
+    private void traverseMetadataIds( Layer l, HashMap<String, String> dataMetadataIds ) {
+        if ( l.getName() != null && l.getDataMetadataSetId() != null ) {
+            dataMetadataIds.put( l.getName(), l.getDataMetadataSetId() );
+        }
+        if ( l.getChildren() != null ) {
+            for ( Layer c : l.getChildren() ) {
+                traverseMetadataIds( c, dataMetadataIds );
+            }
+        }
+    }
+
+    private void handleMetadata( String url, String storeid ) {
+        this.metadataURL = url;
+        HashMap<String, String> dataMetadataIds = new HashMap<String, String>();
+        traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
+        if ( storeid != null ) {
+            MetadataStoreManager mdmanager = workspace.getSubsystemManager( MetadataStoreManager.class );
+            MetadataStore<ISORecord> store = mdmanager.get( storeid );
+            if ( store == null ) {
+                LOG.warn( "Metadata store with id {} is not available, metadata ids will not be checked.", storeid );
+                return;
+            }
+            if ( !store.getType().equals( "iso" ) ) {
+                LOG.warn( "Metadata store with id {} is not an ISO metadata store, metadata ids will not be checked.",
+                          storeid );
+                return;
+            }
+
+            MetadataResultSet<ISORecord> rs = null;
+            try {
+                for ( Entry<String, String> e : dataMetadataIds.entrySet() ) {
+                    rs = store.getRecordById( singletonList( e.getValue() ), null );
+                    if ( !rs.next() ) {
+                        LOG.warn( "Metadata store with id {} does not have a record with id {} (referenced from layer {}).",
+                                  new Object[] { storeid, e.getValue(), e.getKey() } );
+                        return;
+                    }
+
+                    ISORecord rec = rs.getRecord();
+                    String prefix = "//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/";
+                    String code = rec.getStringFromXPath( new XPath( prefix + "gmd:code/gco:CharacterString",
+                                                                     getNamespaceContext() ) );
+                    String codeSpace = rec.getStringFromXPath( new XPath( prefix + "gmd:codeSpace/gco:CharacterString",
+                                                                          getNamespaceContext() ) );
+
+                    Layer l = service.getLayer( e.getKey() );
+                    l.setAuthorityURL( codeSpace );
+                    l.setAuthorityIdentifier( code );
+
+                    rs.close();
+                }
+            } catch ( Throwable e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                if ( rs != null ) {
+                    try {
+                        rs.close();
+                    } catch ( MetadataStoreException e ) {
+                        // ignore
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -277,6 +355,9 @@ public class WMSController extends AbstractOGCServiceController<WMSRequestType> 
 
             ServiceConfigurationType sc = conf.getServiceConfiguration();
             service = new MapService( sc, controllerConf, workspace );
+
+            // after the service knows what layers are available:
+            handleMetadata( conf.getMetadataServiceURL(), conf.getMetadataStoreId() );
 
             // if ( sc.getSecurityManager() == null ) {
             // // then do nothing and step over
@@ -721,6 +802,23 @@ public class WMSController extends AbstractOGCServiceController<WMSRequestType> 
 
     public List<Object> getExtendedCapabilities() {
         return extendedCaps;
+    }
+
+    public String getMetadataURL() {
+        // TODO handle this properly in init(), needs service level dependency management
+        if ( metadataURL == null ) {
+            WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+            Map<String, OWS<? extends Enum<?>>> ctrls = mgr.getServiceControllers();
+            for ( OWS o : ctrls.values() ) {
+                ImplementationMetadata md = o.getImplementationMetadata();
+                for ( String s : md.getImplementedServiceName() ) {
+                    if ( s.equalsIgnoreCase( "csw" ) && md.getImplementedVersions().contains( new Version( 2, 0, 2 ) ) ) {
+                        this.metadataURL = ""; // special case to use requested address
+                    }
+                }
+            }
+        }
+        return metadataURL;
     }
 
     /**

@@ -320,10 +320,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         } catch ( UnknownCRSException e ) {
             LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
-        } catch ( IllegalArgumentException e ) {
-            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( TransformationException e ) {
+        } catch ( Throwable e ) {
             LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
@@ -349,6 +346,46 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 writer.writeAttribute( "current", "1" );
             }
             writer.writeCharacters( dim.getExtentAsString() );
+            writer.writeEndElement();
+        }
+
+        if ( layer.getAuthorityURL() != null ) {
+            writer.writeStartElement( WMSNS, "AuthorityURL" );
+            writer.writeAttribute( "name", "fromISORecord" );
+            writer.writeStartElement( WMSNS, "OnlineResource" );
+            writer.writeAttribute( XLNNS, "href", layer.getAuthorityURL() );
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
+
+        if ( layer.getAuthorityIdentifier() != null ) {
+            writer.writeStartElement( WMSNS, "Identifier" );
+            writer.writeAttribute( "authority", "fromISORecord" );
+            writer.writeCharacters( layer.getAuthorityIdentifier() );
+            writer.writeEndElement();
+        }
+
+        mdlabel: if ( controller.getMetadataURL() != null ) {
+            String id = layer.getDataMetadataSetId();
+            if ( id == null ) {
+                break mdlabel;
+            }
+            String mdurl = controller.getMetadataURL();
+            if ( mdurl.isEmpty() ) {
+                mdurl = getUrl;
+            }
+            if ( !( mdurl.endsWith( "?" ) || mdurl.endsWith( "&" ) ) ) {
+                mdurl += "?";
+            }
+            mdurl += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id="
+                     + id;
+            writer.writeStartElement( WMSNS, "MetadataURL" );
+            writer.writeAttribute( "type", "ISO19115:2003" );
+            writeElement( writer, WMSNS, "Format", "application/xml" );
+            writer.writeStartElement( WMSNS, "OnlineResource" );
+            writer.writeAttribute( XLNNS, "type", "simple" );
+            writer.writeAttribute( XLNNS, "href", mdurl );
+            writer.writeEndElement();
             writer.writeEndElement();
         }
 

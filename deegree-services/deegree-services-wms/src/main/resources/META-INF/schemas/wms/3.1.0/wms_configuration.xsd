@@ -41,6 +41,10 @@
             </sequence>
           </complexType>
         </element>
+        <!-- if set, it will be checked upon startup if metadata ids for layers actually exist -->
+        <element name="MetadataStoreId" type="string" minOccurs="0" />
+        <!-- if set, this base URL will be used for generating MetadataURL elements for layers (default is to use an internal CSW if available) -->
+        <element name="MetadataServiceURL" minOccurs="0" type="string" />
         <element name="ServiceConfiguration" type="wms:ServiceConfigurationType" />
         <element name="FeatureInfoFormats" minOccurs="0" type="wms:FeatureInfoFormatsType" />
       </sequence>
@@ -158,6 +162,7 @@
           <element name="Name" type="string" minOccurs="0" />
           <element name="Title" type="string" minOccurs="0" />
           <element name="Abstract" type="string" minOccurs="0" />
+          <element name="DataMetadataSetId" type="string" minOccurs="0" />
           <element ref="wms:Keywords" minOccurs="0" />
           <element ref="wms:BoundingBox" minOccurs="0" />
           <element name="CRS" type="string" minOccurs="0" />
@@ -190,6 +195,7 @@
             <element name="Name" type="string" />
             <element name="Title" type="string" />
             <element name="Abstract" type="string" minOccurs="0" />
+            <element name="DataMetadataSetId" type="string" minOccurs="0" />
             <element ref="wms:Keywords" minOccurs="0" />
             <element ref="wms:BoundingBox" minOccurs="0" />
             <element name="CRS" type="string" minOccurs="0" />

@@ -45,6 +45,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.services.OWS;
@@ -66,7 +67,7 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
             handledNamespaces = new String[] { "" }; // WMS uses null namespace for SLD GetMap Post requests
             handledRequests = WMSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
-            serviceName = new String[]{ "WMS" };
+            serviceName = new String[] { "WMS" };
         }
     };
 
@@ -92,7 +93,8 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSManager.class, FeatureStoreManager.class, CoverageBuilderManager.class };
+        return new Class[] { RemoteOWSManager.class, FeatureStoreManager.class, CoverageBuilderManager.class,
+                            MetadataStoreManager.class };
     }
 
     @Override
