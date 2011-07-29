@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.protocol.ows.metadata.Description;
 
 /**
  * 
@@ -49,73 +50,18 @@ import org.deegree.cs.coordinatesystems.ICRS;
  */
 public class LayerMetadata {
 
-    private String name, title, _abstract;
-
-    // TODO proper keywords
-    private List<String> keywords;
-
     private List<ICRS> crs;
 
     private DoublePair scaleDenominators;
 
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName( String name ) {
-        this.name = name;
+    private Description description;
+
+    public void setDescription( Description description ) {
+        this.description = description;
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param title
-     *            the title to set
-     */
-    public void setTitle( String title ) {
-        this.title = title;
-    }
-
-    /**
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * @param _abstract
-     *            the _abstract to set
-     */
-    public void set_abstract( String _abstract ) {
-        this._abstract = _abstract;
-    }
-
-    /**
-     * @return the _abstract
-     */
-    public String get_abstract() {
-        return _abstract;
-    }
-
-    /**
-     * @param keywords
-     *            the keywords to set
-     */
-    public void setKeywords( List<String> keywords ) {
-        this.keywords = keywords;
-    }
-
-    /**
-     * @return the keywords
-     */
-    public List<String> getKeywords() {
-        return keywords;
+    public Description getDescription() {
+        return description;
     }
 
     /**

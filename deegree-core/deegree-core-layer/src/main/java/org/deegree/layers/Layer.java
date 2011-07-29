@@ -37,7 +37,6 @@
 package org.deegree.layers;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
@@ -60,6 +59,11 @@ import org.deegree.rendering.r2d.se.unevaluated.Style;
 public interface Layer {
 
     /**
+     * @return the name of the layer (nowadays called identifier)
+     */
+    String getIdentifier();
+
+    /**
      * @return the layer metadata
      */
     LayerMetadata getMetadata();
@@ -73,28 +77,6 @@ public interface Layer {
      * @param envelope
      */
     void setEnvelope( Envelope envelope );
-
-    /**
-     * @return the parent, null for the root layer
-     */
-    Layer getParent();
-
-    /**
-     * @param parent
-     *            may be null
-     */
-    void setParent( Layer parent );
-
-    /**
-     * @return never null
-     */
-    List<Layer> getChildren();
-
-    /**
-     * @param children
-     *            may be null
-     */
-    void setChildren( List<Layer> children );
 
     /**
      * Method to paint on a graphics object.
