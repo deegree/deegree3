@@ -38,17 +38,46 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.layer.persistence;
+package org.deegree.theme.persistence;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
-import org.deegree.layer.Theme;
+import org.deegree.commons.config.AbstractResourceManager;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.DefaultResourceManagerMetadata;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.layer.persistence.LayerManager;
+import org.deegree.theme.Theme;
 
 /**
  * @author stranger
  * 
  */
-public interface ThemeProvider extends ExtendedResourceProvider<Theme> {
+public class ThemeManager extends AbstractResourceManager<Theme> {
 
-    // specialized type parameter
+    private ThemeManagerMetadata metadata;
+
+    @Override
+    public void startup( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        metadata = new ThemeManagerMetadata( workspace );
+        super.startup( workspace );
+    }
+
+    static class ThemeManagerMetadata extends DefaultResourceManagerMetadata<Theme> {
+        ThemeManagerMetadata( DeegreeWorkspace workspace ) {
+            super( "themes", "themes/", ThemeProvider.class, workspace );
+        }
+    }
+
+    @Override
+    public ResourceManagerMetadata<Theme> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { LayerManager.class };
+    }
 
 }
