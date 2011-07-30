@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.layers;
+package org.deegree.layer;
 
 import static java.lang.Math.abs;
 import static org.deegree.commons.utils.math.MathUtils.isZero;

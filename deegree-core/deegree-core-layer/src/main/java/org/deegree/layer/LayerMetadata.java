@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.layers;
+package org.deegree.layer;
 
 import java.util.List;
 

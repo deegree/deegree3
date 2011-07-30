@@ -1,4 +1,4 @@
-package org.deegree.layers;
+package org.deegree.layer;
 
 //$HeadURL$
 /*----------------------------------------------------------------------------
