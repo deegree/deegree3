@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:thm="http://www.deegree.org/themes/standard" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/themes/standard" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.themes.persistence.standard.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <complexType name="ThemeType">
+    <sequence>
+      <element name="Identifier" type="string" minOccurs="0" />
+      <!-- TODO description -->
+      <element name="LayerRef" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Theme" type="thm:ThemeType" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <element name="Theme">
+    <complexType>
+      <complexContent>
+        <extension base="thm:ThemeType">
+          <attribute name="configVersion" use="required" type="thm:ConfigVersionType" />
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <simpleType name="ConfigVersionType">
+    <restriction base="string">
+      <enumeration value="3.1.0" />
+    </restriction>
+  </simpleType>
+
+</schema>
