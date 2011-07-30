@@ -38,6 +38,7 @@ package org.deegree.layer;
 
 import java.util.LinkedList;
 
+import org.deegree.commons.config.Resource;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
@@ -56,7 +57,7 @@ import org.deegree.rendering.r2d.se.unevaluated.Style;
  * 
  * @version $Revision$, $Date$
  */
-public interface Layer {
+public interface Layer extends Resource {
 
     /**
      * @return the name of the layer (nowadays called identifier)

@@ -1,10 +1,10 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-layer/src/main/java/org/deegree/layers/Layer.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2010 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -38,21 +38,17 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.layer;
+package org.deegree.layer.persistence;
 
-import java.util.List;
+import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.layer.Layer;
 
-import org.deegree.commons.config.Resource;
-import org.deegree.protocol.ows.metadata.Description;
+/**
+ * @author stranger
+ * 
+ */
+public interface LayerProvider extends ExtendedResourceProvider<Layer> {
 
-public interface Theme extends Resource {
+    // specializes type parameter
 
-    String getIdentifier();
-    
-    Description getDescription();
-    
-    List<Layer> getLayers();
-    
-    List<Theme> getThemes();
-    
 }
