@@ -41,6 +41,7 @@
 package org.deegree.theme.persistence.standard;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,12 +55,15 @@ import org.deegree.layer.persistence.LayerManager;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.themes.persistence.standard.jaxb.ThemeType;
+import org.slf4j.Logger;
 
 /**
  * @author stranger
  * 
  */
 public class StandardThemeProvider implements ThemeProvider {
+
+    private static final Logger LOG = getLogger( StandardThemeProvider.class );
 
     private static final URL SCHEMA_URL = StandardThemeProvider.class.getResource( "/META-INF/schemas/themes/3.1.0/themes.xsd" );
 
@@ -77,8 +81,8 @@ public class StandardThemeProvider implements ThemeProvider {
         for ( String l : layers ) {
             Layer lay = mgr.get( l );
             if ( lay == null ) {
-                // or warn?
-                throw new ResourceInitException( "Layer with id " + l + " is not available." );
+                LOG.warn( "Layer with id {} is not available.", l );
+                continue;
             }
             lays.add( lay );
         }
