@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<FeatureLayer xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/layers/feature feature.xsd">
+  <FeatureStoreRef>inspire</FeatureStoreRef>
+  <Filter>
+  <Filter xmlns="http://www.opengis.net/ogc">
+    <PropertyIsEqualTo >
+      <PropertyName xmlns:app="http://www.deegree.org/app">app:test</PropertyName>
+      <Literal>213</Literal>
+    </PropertyIsEqualTo>
+    </Filter>
+  </Filter>
+</FeatureLayer>

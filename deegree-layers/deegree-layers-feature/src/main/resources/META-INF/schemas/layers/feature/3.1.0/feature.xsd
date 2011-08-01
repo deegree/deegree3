@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/layers/feature" xmlns:l="http://www.deegree.org/layers/feature"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.layer.persistence.feature.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="FeatureLayer">
+    <complexType>
+      <sequence>
+        <element name="FeatureStoreRef" type="string" />
+        <element name="FeatureType" type="QName" minOccurs="0" />
+        <element name="Filter" type="anyType">
+          <annotation>
+            <appinfo>
+              <jaxb:dom />
+            </appinfo>
+          </annotation>
+        </element>
+        <element name="CRS" type="string" minOccurs="0" />
+        <element name="ScaleDenominators" type="l:ScaleDenominatorsType" minOccurs="0" />
+        <element name="Dimension" type="l:DimensionType" minOccurs="0" maxOccurs="unbounded" />
+        <element name="DirectStyle" type="l:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+        <element name="SLDStyle" type="l:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <complexType name="DirectStyleType">
+    <sequence>
+      <element name="File" type="string" />
+      <element name="Name" type="string" minOccurs="0" />
+      <choice minOccurs="0">
+        <element name="LegendConfigurationFile" type="string" />
+        <element name="LegendGraphic">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="outputGetLegendGraphicUrl" type="boolean" default="true" use="optional" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+      </choice>
+    </sequence>
+  </complexType>
+
+  <complexType name="SLDStyleType">
+    <sequence>
+      <element name="File" type="string" />
+      <element name="NamedLayer" type="string" />
+      <sequence minOccurs="0" maxOccurs="unbounded">
+        <element name="Name" type="string" minOccurs="0" />
+        <element name="UserStyle" type="string" />
+        <choice minOccurs="0">
+          <element name="LegendConfigurationFile" type="string" />
+          <element name="LegendGraphic">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="outputGetLegendGraphicUrl" type="boolean" default="true" use="optional" />
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </choice>
+      </sequence>
+    </sequence>
+  </complexType>
+
+  <complexType name="ScaleDenominatorsType">
+    <attribute name="min" type="double" use="required" />
+    <attribute name="max" type="double" use="required" />
+    <attribute name="native" type="double" use="optional" />
+  </complexType>
+
+  <complexType name="DimensionType">
+    <sequence>
+      <element name="Name" type="string" minOccurs="0" />
+      <element name="Property" type="QName" />
+      <element name="DefaultValue" type="string" minOccurs="0" />
+      <element name="MultipleValues" type="boolean" default="0" minOccurs="0" />
+      <element name="NearestValue" type="boolean" default="0" minOccurs="0" />
+      <element name="Current" type="boolean" default="0" minOccurs="0" />
+      <element name="Units" type="string" minOccurs="0" />
+      <element name="UnitSymbol" type="string" minOccurs="0" />
+      <element name="Extent" type="string" />
+    </sequence>
+    <attribute name="isTime" type="boolean" use="optional" default="false" />
+    <attribute name="isElevation" type="boolean" use="optional" default="false" />
+  </complexType>
+
+  <simpleType name="ConfigVersionType">
+    <restriction base="string">
+      <enumeration value="3.1.0" />
+    </restriction>
+  </simpleType>
+
+</schema>

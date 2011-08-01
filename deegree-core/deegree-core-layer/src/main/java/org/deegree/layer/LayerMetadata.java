@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer;
 
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.utils.DoublePair;
@@ -50,9 +54,9 @@ import org.deegree.protocol.ows.metadata.Description;
  */
 public class LayerMetadata {
 
-    private List<ICRS> crs;
+    private List<ICRS> crs = new ArrayList<ICRS>();
 
-    private DoublePair scaleDenominators;
+    private DoublePair scaleDenominators = new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY );
 
     private Description description;
 
