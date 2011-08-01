@@ -29,10 +29,23 @@ http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd">
   </FeatureType>
 
   <!--
-    Config option 5: Configuration based on table and explicit name with namespace and explicit property mapping
+    Config option 5: Configuration based on table specifying explicit feature type name with namespace, explicit property mapping and 
     specifying CRS
   -->
   <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
+    <SimpleProperty mapping="prop1" name="property1" />
+    <GeometryProperty mapping="the_geom" crs="EPSG:4326" srid="-1" />
+  </FeatureType>
+
+  <!--
+    Config option 5: Configuration based on table specifying explicit feature type name with namespace, explicit property mapping and 
+    specifying CRS. In case no autoincrement PK column could be found for gml:id FID Mapping is required.
+  -->
+  <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
+  <FIDMapping>
+  <Column name="youridcolumnname"/>
+  <AutoIdGenerator/>
+  </FIDMapping>
     <SimpleProperty mapping="prop1" name="property1" />
     <GeometryProperty mapping="the_geom" crs="EPSG:4326" srid="-1" />
   </FeatureType>
