@@ -140,9 +140,9 @@ public class CommonCSWProfile implements ServiceProfile {
                                                        DeegreeServiceControllerType mainConf, Set<Sections> sections,
                                                        ServiceIdentificationType identification, Version version,
                                                        boolean isTransactionEnabled, boolean isEnabledInspireExtension,
-                                                       ServiceProviderType provider ) {
+                                                       ServiceProviderType provider, URL extendedCapabilities ) {
         return new GetCapabilitiesHandler( writer, mainControllerConf, mainConf, sections, identification, version,
-                                           isTransactionEnabled, isEnabledInspireExtension );
+                                           isTransactionEnabled, isEnabledInspireExtension, extendedCapabilities );
     }
 
     @Override

@@ -47,6 +47,14 @@
             </documentation>
           </annotation>
         </element>
+        <element name="ExtendedCapabilities" type="anyURI" minOccurs="0">
+          <annotation>
+            <documentation>
+              Reference to a XML-Snippet containing the extended capabilities which should be included 
+              in the Capabilities document of this service.
+            </documentation>
+          </annotation>
+        </element>
       </sequence>
       <attribute name="configVersion" use="required">
         <simpleType>

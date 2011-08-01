@@ -35,12 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
-import static javax.xml.stream.XMLStreamConstants.CDATA;
-import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -51,7 +45,9 @@ import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -59,11 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.XMLConstants;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
@@ -130,10 +122,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements
 
     private final GetCapabilitiesHelper gcHelper = new GetCapabilitiesHelper();
 
+    private URL extendedCapabilities;
+
     public GetCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
                                    DeegreeServiceControllerType mainConf, Set<Sections> sections,
                                    ServiceIdentificationType identification, Version version,
-                                   boolean isTransactionEnabled, boolean isEnabledInspireExtension ) {
+                                   boolean isTransactionEnabled, boolean isEnabledInspireExtension,
+                                   URL extendedCapabilities ) {
         this.writer = writer;
         this.mainControllerConf = mainControllerConf;
         this.mainConf = mainConf;
@@ -142,6 +137,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements
         this.version = version;
         this.isTransactionEnabled = isTransactionEnabled;
         this.isEnabledInspireExtension = isEnabledInspireExtension;
+        this.extendedCapabilities = extendedCapabilities;
 
         isoQueryables.add( "Format" );
         isoQueryables.add( "Type" );
@@ -355,105 +351,24 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements
         writer.writeEndElement();// Value
 
         writer.writeEndElement();// Constraint
+        InputStream extCapabilites = null;
+        if ( extendedCapabilities != null ) {
+            try {
+                extCapabilites = extendedCapabilities.openStream();
+            } catch ( IOException e ) {
+                LOG.warn( "Could not open stream for extended capabilities. Ignore it!" );
+            }
+        }
         // additional inspire queryables
-        if ( this.isEnabledInspireExtension ) {
-            exportExtendedCapabilities( writer, owsNS );
+        if ( this.isEnabledInspireExtension && extCapabilites == null ) {
+            extCapabilites = GetCapabilitiesHandler.class.getResourceAsStream( "extendedCapInspire.xml" );
+        }
+        gcHelper.exportExtendedCapabilities( writer, owsNS, extCapabilites, varToValue );
+        if ( extCapabilites != null ) {
+            IOUtils.closeQuietly( extCapabilites );
         }
         writer.writeEndElement();// OperationsMetadata
 
-    }
-
-    private void exportExtendedCapabilities( XMLStreamWriter writer, String owsNS )
-                            throws XMLStreamException {
-
-        writer.writeStartElement( owsNS, "ExtendedCapabilities" );
-        InputStream in = GetCapabilitiesHandler.class.getResourceAsStream( "extendedCapInspire.xml" );
-        try {
-            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
-            reader.nextTag();
-            writeTemplateElement( writer, reader );
-            writer.writeEndElement();
-        } finally {
-            IOUtils.closeQuietly( in );
-        }
-    }
-
-    private void writeTemplateElement( XMLStreamWriter writer, XMLStreamReader inStream )
-                            throws XMLStreamException {
-
-        if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
-            throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
-        }
-        int openElements = 0;
-        boolean firstRun = true;
-        while ( firstRun || openElements > 0 ) {
-            firstRun = false;
-            int eventType = inStream.getEventType();
-
-            switch ( eventType ) {
-            case CDATA: {
-                writer.writeCData( inStream.getText() );
-                break;
-            }
-            case CHARACTERS: {
-                String s = new String( inStream.getTextCharacters(), inStream.getTextStart(), inStream.getTextLength() );
-                // TODO optimize
-                for ( String param : varToValue.keySet() ) {
-                    String value = varToValue.get( param );
-                    s = s.replace( param, value );
-                }
-                writer.writeCharacters( s );
-
-                break;
-            }
-            case END_ELEMENT: {
-                writer.writeEndElement();
-                openElements--;
-                break;
-            }
-            case START_ELEMENT: {
-                if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX
-                     || inStream.getPrefix() == null ) {
-                    writer.writeStartElement( inStream.getLocalName() );
-                } else {
-                    if ( writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
-                        // TODO handle special cases for prefix binding, see
-                        // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
-                        writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
-                    }
-                    writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
-                }
-                // copy all namespace bindings
-                for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
-                    String nsPrefix = inStream.getNamespacePrefix( i );
-                    String nsURI = inStream.getNamespaceURI( i );
-                    writer.writeNamespace( nsPrefix, nsURI );
-                }
-
-                // copy all attributes
-                for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
-                    String localName = inStream.getAttributeLocalName( i );
-                    String nsPrefix = inStream.getAttributePrefix( i );
-                    String value = inStream.getAttributeValue( i );
-                    String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null ) {
-                        writer.writeAttribute( localName, value );
-                    } else {
-                        writer.writeAttribute( nsPrefix, nsURI, localName, value );
-                    }
-                }
-
-                openElements++;
-                break;
-            }
-            default: {
-                break;
-            }
-            }
-            if ( openElements > 0 ) {
-                inStream.next();
-            }
-        }
     }
 
     private void writeGetRecordsConstraints( XMLStreamWriter writer, String owsNS )

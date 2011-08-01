@@ -105,13 +105,14 @@ public interface ServiceProfile {
      * @param version
      * @param isTransactionEnabled
      * @param isEnabledInspireExtension
+     * @param extendedCapabilities 
      * @return an instance of a {@link GetCapabilitiesHandler} to hanlde the a GetCapabilities request
      */
     CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
                                                 DeegreeServiceControllerType mainConf, Set<Sections> sections,
                                                 ServiceIdentificationType identification, Version version,
                                                 boolean isTransactionEnabled, boolean isEnabledInspireExtension,
-                                                ServiceProviderType provider );
+                                                ServiceProviderType provider, URL extendedCapabilities );
 
     /**
      * @return the defaultTypeNames supported for a {@link DescribeRecord} request

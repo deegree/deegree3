@@ -41,12 +41,16 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_100;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -58,6 +62,8 @@ import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapte
 import org.deegree.services.csw.profile.EbrimProfile;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -69,6 +75,8 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
  */
 public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements CapabilitiesHandler {
 
+    private static Logger LOG = LoggerFactory.getLogger( EbrimGetCapabilitiesHandler.class );
+    
     private static final String WRS_NS = "http://www.opengis.net/cat/wrs/1.0";
 
     private static final String WRS_PREFIX = "wrs";
@@ -92,19 +100,22 @@ public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter imple
     private final ServiceIdentificationType identification;
 
     private final Version version;
-
+    
     @SuppressWarnings("unused")
     private final boolean isTransactionEnabled;
 
+    private URL extendedCapabilities;
+
     public EbrimGetCapabilitiesHandler( XMLStreamWriter writer, Set<Sections> sections,
                                         ServiceIdentificationType identification, ServiceProviderType provider,
-                                        Version version, boolean isTransactionEnabled ) {
+                                        Version version, boolean isTransactionEnabled, URL extendedCapabilities ) {
         this.writer = writer;
         this.provider = provider;
         this.sections = sections;
         this.identification = identification;
         this.version = version;
         this.isTransactionEnabled = isTransactionEnabled;
+        this.extendedCapabilities = extendedCapabilities;
 
         supportedOperations.add( CSWRequestType.GetCapabilities.name() );
         supportedOperations.add( CSWRequestType.DescribeRecord.name() );
@@ -221,6 +232,18 @@ public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter imple
         writer.writeEndElement();// Metadata
         writer.writeEndElement();// Constraint
 
+        if ( extendedCapabilities != null ) {
+            InputStream extCapabilites = null;
+            try {
+                extCapabilites = extendedCapabilities.openStream();
+                gcHelper.exportExtendedCapabilities( writer, owsNS, extCapabilites, null );
+            } catch ( IOException e ) {
+                LOG.warn( "Could not open stream for extended capabilities. Ignore it!" );
+            } finally {
+                IOUtils.closeQuietly( extCapabilites );
+            }
+        }
+        
         writer.writeEndElement();// OperationsMetadata
     }
 

@@ -35,14 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
+import static javax.xml.stream.XMLStreamConstants.CDATA;
+import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 
+import java.io.InputStream;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.XMLConstants;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.services.jaxb.metadata.KeywordsType;
@@ -84,8 +98,8 @@ public class GetCapabilitiesHelper {
         // keywords [0,n]
         exportKeywords( writer, identification.getKeywords() );
         if ( serviceTypeCodeSpace != null ) {
-            writeElement( writer, "http://www.opengis.net/ows", "ServiceType", serviceType, null, null,
-                          "codeSpace", serviceTypeCodeSpace );
+            writeElement( writer, "http://www.opengis.net/ows", "ServiceType", serviceType, null, null, "codeSpace",
+                          serviceTypeCodeSpace );
         } else {
             writeElement( writer, "http://www.opengis.net/ows", "ServiceType", serviceType );
         }
@@ -302,4 +316,112 @@ public class GetCapabilitiesHelper {
                             throws XMLStreamException {
         XMLAdapter.writeElement( writer, ns, "Value", value );
     }
+
+    /**
+     * @param writer
+     *            the writer to write the extedned capabilities, never <code>null</code>
+     * @param owsNS
+     *            the namespaceURI of the ExtendedCapabilities element
+     * @param extendedCapabilities
+     *            the inputStream containing the extended capabilites, if <code>null</code> nothing is exported
+     * @param varToValue
+     *            an optional list of key value pairs replaced in the extended capabilities, may be <code>null</code>
+     * @throws XMLStreamException
+     */
+    void exportExtendedCapabilities( XMLStreamWriter writer, String owsNS, InputStream extendedCapabilities,
+                                     Map<String, String> varToValue )
+                            throws XMLStreamException {
+        if ( extendedCapabilities != null ) {
+            if ( varToValue == null )
+                varToValue = Collections.emptyMap();
+            writer.writeStartElement( owsNS, "ExtendedCapabilities" );
+            try {
+                XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( extendedCapabilities );
+                reader.nextTag();
+                writeTemplateElement( writer, reader, varToValue );
+                writer.writeEndElement();
+            } finally {
+                IOUtils.closeQuietly( extendedCapabilities );
+            }
+        }
+    }
+
+    private void writeTemplateElement( XMLStreamWriter writer, XMLStreamReader inStream, Map<String, String> varToValue )
+                            throws XMLStreamException {
+
+        if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
+            throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
+        }
+        int openElements = 0;
+        boolean firstRun = true;
+        while ( firstRun || openElements > 0 ) {
+            firstRun = false;
+            int eventType = inStream.getEventType();
+
+            switch ( eventType ) {
+            case CDATA: {
+                writer.writeCData( inStream.getText() );
+                break;
+            }
+            case CHARACTERS: {
+                String s = new String( inStream.getTextCharacters(), inStream.getTextStart(), inStream.getTextLength() );
+                // TODO optimize
+                for ( String param : varToValue.keySet() ) {
+                    String value = varToValue.get( param );
+                    s = s.replace( param, value );
+                }
+                writer.writeCharacters( s );
+
+                break;
+            }
+            case END_ELEMENT: {
+                writer.writeEndElement();
+                openElements--;
+                break;
+            }
+            case START_ELEMENT: {
+                if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX
+                     || inStream.getPrefix() == null ) {
+                    writer.writeStartElement( inStream.getLocalName() );
+                } else {
+                    if ( writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                        // TODO handle special cases for prefix binding, see
+                        // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
+                        writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
+                    }
+                    writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+                }
+                // copy all namespace bindings
+                for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
+                    String nsPrefix = inStream.getNamespacePrefix( i );
+                    String nsURI = inStream.getNamespaceURI( i );
+                    writer.writeNamespace( nsPrefix, nsURI );
+                }
+
+                // copy all attributes
+                for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
+                    String localName = inStream.getAttributeLocalName( i );
+                    String nsPrefix = inStream.getAttributePrefix( i );
+                    String value = inStream.getAttributeValue( i );
+                    String nsURI = inStream.getAttributeNamespace( i );
+                    if ( nsURI == null ) {
+                        writer.writeAttribute( localName, value );
+                    } else {
+                        writer.writeAttribute( nsPrefix, nsURI, localName, value );
+                    }
+                }
+
+                openElements++;
+                break;
+            }
+            default: {
+                break;
+            }
+            }
+            if ( openElements > 0 ) {
+                inStream.next();
+            }
+        }
+    }
+
 }

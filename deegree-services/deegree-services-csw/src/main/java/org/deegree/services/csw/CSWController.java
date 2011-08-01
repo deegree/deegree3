@@ -41,6 +41,7 @@ import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -168,6 +169,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
 
     private ServiceProfile profile;
 
+    private URL extendedCapabilities;
+
     protected CSWController( URL configURL, ImplementationMetadata<CSWRequestType> serviceInfo ) {
         super( configURL, serviceInfo );
     }
@@ -221,7 +224,14 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
             enableInspireExtensions = false;
             LOG.info( "Inspire extensions are deactivated" );
         }
-
+        if ( jaxbConfig.getExtendedCapabilities() != null ) {
+            try {
+                extendedCapabilities = controllerConf.resolve( jaxbConfig.getExtendedCapabilities() );
+            } catch ( MalformedURLException e ) {
+                LOG.warn( "Could not resolve path to extended capabilities : " + extendedCapabilities
+                          + ". Ignore extended capabilities." );
+            }
+        }
         int maxMatches = jaxbConfig.getMaxMatches() == null ? 0 : jaxbConfig.getMaxMatches().intValue();
 
         describeRecordHandler = new DescribeRecordHandler();
@@ -516,7 +526,8 @@ public class CSWController extends AbstractOGCServiceController<CSWRequestType> 
                                                                   mainMetadataConf.getServiceIdentification(),
                                                                   negotiatedVersion, enableTransactions,
                                                                   enableInspireExtensions,
-                                                                  mainMetadataConf.getServiceProvider() );
+                                                                  mainMetadataConf.getServiceProvider(),
+                                                                  extendedCapabilities );
         gce.export();
         xmlWriter.flush();
 

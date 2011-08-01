@@ -144,9 +144,9 @@ public class EbrimProfile implements ServiceProfile {
                                                        DeegreeServiceControllerType mainConf, Set<Sections> sections,
                                                        ServiceIdentificationType identification, Version version,
                                                        boolean isTransactionEnabled, boolean isEnabledInspireExtension,
-                                                       ServiceProviderType provider ) {
+                                                       ServiceProviderType provider, URL extendedCapabilities ) {
         return new EbrimGetCapabilitiesHandler( writer, sections, identification, provider, version,
-                                                isTransactionEnabled );
+                                                isTransactionEnabled, extendedCapabilities );
     }
 
     @Override
