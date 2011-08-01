@@ -232,7 +232,7 @@ public class GetRecordsHandler {
 
         if ( getRec.getQuery() != null ) {
             int maxRecords = maxMatches > 0 ? maxMatches : getRec.getMaxRecords();
-            int startPosition = maxMatches > 0 ? 1 : getRec.getStartPosition();
+            int startPosition = getRec.getStartPosition();
             Query cswQuery = getRec.getQuery();
             elementSetName = cswQuery.getElementSetName();
             returnElements = cswQuery.getElementName();
@@ -245,7 +245,7 @@ public class GetRecordsHandler {
         } else {
             // must be an AdhocQUery
             int maxRecords = maxMatches > 0 ? maxMatches : getRec.getMaxRecords();
-            int startPosition = maxMatches > 0 ? 1 : getRec.getStartPosition();
+            int startPosition = getRec.getStartPosition();
             AdhocQueryAnalyzer fb = new AdhocQueryAnalyzer( getRec.getAdhocQuery(), startPosition, maxRecords,
                                                             (MetadataStore<RegistryObject>) store );
             query = fb.getMetadataQuery();
@@ -308,7 +308,8 @@ public class GetRecordsHandler {
                 }
                 int matches = 0;
                 if ( getRec.getStartPosition() > 1 ) {
-                    rs.skip( getRec.getStartPosition() - 1 );
+                    // lg: Why this? It's handled by SQL!?
+                    // rs.skip( getRec.getStartPosition() - 1 );
                     matches += getRec.getStartPosition() - 1;
                 }
                 for ( int i = 0; i < maxRecords; i++ ) {
