@@ -74,6 +74,7 @@ public class EclipseMojo extends AbstractMojo {
         File target = project.getBasedir();
 
         mergePrefs( "org.eclipse.jdt.core.prefs" );
+        mergePrefs( "org.eclipse.jdt.ui.prefs" );
         mergePrefs( "org.eclipse.wst.validation.prefs" );
         mergePrefs( "org.eclipse.wst.xml.core.prefs" );
 
