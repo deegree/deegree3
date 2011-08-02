@@ -75,7 +75,7 @@ import java.util.ListIterator;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
-import org.deegree.rendering.r2d.styling.components.LinePlacement;
+import org.deegree.style.styling.components.LinePlacement;
 import org.slf4j.Logger;
 
 /**

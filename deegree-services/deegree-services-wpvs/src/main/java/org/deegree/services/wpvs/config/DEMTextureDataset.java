@@ -61,8 +61,6 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.geometry.Envelope;
-import org.deegree.rendering.r2d.se.parser.SymbologyParser;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureTileManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.RasterAPITextureTileProvider;
@@ -71,6 +69,8 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileProvi
 import org.deegree.services.jaxb.wpvs.DEMTextureDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.StyledGeometryProvider;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -45,7 +45,7 @@ import static org.deegree.services.i18n.Messages.get;
 import java.util.Map;
 
 import org.deegree.rendering.r2d.legends.LegendOptions;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Style;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.Layer;

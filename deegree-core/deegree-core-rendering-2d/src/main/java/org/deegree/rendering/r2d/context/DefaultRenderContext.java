@@ -49,7 +49,7 @@ import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
-import org.deegree.rendering.r2d.utils.ImageUtils;
+import org.deegree.style.utils.ImageUtils;
 
 /**
  * 

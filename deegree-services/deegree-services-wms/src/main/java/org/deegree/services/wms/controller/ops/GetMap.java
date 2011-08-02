@@ -47,7 +47,6 @@ import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.ELSEFILTER;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.controller.ows.OWSException.LAYER_NOT_DEFINED;
 import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
@@ -58,6 +57,7 @@ import static org.deegree.services.wms.controller.ops.GetMap.Interpolation.NEARE
 import static org.deegree.services.wms.controller.ops.GetMap.Quality.NORMAL;
 import static org.deegree.services.wms.controller.sld.SLDParser.parse;
 import static org.deegree.services.wms.model.Dimension.parseTyped;
+import static org.deegree.style.se.parser.SymbologyParser.ELSEFILTER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -97,16 +97,16 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.dims.DimensionLexer;
 import org.deegree.protocol.wms.dims.parser;
-import org.deegree.rendering.r2d.se.parser.SymbologyParser.FilterContinuation;
-import org.deegree.rendering.r2d.se.unevaluated.Continuation;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.StyleRegistry;
 import org.deegree.services.wms.controller.WMSController111;
 import org.deegree.services.wms.controller.WMSController130;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.style.se.parser.SymbologyParser.FilterContinuation;
+import org.deegree.style.se.unevaluated.Continuation;
+import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Symbolizer;
 import org.slf4j.Logger;
 
 /**

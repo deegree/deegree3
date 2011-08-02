@@ -58,10 +58,10 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
 import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
-import org.deegree.rendering.r2d.se.parser.PostgreSQLReader;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.DynamicSQLLayer;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.style.se.parser.PostgreSQLReader;
 import org.slf4j.Logger;
 
 /**

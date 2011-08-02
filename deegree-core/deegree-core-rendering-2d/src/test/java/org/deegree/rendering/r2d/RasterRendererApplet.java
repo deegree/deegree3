@@ -52,10 +52,9 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.filter.expression.custom.se.Categorize;
 import org.deegree.filter.expression.custom.se.Interpolate;
-import org.deegree.rendering.r2d.se.parser.SymbologyParser;
-import org.deegree.rendering.r2d.se.parser.SymbologyParserTest;
-import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
-import org.deegree.rendering.r2d.styling.RasterStyling;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.se.unevaluated.Symbolizer;
+import org.deegree.style.styling.RasterStyling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +103,7 @@ public class RasterRendererApplet extends JApplet {
         RasterStyling rs = null;
         try {
             // LOG.debug( "Loading SE XML..." );
-            URI uri = SymbologyParserTest.class.getResource( fname ).toURI();
+            URI uri = RasterRendererApplet.class.getResource( fname ).toURI();
             LOG.debug( "Loading resource: " + uri );
             File f = new File( uri );
             final XMLInputFactory fac = XMLInputFactory.newInstance();
@@ -180,7 +179,7 @@ public class RasterRendererApplet extends JApplet {
         try {
             LOG.trace( "Loading images..." );
 
-            URI uri = SymbologyParserTest.class.getResource( "image.png" ).toURI();
+            URI uri = RasterRendererApplet.class.getResource( "image.png" ).toURI();
             RasterFactory.loadRasterFromFile( new File( uri ) );
 
             uri = RasterRendererApplet.class.getResource( "car.jpg" ).toURI();

@@ -57,13 +57,13 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.rendering.r2d.styling.RasterChannelSelection;
-import org.deegree.rendering.r2d.styling.RasterStyling;
-import org.deegree.rendering.r2d.styling.Styling;
-import org.deegree.rendering.r2d.styling.RasterChannelSelection.ChannelSelectionMode;
-import org.deegree.rendering.r2d.styling.RasterStyling.ContrastEnhancement;
-import org.deegree.rendering.r2d.utils.Raster2Feature;
-import org.deegree.rendering.r2d.utils.RasterDataUtility;
+import org.deegree.style.styling.RasterChannelSelection;
+import org.deegree.style.styling.RasterChannelSelection.ChannelSelectionMode;
+import org.deegree.style.styling.RasterStyling;
+import org.deegree.style.styling.RasterStyling.ContrastEnhancement;
+import org.deegree.style.styling.Styling;
+import org.deegree.style.utils.Raster2Feature;
+import org.deegree.style.utils.RasterDataUtility;
 import org.slf4j.Logger;
 
 /**

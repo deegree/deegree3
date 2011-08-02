@@ -60,7 +60,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Style;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController111;

@@ -65,10 +65,10 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
-import org.deegree.rendering.r2d.styling.PolygonStyling;
-import org.deegree.rendering.r2d.styling.RasterStyling;
-import org.deegree.rendering.r2d.styling.Styling;
-import org.deegree.rendering.r2d.styling.components.Fill;
+import org.deegree.style.styling.PolygonStyling;
+import org.deegree.style.styling.RasterStyling;
+import org.deegree.style.styling.Styling;
+import org.deegree.style.styling.components.Fill;
 
 /**
  * 

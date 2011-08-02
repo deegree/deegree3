@@ -50,7 +50,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.context.RenderingInfo;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
  * <code>Layer</code>

@@ -65,7 +65,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Style;
 import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.ServiceContactType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;

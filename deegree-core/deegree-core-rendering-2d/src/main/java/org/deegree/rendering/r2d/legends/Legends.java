@@ -36,7 +36,7 @@
 package org.deegree.rendering.r2d.legends;
 
 import static java.lang.Math.max;
-import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
+import static org.deegree.style.styling.components.UOM.Metre;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -61,12 +61,13 @@ import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.TextRenderer;
-import org.deegree.rendering.r2d.se.unevaluated.Continuation;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
-import org.deegree.rendering.r2d.styling.RasterStyling;
-import org.deegree.rendering.r2d.styling.Styling;
-import org.deegree.rendering.r2d.styling.TextStyling;
+import org.deegree.style.se.unevaluated.Continuation;
+import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Symbolizer;
+import org.deegree.style.styling.RasterStyling;
+import org.deegree.style.styling.Styling;
+import org.deegree.style.styling.TextStyling;
+import org.deegree.style.styling.components.UOM;
 import org.slf4j.Logger;
 
 /**
@@ -104,7 +105,7 @@ public class Legends {
 
     public static void paintLegendText( int origin, LegendOptions opts, String text, TextRenderer textRenderer ) {
         TextStyling textStyling = new TextStyling();
-        textStyling.font = new org.deegree.rendering.r2d.styling.components.Font();
+        textStyling.font = new org.deegree.style.styling.components.Font();
         textStyling.font.fontFamily.add( 0, "Arial" );
         textStyling.font.fontSize = opts.textSize;
         textStyling.anchorPointX = 0;

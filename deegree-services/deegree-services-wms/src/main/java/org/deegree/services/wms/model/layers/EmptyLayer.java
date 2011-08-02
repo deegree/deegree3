@@ -42,7 +42,7 @@ import java.util.LinkedList;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Style;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;

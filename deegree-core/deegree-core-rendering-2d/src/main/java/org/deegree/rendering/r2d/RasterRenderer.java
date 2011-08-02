@@ -37,7 +37,7 @@
 package org.deegree.rendering.r2d;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.rendering.r2d.styling.RasterStyling;
+import org.deegree.style.styling.RasterStyling;
 
 /**
  * <code>TestingRasterRenderer interface</code>

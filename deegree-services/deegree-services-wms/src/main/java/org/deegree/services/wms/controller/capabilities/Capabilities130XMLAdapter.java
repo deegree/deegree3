@@ -70,7 +70,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Style;
 import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.CodeType;
 import org.deegree.services.jaxb.metadata.ServiceContactType;

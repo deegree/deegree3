@@ -81,8 +81,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r2d.Java2DRenderer;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.rendering.r2d.styling.Styling;
+import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.styling.Styling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

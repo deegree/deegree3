@@ -7,10 +7,6 @@
   <version>3.1-pre11-SNAPSHOT</version>
   <name>deegree-core-rendering-2d</name>
   <url>http://www.deegree.org</url>
-  <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d</url>
-  </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -35,7 +31,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-filterfunctions</artifactId>
+      <artifactId>deegree-core-style</artifactId>
       <version>3.1-pre11-SNAPSHOT</version>
     </dependency>
     <dependency>

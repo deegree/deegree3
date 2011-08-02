@@ -38,7 +38,7 @@ package org.deegree.rendering.r2d;
 import java.util.Collection;
 
 import org.deegree.geometry.Geometry;
-import org.deegree.rendering.r2d.styling.TextStyling;
+import org.deegree.style.styling.TextStyling;
 
 /**
  * <code>TextRenderer</code>

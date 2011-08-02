@@ -52,12 +52,12 @@ import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.RemoteOWSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**

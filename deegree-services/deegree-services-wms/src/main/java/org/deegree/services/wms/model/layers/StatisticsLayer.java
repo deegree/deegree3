@@ -82,16 +82,16 @@ import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.dims.DimensionInterval;
 import org.deegree.rendering.r2d.Java2DRenderer;
-import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
-import org.deegree.rendering.r2d.styling.PolygonStyling;
-import org.deegree.rendering.r2d.styling.components.Fill;
-import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.services.controller.FrontControllerStats;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.model.Dimension;
+import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.se.unevaluated.Symbolizer;
+import org.deegree.style.styling.PolygonStyling;
+import org.deegree.style.styling.components.Fill;
+import org.deegree.style.styling.components.Stroke;
 import org.slf4j.Logger;
 
 /**

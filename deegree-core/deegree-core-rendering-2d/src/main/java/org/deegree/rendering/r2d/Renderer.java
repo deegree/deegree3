@@ -39,10 +39,10 @@ package org.deegree.rendering.r2d;
 import java.util.Collection;
 
 import org.deegree.geometry.Geometry;
-import org.deegree.rendering.r2d.styling.LineStyling;
-import org.deegree.rendering.r2d.styling.PointStyling;
-import org.deegree.rendering.r2d.styling.PolygonStyling;
-import org.deegree.rendering.r2d.styling.Styling;
+import org.deegree.style.styling.LineStyling;
+import org.deegree.style.styling.PointStyling;
+import org.deegree.style.styling.PolygonStyling;
+import org.deegree.style.styling.Styling;
 
 /**
  * <code>Renderer</code>

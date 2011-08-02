@@ -69,8 +69,8 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.TextStroke;
-import org.deegree.rendering.r2d.styling.TextStyling;
-import org.deegree.rendering.r2d.styling.components.Font.Style;
+import org.deegree.style.styling.TextStyling;
+import org.deegree.style.styling.components.Font.Style;
 import org.slf4j.Logger;
 
 /**

@@ -42,7 +42,7 @@ import static org.deegree.commons.utils.CollectionUtils.AND;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.rendering.r2d.legends.Legends.paintLegendText;
-import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
+import static org.deegree.style.styling.components.UOM.Metre;
 
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
@@ -65,11 +65,11 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
-import org.deegree.rendering.r2d.se.unevaluated.Continuation;
-import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
-import org.deegree.rendering.r2d.styling.LineStyling;
-import org.deegree.rendering.r2d.styling.PointStyling;
-import org.deegree.rendering.r2d.styling.Styling;
+import org.deegree.style.se.unevaluated.Continuation;
+import org.deegree.style.se.unevaluated.Symbolizer;
+import org.deegree.style.styling.LineStyling;
+import org.deegree.style.styling.PointStyling;
+import org.deegree.style.styling.Styling;
 
 /**
  * 
