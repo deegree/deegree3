@@ -58,7 +58,6 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQNa
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.skipElement;
 import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
-import static org.deegree.rendering.i18n.Messages.get;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 import static org.deegree.rendering.r2d.styling.components.Stroke.LineCap.BUTT;
 import static org.deegree.rendering.r2d.styling.components.Stroke.LineJoin.ROUND;
@@ -761,7 +760,7 @@ public class SymbologyParser {
                     }
                 } catch ( IOException e ) {
                     LOG.debug( "Stack trace", e );
-                    LOG.warn( get( "R2D.EXTERNAL_GRAPHIC_NOT_LOADED" ),
+                    LOG.warn( "External graphic could not be loaded. Location: line '{}' column '{}' of file '{}'.",
                               new Object[] { in.getLocation().getLineNumber(), in.getLocation().getColumnNumber(),
                                             in.getLocation().getSystemId() } );
                 }
@@ -1323,9 +1322,10 @@ public class SymbologyParser {
                         xmlText.append( sw.toString() );
                     }
                     Pair<Expression, String> second;
-                    second = new Pair<Expression, String>( expr, get( "R2D.LINE", in.getLocation().getLineNumber(),
-                                                                      in.getLocation().getColumnNumber(),
-                                                                      in.getLocation().getSystemId() ) );
+                    second = new Pair<Expression, String>( expr, "Error parsing SLD/SE, file "
+                                                                 + in.getLocation().getSystemId() + ", line "
+                                                                 + in.getLocation().getLineNumber() + ", column "
+                                                                 + in.getLocation().getColumnNumber() );
                     text.add( new Pair<String, Pair<Expression, String>>( null, second ) );
                     textOnly = false;
                 }
@@ -1363,12 +1363,14 @@ public class SymbologyParser {
                                 try {
                                     TypedObjectNode[] evald = p.second.first.evaluate( f, evaluator );
                                     if ( evald.length == 0 ) {
-                                        LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), p.second.second );
+                                        LOG.warn( "The following expression in a style evaluated to null:\n'{}'",
+                                                  p.second.second );
                                     } else {
                                         tmp.append( evald[0] );
                                     }
                                 } catch ( FilterEvaluationException e ) {
-                                    LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), p.second.second );
+                                    LOG.warn( "Evaluating the following expression resulted in an error '{}':\n'{}'",
+                                              e.getLocalizedMessage(), p.second.second );
                                 }
                             }
                         }
@@ -1952,7 +1954,8 @@ public class SymbologyParser {
                     base.addAll( syms );
                 }
             } catch ( FilterEvaluationException e ) {
-                LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), filter.toString() );
+                LOG.warn( "Evaluating the following expression resulted in an error '{}':\n'{}'",
+                          e.getLocalizedMessage(), filter.toString() );
                 LOG.debug( "Stack trace:", e );
             }
         }

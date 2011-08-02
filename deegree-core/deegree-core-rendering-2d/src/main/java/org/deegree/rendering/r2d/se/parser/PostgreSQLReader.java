@@ -41,7 +41,6 @@ import static java.util.Arrays.asList;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
-import static org.deegree.rendering.i18n.Messages.get;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromSvg;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.getUOM;
 import static org.deegree.rendering.r2d.styling.components.Mark.SimpleMark.SQUARE;
@@ -726,12 +725,13 @@ public class PostgreSQLReader {
                 try {
                     Object[] evald = expr2.evaluate( obj, evaluator );
                     if ( evald.length == 0 ) {
-                        LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), expr2 );
+                        LOG.warn( "The following expression in a style evaluated to null:\n{}", expr2 );
                     } else {
                         updater.update( base, evald[0].toString() );
                     }
                 } catch ( FilterEvaluationException e ) {
-                    LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), expr2 );
+                    LOG.warn( "Evaluating the following expression resulted in an error '{}':\n{}",
+                              e.getLocalizedMessage(), expr2 );
                 }
             }
         };
@@ -889,12 +889,13 @@ public class PostgreSQLReader {
                                 try {
                                     Object[] evald = expr.evaluate( f, evaluator );
                                     if ( evald.length == 0 ) {
-                                        LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), expr );
+                                        LOG.warn( "The following expression in a style evaluated to null:\n{}", expr );
                                     } else {
                                         base.append( evald[0] );
                                     }
                                 } catch ( FilterEvaluationException e ) {
-                                    LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), expr );
+                                    LOG.warn( "Evaluating the following expression resulted in an error '{}':\n{}",
+                                              e.getLocalizedMessage(), expr );
                                 }
                             }
                         } );
