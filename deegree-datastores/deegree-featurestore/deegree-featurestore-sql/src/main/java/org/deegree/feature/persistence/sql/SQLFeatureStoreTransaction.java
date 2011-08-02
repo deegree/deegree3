@@ -135,10 +135,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
      * @param store
      *            invoking feature store instance, never <code>null</code>
      * @param taManager
+     *            transaction manager, never <code>null</code>
      * @param conn
      *            JDBC connection associated with the transaction, never <code>null</code> and has
      *            <code>autocommit</code> set to <code>false</code>
      * @param schema
+     *            application schema with mapping information, never <code>null</code>
      */
     SQLFeatureStoreTransaction( SQLFeatureStore store, TransactionManager taManager, Connection conn,
                                 MappedApplicationSchema schema ) {
@@ -165,7 +167,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             // TODO only recalculate if necessary
             for ( FeatureType ft : getStore().getSchema().getFeatureTypes( null, false, false ) ) {
                 Envelope bbox = fs.calcEnvelope( ft.getName(), conn );
-                System.out.println( bbox );
                 fs.getBBoxCache().set( ft.getName(), bbox );
             }
             try {
@@ -886,5 +887,4 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             taManager.releaseTransaction( this );
         }
     }
-
 }
