@@ -81,6 +81,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLInputFactory;
@@ -88,6 +89,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectManager;
+import org.deegree.sqldialect.filter.function.SQLFunctionManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -178,6 +180,8 @@ public class TOPPStatesTest {
         ws.getSubsystemManager( ConnectionManager.class ).startup( ws );
         ws.getSubsystemManager( SQLDialectManager.class ).startup( ws );
         ws.getSubsystemManager( FeatureStoreManager.class ).startup( ws );
+        ws.getSubsystemManager( FunctionManager.class ).startup( ws );
+        ws.getSubsystemManager( SQLFunctionManager.class ).startup( ws );
 
         ConnectionManager.addConnection( "admin", settings.getAdminUrl(), settings.getAdminUser(),
                                          settings.getAdminPass(), 1, 10 );
