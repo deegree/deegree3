@@ -57,9 +57,10 @@ public interface Format {
     public void destroy();
 
     /**
-     * Invoked by the {@link WFSController} when this output format instance is responsible for handling the request.
+     * Invoked by the {@link WFSController} to perform a <code>DescribeFeatureType</code> request for this format.
      * 
      * @param request
+     *            request to be performed, never <code>null</code>
      * @param response
      *            sink for writing the respone, never <code>null</code>
      */
@@ -67,9 +68,10 @@ public interface Format {
                             throws Exception;
 
     /**
-     * Invoked by the {@link WFSController} when this output format instance is responsible for handling the request.
+     * Invoked by the {@link WFSController} to perform a <code>GetFeature</code> request for this format.
      * 
      * @param request
+     *            request to be performed, never <code>null</code>
      * @param response
      *            sink for writing the respone, never <code>null</code>
      */
@@ -77,8 +79,12 @@ public interface Format {
                             throws Exception;
 
     /**
+     * Invoked by the {@link WFSController} to perform a <code>GetGmlObject</code> request for this format.
+     * 
      * @param request
+     *            request to be performed, never <code>null</code>
      * @param response
+     *            sink for writing the respone, never <code>null</code>
      * @throws Exception
      */
     public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )

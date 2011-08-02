@@ -130,7 +130,7 @@ public class GMLFormat implements Format {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLFormat.class );
 
-    GMLVersion gmlVersion;
+    final GMLVersion gmlVersion;
 
     private QName responseContainerEl;
 
@@ -140,25 +140,27 @@ public class GMLFormat implements Format {
 
     private boolean disableStreaming;
 
-    private WFSController master;
+    private final WFSController master;
 
-    private WFService service;
+    private final WFService service;
 
-    private int featureLimit;
+    private final int featureLimit;
 
-    private boolean checkAreaOfUse;
+    private final boolean checkAreaOfUse;
 
     private CoordinateFormatter formatter;
 
-    private DescribeFeatureTypeHandler dftHandler;
+    private final DescribeFeatureTypeHandler dftHandler;
 
     private boolean exportOriginalSchema;
+
+    private String appSchemaBaseURL;
 
     public GMLFormat( WFSController master, GMLVersion gmlVersion ) {
 
         this.master = master;
         this.service = master.getService();
-        this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema );
+        this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema, null );
 
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
@@ -185,12 +187,19 @@ public class GMLFormat implements Format {
             if ( responseConfig.getAdditionalSchemaLocation() != null ) {
                 schemaLocation = responseConfig.getAdditionalSchemaLocation();
             }
-            if ( responseConfig.isDisableDynamicSchema() != null ) {
-                exportOriginalSchema = responseConfig.isDisableDynamicSchema();
+            if ( responseConfig.getDisableDynamicSchema() != null ) {
+                exportOriginalSchema = responseConfig.getDisableDynamicSchema().isValue();
+                appSchemaBaseURL = responseConfig.getDisableDynamicSchema().getBaseURL();
+                if ( appSchemaBaseURL != null && appSchemaBaseURL.endsWith( "/" ) ) {
+                    appSchemaBaseURL = appSchemaBaseURL.substring( 0, appSchemaBaseURL.length() - 1 );
+                }
+                if ( appSchemaBaseURL != null && appSchemaBaseURL.isEmpty() ) {
+                    appSchemaBaseURL = null;
+                }
             }
         }
 
-        this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema );
+        this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema, appSchemaBaseURL );
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
 

@@ -51,6 +51,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -106,9 +107,15 @@ class DescribeFeatureTypeHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( DescribeFeatureTypeHandler.class );
 
+    private static final String APPSCHEMAS = "appschemas";
+
     private WFService service;
 
-    private String wsBaseURL;
+    // URL of workspace appschema directory
+    private String wsAppSchemaBaseURL;
+
+    // external URL for accessing appschema directory
+    private String appSchemaBaseURL;
 
     private String ogcSchemaJarBaseURL;
 
@@ -119,13 +126,19 @@ class DescribeFeatureTypeHandler {
      * {@link FeatureType}s.
      * 
      * @param service
-     *            WFS instance used to lookup the feature types
+     *            WFS instance used to lookup the feature types, must not be <code>null</code>
      * @param exportOriginalSchema
+     *            true, if the original GML application schema files shall be used, false otherwise
+     * @param appSchemaBaseURL
+     *            base URL to use for referring to static appschema fragments, can be <code>null</code> (use resources
+     *            servlet)
      */
-    DescribeFeatureTypeHandler( WFService service, boolean exportOriginalSchema ) {
+    DescribeFeatureTypeHandler( WFService service, boolean exportOriginalSchema, String appSchemaBaseURL ) {
         this.service = service;
         try {
-            this.wsBaseURL = OGCFrontController.getServiceWorkspace().getLocation().toURI().toURL().toString();
+            File wsBaseDir = OGCFrontController.getServiceWorkspace().getLocation();
+            File appSchemaBaseDir = new File( wsBaseDir, APPSCHEMAS );
+            this.wsAppSchemaBaseURL = appSchemaBaseDir.toURI().toURL().toString();
         } catch ( MalformedURLException e ) {
             throw new RuntimeException( e );
         }
@@ -134,6 +147,7 @@ class DescribeFeatureTypeHandler {
             this.ogcSchemaJarBaseURL = baseUrl.toString();
         }
         this.exportOriginalSchema = exportOriginalSchema;
+        this.appSchemaBaseURL = appSchemaBaseURL;
     }
 
     /**
@@ -224,9 +238,12 @@ class DescribeFeatureTypeHandler {
             @SuppressWarnings("synthetic-access")
             @Override
             public String translate( String uri ) {
-                if ( uri.startsWith( wsBaseURL ) ) {
-                    String resourcePath = uri.substring( wsBaseURL.length() );
-                    return ResourcesServlet.getHttpGetURL( resourcePath );
+                if ( uri.startsWith( wsAppSchemaBaseURL ) ) {
+                    String relativePath = uri.substring( wsAppSchemaBaseURL.length() );
+                    if ( appSchemaBaseURL == null ) {
+                        return ResourcesServlet.getHttpGetURL( APPSCHEMAS + "/" + relativePath );
+                    }
+                    return appSchemaBaseURL + "/" + relativePath;
                 }
                 if ( uri.startsWith( ogcSchemaJarBaseURL ) ) {
                     return "http://schemas.opengis.net" + uri.substring( ogcSchemaJarBaseURL.length() );
@@ -522,8 +539,7 @@ class DescribeFeatureTypeHandler {
             } else {
                 String ns = request.getNsBindings().values().iterator().next();
                 LOG.debug( "Describing all feature types in namespace '" + ns + "'." );
-                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes(
-                                                                                                                   ns,
+                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes( ns,
                                                                                                                    true,
                                                                                                                    false );
                 for ( FeatureType ft : nsFts ) {

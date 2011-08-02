@@ -56,7 +56,15 @@
                   <element name="ContainerElement" type="QName" minOccurs="0" />
                   <element name="FeatureMemberElement" type="QName" minOccurs="0" />
                   <element name="AdditionalSchemaLocation" type="string" minOccurs="0" />
-                  <element name="DisableDynamicSchema" type="boolean" minOccurs="0" default="false" />
+                  <element name="DisableDynamicSchema" minOccurs="0" default="false">
+                    <complexType>
+                      <simpleContent>
+                        <extension base="boolean">
+                          <attribute name="baseURL" />
+                        </extension>
+                      </simpleContent>
+                    </complexType>
+                  </element>
                   <element name="DisableStreaming" type="boolean" minOccurs="0" default="false" />
                 </sequence>
               </complexType>
