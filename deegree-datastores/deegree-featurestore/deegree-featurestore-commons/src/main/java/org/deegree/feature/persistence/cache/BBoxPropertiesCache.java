@@ -130,7 +130,7 @@ public class BBoxPropertiesCache implements BBoxCache {
     @Override
     public void set( QName ftName, Envelope bbox ) {
         ftNameToEnvelope.put( ftName.toString(), bbox );
-        
+
         // TODO really do this every time?
         try {
             persist();
@@ -147,9 +147,13 @@ public class BBoxPropertiesCache implements BBoxCache {
         for ( String ftName : ftNameToEnvelope.keySet() ) {
             props.put( ftName, encodePropValue( ftNameToEnvelope.get( ftName ) ) );
         }
-        FileOutputStream out = new FileOutputStream( propsFile );
+        
+        FileOutputStream out = null;
         try {
+            out = new FileOutputStream( propsFile );
             props.store( out, null );
+        } catch ( Throwable t ) {
+            LOG.warn ("Unable to store cached envelopes in file '" + propsFile + "': "  + t.getMessage());
         } finally {
             IOUtils.closeQuietly( out );
         }
