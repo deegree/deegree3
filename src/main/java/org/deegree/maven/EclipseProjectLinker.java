@@ -72,6 +72,7 @@ public class EclipseProjectLinker extends AbstractMojo {
 
         String eclipseWorkspace = System.getProperty( "eclipse.workspace" );
         String formatter = System.getProperty( "eclipse.formatter" );
+        String linkJunction = System.getProperty( "eclipse.junction" );
 
         if ( eclipseWorkspace == null ) {
             throw new MojoExecutionException( "Need property 'eclipse.workspace'." );
@@ -82,8 +83,20 @@ public class EclipseProjectLinker extends AbstractMojo {
         }
 
         File target = project.getBasedir();
-
         String cmd = "ln -sf -t " + eclipseWorkspace + " " + target;
+
+        // if user wants to use mike ruscovichs junction.exe let him
+        if ( linkJunction != null ) {
+            File junctionExe = new File( linkJunction );
+            if ( junctionExe.isFile() )
+                cmd = linkJunction + " " + eclipseWorkspace + "\\" + target.getName() + " " + target;
+            else {
+                getLog().info( "using junction.exe from path ( junction.exe is available from http://technet.microsoft.com/en-gb/sysinternals/bb896768 )" );
+                cmd = "junction.exe " + eclipseWorkspace + "\\" + target.getName() + " " + target;
+            }
+        }
+        getLog().info( "*** CMD: " + cmd );
+
         try {
             Runtime.getRuntime().exec( cmd );
         } catch ( IOException e ) {
