@@ -156,13 +156,13 @@ public class ApplicationSchemaXSDEncoder {
 
     private final Map<String, String> nsToPrefix = new HashMap<String, String>();
 
-    // set to "gml:_Feature" (GML 2 and 3.1) or "gml:AbstractFeatureType" (GML 3.2)
+    // set to "gml:_Feature" (GML 2, 3.0 and 3.1) or "gml:AbstractFeature" (GML 3.2)
     private String abstractGMLFeatureElement;
 
-    // set to "gml:_FeatureCollection" (GML 2 and 3.1) or null (GML 3.2)
+    // set to "gml:_FeatureCollection" (GML 2, 3.0 and 3.1) or null (GML 3.2)
     private String abstractGMLFeatureCollectionElement;
 
-    // set to "gml:FeatureAssociationType" (GML 2) or "gml:FeaturePropertyType" (GML 3.1 / GML 3.2)
+    // set to "gml:FeatureAssociationType" (GML 2) or "gml:FeaturePropertyType" (GML 3.0, 3.1 and 3.2)
     private String featurePropertyType;
 
     // keeps track of already exported (global) xs:elements declarations
