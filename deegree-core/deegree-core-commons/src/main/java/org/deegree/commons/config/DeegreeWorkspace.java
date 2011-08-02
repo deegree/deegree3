@@ -53,6 +53,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.TimeZone;
@@ -196,10 +197,15 @@ public class DeegreeWorkspace {
 
         // first, collect all manager instances
         while ( iter.hasNext() ) {
-            List<Class<? extends ResourceManager>> list = new LinkedList<Class<? extends ResourceManager>>();
-            ResourceManager manager = iter.next();
-            map.put( manager, list );
-            managerMap.put( manager.getClass(), manager );
+            try {
+                List<Class<? extends ResourceManager>> list = new LinkedList<Class<? extends ResourceManager>>();
+                ResourceManager manager = iter.next();
+                map.put( manager, list );
+                managerMap.put( manager.getClass(), manager );
+            } catch ( ServiceConfigurationError e ) {
+                LOG.warn( "A resource manager was not available. Error was {}", e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
         }
 
         // second, check for transitive dependencies
