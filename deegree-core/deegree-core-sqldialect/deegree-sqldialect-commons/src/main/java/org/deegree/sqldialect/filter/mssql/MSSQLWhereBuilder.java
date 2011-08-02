@@ -84,6 +84,8 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
     /**
      * Creates a new {@link MSSQLWhereBuilder} instance.
      * 
+     * @param dialect
+     *            SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
      * @param mapper
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
