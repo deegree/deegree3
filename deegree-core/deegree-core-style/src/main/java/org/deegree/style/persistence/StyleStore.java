@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/persistence/SLDProvider.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -31,45 +31,49 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs Schmitz & Schneider GbR
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+ http://www.occamlabs.de/
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.style.persistence;
 
-import java.net.URL;
+import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ExtendedResourceProvider;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.Resource;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
+ * @author stranger
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 30128 $, $Date: 2011-03-22 13:02:43 +0100 (Tue, 22 Mar 2011) $
  */
-public class SLDProvider implements ExtendedResourceProvider<StyleFile> {
+public interface StyleStore extends Resource {
 
-    public String getConfigNamespace() {
-        return "http://www.opengis.net/sld";
-    }
+    /**
+     * @param styleName
+     *            if null, the default style will be returned
+     */
+    Style getStyle( String styleName );
 
-    public URL getConfigSchema() {
-        return SLDProvider.class.getResource( "/META-INF/SCHEMAS_OPENGIS_NET/sld/1.1.0/StyledLayerDescriptor.xsd" );
-    }
+    /**
+     * @param layerName
+     *            if null, the first matching style will be returned
+     * @param styleName
+     *            if null, the default style will be returned
+     */
+    Style getStyle( String layerName, String styleName );
 
-    public void init( DeegreeWorkspace workspace ) {
-        // nothing to initialize
-    }
+    /**
+     * @param layerName
+     *            if null, equivalent with #getAll()
+     */
+    List<Style> getAll( String layerName );
 
-    public StyleFile create( URL configUrl )
-                            throws ResourceInitException {
-        return new StyleFile();
-    }
+    /**
+     * @return all styles known to the style store
+     */
+    List<Style> getAll();
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[0];
-    }
 }

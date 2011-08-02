@@ -118,6 +118,7 @@ public class FunctionManager extends AbstractBasicResourceManager {
     @Override
     public void startup( DeegreeWorkspace ws )
                             throws ResourceInitException {
+        LOG.info( "Loading functions..." );
         functionLoader = ServiceLoader.load( FunctionProvider.class, ws.getModuleClassLoader() );
         for ( FunctionProvider fp : functionLoader ) {
             try {

@@ -1,7 +1,7 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/persistence/StyleFile.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -31,33 +31,79 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs Schmitz & Schneider GbR
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+ http://www.occamlabs.de/
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.style.persistence;
+package org.deegree.style.persistence.se;
+
+import static java.util.Collections.singletonList;
+
+import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceInitException;
-
+import org.deegree.style.persistence.StyleStore;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
- * Dummy implementation of {@link Resource}.
+ * @author stranger
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 29991 $, $Date: 2011-03-11 16:37:00 +0100 (Fri, 11 Mar 2011) $
  */
-public class StyleFile implements Resource {
+public class SEStyleStore implements StyleStore {
+
+    // private DeegreeWorkspace workspace;
+
+    private Style style;
+
+    public SEStyleStore( Style style ) {
+        this.style = style;
+    }
 
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        // TODO Auto-generated method stub        
+        // this.workspace = workspace;
     }
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub       
+        // nothing to do
     }
+
+    @Override
+    public Style getStyle( String styleName ) {
+        if ( styleName != null && style.getName().equals( styleName ) ) {
+            return style;
+        }
+        if ( styleName == null ) {
+            return style;
+        }
+        return null;
+    }
+
+    @Override
+    public Style getStyle( String layerName, String styleName ) {
+        if ( styleName != null && style.getName().equals( styleName ) ) {
+            return style;
+        }
+        if ( styleName == null ) {
+            return style;
+        }
+        return null;
+    }
+
+    @Override
+    public List<Style> getAll( String layerName ) {
+        return singletonList( style );
+    }
+
+    @Override
+    public List<Style> getAll() {
+        return singletonList( style );
+    }
+
 }

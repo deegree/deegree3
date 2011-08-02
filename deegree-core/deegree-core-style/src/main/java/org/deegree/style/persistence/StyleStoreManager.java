@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/persistence/SEProvider.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -31,45 +31,53 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs Schmitz & Schneider GbR
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+ http://www.occamlabs.de/
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.style.persistence;
 
-import java.net.URL;
-
+import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.filter.function.FunctionManager;
 
 /**
+ * @author stranger
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 30261 $, $Date: 2011-03-29 14:35:20 +0200 (Tue, 29 Mar 2011) $
  */
-public class SEProvider implements ExtendedResourceProvider<StyleFile> {
+public class StyleStoreManager extends AbstractResourceManager<StyleStore> {
 
-    public String getConfigNamespace() {
-        return "http://www.opengis.net/se";
-    }
+    private StyleStoreManagerMetadata metadata;
 
-    public URL getConfigSchema() {
-        return SEProvider.class.getResource( "/META-INF/schemas/se/1.1.0/symbology.xsd" );
-    }
-
-    public void init( DeegreeWorkspace workspace ) {
-        // nothing to initialize
-    }
-
-    public StyleFile create( URL configUrl )
+    @Override
+    public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        return new StyleFile();
+        this.metadata = new StyleStoreManagerMetadata( workspace );
+        super.startup( workspace );
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[0];
+    @Override
+    public ResourceManagerMetadata<StyleStore> getMetadata() {
+        return metadata;
     }
+
+    static class StyleStoreManagerMetadata extends DefaultResourceManagerMetadata<StyleStore> {
+        StyleStoreManagerMetadata( DeegreeWorkspace workspace ) {
+            super( "styles", "styles/", StyleStoreProvider.class, workspace );
+        }
+    }
+
+    @Override
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class, FunctionManager.class };
+    }
+
 }

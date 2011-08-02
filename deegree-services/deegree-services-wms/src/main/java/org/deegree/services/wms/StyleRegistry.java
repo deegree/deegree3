@@ -59,14 +59,17 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.Filter;
-import org.deegree.style.se.parser.SymbologyParser;
-import org.deegree.style.se.unevaluated.Style;
 import org.deegree.services.jaxb.wms.DirectStyleType;
 import org.deegree.services.jaxb.wms.SLDStyleType;
 import org.deegree.services.jaxb.wms.SLDStyleType.LegendGraphicFile;
+import org.deegree.style.persistence.StyleStore;
+import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -93,6 +96,15 @@ public class StyleRegistry extends TimerTask {
     private HashSet<String> soleStyleFiles = new HashSet<String>();
 
     private HashSet<String> soleLegendFiles = new HashSet<String>();
+
+    private StyleStoreManager styleManager;
+
+    private DeegreeWorkspace workspace;
+
+    public StyleRegistry( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
+        this.styleManager = workspace.getSubsystemManager( StyleStoreManager.class );
+    }
 
     /**
      * @param layerName
@@ -274,12 +286,28 @@ public class StyleRegistry extends TimerTask {
      * @param adapter
      */
     public void load( String layerName, List<DirectStyleType> styles, XMLAdapter adapter ) {
+        File stylesDir = new File( workspace.getLocation(), "styles" );
         for ( DirectStyleType sty : styles ) {
             try {
                 File file = new File( adapter.resolve( sty.getFile() ).toURI() );
-                String name = sty.getName();
-                Style style = loadNoImport( layerName, file, false );
+
+                Style style;
+                if ( file.getParentFile().equals( stylesDir ) ) {
+                    // already loaded from style store
+                    String styleId = file.getName().substring( 0, file.getName().length() - 4 );
+                    StyleStore store = styleManager.get( styleId );
+                    if ( store != null ) {
+                        style = store.getStyle( null );
+                    } else {
+                        LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
+                        style = loadNoImport( layerName, file, false );
+                    }
+                } else {
+                    // outside of workspace - load it manually
+                    style = loadNoImport( layerName, file, false );
+                }
                 if ( style != null ) {
+                    String name = sty.getName();
                     if ( name != null ) {
                         style.setName( name );
                     }
@@ -308,8 +336,23 @@ public class StyleRegistry extends TimerTask {
             try {
                 if ( sty.getLegendConfigurationFile() != null ) {
                     File file = new File( adapter.resolve( sty.getLegendConfigurationFile() ).toURI() );
+                    Style style;
+                    if ( file.getParentFile().equals( stylesDir ) ) {
+                        // already loaded from style store
+                        String styleId = file.getName().substring( 0, file.getName().length() - 4 );
+                        StyleStore store = styleManager.get( styleId );
+                        if ( store != null ) {
+                            style = store.getStyle( null );
+                        } else {
+                            LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
+                            style = loadNoImport( layerName, file, true );
+                        }
+                    } else {
+                        // outside of workspace - load it manually
+                        style = loadNoImport( layerName, file, true );
+                    }
+
                     String name = sty.getName();
-                    Style style = loadNoImport( layerName, file, true );
                     if ( style != null ) {
                         if ( name != null ) {
                             style.setName( name );
@@ -336,10 +379,13 @@ public class StyleRegistry extends TimerTask {
      * @param adapter
      */
     public void load( String layerName, XMLAdapter adapter, List<SLDStyleType> styles ) {
+        File stylesDir = new File( workspace.getLocation(), "styles" );
+
         for ( SLDStyleType sty : styles ) {
             FileInputStream is = null;
             try {
                 File file = new File( adapter.resolve( sty.getFile() ).toURI() );
+
                 String namedLayer = sty.getNamedLayer();
                 LOG.debug( "Will read styles from SLD '{}', for named layer '{}'.", file, namedLayer );
                 Map<String, String> map = new HashMap<String, String>();
@@ -351,7 +397,22 @@ public class StyleRegistry extends TimerTask {
                         name = elem.getValue().toString();
                     } else if ( elem.getName().getLocalPart().equals( "LegendConfigurationFile" ) ) {
                         File legendFile = new File( adapter.resolve( elem.getValue().toString() ).toURI() );
-                        Style style = loadNoImport( layerName, legendFile, true );
+                        Style style;
+
+                        if ( legendFile.getParentFile().equals( stylesDir ) ) {
+                            // already loaded from style store
+                            String styleId = legendFile.getName().substring( 0, legendFile.getName().length() - 4 );
+                            StyleStore store = styleManager.get( styleId );
+                            if ( store != null ) {
+                                style = store.getStyle( null );
+                            } else {
+                                LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
+                                style = loadNoImport( layerName, legendFile, true );
+                            }
+                        } else {
+                            style = loadNoImport( layerName, legendFile, true );
+                        }
+
                         if ( style != null ) {
                             if ( name != null ) {
                                 style.setName( name );
@@ -379,6 +440,30 @@ public class StyleRegistry extends TimerTask {
                         name = null;
                     }
                 }
+
+                if ( file.getParentFile().equals( stylesDir ) ) {
+                    // already loaded from workspace
+                    String styleId = file.getName().substring( 0, file.getName().length() - 4 );
+                    StyleStore store = styleManager.get( styleId );
+
+                    if ( store != null ) {
+                        LOG.info( "Using SLD file loaded from style store." );
+                        for ( Style s : store.getAll( namedLayer ) ) {
+                            put( layerName, s, false );
+                            Pair<File, URL> p = legends.get( s.getName() );
+                            if ( p != null && p.first != null ) {
+                                s.setLegendFile( p.first );
+                            } else if ( p != null ) {
+                                s.setLegendURL( p.second );
+                            }
+                            s.setPrefersGetLegendGraphicUrl( glgUrls.get( s.getName() ) != null
+                                                             && glgUrls.get( s.getName() ) );
+                        }
+                        return;
+                    }
+                }
+
+                LOG.info( "Parsing SLD style file unavailable from style stores." );
                 XMLInputFactory fac = XMLInputFactory.newInstance();
                 is = new FileInputStream( file );
                 XMLStreamReader in = fac.createXMLStreamReader( file.toURI().toURL().toString(), is );

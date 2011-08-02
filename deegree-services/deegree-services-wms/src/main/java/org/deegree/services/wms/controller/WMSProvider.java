@@ -51,6 +51,7 @@ import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.style.persistence.StyleStoreManager;
 
 /**
  * 
@@ -91,10 +92,11 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
         return new WMSController( configURL, getImplementationMetadata() );
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { RemoteOWSManager.class, FeatureStoreManager.class, CoverageBuilderManager.class,
-                            MetadataStoreManager.class };
+                            MetadataStoreManager.class, StyleStoreManager.class };
     }
 
     @Override

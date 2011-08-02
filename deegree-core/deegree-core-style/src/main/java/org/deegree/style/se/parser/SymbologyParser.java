@@ -1802,6 +1802,7 @@ public class SymbologyParser {
         if ( in.getLocalName().equals( "OnlineResource" ) ) {
             try {
                 URL url = SymbologyParser.parseOnlineResource( in );
+                System.out.println("reading url" + url);
                 XMLStreamReader newReader = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                                  url.openStream() );
                 while ( !newReader.isStartElement() )

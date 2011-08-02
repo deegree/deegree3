@@ -157,7 +157,7 @@ public class MapService {
     /**
      * 
      */
-    public StyleRegistry registry = new StyleRegistry();
+    public StyleRegistry registry;
 
     private HashMap<Style, Pair<Integer, Integer>> legendSizes = new HashMap<Style, Pair<Integer, Integer>>();
 
@@ -198,6 +198,7 @@ public class MapService {
     public MapService( ServiceConfigurationType conf, XMLAdapter adapter, DeegreeWorkspace workspace )
                             throws MalformedURLException {
         this.workspace = workspace;
+        this.registry = new StyleRegistry( workspace );
         layers = new HashMap<String, Layer>();
         if ( conf != null && conf.getAbstractLayer() != null ) {
             LayerOptionsType sf = conf.getDefaultLayerOptions();
