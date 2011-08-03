@@ -142,6 +142,8 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
     }
 
     /**
+     * Creates a new {@link EbrimEOMDStore} instance.
+     * 
      * @param connId
      *            id of the JDBC connection to use, must not be <code>null</code>
      * @param queriesDir

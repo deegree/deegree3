@@ -423,9 +423,14 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
                         // nothing to do
                         break;
                     }
+                    case RegistryObject: {
+                        LOG.debug( "Assuming 'RegistryObject' step refers to 'ExtrinsicObject'. This works for ESA requests, but may be not enough." );
+                        childType = RIMType.ExtrinsicObject;
+                        break;
+                    }
                     default: {
                         String msg = "Unable to map PropertyName '" + propName.getAsText() + "'. Filtering based on '"
-                                     + type.getType().name() + "' in the RegistryObjectList is not supported.";
+                                     + childType.name() + "' children of RegistryObjectList elements is not supported.";
                         throw new UnmappableException( msg );
                     }
                     }
