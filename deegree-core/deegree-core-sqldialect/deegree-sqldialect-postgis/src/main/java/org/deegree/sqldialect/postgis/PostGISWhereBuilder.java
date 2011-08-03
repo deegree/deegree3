@@ -80,8 +80,6 @@ import org.deegree.sqldialect.filter.islike.IsLikeString;
  */
 public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
-    private final PropertyNameMapper mapper;
-
     private final boolean useLegacyPredicates;
 
     /**
@@ -110,7 +108,6 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
                             throws FilterEvaluationException, UnmappableException {
         super( dialect, mapper, filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
-        this.mapper = mapper;
         build( allowPartialMappings );
     }
 
