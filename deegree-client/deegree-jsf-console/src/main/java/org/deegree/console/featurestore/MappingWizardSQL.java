@@ -69,6 +69,7 @@ import org.deegree.console.ConfigManager;
 import org.deegree.console.WorkspaceBean;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedApplicationSchema;
@@ -278,7 +279,7 @@ public class MappingWizardSQL {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
 
-            ICRS storageCrs = CRSManager.lookup( this.storageCrs );
+            CRSRef storageCrs = CRSManager.getCRSRef( this.storageCrs );
             boolean createBlobMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "blob" );
             boolean createRelationalMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "relational" );
             GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, storageSrid,
