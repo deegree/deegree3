@@ -160,11 +160,7 @@ public class TOPPStatesTest {
         FeatureStoreTransaction ta = fs.acquireTransaction();
         try {
             List<String> fids = ta.performInsert( fc, GENERATE_NEW );
-            for ( String string : fids ) {
-                System.out.println( string );
-            }
-            // TODO
-            Assert.assertEquals( 98, fids.size() );
+            Assert.assertEquals( 49, fids.size() );
             ta.commit();
         } catch ( Throwable t ) {
             ta.rollback();
