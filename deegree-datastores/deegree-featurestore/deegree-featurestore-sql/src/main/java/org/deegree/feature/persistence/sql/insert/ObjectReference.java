@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,48 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
-import org.deegree.commons.jdbc.InsertRow;
+import org.deegree.commons.tom.Object;
+import org.deegree.commons.tom.Reference;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 
-/**
- * Represents (the propagation of) a key column of an {@link InsertRow} to an {@link InsertRow} that references the
- * first one.
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- */
-public class ForeignKey {
+class ObjectReference {
 
-    private final InsertRow primary;
+    private final TableJoin join;
 
-    private final InsertRow foreign;
+    private final Reference<Object> ref;
 
-    private final String primaryColumn;
-
-    private final String foreignColumn;
-
-    public ForeignKey( InsertRow primary, String primaryColumn, InsertRow foreign, String foreignColumn ) {
-        this.primary = primary;
-        this.primaryColumn = primaryColumn;
-        this.foreign = foreign;
-        this.foreignColumn = foreignColumn;
+    ObjectReference( TableJoin join, Reference<Object> ref ) {
+        this.join = join;
+        this.ref = ref;
     }
-
-    public InsertRow getPre() {
-        return primary;
-    }
-
-    public String getPreColumn() {
-        return primaryColumn;
-    }
-
-    public InsertRow getPost() {
-        return foreign;
-    }
-
-    public String getPostColumn() {
-        return foreignColumn;
-    }
-
 }

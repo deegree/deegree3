@@ -48,21 +48,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -74,21 +70,16 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
-import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
-import org.deegree.feature.persistence.sql.insert.InsertRowNode;
-import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.FeatureMapping;
+import org.deegree.feature.persistence.sql.insert.IdAssignment;
+import org.deegree.feature.persistence.sql.insert.InsertRowManager;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
@@ -96,6 +87,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.deegree.sqldialect.filter.DBField;
@@ -119,6 +111,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     private final SQLFeatureStore fs;
 
     private final MappedApplicationSchema schema;
+
+    private final GMLVersion gmlVersion;
 
     private final BlobMapping blobMapping;
 
@@ -156,6 +150,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                                                                    geometryParams, null );
             blobGeomConverter = fs.getGeometryConverter( blobGeomMapping );
         }
+        this.gmlVersion = schema.getXSModel() == null ? GML_32 : schema.getXSModel().getVersion();
     }
 
     @Override
@@ -386,14 +381,20 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             } else {
                 // pure relational mode
+                List<IdAssignment> idAssignments = new ArrayList<IdAssignment>();
+                InsertRowManager insertManager = new InsertRowManager( fs, conn );
                 for ( Feature feature : features ) {
-                    fid = feature.getId();
                     FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
                     if ( ftMapping == null ) {
                         throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
                                                          + "'. No mapping defined and BLOB mode is off." );
                     }
-                    fids.add( insertFeatureRelational( feature, ftMapping, mode ) );
+                    idAssignments.add( insertManager.insertFeature( feature, ftMapping, mode ) );
+                }
+                // TODO why is this necessary?
+                fids.clear();
+                for ( IdAssignment assignment : idAssignments ) {
+                    fids.add( assignment.getNewId() );
                 }
             }
         } catch ( Throwable t ) {
@@ -470,165 +471,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         // }
         // }
         return internalId;
-    }
-
-    private String insertFeatureRelational( Feature feature, FeatureTypeMapping ftMapping, IDGenMode mode )
-                            throws SQLException, FeatureStoreException, FilterEvaluationException {
-
-        InsertRowNode node;
-
-        String fid = feature.getId();
-        FIDMapping fidMapping = ftMapping.getFidMapping();
-        if ( mode == IDGenMode.USE_EXISTING ) {
-            node = new InsertRowNode( ftMapping.getFtTable(), null, null );
-            node.getRow().addPreparedArgument( fidMapping.getColumn(), fid );
-        } else if ( mode == IDGenMode.GENERATE_NEW ) {
-            IDGenerator gen = fidMapping.getIdGenerator();
-            if ( gen instanceof AutoIDGenerator ) {
-                node = new InsertRowNode( ftMapping.getFtTable(), null, fidMapping.getColumn() );
-            } else {
-                node = new InsertRowNode( ftMapping.getFtTable(), null, null );
-            }
-        } else {
-            throw new UnsupportedOperationException();
-        }
-
-        for ( Mapping particleMapping : ftMapping.getMappings() ) {
-            buildInsertRows( feature, particleMapping, node );
-        }
-        LOG.debug( "Built row {}", node );
-        Map<String, Object> keys = node.performInsert( conn );
-
-        if ( mode == IDGenMode.GENERATE_NEW ) {
-            IDGenerator gen = fidMapping.getIdGenerator();
-            if ( gen instanceof AutoIDGenerator ) {
-                StringBuilder sb = new StringBuilder( fidMapping.getPrefix() );
-                boolean first = true;
-                for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
-                    if ( !first ) {
-                        sb.append( fidMapping.getDelimiter() );
-                        first = false;
-                    }
-                    Object value = keys.get( fidColumn.first );
-                    if ( value == null ) {
-                        throw new FeatureStoreException( "No generated key for column '" + fidColumn.first + "'." );
-                    }
-                    sb.append( value );
-                }
-                fid = sb.toString();
-            }
-        }
-        return fid;
-    }
-
-    private void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertRowNode node )
-                            throws FilterEvaluationException, FeatureStoreException {
-
-        List<TableJoin> jc = mapping.getJoinedTable();
-        if ( jc != null ) {
-            if ( jc.size() != 1 ) {
-                throw new FeatureStoreException( "Handling of joins with " + jc.size() + " steps is not implemented." );
-            }
-        }
-
-        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
-        TypedObjectNode[] values = evaluator.eval( particle, mapping.getPath() );
-        int childIdx = 1;
-        for ( TypedObjectNode value : values ) {
-            InsertRowNode insertNode = node;
-            if ( jc != null && !( mapping instanceof FeatureMapping ) ) {
-                insertNode = new InsertRowNode( jc.get( 0 ).getToTable(), jc.get( 0 ), jc.get( 0 ) == null ? null
-                                                                                                          : "id" );
-                node.getRelatedRows().add( insertNode );
-            }
-            if ( mapping instanceof PrimitiveMapping ) {
-                MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
-                if ( !( me instanceof DBField ) ) {
-                    LOG.debug( "Skipping primitive mapping. Not mapped to database column." );
-                } else {
-                    PrimitiveValue primitiveValue = getPrimitiveValue( value );
-                    String column = ( (DBField) me ).getColumn();
-                    Object sqlValue = SQLValueMangler.internalToSQL( primitiveValue );
-                    insertNode.getRow().addPreparedArgument( column, sqlValue );
-                }
-            } else if ( mapping instanceof GeometryMapping ) {
-                MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
-                if ( !( me instanceof DBField ) ) {
-                    LOG.debug( "Skipping geometry mapping. Not mapped to database column." );
-                } else {
-                    Geometry geom = (Geometry) getPropValue( value );
-                    ParticleConverter<Geometry> converter = (ParticleConverter<Geometry>) fs.getConverter( mapping );
-                    String column = ( (DBField) me ).getColumn();
-                    insertNode.getRow().addPreparedArgument( column, geom, converter );
-                }
-            } else if ( mapping instanceof FeatureMapping ) {
-                String fid = null;
-                String href = null;
-                Feature feature = (Feature) getPropValue( value );
-                if ( feature instanceof FeatureReference ) {
-                    if ( ( (FeatureReference) feature ).isLocal() ) {
-                        fid = feature.getId();
-                    } else {
-                        href = ( (FeatureReference) feature ).getURI();
-                    }
-                } else if ( feature != null ) {
-                    fid = feature.getId();
-                }
-
-                if ( fid != null ) {
-                    if ( jc.isEmpty() ) {
-                        LOG.debug( "Skipping feature mapping (fk). Not mapped to database column." );
-                    } else {
-                        String column = jc.get( 0 ).getFromColumns().get( 0 );
-                        Object sqlValue = SQLValueMangler.internalToSQL( fid );
-                        insertNode.getRow().addPreparedArgument( column, sqlValue );
-                    }
-                }
-                if ( href != null ) {
-                    MappingExpression me = ( (FeatureMapping) mapping ).getHrefMapping();
-                    if ( !( me instanceof DBField ) ) {
-                        LOG.debug( "Skipping feature mapping (href). Not mapped to database column." );
-                    } else {
-                        String column = ( (DBField) me ).getColumn();
-                        Object sqlValue = SQLValueMangler.internalToSQL( href );
-                        insertNode.getRow().addPreparedArgument( column, sqlValue );
-                    }
-                }
-            } else if ( mapping instanceof CompoundMapping ) {
-                for ( Mapping child : ( (CompoundMapping) mapping ).getParticles() ) {
-                    buildInsertRows( value, child, insertNode );
-                }
-            } else {
-                LOG.warn( "Unhandled mapping type '" + mapping.getClass() + "'." );
-            }
-
-            if ( jc != null ) {
-                // add index column value
-                for ( String col : jc.get( 0 ).getOrderColumns() ) {
-                    if ( insertNode.getRow().get( col ) == null ) {
-                        // TODO do this properly
-                        insertNode.getRow().addLiteralValue( col, "" + childIdx++ );
-                    }
-                }
-            }
-        }
-    }
-
-    private PrimitiveValue getPrimitiveValue( TypedObjectNode value ) {
-        if ( value instanceof Property ) {
-            value = ( (Property) value ).getValue();
-        }
-        if ( value instanceof GenericXMLElement ) {
-            value = ( (GenericXMLElement) value ).getValue();
-        }
-        return (PrimitiveValue) value;
-    }
-
-    private TypedObjectNode getPropValue( TypedObjectNode prop ) {
-        if ( prop instanceof Property ) {
-            return ( (Property) prop ).getValue();
-        }
-        return prop;
     }
 
     private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features,

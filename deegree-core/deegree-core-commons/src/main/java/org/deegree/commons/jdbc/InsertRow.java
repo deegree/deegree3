@@ -61,7 +61,7 @@ public class InsertRow extends TransactionRow {
 
     private final Map<String, Object> columnToAutoKey = new HashMap<String, Object>();
 
-    private final String autogenColumn;
+    protected String autogenColumn;
 
     /**
      * Creates a new {@link InsertRow} instance.

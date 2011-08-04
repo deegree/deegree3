@@ -52,7 +52,7 @@ import org.deegree.commons.tom.sql.ParticleConverter;
  */
 public abstract class TransactionRow {
 
-    protected final QTableName table;
+    protected QTableName table;
 
     protected final LinkedHashMap<String, String> columnToLiteral = new LinkedHashMap<String, String>();
 
