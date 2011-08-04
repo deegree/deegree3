@@ -37,54 +37,72 @@ package org.deegree.feature.persistence.sql.insert;
 
 import java.util.List;
 
+import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 
-public class IdAssignment {
+/**
+ * The id of a {@link Feature} that's part of an insert operation of a {@link FeatureStoreTransaction}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class InsertFID {
 
-    private final String oldId;
-
-    private final DelayedInsertRow insertRow;
+    private final String originalId;
 
     private String newId;
 
     private FIDMapping fidMapping;
 
-    IdAssignment( String oldId, DelayedInsertRow insertRow ) {
-        this.oldId = oldId;
-        this.insertRow = insertRow;
+    InsertFID( String orginalId ) {
+        this.originalId = orginalId;
     }
-    
-    void setFidMapping (FIDMapping fidMapping) {
+
+    void setFIDMapping( FIDMapping fidMapping ) {
         this.fidMapping = fidMapping;
     }
 
-    public String getOldId() {
-        return oldId;
+    /**
+     * Returns the original id of the {@link Feature}.
+     * 
+     * @return original id, can be <code>null</code> (anonymous)
+     */
+    public String getOriginalId() {
+        return originalId;
     }
 
+    /**
+     * Returns the new id that's been assigned to the {@link Feature} during the insert process.
+     * 
+     * @return new id, can be <code>null</code> (not known yet)
+     */
     public String getNewId() {
-        if ( !isAssigned() ) {
-            throw new RuntimeException( "Id has not been reassigned yet." );
-        }
         return newId;
     }
 
-    public boolean isAssigned() {
-        return fidMapping != null || newId != null;
-    }
-
-    void assign( FIDMapping fidMapping ) {               
+    void assign( InsertRow featureRow )
+                            throws FeatureStoreException {
         newId = fidMapping.getPrefix();
         List<Pair<String, BaseType>> fidColumns = fidMapping.getColumns();
-        newId += insertRow.get( fidColumns.get( 0 ).first );
+        newId += checkFIDParticle( featureRow, fidColumns.get( 0 ).first );
         for ( int i = 1; i < fidColumns.size(); i++ ) {
-            newId += fidMapping.getDelimiter() + insertRow.get( fidColumns.get( i ).first );
+            newId += fidMapping.getDelimiter() + checkFIDParticle( featureRow, fidColumns.get( i ).first );
         }
     }
 
-    public DelayedInsertRow getInsertRow() {
-        return insertRow;
+    private Object checkFIDParticle( InsertRow featureRow, String column )
+                            throws FeatureStoreException {
+        Object value = featureRow.get( column );
+        if ( value == null ) {
+            throw new FeatureStoreException( "FIDMapping error: No value for feature id column '" + column + "'." );
+        }
+        return value;
     }
 }

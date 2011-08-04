@@ -423,7 +423,7 @@ public class AppSchemaMapper {
         QTableName fromTable = new QTableName( from.getTable() );
         QTableName toTable = new QTableName( "?" );
         List<String> fromColumns = Collections.singletonList( from.getColumn() );
-        List<String> toColumns = Collections.singletonList( "gml_id" );
+        List<String> toColumns = Collections.singletonList( "attr_gml_id" );
         ftJoin = new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false );
         return ftJoin;
     }

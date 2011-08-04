@@ -49,11 +49,11 @@ import org.deegree.commons.jdbc.QTableName;
  * 
  * @version $Revision$, $Date$
  */
-class DelayedInsertRow extends InsertRow {
+class ChildInsertRow extends InsertRow {
 
-    private Map<DelayedInsertRow, InsertRowReference> parentToRef = new HashMap<DelayedInsertRow, InsertRowReference>();
+    private Map<ChildInsertRow, InsertRowReference> parentToRef = new HashMap<ChildInsertRow, InsertRowReference>();
 
-    DelayedInsertRow( QTableName table, String autoGenColumn ) {
+    ChildInsertRow( QTableName table, String autoGenColumn ) {
         super( table, autoGenColumn );
     }
 
@@ -69,7 +69,7 @@ class DelayedInsertRow extends InsertRow {
         parentToRef.put( ref.getRef(), ref );
     }
 
-    public void removeParent( DelayedInsertRow parent ) {
+    public void removeParent( ChildInsertRow parent ) {
         
         InsertRowReference row = parentToRef.get( parent );
         
@@ -79,14 +79,14 @@ class DelayedInsertRow extends InsertRow {
             String toColumn = row.getJoin().getToColumns().get( i );
             Object key = parent.get( fromColumn );
             if ( key == null ) {
-                throw new IllegalArgumentException( "Unable to resolve foreign key relation. Encountered NULL value." );
+                throw new IllegalArgumentException( "Unable to resolve foreign key relation. Encountered NULL value for key column '" + fromColumn + "'.");
             }
             addPreparedArgument( toColumn, key );
         }
         parentToRef.remove( parent );
     }
 
-    boolean canInsert() {
+    boolean hasParents() {
         return parentToRef.isEmpty();
     }
 }

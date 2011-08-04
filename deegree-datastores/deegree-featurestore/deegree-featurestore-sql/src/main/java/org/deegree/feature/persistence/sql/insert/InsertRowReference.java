@@ -41,9 +41,9 @@ class InsertRowReference {
 
     private final TableJoin join;
     
-    private final DelayedInsertRow ref;
+    private final ChildInsertRow ref;
 
-    InsertRowReference( TableJoin join, DelayedInsertRow ref ) {
+    InsertRowReference( TableJoin join, ChildInsertRow ref ) {
         this.join = join;
         this.ref = ref;
     }
@@ -52,7 +52,7 @@ class InsertRowReference {
         return join;
     }
 
-    public DelayedInsertRow getRef() {
+    public ChildInsertRow getRef() {
         return ref;
     }
 }
