@@ -537,13 +537,7 @@ public class RasterGeoReference {
             GeometryTransformer trans = new GeometryTransformer( crs );
             try {
                 result = trans.transform( result ).getEnvelope();
-            } catch ( IllegalArgumentException e ) {
-                // let the envelope be.
-            } catch ( TransformationException e ) {
-                // let the envelope be.
-            } catch ( UnknownCRSException e ) {
-                // let the envelope be.
-            } catch ( ReferenceResolvingException e ) {
+            } catch ( Throwable e ) {
                 // let the envelope be.
             }
         }

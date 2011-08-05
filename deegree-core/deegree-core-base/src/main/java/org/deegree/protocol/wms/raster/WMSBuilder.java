@@ -51,15 +51,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import javax.xml.bind.JAXBException;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageBuilder;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -69,8 +66,8 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.protocol.wms.raster.jaxb.MultiResolutionRasterConfig;
-import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType;
 import org.deegree.protocol.wms.raster.jaxb.MultiResolutionRasterConfig.Resolution;
+import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType;
 import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType.CapabilitiesDocumentLocation;
 import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType.MaxMapDimensions;
 import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType.RequestedFormat;
@@ -99,30 +96,6 @@ public class WMSBuilder implements CoverageBuilder {
     @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
-    }
-
-    @Override
-    public AbstractCoverage buildCoverage( URL configURL )
-                            throws IOException {
-        try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL, workspace );
-
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configURL.toString() );
-
-            if ( config instanceof MultiResolutionRasterConfig ) {
-                return fromJAXB( (MultiResolutionRasterConfig) config, resolver );
-            }
-            if ( config instanceof WMSDataSourceType ) {
-                return fromJAXB( (WMSDataSourceType) config, resolver, null );
-            }
-            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
-        } catch ( JAXBException e ) {
-            LOG.warn( "Coverage datastore configuration from '{}' could not be read: '{}'.", configURL,
-                      e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
     }
 
     /**
@@ -265,8 +238,19 @@ public class WMSBuilder implements CoverageBuilder {
     public Coverage create( URL configUrl )
                             throws ResourceInitException {
         try {
-            return buildCoverage( configUrl );
-        } catch ( IOException e ) {
+            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configUrl, workspace );
+
+            XMLAdapter resolver = new XMLAdapter();
+            resolver.setSystemId( configUrl.toString() );
+
+            if ( config instanceof MultiResolutionRasterConfig ) {
+                return fromJAXB( (MultiResolutionRasterConfig) config, resolver );
+            }
+            if ( config instanceof WMSDataSourceType ) {
+                return fromJAXB( (WMSDataSourceType) config, resolver, null );
+            }
+            throw new ResourceInitException( "An unknown object came out of JAXB parsing. This is probably a bug." );
+        } catch ( Throwable e ) {
             throw new ResourceInitException( "IO-Error while constructing WMS coverage store.", e );
         }
     }

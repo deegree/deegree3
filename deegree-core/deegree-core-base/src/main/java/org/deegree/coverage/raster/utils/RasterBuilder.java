@@ -49,8 +49,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
@@ -170,41 +168,9 @@ public class RasterBuilder implements CoverageBuilder {
         return mrr;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.coverage.raster.utils.CoverageBuilder#getConfigNamespace()
-     */
+    @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.coverage.raster.utils.CoverageBuilder#buildCoverage(java.net.URL)
-     */
-    public AbstractCoverage buildCoverage( URL configURL )
-                            throws IOException {
-        try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL, workspace );
-
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configURL.toString() );
-
-            if ( config instanceof MultiResolutionRasterConfig ) {
-                return fromJAXB( (MultiResolutionRasterConfig) config, resolver, null );
-            }
-            if ( config instanceof RasterConfig ) {
-                return fromJAXB( (RasterConfig) config, resolver, null, null );
-            }
-            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
-        } catch ( JAXBException e ) {
-            LOG.warn( "Coverage datastore configuration from '{}' could not be read: '{}'.", configURL,
-                      e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
     }
 
     /**
@@ -603,8 +569,20 @@ public class RasterBuilder implements CoverageBuilder {
     public Coverage create( URL configUrl )
                             throws ResourceInitException {
         try {
-            return buildCoverage( configUrl );
-        } catch ( IOException e ) {
+            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configUrl, workspace );
+
+            XMLAdapter resolver = new XMLAdapter();
+            resolver.setSystemId( configUrl.toString() );
+
+            if ( config instanceof MultiResolutionRasterConfig ) {
+                return fromJAXB( (MultiResolutionRasterConfig) config, resolver, null );
+            }
+            if ( config instanceof RasterConfig ) {
+                return fromJAXB( (RasterConfig) config, resolver, null, null );
+            }
+            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
+            return null;
+        } catch ( Throwable e ) {
             throw new ResourceInitException( "IO-Error while creating coverage store.", e );
         }
     }

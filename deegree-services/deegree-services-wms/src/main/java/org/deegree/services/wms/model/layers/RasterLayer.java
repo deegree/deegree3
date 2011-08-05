@@ -253,6 +253,9 @@ public class RasterLayer extends Layer {
             Envelope bbox = gm.getBoundingBox();
             AbstractRaster raster = this.raster;
             if ( raster == null ) {
+                System.out.println(multiraster);
+                System.out.println(trans);
+                System.out.println(multiraster.getRaster( trans.transform( bbox ).getSpan0() / gm.getWidth() ));
                 raster = multiraster.getRaster( trans.transform( bbox ).getSpan0() / gm.getWidth() );
             }
 

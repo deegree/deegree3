@@ -35,25 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence;
 
-import java.io.IOException;
-import java.net.URL;
-
 import org.deegree.commons.config.ExtendedResourceProvider;
-import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.Coverage;
 
 public interface CoverageBuilder extends ExtendedResourceProvider<Coverage> {
 
-    /**
-     * Creates a new {@link AbstractCoverage} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new AbstractCoverage instance, configured
-     * @throws IOException
-     *             if the configuration contains an error or creation fails
-     */
-    public abstract AbstractCoverage buildCoverage( URL configURL )
-                            throws IOException;
+    // specializes type parameter
 
 }

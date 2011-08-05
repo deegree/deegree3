@@ -100,7 +100,7 @@ public class RasterIOOptions implements Serializable {
      * which image index to use (eg. for tiffs with overviews)
      */
     public static final String IMAGE_INDEX = "IMAGE_INDEX";
-    
+
     /**
      * This key will get the local raster cache directory to be used inside the raster cache directory for the given
      * raster. For example the raster cache directory is /tmp/ and the LOCAL_RASTER_CACHE_DIR is set to 'some_name' all
@@ -168,8 +168,8 @@ public class RasterIOOptions implements Serializable {
      */
     public RasterIOOptions( OriginLocation originLocation ) {
         this();
-        options.put( GEO_ORIGIN_LOCATION, ( ( originLocation == null ) ? OriginLocation.CENTER.name()
-                                                                      : originLocation.name() ) );
+        options.put( GEO_ORIGIN_LOCATION,
+                     ( ( originLocation == null ) ? OriginLocation.CENTER.name() : originLocation.name() ) );
     }
 
     /**
@@ -382,7 +382,7 @@ public class RasterIOOptions implements Serializable {
      * 
      * @param otherOptions
      */
-    public void copyOf( RasterIOOptions otherOptions ) {
+    public RasterIOOptions copyOf( RasterIOOptions otherOptions ) {
 
         if ( otherOptions != null ) {
             if ( getLoadingPolicy() != otherOptions.getLoadingPolicy() ) {
@@ -429,6 +429,7 @@ public class RasterIOOptions implements Serializable {
             // }
 
         }
+        return this;
     }
 
 }
