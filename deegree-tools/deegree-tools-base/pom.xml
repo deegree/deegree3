@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-tools-base</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre11-SNAPSHOT</version>
+  <version>3.1-pre11</version>
   <name>deegree-tools-base</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-tools/deegree-tools-base</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-tools/deegree-tools-base</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/deegree-tools/deegree-tools-base</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/deegree-tools/deegree-tools-base</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tools-parent</artifactId>
-    <version>3.1-pre11-SNAPSHOT</version>
+    <version>3.1-pre11</version>
   </parent>
   <properties>
     <toolboxname>d3toolbox</toolboxname>
@@ -38,12 +38,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-rendering-2d</artifactId>
-      <version>3.1-pre11-SNAPSHOT</version>
+      <version>3.1-pre11</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-sql</artifactId>
-      <version>3.1-pre11-SNAPSHOT</version>
+      <version>3.1-pre11</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>

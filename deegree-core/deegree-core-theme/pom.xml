@@ -4,14 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-core-theme</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre11-SNAPSHOT</version>
+  <version>3.1-pre11</version>
   <name>deegree-core-theme</name>
   <url>http://www.deegree.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre11-SNAPSHOT</version>
+    <version>3.1-pre11</version>
     <relativePath />
   </parent>
 
@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-layer</artifactId>
-      <version>3.1-pre11-SNAPSHOT</version>
+      <version>3.1-pre11</version>
     </dependency>
   </dependencies>
 

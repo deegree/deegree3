@@ -4,20 +4,20 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-services-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre11-SNAPSHOT</version>
+  <version>3.1-pre11</version>
   <name>deegree-services-parent</name>
   <url>http://www.deegree.org</url>
 
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-parent</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-services/deegree-services-parent</url>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/deegree-services/deegree-services-parent</developerConnection>
+    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/deegree-services/deegree-services-parent</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre11-SNAPSHOT</version>
-    <relativePath/>
+    <version>3.1-pre11</version>
+    <relativePath />
   </parent>
 
   <repositories>
@@ -91,12 +91,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-console</artifactId>
-      <version>3.1-pre11-SNAPSHOT</version>
+      <version>3.1-pre11</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-console</artifactId>
-      <version>3.1-pre11-SNAPSHOT</version>
+      <version>3.1-pre11</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
       <scope>compile</scope>

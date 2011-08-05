@@ -3,14 +3,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-xplan40</artifactId>
   <packaging>deegree-workspace</packaging>
-  <version>3.1-pre11-SNAPSHOT</version>
+  <version>3.1-pre11</version>
   <name>deegree 3 xplanNode service</name>
   <url>http://maven.apache.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspace-parent</artifactId>
-    <version>3.1-pre11-SNAPSHOT</version>
+    <version>3.1-pre11</version>
   </parent>
 
   <repositories>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre11-SNAPSHOT</version>
+      <version>3.1-pre11</version>
       <type>deegree-workspace</type>
     </dependency>
   </dependencies>
