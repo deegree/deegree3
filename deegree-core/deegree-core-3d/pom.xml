@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-core-3d</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre11</version>
+  <version>3.1-pre12-SNAPSHOT</version>
   <name>deegree-core-3d</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/deegree-core/deegree-core-3d</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/deegree-core/deegree-core-3d</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-3d</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core/deegree-core-3d</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre11</version>
+    <version>3.1-pre12-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -55,12 +55,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
-      <version>3.1-pre11</version>
+      <version>3.1-pre12-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-rendering-2d</artifactId>
-      <version>3.1-pre11</version>
+      <version>3.1-pre12-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>jogl</groupId>

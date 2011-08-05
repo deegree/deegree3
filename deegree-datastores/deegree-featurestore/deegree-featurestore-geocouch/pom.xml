@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-featurestore-geocouch</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre11</version>
+  <version>3.1-pre12-SNAPSHOT</version>
   <name>deegree-featurestore-geocouch</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/deegree-datastores/deegree-featurestore/deegree-featurestore-geocouch</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/deegree-datastores/deegree-featurestore/deegree-featurestore-geocouch</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-geocouch</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-geocouch</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre11</version>
+    <version>3.1-pre12-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -57,7 +57,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-sql</artifactId>
-      <version>3.1-pre11</version>
+      <version>3.1-pre12-SNAPSHOT</version>
     </dependency>
 
   </dependencies>

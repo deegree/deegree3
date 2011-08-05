@@ -4,14 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-layers</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre11</version>
+  <version>3.1-pre12-SNAPSHOT</version>
   <name>deegree-layers</name>
   <url>http://www.deegree.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre11</version>
+    <version>3.1-pre12-SNAPSHOT</version>
     <relativePath />
   </parent>
 

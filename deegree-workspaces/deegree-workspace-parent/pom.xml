@@ -4,18 +4,18 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-workspace-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre11</version>
+  <version>3.1-pre12-SNAPSHOT</version>
   <name>deegree-workspace-parent</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/trunk/deegree-workspace-parent</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.1-pre11/trunk/deegree-workspace-parent</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/applications/deegree-workspaces/trunk/deegree-workspace-parent</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/applications/deegree-workspaces/trunk/deegree-workspace-parent</url>
   </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre11</version>
+    <version>3.1-pre12-SNAPSHOT</version>
   </parent>
 
   <repositories>
