@@ -50,10 +50,10 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.StringUtils;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
@@ -147,13 +147,13 @@ public class BBoxPropertiesCache implements BBoxCache {
         for ( String ftName : ftNameToEnvelope.keySet() ) {
             props.put( ftName, encodePropValue( ftNameToEnvelope.get( ftName ) ) );
         }
-        
+
         FileOutputStream out = null;
         try {
             out = new FileOutputStream( propsFile );
             props.store( out, null );
         } catch ( Throwable t ) {
-            LOG.warn ("Unable to store cached envelopes in file '" + propsFile + "': "  + t.getMessage());
+            LOG.warn( "Unable to store cached envelopes in file '" + propsFile + "': " + t.getMessage() );
         } finally {
             IOUtils.closeQuietly( out );
         }
@@ -165,10 +165,11 @@ public class BBoxPropertiesCache implements BBoxCache {
         }
         String[] parts = StringUtils.split( s, "," );
         String srsName = parts[0];
-        ICRS crs;
+        CRSRef crs;
         try {
-            crs = CRSManager.lookup( srsName );
-        } catch ( UnknownCRSException e ) {
+            crs = CRSManager.getCRSRef( srsName );
+            crs.getReferencedObject();
+        } catch ( ReferenceResolvingException e ) {
             throw new IllegalArgumentException( e.getMessage() );
         }
         double[] coords = new double[parts.length - 1];
@@ -192,7 +193,7 @@ public class BBoxPropertiesCache implements BBoxCache {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append( env.getCoordinateSystem().getName() );
+        sb.append( env.getCoordinateSystem().getId() );
         Point p = env.getMin();
         for ( double d : p.getAsArray() ) {
             sb.append( ',' );
