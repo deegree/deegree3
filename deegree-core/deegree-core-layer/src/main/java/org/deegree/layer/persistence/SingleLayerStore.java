@@ -31,24 +31,54 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
- Occam Labs Schmitz & Schneider GbR
- Godesberger Allee 139, 53175 Bonn
- Germany
- http://www.occamlabs.de/
-
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
+import java.util.Collections;
+import java.util.List;
+
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.layer.Layer;
 
 /**
- * @author stranger
  * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
  */
-public interface LayerProvider extends ExtendedResourceProvider<Layer> {
+public class SingleLayerStore implements LayerStore {
 
-    // specializes type parameter
+    private final Layer layer;
+
+    public SingleLayerStore( Layer layer ) {
+        this.layer = layer;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to do
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
+    }
+
+    @Override
+    public List<Layer> getAll() {
+        return Collections.singletonList( get( layer.getIdentifier() ) );
+    }
+
+    @Override
+    public Layer get( String identifier ) {
+        if ( layer.getIdentifier().equals( identifier ) ) {
+            return layer;
+        }
+        return null;
+    }
 
 }

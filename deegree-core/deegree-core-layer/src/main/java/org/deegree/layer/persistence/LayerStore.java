@@ -31,52 +31,26 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
- Occam Labs Schmitz & Schneider GbR
- Godesberger Allee 139, 53175 Bonn
- Germany
- http://www.occamlabs.de/
-
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
+import java.util.List;
+
+import org.deegree.commons.config.Resource;
 import org.deegree.layer.Layer;
 
 /**
- * @author stranger
  * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
  */
-public class LayerManager extends AbstractResourceManager<Layer> {
+public interface LayerStore extends Resource {
 
-    private LayerManagerMetadata metadata;
+    List<Layer> getAll();
 
-    @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        metadata = new LayerManagerMetadata( workspace );
-        super.startup( workspace );
-    }
-
-    static class LayerManagerMetadata extends DefaultResourceManagerMetadata<Layer> {
-        LayerManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "layers", "layers/", LayerProvider.class, workspace );
-        }
-    }
-
-    @Override
-    public ResourceManagerMetadata<Layer> getMetadata() {
-        return metadata;
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
+    Layer get( String identifier );
 
 }

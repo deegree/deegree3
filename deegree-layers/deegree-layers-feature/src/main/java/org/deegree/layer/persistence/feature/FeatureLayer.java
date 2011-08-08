@@ -44,8 +44,6 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
 import org.deegree.layer.AbstractLayer;
@@ -61,8 +59,6 @@ import org.deegree.style.se.unevaluated.Style;
  * 
  */
 public class FeatureLayer extends AbstractLayer {
-
-    private DeegreeWorkspace workspace;
 
     private FeatureStore featureStore;
 
@@ -84,17 +80,6 @@ public class FeatureLayer extends AbstractLayer {
     public LinkedList<String> paintMap( RenderContext context, RenderingInfo info, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
         return null;
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public void destroy() {
-        // nothing to do
     }
 
 }

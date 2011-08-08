@@ -62,9 +62,10 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.layer.Layer;
 import org.deegree.layer.LayerMetadata;
-import org.deegree.layer.persistence.LayerProvider;
+import org.deegree.layer.persistence.LayerStore;
+import org.deegree.layer.persistence.LayerStoreProvider;
+import org.deegree.layer.persistence.SingleLayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayer;
 import org.deegree.layer.persistence.feature.jaxb.ScaleDenominatorsType;
 
@@ -72,7 +73,7 @@ import org.deegree.layer.persistence.feature.jaxb.ScaleDenominatorsType;
  * @author stranger
  * 
  */
-public class FeatureLayerProvider implements LayerProvider {
+public class FeatureLayerProvider implements LayerStoreProvider {
 
     private static final URL SCHEMA_URL = FeatureLayerProvider.class.getResource( "/META-INF/schemas/layers/feature/3.1.0/feature.xsd" );
 
@@ -84,14 +85,14 @@ public class FeatureLayerProvider implements LayerProvider {
     }
 
     @Override
-    public Layer create( URL configUrl )
+    public LayerStore create( URL configUrl )
                             throws ResourceInitException {
         String pkg = "org.deegree.layer.persistence.feature.jaxb";
         try {
             FeatureLayer lay = (FeatureLayer) unmarshall( pkg, SCHEMA_URL, configUrl, workspace );
 
             QName featureType = lay.getFeatureType();
-            
+
             XMLInputFactory fac = XMLInputFactory.newInstance();
             XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( lay.getFilter() ) );
             nextElement( reader );
@@ -122,7 +123,7 @@ public class FeatureLayerProvider implements LayerProvider {
             }
             org.deegree.layer.persistence.feature.FeatureLayer l;
             l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter );
-            return l;
+            return new SingleLayerStore( l );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse layer configuration file.", e );
         }

@@ -51,7 +51,8 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.layer.Layer;
-import org.deegree.layer.persistence.LayerManager;
+import org.deegree.layer.persistence.LayerStore;
+import org.deegree.layer.persistence.LayerStoreManager;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.themes.persistence.standard.jaxb.ThemeType;
@@ -77,14 +78,14 @@ public class StandardThemeProvider implements ThemeProvider {
     private Theme buildTheme( String identifier, List<String> layers, List<ThemeType> themes )
                             throws ResourceInitException {
         List<Layer> lays = new ArrayList<Layer>( layers.size() );
-        LayerManager mgr = workspace.getSubsystemManager( LayerManager.class );
+        LayerStoreManager mgr = workspace.getSubsystemManager( LayerStoreManager.class );
         for ( String l : layers ) {
-            Layer lay = mgr.get( l );
+            LayerStore lay = mgr.get( l );
             if ( lay == null ) {
-                LOG.warn( "Layer with id {} is not available.", l );
+                LOG.warn( "Layer store with id {} is not available.", l );
                 continue;
             }
-            lays.add( lay );
+            lays.addAll( lay.getAll() );
         }
         List<Theme> thms = new ArrayList<Theme>( themes.size() );
         for ( ThemeType tt : themes ) {

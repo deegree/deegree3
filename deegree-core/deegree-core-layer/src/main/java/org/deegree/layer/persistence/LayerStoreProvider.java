@@ -38,46 +38,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.theme.persistence;
+package org.deegree.layer.persistence;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.layer.persistence.LayerStoreManager;
-import org.deegree.theme.Theme;
+import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
  * @author stranger
  * 
  */
-public class ThemeManager extends AbstractResourceManager<Theme> {
+public interface LayerStoreProvider extends ExtendedResourceProvider<LayerStore> {
 
-    private ThemeManagerMetadata metadata;
-
-    @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        metadata = new ThemeManagerMetadata( workspace );
-        super.startup( workspace );
-    }
-
-    static class ThemeManagerMetadata extends DefaultResourceManagerMetadata<Theme> {
-        ThemeManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "themes", "themes/", ThemeProvider.class, workspace );
-        }
-    }
-
-    @Override
-    public ResourceManagerMetadata<Theme> getMetadata() {
-        return metadata;
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { LayerStoreManager.class };
-    }
+    // specializes type parameter
 
 }
