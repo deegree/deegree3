@@ -61,11 +61,13 @@ public class RemoteOWSManager extends AbstractResourceManager<RemoteOWSStore> {
         super.startup( workspace );
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
     }
 
+    @Override
     public ResourceManagerMetadata<RemoteOWSStore> getMetadata() {
         return metadata;
     }

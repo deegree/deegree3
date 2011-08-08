@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
 
-import java.net.URL;
 import java.util.List;
 
 import org.deegree.commons.config.ExtendedResourceProvider;
@@ -58,7 +57,5 @@ public interface RemoteOWSProvider extends ExtendedResourceProvider<RemoteOWSSto
      * @return the handled service type, eg. 'WMS'. May not be null.
      */
     String getServiceType();
-
-    RemoteOWSStore create( URL config );
 
 }

@@ -390,10 +390,12 @@ public class RemoteWMSStore implements RemoteOWSStore {
         public Map<String, String> hardParametersGetFeatureInfo = new HashMap<String, String>();
     }
 
+    @Override
     public void destroy() {
         client = null; // necessary?
     }
 
+    @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         // TODO move construction here

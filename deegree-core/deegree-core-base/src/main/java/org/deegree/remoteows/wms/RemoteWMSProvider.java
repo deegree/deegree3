@@ -82,14 +82,17 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
 
     private DeegreeWorkspace workspace;
 
+    @Override
     public List<String> getCapabilitiesNamespaces() {
         return null;
     }
 
+    @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/datasource/remoteows/wms";
     }
 
+    @Override
     public String getServiceType() {
         return "WMS";
     }
@@ -146,6 +149,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
         return ropts != null;
     }
 
+    @Override
     public RemoteOWSStore create( URL config ) {
         try {
             RemoteWMSStore cfg = (RemoteWMSStore) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, config, workspace );
@@ -203,15 +207,18 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
         return null;
     }
 
+    @Override
     public URL getConfigSchema() {
         return CONFIG_SCHEMA;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
     }
 
+    @Override
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
     }
