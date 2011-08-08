@@ -51,7 +51,6 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.BaseType;
-import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
@@ -142,7 +141,7 @@ public class InsertRowManager {
     public InsertFID insertFeature( Feature feature, FeatureTypeMapping ftMapping, IDGenMode mode )
                             throws SQLException, FeatureStoreException, FilterEvaluationException {
 
-        InsertFID fid = getInsertFID( feature.getId() );
+        InsertFID fid = getInsertFID( feature );
         ChildInsertRow featureRow = getFeatureRow( fid );
         featureRow.setTable( ftMapping.getFtTable() );
         FIDMapping fidMapping = ftMapping.getFidMapping();
@@ -222,6 +221,14 @@ public class InsertRowManager {
         fid.assign( featureRow );
     }
 
+    private InsertFID getInsertFID( Feature f ) {
+        String fid = f.getId();
+        if ( fid == null ) {
+            fid = "" + f.hashCode();
+        }
+        return getInsertFID( fid );
+    }
+
     private InsertFID getInsertFID( String fid ) {
         InsertFID insertFid = origIdToInsertFID.get( fid );
         if ( insertFid == null ) {
@@ -287,24 +294,24 @@ public class InsertRowManager {
                     currentRow.addPreparedArgument( column, geom, converter );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
-                String subFid = null;
+                InsertFID subFid = null;
                 String href = null;
                 Feature feature = (Feature) getPropValue( value );
                 if ( feature instanceof FeatureReference ) {
                     if ( ( (FeatureReference) feature ).isLocal() ) {
-                        subFid = feature.getId();
+                        subFid = getInsertFID( feature.getId() );
                     } else {
                         href = ( (FeatureReference) feature ).getURI();
                     }
                 } else if ( feature != null ) {
-                    subFid = feature.getId();
+                    subFid = getInsertFID( feature );
                 }
 
                 if ( subFid != null ) {
                     if ( jc.isEmpty() ) {
                         LOG.debug( "Skipping feature mapping (fk). Not mapped to database column." );
                     } else {
-                        ChildInsertRow parentRow = getFeatureRow( getInsertFID( subFid ) );
+                        ChildInsertRow parentRow = getFeatureRow( subFid );
                         TableJoin join = jc.get( 0 );
                         for ( int i = 0; i < join.getFromColumns().size(); i++ ) {
                             // invert join (the logical parent is the sub feature row)
