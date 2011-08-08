@@ -109,11 +109,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public abstract class AbstractOGCServiceController<T extends Enum<T>> implements OWS<T> {
+public abstract class AbstractOWS<T extends Enum<T>> implements OWS<T> {
 
     private ImplementationMetadata<?> implementationMetadata;
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractOGCServiceController.class );
+    private static final Logger LOG = LoggerFactory.getLogger( AbstractOWS.class );
 
     /** Common configuration (metadata) of parent {@link OGCFrontController}. */
     protected DeegreeServicesMetadataType mainMetadataConf;
@@ -121,7 +121,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
     protected DeegreeServiceControllerType mainControllerConf;
 
     /**
-     * Versions offered by the {@link AbstractOGCServiceController} instance (depends on configuration).
+     * Versions offered by the {@link AbstractOWS} instance (depends on configuration).
      * <p>
      * Versions are sorted from lowest to highest in order to support the (old-style) version negotiation algorithm.
      * </p>
@@ -134,7 +134,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
 
     protected ImplementationMetadata<T> serviceInfo;
 
-    protected AbstractOGCServiceController( URL configURL, ImplementationMetadata<T> serviceInfo ) {
+    protected AbstractOWS( URL configURL, ImplementationMetadata<T> serviceInfo ) {
         this.configURL = configURL;
         this.serviceInfo = serviceInfo;
     }
@@ -176,7 +176,7 @@ public abstract class AbstractOGCServiceController<T extends Enum<T>> implements
     }
 
     /**
-     * Initializes the {@link AbstractOGCServiceController} instance.
+     * Initializes the {@link AbstractOWS} instance.
      * 
      * @param mainMetadataConf
      * @param serviceInformation

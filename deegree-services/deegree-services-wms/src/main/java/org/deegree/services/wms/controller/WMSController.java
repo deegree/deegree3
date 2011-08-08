@@ -122,7 +122,7 @@ import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.WebServicesConfiguration;
@@ -158,7 +158,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 @LoggingNotes(trace = "logs stack traces", debug = "logs sent exception messages, security information", warn = "logs problems with custom serializer classes", error = "logs unknown errors, problems with GetFeatureInfo templates")
-public class WMSController extends AbstractOGCServiceController<WMSRequestType> {
+public class WMSController extends AbstractOWS<WMSRequestType> {
 
     private static final Logger LOG = getLogger( WMSController.class );
 

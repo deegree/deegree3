@@ -36,10 +36,10 @@
 
 package org.deegree.services.controller.exception;
 
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 
 /**
- * Indicates that the initialization of a {@link AbstractOGCServiceController} failed (usually due to a configuration error).
+ * Indicates that the initialization of a {@link AbstractOWS} failed (usually due to a configuration error).
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author last edited by: $Author: $

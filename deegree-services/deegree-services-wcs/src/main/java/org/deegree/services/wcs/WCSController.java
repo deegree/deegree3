@@ -79,7 +79,7 @@ import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;
 import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.protocol.wcs.capabilities.GetCapabilities100KVPAdapter;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -116,7 +116,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WCSController extends AbstractOGCServiceController<WCSRequestType> {
+public class WCSController extends AbstractOWS<WCSRequestType> {
 
     private static int UPDATE_SEQUENCE = -1;
 

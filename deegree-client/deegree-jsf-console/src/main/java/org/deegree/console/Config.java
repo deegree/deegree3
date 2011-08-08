@@ -175,7 +175,7 @@ public class Config implements Comparable<Config> {
 
         // HACK HACK HACK
         int index = sb.indexOf( "/console" );
-        return sb.substring( 0, index ) + "/services?service=" + type + "&request=GetCapabilities";
+        return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
     }
 
     public String getState() {

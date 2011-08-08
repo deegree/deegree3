@@ -111,7 +111,7 @@ import org.deegree.protocol.sos.getobservation.GetObservation;
 import org.deegree.protocol.sos.getobservation.GetObservation100KVPAdapter;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.ResultFilterException;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -145,7 +145,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class SOSController extends AbstractOGCServiceController<SOSRequestType> {
+public class SOSController extends AbstractOWS<SOSRequestType> {
 
     private static final Logger LOG = LoggerFactory.getLogger( SOSController.class );
 

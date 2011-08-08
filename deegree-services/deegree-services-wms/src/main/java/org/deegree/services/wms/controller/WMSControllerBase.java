@@ -60,7 +60,7 @@ import javax.servlet.ServletException;
 import javax.xml.stream.XMLOutputFactory;
 
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -123,7 +123,7 @@ public abstract class WMSControllerBase implements Controller {
                                 Color color, boolean transparent, String format, WMSController controller )
                             throws ServletException {
         if ( type.equalsIgnoreCase( EXCEPTION_DEFAULT ) ) {
-            AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+            AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
                                                         IMPLEMENTATION_METADATA, ex, response );
         } else if ( type.equalsIgnoreCase( EXCEPTION_INIMAGE ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
@@ -148,10 +148,10 @@ public abstract class WMSControllerBase implements Controller {
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
                                                             IMPLEMENTATION_METADATA, ex, response );
             } catch ( IOException e ) {
-                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
                                                             IMPLEMENTATION_METADATA, ex, response );
             }
         } else if ( type.equalsIgnoreCase( EXCEPTION_BLANK ) ) {
@@ -159,14 +159,14 @@ public abstract class WMSControllerBase implements Controller {
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
                                                             IMPLEMENTATION_METADATA, ex, response );
             } catch ( IOException e ) {
-                AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
                                                             IMPLEMENTATION_METADATA, ex, response );
             }
         } else {
-            AbstractOGCServiceController.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
+            AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
                                                         IMPLEMENTATION_METADATA, ex, response );
         }
     }

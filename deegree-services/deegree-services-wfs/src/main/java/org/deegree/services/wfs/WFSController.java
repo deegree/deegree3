@@ -113,7 +113,7 @@ import org.deegree.protocol.wfs.lockfeature.LockFeatureXMLAdapter;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionKVPAdapter;
 import org.deegree.protocol.wfs.transaction.TransactionXMLAdapter;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
@@ -149,7 +149,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * </p>
  * 
- * @see AbstractOGCServiceController
+ * @see AbstractOWS
  * @see OGCFrontController
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -157,7 +157,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 15339 $, $Date: 2008-12-11 18:40:09 +0100 (Do, 11 Dez 2008) $
  */
-public class WFSController extends AbstractOGCServiceController<WFSRequestType> {
+public class WFSController extends AbstractOWS<WFSRequestType> {
 
     private static final Logger LOG = LoggerFactory.getLogger( WFSController.class );
 

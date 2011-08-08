@@ -128,19 +128,18 @@ import org.slf4j.Logger;
  * <li>SOAP (OGC style, the XML request is the child element of the SOAP body)</li>
  * </ul>
  * </li>
- * <li>The responsible {@link AbstractOGCServiceController} instance is determined and one of the following methods is
- * called:
+ * <li>The responsible {@link AbstractOWS} instance is determined and one of the following methods is called:
  * <ul>
- * <li>{@link AbstractOGCServiceController#doKVP(Map, HttpServletRequest, HttpResponseBuffer, List)}</li>
- * <li>{@link AbstractOGCServiceController#doXML(XMLStreamReader, HttpServletRequest, HttpResponseBuffer, List)}</li>
+ * <li>{@link AbstractOWS#doKVP(Map, HttpServletRequest, HttpResponseBuffer, List)}</li>
+ * <li>{@link AbstractOWS#doXML(XMLStreamReader, HttpServletRequest, HttpResponseBuffer, List)}</li>
  * <li>
- * {@link AbstractOGCServiceController#doSOAP(SOAPEnvelope, HttpServletRequest, HttpResponseBuffer, List, SOAPFactory)}</li>
+ * {@link AbstractOWS#doSOAP(SOAPEnvelope, HttpServletRequest, HttpResponseBuffer, List, SOAPFactory)}</li>
  * </ul>
  * </li>
  * </nl>
  * </p>
  * 
- * @see AbstractOGCServiceController
+ * @see OWS
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema </a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -509,6 +508,23 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
+    private OWS<?> determineOWSByPath( HttpServletRequest request, HttpServletResponse response )
+                            throws ServletException {
+        OWS<?> ows = null;
+        String pathInfo = request.getPathInfo();
+        if ( pathInfo != null ) {
+            // remove start "/"
+            String serviceId = pathInfo.substring( 1 );
+            ows = serviceConfiguration.get( serviceId );
+            if ( ows == null ) {
+                String msg = "No service with identifier '" + serviceId + "' available.";
+                OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
+                sendException( e, response, null );
+            }
+        }
+        return ows;
+    }
+
     private HttpServletResponse handleCompression( HttpServletRequest request, HttpServletResponse response ) {
         // TODO check if we should enable this in any case (XML, images, ...)
         // String encoding = request.getHeader( "Accept-Encoding" );
@@ -568,10 +584,9 @@ public class OGCFrontController extends HttpServlet {
     }
 
     /**
-     * Dispatches a KVP request to the responsible {@link AbstractOGCServiceController}. Both GET and POST are handled
-     * by this method.
+     * Dispatches a KVP request to the responsible {@link OWS}. Both GET and POST are handled by this method.
      * <p>
-     * The responsible {@link AbstractOGCServiceController} is identified according to this strategy:
+     * The responsible {@link OWS} is identified according to this strategy:
      * <nl>
      * <li>If a <code>SERVICE</code> attribute is present, it is used to determine the controller.</li>
      * <li>If no <code>SERVICE</code> attribute is present, the value of the <code>REQUEST</code> attribute is taken to
@@ -589,6 +604,8 @@ public class OGCFrontController extends HttpServlet {
     private void dispatchKVPRequest( Map<String, String> normalizedKVPParams, HttpServletRequest requestWrapper,
                                      HttpServletResponse response, List<FileItem> multiParts, long entryTime )
                             throws ServletException, IOException {
+
+        OWS<? extends Enum<?>> ows = determineOWSByPath( requestWrapper, response );
 
         LoggingHttpResponseWrapper logging = null;
 
@@ -613,33 +630,49 @@ public class OGCFrontController extends HttpServlet {
                                                                      serviceConfiguration.getRequestLogger(), null );
             }
 
-            OWS<? extends Enum<?>> subController = null;
-            // first try service parameter, SERVICE-parameter is mandatory for each service and request (except WMS
-            // 1.0.0)
-            String service = normalizedKVPParams.get( "SERVICE" );
-            String request = normalizedKVPParams.get( "REQUEST" );
+            if ( ows == null ) {
+                // first try service parameter, SERVICE-parameter is mandatory for each service and request (except WMS
+                // 1.0.0)
+                String service = normalizedKVPParams.get( "SERVICE" );
+                String request = normalizedKVPParams.get( "REQUEST" );
 
-            if ( request != null && request.equalsIgnoreCase( "getlogo" ) ) {
-                response.setContentType( "text/plain" );
-                DeegreeAALogoUtils.print( response.getWriter() );
-                return;
-            }
+                if ( request != null && request.equalsIgnoreCase( "getlogo" ) ) {
+                    response.setContentType( "text/plain" );
+                    DeegreeAALogoUtils.print( response.getWriter() );
+                    return;
+                }
 
-            if ( service != null ) {
-                subController = serviceConfiguration.determineResponsibleControllerByServiceName( service );
-            } else {
-                // dispatch according to REQUEST-parameter
-                if ( request != null ) {
-                    subController = serviceConfiguration.determineResponsibleControllerByRequestName( request );
+                if ( service != null ) {
+                    ows = serviceConfiguration.determineResponsibleControllerByServiceName( service );
+                } else {
+                    // dispatch according to REQUEST-parameter
+                    if ( request != null ) {
+                        ows = serviceConfiguration.determineResponsibleControllerByRequestName( request );
+                    }
+                }
+
+                if ( ows == null ) {
+                    String msg = null;
+                    String code;
+                    if ( service == null || request == null ) {
+                        msg = "The 'SERVICE' or 'REQUEST' parameter is absent. Cannot determine responsible subcontroller.";
+                        code = "MissingParameterValue";
+                    } else {
+                        code = "InvalidParameterValue";
+                        msg = "Unable to determine the subcontroller for request type '" + request
+                              + "' and service type '" + service + "'.";
+                    }
+                    OWSException ex = new OWSException( msg, code, "service" );
+                    sendException( ex, response, null );
                 }
             }
 
-            if ( subController != null ) {
-                LOG.debug( "Dispatching request to subcontroller class: " + subController.getClass().getName() );
+            if ( ows != null ) {
+                LOG.debug( "Dispatching request to subcontroller class: " + ows.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
                 long dispatchTime = FrontControllerStats.requestDispatched();
                 try {
-                    subController.doKVP( normalizedKVPParams, requestWrapper, responseWrapper, multiParts );
+                    ows.doKVP( normalizedKVPParams, requestWrapper, responseWrapper, multiParts );
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
@@ -650,19 +683,6 @@ public class OGCFrontController extends HttpServlet {
                 if ( logging != null ) {
                     logging.finalizeLogging();
                 }
-            } else {
-                String msg = null;
-                String code;
-                if ( service == null || request == null ) {
-                    msg = "The 'SERVICE' or 'REQUEST' parameter is absent. Cannot determine responsible subcontroller.";
-                    code = "MissingParameterValue";
-                } else {
-                    code = "InvalidParameterValue";
-                    msg = "Unable to determine the subcontroller for request type '" + request + "' and service type '"
-                          + service + "'.";
-                }
-                OWSException ex = new OWSException( msg, code, "service" );
-                sendException( ex, response, null );
             }
         } catch ( SecurityException e ) {
             if ( credentialsProvider != null ) {
@@ -682,10 +702,9 @@ public class OGCFrontController extends HttpServlet {
     }
 
     /**
-     * Dispatches an XML request to the responsible {@link AbstractOGCServiceController}. Both GET and POST are handled
-     * by this method.
+     * Dispatches an XML request to the responsible {@link OWS}. Both GET and POST are handled by this method.
      * <p>
-     * The responsible {@link AbstractOGCServiceController} is identified by the namespace of the root element.
+     * The responsible {@link OWS} is identified by the namespace of the root element.
      * 
      * @param xmlStream
      *            provides access to the XML request, cursor points to the START_ELEMENT event of the root element
@@ -698,6 +717,8 @@ public class OGCFrontController extends HttpServlet {
     private void dispatchXMLRequest( XMLStreamReader xmlStream, HttpServletRequest requestWrapper,
                                      HttpServletResponse response, List<FileItem> multiParts )
                             throws ServletException, IOException {
+
+        OWS<? extends Enum<?>> ows = determineOWSByPath( requestWrapper, response );
 
         CredentialsProvider credentialsProvider = securityConfiguration == null ? null
                                                                                : securityConfiguration.getCredentialsProvider();
@@ -718,13 +739,19 @@ public class OGCFrontController extends HttpServlet {
             // String sessionId = xmlStream.getAttributeValue( XMLConstants.NULL_NS_URI, "sessionId" );
 
             String ns = xmlStream.getNamespaceURI();
-            OWS<? extends Enum<?>> subcontroller = serviceConfiguration.determineResponsibleControllerByNS( ns );
-            if ( subcontroller != null ) {
-                LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
+            if ( ows == null ) {
+                ows = serviceConfiguration.determineResponsibleControllerByNS( ns );
+                if ( ows == null ) {
+                    String msg = "No subcontroller for request namespace '" + ns + "' available.";
+                    throw new ServletException( msg );
+                }
+            }
+            if ( ows != null ) {
+                LOG.debug( "Dispatching request to subcontroller class: " + ows.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
                 long dispatchTime = FrontControllerStats.requestDispatched();
                 try {
-                    subcontroller.doXML( xmlStream, requestWrapper, responseWrapper, multiParts );
+                    ows.doXML( xmlStream, requestWrapper, responseWrapper, multiParts );
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
@@ -732,9 +759,6 @@ public class OGCFrontController extends HttpServlet {
                     validateResponse( responseWrapper );
                 }
                 responseWrapper.flushBuffer();
-            } else {
-                String msg = "No subcontroller for request namespace '" + ns + "' available.";
-                throw new ServletException( msg );
             }
         } catch ( SecurityException e ) {
             if ( credentialsProvider != null ) {
@@ -747,15 +771,12 @@ public class OGCFrontController extends HttpServlet {
                                response, null );
             }
         }
-
     }
 
     /**
-     * Dispatches a SOAP request to the responsible {@link AbstractOGCServiceController}. Both GET and POST are handled
-     * by this method.
+     * Dispatches a SOAP request to the responsible {@link OWS}. Both GET and POST are handled by this method.
      * <p>
-     * The responsible {@link AbstractOGCServiceController} is identified by the namespace of the first child of the
-     * SOAP body element.
+     * The responsible {@link OWS} is identified by the namespace of the first child of the SOAP body element.
      * 
      * @param xmlStream
      *            provides access to the SOAP request, cursor points to the START_ELEMENT event of the root element
@@ -769,8 +790,10 @@ public class OGCFrontController extends HttpServlet {
                                       HttpServletResponse response, List<FileItem> multiParts )
                             throws ServletException, IOException {
 
+        OWS<? extends Enum<?>> ows = determineOWSByPath( requestWrapper, response );
+
         // TODO integrate authentication handling (CredentialsProvider)
-        LOG.debug( "Handling soap request." );
+        LOG.debug( "Handling SOAP request." );
         XMLAdapter requestDoc = new XMLAdapter( xmlStream );
         OMElement root = requestDoc.getRootElement();
         SOAPFactory factory = null;
@@ -821,25 +844,27 @@ public class OGCFrontController extends HttpServlet {
             // }
             // }
 
-            OWS<? extends Enum<?>> subcontroller = serviceConfiguration.determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
-            if ( subcontroller != null ) {
-                LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
-                HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
-                long dispatchTime = FrontControllerStats.requestDispatched();
-                try {
-                    subcontroller.doSOAP( envelope, requestWrapper, responseWrapper, multiParts, factory );
-                } finally {
-                    FrontControllerStats.requestFinished( dispatchTime );
+            if ( ows == null ) {
+                ows = serviceConfiguration.determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
+                if ( ows == null ) {
+                    String msg = "No subcontroller for request namespace '"
+                                 + envelope.getSOAPBodyFirstElementNS().getNamespaceURI() + "' available.";
+                    throw new ServletException( msg );
                 }
-                if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
-                    validateResponse( responseWrapper );
-                }
-                responseWrapper.flushBuffer();
-            } else {
-                String msg = "No subcontroller for request namespace '"
-                             + envelope.getSOAPBodyFirstElementNS().getNamespaceURI() + "' available.";
-                throw new ServletException( msg );
             }
+
+            LOG.debug( "Dispatching request to subcontroller class: " + ows.getClass().getName() );
+            HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
+            long dispatchTime = FrontControllerStats.requestDispatched();
+            try {
+                ows.doSOAP( envelope, requestWrapper, responseWrapper, multiParts, factory );
+            } finally {
+                FrontControllerStats.requestFinished( dispatchTime );
+            }
+            if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
+                validateResponse( responseWrapper );
+            }
+            responseWrapper.flushBuffer();
         } catch ( SecurityException e ) {
             if ( credentialsProvider != null ) {
                 LOG.debug( "A security exception was thrown, let the credential provider handle the job." );
@@ -1142,12 +1167,11 @@ public class OGCFrontController extends HttpServlet {
             // correct)
             OWS<? extends Enum<?>> first = values.iterator().next();
             Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = first.getExceptionSerializer( requestVersion );
-            ( (AbstractOGCServiceController<?>) first ).sendException( serializerAndMime.second, "UTF-8", null, 200,
-                                                                       serializerAndMime.first, e, res );
+            ( (AbstractOWS<?>) first ).sendException( serializerAndMime.second, "UTF-8", null, 200,
+                                                      serializerAndMime.first, e, res );
         } else {
             // use the most common serializer (OWS 1.1.0)
-            AbstractOGCServiceController.sendException( "text/xml", "UTF-8", null, 200,
-                                                        new OWSException110XMLAdapter(), null, e, res );
+            AbstractOWS.sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), null, e, res );
         }
     }
 }

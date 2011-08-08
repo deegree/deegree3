@@ -51,7 +51,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.Utils;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -83,7 +83,7 @@ public class WMSController130 extends WMSControllerBase {
 
     public void sendException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        AbstractOGCServiceController.sendException( "text/xml", "UTF-8", null, 200, EXCEPTIONS,
+        AbstractOWS.sendException( "text/xml", "UTF-8", null, 200, EXCEPTIONS,
                                                     IMPLEMENTATION_METADATA, ex, response );
     }
 

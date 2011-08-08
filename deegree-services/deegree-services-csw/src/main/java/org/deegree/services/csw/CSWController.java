@@ -82,7 +82,7 @@ import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.authentication.soapauthentication.FailedAuthentication;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
@@ -133,7 +133,7 @@ import org.slf4j.LoggerFactory;
  * </p>
  * 
  * @see CSWService
- * @see AbstractOGCServiceController
+ * @see AbstractOWS
  * @see OGCFrontController
  * 
  * 
@@ -142,7 +142,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CSWController extends AbstractOGCServiceController<CSWRequestType> {
+public class CSWController extends AbstractOWS<CSWRequestType> {
 
     private static final Logger LOG = LoggerFactory.getLogger( CSWController.class );
 

@@ -44,7 +44,7 @@ import org.deegree.commons.tom.ows.Version;
 
 /**
  * This class contains metadata information on the details of an implementation of a
- * {@link AbstractOGCServiceController}.
+ * {@link AbstractOWS}.
  * <p>
  * Contained information:
  * <ul>

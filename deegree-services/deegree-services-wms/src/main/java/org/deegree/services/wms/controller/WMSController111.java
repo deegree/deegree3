@@ -49,7 +49,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.protocol.wms.Utils;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ows.NamespacelessOWSExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -83,7 +83,7 @@ public class WMSController111 extends WMSControllerBase {
 
     public void sendException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        AbstractOGCServiceController.sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, EXCEPTIONS,
+        AbstractOWS.sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, EXCEPTIONS,
                                                     IMPLEMENTATION_METADATA, ex, response );
     }
 

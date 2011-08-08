@@ -76,7 +76,7 @@ import org.deegree.protocol.wps.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wps.describeprocess.DescribeProcessRequest;
 import org.deegree.protocol.wps.describeprocess.DescribeProcessRequestKVPAdapter;
 import org.deegree.protocol.wps.describeprocess.DescribeProcessRequestXMLAdapter;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
@@ -124,7 +124,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WPService extends AbstractOGCServiceController<WPSRequestType> {
+public class WPService extends AbstractOWS<WPSRequestType> {
 
     private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
 

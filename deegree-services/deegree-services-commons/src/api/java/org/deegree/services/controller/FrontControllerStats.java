@@ -90,7 +90,7 @@ public class FrontControllerStats {
 
     /**
      * Called by the {@link OGCFrontController} to indicate that a new request has just been dispatched to an
-     * {@link AbstractOGCServiceController}.
+     * {@link AbstractOWS}.
      * 
      * @return current time
      */

@@ -72,7 +72,7 @@ import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
-import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
@@ -112,7 +112,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WPVSController extends AbstractOGCServiceController<WPVSRequestType> {
+public class WPVSController extends AbstractOWS<WPVSRequestType> {
 
     private final static Logger LOG = LoggerFactory.getLogger( WPVSController.class );
 

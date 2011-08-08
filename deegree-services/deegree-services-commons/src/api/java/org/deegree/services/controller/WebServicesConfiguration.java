@@ -240,7 +240,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     }
 
     /**
-     * Determines the {@link AbstractOGCServiceController} that is responsible for handling requests to a certain
+     * Determines the {@link AbstractOWS} that is responsible for handling requests to a certain
      * service type, e.g. WMS, WFS.
      * 
      * @param serviceType
@@ -250,9 +250,10 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     public OWS<? extends Enum<?>> determineResponsibleControllerByServiceName( String serviceType ) {
         return serviceNameToController.get( serviceType.toUpperCase() );
     }
+        
 
     /**
-     * Determines the {@link AbstractOGCServiceController} that is responsible for handling requests with a certain
+     * Determines the {@link AbstractOWS} that is responsible for handling requests with a certain
      * name, e.g. GetMap, GetFeature.
      * 
      * @param requestName
@@ -264,7 +265,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     }
 
     /**
-     * Determines the {@link AbstractOGCServiceController} that is responsible for handling requests to a certain
+     * Determines the {@link AbstractOWS} that is responsible for handling requests to a certain
      * service type, e.g. WMS, WFS.
      * 
      * @param ns
