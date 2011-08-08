@@ -54,7 +54,6 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
-import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
@@ -216,10 +215,9 @@ public class InsertRowManager {
         }
         for ( int i = 0; i < fidMapping.getColumns().size(); i++ ) {
             Pair<String, BaseType> idColumn = fidMapping.getColumns().get( i );
-            PrimitiveType pt = new PrimitiveType( idColumn.second );
-            PrimitiveValue pv = new PrimitiveValue( idKernels[i], pt );
-            DefaultPrimitiveConverter converter = new DefaultPrimitiveConverter( pt, idColumn.getFirst() );
-            featureRow.addPreparedArgument( idColumn.getFirst(), pv, converter );
+            // TODO mapping to non-string columns
+            Object value = idKernels[i];
+            featureRow.addPreparedArgument( idColumn.getFirst(), value );
         }
         fid.assign( featureRow );
     }
