@@ -65,8 +65,8 @@ public class WFSConstants {
 
     /** WFS protocol version 2.0.0 */
     public static final Version VERSION_200 = Version.parseVersion( "2.0.0" );
-    
-    /** URL of the WFS 1.0.0 basic schema*/
+
+    /** URL of the WFS 1.0.0 basic schema */
     public static final String WFS_100_BASIC_SCHEMA_URL = "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
 
     /** URL of the WFS 1.0.0 capabilities schema */
@@ -79,7 +79,7 @@ public class WFSConstants {
     public static final String WFS_110_SCHEMA_URL = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
 
     /** URL of the WFS 2.0.0 schema */
-    public static final String WFS_200_SCHEMA_URL = "http://schemas.opengis.net/wfs/2.0/wfs.xsd";    
+    public static final String WFS_200_SCHEMA_URL = "http://schemas.opengis.net/wfs/2.0/wfs.xsd";
 
     /**
      * Enum type for discriminating between the different types of WebFeatureService (WFS) requests.
@@ -91,29 +91,29 @@ public class WFSConstants {
      */
     public enum WFSRequestType {
 
-        /** Retrieve the capabilities of the service.(1.0.0, 1.1.0, 2.0.0) */
+        /** Retrieve the capabilities of the service (1.0.0, 1.1.0, 2.0.0) */
         GetCapabilities,
-        /** Retrieve the data model (schema) for one or more feature types.(1.0.0, 1.1.0, 2.0.0) */
+        /** Retrieve the data model (schema) for one or more feature types (1.0.0, 1.1.0, 2.0.0) */
         DescribeFeatureType,
-        /** Query one or more feature types with optional filter expressions.(1.0.0, 1.1.0, 2.0.0) */
+        /** Query one or more feature types with optional filter expressions (1.0.0, 1.1.0, 2.0.0) */
         GetFeature,
-        /** Insert, update or delete features.(1.0.0, 1.1.0, 2.0.0) */
+        /** Insert, update or delete features (1.0.0, 1.1.0, 2.0.0) */
         Transaction,
-        /** Query and lock features.(1.1.0 and 2.0.0) */
+        /** Query and lock features (1.1.0 and 2.0.0) */
         GetFeatureWithLock,
-        /** Retrieve features and elements by ID.(1.1.0) */
+        /** Retrieve features and elements by ID (1.1.0) */
         GetGmlObject,
         /** Lock features that match a filter expression. */
         LockFeature,
-        /** Retrieve the values of selected feature properties based on query constraints.(2.0.0) */
+        /** Retrieve the values of selected feature properties based on query constraints (2.0.0) */
         GetPropertyValue,
-        /** Define persistent parametrized query expressions. (2.0.0) */
+        /** Define persistent parametrized query expressions (2.0.0) */
         CreateStoredQuery,
-        /** Drop a stored query from the service.(2.0.0) */
+        /** Drop a stored query from the service (2.0.0) */
         DropStoredQuery,
-        /** Retrieve a list of stored queries offered by a service.(2.0.0) */
+        /** Retrieve a list of stored queries offered by a service (2.0.0) */
         ListStoredQueries,
-        /** Retrieve a description of a stored query expresssion. (2.0.0) */
+        /** Retrieve a description of a stored query expresssion (2.0.0) */
         DescribeStoredQueries
     }
 }
