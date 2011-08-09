@@ -1,0 +1,5 @@
+<RemoteWFSFeatureStore configVersion="3.1.0" xmlns="http://www.deegree.org/datasource/feature/memory"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/remotewfs http://schemas.deegree.org/datasource/feature/remotewfs/3.1.0/remotewfs.xsd">
+
+</RemoteWFSFeatureStore>

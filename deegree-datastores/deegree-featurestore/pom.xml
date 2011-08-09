@@ -35,6 +35,7 @@
     <module>deegree-featurestore-commons</module>
     <module>deegree-featurestore-geocouch</module>
     <module>deegree-featurestore-memory</module>
+    <module>deegree-featurestore-remotewfs</module>
     <module>deegree-featurestore-shape</module>
     <module>deegree-featurestore-simplesql</module>
     <module>deegree-featurestore-sql</module>
