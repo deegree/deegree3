@@ -1047,11 +1047,15 @@ public class SQLFeatureStore implements FeatureStore {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
+        FeatureType ft = getSchema().getFeatureType( ftName );
+        FeatureTypeMapping ftMapping = getMapping( ftName );
+        if ( ftMapping == null ) {
+            String msg = "Cannot perform query on feature type '" + ftName + "'. Feature type is not mapped.";
+            throw new FeatureStoreException( msg );
+        }
+
         try {
             conn = getConnection();
-
-            FeatureType ft = getSchema().getFeatureType( ftName );
-            FeatureTypeMapping ftMapping = getMapping( ftName );
 
             wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
             String ftTableAlias = wb.getAliasManager().getRootTableAlias();
