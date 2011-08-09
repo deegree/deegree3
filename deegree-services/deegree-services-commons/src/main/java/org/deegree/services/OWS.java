@@ -58,7 +58,7 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
- * Implementations are OGC web services that plug into the {@link OGCFrontController}.
+ * Implementations are OGC web services.
  * 
  * @see OWSProvider
  * @see OGCFrontController

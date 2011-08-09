@@ -94,14 +94,14 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
-    private final Map<String, OWS<? extends Enum<?>>> serviceNameToController = new HashMap<String, OWS<? extends Enum<?>>>();
+    private final Map<String, OWS<? extends Enum<?>>> ogcNameToService = new HashMap<String, OWS<? extends Enum<?>>>();
 
     // maps service namespaces (e.g. 'http://www.opengis.net/wms', 'http://www.opengis.net/wfs', ...) to the
     // responsible subcontrollers
-    private final Map<String, OWS<? extends Enum<?>>> serviceNSToController = new HashMap<String, OWS<? extends Enum<?>>>();
+    private final Map<String, OWS<? extends Enum<?>>> requestNsToService = new HashMap<String, OWS<? extends Enum<?>>>();
 
     // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to the responsible subcontrollers
-    private final Map<String, OWS<? extends Enum<?>>> requestNameToController = new HashMap<String, OWS<? extends Enum<?>>>();
+    private final Map<String, OWS<? extends Enum<?>>> requestNameToService = new HashMap<String, OWS<? extends Enum<?>>>();
 
     private DeegreeServicesMetadataType metadataConfig;
 
@@ -240,52 +240,50 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     }
 
     /**
-     * Determines the {@link AbstractOWS} that is responsible for handling requests to a certain
-     * service type, e.g. WMS, WFS.
+     * Returns the {@link OWS} instance that is responsible for handling requests to a certain service type, e.g. WMS,
+     * WFS.
      * 
      * @param serviceType
      *            service type code, e.g. "WMS" or "WFS"
-     * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
+     * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS<? extends Enum<?>> determineResponsibleControllerByServiceName( String serviceType ) {
-        return serviceNameToController.get( serviceType.toUpperCase() );
+    public OWS<? extends Enum<?>> getByServiceType( String serviceType ) {
+        return ogcNameToService.get( serviceType.toUpperCase() );
     }
-        
 
     /**
-     * Determines the {@link AbstractOWS} that is responsible for handling requests with a certain
-     * name, e.g. GetMap, GetFeature.
+     * Returns the {@link OWS} instance that is responsible for handling requests with a certain name, e.g. GetMap,
+     * GetFeature.
      * 
      * @param requestName
      *            request name, e.g. "GetMap" or "GetFeature"
-     * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
+     * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS<? extends Enum<?>> determineResponsibleControllerByRequestName( String requestName ) {
-        return requestNameToController.get( requestName );
+    public OWS<? extends Enum<?>> getByRequestName( String requestName ) {
+        return requestNameToService.get( requestName );
     }
 
     /**
-     * Determines the {@link AbstractOWS} that is responsible for handling requests to a certain
-     * service type, e.g. WMS, WFS.
+     * Determines the {@link OWS} instance that is responsible for handling XML requests in the given namespace.
      * 
      * @param ns
-     *            service type code, e.g. "WMS" or "WFS"
-     * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
+     *            XML namespace
+     * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS<? extends Enum<?>> determineResponsibleControllerByNS( String ns ) {
-        return serviceNSToController.get( ns );
+    public OWS<? extends Enum<?>> getByRequestNS( String ns ) {
+        return requestNsToService.get( ns );
     }
 
     /**
-     * Return all active service controllers.
+     * Return all active {@link OWS}.
      * 
      * @return the instance of the requested service used by OGCFrontController, or null if the service is not
      *         registered.
      */
     public Map<String, OWS<? extends Enum<?>>> getServiceControllers() {
         Map<String, OWS<? extends Enum<?>>> nameToController = new HashMap<String, OWS<? extends Enum<?>>>();
-        for ( String serviceName : serviceNameToController.keySet() ) {
-            nameToController.put( serviceName, serviceNameToController.get( serviceName ) );
+        for ( String serviceName : ogcNameToService.keySet() ) {
+            nameToController.put( serviceName, ogcNameToService.get( serviceName ) );
         }
         return nameToController;
     }
@@ -301,7 +299,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
      *         is active
      */
     public <T extends Enum<T>, U extends OWS<T>> U getServiceController( Class<U> c ) {
-        for ( OWS<?> it : serviceNSToController.values() ) {
+        for ( OWS<?> it : requestNsToService.values() ) {
             if ( c == it.getClass() ) {
                 // somehow just annotating the return expression does not work
                 // even annotations to suppress sucking generics suck
@@ -317,15 +315,16 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     public void shutdown() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Shutting down deegree web services in context..." );
-        for ( String serviceName : serviceNameToController.keySet() ) {
-            OWS<?> subcontroller = serviceNameToController.get( serviceName );
-            LOG.info( "Shutting down '" + serviceName + "'." );
-            try {
-                subcontroller.destroy();
-            } catch ( Exception e ) {
-                String msg = "Error destroying subcontroller '" + subcontroller.getClass().getName() + "': "
-                             + e.getMessage();
-                LOG.error( msg, e );
+        for ( ResourceState<OWS<?>> state : getStates() ) {
+            OWS<?> ows = state.getResource();
+            if ( ows != null ) {
+                LOG.info( "Shutting down service: " + state.getId() + "" );
+                try {
+                    ows.destroy();
+                } catch ( Throwable e ) {
+                    String msg = "Error shutting down service '" + state.getId() + "': " + e.getMessage();
+                    LOG.error( msg, e );
+                }
             }
         }
         LOG.info( "deegree OGC webservices shut down." );
@@ -444,7 +443,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
         ImplementationMetadata<?> md = ows.getImplementationMetadata();
         for ( String serviceName : md.getImplementedServiceName() ) {
             LOG.debug( "Service name '" + serviceName + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            serviceNameToController.put( serviceName.toUpperCase(), ows );
+            ogcNameToService.put( serviceName.toUpperCase(), ows );
         }
 
         // associate request types with controller instance
@@ -452,14 +451,14 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
             // skip GetCapabilities requests
             if ( !( "GetCapabilities".equals( request ) ) ) {
                 LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
-                requestNameToController.put( request, ows );
+                requestNameToService.put( request, ows );
             }
         }
 
         // associate namespaces with controller instance
         for ( String ns : md.getHandledNamespaces() ) {
             LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            serviceNSToController.put( ns, ows );
+            requestNsToService.put( ns, ows );
         }
     }
 
@@ -468,20 +467,20 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
         ImplementationMetadata<?> md = ows.getImplementationMetadata();
         for ( String serviceName : md.getImplementedServiceName() ) {
             LOG.debug( "Service name '" + serviceName + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            serviceNameToController.remove( serviceName.toUpperCase() );
+            ogcNameToService.remove( serviceName.toUpperCase() );
         }
 
         for ( String request : md.getHandledRequests() ) {
             // skip GetCapabilities requests
             if ( !( "GetCapabilities".equals( request ) ) ) {
                 LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
-                requestNameToController.remove( request );
+                requestNameToService.remove( request );
             }
         }
 
         for ( String ns : md.getHandledNamespaces() ) {
             LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            serviceNSToController.remove( ns );
+            requestNsToService.remove( ns );
         }
     }
 }

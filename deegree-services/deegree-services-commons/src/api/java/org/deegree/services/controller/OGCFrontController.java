@@ -116,7 +116,8 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.slf4j.Logger;
 
 /**
- * Servlet that acts as the single communication entry point and dispatcher to OWS implementations.
+ * Servlet that acts as single HTTP communication end point and dispatcher to the OWS instances configured in the
+ * {@link DeegreeWorkspace}.
  * <p>
  * Calls to {@link #doGet(HttpServletRequest, HttpServletResponse)} and
  * {@link #doPost(HttpServletRequest, HttpServletResponse)} are processed as follows:
@@ -128,12 +129,12 @@ import org.slf4j.Logger;
  * <li>SOAP (OGC style, the XML request is the child element of the SOAP body)</li>
  * </ul>
  * </li>
- * <li>The responsible {@link AbstractOWS} instance is determined and one of the following methods is called:
+ * <li>The responsible {@link OWS} instance is determined and one of the following methods is called:
  * <ul>
- * <li>{@link AbstractOWS#doKVP(Map, HttpServletRequest, HttpResponseBuffer, List)}</li>
- * <li>{@link AbstractOWS#doXML(XMLStreamReader, HttpServletRequest, HttpResponseBuffer, List)}</li>
+ * <li>{@link OWS#doKVP(Map, HttpServletRequest, HttpResponseBuffer, List)}</li>
+ * <li>{@link OWS#doXML(XMLStreamReader, HttpServletRequest, HttpResponseBuffer, List)}</li>
  * <li>
- * {@link AbstractOWS#doSOAP(SOAPEnvelope, HttpServletRequest, HttpResponseBuffer, List, SOAPFactory)}</li>
+ * {@link OWS#doSOAP(SOAPEnvelope, HttpServletRequest, HttpResponseBuffer, List, SOAPFactory)}</li>
  * </ul>
  * </li>
  * </nl>
@@ -215,16 +216,6 @@ public class OGCFrontController extends HttpServlet {
      */
     public static WebServicesConfiguration getServiceConfiguration() {
         return instance.serviceConfiguration;
-    }
-
-    /**
-     * Return all active service controllers.
-     * 
-     * @return the instance of the requested service used by OGCFrontController, or null if the service is not
-     *         registered.
-     */
-    public static Map<String, OWS<? extends Enum<?>>> getServiceControllers() {
-        return instance.serviceConfiguration.getServiceControllers();
     }
 
     /**
@@ -643,11 +634,11 @@ public class OGCFrontController extends HttpServlet {
                 }
 
                 if ( service != null ) {
-                    ows = serviceConfiguration.determineResponsibleControllerByServiceName( service );
+                    ows = serviceConfiguration.getByServiceType( service );
                 } else {
                     // dispatch according to REQUEST-parameter
                     if ( request != null ) {
-                        ows = serviceConfiguration.determineResponsibleControllerByRequestName( request );
+                        ows = serviceConfiguration.getByRequestName( request );
                     }
                 }
 
@@ -740,7 +731,7 @@ public class OGCFrontController extends HttpServlet {
 
             String ns = xmlStream.getNamespaceURI();
             if ( ows == null ) {
-                ows = serviceConfiguration.determineResponsibleControllerByNS( ns );
+                ows = serviceConfiguration.getByRequestNS( ns );
                 if ( ows == null ) {
                     String msg = "No subcontroller for request namespace '" + ns + "' available.";
                     throw new ServletException( msg );
@@ -845,7 +836,7 @@ public class OGCFrontController extends HttpServlet {
             // }
 
             if ( ows == null ) {
-                ows = serviceConfiguration.determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
+                ows = serviceConfiguration.getByRequestNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
                 if ( ows == null ) {
                     String msg = "No subcontroller for request namespace '"
                                  + envelope.getSOAPBodyFirstElementNS().getNamespaceURI() + "' available.";
@@ -1160,7 +1151,6 @@ public class OGCFrontController extends HttpServlet {
      */
     private void sendException( OWSException e, HttpServletResponse res, Version requestVersion )
                             throws ServletException {
-
         Collection<OWS<? extends Enum<?>>> values = serviceConfiguration.getServiceControllers().values();
         if ( values.size() > 0 ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be

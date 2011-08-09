@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.util;
 
-import static org.deegree.services.controller.OGCFrontController.getServiceConfiguration;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -72,8 +71,6 @@ public class ApplicationBean implements Serializable {
 
     private String logo = DeegreeAALogoUtils.getAsString();
 
-    private List<String> nameToController = new ArrayList<String>();
-
     private String baseVersion;
 
     private List<String> internalModules = new ArrayList<String>();
@@ -85,11 +82,6 @@ public class ApplicationBean implements Serializable {
             }
             internalModules.add( info.toString() );
         }
-        if ( getServiceConfiguration() != null && getServiceConfiguration().getServiceControllers() != null ) {
-            for ( String key : getServiceConfiguration().getServiceControllers().keySet() ) {
-                nameToController.add( key );
-            }
-        }
     }
 
     public String getBaseVersion() {
@@ -98,10 +90,6 @@ public class ApplicationBean implements Serializable {
 
     public String getLogo() {
         return logo;
-    }
-
-    public List<String> getNameToController() {
-        return nameToController;
     }
 
     public List<String> getInternalModules() {
