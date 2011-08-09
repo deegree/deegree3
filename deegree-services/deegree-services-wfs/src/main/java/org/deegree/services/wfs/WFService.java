@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -49,6 +50,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
@@ -90,13 +92,31 @@ public class WFService {
      * @throws FeatureStoreException
      */
     public void init( DeegreeWFS sc, String baseURL, DeegreeWorkspace workspace )
-                            throws FeatureStoreException {
-
-        LOG.debug( "Adding configured feature stores." );
+                            throws ResourceInitException {
 
         FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-        for ( ResourceState<FeatureStore> state : mgr.getStates() ) {
-            if ( state.getResource() != null ) {
+        List<String> ids = sc.getFeatureStoreId();
+
+        if ( ids.isEmpty() ) {
+            LOG.debug( "Feature store ids not configured. Adding all active feature stores." );
+            for ( ResourceState<FeatureStore> state : mgr.getStates() ) {
+                if ( state.getResource() != null ) {
+                    addStore( state.getResource() );
+                    addNotYetHintedNamespaces( state.getResource().getSchema().getNamespaceBindings().values() );
+                }
+            }
+        } else {
+            LOG.debug( "Adding configured feature stores." );
+            for ( String id : ids ) {
+                ResourceState<FeatureStore> state = mgr.getState( id );
+                if ( state == null ) {
+                    String msg = "Cannot add feature store '" + id + "': no such feature store has been configured.";
+                    throw new ResourceInitException( msg );
+                }
+                if ( state.getResource() == null ) {
+                    String msg = "Cannot add feature store '" + id + "': no such feature store has been configured.";
+                    throw new ResourceInitException( msg );
+                }
                 addStore( state.getResource() );
                 addNotYetHintedNamespaces( state.getResource().getSchema().getNamespaceBindings().values() );
             }

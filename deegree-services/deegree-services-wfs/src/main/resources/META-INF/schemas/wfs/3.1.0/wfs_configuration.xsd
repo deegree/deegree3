@@ -11,6 +11,7 @@
   <element name="deegreeWFS">
     <complexType>
       <sequence>
+        <element name="FeatureStoreId" type="string" minOccurs="0" maxOccurs="unbounded" />      
         <element name="SupportedVersions" minOccurs="0">
           <complexType>
             <sequence>
