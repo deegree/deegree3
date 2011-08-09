@@ -36,6 +36,7 @@
     <module>deegree-core-3d</module>
     <module>deegree-core-annotations</module>
     <module>deegree-core-commons</module>
+    <module>deegree-core-remoteows</module>
     <module>deegree-core-cs</module>
     <module>deegree-core-base</module>
     <module>deegree-core-filterfunctions</module>
