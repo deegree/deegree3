@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.deegree</groupId>
+  <artifactId>deegree-remoteows-wfs</artifactId>
+  <packaging>jar</packaging>
+  <version>3.1-pre12-SNAPSHOT</version>
+  <name>deegree-remoteows-wfs</name>
+  <url>http://www.deegree.org</url>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.1-pre12-SNAPSHOT</version>
+    <relativePath />
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <schemaFiles>datasource/remoteows/wfs/3.1.0/remotewfs.xsd</schemaFiles>
+          <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-remoteows-commons</artifactId>
+      <version>3.1-pre12-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-base</artifactId>
+      <version>3.1-pre12-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>
