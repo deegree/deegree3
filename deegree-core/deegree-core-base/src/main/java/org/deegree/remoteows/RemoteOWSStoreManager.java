@@ -50,7 +50,7 @@ import org.deegree.commons.utils.ProxyUtils;
  * 
  * @version $Revision$, $Date$
  */
-public class RemoteOWSManager extends AbstractResourceManager<RemoteOWSStore> {
+public class RemoteOWSStoreManager extends AbstractResourceManager<RemoteOWSStore> {
 
     private RemoteOWSManagerMetadata metadata;
 
@@ -74,7 +74,7 @@ public class RemoteOWSManager extends AbstractResourceManager<RemoteOWSStore> {
 
     static class RemoteOWSManagerMetadata extends DefaultResourceManagerMetadata<RemoteOWSStore> {
         RemoteOWSManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "remote OWS stores", "datasources/remoteows", RemoteOWSProvider.class, workspace );
+            super( "remote OWS stores", "datasources/remoteows", RemoteOWSStoreProvider.class, workspace );
         }
     }
 

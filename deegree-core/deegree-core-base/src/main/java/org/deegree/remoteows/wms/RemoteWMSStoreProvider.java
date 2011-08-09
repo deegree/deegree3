@@ -52,7 +52,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wms.client.WMSClient111;
-import org.deegree.remoteows.RemoteOWSProvider;
+import org.deegree.remoteows.RemoteOWSStoreProvider;
 import org.deegree.remoteows.RemoteOWSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
 import org.deegree.remoteows.wms.jaxb.AuthenticationType;
@@ -72,13 +72,13 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class RemoteWMSProvider implements RemoteOWSProvider {
+public class RemoteWMSStoreProvider implements RemoteOWSStoreProvider {
 
-    private static final Logger LOG = getLogger( RemoteWMSProvider.class );
+    private static final Logger LOG = getLogger( RemoteWMSStoreProvider.class );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms.jaxb";
 
-    private static final URL CONFIG_SCHEMA = RemoteWMSProvider.class.getResource( "/META-INF/schemas/datasource/remoteows/wms/3.1.0/remotewms.xsd" );
+    private static final URL CONFIG_SCHEMA = RemoteWMSStoreProvider.class.getResource( "/META-INF/schemas/datasource/remoteows/wms/3.1.0/remotewms.xsd" );
 
     private DeegreeWorkspace workspace;
 

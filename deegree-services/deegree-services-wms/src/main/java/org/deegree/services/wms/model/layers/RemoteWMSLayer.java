@@ -49,7 +49,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
-import org.deegree.remoteows.RemoteOWSManager;
+import org.deegree.remoteows.RemoteOWSStoreManager;
 import org.deegree.remoteows.RemoteOWSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore;
 import org.deegree.services.controller.OGCFrontController;
@@ -88,7 +88,7 @@ public class RemoteWMSLayer extends Layer {
     public RemoteWMSLayer( MapService service, AbstractLayerType layer, Layer parent ) {
         super( service, layer, parent );
 
-        RemoteOWSManager manager = OGCFrontController.getServiceWorkspace().getSubsystemManager( RemoteOWSManager.class );
+        RemoteOWSStoreManager manager = OGCFrontController.getServiceWorkspace().getSubsystemManager( RemoteOWSStoreManager.class );
         RemoteOWSStore store = manager.get( layer.getRemoteWMSStoreId() );
 
         if ( !( store instanceof RemoteWMSStore ) ) {
