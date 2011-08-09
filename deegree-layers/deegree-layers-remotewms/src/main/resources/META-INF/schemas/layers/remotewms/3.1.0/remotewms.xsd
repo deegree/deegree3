@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/layers/remotewms" xmlns:l="http://www.deegree.org/layers/remotewms"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.layer.persistence.remotewms.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="RemoteWMSLayers">
+    <complexType>
+      <sequence>
+        <element name="RemoteWMSStoreId" type="string" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <simpleType name="ConfigVersionType">
+    <restriction base="string">
+      <enumeration value="3.1.0" />
+    </restriction>
+  </simpleType>
+
+</schema>

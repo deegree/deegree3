@@ -30,6 +30,7 @@
 
   <modules>
     <module>deegree-layers-feature</module>
+    <module>deegree-layers-remotewms</module>
   </modules>
 
 </project>

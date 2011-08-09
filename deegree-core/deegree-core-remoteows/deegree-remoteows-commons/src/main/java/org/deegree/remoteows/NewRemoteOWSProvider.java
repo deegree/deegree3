@@ -46,7 +46,7 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public interface RemoteOWSProvider extends ExtendedResourceProvider<RemoteOWSStore> {
+public interface NewRemoteOWSProvider extends ExtendedResourceProvider<NewRemoteOWSStore> {
 
     /**
      * @return the namespaces of capabilities XML documents the provider can handle. May be null or empty.

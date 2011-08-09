@@ -80,8 +80,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
+import org.deegree.commons.struct.Tree;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -971,5 +973,26 @@ public class WMSClient111 implements WMSClient {
             }
             targetImage.getGraphics().drawImage( response.first, xMin, yMin, null );
         }
+    }
+
+    private void buildLayerTree( Tree<StringPair> node, OMElement lay ) {
+        for ( OMElement l : capabilities.getElements( lay, new XPath( "Layer" ) ) ) {
+            Tree<StringPair> child = new Tree<StringPair>();
+            String name = capabilities.getNodeAsString( l, new XPath( "Name" ), null );
+            String title = capabilities.getNodeAsString( l, new XPath( "Title" ), null );
+            child.value = new StringPair( name, title );
+            node.children.add( child );
+        }
+    }
+
+    @Override
+    public Tree<StringPair> getLayerTree() {
+        Tree<StringPair> tree = new Tree<StringPair>();
+        OMElement lay = capabilities.getElement( capabilities.getRootElement(), new XPath( "//Capability/Layer" ) );
+        String name = capabilities.getNodeAsString( lay, new XPath( "Name" ), null );
+        String title = capabilities.getNodeAsString( lay, new XPath( "Title" ), null );
+        tree.value = new StringPair( name, title );
+        buildLayerTree( tree, lay );
+        return tree;
     }
 }

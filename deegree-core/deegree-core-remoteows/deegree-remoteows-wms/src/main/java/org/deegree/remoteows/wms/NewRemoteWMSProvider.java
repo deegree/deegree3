@@ -48,8 +48,8 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.remoteows.RemoteOWSProvider;
-import org.deegree.remoteows.RemoteOWSStore;
+import org.deegree.remoteows.NewRemoteOWSProvider;
+import org.deegree.remoteows.NewRemoteOWSStore;
 import org.deegree.remoteows.wms.jaxb.AuthenticationType;
 import org.deegree.remoteows.wms.jaxb.HTTPBasicAuthenticationType;
 import org.deegree.remoteows.wms.jaxb.RemoteWMSStore;
@@ -62,13 +62,13 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31451 $, $Date: 2011-08-08 08:13:46 +0200 (Mon, 08 Aug 2011) $
  */
-public class RemoteWMSProvider implements RemoteOWSProvider {
+public class NewRemoteWMSProvider implements NewRemoteOWSProvider {
 
-    private static final Logger LOG = getLogger( RemoteWMSProvider.class );
+    private static final Logger LOG = getLogger( NewRemoteWMSProvider.class );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms.jaxb";
 
-    private static final URL CONFIG_SCHEMA = RemoteWMSProvider.class.getResource( "/META-INF/schemas/datasource/remoteows/wms/3.1.0/remotewms.xsd" );
+    private static final URL CONFIG_SCHEMA = NewRemoteWMSProvider.class.getResource( "/META-INF/schemas/datasource/remoteows/wms/3.1.0/remotewms.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -88,7 +88,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
     }
 
     @Override
-    public RemoteOWSStore create( URL config ) {
+    public NewRemoteOWSStore create( URL config ) {
         try {
             RemoteWMSStore cfg = (RemoteWMSStore) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, config, workspace );
             XMLAdapter resolver = new XMLAdapter();
@@ -110,7 +110,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             }
             client = new WMSClient111( capas, connTimeout, reqTimeout, user, pass );
 
-            return new org.deegree.remoteows.wms.RemoteWMSStore( client );
+            return new org.deegree.remoteows.wms.NewRemoteWMSStore( client );
         } catch ( JAXBException e ) {
             e.printStackTrace();
             LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );

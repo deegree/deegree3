@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/remoteows/wms/RemoteWMSStore.java $
+//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,32 +33,35 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.remoteows.wms;
+package org.deegree.layer.persistence;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.remoteows.RemoteOWSStore;
+import org.deegree.layer.Layer;
 
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
+ * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: 31451 $, $Date: 2011-08-08 08:13:46 +0200 (Mon, 08 Aug 2011) $
+ * @version $Revision: $, $Date: $
  */
-public class RemoteWMSStore implements RemoteOWSStore {
+public class MultipleLayerStore implements LayerStore {
 
-    private WMSClient client;
+    private Map<String, Layer> map;
 
-    /**
-     * @param client
-     */
-    public RemoteWMSStore( WMSClient client ) {
-        this.client = client;
+    public MultipleLayerStore( Map<String, Layer> map ) {
+        this.map = map;
     }
 
-    public WMSClient getClient() {
-        return client;
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to do
     }
 
     @Override
@@ -67,9 +70,13 @@ public class RemoteWMSStore implements RemoteOWSStore {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        // nothing to do
+    public List<Layer> getAll() {
+        return new ArrayList<Layer>( map.values() );
+    }
+
+    @Override
+    public Layer get( String identifier ) {
+        return map.get( identifier );
     }
 
 }

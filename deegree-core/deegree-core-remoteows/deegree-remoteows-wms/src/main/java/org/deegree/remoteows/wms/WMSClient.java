@@ -41,7 +41,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.struct.Tree;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringPair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
@@ -87,5 +89,7 @@ public interface WMSClient {
     public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,
                                              Envelope bbox, ICRS srs, int count, Map<String, String> hardParameters )
                             throws IOException;
+
+    public Tree<StringPair> getLayerTree();
 
 }
