@@ -11,8 +11,6 @@
     </appinfo>
   </annotation>
 
-  <element name="Authentication" type="wms:AuthenticationType" />
-
   <element name="RemoteWFS">
     <complexType>
       <sequence>
