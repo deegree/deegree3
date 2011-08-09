@@ -57,7 +57,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WPVSProvider implements OWSProvider<WPVSRequestType> {
+public class WPVSProvider implements OWSProvider {
 
     protected static final ImplementationMetadata<WPVSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPVSRequestType>() {
         {
@@ -65,7 +65,7 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
             handledNamespaces = new String[] { WPVS_NS };
             handledRequests = WPVSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = new String[]{ "WPVS" };
+            serviceName = new String[] { "WPVS" };
         }
     };
 
@@ -85,7 +85,7 @@ public class WPVSProvider implements OWSProvider<WPVSRequestType> {
     }
 
     @Override
-    public OWS<WPVSRequestType> create( URL configURL ) {
+    public OWS create( URL configURL ) {
         return new WPVSController( configURL, getImplementationMetadata() );
     }
 

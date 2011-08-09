@@ -37,8 +37,6 @@ package org.deegree.services.wfs;
 
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.URL;
@@ -59,7 +57,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WFSProvider implements OWSProvider<WFSRequestType> {
+public class WFSProvider implements OWSProvider {
 
     protected static final ImplementationMetadata<WFSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WFSRequestType>() {
         {
@@ -67,7 +65,7 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
             handledNamespaces = new String[] { WFS_NS };
             handledRequests = WFSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
-            serviceName = new String[]{ "WFS" };
+            serviceName = new String[] { "WFS" };
         }
     };
 
@@ -87,7 +85,7 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
     }
 
     @Override
-    public OWS<WFSRequestType> create( URL configURL ) {
+    public OWS create( URL configURL ) {
         return new WFSController( configURL, getImplementationMetadata() );
     }
 
@@ -100,6 +98,6 @@ public class WFSProvider implements OWSProvider<WFSRequestType> {
     @Override
     public void init( DeegreeWorkspace workspace ) {
         // TODO Auto-generated method stub
-        
+
     }
 }

@@ -81,7 +81,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
+public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     private static final Logger LOG = getLogger( WebServicesConfiguration.class );
 
@@ -94,14 +94,14 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
-    private final Map<String, OWS<? extends Enum<?>>> ogcNameToService = new HashMap<String, OWS<? extends Enum<?>>>();
+    private final Map<String, OWS> ogcNameToService = new HashMap<String, OWS>();
 
     // maps service namespaces (e.g. 'http://www.opengis.net/wms', 'http://www.opengis.net/wfs', ...) to the
     // responsible subcontrollers
-    private final Map<String, OWS<? extends Enum<?>>> requestNsToService = new HashMap<String, OWS<? extends Enum<?>>>();
+    private final Map<String, OWS> requestNsToService = new HashMap<String, OWS>();
 
     // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to the responsible subcontrollers
-    private final Map<String, OWS<? extends Enum<?>>> requestNameToService = new HashMap<String, OWS<? extends Enum<?>>>();
+    private final Map<String, OWS> requestNameToService = new HashMap<String, OWS>();
 
     private DeegreeServicesMetadataType metadataConfig;
 
@@ -134,7 +134,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
             iter = ServiceLoader.load( OWSProvider.class ).iterator();
         }
         while ( iter.hasNext() ) {
-            OWSProvider<?> prov = iter.next();
+            OWSProvider prov = iter.next();
             providers.add( prov );
             deps.addAll( asList( prov.getDependencies() ) );
         }
@@ -201,12 +201,12 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
         // }
 
         this.workspace = workspace;
-        ResourceManagerMetadata<OWS<?>> md = getMetadata();
+        ResourceManagerMetadata<OWS> md = getMetadata();
         if ( md != null ) {
             for ( ResourceProvider p : md.getResourceProviders() ) {
                 try {
-                    ( (OWSProvider<?>) p ).init( workspace );
-                    nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<OWS<?>>) p );
+                    ( (OWSProvider) p ).init( workspace );
+                    nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<OWS>) p );
                 } catch ( Throwable t ) {
                     LOG.error( "Initializing of service provider " + p.getClass() + " failed.", t );
                 }
@@ -228,7 +228,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
                 String fileName = configFile.getName();
                 if ( !fileName.equals( "metadata.xml" ) && !fileName.equals( "main.xml" ) ) {
                     try {
-                        ResourceState<OWS<?>> state = processResourceConfig( configFile );
+                        ResourceState<OWS> state = processResourceConfig( configFile );
                         idToState.put( state.getId(), state );
                     } catch ( Throwable t ) {
                         LOG.error( t.getMessage(), t );
@@ -247,7 +247,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
      *            service type code, e.g. "WMS" or "WFS"
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS<? extends Enum<?>> getByServiceType( String serviceType ) {
+    public OWS getByServiceType( String serviceType ) {
         return ogcNameToService.get( serviceType.toUpperCase() );
     }
 
@@ -259,7 +259,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
      *            request name, e.g. "GetMap" or "GetFeature"
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS<? extends Enum<?>> getByRequestName( String requestName ) {
+    public OWS getByRequestName( String requestName ) {
         return requestNameToService.get( requestName );
     }
 
@@ -270,7 +270,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
      *            XML namespace
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS<? extends Enum<?>> getByRequestNS( String ns ) {
+    public OWS getByRequestNS( String ns ) {
         return requestNsToService.get( ns );
     }
 
@@ -280,8 +280,8 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
      * @return the instance of the requested service used by OGCFrontController, or null if the service is not
      *         registered.
      */
-    public Map<String, OWS<? extends Enum<?>>> getServiceControllers() {
-        Map<String, OWS<? extends Enum<?>>> nameToController = new HashMap<String, OWS<? extends Enum<?>>>();
+    public Map<String, OWS> getServiceControllers() {
+        Map<String, OWS> nameToController = new HashMap<String, OWS>();
         for ( String serviceName : ogcNameToService.keySet() ) {
             nameToController.put( serviceName, ogcNameToService.get( serviceName ) );
         }
@@ -291,21 +291,15 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     /**
      * Returns the service controller instance based on the class of the service controller.
      * 
-     * @param <T>
-     * 
      * @param c
      *            class of the requested service controller, e.g. <code>WPSController.getClass()</code>
      * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
      *         is active
      */
-    public <T extends Enum<T>, U extends OWS<T>> U getServiceController( Class<U> c ) {
-        for ( OWS<?> it : requestNsToService.values() ) {
+    public OWS getServiceController( Class<?> c ) {
+        for ( OWS it : requestNsToService.values() ) {
             if ( c == it.getClass() ) {
-                // somehow just annotating the return expression does not work
-                // even annotations to suppress sucking generics suck
-                @SuppressWarnings(value = "unchecked")
-                U result = (U) it;
-                return result;
+                return it;
             }
         }
         return null;
@@ -315,8 +309,8 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS<?>> {
     public void shutdown() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Shutting down deegree web services in context..." );
-        for ( ResourceState<OWS<?>> state : getStates() ) {
-            OWS<?> ows = state.getResource();
+        for ( ResourceState<OWS> state : getStates() ) {
+            OWS ows = state.getResource();
             if ( ows != null ) {
                 LOG.info( "Shutting down service: " + state.getId() + "" );
                 try {

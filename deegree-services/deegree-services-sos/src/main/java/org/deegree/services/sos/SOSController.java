@@ -145,7 +145,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class SOSController extends AbstractOWS<SOSRequestType> {
+public class SOSController extends AbstractOWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( SOSController.class );
 
@@ -167,7 +167,7 @@ public class SOSController extends AbstractOWS<SOSRequestType> {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<SOSRequestType> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
 
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );

@@ -124,7 +124,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WPService extends AbstractOWS<WPSRequestType> {
+public class WPService extends AbstractOWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
 
@@ -146,7 +146,7 @@ public class WPService extends AbstractOWS<WPSRequestType> {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<WPSRequestType> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
 
         LOG.info( "Initializing WPS." );
@@ -390,7 +390,7 @@ public class WPService extends AbstractOWS<WPSRequestType> {
                             throws OWSException {
         WPSRequestType requestType = null;
         try {
-            requestType = serviceInfo.getRequestTypeByName( requestName );
+            requestType = (WPSRequestType) serviceInfo.getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OPERATION_NOT_SUPPORTED );
         }

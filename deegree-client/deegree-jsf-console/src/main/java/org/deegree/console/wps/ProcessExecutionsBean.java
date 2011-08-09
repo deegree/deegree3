@@ -68,7 +68,7 @@ public class ProcessExecutionsBean {
      * Creates a new {@link ProcessExecutionsBean} instance (only used by JSF).
      */
     public ProcessExecutionsBean() {
-        WPService service = OGCFrontController.getServiceController( WPService.class );
+        WPService service = (WPService) OGCFrontController.getServiceController( WPService.class );
         for ( org.deegree.services.wps.ProcessExecution p : service.getExecutionManager().getAllProcesses() ) {
             executions.add( new ProcessExecution( p ) );
         }

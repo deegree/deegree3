@@ -157,7 +157,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 15339 $, $Date: 2008-12-11 18:40:09 +0100 (Do, 11 Dez 2008) $
  */
-public class WFSController extends AbstractOWS<WFSRequestType> {
+public class WFSController extends AbstractOWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( WFSController.class );
 
@@ -197,7 +197,7 @@ public class WFSController extends AbstractOWS<WFSRequestType> {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<WFSRequestType> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
 
         LOG.info( "Initializing WFS." );
@@ -690,8 +690,7 @@ public class WFSController extends AbstractOWS<WFSRequestType> {
 
     private WFSRequestType getRequestTypeByName( String requestName )
                             throws OWSException {
-
-        WFSRequestType requestType = serviceInfo.getRequestTypeByName( requestName );
+        WFSRequestType requestType = (WFSRequestType) serviceInfo.getRequestTypeByName( requestName );
         if ( requestType == null ) {
             String msg = "Request type '" + requestName + "' is not supported.";
             throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED, "request" );

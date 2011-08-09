@@ -57,7 +57,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WCSProvider implements OWSProvider<WCSRequestType> {
+public class WCSProvider implements OWSProvider {
 
     protected static final ImplementationMetadata<WCSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WCSRequestType>() {
         {
@@ -65,7 +65,7 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
             handledNamespaces = new String[] { WCS_100_NS };
             handledRequests = WCSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = new String[]{ "WCS" };
+            serviceName = new String[] { "WCS" };
         }
     };
 
@@ -85,7 +85,7 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
     }
 
     @Override
-    public OWS<WCSRequestType> create( URL configURL ) {
+    public OWS create( URL configURL ) {
         return new WCSController( configURL, getImplementationMetadata() );
     }
 
@@ -98,6 +98,6 @@ public class WCSProvider implements OWSProvider<WCSRequestType> {
     @Override
     public void init( DeegreeWorkspace workspace ) {
         // TODO Auto-generated method stub
-        
+
     }
 }

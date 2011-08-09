@@ -225,8 +225,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
 
-        this.perspectiveViewService = workspace.getSubsystemManager( WebServicesConfiguration.class ).getServiceController(
-                                                                                                                            WPVSController.class ).getService();
+        this.perspectiveViewService = ( (WPVSController) workspace.getSubsystemManager( WebServicesConfiguration.class ).getServiceController(
+                                                                                                                            WPVSController.class ) ).getService();
 
         this.demRenderer = this.perspectiveViewService.getDefaultDEMRenderer();
         DEMDataset dDW = this.perspectiveViewService.getDEMDatasets();

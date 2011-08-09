@@ -41,17 +41,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.services.OWS;
 
 /**
- * This class contains metadata information on the details of an implementation of a
- * {@link AbstractOWS}.
+ * This class contains metadata information on the details of an implementation of an {@link OWS}.
  * <p>
  * Contained information:
  * <ul>
- * <li>OGC versions supported by the implementation</li>
+ * <li>OGC protocol versions supported by the implementation</li>
  * <li>Names of requests that are supported by the implementation</li>
  * <li>Namespaces used by XML requests</li>
- * <li>Supported configuration file versions.</li>
+ * <li>Supported deegree configuration file versions</li>
  * </ul>
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>

@@ -62,7 +62,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class CSWProvider implements OWSProvider<CSWRequestType> {
+public class CSWProvider implements OWSProvider {
 
     private static final Logger LOG = getLogger( CSWProvider.class );
 
@@ -87,7 +87,7 @@ public class CSWProvider implements OWSProvider<CSWRequestType> {
     }
 
     @Override
-    public OWS<CSWRequestType> create( URL configURL ) {
+    public OWS create( URL configURL ) {
         MetadataStoreManager mgr = ws.getSubsystemManager( MetadataStoreManager.class );
         if ( mgr == null )
             throw new IllegalArgumentException( "Could not find a MetadataStoreManager!" );

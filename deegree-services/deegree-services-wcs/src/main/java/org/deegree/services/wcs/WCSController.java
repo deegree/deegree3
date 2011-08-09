@@ -116,7 +116,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WCSController extends AbstractOWS<WCSRequestType> {
+public class WCSController extends AbstractOWS {
 
     private static int UPDATE_SEQUENCE = -1;
 
@@ -144,7 +144,7 @@ public class WCSController extends AbstractOWS<WCSRequestType> {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<WCSRequestType> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
 
         LOG.info( "Initializing WCS." );

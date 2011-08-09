@@ -46,10 +46,10 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWSProvider<T extends Enum<T>> extends ExtendedResourceProvider<OWS<T>> {
+public interface OWSProvider extends ExtendedResourceProvider<OWS> {
 
     /**
      * @return information about handled requests, namespaces and so on
      */
-    ImplementationMetadata<T> getImplementationMetadata();
+    ImplementationMetadata<?> getImplementationMetadata();
 }

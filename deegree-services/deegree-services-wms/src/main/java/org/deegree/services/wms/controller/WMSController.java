@@ -158,7 +158,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 @LoggingNotes(trace = "logs stack traces", debug = "logs sent exception messages, security information", warn = "logs problems with custom serializer classes", error = "logs unknown errors, problems with GetFeatureInfo templates")
-public class WMSController extends AbstractOWS<WMSRequestType> {
+public class WMSController extends AbstractOWS {
 
     private static final Logger LOG = getLogger( WMSController.class );
 
@@ -192,7 +192,7 @@ public class WMSController extends AbstractOWS<WMSRequestType> {
 
     private String metadataURL;
 
-    public WMSController( URL configURL, ImplementationMetadata serviceInfo ) {
+    public WMSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         super( configURL, serviceInfo );
     }
 
@@ -220,6 +220,7 @@ public class WMSController extends AbstractOWS<WMSRequestType> {
         traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
         if ( storeid != null ) {
             MetadataStoreManager mdmanager = workspace.getSubsystemManager( MetadataStoreManager.class );
+            @SuppressWarnings("unchecked")
             MetadataStore<ISORecord> store = mdmanager.get( storeid );
             if ( store == null ) {
                 LOG.warn( "Metadata store with id {} is not available, metadata ids will not be checked.", storeid );
@@ -271,7 +272,7 @@ public class WMSController extends AbstractOWS<WMSRequestType> {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
-                      ImplementationMetadata<WMSRequestType> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
 
         super.init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
@@ -398,7 +399,7 @@ public class WMSController extends AbstractOWS<WMSRequestType> {
 
         WMSRequestType req;
         try {
-            req = serviceInfo.getRequestTypeByName( map.get( "REQUEST" ) );
+            req = (WMSRequestType) serviceInfo.getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
                                                                              map.get( "REQUEST" ) ),
@@ -808,9 +809,9 @@ public class WMSController extends AbstractOWS<WMSRequestType> {
         // TODO handle this properly in init(), needs service level dependency management
         if ( metadataURL == null ) {
             WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
-            Map<String, OWS<? extends Enum<?>>> ctrls = mgr.getServiceControllers();
+            Map<String, OWS> ctrls = mgr.getServiceControllers();
             for ( OWS o : ctrls.values() ) {
-                ImplementationMetadata md = o.getImplementationMetadata();
+                ImplementationMetadata<?> md = o.getImplementationMetadata();
                 for ( String s : md.getImplementedServiceName() ) {
                     if ( s.equalsIgnoreCase( "csw" ) && md.getImplementedVersions().contains( new Version( 2, 0, 2 ) ) ) {
                         this.metadataURL = ""; // special case to use requested address

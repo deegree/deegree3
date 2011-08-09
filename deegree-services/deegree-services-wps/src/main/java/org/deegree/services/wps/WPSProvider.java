@@ -56,7 +56,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WPSProvider implements OWSProvider<WPSRequestType> {
+public class WPSProvider implements OWSProvider {
 
     protected static final ImplementationMetadata<WPSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPSRequestType>() {
         {
@@ -64,7 +64,7 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
             handledNamespaces = new String[] { WPS_100_NS };
             handledRequests = WPSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
-            serviceName = new String[]{ "WPS" };
+            serviceName = new String[] { "WPS" };
         }
     };
 
@@ -84,7 +84,7 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
     }
 
     @Override
-    public OWS<WPSRequestType> create( URL configURL ) {
+    public OWS create( URL configURL ) {
         return new WPService( configURL, getImplementationMetadata() );
     }
 
@@ -97,6 +97,5 @@ public class WPSProvider implements OWSProvider<WPSRequestType> {
     @Override
     public void init( DeegreeWorkspace workspace ) {
         // TODO Auto-generated method stub
-        
     }
 }

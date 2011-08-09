@@ -109,7 +109,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public abstract class AbstractOWS<T extends Enum<T>> implements OWS<T> {
+public abstract class AbstractOWS implements OWS {
 
     private ImplementationMetadata<?> implementationMetadata;
 
@@ -132,9 +132,9 @@ public abstract class AbstractOWS<T extends Enum<T>> implements OWS<T> {
 
     private URL configURL;
 
-    protected ImplementationMetadata<T> serviceInfo;
+    protected ImplementationMetadata<?> serviceInfo;
 
-    protected AbstractOWS( URL configURL, ImplementationMetadata<T> serviceInfo ) {
+    protected AbstractOWS( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         this.configURL = configURL;
         this.serviceInfo = serviceInfo;
     }
@@ -171,7 +171,7 @@ public abstract class AbstractOWS<T extends Enum<T>> implements OWS<T> {
         init( ws.getMetadataConfiguration(), ws.getMainConfiguration(), serviceInfo, adapter );
     }
 
-    public ImplementationMetadata<T> getImplementationMetadata() {
+    public ImplementationMetadata<?> getImplementationMetadata() {
         return serviceInfo;
     }
 
@@ -186,7 +186,7 @@ public abstract class AbstractOWS<T extends Enum<T>> implements OWS<T> {
      *             if the config version does not match one of the supported versions
      */
     protected void init( DeegreeServicesMetadataType mainMetadataConf, DeegreeServiceControllerType mainControllerConf,
-                         ImplementationMetadata<T> serviceInformation, XMLAdapter controllerConfig )
+                         ImplementationMetadata<?> serviceInformation, XMLAdapter controllerConfig )
                             throws ResourceInitException {
         this.mainMetadataConf = mainMetadataConf;
         this.mainControllerConf = mainControllerConf;

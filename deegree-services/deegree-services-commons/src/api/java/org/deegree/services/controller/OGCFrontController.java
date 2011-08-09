@@ -226,7 +226,7 @@ public class OGCFrontController extends HttpServlet {
      * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
      *         is active
      */
-    public static <U extends Enum<U>, T extends OWS<U>> T getServiceController( Class<T> c ) {
+    public static OWS getServiceController( Class<?> c ) {
         return instance.serviceConfiguration.getServiceController( c );
     }
 
@@ -279,6 +279,7 @@ public class OGCFrontController extends HttpServlet {
      * service specification allows the sending of XML requests via GET (see WCS 1.0.0 specification, section 6.3.3). In
      * this case, the query string contains no <code>key=value</code> pairs, but the (URL encoded) xml. The encoding
      * ensures that no <code>=</code> char (parameter/value delimiters) occur in the string.
+     * </p>
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -366,8 +367,8 @@ public class OGCFrontController extends HttpServlet {
      * ways to encode the parameters:
      * <ul>
      * <li><b>KVP</b>: Parameters are given as <code>key=value</code> pairs which are separated using the &amp;
-     * character. This is equivalent to standard HTTP GET requests, except that the parameters are not encoded in the
-     * query string, but in the POST body. In this case, the <code>content-type</code> field in the header must be
+     * character. This is equivalent to standard HTTP GET requests, except that the parameters are not part of the query
+     * string, but the POST body. In this case, the <code>content-type</code> field in the header must be
      * <code>application/x-www-form-urlencoded</code>.</li>
      * <li><b>XML</b>: The POST body contains an XML document. In this case, the <code>content-type</code> field in the
      * header has to be <code>text/xml</code>, but the implementation does not rely on this in order to be more tolerant
@@ -499,9 +500,9 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private OWS<?> determineOWSByPath( HttpServletRequest request, HttpServletResponse response )
+    private OWS determineOWSByPath( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException {
-        OWS<?> ows = null;
+        OWS ows = null;
         String pathInfo = request.getPathInfo();
         if ( pathInfo != null ) {
             // remove start "/"
@@ -596,7 +597,7 @@ public class OGCFrontController extends HttpServlet {
                                      HttpServletResponse response, List<FileItem> multiParts, long entryTime )
                             throws ServletException, IOException {
 
-        OWS<? extends Enum<?>> ows = determineOWSByPath( requestWrapper, response );
+        OWS ows = determineOWSByPath( requestWrapper, response );
 
         LoggingHttpResponseWrapper logging = null;
 
@@ -709,7 +710,7 @@ public class OGCFrontController extends HttpServlet {
                                      HttpServletResponse response, List<FileItem> multiParts )
                             throws ServletException, IOException {
 
-        OWS<? extends Enum<?>> ows = determineOWSByPath( requestWrapper, response );
+        OWS ows = determineOWSByPath( requestWrapper, response );
 
         CredentialsProvider credentialsProvider = securityConfiguration == null ? null
                                                                                : securityConfiguration.getCredentialsProvider();
@@ -781,7 +782,7 @@ public class OGCFrontController extends HttpServlet {
                                       HttpServletResponse response, List<FileItem> multiParts )
                             throws ServletException, IOException {
 
-        OWS<? extends Enum<?>> ows = determineOWSByPath( requestWrapper, response );
+        OWS ows = determineOWSByPath( requestWrapper, response );
 
         // TODO integrate authentication handling (CredentialsProvider)
         LOG.debug( "Handling SOAP request." );
@@ -1151,14 +1152,14 @@ public class OGCFrontController extends HttpServlet {
      */
     private void sendException( OWSException e, HttpServletResponse res, Version requestVersion )
                             throws ServletException {
-        Collection<OWS<? extends Enum<?>>> values = serviceConfiguration.getServiceControllers().values();
+        Collection<OWS> values = serviceConfiguration.getServiceControllers().values();
         if ( values.size() > 0 ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be
             // correct)
-            OWS<? extends Enum<?>> first = values.iterator().next();
+            OWS first = values.iterator().next();
             Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = first.getExceptionSerializer( requestVersion );
-            ( (AbstractOWS<?>) first ).sendException( serializerAndMime.second, "UTF-8", null, 200,
-                                                      serializerAndMime.first, e, res );
+            ( (AbstractOWS) first ).sendException( serializerAndMime.second, "UTF-8", null, 200,
+                                                   serializerAndMime.first, e, res );
         } else {
             // use the most common serializer (OWS 1.1.0)
             AbstractOWS.sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), null, e, res );

@@ -56,7 +56,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class SOSProvider implements OWSProvider<SOSRequestType> {
+public class SOSProvider implements OWSProvider {
 
     protected static final ImplementationMetadata<SOSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<SOSRequestType>() {
         {
@@ -64,7 +64,7 @@ public class SOSProvider implements OWSProvider<SOSRequestType> {
             handledNamespaces = new String[] { SOS_100_NS };
             handledRequests = SOSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
-            serviceName = new String[]{ "SOS"} ;
+            serviceName = new String[] { "SOS" };
         }
     };
 
@@ -84,7 +84,7 @@ public class SOSProvider implements OWSProvider<SOSRequestType> {
     }
 
     @Override
-    public OWS<SOSRequestType> create( URL configURL ) {
+    public OWS create( URL configURL ) {
         return new SOSController( configURL, getImplementationMetadata() );
     }
 
@@ -97,6 +97,6 @@ public class SOSProvider implements OWSProvider<SOSRequestType> {
     @Override
     public void init( DeegreeWorkspace workspace ) {
         // TODO Auto-generated method stub
-        
+
     }
 }

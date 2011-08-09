@@ -112,7 +112,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WPVSController extends AbstractOWS<WPVSRequestType> {
+public class WPVSController extends AbstractOWS {
 
     private final static Logger LOG = LoggerFactory.getLogger( WPVSController.class );
 
@@ -128,17 +128,18 @@ public class WPVSController extends AbstractOWS<WPVSRequestType> {
 
     private ServiceProviderType provider;
 
+    @SuppressWarnings("unused")
     private PublishedInformation publishedInformation;
 
     private List<String> allowedOperations = new LinkedList<String>();
 
-    public WPVSController( URL configURL, ImplementationMetadata serviceInfo ) {
+    public WPVSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         super( configURL, serviceInfo );
     }
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<WPVSRequestType> md, XMLAdapter controllerConf )
+                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
 
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
@@ -220,7 +221,7 @@ public class WPVSController extends AbstractOWS<WPVSRequestType> {
             sendServiceException( new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE ), response );
             return;
         }
-        mappedRequest = serviceInfo.getRequestTypeByName( requestName );
+        mappedRequest = (WPVSRequestType) serviceInfo.getRequestTypeByName( requestName );
 
         if ( mappedRequest == null ) {
             sendServiceException( new OWSException( "Unknown request: " + requestName + " is not known to the WPVS.",

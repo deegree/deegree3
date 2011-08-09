@@ -68,7 +68,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWS<T extends Enum<T>> extends Resource {
+public interface OWS extends Resource {
 
     /**
      * Called by the {@link OGCFrontController} to allow this {@link OWS} to handle an OGC-KVP request.
@@ -145,7 +145,7 @@ public interface OWS<T extends Enum<T>> extends Resource {
      *         for backward compatibility regarding custom controller classes)
      */
     @Deprecated
-    public ImplementationMetadata<T> getImplementationMetadata();
+    public ImplementationMetadata<?> getImplementationMetadata();
 
     /**
      * Returns the {@link ExceptionSerializer} and mime-type suitable for the given request version.

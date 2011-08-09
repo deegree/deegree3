@@ -60,7 +60,7 @@ import org.deegree.style.persistence.StyleStoreManager;
  * 
  * @version $Revision$, $Date$
  */
-public class WMSProvider implements OWSProvider<WMSRequestType> {
+public class WMSProvider implements OWSProvider {
 
     protected static final ImplementationMetadata<WMSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMSRequestType>() {
         {
@@ -88,7 +88,7 @@ public class WMSProvider implements OWSProvider<WMSRequestType> {
     }
 
     @Override
-    public OWS<WMSRequestType> create( URL configURL ) {
+    public OWS create( URL configURL ) {
         return new WMSController( configURL, getImplementationMetadata() );
     }
 
