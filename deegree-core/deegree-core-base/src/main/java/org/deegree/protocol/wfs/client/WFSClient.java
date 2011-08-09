@@ -48,7 +48,7 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 
 /**
- * API-level client for accessing services that implement the <a
+ * API-level client for accessing web services that implement the <a
  * href="http://www.opengeospatial.org/standards/wfs">WebFeatureService (WFS) 1.0.0/1.1.0/2.0</a> protocol.
  * 
  * <h4>Initialization</h4> In the initial step, one constructs a new {@link WFSClient} instance by invoking the

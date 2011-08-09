@@ -80,7 +80,7 @@ import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
  * <li>{@link BBoxQuery}</li>
  * </ul>
  * Some keys are specific for a query type, some are required, etc. For a comprehensive table of keywords and values
- * please look at the WFS v1.1 implementation specification.
+ * please look at the WFS 1.1.0 implementation specification.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>

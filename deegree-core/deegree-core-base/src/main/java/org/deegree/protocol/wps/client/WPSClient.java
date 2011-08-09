@@ -65,8 +65,8 @@ import org.slf4j.LoggerFactory;
  * 
  * <pre>
  * ...
- *   URL processUrl = new URL( "http://...?service=WPS&version=1.0.0&request=GetCapabilities" );
- *   WPSClient wpsClient = new WPSClient( processUrl );
+ *   URL capabilitiesUrl = new URL( "http://...?service=WPS&version=1.0.0&request=GetCapabilities" );
+ *   WPSClient wpsClient = new WPSClient( capabilitiesUrl );
  * ...
  * </pre>
  * 
@@ -323,7 +323,7 @@ public class WPSClient {
         }
 
         OMElement root = capabilitiesDoc.getRootElement();
-        System.out.println(root.toString());
+        System.out.println( root.toString() );
         String protocolVersion = root.getAttributeValue( new QName( "version" ) );
         if ( !"1.0.0".equals( protocolVersion ) ) {
             String msg = "Capabilities document has unsupported version " + protocolVersion + ".";
