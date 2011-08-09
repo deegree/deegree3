@@ -69,7 +69,7 @@ public class WPSBean {
      * Creates a new {@link WPSBean} instance (only used by JSF).
      */
     public WPSBean() {
-        WPService service = (WPService) OGCFrontController.getServiceController( WPService.class );
+        WPService service = (WPService) ( OGCFrontController.getServiceConfiguration().getByOWSClass( WPService.class ).get( 0 ) );
         this.version = service.getOfferedVersionsString();
         for ( WPSProcess process : service.getProcessManager().getProcesses().values() ) {
             processIds.add( process.getDescription().getIdentifier().getValue().toString() );

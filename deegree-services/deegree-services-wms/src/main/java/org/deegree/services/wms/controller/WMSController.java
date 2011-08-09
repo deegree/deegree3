@@ -809,12 +809,15 @@ public class WMSController extends AbstractOWS {
         // TODO handle this properly in init(), needs service level dependency management
         if ( metadataURL == null ) {
             WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
-            Map<String, OWS> ctrls = mgr.getServiceControllers();
-            for ( OWS o : ctrls.values() ) {
-                ImplementationMetadata<?> md = o.getImplementationMetadata();
-                for ( String s : md.getImplementedServiceName() ) {
-                    if ( s.equalsIgnoreCase( "csw" ) && md.getImplementedVersions().contains( new Version( 2, 0, 2 ) ) ) {
-                        this.metadataURL = ""; // special case to use requested address
+            Map<String, List<OWS>> ctrls = mgr.getAll();
+            for ( List<OWS> lists : ctrls.values() ) {
+                for ( OWS o : lists ) {
+                    ImplementationMetadata<?> md = o.getImplementationMetadata();
+                    for ( String s : md.getImplementedServiceName() ) {
+                        if ( s.equalsIgnoreCase( "csw" )
+                             && md.getImplementedVersions().contains( new Version( 2, 0, 2 ) ) ) {
+                            this.metadataURL = ""; // special case to use requested address
+                        }
                     }
                 }
             }

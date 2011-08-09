@@ -63,15 +63,15 @@ public class ProcessExecutionsBean {
 
     @Getter
     private final boolean hasExecutions;
-    
+
     /**
      * Creates a new {@link ProcessExecutionsBean} instance (only used by JSF).
      */
     public ProcessExecutionsBean() {
-        WPService service = (WPService) OGCFrontController.getServiceController( WPService.class );
+        WPService service = (WPService) ( OGCFrontController.getServiceConfiguration().getByOWSClass( WPService.class ).get( 0 ) );
         for ( org.deegree.services.wps.ProcessExecution p : service.getExecutionManager().getAllProcesses() ) {
             executions.add( new ProcessExecution( p ) );
         }
         hasExecutions = !executions.isEmpty();
-    }   
+    }
 }

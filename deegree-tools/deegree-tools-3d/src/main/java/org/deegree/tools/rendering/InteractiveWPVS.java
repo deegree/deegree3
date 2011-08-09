@@ -225,7 +225,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
 
-        this.perspectiveViewService = ( (WPVSController) workspace.getSubsystemManager( WebServicesConfiguration.class ).getServiceController(
+        this.perspectiveViewService = ( (WPVSController) workspace.getSubsystemManager( WebServicesConfiguration.class ).getByOWSClass(
                                                                                                                             WPVSController.class ) ).getService();
 
         this.demRenderer = this.perspectiveViewService.getDefaultDEMRenderer();
@@ -946,7 +946,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         if ( workspace.getSubsystemManager( WebServicesConfiguration.class ) == null ) {
             throw new FileNotFoundException( "No web service configurations were found in the workspace." );
         }
-        if ( workspace.getSubsystemManager( WebServicesConfiguration.class ).getServiceController( WPVSController.class ) == null ) {
+        if ( workspace.getSubsystemManager( WebServicesConfiguration.class ).getByOWSClass( WPVSController.class ) == null ) {
             throw new FileNotFoundException( "No WPVS configuration was found in the workspace." );
         }
 

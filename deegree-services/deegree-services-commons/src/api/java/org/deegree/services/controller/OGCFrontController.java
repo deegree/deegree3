@@ -219,18 +219,6 @@ public class OGCFrontController extends HttpServlet {
     }
 
     /**
-     * Returns the service controller instance based on the class of the service controller.
-     * 
-     * @param c
-     *            class of the requested service controller, e.g. <code>WPSController.getClass()</code>
-     * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
-     *         is active
-     */
-    public static OWS getServiceController( Class<?> c ) {
-        return instance.serviceConfiguration.getServiceController( c );
-    }
-
-    /**
      * Returns the HTTP URL for communicating with the OGCFrontController over the web (for POST requests).
      * <p>
      * NOTE: This method will only return a correct result if the calling thread originated in the
@@ -635,11 +623,37 @@ public class OGCFrontController extends HttpServlet {
                 }
 
                 if ( service != null ) {
-                    ows = serviceConfiguration.getByServiceType( service );
+                    List<OWS> services = serviceConfiguration.getByServiceType( service );
+                    if ( services == null || services.isEmpty() ) {
+                        String msg = "Cannot dispatch request for service '" + service
+                                     + "' -- currently, no such service is configured / active.";
+                        throw new ServletException( msg );
+                    }
+                    if ( services.size() > 1 ) {
+                        String msg = "Cannot dispatch request for service '" + service
+                                     + "' -- currently, multiple services of this type "
+                                     + "are active. Please add the service id to the URL to "
+                                     + "choose one of the services.";
+                        throw new ServletException( msg );
+                    }
+                    ows = services.get( 0 );
                 } else {
                     // dispatch according to REQUEST-parameter
                     if ( request != null ) {
-                        ows = serviceConfiguration.getByRequestName( request );
+                        List<OWS> services = serviceConfiguration.getByRequestName( service );
+                        if ( services == null || services.isEmpty() ) {
+                            String msg = "Cannot dispatch KVP request of type '" + request
+                                         + "' -- currently, no services for this request type is configured / active.";
+                            throw new ServletException( msg );
+                        }
+                        if ( services.size() > 1 ) {
+                            String msg = "Cannot dispatch KVP request of type '" + request
+                                         + "' -- currently, multiple services for this request type "
+                                         + "are active. Please add the service id to the URL to "
+                                         + "choose one of the services.";
+                            throw new ServletException( msg );
+                        }
+                        ows = services.get( 0 );
                     }
                 }
 
@@ -660,7 +674,7 @@ public class OGCFrontController extends HttpServlet {
             }
 
             if ( ows != null ) {
-                LOG.debug( "Dispatching request to subcontroller class: " + ows.getClass().getName() );
+                LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
                 long dispatchTime = FrontControllerStats.requestDispatched();
                 try {
@@ -732,14 +746,23 @@ public class OGCFrontController extends HttpServlet {
 
             String ns = xmlStream.getNamespaceURI();
             if ( ows == null ) {
-                ows = serviceConfiguration.getByRequestNS( ns );
-                if ( ows == null ) {
-                    String msg = "No subcontroller for request namespace '" + ns + "' available.";
+                List<OWS> services = serviceConfiguration.getByRequestNS( ns );
+                if ( services == null || services.isEmpty() ) {
+                    String msg = "Cannot dispatch XML request with namespace '" + ns
+                                 + "' -- currently, no service for this request namespace is configured / active.";
                     throw new ServletException( msg );
                 }
+                if ( services.size() > 1 ) {
+                    String msg = "Cannot dispatch XML request with namespace '" + ns
+                                 + "' -- currently, multiple services for this namespace "
+                                 + "are active. Please add the service id to the URL to "
+                                 + "choose one of the services.";
+                    throw new ServletException( msg );
+                }
+                ows = services.get( 0 );
             }
             if ( ows != null ) {
-                LOG.debug( "Dispatching request to subcontroller class: " + ows.getClass().getName() );
+                LOG.debug( "Dispatching request to OWS: " + ows.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
                 long dispatchTime = FrontControllerStats.requestDispatched();
                 try {
@@ -799,7 +822,7 @@ public class OGCFrontController extends HttpServlet {
         StAXSOAPModelBuilder soap = new StAXSOAPModelBuilder( root.getXMLStreamReaderWithoutCaching(), factory,
                                                               factory.getSoapVersionURI() );
 
-        SOAPEnvelope envelope = soap.getSOAPEnvelope();
+        SOAPEnvelope env = soap.getSOAPEnvelope();
 
         CredentialsProvider credentialsProvider = securityConfiguration == null ? null
                                                                                : securityConfiguration.getCredentialsProvider();
@@ -808,7 +831,7 @@ public class OGCFrontController extends HttpServlet {
             // TODO handle multiple authentication methods
             Credentials cred = null;
             if ( credentialsProvider != null ) {
-                cred = credentialsProvider.doSOAP( envelope, requestWrapper );
+                cred = credentialsProvider.doSOAP( env, requestWrapper );
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -837,19 +860,29 @@ public class OGCFrontController extends HttpServlet {
             // }
 
             if ( ows == null ) {
-                ows = serviceConfiguration.getByRequestNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
-                if ( ows == null ) {
-                    String msg = "No subcontroller for request namespace '"
-                                 + envelope.getSOAPBodyFirstElementNS().getNamespaceURI() + "' available.";
+                String requestNs = env.getSOAPBodyFirstElementNS().getNamespaceURI();
+                List<OWS> services = serviceConfiguration.getByRequestNS( requestNs );
+                if ( services == null || services.isEmpty() ) {
+                    String msg = "Cannot dispatch SOAP request with body namespace '" + requestNs
+                                 + "' -- currently, no service for this namespace '" + requestNs
+                                 + "' is configured / active.";
                     throw new ServletException( msg );
                 }
+                if ( services.size() > 1 ) {
+                    String msg = "Cannot dispatch SOAP request with body namespace '" + requestNs
+                                 + "' -- currently, multiple services for this namespace '" + requestNs
+                                 + "' are active. Please add the service id to the URL to "
+                                 + "choose one of the services.";
+                    throw new ServletException( msg );
+                }
+                ows = services.get( 0 );
             }
 
-            LOG.debug( "Dispatching request to subcontroller class: " + ows.getClass().getName() );
+            LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
             HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
             long dispatchTime = FrontControllerStats.requestDispatched();
             try {
-                ows.doSOAP( envelope, requestWrapper, responseWrapper, multiParts, factory );
+                ows.doSOAP( env, requestWrapper, responseWrapper, multiParts, factory );
             } finally {
                 FrontControllerStats.requestFinished( dispatchTime );
             }
@@ -1152,11 +1185,11 @@ public class OGCFrontController extends HttpServlet {
      */
     private void sendException( OWSException e, HttpServletResponse res, Version requestVersion )
                             throws ServletException {
-        Collection<OWS> values = serviceConfiguration.getServiceControllers().values();
-        if ( values.size() > 0 ) {
+        Collection<List<OWS>> values = serviceConfiguration.getAll().values();
+        if ( values.size() > 0 && !values.iterator().next().isEmpty() ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be
             // correct)
-            OWS first = values.iterator().next();
+            OWS first = values.iterator().next().get( 0 );
             Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = first.getExceptionSerializer( requestVersion );
             ( (AbstractOWS) first ).sendException( serializerAndMime.second, "UTF-8", null, 200,
                                                    serializerAndMime.first, e, res );

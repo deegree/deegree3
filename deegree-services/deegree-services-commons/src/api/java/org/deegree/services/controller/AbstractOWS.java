@@ -111,9 +111,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractOWS implements OWS {
 
-    private ImplementationMetadata<?> implementationMetadata;
-
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOWS.class );
+
+    private ImplementationMetadata<?> implementationMetadata;
 
     /** Common configuration (metadata) of parent {@link OGCFrontController}. */
     protected DeegreeServicesMetadataType mainMetadataConf;

@@ -93,15 +93,14 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
 
-    // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
-    private final Map<String, OWS> ogcNameToService = new HashMap<String, OWS>();
+    // maps service names (e.g. 'WMS', 'WFS', ...) to OWS instances
+    private final Map<String, List<OWS>> ogcNameToService = new HashMap<String, List<OWS>>();
 
-    // maps service namespaces (e.g. 'http://www.opengis.net/wms', 'http://www.opengis.net/wfs', ...) to the
-    // responsible subcontrollers
-    private final Map<String, OWS> requestNsToService = new HashMap<String, OWS>();
+    // maps service namespaces (e.g. 'http://www.opengis.net/wms', 'http://www.opengis.net/wfs', ...) to OWS instances
+    private final Map<String, List<OWS>> requestNsToService = new HashMap<String, List<OWS>>();
 
-    // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to the responsible subcontrollers
-    private final Map<String, OWS> requestNameToService = new HashMap<String, OWS>();
+    // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to OWS instances
+    private final Map<String, List<OWS>> requestNameToService = new HashMap<String, List<OWS>>();
 
     private DeegreeServicesMetadataType metadataConfig;
 
@@ -247,7 +246,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
      *            service type code, e.g. "WMS" or "WFS"
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS getByServiceType( String serviceType ) {
+    public List<OWS> getByServiceType( String serviceType ) {
         return ogcNameToService.get( serviceType.toUpperCase() );
     }
 
@@ -259,7 +258,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
      *            request name, e.g. "GetMap" or "GetFeature"
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS getByRequestName( String requestName ) {
+    public List<OWS> getByRequestName( String requestName ) {
         return requestNameToService.get( requestName );
     }
 
@@ -270,7 +269,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
      *            XML namespace
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
-    public OWS getByRequestNS( String ns ) {
+    public List<OWS> getByRequestNS( String ns ) {
         return requestNsToService.get( ns );
     }
 
@@ -280,12 +279,8 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
      * @return the instance of the requested service used by OGCFrontController, or null if the service is not
      *         registered.
      */
-    public Map<String, OWS> getServiceControllers() {
-        Map<String, OWS> nameToController = new HashMap<String, OWS>();
-        for ( String serviceName : ogcNameToService.keySet() ) {
-            nameToController.put( serviceName, ogcNameToService.get( serviceName ) );
-        }
-        return nameToController;
+    public Map<String, List<OWS>> getAll() {
+        return ogcNameToService;
     }
 
     /**
@@ -296,13 +291,17 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
      * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
      *         is active
      */
-    public OWS getServiceController( Class<?> c ) {
-        for ( OWS it : requestNsToService.values() ) {
-            if ( c == it.getClass() ) {
-                return it;
+    public List<OWS> getByOWSClass( Class<?> c ) {
+        List<OWS> services = new ArrayList<OWS>();
+        for ( ResourceState<OWS> state : getStates() ) {
+            OWS ows = state.getResource();
+            if ( ows != null ) {
+                if ( c == ows.getClass() ) {
+                    services.add( ows );
+                }
             }
         }
-        return null;
+        return services;
     }
 
     @Override
@@ -437,7 +436,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
         ImplementationMetadata<?> md = ows.getImplementationMetadata();
         for ( String serviceName : md.getImplementedServiceName() ) {
             LOG.debug( "Service name '" + serviceName + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            ogcNameToService.put( serviceName.toUpperCase(), ows );
+            put( ogcNameToService, serviceName.toUpperCase(), ows );
         }
 
         // associate request types with controller instance
@@ -445,14 +444,14 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
             // skip GetCapabilities requests
             if ( !( "GetCapabilities".equals( request ) ) ) {
                 LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
-                requestNameToService.put( request, ows );
+                put( requestNameToService, request, ows );
             }
         }
 
         // associate namespaces with controller instance
         for ( String ns : md.getHandledNamespaces() ) {
             LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            requestNsToService.put( ns, ows );
+            put( requestNsToService, ns, ows );
         }
     }
 
@@ -461,20 +460,38 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
         ImplementationMetadata<?> md = ows.getImplementationMetadata();
         for ( String serviceName : md.getImplementedServiceName() ) {
             LOG.debug( "Service name '" + serviceName + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            ogcNameToService.remove( serviceName.toUpperCase() );
+            remove( ogcNameToService, serviceName.toUpperCase(), ows );
         }
 
         for ( String request : md.getHandledRequests() ) {
             // skip GetCapabilities requests
             if ( !( "GetCapabilities".equals( request ) ) ) {
                 LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
-                requestNameToService.remove( request );
+                remove( requestNameToService, request, ows );
             }
         }
 
         for ( String ns : md.getHandledNamespaces() ) {
             LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            requestNsToService.remove( ns );
+            remove( requestNsToService, ns, ows );
+        }
+    }
+
+    private void put( Map<String, List<OWS>> map, String key, OWS value ) {
+        List<OWS> values = map.get( key );
+        if ( values == null ) {
+            values = new ArrayList<OWS>();
+            map.put( key, values );
+        }
+        if ( !values.contains( value ) ) {
+            values.add( value );
+        }
+    }
+
+    private void remove( Map<String, List<OWS>> map, String key, OWS value ) {
+        List<OWS> values = map.get( key );
+        if ( values != null ) {
+            values.remove( value );
         }
     }
 }
