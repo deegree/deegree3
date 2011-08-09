@@ -51,4 +51,17 @@ public class Tree<T> {
 
     public T value;
 
+    private static <T> void dfsFlat( List<T> list, Tree<T> t ) {
+        list.add( t.value );
+        for ( Tree<T> c : t.children ) {
+            dfsFlat( list, c );
+        }
+    }
+
+    public List<T> flattenDepthFirst() {
+        List<T> list = new ArrayList<T>();
+        dfsFlat( list, this );
+        return list;
+    }
+
 }
