@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/remoteows/wms/RemoteWMSStore.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,43 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.remoteows.wms;
+package org.deegree.remoteows;
 
+import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.remoteows.NewRemoteOWSStore;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.utils.ProxyUtils;
 
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 31451 $, $Date: 2011-08-08 08:13:46 +0200 (Mon, 08 Aug 2011) $
+ * @version $Revision$, $Date$
  */
-public class NewRemoteWMSStore implements NewRemoteOWSStore {
+public class RemoteOWSManager extends AbstractResourceManager<RemoteOWS> {
 
-    private WMSClient client;
-
-    /**
-     * @param client
-     */
-    public NewRemoteWMSStore( WMSClient client ) {
-        this.client = client;
-    }
-
-    public WMSClient getClient() {
-        return client;
-    }
+    private RemoteOWSManagerMetadata metadata;
 
     @Override
-    public void destroy() {
-        // nothing to do
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace )
+    public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        // nothing to do
+        this.metadata = new RemoteOWSManagerMetadata( workspace );
+        super.startup( workspace );
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[] { ProxyUtils.class };
+    }
+
+    @Override
+    public ResourceManagerMetadata<RemoteOWS> getMetadata() {
+        return metadata;
+    }
+
+    static class RemoteOWSManagerMetadata extends DefaultResourceManagerMetadata<RemoteOWS> {
+        RemoteOWSManagerMetadata( DeegreeWorkspace workspace ) {
+            super( "remote OWS stores", "datasources/remoteows", RemoteOWSProvider.class, workspace );
+        }
     }
 
 }

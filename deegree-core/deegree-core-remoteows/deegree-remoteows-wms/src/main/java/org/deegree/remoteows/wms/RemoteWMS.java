@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/remoteows/wms/RemoteWMSStore.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,29 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.remoteows;
+package org.deegree.remoteows.wms;
 
-import java.util.List;
-
-import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.remoteows.RemoteOWS;
 
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: aschmitz $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31451 $, $Date: 2011-08-08 08:13:46 +0200 (Mon, 08 Aug 2011) $
  */
-public interface NewRemoteOWSProvider extends ExtendedResourceProvider<NewRemoteOWSStore> {
+public class RemoteWMS implements RemoteOWS {
+
+    private WMSClient client;
 
     /**
-     * @return the namespaces of capabilities XML documents the provider can handle. May be null or empty.
+     * @param client
      */
-    List<String> getCapabilitiesNamespaces();
+    public RemoteWMS( WMSClient client ) {
+        this.client = client;
+    }
 
-    /**
-     * @return the handled service type, eg. 'WMS'. May not be null.
-     */
-    String getServiceType();
+    public WMSClient getClient() {
+        return client;
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to do
+    }
 
 }

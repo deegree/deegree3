@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
 
-import org.deegree.commons.config.Resource;
+import java.util.List;
+
+import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
  * 
@@ -44,8 +46,16 @@ import org.deegree.commons.config.Resource;
  * 
  * @version $Revision$, $Date$
  */
-public interface NewRemoteOWSStore extends Resource {
+public interface RemoteOWSProvider extends ExtendedResourceProvider<RemoteOWS> {
 
-    // probably does not make much sense to define something here, as the services are very different
+    /**
+     * @return the namespaces of capabilities XML documents the provider can handle. May be null or empty.
+     */
+    List<String> getCapabilitiesNamespaces();
+
+    /**
+     * @return the handled service type, eg. 'WMS'. May not be null.
+     */
+    String getServiceType();
 
 }

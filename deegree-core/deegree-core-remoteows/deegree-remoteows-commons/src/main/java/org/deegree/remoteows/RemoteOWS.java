@@ -35,13 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.commons.config.Resource;
 
 /**
  * 
@@ -50,32 +44,8 @@ import org.deegree.commons.utils.ProxyUtils;
  * 
  * @version $Revision$, $Date$
  */
-public class NewRemoteOWSManager extends AbstractResourceManager<NewRemoteOWSStore> {
+public interface RemoteOWS extends Resource {
 
-    private RemoteOWSManagerMetadata metadata;
-
-    @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        this.metadata = new RemoteOWSManagerMetadata( workspace );
-        super.startup( workspace );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
-    }
-
-    @Override
-    public ResourceManagerMetadata<NewRemoteOWSStore> getMetadata() {
-        return metadata;
-    }
-
-    static class RemoteOWSManagerMetadata extends DefaultResourceManagerMetadata<NewRemoteOWSStore> {
-        RemoteOWSManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "remote OWS stores", "datasources/remoteows", NewRemoteOWSProvider.class, workspace );
-        }
-    }
+    // probably does not make much sense to define something here, as the services are very different
 
 }
