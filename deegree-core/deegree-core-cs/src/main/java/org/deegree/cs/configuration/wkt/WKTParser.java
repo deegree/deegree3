@@ -287,6 +287,7 @@ public class WKTParser {
             case StreamTokenizer.TT_WORD:
                 if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
+                    parseAuthority(); // and ignore the value for now
                     // code = parseAuthority();
                 } else {
                     throw new WKTParsingException( "Unknown word encountered in the UNIT element: " + tokenizer );
