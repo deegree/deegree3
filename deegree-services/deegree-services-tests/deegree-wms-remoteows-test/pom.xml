@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wms-remoteows-test</artifactId>
   <packaging>war</packaging>
-  <version>3.1-pre11-SNAPSHOT</version>
+  <version>3.1-pre12-SNAPSHOT</version>
   <name>deegree-wms-remoteows-test webapp</name>
   <url>http://www.deegree.org</url>
 
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-stable-service-parent</artifactId>
-    <version>3.1-pre11-SNAPSHOT</version>
+    <version>3.1-pre12-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
-      <version>3.1-pre11-SNAPSHOT</version>
+      <version>3.1-pre12-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

@@ -4,14 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wfs-cite110-postgis-blob</artifactId>
   <packaging>war</packaging>
-  <version>3.1-pre11-SNAPSHOT</version>
+  <version>3.1-pre12-SNAPSHOT</version>
   <name>deegree-wfs-cite110 Webapp PostGIS blob</name>
   <url>http://www.deegree.org</url>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-test-parent</artifactId>
-    <version>3.1-pre11-SNAPSHOT</version>
+    <version>3.1-pre12-SNAPSHOT</version>
     <relativePath />
   </parent>
 
