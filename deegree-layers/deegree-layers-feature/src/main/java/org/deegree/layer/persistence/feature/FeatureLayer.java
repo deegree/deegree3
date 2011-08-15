@@ -41,6 +41,7 @@
 package org.deegree.layer.persistence.feature;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -69,9 +70,10 @@ public class FeatureLayer extends AbstractLayer {
     /**
      * @param md
      */
-    protected FeatureLayer( LayerMetadata md, FeatureStore fs, QName featureType, Filter filter ) {
+    protected FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, Filter filter,
+                            Map<String, Style> styles, Map<String, Style> legendStyles ) {
         super( md );
-        featureStore = fs;
+        this.featureStore = featureStore;
         this.featureType = featureType;
         this.filter = filter;
     }
@@ -79,6 +81,7 @@ public class FeatureLayer extends AbstractLayer {
     @Override
     public LinkedList<String> paintMap( RenderContext context, RenderingInfo info, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
+
         return null;
     }
 

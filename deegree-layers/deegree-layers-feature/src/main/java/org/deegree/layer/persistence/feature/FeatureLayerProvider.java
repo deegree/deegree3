@@ -101,7 +101,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             reader.close();
 
             FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-            String fsRef = lay.getFeatureStoreRef();
+            String fsRef = lay.getFeatureStoreId();
             FeatureStore fs = mgr.get( fsRef );
             if ( fs == null ) {
                 throw new ResourceInitException( "Feature layer config was invalid, feature store with id " + fsRef
@@ -122,7 +122,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
             }
             org.deegree.layer.persistence.feature.FeatureLayer l;
-            l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter );
+            l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter, null, null );
             return new SingleLayerStore( l );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse layer configuration file.", e );

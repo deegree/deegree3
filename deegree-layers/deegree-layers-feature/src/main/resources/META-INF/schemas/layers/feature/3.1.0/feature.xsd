@@ -14,7 +14,7 @@
   <element name="FeatureLayer">
     <complexType>
       <sequence>
-        <element name="FeatureStoreRef" type="string" />
+        <element name="FeatureStoreId" type="string" />
         <element name="FeatureType" type="QName" minOccurs="0" />
         <element name="Filter" type="anyType">
           <annotation>
@@ -26,51 +26,35 @@
         <element name="CRS" type="string" minOccurs="0" />
         <element name="ScaleDenominators" type="l:ScaleDenominatorsType" minOccurs="0" />
         <element name="Dimension" type="l:DimensionType" minOccurs="0" maxOccurs="unbounded" />
-        <element name="DirectStyle" type="l:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
-        <element name="SLDStyle" type="l:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+        <element name="StyleRef" minOccurs="0" maxOccurs="unbounded" type="l:StyleRefType" />
       </sequence>
     </complexType>
   </element>
 
-  <complexType name="DirectStyleType">
+  <complexType name="StyleRefType">
     <sequence>
-      <element name="File" type="string" />
-      <element name="Name" type="string" minOccurs="0" />
-      <choice minOccurs="0">
-        <element name="LegendConfigurationFile" type="string" />
-        <element name="LegendGraphic">
-          <complexType>
-            <simpleContent>
-              <extension base="string">
-                <attribute name="outputGetLegendGraphicUrl" type="boolean" default="true" use="optional" />
-              </extension>
-            </simpleContent>
-          </complexType>
-        </element>
-      </choice>
-    </sequence>
-  </complexType>
-
-  <complexType name="SLDStyleType">
-    <sequence>
-      <element name="File" type="string" />
-      <element name="NamedLayer" type="string" />
-      <sequence minOccurs="0" maxOccurs="unbounded">
-        <element name="Name" type="string" minOccurs="0" />
-        <element name="UserStyle" type="string" />
-        <choice minOccurs="0">
-          <element name="LegendConfigurationFile" type="string" />
-          <element name="LegendGraphic">
-            <complexType>
-              <simpleContent>
-                <extension base="string">
-                  <attribute name="outputGetLegendGraphicUrl" type="boolean" default="true" use="optional" />
-                </extension>
-              </simpleContent>
-            </complexType>
-          </element>
-        </choice>
-      </sequence>
+      <element name="StyleStoreId" type="string" />
+      <element name="Style" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="StyleName" type="string" minOccurs="0" />
+            <element name="LayerNameRef" type="string" minOccurs="0" />
+            <element name="StyleNameRef" type="string" minOccurs="0" />
+            <choice minOccurs="0">
+              <element name="LegendStyleStoreId" type="string" />
+              <element name="LegendGraphic">
+                <complexType>
+                  <simpleContent>
+                    <extension base="string">
+                      <attribute name="outputGetLegendGraphicUrl" type="boolean" default="true" use="optional" />
+                    </extension>
+                  </simpleContent>
+                </complexType>
+              </element>
+            </choice>
+          </sequence>
+        </complexType>
+      </element>
     </sequence>
   </complexType>
 
