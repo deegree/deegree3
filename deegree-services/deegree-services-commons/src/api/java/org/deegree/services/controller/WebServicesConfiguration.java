@@ -125,7 +125,6 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
         deps.add( ProxyUtils.class );
         deps.add( ConnectionManager.class );
 
-        @SuppressWarnings("unchecked")
         Iterator<OWSProvider> iter;
         if ( workspace != null ) {
             iter = ServiceLoader.load( OWSProvider.class, workspace.getModuleClassLoader() ).iterator();
