@@ -640,7 +640,7 @@ public class OGCFrontController extends HttpServlet {
                 } else {
                     // dispatch according to REQUEST-parameter
                     if ( request != null ) {
-                        List<OWS> services = serviceConfiguration.getByRequestName( service );
+                        List<OWS> services = serviceConfiguration.getByRequestName( request );
                         if ( services == null || services.isEmpty() ) {
                             String msg = "Cannot dispatch KVP request of type '" + request
                                          + "' -- currently, no services for this request type is configured / active.";
