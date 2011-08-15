@@ -36,6 +36,7 @@
 package org.deegree.coverage.raster.io.imageio;
 
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
+import it.geosolutions.imageio.plugins.geotiff.GeoTiffImageReader;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -119,6 +120,8 @@ public class IIORasterDataReader implements RasterDataReader {
 
     private final int imageIndex;
 
+    private boolean useGdal;
+
     /**
      * Create a IIORasterDataReader for given file
      * 
@@ -127,8 +130,8 @@ public class IIORasterDataReader implements RasterDataReader {
      * @param options
      *            with values.
      */
-    public IIORasterDataReader( File file, RasterIOOptions options, int imageIndex ) {
-        this( options, false, imageIndex );
+    public IIORasterDataReader( File file, RasterIOOptions options, int imageIndex, boolean useGdal ) {
+        this( options, false, imageIndex, useGdal );
         this.file = file;
     }
 
@@ -140,16 +143,17 @@ public class IIORasterDataReader implements RasterDataReader {
      * @param options
      *            with values
      */
-    public IIORasterDataReader( InputStream stream, RasterIOOptions options, int imageIndex ) {
-        this( options, ( stream != null && stream.markSupported() ), imageIndex );
+    public IIORasterDataReader( InputStream stream, RasterIOOptions options, int imageIndex, boolean useGdal ) {
+        this( options, ( stream != null && stream.markSupported() ), imageIndex, useGdal );
         this.inputStream = stream;
     }
 
-    private IIORasterDataReader( RasterIOOptions options, boolean resetableStream, int imageIndex ) {
+    private IIORasterDataReader( RasterIOOptions options, boolean resetableStream, int imageIndex, boolean useGdal ) {
         this.imageIndex = imageIndex;
         this.format = options.get( RasterIOOptions.OPT_FORMAT );
         this.options = options;
         this.resetableStream = resetableStream;
+        this.useGdal = useGdal;
     }
 
     /**
@@ -157,6 +161,7 @@ public class IIORasterDataReader implements RasterDataReader {
      * 
      * @return new RasterData
      */
+    @Override
     public ByteBufferRasterData read() {
         BufferedImage result = null;
         synchronized ( LOCK ) {
@@ -329,10 +334,17 @@ public class IIORasterDataReader implements RasterDataReader {
                         }
                         iis = ImageIO.createImageInputStream( inputStream );
                     }
-                    Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName( format );
+                    Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix( format );
                     if ( iter.hasNext() ) {
-                        // use the first.
-                        this.reader = iter.next();
+                        if ( useGdal ) {
+                            while ( iter.hasNext() && ( reader == null || !( reader instanceof GeoTiffImageReader ) ) ) {
+                                reader = iter.next();
+                            }
+                        } else {
+                            while ( iter.hasNext() && ( reader == null || reader instanceof GeoTiffImageReader ) ) {
+                                reader = iter.next();
+                            }
+                        }
                         reader.setInput( iis );
                         // done creating a reader.
                         return true;
@@ -463,6 +475,10 @@ public class IIORasterDataReader implements RasterDataReader {
                 reader = null;
             }
         }
+    }
+
+    protected ImageReader getImageReader() {
+        return reader;
     }
 
     /**

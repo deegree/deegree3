@@ -39,6 +39,7 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.coverage.raster.io.RasterIOOptions.CRS;
 import static org.deegree.coverage.raster.io.RasterIOOptions.IMAGE_INDEX;
 import static org.deegree.coverage.raster.io.RasterIOOptions.OPT_FORMAT;
+import it.geosolutions.imageio.plugins.geotiff.GeoTiffImageReader;
 
 import java.io.File;
 import java.net.URL;
@@ -60,6 +61,7 @@ import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
 import org.deegree.coverage.raster.utils.RasterFactory;
+import org.deegree.cs.configuration.wkt.WKTParser;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -115,27 +117,45 @@ public class PyramidProvider implements CoverageBuilder {
         try {
             Pyramid config = (Pyramid) unmarshall( "org.deegree.coverage.persistence.pyramid.jaxb", CONFIG_SCHEMA,
                                                    configUrl, workspace );
-            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix( "tiff" );
+            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix( "tif" );
             ImageReader reader = readers.next();
+            while ( readers.hasNext() && !reader.getClass().getSimpleName().equals( "GeoTiffImageReader" ) ) {
+                reader = readers.next();
+            }
+
+            if ( !reader.getClass().getSimpleName().equals( "GeoTiffImageReader" ) ) {
+                LOG.warn( "GDAL GeoTiff reader not available, will be unable to read BigTiff." );
+            }
+
             MultiResolutionRaster mrr = new MultiResolutionRaster();
             for ( String file : config.getPyramidFile() ) {
                 ImageInputStream iis = ImageIO.createImageInputStream( new File( file ) );
                 reader.setInput( iis );
-                int num = reader.getNumImages( true );
-                IIOMetadata md = reader.getImageMetadata( 0 );
+
+                IIOMetadata md = reader.getStreamMetadata();
                 ICRS crs = getCRS( md );
+
+                if ( reader instanceof GeoTiffImageReader ) {
+                    GeoTiffImageReader gt = (GeoTiffImageReader) reader;
+                    String proj = gt.getProjection( 0 );
+                    crs = WKTParser.parse( proj );
+                }
+
+                int num = reader.getNumImages( true );
                 iis.close();
                 for ( int i = 0; i < num; ++i ) {
                     RasterIOOptions opts = new RasterIOOptions();
                     opts.add( IMAGE_INDEX, "" + i );
-                    opts.add( OPT_FORMAT, "tiff" );
-                    opts.add( CRS, crs.getAlias() );
+                    opts.add( OPT_FORMAT, "tif" );
+                    if ( crs != null ) {
+                        opts.add( CRS, crs.getAlias() );
+                    } else {
+                        opts.add( CRS, "EPSG:25832" );
+                    }
                     AbstractRaster raster = RasterFactory.loadRasterFromFile( new File( file ), opts );
                     mrr.addRaster( raster );
                 }
                 mrr.setCoordinateSystem( crs );
-                // Envelope env = rgr.getEnvelope( reader.getWidth( 0 ), reader.getHeight( 0 ), null );
-                // System.out.println( env );
             }
             return mrr;
         } catch ( Throwable e ) {
