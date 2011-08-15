@@ -85,7 +85,7 @@
         <dependency>
           <artifactId>latlon-sqldialect-mssql</artifactId>
           <groupId>de.latlon</groupId>
-          <version>3.1-pre11-SNAPSHOT</version>
+          <version>3.1-pre12-SNAPSHOT</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -96,7 +96,7 @@
         <dependency>
           <artifactId>deegree-sqldialect-oracle</artifactId>
           <groupId>org.deegree</groupId>
-          <version>3.1-pre11-SNAPSHOT</version>
+          <version>3.1-pre12-SNAPSHOT</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
