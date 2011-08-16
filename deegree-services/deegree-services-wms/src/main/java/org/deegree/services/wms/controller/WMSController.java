@@ -466,8 +466,10 @@ public class WMSController extends AbstractOWS {
                 break;
             }
         } catch ( MissingDimensionValue e ) {
+            LOG.trace( "Stack trace:", e );
             throw new OWSException( get( "WMS.DIMENSION_VALUE_MISSING", e.name ), "MissingDimensionValue" );
         } catch ( InvalidDimensionValue e ) {
+            LOG.trace( "Stack trace:", e );
             throw new OWSException( get( "WMS.DIMENSION_VALUE_INVALID", e.value, e.name ), "InvalidDimensionValue" );
         }
     }
