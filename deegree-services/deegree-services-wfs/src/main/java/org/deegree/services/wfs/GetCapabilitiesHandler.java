@@ -84,7 +84,7 @@ import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.protocol.wfs.WFSConstants.WFSRequestType;
+import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.controller.ows.capabilities.OWSOperation;

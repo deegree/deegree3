@@ -45,7 +45,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.protocol.wfs.WFSConstants.WFSRequestType;
+import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;

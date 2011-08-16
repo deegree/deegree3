@@ -92,7 +92,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSConstants;
-import org.deegree.protocol.wfs.WFSConstants.WFSRequestType;
+import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.capabilities.GetCapabilitiesKVPAdapter;
 import org.deegree.protocol.wfs.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;

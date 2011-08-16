@@ -54,8 +54,27 @@ public class WFSFeatureType {
 
     private final QName name;
 
-    WFSFeatureType( QName name ) {
+    private final String title;
+
+    private final String ftAbstract;
+
+    private final String keywords;
+
+    private final CRSRef defaultSrs;
+
+    private final List<Envelope> wgs84BBoxes;
+
+    private final Envelope wgs84BBox;
+
+    public WFSFeatureType( QName name, String title, String ftAbstract, String keywords, CRSRef srs,
+                           List<Envelope> ftBboxes, Envelope ftBBox ) {
         this.name = name;
+        this.title = title;
+        this.ftAbstract = ftAbstract;
+        this.keywords = keywords;
+        this.defaultSrs = srs;
+        this.wgs84BBoxes = ftBboxes;
+        this.wgs84BBox = ftBBox;
     }
 
     public QName getName() {
@@ -63,22 +82,33 @@ public class WFSFeatureType {
     }
 
     public String getTitle() {
-        return null;
+        return title;
     }
 
-    public CRSRef getDefaultCRS() {
-        return null;
+    public String getAbstract() {
+        return ftAbstract;
+    }
+    
+    public CRSRef getDefaultSrs() {
+        return defaultSrs;
     }
 
-    public CRSRef getOtherCRS() {
+    public CRSRef getOtherSrs() {
         return null;
     }
 
     public Envelope getWGS84BoundingBox() {
+        return wgs84BBox;
+    }
+
+    public List<String> getOutputFormats() {
         return null;
     }
-    
-    public List<String> getOutputFormats () {
-        return null;
+
+    @Override
+    public String toString() {
+        return "WFSFeatureType [name=" + name + ", title=" + title + ", ftAbstract=" + ftAbstract + ", keywords="
+               + keywords + ", defaultSrs=" + defaultSrs + ", wgs84BBoxes=" + wgs84BBoxes + ", wgs84BBox=" + wgs84BBox
+               + "]";
     }
 }
