@@ -43,7 +43,6 @@ package org.deegree.layer.persistence;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 
@@ -56,10 +55,8 @@ public class LayerStoreManager extends AbstractResourceManager<LayerStore> {
     private LayerManagerMetadata metadata;
 
     @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void initMetadata( DeegreeWorkspace workspace ) {
         metadata = new LayerManagerMetadata( workspace );
-        super.startup( workspace );
     }
 
     static class LayerManagerMetadata extends DefaultResourceManagerMetadata<LayerStore> {

@@ -48,11 +48,10 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.remoteows.RemoteOWSProvider;
 import org.deegree.remoteows.RemoteOWS;
-import org.deegree.remoteows.wms.jaxb.AuthenticationType;
-import org.deegree.remoteows.wms.jaxb.HTTPBasicAuthenticationType;
-import org.deegree.remoteows.wms.jaxb.RemoteWMSStore;
+import org.deegree.remoteows.RemoteOWSProvider;
+import org.deegree.remoteows.wms_new.jaxb.AuthenticationType;
+import org.deegree.remoteows.wms_new.jaxb.HTTPBasicAuthenticationType;
 import org.slf4j.Logger;
 
 /**
@@ -66,9 +65,9 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
 
     private static final Logger LOG = getLogger( RemoteWMSProvider.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms.jaxb";
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms_new.jaxb";
 
-    private static final URL CONFIG_SCHEMA = RemoteWMSProvider.class.getResource( "/META-INF/schemas/datasource/remoteows/wms/3.1.0/remotewms.xsd" );
+    private static final URL CONFIG_SCHEMA = RemoteWMSProvider.class.getResource( "/META-INF/schemas/remoteows/wms/3.1.0/remotewms.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -79,7 +78,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
 
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/remoteows/wms";
+        return "http://www.deegree.org/remoteows/wms";
     }
 
     @Override
@@ -90,7 +89,9 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
     @Override
     public RemoteOWS create( URL config ) {
         try {
-            RemoteWMSStore cfg = (RemoteWMSStore) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, config, workspace );
+            org.deegree.remoteows.wms_new.jaxb.RemoteWMS cfg;
+            cfg = (org.deegree.remoteows.wms_new.jaxb.RemoteWMS) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+                                                                             config, workspace );
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( config.toString() );
             URL capas = resolver.resolve( cfg.getCapabilitiesDocumentLocation().getLocation() );

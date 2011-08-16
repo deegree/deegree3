@@ -36,7 +36,6 @@
 package org.deegree.services.controller;
 
 import static java.lang.Class.forName;
-import static java.util.Arrays.asList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -44,16 +43,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ExtendedResourceManager;
 import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.commons.config.ResourceInitException;
@@ -61,9 +58,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -110,34 +105,11 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     private boolean logOnlySuccessful;
 
-    static List<ResourceProvider> providers = new ArrayList<ResourceProvider>();
+    private WebServiceManagerMetadata metadata;
 
-    private static Class<? extends ResourceManager>[] dependencies;
-
-    static {
-        updateDependencies( null );
-    }
-
-    private static void updateDependencies( DeegreeWorkspace workspace ) {
-        providers.clear();
-        List<Class<? extends ResourceManager>> deps = new LinkedList<Class<? extends ResourceManager>>();
-
-        deps.add( ProxyUtils.class );
-        deps.add( ConnectionManager.class );
-
-        Iterator<OWSProvider> iter;
-        if ( workspace != null ) {
-            iter = ServiceLoader.load( OWSProvider.class, workspace.getModuleClassLoader() ).iterator();
-        } else {
-            iter = ServiceLoader.load( OWSProvider.class ).iterator();
-        }
-        while ( iter.hasNext() ) {
-            OWSProvider prov = iter.next();
-            providers.add( prov );
-            deps.addAll( asList( prov.getDependencies() ) );
-        }
-
-        dependencies = deps.toArray( new Class[deps.size()] );
+    @Override
+    public void initMetadata( DeegreeWorkspace workspace ) {
+        metadata = new WebServiceManagerMetadata( workspace );
     }
 
     @Override
@@ -145,7 +117,6 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
                             throws ResourceInitException {
 
         this.workspace = workspace;
-        updateDependencies( workspace );
 
         File metadata = new File( workspace.getLocation(), "services" + File.separator + "metadata.xml" );
         File main = new File( workspace.getLocation(), "services" + File.separator + "main.xml" );
@@ -404,30 +375,24 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
         return logOnlySuccessful;
     }
 
+    @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return dependencies;
+        return new Class[] {};
     }
 
     public DeegreeWorkspace getWorkspace() {
         return workspace;
     }
 
-    static class WebServiceManagerMetadata implements ResourceManagerMetadata {
-        public String getName() {
-            return "web services";
-        }
-
-        public String getPath() {
-            return "services";
-        }
-
-        public List<ResourceProvider> getResourceProviders() {
-            return providers;
+    static class WebServiceManagerMetadata extends DefaultResourceManagerMetadata<OWS> {
+        WebServiceManagerMetadata( DeegreeWorkspace workspace ) {
+            super( "web services", "services/", OWSProvider.class, workspace );
         }
     }
 
+    @Override
     public ResourceManagerMetadata getMetadata() {
-        return new WebServiceManagerMetadata();
+        return metadata;
     }
 
     @Override

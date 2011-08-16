@@ -75,11 +75,13 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
     private FeatureStoreManagerMetadata metadata;
 
     @Override
+    public void initMetadata( DeegreeWorkspace workspace ) {
+        metadata = new FeatureStoreManagerMetadata( workspace );
+    }
+
+    @Override
     public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-
-        metadata = new FeatureStoreManagerMetadata( workspace );
-
         try {
             File dir = new File( workspace.getLocation(), metadata.getPath() );
             bboxCache = new BBoxPropertiesCache( new File( dir, BBOX_CACHE_FILE ) );

@@ -38,7 +38,6 @@ package org.deegree.coverage.persistence;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.utils.ProxyUtils;
@@ -57,12 +56,8 @@ public class CoverageBuilderManager extends AbstractResourceManager<Coverage> {
     private CoverageResourceManagerMetadata metadata;
 
     @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void initMetadata( DeegreeWorkspace workspace ) {
         metadata = new CoverageResourceManagerMetadata( workspace );
-
-        // stores startup
-        super.startup( workspace );
     }
 
     @SuppressWarnings("unchecked")

@@ -38,7 +38,7 @@ public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
                             throws ResourceInitException {
         try {
             RemoteWMSLayers cfg = (RemoteWMSLayers) unmarshall( "org.deegree.layer.persistence.remotewms.jaxb",
-                                                                configUrl, SCHEMA_URL, workspace );
+                                                                SCHEMA_URL, configUrl, workspace );
             String id = cfg.getRemoteWMSStoreId();
             RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
             RemoteOWS store = mgr.get( id );

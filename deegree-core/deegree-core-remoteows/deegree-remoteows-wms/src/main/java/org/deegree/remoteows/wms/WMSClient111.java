@@ -232,7 +232,7 @@ public class WMSClient111 implements WMSClient {
         maxMapHeight = maxHeight;
     }
 
-    private void checkCapabilities( XMLAdapter capabilities ) {
+    private static void checkCapabilities( XMLAdapter capabilities ) {
         OMElement root = capabilities.getRootElement();
         String version = root.getAttributeValue( new QName( "version" ) );
         if ( !"1.1.1".equals( version ) ) {
@@ -621,7 +621,7 @@ public class WMSClient111 implements WMSClient {
         return null;
     }
 
-    private FeatureCollection readESRICollection( XMLStreamReader reader )
+    private static FeatureCollection readESRICollection( XMLStreamReader reader )
                             throws NoSuchElementException, XMLStreamException {
         GenericFeatureCollection col = new GenericFeatureCollection();
 
@@ -646,7 +646,7 @@ public class WMSClient111 implements WMSClient {
         return col;
     }
 
-    private FeatureCollection readMyWMSCollection( XMLStreamReader reader )
+    private static FeatureCollection readMyWMSCollection( XMLStreamReader reader )
                             throws NoSuchElementException, XMLStreamException {
         GenericFeatureCollection col = new GenericFeatureCollection();
 
@@ -982,6 +982,7 @@ public class WMSClient111 implements WMSClient {
             String title = capabilities.getNodeAsString( l, new XPath( "Title" ), null );
             child.value = new StringPair( name, title );
             node.children.add( child );
+            buildLayerTree( child, l );
         }
     }
 

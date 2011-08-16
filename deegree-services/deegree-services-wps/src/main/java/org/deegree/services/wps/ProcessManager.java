@@ -42,7 +42,6 @@ import java.util.Map;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceState;
@@ -114,10 +113,8 @@ public class ProcessManager extends AbstractResourceManager<ProcessProvider> {
     }
 
     @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void initMetadata( DeegreeWorkspace workspace ) {
         this.metadata = new ProcessManagerMetadata( workspace );
-        super.startup( workspace );
     }
 
     static class ProcessManagerMetadata extends DefaultResourceManagerMetadata<ProcessProvider> {

@@ -38,7 +38,6 @@ package org.deegree.remoteows;
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.utils.ProxyUtils;
@@ -55,10 +54,8 @@ public class RemoteOWSManager extends AbstractResourceManager<RemoteOWS> {
     private RemoteOWSManagerMetadata metadata;
 
     @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void initMetadata( DeegreeWorkspace workspace ) {
         this.metadata = new RemoteOWSManagerMetadata( workspace );
-        super.startup( workspace );
     }
 
     @Override

@@ -35,9 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+
+import org.slf4j.Logger;
 
 /**
  * 
@@ -47,6 +51,8 @@ import java.util.ServiceLoader;
  * @version $Revision$, $Date$
  */
 public class DefaultResourceManagerMetadata<T extends Resource> implements ResourceManagerMetadata<T> {
+
+    private static final Logger LOG = getLogger( DefaultResourceManagerMetadata.class );
 
     private final String name;
 
@@ -58,7 +64,9 @@ public class DefaultResourceManagerMetadata<T extends Resource> implements Resou
                                            DeegreeWorkspace workspace ) {
         this.name = name;
         this.path = path;
+        LOG.debug( "-- Searching providers for interface {}.", clz.getName() );
         for ( ExtendedResourceProvider<T> p : ServiceLoader.load( clz, workspace.getModuleClassLoader() ) ) {
+            LOG.debug( "Found resource provider {}.", p.getClass().getName() );
             providers.add( p );
         }
     }

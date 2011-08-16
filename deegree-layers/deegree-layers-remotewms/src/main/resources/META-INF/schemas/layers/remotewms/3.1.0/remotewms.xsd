@@ -16,6 +16,7 @@
       <sequence>
         <element name="RemoteWMSStoreId" type="string" />
       </sequence>
+      <attribute name="configVersion" type="l:ConfigVersionType" use="required" />
     </complexType>
   </element>
 

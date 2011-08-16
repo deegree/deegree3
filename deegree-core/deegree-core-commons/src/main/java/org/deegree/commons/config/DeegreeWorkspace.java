@@ -200,6 +200,10 @@ public class DeegreeWorkspace {
             try {
                 List<Class<? extends ResourceManager>> list = new LinkedList<Class<? extends ResourceManager>>();
                 ResourceManager manager = iter.next();
+                if ( manager instanceof ExtendedResourceManager ) {
+                    // this makes sure resource provider dependencies are available below
+                    ( (ExtendedResourceManager<?>) manager ).initMetadata( this );
+                }
                 map.put( manager, list );
                 managerMap.put( manager.getClass(), manager );
             } catch ( ServiceConfigurationError e ) {
@@ -235,7 +239,7 @@ public class DeegreeWorkspace {
         outer: while ( changed ) {
             changed = false;
             for ( ResourceManager m : order ) {
-                for ( Class<? extends ResourceManager> c : m.getDependencies() ) {
+                for ( Class<? extends ResourceManager> c : map.get( m ) ) {
                     if ( order.indexOf( managerMap.get( c ) ) > order.indexOf( m ) ) {
                         order.remove( managerMap.get( c ) );
                         order.add( order.indexOf( m ), managerMap.get( c ) );
@@ -245,6 +249,7 @@ public class DeegreeWorkspace {
                 }
             }
         }
+
         managers.addAll( order );
     }
 

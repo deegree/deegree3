@@ -47,6 +47,13 @@ import java.net.URL;
 public interface ExtendedResourceManager<T extends Resource> extends ResourceManager {
 
     /**
+     * Initializes the metadata (can be used to scan for resource providers, important so transitive dependencies work).
+     * 
+     * @param workspace
+     */
+    void initMetadata( DeegreeWorkspace workspace );
+
+    /**
      * @return a metadata object for use in GUIs, may be null
      */
     ResourceManagerMetadata<T> getMetadata();
