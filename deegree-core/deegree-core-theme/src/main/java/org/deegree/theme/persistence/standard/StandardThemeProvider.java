@@ -55,7 +55,8 @@ import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreManager;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
-import org.deegree.themes.persistence.standard.jaxb.ThemeType;
+import org.deegree.theme.persistence.standard.jaxb.ThemeType;
+import org.deegree.theme.persistence.standard.jaxb.Themes;
 import org.slf4j.Logger;
 
 /**
@@ -75,21 +76,27 @@ public class StandardThemeProvider implements ThemeProvider {
         this.workspace = workspace;
     }
 
-    private Theme buildTheme( String identifier, List<String> layers, List<ThemeType> themes )
+    private Theme buildTheme( String identifier, List<String> layers, List<ThemeType> themes, List<LayerStore> stores )
                             throws ResourceInitException {
         List<Layer> lays = new ArrayList<Layer>( layers.size() );
-        LayerStoreManager mgr = workspace.getSubsystemManager( LayerStoreManager.class );
+
         for ( String l : layers ) {
-            LayerStore lay = mgr.get( l );
+            Layer lay = null;
+            for ( LayerStore s : stores ) {
+                lay = s.get( l );
+                if ( lay != null ) {
+                    break;
+                }
+            }
             if ( lay == null ) {
-                LOG.warn( "Layer store with id {} is not available.", l );
+                LOG.warn( "Layer with identifier {} is not available from any layer store.", l );
                 continue;
             }
-            lays.addAll( lay.getAll() );
+            lays.add( lay );
         }
         List<Theme> thms = new ArrayList<Theme>( themes.size() );
         for ( ThemeType tt : themes ) {
-            thms.add( buildTheme( tt.getIdentifier(), tt.getLayerRef(), tt.getTheme() ) );
+            thms.add( buildTheme( tt.getIdentifier(), tt.getLayer(), tt.getTheme(), stores ) );
         }
         return new StandardTheme( identifier, thms, lays );
     }
@@ -99,10 +106,24 @@ public class StandardThemeProvider implements ThemeProvider {
                             throws ResourceInitException {
         String pkg = "org.deegree.theme.persistence.standard.jaxb";
         try {
-            org.deegree.themes.persistence.standard.jaxb.Theme cfg;
-            cfg = (org.deegree.themes.persistence.standard.jaxb.Theme) unmarshall( pkg, SCHEMA_URL, configUrl,
-                                                                                   workspace );
-            return buildTheme( cfg.getIdentifier(), cfg.getLayerRef(), cfg.getTheme() );
+            Themes cfg;
+            cfg = (Themes) unmarshall( pkg, SCHEMA_URL, configUrl, workspace );
+
+            List<String> storeIds = cfg.getLayerStoreId();
+            List<LayerStore> stores = new ArrayList<LayerStore>( storeIds.size() );
+            LayerStoreManager mgr = workspace.getSubsystemManager( LayerStoreManager.class );
+
+            for ( String id : storeIds ) {
+                LayerStore store = mgr.get( id );
+                if ( store == null ) {
+                    LOG.warn( "Layer store with id {} is not available.", id );
+                    continue;
+                }
+                stores.add( store );
+            }
+
+            ThemeType root = cfg.getTheme();
+            return buildTheme( root.getIdentifier(), root.getLayer(), root.getTheme(), stores );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse theme configuration file.", e );
         }

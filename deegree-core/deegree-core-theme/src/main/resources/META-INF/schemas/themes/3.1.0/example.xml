@@ -1,7 +1,20 @@
 <?xml version="1.0"?>
-<Theme configVersion="3.1.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<Themes configVersion="3.1.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd">
 
-  <LayerRef>water</LayerRef>
 
-</Theme>
+  <LayerStoreId>layerstore</LayerStoreId>
+  <LayerStoreId>layerstore2</LayerStoreId>
+
+  <Theme>
+    <Identifier>base</Identifier>
+    <Layer>water</Layer>
+    <Layer>water2</Layer>
+    <Theme>
+      <Identifier>water</Identifier>
+      <Layer>water3</Layer>
+      <Layer>water4</Layer>
+    </Theme>
+  </Theme>
+
+</Themes>
