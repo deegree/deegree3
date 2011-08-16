@@ -256,11 +256,15 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private TreeMap<Float, LinkedList<Pair<float[], ?>>> sortEnvelopes( Collection<Pair<float[], ?>> rects, int byIdx ) {
+    private static TreeMap<Float, LinkedList<Pair<float[], ?>>> sortEnvelopes( Collection<Pair<float[], ?>> rects,
+                                                                               int byIdx ) {
         TreeMap<Float, LinkedList<Pair<float[], ?>>> map = new TreeMap<Float, LinkedList<Pair<float[], ?>>>();
 
         for ( Pair<float[], ?> p : rects ) {
             float[] env = p.first;
+            if ( env == null ) {
+                continue;
+            }
             float d = env[byIdx] + ( env[byIdx + 2] - env[byIdx] ) / 2;
             if ( !map.containsKey( d ) ) {
                 map.put( d, new LinkedList<Pair<float[], ?>>() );
@@ -271,7 +275,7 @@ public class RTree<T> extends SpatialIndex<T> {
         return map;
     }
 
-    private TreeMap<Float, LinkedList<Pair<float[], ?>>> sort( Collection<Pair<float[], ?>> rects, int byIdx ) {
+    private static TreeMap<Float, LinkedList<Pair<float[], ?>>> sort( Collection<Pair<float[], ?>> rects, int byIdx ) {
         TreeMap<Float, LinkedList<Pair<float[], ?>>> map = new TreeMap<Float, LinkedList<Pair<float[], ?>>>();
 
         for ( Pair<float[], ?> p : rects ) {
@@ -285,7 +289,8 @@ public class RTree<T> extends SpatialIndex<T> {
         return map;
     }
 
-    private LinkedList<LinkedList<Pair<float[], ?>>> slice( TreeMap<Float, LinkedList<Pair<float[], ?>>> map, int limit ) {
+    private static LinkedList<LinkedList<Pair<float[], ?>>> slice( TreeMap<Float, LinkedList<Pair<float[], ?>>> map,
+                                                                   int limit ) {
         LinkedList<LinkedList<Pair<float[], ?>>> list = new LinkedList<LinkedList<Pair<float[], ?>>>();
 
         LinkedList<Pair<float[], ?>> cur = new LinkedList<Pair<float[], ?>>();
@@ -333,7 +338,7 @@ public class RTree<T> extends SpatialIndex<T> {
             }
             return node;
         }
-
+        System.out.println( rects );
         LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sortEnvelopes( rects, 0 ), bigM * bigM );
         ArrayList<Pair<float[], NodeEntry<T>[]>> newRects = new ArrayList<Pair<float[], NodeEntry<T>[]>>();
 
@@ -488,7 +493,7 @@ public class RTree<T> extends SpatialIndex<T> {
      * 
      * @param node
      */
-    private int notNullLength( NodeEntry<T>[] node ) {
+    private static <T> int notNullLength( NodeEntry<T>[] node ) {
         for ( int i = 0; i < node.length; i++ ) {
             if ( node[i] == null ) {
                 return i;
@@ -505,7 +510,7 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param index
      *            the index
      */
-    private void removeFromArray( Object[] node, int index ) {
+    private static void removeFromArray( Object[] node, int index ) {
         for ( int i = index; i < node.length - 1; i++ ) {
             node[i] = node[i + 1];
         }
@@ -616,7 +621,7 @@ public class RTree<T> extends SpatialIndex<T> {
     /**
      * @param bbox2
      */
-    private double calculateArea( float[] bbox2 ) {
+    private static double calculateArea( float[] bbox2 ) {
         return ( bbox2[2] - bbox2[0] ) * ( bbox2[3] - bbox2[1] );
     }
 
@@ -704,7 +709,7 @@ public class RTree<T> extends SpatialIndex<T> {
     /**
      * @throws IOException
      */
-    private void writeBboxToDisk( DataOutputStream output, float[] boundingBox )
+    private static void writeBboxToDisk( DataOutputStream output, float[] boundingBox )
                             throws IOException {
         output.writeFloat( boundingBox[0] );
         output.writeFloat( boundingBox[1] );
@@ -712,7 +717,6 @@ public class RTree<T> extends SpatialIndex<T> {
         output.writeFloat( boundingBox[3] );
     }
 
-    @SuppressWarnings("unchecked")
     private boolean hasNullEntries( NodeEntry[] array ) {
         NodeEntry[] nullArray = new RTree.NodeEntry[bigM + 1];
         Arrays.fill( nullArray, null );
