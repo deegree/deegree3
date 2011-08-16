@@ -53,7 +53,7 @@ public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
             List<StringPair> layers = client.getLayerTree().flattenDepthFirst();
             for ( StringPair p : layers ) {
                 if ( p.first != null ) {
-                    map.put( p.first, new RemoteWMSLayer( new LayerMetadata() ) );
+                    map.put( p.first, new RemoteWMSLayer( new LayerMetadata(), client, p.first ) );
                 }
             }
             return new MultipleLayerStore( map );
