@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.context;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -58,6 +59,8 @@ public interface RenderContext {
     TextRenderer getTextRenderer();
 
     RasterRenderer getRasterRenderer();
+
+    void paintImage( BufferedImage img );
 
     boolean close()
                             throws IOException;

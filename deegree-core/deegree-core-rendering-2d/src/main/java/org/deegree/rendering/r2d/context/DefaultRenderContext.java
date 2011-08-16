@@ -126,4 +126,9 @@ public class DefaultRenderContext implements RenderContext {
         return false;
     }
 
+    @Override
+    public void paintImage( BufferedImage img ) {
+        graphics.drawImage( img, 0, 0, null );
+    }
+
 }
