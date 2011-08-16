@@ -514,10 +514,8 @@ public class SHPReader {
      * He Who Needs It As Double, is welcome to implement/copy it.
      * 
      * @return a list of all envelopes (minx, miny, maxx, maxy)
-     * @throws IOException
      */
-    public Pair<ArrayList<Pair<float[], Long>>, Boolean> readEnvelopes()
-                            throws IOException {
+    public Pair<ArrayList<Pair<float[], Long>>, Boolean> readEnvelopes() {
         ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
         ArrayList<Pair<float[], Long>> list = new ArrayList<Pair<float[], Long>>();
