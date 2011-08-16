@@ -338,7 +338,6 @@ public class RTree<T> extends SpatialIndex<T> {
             }
             return node;
         }
-        System.out.println( rects );
         LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sortEnvelopes( rects, 0 ), bigM * bigM );
         ArrayList<Pair<float[], NodeEntry<T>[]>> newRects = new ArrayList<Pair<float[], NodeEntry<T>[]>>();
 
