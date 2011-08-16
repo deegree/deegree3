@@ -624,36 +624,30 @@ public class OGCFrontController extends HttpServlet {
 
                 if ( service != null ) {
                     List<OWS> services = serviceConfiguration.getByServiceType( service );
-                    if ( services == null || services.isEmpty() ) {
-                        String msg = "Cannot dispatch request for service '" + service
-                                     + "' -- currently, no such service is configured / active.";
-                        throw new ServletException( msg );
-                    }
-                    if ( services.size() > 1 ) {
-                        String msg = "Cannot dispatch request for service '" + service
-                                     + "' -- currently, multiple services of this type "
-                                     + "are active. Please add the service id to the URL to "
-                                     + "choose one of the services.";
-                        throw new ServletException( msg );
-                    }
-                    ows = services.get( 0 );
-                } else {
-                    // dispatch according to REQUEST-parameter
-                    if ( request != null ) {
-                        List<OWS> services = serviceConfiguration.getByRequestName( request );
-                        if ( services == null || services.isEmpty() ) {
-                            String msg = "Cannot dispatch KVP request of type '" + request
-                                         + "' -- currently, no services for this request type is configured / active.";
-                            throw new ServletException( msg );
-                        }
+                    if ( services != null && !services.isEmpty() ) {
                         if ( services.size() > 1 ) {
-                            String msg = "Cannot dispatch KVP request of type '" + request
-                                         + "' -- currently, multiple services for this request type "
+                            String msg = "Cannot dispatch request for service '" + service
+                                         + "' -- currently, multiple services of this type "
                                          + "are active. Please add the service id to the URL to "
                                          + "choose one of the services.";
                             throw new ServletException( msg );
                         }
                         ows = services.get( 0 );
+                    }
+                } else {
+                    // dispatch according to REQUEST-parameter
+                    if ( request != null ) {
+                        List<OWS> services = serviceConfiguration.getByRequestName( request );
+                        if ( services != null && !services.isEmpty() ) {
+                            if ( services.size() > 1 ) {
+                                String msg = "Cannot dispatch KVP request of type '" + request
+                                             + "' -- currently, multiple services for this request type "
+                                             + "are active. Please add the service id to the URL to "
+                                             + "choose one of the services.";
+                                throw new ServletException( msg );
+                            }
+                            ows = services.get( 0 );
+                        }
                     }
                 }
 
@@ -661,12 +655,12 @@ public class OGCFrontController extends HttpServlet {
                     String msg = null;
                     String code;
                     if ( service == null || request == null ) {
-                        msg = "The 'SERVICE' or 'REQUEST' parameter is absent. Cannot determine responsible subcontroller.";
+                        msg = "The 'SERVICE' or 'REQUEST' parameter is absent. Cannot determine responsible service for handling the request.";
                         code = "MissingParameterValue";
                     } else {
                         code = "InvalidParameterValue";
-                        msg = "Unable to determine the subcontroller for request type '" + request
-                              + "' and service type '" + service + "'.";
+                        msg = "No service for request type '" + request + "' and service type '" + service
+                              + "' is configured / active.";
                     }
                     OWSException ex = new OWSException( msg, code, "service" );
                     sendException( ex, response, null );
