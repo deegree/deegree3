@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.1-pre13-SNAPSHOT</version>
+    <version>3.1-pre12-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -96,7 +96,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre12-SNAPSHOT</version>
     </dependency>
 	<dependency>
 		<groupId>com.sun.jersey</groupId>
