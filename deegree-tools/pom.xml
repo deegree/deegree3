@@ -112,8 +112,8 @@
   </build>
 
   <modules>
-    <module>deegree-tools-base</module>
     <module>deegree-tools-3d</module>
+    <module>deegree-tools-base</module>
   </modules>
   
 </project>
