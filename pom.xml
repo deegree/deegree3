@@ -9,8 +9,8 @@
   <url>http://www.deegree.org</url>
 
   <scm>
-    <connection>http://svn.wald.intevation.org/svn/deegree/base/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk</developerConnection>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/base/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk</developerConnection>
     <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/?root=deegree</url>
   </scm>
 
@@ -131,6 +131,14 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <goals>install</goals>
+        </configuration>
       </plugin>
     </plugins>
   </build>
