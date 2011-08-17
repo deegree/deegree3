@@ -52,11 +52,48 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin>      
       <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.0</version>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <descriptors>
+            <descriptor>assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
         <executions>
+          <execution>
+            <id>assemble-tomcat</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
+  <profiles>
+    <profile>
+      <id>activate-dependency-plugin</id>
+        <activation>
+          <property>
+            <name>!deactivateDependencyPlugin</name>
+          </property>
+        </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.3</version>
+          <executions>
           <execution>
             <id>jsf-console</id>
             <phase>generate-resources</phase>
@@ -85,31 +122,11 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>     
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>assemble-tomcat</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>

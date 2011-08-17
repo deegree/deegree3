@@ -54,34 +54,51 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.deegree</groupId>
-                  <artifactId>deegree-javacheck</artifactId>
-                  <version>3.1-pre12-SNAPSHOT</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>target/generated-resources/</outputDirectory>
-                  <destFileName>deegree-javacheck.jar</destFileName>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+
+  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
+  <profiles>
+    <profile>
+      <id>activate-dependency-plugin</id>
+        <activation>
+          <property>
+            <name>!deactivateDependencyPlugin</name>
+          </property>
+        </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.3</version>
+            <executions>
+              <execution>
+                <id>copy</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.deegree</groupId>
+                      <artifactId>deegree-javacheck</artifactId>
+                      <version>3.1-pre12-SNAPSHOT</version>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>target/generated-resources/</outputDirectory>
+                      <destFileName>deegree-javacheck.jar</destFileName>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
