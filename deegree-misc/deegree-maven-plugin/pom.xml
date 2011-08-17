@@ -1,16 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.deegree</groupId>
   <artifactId>deegree-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <version>1.7-SNAPSHOT</version>
   <name>deegree-maven-plugin</name>
-  <url>http://www.deegree.org</url>
-
-  <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/deegree-misc/deegree-maven-plugin</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/deegree-misc/deegree-maven-plugin</url>
-  </scm>
 
   <parent>
     <groupId>org.deegree</groupId>

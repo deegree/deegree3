@@ -1,22 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.deegree</groupId>
   <artifactId>deegree-alkis-6</artifactId>
   <packaging>war</packaging>
-  <version>3.1-SNAPSHOT</version>
   <name>deegree-alkis-6</name>
-  <url>http://www.deegree.org</url>
-
-  <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-demos/deegree-alkis/deegre-alkis-6</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-demos/deegree-alkis/deegree-alkis-6</url>
-  </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-stable-service-parent</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-pre12-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -59,7 +51,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-alkis-base</artifactId>
-      <version>3.1-SNAPSHOT</version>
+      <version>3.1-pre12-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
