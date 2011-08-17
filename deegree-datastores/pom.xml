@@ -25,7 +25,7 @@
   </repositories>
 
   <modules>
-    <module>deegree-featurestore</module>
+    <module>deegree-featurestores</module>
     <module>deegree-mdstores</module>
   </modules>
 
