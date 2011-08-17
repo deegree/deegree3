@@ -25,9 +25,11 @@
   </repositories>
 
   <modules>
-    <module>deegree-sos-webclient</module>
-    <module>deegree-jsf-core</module>
     <module>deegree-jsf-console</module>
+    <module>deegree-jsf-core</module>
+    <module>deegree-mdeditor</module>
+    <module>deegree-sos-webclient</module>
+    <module>deegree-wps-webclient</module>
   </modules>
 
 </project>

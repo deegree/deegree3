@@ -153,8 +153,6 @@
   </properties>
 
   <modules>
-    <module>deegree-services/deegree-services-parent</module>
-    <module>deegree-services/deegree-tomcat-parent</module>
     <module>deegree-client</module>
     <module>deegree-core</module>
     <module>deegree-datastores</module>

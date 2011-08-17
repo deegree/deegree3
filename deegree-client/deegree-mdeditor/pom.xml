@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-client</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.1-pre12-SNAPSHOT</version>
     </parent>
 
   <repositories>
@@ -29,12 +29,7 @@
         <dependency>
             <groupId>org.deegree</groupId>
             <artifactId>deegree-core-base</artifactId>
-            <version>3.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.deegree</groupId>
-            <artifactId>deegree-core-commons</artifactId>
-            <version>3.1-SNAPSHOT</version>
+            <version>3.1-pre12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
