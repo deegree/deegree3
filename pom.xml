@@ -74,6 +74,7 @@
     <module>deegree-client</module>
     <module>deegree-core</module>
     <module>deegree-layers</module>
+    <module>deegree-themes</module>
     <module>deegree-datastores</module>
     <module>deegree-misc</module>
     <module>deegree-processproviders</module>
