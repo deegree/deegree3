@@ -117,8 +117,6 @@ public class RemoteWMSThemeProvider implements ThemeProvider {
             WMSClient client = ( (RemoteWMS) ows ).getClient();
             Tree<StringPair> tree = client.getLayerTree();
 
-            System.out.println(tree);
-            
             return buildTheme( tree, store );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse remote WMS theme config.", e );
