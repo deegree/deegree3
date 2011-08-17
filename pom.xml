@@ -4,13 +4,14 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.1-pre12</version>
+  <version>3.1-pre12-SNAPSHOT</version>
   <name>deegree</name>
   <url>http://www.deegree.org</url>
 
   <scm>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/deegree-3.1-pre12</developerConnection>
-    <url>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/deegree-3.1-pre12</url>
+    <connection>http://svn.wald.intevation.org/svn/deegree/base/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk</developerConnection>
+    <url>http://wald.intevation.org/plugins/scmsvn/viewcvs.php/deegree3/trunk/?root=deegree</url>
   </scm>
 
   <repositories>
