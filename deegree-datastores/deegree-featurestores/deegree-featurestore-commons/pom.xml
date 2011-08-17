@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-featurestore</artifactId>
-  <packaging>pom</packaging>
-  <name>deegree-featurestore</name>
+  <artifactId>deegree-featurestore-commons</artifactId>
+  <packaging>jar</packaging>
+  <name>deegree-featurestore-commons</name>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-datastores</artifactId>
+    <artifactId>deegree-featurestores</artifactId>
     <version>3.1-pre12-SNAPSHOT</version>
   </parent>
 
@@ -24,14 +24,16 @@
     </repository>
   </repositories>
 
-  <modules>
-    <module>deegree-featurestore-commons</module>
-    <module>deegree-featurestore-geocouch</module>
-    <module>deegree-featurestore-memory</module>
-    <module>deegree-featurestore-remotewfs</module>
-    <module>deegree-featurestore-shape</module>
-    <module>deegree-featurestore-simplesql</module>
-    <module>deegree-featurestore-sql</module>
-  </modules>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-base</artifactId>
+      <version>3.1-pre12-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-sqldialect-commons</artifactId>
+      <version>3.1-pre12-SNAPSHOT</version>
+    </dependency>     
+  </dependencies>
 </project>
