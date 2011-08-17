@@ -8,7 +8,7 @@
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-misc</artifactId>
+    <artifactId>deegree</artifactId>
     <version>3.1-pre12-SNAPSHOT</version>
   </parent>
 
