@@ -11,7 +11,7 @@
   <scm>
     <!--connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/base/trunk</connection-->
     <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/base/trunk</url>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</url>
   </scm>
 
   <repositories>
