@@ -71,6 +71,7 @@
         <configuration>
           <preparationGoals>clean install</preparationGoals>
           <tagBase>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
       </plugin>
       <plugin>
