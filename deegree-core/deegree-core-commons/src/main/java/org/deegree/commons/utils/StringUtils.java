@@ -319,4 +319,13 @@ public class StringUtils {
         }
         return sb.toString();
     }
+
+    public static String repeat( int count, String str ) {
+        StringBuilder sb = new StringBuilder();
+        for ( int i = 0; i < count; ++i ) {
+            sb.append( str );
+        }
+        return sb.toString();
+    }
+
 }

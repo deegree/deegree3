@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.struct;
 
+import static org.deegree.commons.utils.StringUtils.repeat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +64,21 @@ public class Tree<T> {
         List<T> list = new ArrayList<T>();
         dfsFlat( list, this );
         return list;
+    }
+
+    public String toString( int indent ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append( repeat( indent, " " ) + " - " + value + "\n" );
+        indent += 2;
+        for ( Tree<T> c : children ) {
+            sb.append( c.toString( indent ) );
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return toString( 0 );
     }
 
 }
