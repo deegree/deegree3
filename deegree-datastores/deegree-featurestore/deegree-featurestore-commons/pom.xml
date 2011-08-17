@@ -1,36 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.deegree</groupId>
   <artifactId>deegree-featurestore-commons</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-pre12-SNAPSHOT</version>
   <name>deegree-featurestore-commons</name>
-  <url>http://www.deegree.org</url>
-  <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-commons</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-commons</url>
-  </scm>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-parent</artifactId>
+    <artifactId>deegree-featurestore</artifactId>
     <version>3.1-pre12-SNAPSHOT</version>
-    <relativePath />
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <dependencies>
     <dependency>
