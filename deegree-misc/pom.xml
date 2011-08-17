@@ -25,9 +25,9 @@
   </repositories>
 
   <modules>
+    <module>deegree-api-examples</module>
     <module>deegree-javacheck</module>
     <module>deegree-tomcat</module>
-    <!--module>deegree-log4j-properties</module-->
   </modules>
 
 </project>
