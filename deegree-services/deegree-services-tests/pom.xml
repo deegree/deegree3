@@ -107,15 +107,9 @@
   </dependencies>
 
   <modules>
-    <module>deegree-test-parent</module>
+    <module>deegree-cite-tests</module>
     <module>deegree-workspace-tests</module>
-    <module>deegree-wms-cite</module>
     <module>deegree-wms-similarity-tests</module>
-    <module>deegree-wcs-cite100</module>
-    <module>deegree-csw-bkg</module>
-    <module>deegree-wfs-cite110</module>
-    <module>deegree-wfs-cite100</module>
-    <module>deegree-sos-cite100</module>
     <!-- <module>deegree-wms-remoteows-test</module> -->
   </modules>
 
