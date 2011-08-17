@@ -1,15 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.deegree</groupId>
-  <artifactId>deegree-csw-bkg</artifactId>
+  <artifactId>deegree-wfs-cite100</artifactId>
   <packaging>war</packaging>
   <version>3.1-pre12-SNAPSHOT</version>
-  <name>deegree CSW BKG-Test Webapp</name>
-  <url>http://www.deegree.org</url>
-
+  <name>deegree-wfs-cite100</name>
+  
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-test-parent</artifactId>
+    <artifactId>deegree-cite-tests</artifactId>
     <version>3.1-pre12-SNAPSHOT</version>
   </parent>
 
@@ -41,20 +39,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.0.1</version>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wfs</artifactId>
+      <version>3.1-pre12-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-csw</artifactId>
+      <artifactId>deegree-featurestore-memory</artifactId>
       <version>3.1-pre12-SNAPSHOT</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xalan</groupId>
-          <artifactId>xalan</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 

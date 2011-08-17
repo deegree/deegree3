@@ -1,22 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.deegree</groupId>
   <artifactId>deegree-wcs-cite100</artifactId>
   <packaging>war</packaging>
-  <version>3.1-pre12-SNAPSHOT</version>
-  <name>deegree-wcs-cite100 Webapp</name>
-  <url>http://www.deegree.org</url>
-
-  <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-test/deegree-wcs-cite100</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-test/deegree-wcs-cite100</url>
-  </scm>
+  <name>deegree-wcs-cite100</name>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-test-parent</artifactId>
+    <artifactId>deegree-cite-tests</artifactId>
     <version>3.1-pre12-SNAPSHOT</version>
-    <relativePath />
   </parent>
 
   <repositories>
