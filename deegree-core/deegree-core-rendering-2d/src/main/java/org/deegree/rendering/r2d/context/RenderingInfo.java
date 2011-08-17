@@ -67,6 +67,8 @@ public class RenderingInfo {
         this.height = height;
         this.transparent = transparent;
         this.bgcolor = bgcolor;
+        this.envelope = envelope;
+        this.pixelSize = pixelSize;
     }
 
     public void setFormat( String format ) {
