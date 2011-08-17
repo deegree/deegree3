@@ -40,10 +40,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence.standard;
 
+import static org.deegree.commons.utils.StringUtils.repeat;
+
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.layer.Layer;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.theme.Theme;
@@ -54,7 +57,7 @@ import org.deegree.theme.Theme;
  */
 public class StandardTheme implements Theme {
 
-    private DeegreeWorkspace workspace;
+    // private DeegreeWorkspace workspace;
 
     private final String identifier;
 
@@ -71,7 +74,7 @@ public class StandardTheme implements Theme {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        this.workspace = workspace;
+        // this.workspace = workspace;
     }
 
     @Override
@@ -98,6 +101,30 @@ public class StandardTheme implements Theme {
     @Override
     public List<Theme> getThemes() {
         return themes;
+    }
+
+    public String toString( int indent ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append( repeat( indent, "  " ) );
+        sb.append( " - " );
+        sb.append( identifier );
+        sb.append( " " );
+        sb.append( layers.size() );
+        sb.append( " layers\n" );
+        indent += 2;
+        for ( Theme t : themes ) {
+            if ( t instanceof StandardTheme ) {
+                sb.append( ( (StandardTheme) t ).toString( indent ) );
+            } else {
+                sb.append( t );
+            }
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return toString( 0 );
     }
 
 }
