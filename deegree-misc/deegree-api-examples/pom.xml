@@ -28,7 +28,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core</artifactId>
+      <artifactId>deegree-core-base</artifactId>
       <version>3.1-pre12-SNAPSHOT</version>
     </dependency>
   </dependencies>
