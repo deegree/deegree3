@@ -26,6 +26,7 @@
 
   <modules>
     <module>deegree-processprovider-example</module>
+    <module>deegree-processprovider-jrxml</module>
     <module>deegree-processprovider-sextante</module>
   </modules>
 
