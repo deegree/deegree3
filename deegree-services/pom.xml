@@ -11,15 +11,6 @@
     <version>3.1-pre12-SNAPSHOT</version>
   </parent>
 
-  <profiles>
-    <profile>
-      <id>run-service-tests</id>
-      <modules>
-        <module>deegree-services-tests</module>
-      </modules>
-    </profile>
-  </profiles>
-
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -46,4 +37,14 @@
     <module>deegree-webservices</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>run-service-tests</id>
+      <modules>
+        <module>deegree-services-tests</module>
+      </modules>
+    </profile>
+  </profiles>
+
 </project>
+
