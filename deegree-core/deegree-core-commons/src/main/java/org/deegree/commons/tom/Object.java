@@ -36,7 +36,7 @@
 package org.deegree.commons.tom;
 
 /**
- * {@link TypedObjectNode} with an object semantics, i.e. it can be referenced by its identifier.
+ * {@link TypedObjectNode} with object semantics, i.e. it can be referenced by its identifier.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

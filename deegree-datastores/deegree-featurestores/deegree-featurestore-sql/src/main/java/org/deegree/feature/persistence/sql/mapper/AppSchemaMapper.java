@@ -155,7 +155,7 @@ public class AppSchemaMapper {
         FeatureType[] fts = appSchema.getFeatureTypes( null, false, false ).toArray( new FeatureType[ftList.size()] );
         Map<FeatureType, FeatureType> ftToSuperFt = appSchema.getFtToSuperFt();
         Map<String, String> prefixToNs = appSchema.getNamespaceBindings();
-        GMLSchemaInfoSet xsModel = appSchema.getXSModel();
+        GMLSchemaInfoSet xsModel = appSchema.getGMLSchema();
 
         FeatureTypeMapping[] ftMappings = null;
 
@@ -192,7 +192,7 @@ public class AppSchemaMapper {
         // TODO
         String table = "GML_OBJECTS";
         // TODO
-        BlobCodec codec = new BlobCodec( appSchema.getXSModel().getVersion(), NONE );
+        BlobCodec codec = new BlobCodec( appSchema.getGMLSchema().getVersion(), NONE );
         return new BlobMapping( table, geometryParams.getCrs(), codec );
     }
 
@@ -232,7 +232,7 @@ public class AppSchemaMapper {
 
         List<Mapping> mappings = new ArrayList<Mapping>();
         if ( mapGMLProps ) {
-            for ( PropertyType pt : ft.getPropertyDeclarations( ft.getSchema().getXSModel().getVersion() ) ) {
+            for ( PropertyType pt : ft.getPropertyDeclarations( ft.getSchema().getGMLSchema().getVersion() ) ) {
                 mappings.add( generatePropMapping( pt, mc ) );
             }
         } else {
@@ -623,7 +623,7 @@ public class AppSchemaMapper {
         }
 
         // consider every concrete element substitution
-        List<XSElementDeclaration> substitutions = appSchema.getXSModel().getSubstitutions( elDecl, null, true, true );
+        List<XSElementDeclaration> substitutions = appSchema.getGMLSchema().getSubstitutions( elDecl, null, true, true );
         if ( eName.equals( new QName( "http://www.isotc211.org/2005/gco", "CharacterString" ) ) ) {
             substitutions.clear();
             substitutions.add( elDecl );

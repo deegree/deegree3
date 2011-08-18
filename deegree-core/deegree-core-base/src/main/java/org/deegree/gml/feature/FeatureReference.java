@@ -51,8 +51,7 @@ import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Represents a reference to a feature, which is usually expressed using an <code>xlink:href</code> attribute in GML
- * (may be document-local or remote).
+ * A {@link GMLReference} that targets a {@link Feature}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $

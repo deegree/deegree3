@@ -41,6 +41,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.Object;
 
 /**
  * {@link PropertyType} that defines a property with an {@link Object} value.

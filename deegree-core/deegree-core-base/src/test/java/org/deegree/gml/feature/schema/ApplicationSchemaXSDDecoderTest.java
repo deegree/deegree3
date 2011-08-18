@@ -227,7 +227,7 @@ public class ApplicationSchemaXSDDecoderTest {
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 75, fts.length );
-        for ( String ns : schema.getXSModel().getAppNamespaces() ) {
+        for ( String ns : schema.getGMLSchema().getAppNamespaces() ) {
             System.out.println( ns );
         }
     }

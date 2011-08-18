@@ -142,8 +142,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             String ns = fs.getNamespaceContext().get( prefix );
             nsBindings.addNamespace( prefix, ns );
         }
-        if ( ft.getSchema().getXSModel() != null ) {
-            this.gmlVersion = ft.getSchema().getXSModel().getVersion();
+        if ( ft.getSchema().getGMLSchema() != null ) {
+            this.gmlVersion = ft.getSchema().getGMLSchema().getVersion();
         } else {
             this.gmlVersion = GMLVersion.GML_32;
         }

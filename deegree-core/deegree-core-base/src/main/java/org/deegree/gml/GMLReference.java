@@ -41,8 +41,7 @@ import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.gml.props.GMLStdProps;
 
 /**
- * Represents a reference to a {@link GMLObject}, corresponds to a GML property with an <code>xlink:href</code>
- * attribute.
+ * A {@link Reference} to a {@link GMLObject}, corresponds to a GML property with an <code>xlink:href</code> attribute.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

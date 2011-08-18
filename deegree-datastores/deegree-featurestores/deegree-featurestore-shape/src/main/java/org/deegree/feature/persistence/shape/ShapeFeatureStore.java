@@ -91,6 +91,7 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.GenericApplicationSchema;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -297,7 +298,7 @@ public class ShapeFeatureStore implements FeatureStore {
                                                                       null, shp.getGeometryType(), DIM_2_OR_3, BOTH );
             ft = new GenericFeatureType( ftName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
-        schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );
+        schema = new GenericApplicationSchema( new FeatureType[] { ft }, null, null, null );
     }
 
     private void getCRSFromFile( File prj ) {
@@ -397,7 +398,7 @@ public class ShapeFeatureStore implements FeatureStore {
                         dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
                     }
                     ft = dbf.getFeatureType();
-                    schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );
+                    schema = new GenericApplicationSchema( new FeatureType[] { ft }, null, null, null );
                     dbfLastModified = dbfFile.lastModified();
                     cache.clear();
                 }

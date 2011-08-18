@@ -72,6 +72,7 @@ import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Curve.CurveType;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
@@ -81,14 +82,13 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.Ring.RingType;
 import org.deegree.geometry.primitive.Solid;
+import org.deegree.geometry.primitive.Solid.SolidType;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
-import org.deegree.geometry.primitive.Curve.CurveType;
-import org.deegree.geometry.primitive.Ring.RingType;
-import org.deegree.geometry.primitive.Solid.SolidType;
-import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.Triangle;
@@ -110,10 +110,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parser for geometry and geometry-related constructs from the GML 3 specification series (3.0 / 3.1 / 3.2).
- * 
- * TODO: check correctness for GML 3.0 / 3.2
- * 
+ * Parser for geometry and geometry-related constructs from the GML 3 specification series (3.0/3.1/3.2).
  * <p>
  * Supports the following geometry elements:
  * <p>
@@ -144,13 +141,12 @@ import org.slf4j.LoggerFactory;
  * <li><code>MultiGeometry</code></li>
  * </p>
  * <p>
- * Additionally, the parsing of <code>Envelope</code> elements is supported, @see
- * {@link #parseEnvelope(XMLStreamReaderWrapper)} and {@link #parseGeometryOrEnvelope(XMLStreamReaderWrapper)
- * (XMLStreamReaderWrapper)}.
+ * Additionally, parsing of <code>Envelope</code> elements is supported, {@link #parseEnvelope(XMLStreamReaderWrapper)}
+ * and {@link #parseGeometryOrEnvelope(XMLStreamReaderWrapper)}.
  * </p>
  * <p>
- * Currently unsupported are the elements from the <code>_ImplicitGeometry</code> substitution group, i.e.
- * <code>Grid</code> and <code>RectifiedGrid</code>):
+ * TODO Currently unsupported are the elements from the <code>_ImplicitGeometry</code> substitution group, i.e.
+ * <code>Grid</code> and <code>RectifiedGrid</code>).
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -581,8 +577,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public MultiGeometry<? extends Geometry> parseGeometricAggregate( XMLStreamReaderWrapper xmlStream,
-                                                                      ICRS defaultCRS )
+    public MultiGeometry<? extends Geometry> parseGeometricAggregate( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         MultiGeometry<? extends Geometry> geometry = null;
@@ -2553,8 +2548,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public GeometricPrimitive parseGeometricPrimitiveProperty( XMLStreamReaderWrapper xmlStream,
-                                                               ICRS defaultCRS )
+    public GeometricPrimitive parseGeometricPrimitiveProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         GeometricPrimitive primitive = null;

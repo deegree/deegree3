@@ -43,7 +43,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
- * Enum type for the GML versions that have to be differerentiated in deegree's GML subsystem.
+ * Enum type for the GML versions that are differerentiated in deegree's GML subsystem.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $

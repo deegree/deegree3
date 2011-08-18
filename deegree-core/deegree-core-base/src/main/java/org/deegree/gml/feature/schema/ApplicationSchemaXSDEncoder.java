@@ -353,7 +353,7 @@ public class ApplicationSchemaXSDEncoder {
         // export element declarations and type declarations (in the target namespace) that are not feature type related
         try {
             for ( ApplicationSchema schema : schemas ) {
-                GMLSchemaInfoSet analyzer = schema.getXSModel();
+                GMLSchemaInfoSet analyzer = schema.getGMLSchema();
                 if ( analyzer != null ) {
                     XSModel xsModel = analyzer.getXSModel();
                     XSNamespaceItemList nsItems = xsModel.getNamespaceItems();
@@ -530,7 +530,7 @@ public class ApplicationSchemaXSDEncoder {
 
         QName elName = ft.getName();
         QName typeName = null;
-        GMLSchemaInfoSet analyzer = ft.getSchema().getXSModel();
+        GMLSchemaInfoSet analyzer = ft.getSchema().getGMLSchema();
         if ( analyzer == null ) {
             if ( hasSubTypes ) {
                 typeName = new QName( elName.getNamespaceURI(), elName.getLocalPart() + "Type" );

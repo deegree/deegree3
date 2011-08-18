@@ -47,6 +47,7 @@ import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.id.IdAnalyzer;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.GenericApplicationSchema;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class MappedApplicationSchema extends ApplicationSchema {
+public class MappedApplicationSchema extends GenericApplicationSchema {
 
     private static final Logger LOG = LoggerFactory.getLogger( MappedApplicationSchema.class );
 

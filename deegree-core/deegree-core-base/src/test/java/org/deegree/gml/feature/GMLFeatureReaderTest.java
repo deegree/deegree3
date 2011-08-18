@@ -493,4 +493,16 @@ public class GMLFeatureReaderTest {
         }
         Assert.assertEquals( 4, i );
     }
+    
+//    @Test
+//    public void testGeoServerWFS110FCNoSchema()
+//                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+//                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
+//
+//        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS110_no_schema.xml" );
+//        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
+//        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+//        gmlReader.getIdContext().resolveLocalRefs();
+//        Assert.assertEquals( 4, fc.size() );
+//    }
 }

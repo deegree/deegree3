@@ -151,7 +151,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         nsBindings = buildNSBindings( gmlSchema.getNamespaceBindings(), nsHints );
         schemaWalker = new XPathSchemaWalker( gmlSchema, nsBindings );
         if ( blobConf != null ) {
-            Pair<BlobMapping, BBoxTableMapping> pair = buildBlobMapping( blobConf, gmlSchema.getXSModel().getVersion() );
+            Pair<BlobMapping, BBoxTableMapping> pair = buildBlobMapping( blobConf,
+                                                                         gmlSchema.getGMLSchema().getVersion() );
             blobMapping = pair.first;
             bboxMapping = pair.second;
         }
@@ -178,7 +179,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             String prefix = prefixIter.next();
             prefixToNs.put( prefix, nsBindings.getNamespaceURI( prefix ) );
         }
-        GMLSchemaInfoSet xsModel = gmlSchema.getXSModel();
+        GMLSchemaInfoSet xsModel = gmlSchema.getGMLSchema();
         return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping,
                                             blobMapping, geometryParams );
     }
@@ -210,7 +211,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             String msg = "Error building GML application schema: " + t.getMessage();
             throw new FeatureStoreException( msg );
         }
-        LOG.debug( "GML version: " + appSchema.getXSModel().getVersion() );
+        LOG.debug( "GML version: " + appSchema.getGMLSchema().getVersion() );
         return appSchema;
     }
 
@@ -242,7 +243,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         QTableName ftTable = new QTableName( ftMappingConf.getTable() );
         FIDMapping fidMapping = buildFIDMapping( ftTable, ftName, ftMappingConf.getFIDMapping() );
         List<Mapping> particleMappings = new ArrayList<Mapping>();
-        XSElementDeclaration elDecl = gmlSchema.getXSModel().getElementDecl( ftName );
+        XSElementDeclaration elDecl = gmlSchema.getGMLSchema().getElementDecl( ftName );
         for ( JAXBElement<? extends AbstractParticleJAXB> particle : ftMappingConf.getAbstractParticle() ) {
             particleMappings.add( buildMapping( ftTable, new Pair<XSElementDeclaration, Boolean>( elDecl, TRUE ),
                                                 particle.getValue() ) );
@@ -341,8 +342,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         QName ptName = new QName( elDecl.first.getNamespace(), elDecl.first.getName() );
         // TODO rework this
-        FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getXSModel().getGMLPropertyDecl( elDecl.first, ptName,
-                                                                                                  0, 1, null );
+        FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getGMLSchema().getGMLPropertyDecl( elDecl.first,
+                                                                                                    ptName, 0, 1, null );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new FeatureMapping( path, elDecl.second, hrefMe, pt.getFTName(), joinedTable );
     }

@@ -203,7 +203,7 @@ public class MappingWizardSQL {
     }
 
     public String getGmlVersion() {
-        return appSchema.getXSModel().getVersion().name();
+        return appSchema.getGMLSchema().getVersion().name();
     }
 
     public AppSchemaInfo getAppSchemaInfo() {

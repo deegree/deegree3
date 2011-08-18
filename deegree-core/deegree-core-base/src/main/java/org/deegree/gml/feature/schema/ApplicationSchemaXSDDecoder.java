@@ -70,6 +70,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.GenericApplicationSchema;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.ArrayPropertyType;
@@ -266,7 +267,7 @@ public class ApplicationSchemaXSDDecoder {
             }
             ftSubstitution.put( ftNameToFt.get( ftName ), ftNameToFt.get( substitutionFtName ) );
         }
-        return new ApplicationSchema( fts, ftSubstitution, prefixToNs, analyzer );
+        return new GenericApplicationSchema( fts, ftSubstitution, prefixToNs, analyzer );
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {

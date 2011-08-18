@@ -273,7 +273,7 @@ public class XMLSchemaInfoSet {
     /**
      * Returns the XML schema infoset (represented as a Xerces {@link XSModel}).
      * 
-     * @return the XML schema infoset
+     * @return the XML schema infoset, never <code>null</code>
      */
     public XSModel getXSModel() {
         return xsModel;

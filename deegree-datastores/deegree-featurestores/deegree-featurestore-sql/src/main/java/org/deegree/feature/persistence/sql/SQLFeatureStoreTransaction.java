@@ -150,7 +150,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                                                                    geometryParams, null );
             blobGeomConverter = fs.getGeometryConverter( blobGeomMapping );
         }
-        this.gmlVersion = schema.getXSModel() == null ? GML_32 : schema.getXSModel().getVersion();
+        this.gmlVersion = schema.getGMLSchema() == null ? GML_32 : schema.getGMLSchema().getVersion();
     }
 
     @Override

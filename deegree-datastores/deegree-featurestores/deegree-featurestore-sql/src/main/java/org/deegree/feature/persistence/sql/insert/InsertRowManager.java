@@ -124,7 +124,7 @@ public class InsertRowManager {
     public InsertRowManager( SQLFeatureStore fs, Connection conn ) {
         this.fs = fs;
         this.conn = conn;
-        this.gmlVersion = fs.getSchema().getXSModel() == null ? GML_32 : fs.getSchema().getXSModel().getVersion();
+        this.gmlVersion = fs.getSchema().getGMLSchema() == null ? GML_32 : fs.getSchema().getGMLSchema().getVersion();
     }
 
     /**

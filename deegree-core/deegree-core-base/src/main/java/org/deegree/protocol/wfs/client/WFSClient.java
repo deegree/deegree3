@@ -49,6 +49,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.GenericApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
@@ -261,7 +262,7 @@ public class WFSClient {
 
         StreamFeatureCollection fc = null;
         try {
-            GMLVersion gmlVersion = getApplicationSchema().getXSModel().getVersion();
+            GMLVersion gmlVersion = getApplicationSchema().getGMLSchema().getVersion();
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, new URL( url ) );
             gmlReader.setApplicationSchema( schema );
             // TODO default SRS

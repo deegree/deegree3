@@ -128,20 +128,20 @@ public class XPathSchemaWalker {
         return currentEl;
     }
 
-    private int getNumber (NameStep step) {
+    private int getNumber( NameStep step ) {
         int num = 0;
         if ( !step.getPredicates().isEmpty() ) {
             List<?> predicates = step.getPredicates();
             if ( predicates.size() == 1 ) {
                 Expr predicate = ( (Predicate) predicates.get( 0 ) ).getExpr();
                 if ( predicate instanceof NumberExpr ) {
-                    num = ((NumberExpr) predicate).getNumber().intValue();
+                    num = ( (NumberExpr) predicate ).getNumber().intValue();
                 }
             }
         }
-        return num; 
+        return num;
     }
-    
+
     public Pair<PrimitiveType, Boolean> getTargetType( Pair<XSElementDeclaration, Boolean> context,
                                                        PropertyName propName ) {
 
@@ -261,8 +261,8 @@ public class XPathSchemaWalker {
     private Pair<XSElementDeclaration, Boolean> getTargetElementTerm( Pair<XSTerm, Boolean> term, QName elName, int num ) {
         if ( term.first instanceof XSElementDeclaration ) {
             XSElementDeclaration elDecl = (XSElementDeclaration) term.first;
-            for ( XSElementDeclaration substitution : appSchema.getXSModel().getSubstitutions( elDecl, null, true,
-                                                                                               false ) ) {
+            for ( XSElementDeclaration substitution : appSchema.getGMLSchema().getSubstitutions( elDecl, null, true,
+                                                                                                 false ) ) {
                 QName elDeclName = getQName( substitution );
                 if ( elName.equals( elDeclName ) ) {
                     return new Pair<XSElementDeclaration, Boolean>( substitution, term.second );
@@ -274,7 +274,10 @@ public class XPathSchemaWalker {
             for ( int i = 0; i < ol.getLength(); i++ ) {
                 XSParticle o = (XSParticle) ol.item( i );
                 boolean voidable = o.getMinOccurs() == 0 || o.getMinOccurs() < num;
-                Pair<XSElementDeclaration, Boolean> elDecl = getTargetElementTerm( new Pair<XSTerm,Boolean>(o.getTerm(), voidable), elName, num );
+                Pair<XSElementDeclaration, Boolean> elDecl = getTargetElementTerm( new Pair<XSTerm, Boolean>(
+                                                                                                              o.getTerm(),
+                                                                                                              voidable ),
+                                                                                   elName, num );
                 if ( elDecl != null ) {
                     return elDecl;
                 }
@@ -282,7 +285,7 @@ public class XPathSchemaWalker {
         } else if ( term.first instanceof XSWildcard ) {
             throw new IllegalArgumentException( "Matching of wildcard elements not supported." );
         } else {
-            throw new RuntimeException("Unexpected term type: " + term.getClass());
+            throw new RuntimeException( "Unexpected term type: " + term.getClass() );
         }
         return null;
     }

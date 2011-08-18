@@ -73,7 +73,7 @@ public class GeoCouchFeatureStoreTransaction implements FeatureStoreTransaction 
     @Override
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
-        BlobCodec codec = new BlobCodec( store.getSchema().getXSModel().getVersion(), Compression.NONE );
+        BlobCodec codec = new BlobCodec( store.getSchema().getGMLSchema().getVersion(), Compression.NONE );
         List<String> ids = new ArrayList<String>();
         try {
             for ( Feature f : fc ) {

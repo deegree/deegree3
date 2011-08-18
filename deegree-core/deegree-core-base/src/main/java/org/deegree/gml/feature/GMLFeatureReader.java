@@ -100,6 +100,7 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.GenericApplicationSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.ArrayPropertyType;

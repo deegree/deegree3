@@ -23,8 +23,8 @@ public class AppSchemaInfo {
 
     public SortedSet<String> getSchemaComponents() {
         TreeSet<String> components = new TreeSet<String>();
-        for ( String ns : schema.getXSModel().getSchemaNamespaces() ) {
-            components.addAll( schema.getXSModel().getComponentLocations( ns ) );
+        for ( String ns : schema.getGMLSchema().getSchemaNamespaces() ) {
+            components.addAll( schema.getGMLSchema().getComponentLocations( ns ) );
         }
         return components;
     }

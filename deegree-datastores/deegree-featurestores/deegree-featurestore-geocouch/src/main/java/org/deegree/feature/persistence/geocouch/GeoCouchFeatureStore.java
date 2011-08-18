@@ -217,7 +217,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
                             throws FeatureStoreException {
 
         FeatureResultSet result = null;
-        BlobCodec codec = new BlobCodec( schema.getXSModel().getVersion(), Compression.NONE );
+        BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), Compression.NONE );
         try {
             result = new IteratorResultSet( new IDIterator( filter.getMatchingIds().iterator(), codec ) );
         } catch ( Throwable e ) {
@@ -261,7 +261,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
                     }
                 }
 
-                BlobCodec codec = new BlobCodec( schema.getXSModel().getVersion(), Compression.NONE );
+                BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), Compression.NONE );
                 result = new IteratorResultSet( new IDIterator( ids.iterator(), codec ) );
 
                 // mangle filter to exclude bbox
@@ -378,7 +378,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
     }
 
     private Feature getFeatureById( String id ) {
-        BlobCodec codec = new BlobCodec( schema.getXSModel().getVersion(), NONE );
+        BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), NONE );
         HttpClient client = new DefaultHttpClient();
         try {
             HttpGet get = new HttpGet( couchUrl + id + "/feature" );

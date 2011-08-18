@@ -116,8 +116,8 @@ public class SQLFeatureStoreConfigWriter {
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", SCHEMA_LOCATION );
         int i = 1;
-        for ( String ns : schema.getXSModel().getAppNamespaces() ) {
-            String prefix = schema.getXSModel().getNamespacePrefixes().get( ns );
+        for ( String ns : schema.getGMLSchema().getAppNamespaces() ) {
+            String prefix = schema.getGMLSchema().getNamespacePrefixes().get( ns );
             if ( prefix != null && !prefix.equals( XMLConstants.DEFAULT_NS_PREFIX ) ) {
                 writer.writeNamespace( prefix, ns );
             } else {
@@ -285,7 +285,7 @@ public class SQLFeatureStoreConfigWriter {
 
     private String getName( QName name ) {
         if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
-            String prefix = schema.getXSModel().getNamespacePrefixes().get( name.getNamespaceURI() );
+            String prefix = schema.getGMLSchema().getNamespacePrefixes().get( name.getNamespaceURI() );
             return prefix + ":" + name.getLocalPart();
         }
         return name.getLocalPart();

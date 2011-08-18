@@ -194,9 +194,9 @@ class DescribeFeatureTypeHandler {
             Collection<String> namespaces = determineRequiredNamespaces( request );
             String targetNs = namespaces.iterator().next();
             if ( exportOriginalSchema && service.getStores().length == 1
-                 && service.getStores()[0].getSchema().getXSModel() != null
-                 && service.getStores()[0].getSchema().getXSModel().getVersion() == version ) {
-                exportOriginalInfoSet( writer, service.getStores()[0].getSchema().getXSModel(), targetNs );
+                 && service.getStores()[0].getSchema().getGMLSchema() != null
+                 && service.getStores()[0].getSchema().getGMLSchema().getVersion() == version ) {
+                exportOriginalInfoSet( writer, service.getStores()[0].getSchema().getGMLSchema(), targetNs );
             } else {
                 reencodeSchema( request, writer, targetNs, namespaces, version );
             }

@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,29 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.schema;
-
-import org.apache.xerces.impl.xs.XSElementDecl;
-import org.deegree.feature.types.property.ValueRepresentation;
+package org.deegree.feature.types;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link ApplicationSchema} that provides methods for changing defined {@link FeatureTypes} during runtime.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GeometryPropertyDecl extends GMLPropertyDecl {
+public class DynamicApplicationSchema {
 
-    private final XSElementDecl geomValue;
-
-    public GeometryPropertyDecl( ValueRepresentation valueRep, XSElementDecl geomValue ) {
-        super( valueRep );
-        this.geomValue = geomValue;
-    }
-
-    public XSElementDecl getGeomValue () {
-        return geomValue;
-    }
 }

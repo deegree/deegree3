@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,27 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.schema;
-
-import org.deegree.feature.types.property.ValueRepresentation;
+package org.deegree.feature.types;
 
 /**
- * Encapsu
+ * {@link FeatureType} that provides methods for changing property declarations after construction.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GMLPropertyDecl {
+public class DynamicFeatureType {
 
-    private ValueRepresentation valueRep;
-    
-    public GMLPropertyDecl (ValueRepresentation valueRep) {
-        this.valueRep = valueRep;
-    }
-
-    public ValueRepresentation getRepresentation () {
-        return valueRep;
-    }   
 }
