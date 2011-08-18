@@ -72,6 +72,11 @@
   </servlet-mapping>
 
   <servlet-mapping>
+    <servlet-name>services</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
     <servlet-name>resources</servlet-name>
     <url-pattern>/resources/*</url-pattern>
   </servlet-mapping>
