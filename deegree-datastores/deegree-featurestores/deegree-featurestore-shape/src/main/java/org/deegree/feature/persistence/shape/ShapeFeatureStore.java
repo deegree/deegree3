@@ -89,9 +89,9 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericApplicationSchema;
+import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -141,7 +141,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private FeatureType ft;
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     private final FeatureStoreCache cache;
 
@@ -298,7 +298,7 @@ public class ShapeFeatureStore implements FeatureStore {
                                                                       null, shp.getGeometryType(), DIM_2_OR_3, BOTH );
             ft = new GenericFeatureType( ftName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
-        schema = new GenericApplicationSchema( new FeatureType[] { ft }, null, null, null );
+        schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null );
     }
 
     private void getCRSFromFile( File prj ) {
@@ -398,7 +398,7 @@ public class ShapeFeatureStore implements FeatureStore {
                         dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
                     }
                     ft = dbf.getFeatureType();
-                    schema = new GenericApplicationSchema( new FeatureType[] { ft }, null, null, null );
+                    schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null );
                     dbfLastModified = dbfFile.lastModified();
                     cache.clear();
                 }
@@ -640,7 +640,7 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public ApplicationSchema getSchema() {
+    public AppSchema getSchema() {
         return schema;
     }
 

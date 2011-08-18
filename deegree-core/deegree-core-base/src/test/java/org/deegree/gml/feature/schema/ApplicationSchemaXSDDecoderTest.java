@@ -44,7 +44,7 @@ import javax.xml.namespace.QName;
 import junit.framework.Assert;
 
 import org.deegree.commons.utils.test.TestProperties;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -97,7 +97,7 @@ public class ApplicationSchemaXSDDecoderTest {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 54, fts.length );
 
@@ -117,7 +117,7 @@ public class ApplicationSchemaXSDDecoderTest {
         }
 
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
         schema.getFeatureTypes();
     }
 
@@ -186,7 +186,7 @@ public class ApplicationSchemaXSDDecoderTest {
         }
 
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
         Assert.assertEquals( 132, schema.getFeatureTypes().length );
     }
 
@@ -201,7 +201,7 @@ public class ApplicationSchemaXSDDecoderTest {
         }
 
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_30, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
         Assert.assertEquals( 237, schema.getFeatureTypes().length );
 
         QName ftName = new QName( "http://www.adv-online.de/namespaces/adv/gid/5.1.1", "AX_BesondereFlurstuecksgrenze" );
@@ -224,7 +224,7 @@ public class ApplicationSchemaXSDDecoderTest {
         }
 
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 75, fts.length );
         for ( String ns : schema.getGMLSchema().getAppNamespaces() ) {

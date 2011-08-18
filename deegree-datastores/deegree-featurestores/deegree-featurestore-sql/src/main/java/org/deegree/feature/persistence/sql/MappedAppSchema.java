@@ -45,24 +45,24 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.id.IdAnalyzer;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericApplicationSchema;
+import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An {@link ApplicationSchema} augmented with relational and / or BLOB mapping information.
+ * An {@link AppSchema} augmented with relational and / or BLOB mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class MappedApplicationSchema extends GenericApplicationSchema {
+public class MappedAppSchema extends GenericAppSchema {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MappedApplicationSchema.class );
+    private static final Logger LOG = LoggerFactory.getLogger( MappedAppSchema.class );
 
     private final BBoxTableMapping bboxMapping;
 
@@ -81,7 +81,7 @@ public class MappedApplicationSchema extends GenericApplicationSchema {
     private final IdAnalyzer idAnalyzer;
 
     /**
-     * Creates a new {@link MappedApplicationSchema} from the given parameters.
+     * Creates a new {@link MappedAppSchema} from the given parameters.
      * 
      * @param fts
      *            all application feature types (abstract and non-abstract), this must not include the GML base feature
@@ -103,10 +103,9 @@ public class MappedApplicationSchema extends GenericApplicationSchema {
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
-    public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
-                                    Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel,
-                                    FeatureTypeMapping[] ftMappings, BBoxTableMapping bboxMapping,
-                                    BlobMapping blobMapping, GeometryStorageParams geometryParams ) {
+    public MappedAppSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
+                            Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel, FeatureTypeMapping[] ftMappings,
+                            BBoxTableMapping bboxMapping, BlobMapping blobMapping, GeometryStorageParams geometryParams ) {
 
         super( fts, ftToSuperFt, prefixToNs, xsModel );
         if ( ftMappings != null ) {

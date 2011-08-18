@@ -80,7 +80,7 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -198,7 +198,7 @@ public class FeatureLayer extends Layer {
 
         // always use up-to-date envelope
         Envelope bbox = null;
-        ApplicationSchema schema = datastore.getSchema();
+        AppSchema schema = datastore.getSchema();
 
         List<Style> styles = service.registry.getAll( getName() );
         List<QName> ftNames = new LinkedList<QName>();

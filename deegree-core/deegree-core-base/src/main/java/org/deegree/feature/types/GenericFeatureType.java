@@ -69,7 +69,7 @@ public class GenericFeatureType implements FeatureType {
 
     private boolean isAbstract;
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     public GenericFeatureType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
         this.name = name;
@@ -142,12 +142,12 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
-    public ApplicationSchema getSchema() {
+    public AppSchema getSchema() {
         return schema;
     }
 
     @Override
-    public void setSchema( ApplicationSchema schema ) {
+    public void setSchema( AppSchema schema ) {
         this.schema = schema;
     }
 

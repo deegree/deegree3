@@ -78,7 +78,7 @@ import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobCodec.Compression;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -113,11 +113,11 @@ public class GeoCouchFeatureStore implements FeatureStore {
 
     private ICRS crs;
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     private String couchUrl;
 
-    public GeoCouchFeatureStore( ICRS crs, ApplicationSchema schema, String couchUrl ) {
+    public GeoCouchFeatureStore( ICRS crs, AppSchema schema, String couchUrl ) {
         this.crs = crs;
         this.schema = schema;
         this.couchUrl = couchUrl;
@@ -166,7 +166,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
     }
 
     @Override
-    public ApplicationSchema getSchema() {
+    public AppSchema getSchema() {
         return schema;
     }
 

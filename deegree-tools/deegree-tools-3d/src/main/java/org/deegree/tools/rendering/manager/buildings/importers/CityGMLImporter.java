@@ -63,7 +63,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
@@ -129,7 +129,7 @@ public class CityGMLImporter implements ModelImporter {
 
     private final QName BUILDING_QNAME;
 
-    private final ApplicationSchema schema;
+    private final AppSchema schema;
 
     private final Tesselator tesselator;
 

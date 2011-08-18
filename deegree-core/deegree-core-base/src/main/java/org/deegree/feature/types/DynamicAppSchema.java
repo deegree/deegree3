@@ -36,13 +36,13 @@
 package org.deegree.feature.types;
 
 /**
- * {@link ApplicationSchema} that provides methods for changing defined {@link FeatureTypes} during runtime.
+ * {@link AppSchema} that provides methods for changing defined {@link FeatureTypes} during runtime.
  * 
  * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DynamicApplicationSchema {
+public class DynamicAppSchema {
 
 }

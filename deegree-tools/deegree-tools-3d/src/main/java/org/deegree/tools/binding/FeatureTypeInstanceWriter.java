@@ -68,9 +68,9 @@ import javax.lang.model.type.PrimitiveType;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.StringPair;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericApplicationSchema;
+import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
@@ -105,7 +105,7 @@ public class FeatureTypeInstanceWriter {
 
     private final static String GML = GMLVersion.class.getSimpleName();
 
-    private final static String ASCHEMA = ApplicationSchema.class.getSimpleName();
+    private final static String ASCHEMA = AppSchema.class.getSimpleName();
 
     private final static String FIELD_PROPS = "ALLOWED_PROPERTIES";
 
@@ -120,7 +120,7 @@ public class FeatureTypeInstanceWriter {
         // featuretype implementation
         imports.add( FeatureType.class.getCanonicalName() );
         imports.add( PropertyType.class.getCanonicalName() );
-        imports.add( GenericApplicationSchema.class.getCanonicalName() );
+        imports.add( GenericAppSchema.class.getCanonicalName() );
         imports.add( GeometryPropertyType.class.getCanonicalName() );
         imports.add( List.class.getCanonicalName() );
         imports.add( GMLVersion.class.getCanonicalName() );
@@ -132,7 +132,7 @@ public class FeatureTypeInstanceWriter {
 
     protected static void writeFields( Writer out, FeatureType ft )
                             throws IOException {
-        ApplicationSchema schema = ft.getSchema();
+        AppSchema schema = ft.getSchema();
         List<PropertyType> propertyDeclarations = schema.getNewPropertyDecls( ft );
         // write the feature type name as a field;
 

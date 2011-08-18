@@ -59,7 +59,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
@@ -86,7 +86,7 @@ class StoredFeatures {
 
     private static final Logger LOG = LoggerFactory.getLogger( StoredFeatures.class );
 
-    private final ApplicationSchema schema;
+    private final AppSchema schema;
 
     private final ICRS storageCRS;
 
@@ -98,7 +98,7 @@ class StoredFeatures {
 
     final Map<FeatureType, RTree<Feature>> ftToIndex;
 
-    StoredFeatures( ApplicationSchema schema, ICRS storageCRS, StoredFeatures former ) {
+    StoredFeatures( AppSchema schema, ICRS storageCRS, StoredFeatures former ) {
         this.schema = schema;
         this.storageCRS = storageCRS;
         for ( FeatureType ft : schema.getFeatureTypes( null, true, false ) ) {

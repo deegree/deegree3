@@ -99,8 +99,8 @@ import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
-import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.feature.types.GenericApplicationSchema;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.ArrayPropertyType;
@@ -147,7 +147,7 @@ public class GMLFeatureReader extends XMLAdapter {
 
     private final String gmlNs;
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     private final GeometryFactory geomFac;
 
@@ -176,7 +176,7 @@ public class GMLFeatureReader extends XMLAdapter {
      *            defaultValue for coordinate dimension, only used when a posList is parsed and no dimension information
      *            from CRS is available (unknown CRS)
      */
-    public GMLFeatureReader( GMLVersion version, ApplicationSchema schema, GMLDocumentIdContext idContext,
+    public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext,
                              int defaultCoordDim ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
@@ -209,7 +209,7 @@ public class GMLFeatureReader extends XMLAdapter {
      *            from CRS is available (unknown CRS) *
      * @param resolver
      */
-    public GMLFeatureReader( GMLVersion version, ApplicationSchema schema, GMLDocumentIdContext idContext,
+    public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext,
                              int defaultCoordDim, GMLReferenceResolver resolver ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
@@ -236,11 +236,11 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     /**
-     * Returns the associated {@link ApplicationSchema} that describes the structure of the feature types.
+     * Returns the associated {@link AppSchema} that describes the structure of the feature types.
      * 
-     * @return the associated {@link ApplicationSchema}
+     * @return the associated {@link AppSchema}
      */
-    public ApplicationSchema getApplicationSchema() {
+    public AppSchema getApplicationSchema() {
         return schema;
     }
 
@@ -405,7 +405,7 @@ public class GMLFeatureReader extends XMLAdapter {
         return new GMLStreamFeatureCollection( fid, ft, this, xmlStream, crs );
     }
 
-    private ApplicationSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream )
+    private AppSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream )
                             throws XMLParsingException {
         String schemaLocation = xmlStream.getAttributeValue( XSINS, "schemaLocation" );
         if ( schemaLocation == null ) {
@@ -437,7 +437,7 @@ public class GMLFeatureReader extends XMLAdapter {
         }
 
         // TODO handle multi-namespace schemas
-        ApplicationSchema schema = null;
+        AppSchema schema = null;
         try {
             ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( version, null, schemaUrls );
             schema = decoder.extractFeatureTypeSchema();

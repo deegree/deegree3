@@ -20,7 +20,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
@@ -43,7 +43,7 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
     }
 
     @Override
-    public void serialize( ApplicationSchema schema, FeatureCollection col, OutputStream outputStream ) {
+    public void serialize( AppSchema schema, FeatureCollection col, OutputStream outputStream ) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader( workspace.getModuleClassLoader() );
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

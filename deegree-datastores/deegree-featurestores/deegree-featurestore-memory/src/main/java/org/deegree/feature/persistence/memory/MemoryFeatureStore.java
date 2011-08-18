@@ -60,7 +60,7 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
@@ -83,7 +83,7 @@ import org.deegree.protocol.wfs.transaction.IDGenMode;
  */
 public class MemoryFeatureStore implements FeatureStore {
 
-    private final ApplicationSchema schema;
+    private final AppSchema schema;
 
     private final ICRS storageCRS;
 
@@ -96,7 +96,7 @@ public class MemoryFeatureStore implements FeatureStore {
     StoredFeatures storedFeatures;
 
     /**
-     * Creates a new {@link MemoryFeatureStore} for the given {@link ApplicationSchema}.
+     * Creates a new {@link MemoryFeatureStore} for the given {@link AppSchema}.
      * 
      * @param schema
      *            application schema, must not be <code>null</code>
@@ -104,7 +104,7 @@ public class MemoryFeatureStore implements FeatureStore {
      *            crs used for storing geometries, may be <code>null</code>
      * @throws FeatureStoreException
      */
-    MemoryFeatureStore( ApplicationSchema schema, ICRS storageCRS ) throws FeatureStoreException {
+    MemoryFeatureStore( AppSchema schema, ICRS storageCRS ) throws FeatureStoreException {
         this.schema = schema;
         this.storageCRS = storageCRS;
         this.storedFeatures = new StoredFeatures( schema, storageCRS, null );
@@ -125,7 +125,7 @@ public class MemoryFeatureStore implements FeatureStore {
      * @throws FeatureStoreException
      * @throws ReferenceResolvingException
      */
-    public MemoryFeatureStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
+    public MemoryFeatureStore( URL docURL, AppSchema schema ) throws XMLStreamException, XMLParsingException,
                             UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException,
                             ReferenceResolvingException {
 
@@ -154,7 +154,7 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public ApplicationSchema getSchema() {
+    public AppSchema getSchema() {
         return schema;
     }
 

@@ -29,7 +29,7 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
  * 
  * @version $Revision:$, $Date:$
  */
-public interface ApplicationSchema {
+public interface AppSchema {
 
     /**
      * Returns all feature types that are defined in this application schema.
@@ -84,7 +84,7 @@ public interface ApplicationSchema {
      *            feature type, must not be <code>null</code>
      * @return parent feature type, can be <code>null</code>
      */
-    FeatureType getParentFt( FeatureType ft );
+    FeatureType getParent( FeatureType ft );
 
     /**
      * Retrieves all substitutions (abstract and non-abstract ones) for the given feature type.

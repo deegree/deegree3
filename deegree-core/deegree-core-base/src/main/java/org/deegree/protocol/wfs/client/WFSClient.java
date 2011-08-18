@@ -48,8 +48,8 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.StreamFeatureCollection;
-import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.feature.types.GenericApplicationSchema;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
@@ -116,7 +116,7 @@ public class WFSClient {
 
     private final WFSFeatureType[] wfsFts;
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     /**
      * Creates a new {@link WFSClient} instance.
@@ -236,11 +236,11 @@ public class WFSClient {
     }
 
     /**
-     * Returns the (GML) {@link ApplicationSchema} for all {@link FeatureType}s offered by this server.
+     * Returns the (GML) {@link AppSchema} for all {@link FeatureType}s offered by this server.
      * 
      * @return application schema, never <code>null</code>
      */
-    public ApplicationSchema getApplicationSchema() {
+    public AppSchema getApplicationSchema() {
         if ( schema == null ) {
             try {
                 String url = "http://deegree3-testing.deegree.org/deegree-utah-demo/services?version=1.0.0&service=WFS&request=DescribeFeatureType";

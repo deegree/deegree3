@@ -58,7 +58,7 @@ import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.expression.PropertyName;
 import org.jaxen.expr.AllNodeStep;
 import org.jaxen.expr.Expr;
@@ -81,11 +81,11 @@ import org.jaxen.saxpath.Axis;
  */
 public class XPathSchemaWalker {
 
-    private final ApplicationSchema appSchema;
+    private final AppSchema appSchema;
 
     private final NamespaceBindings nsBindings;
 
-    public XPathSchemaWalker( ApplicationSchema appSchema, NamespaceBindings nsBindings ) {
+    public XPathSchemaWalker( AppSchema appSchema, NamespaceBindings nsBindings ) {
         this.appSchema = appSchema;
         this.nsBindings = nsBindings;
     }

@@ -42,7 +42,7 @@ import java.sql.SQLException;
 
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.feature.FeatureReference;
@@ -66,12 +66,12 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
 
     private final FeatureType valueFt;
 
-    private final MappedApplicationSchema schema;
+    private final MappedAppSchema schema;
 
     private final String fidPrefix;
 
     public FeatureParticleConverter( String fkColumn, String hrefColumn, GMLReferenceResolver resolver,
-                                     FeatureType valueFt, MappedApplicationSchema schema ) {
+                                     FeatureType valueFt, MappedAppSchema schema ) {
         this.fkColumn = fkColumn;
         this.hrefColumn = hrefColumn;
         this.resolver = resolver;

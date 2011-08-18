@@ -51,7 +51,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -86,7 +86,7 @@ public class FilterEvaluationTest {
 
         String schemaURL = this.getClass().getResource( "../gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+        AppSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = this.getClass().getResource( "../gml/feature/testdata/features/Philosopher_FeatureCollection.xml" );
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );

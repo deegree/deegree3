@@ -89,7 +89,7 @@ import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
@@ -393,7 +393,7 @@ class TransactionHandler {
         FeatureCollection fc = null;
 
         // TODO determine correct schema
-        ApplicationSchema schema = service.getStores()[0].getSchema();
+        AppSchema schema = service.getStores()[0].getSchema();
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );

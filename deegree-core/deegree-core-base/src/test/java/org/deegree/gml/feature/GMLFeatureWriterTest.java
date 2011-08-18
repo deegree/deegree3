@@ -52,7 +52,7 @@ import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -84,7 +84,7 @@ public class GMLFeatureWriterTest {
                             XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GML_31, null, schemaURL );
-        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+        AppSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
@@ -119,7 +119,7 @@ public class GMLFeatureWriterTest {
                             XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GML_31, null, schemaURL );
-        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+        AppSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );

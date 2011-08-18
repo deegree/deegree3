@@ -73,7 +73,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -203,14 +203,14 @@ public class TOPPStatesTest {
         // read application schema
         URL schemaUrl = TOPPStatesTest.class.getResource( "topp_states/schema/states.xsd" );
         ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( null, null, schemaUrl.toString() );
-        ApplicationSchema appSchema = decoder.extractFeatureTypeSchema();
+        AppSchema appSchema = decoder.extractFeatureTypeSchema();
 
         // map application schema
         ICRS crs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams storageParams = new GeometryStorageParams( crs, dialect.getUndefinedSrid(), DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, storageParams,
                                                       dialect.getMaxTableNameLength(), false, false );
-        MappedApplicationSchema mappedSchema = mapper.getMappedSchema();
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
         // create tables
         String[] ddl = DDLCreator.newInstance( mappedSchema, dialect ).getDDL();

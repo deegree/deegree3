@@ -76,7 +76,7 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
 
     private boolean isAbstract;
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     public GenericFeatureCollectionType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
         this.name = name;
@@ -147,12 +147,12 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     }
 
     @Override
-    public ApplicationSchema getSchema() {
+    public AppSchema getSchema() {
         return schema;
     }
 
     @Override
-    public void setSchema( ApplicationSchema schema ) {
+    public void setSchema( AppSchema schema ) {
         this.schema = schema;
     }
 

@@ -74,7 +74,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
@@ -87,7 +87,7 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
@@ -107,7 +107,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates {@link MappedApplicationSchema} instances from {@link ApplicationSchema}s by inferring a canonical database
+ * Creates {@link MappedAppSchema} instances from {@link AppSchema}s by inferring a canonical database
  * mapping.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -119,11 +119,11 @@ public class AppSchemaMapper {
 
     private static Logger LOG = LoggerFactory.getLogger( AppSchemaMapper.class );
 
-    private final ApplicationSchema appSchema;
+    private final AppSchema appSchema;
 
     private final MappingContextManager mcManager;
 
-    private final MappedApplicationSchema mappedSchema;
+    private final MappedAppSchema mappedSchema;
 
     private final HashMap<String, String> nsToPrefix;
 
@@ -143,7 +143,7 @@ public class AppSchemaMapper {
      * @param geometryParams
      *            parameters for storing geometries, must not be <code>null</code>
      */
-    public AppSchemaMapper( ApplicationSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
+    public AppSchemaMapper( AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
                             GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
                             boolean mapGMLProps ) {
 
@@ -175,16 +175,16 @@ public class AppSchemaMapper {
         BBoxTableMapping bboxMapping = createBlobMapping ? generateBBoxMapping() : null;
         BlobMapping blobMapping = createBlobMapping ? generateBlobMapping() : null;
 
-        this.mappedSchema = new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings,
+        this.mappedSchema = new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings,
                                                          bboxMapping, blobMapping, geometryParams );
     }
 
     /**
-     * Returns the {@link MappedApplicationSchema} instance.
+     * Returns the {@link MappedAppSchema} instance.
      * 
      * @return mapped schema, never <code>null</code>
      */
-    public MappedApplicationSchema getMappedSchema() {
+    public MappedAppSchema getMappedSchema() {
         return mappedSchema;
     }
 

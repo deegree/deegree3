@@ -61,7 +61,7 @@ import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLFeatureCollection;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLSchema;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.NamespaceHint;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -111,7 +111,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                                                                                                CONFIG_SCHEMA,
                                                                                                configURL, workspace );
 
-            ApplicationSchema schema = null;
+            AppSchema schema = null;
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
             try {

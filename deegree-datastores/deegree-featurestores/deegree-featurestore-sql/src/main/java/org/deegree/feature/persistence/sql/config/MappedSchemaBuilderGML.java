@@ -63,7 +63,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.StringConst;
@@ -89,7 +89,7 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
@@ -104,7 +104,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generates {@link MappedApplicationSchema} instances from JAXB {@link BLOBMapping} and JAXB {@link FeatureTypeMapping}
+ * Generates {@link MappedAppSchema} instances from JAXB {@link BLOBMapping} and JAXB {@link FeatureTypeMapping}
  * instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -120,7 +120,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private static final String GML_OBJECTS_TABLE = "gml_objects";
 
-    private final ApplicationSchema gmlSchema;
+    private final AppSchema gmlSchema;
 
     private final NamespaceBindings nsBindings;
 
@@ -165,11 +165,11 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     }
 
     /**
-     * Returns the {@link MappedApplicationSchema} derived from GML application schemas / configuration.
+     * Returns the {@link MappedAppSchema} derived from GML application schemas / configuration.
      * 
      * @return mapped application schema, never <code>null</code>
      */
-    public MappedApplicationSchema getMappedSchema() {
+    public MappedAppSchema getMappedSchema() {
         FeatureType[] fts = gmlSchema.getFeatureTypes();
         org.deegree.feature.persistence.sql.FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new org.deegree.feature.persistence.sql.FeatureTypeMapping[ftNameToMapping.size()] );
         Map<FeatureType, FeatureType> ftToSuperFt = gmlSchema.getFtToSuperFt();
@@ -180,15 +180,15 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             prefixToNs.put( prefix, nsBindings.getNamespaceURI( prefix ) );
         }
         GMLSchemaInfoSet xsModel = gmlSchema.getGMLSchema();
-        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping,
+        return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping,
                                             blobMapping, geometryParams );
     }
 
-    private ApplicationSchema buildGMLSchema( String configURL, List<String> gmlSchemas )
+    private AppSchema buildGMLSchema( String configURL, List<String> gmlSchemas )
                             throws FeatureStoreException {
 
         LOG.debug( "Building application schema from GML schema files." );
-        ApplicationSchema appSchema = null;
+        AppSchema appSchema = null;
         try {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL );

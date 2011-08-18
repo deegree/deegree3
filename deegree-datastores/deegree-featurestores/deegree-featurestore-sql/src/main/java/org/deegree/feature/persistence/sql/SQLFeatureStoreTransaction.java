@@ -110,7 +110,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final SQLFeatureStore fs;
 
-    private final MappedApplicationSchema schema;
+    private final MappedAppSchema schema;
 
     private final GMLVersion gmlVersion;
 
@@ -137,7 +137,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
      *            application schema with mapping information, never <code>null</code>
      */
     SQLFeatureStoreTransaction( SQLFeatureStore store, TransactionManager taManager, Connection conn,
-                                MappedApplicationSchema schema ) {
+                                MappedAppSchema schema ) {
         this.fs = store;
         this.taManager = taManager;
         this.conn = conn;

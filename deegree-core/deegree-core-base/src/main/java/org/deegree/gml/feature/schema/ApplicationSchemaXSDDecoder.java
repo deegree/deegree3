@@ -68,9 +68,9 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericApplicationSchema;
+import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.ArrayPropertyType;
@@ -87,13 +87,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides access to the {@link FeatureType} hierarchy defined in a GML schema document.
  * <p>
- * Note that the generated {@link ApplicationSchema} only contains user-defined feature types, i.e. all feature base
+ * Note that the generated {@link AppSchema} only contains user-defined feature types, i.e. all feature base
  * types from the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This
- * follows the idea that working with {@link ApplicationSchema} objects should not involve GML (and GML-version)
+ * follows the idea that working with {@link AppSchema} objects should not involve GML (and GML-version)
  * specific details (such as the mentioned GML feature types).
  * </p>
  * 
- * @see ApplicationSchema
+ * @see AppSchema
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
@@ -242,7 +242,7 @@ public class ApplicationSchemaXSDDecoder {
         return schemaUrls.toArray( new String[schemaUrls.size()] );
     }
 
-    public ApplicationSchema extractFeatureTypeSchema() {
+    public AppSchema extractFeatureTypeSchema() {
 
         for ( QName ftName : ftNameToFtElement.keySet() ) {
             FeatureType ft = buildFeatureType( ftNameToFtElement.get( ftName ) );
@@ -267,7 +267,7 @@ public class ApplicationSchemaXSDDecoder {
             }
             ftSubstitution.put( ftNameToFt.get( ftName ), ftNameToFt.get( substitutionFtName ) );
         }
-        return new GenericApplicationSchema( fts, ftSubstitution, prefixToNs, analyzer );
+        return new GenericAppSchema( fts, ftSubstitution, prefixToNs, analyzer );
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {

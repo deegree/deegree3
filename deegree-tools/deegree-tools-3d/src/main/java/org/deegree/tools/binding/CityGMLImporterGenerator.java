@@ -45,7 +45,7 @@ import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -71,7 +71,7 @@ public class CityGMLImporterGenerator {
                             IllegalAccessException, IOException {
         String schemaURL = "file:/home/rutger/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
         // FeatureType[] fts = schema.getFeatureTypes();
         // Assert.assertEquals( 54, fts.length );
         // List<QName> ftNames = new ArrayList<QName>( 54 );
@@ -112,7 +112,7 @@ public class CityGMLImporterGenerator {
 
     }
 
-    private static void createClassHierarchy( ApplicationSchema schema, FeatureType currentType, FeatureClass parent,
+    private static void createClassHierarchy( AppSchema schema, FeatureType currentType, FeatureClass parent,
                                               HashMap<QName, FeatureClass> featClasses )
                             throws IOException {
         FeatureClass newClass = null;
@@ -136,7 +136,7 @@ public class CityGMLImporterGenerator {
         }
     }
 
-    private static void createClasses( ApplicationSchema schema, FeatureType root,
+    private static void createClasses( AppSchema schema, FeatureType root,
                                        HashMap<QName, FeatureClass> featClasses )
                             throws IOException {
         if ( root != null ) {

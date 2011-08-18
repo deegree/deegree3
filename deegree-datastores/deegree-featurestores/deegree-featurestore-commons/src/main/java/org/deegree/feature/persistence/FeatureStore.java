@@ -43,7 +43,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -52,7 +52,7 @@ import org.deegree.gml.GMLObject;
 /**
  * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
  * <p>
- * Note that a {@link FeatureStore} instance is always associated with exactly one {@link ApplicationSchema} instance.
+ * Note that a {@link FeatureStore} instance is always associated with exactly one {@link AppSchema} instance.
  * </p>
  * <p>
  * NOTE: Implementations must be thread-safe, as {@link FeatureStore} instances are usually used in multiple threads
@@ -78,7 +78,7 @@ public interface FeatureStore extends Resource {
      * 
      * @return the served application schema, never <code>null</code>
      */
-    ApplicationSchema getSchema();
+    AppSchema getSchema();
 
     /**
      * Returns the envelope for all stored features of the given type.

@@ -155,7 +155,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     private final boolean allowInMemoryFiltering;
 
-    private MappedApplicationSchema schema;
+    private MappedAppSchema schema;
 
     private TransactionManager taManager;
 
@@ -204,7 +204,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         LOG.debug( "init" );
 
-        MappedApplicationSchema schema;
+        MappedAppSchema schema;
         try {
             schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect );
         } catch ( Throwable t ) {
@@ -314,7 +314,7 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     @Override
-    public MappedApplicationSchema getSchema() {
+    public MappedAppSchema getSchema() {
         return schema;
     }
 
@@ -335,7 +335,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     /**
      * Returns a {@link ParticleConverter} for the given {@link Mapping} instance from the served
-     * {@link MappedApplicationSchema}.
+     * {@link MappedAppSchema}.
      * 
      * @param mapping
      *            particle mapping, must not be <code>null</code>

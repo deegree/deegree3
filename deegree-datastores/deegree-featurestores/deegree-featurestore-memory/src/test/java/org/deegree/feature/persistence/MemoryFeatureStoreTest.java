@@ -61,7 +61,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
@@ -100,7 +100,7 @@ public class MemoryFeatureStoreTest {
         DeegreeWorkspace.getInstance().initAll();
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         store = new MemoryFeatureStore( docURL, schema );

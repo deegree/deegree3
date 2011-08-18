@@ -47,7 +47,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLVersion;
 import org.junit.Test;
 
@@ -68,7 +68,7 @@ public class ApplicationSchemaXSDEncoderTest {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf1.xsd" ).toString();
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );

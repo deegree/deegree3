@@ -56,7 +56,7 @@ import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.slf4j.Logger;
@@ -78,7 +78,7 @@ public class WFService {
 
     private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
-    private final Map<ApplicationSchema, FeatureStore> schemaToStore = new HashMap<ApplicationSchema, FeatureStore>();
+    private final Map<AppSchema, FeatureStore> schemaToStore = new HashMap<AppSchema, FeatureStore>();
 
     private final Map<String, String> prefixToNs = new LinkedHashMap<String, String>();
 

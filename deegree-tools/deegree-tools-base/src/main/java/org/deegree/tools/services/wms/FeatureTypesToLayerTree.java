@@ -61,7 +61,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.tools.i18n.Messages;
 import org.slf4j.Logger;
@@ -148,7 +148,7 @@ public class FeatureTypesToLayerTree {
             FeatureStoreManager mgr = new FeatureStoreManager();
             mgr.startup( DeegreeWorkspace.getInstance() );
             FeatureStore store = mgr.create( "unknown", new File( storeFile ).toURI().toURL() );
-            ApplicationSchema schema = store.getSchema();
+            AppSchema schema = store.getSchema();
 
             // prepare document
             out.writeStartDocument();

@@ -52,7 +52,7 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
@@ -72,7 +72,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates configuration documents for the {@link PostGISFeatureStore} from {@link MappedApplicationSchema} instances.
+ * Creates configuration documents for the {@link PostGISFeatureStore} from {@link MappedAppSchema} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -87,7 +87,7 @@ public class SQLFeatureStoreConfigWriter {
 
     private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd";
 
-    private final MappedApplicationSchema schema;
+    private final MappedAppSchema schema;
 
     /**
      * Creates a new {@link SQLFeatureStoreConfigWriter} instance.
@@ -95,7 +95,7 @@ public class SQLFeatureStoreConfigWriter {
      * @param schema
      *            the mapped application schema to export, must not be <code>null</code>
      */
-    public SQLFeatureStoreConfigWriter( MappedApplicationSchema schema ) {
+    public SQLFeatureStoreConfigWriter( MappedAppSchema schema ) {
         this.schema = schema;
     }
 

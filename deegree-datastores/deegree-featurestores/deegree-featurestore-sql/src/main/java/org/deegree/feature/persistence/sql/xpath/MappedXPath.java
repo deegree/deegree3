@@ -44,7 +44,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
@@ -67,7 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A {@link PropertyName} that's mapped to the relational model defined by a {@link MappedApplicationSchema}.
+ * A {@link PropertyName} that's mapped to the relational model defined by a {@link MappedAppSchema}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -80,7 +80,7 @@ public class MappedXPath {
 
     private final SQLFeatureStore fs;
 
-    private final MappedApplicationSchema schema;
+    private final MappedAppSchema schema;
 
     private final PropertyName propName;
 

@@ -62,7 +62,7 @@ import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 
@@ -141,7 +141,7 @@ public class FeatureStoreConfig implements Serializable {
         if ( fs == null ) {
             return Collections.emptyList();
         }
-        ApplicationSchema schema = fs.getSchema();
+        AppSchema schema = fs.getSchema();
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             String prefix = ft.getName().getPrefix();
             String ns = ft.getName().getNamespaceURI();
@@ -152,14 +152,14 @@ public class FeatureStoreConfig implements Serializable {
 
     public String getNumFtsTotal() {
         FeatureStore fs = getFeatureStoreManager().get( getId() );
-        ApplicationSchema schema = fs.getSchema();
+        AppSchema schema = fs.getSchema();
         int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         return "" + numFtsTotal;
     }
 
     public String getNumFtsAbstract() {
         FeatureStore fs = getFeatureStoreManager().get( getId() );
-        ApplicationSchema schema = fs.getSchema();
+        AppSchema schema = fs.getSchema();
         int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
         return "" + ( numFtsTotal - numFtsConcrete );
@@ -167,7 +167,7 @@ public class FeatureStoreConfig implements Serializable {
 
     public String getNumFtsConcrete() {
         FeatureStore fs = getFeatureStoreManager().get( getId() );
-        ApplicationSchema schema = fs.getSchema();
+        AppSchema schema = fs.getSchema();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
         return "" + numFtsConcrete;
     }
@@ -176,7 +176,7 @@ public class FeatureStoreConfig implements Serializable {
                             throws IOException {
         StringBuffer sb = new StringBuffer();
         FeatureStore fs = getFeatureStoreManager().get( getId() );
-        ApplicationSchema schema = fs.getSchema();
+        AppSchema schema = fs.getSchema();
         FeatureType[] fts = schema.getRootFeatureTypes();
 
         // sort the types by name
@@ -203,7 +203,7 @@ public class FeatureStoreConfig implements Serializable {
                             throws IOException {
         StringBuffer sb = new StringBuffer();
         FeatureStore fs = getFeatureStoreManager().get( getId() );
-        ApplicationSchema schema = fs.getSchema();
+        AppSchema schema = fs.getSchema();
         FeatureType[] fts = schema.getRootFeatureTypes();
 
         // sort the types by name

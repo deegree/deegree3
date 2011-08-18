@@ -43,7 +43,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.ArrayUtils;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -56,7 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedApplicationSchema} instances.
+ * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -68,14 +68,14 @@ public class MSSQLDDLCreator extends DDLCreator {
     private static Logger LOG = LoggerFactory.getLogger( MSSQLDDLCreator.class );
 
     /**
-     * Creates a new {@link MSSQLDDLCreator} instance for the given {@link MappedApplicationSchema}.
+     * Creates a new {@link MSSQLDDLCreator} instance for the given {@link MappedAppSchema}.
      * 
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
      *            SQL dialect, must not be <code>null</code>
      */
-    public MSSQLDDLCreator( MappedApplicationSchema schema, SQLDialect dialect ) {
+    public MSSQLDDLCreator( MappedAppSchema schema, SQLDialect dialect ) {
         super( schema, dialect );
     }
 

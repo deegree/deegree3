@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,7 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
 
     private final List<GMLReference<?>> localRefs = new ArrayList<GMLReference<?>>();
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     /**
      * Creates a new {@link GMLDocumentIdContext} instance for a GML document of the given version.
@@ -92,7 +92,7 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
      * @param schema
      *            application schema to use for parsing external references
      */
-    public void setApplicationSchema( ApplicationSchema schema ) {
+    public void setApplicationSchema( AppSchema schema ) {
         this.schema = schema;
     }
 

@@ -39,12 +39,12 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 
 /**
- * Encapsulates the BLOB mapping parameters of a {@link MappedApplicationSchema}.
+ * Encapsulates the BLOB mapping parameters of a {@link MappedAppSchema}.
  * 
- * @see MappedApplicationSchema
+ * @see MappedAppSchema
  * @see FeatureTypeMapping
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

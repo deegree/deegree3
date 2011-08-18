@@ -49,7 +49,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.geocouch.jaxb.GeoCouchFeatureStoreConfig;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public class GeoCouchFeatureStoreProvider implements FeatureStoreProvider {
             }
 
             ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( null, null, schemas );
-            ApplicationSchema schema = decoder.extractFeatureTypeSchema();
+            AppSchema schema = decoder.extractFeatureTypeSchema();
 
             fs = new GeoCouchFeatureStore( crs, schema, couchUrl );
 

@@ -9,15 +9,15 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 
 public class AppSchemaInfo {
 
-    private final ApplicationSchema schema;
+    private final AppSchema schema;
 
-    public AppSchemaInfo( ApplicationSchema schema ) {
+    public AppSchemaInfo( AppSchema schema ) {
         this.schema = schema;
     }
 

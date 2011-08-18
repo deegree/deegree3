@@ -69,7 +69,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
@@ -100,7 +100,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generates {@link MappedApplicationSchema} instances from JAXB {@link FeatureTypeDecl} instances.
+ * Generates {@link MappedAppSchema} instances from JAXB {@link FeatureTypeDecl} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -148,11 +148,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     }
 
     /**
-     * Returns the {@link MappedApplicationSchema} derived from configuration / tables.
+     * Returns the {@link MappedAppSchema} derived from configuration / tables.
      * 
      * @return mapped application schema, never <code>null</code>
      */
-    public MappedApplicationSchema getMappedSchema() {
+    public MappedAppSchema getMappedSchema() {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
         Map<FeatureType, FeatureType> ftToSuperFt = null;
@@ -162,7 +162,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         GeometryStorageParams geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( "EPSG:4326" ),
                                                                           dialect.getUndefinedSrid(),
                                                                           CoordinateDimension.DIM_2 );
-        return new MappedApplicationSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null,
+        return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null,
                                             geometryParams );
     }
 

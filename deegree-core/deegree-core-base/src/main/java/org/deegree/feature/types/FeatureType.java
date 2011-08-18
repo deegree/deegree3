@@ -133,11 +133,11 @@ public interface FeatureType {
     public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version );
 
     /**
-     * Returns the {@link ApplicationSchema} that this feature type belongs to.
+     * Returns the {@link AppSchema} that this feature type belongs to.
      * 
      * @return the corresponding <code>ApplicationSchema</code> or null if this feature type has none
      */
-    public ApplicationSchema getSchema();
+    public AppSchema getSchema();
 
-    public void setSchema( ApplicationSchema applicationSchema );
+    public void setSchema( AppSchema applicationSchema );
 }

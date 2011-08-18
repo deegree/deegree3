@@ -44,7 +44,7 @@ import org.deegree.commons.jdbc.QTableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
@@ -58,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedApplicationSchema} instances.
+ * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -69,7 +69,7 @@ public abstract class DDLCreator {
 
     private static Logger LOG = LoggerFactory.getLogger( DDLCreator.class );
 
-    protected final MappedApplicationSchema schema;
+    protected final MappedAppSchema schema;
 
     private final boolean hasBlobTable;
 
@@ -78,21 +78,21 @@ public abstract class DDLCreator {
     protected QTableName currentFtTable;
 
     /**
-     * Creates a new {@link DDLCreator} instance for the given {@link MappedApplicationSchema}.
+     * Creates a new {@link DDLCreator} instance for the given {@link MappedAppSchema}.
      * 
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
      *            SQL dialect, must not be <code>null</code>
      */
-    protected DDLCreator( MappedApplicationSchema schema, SQLDialect dialect ) {
+    protected DDLCreator( MappedAppSchema schema, SQLDialect dialect ) {
         this.schema = schema;
         this.dialect = dialect;
         hasBlobTable = schema.getBlobMapping() != null;
     }
 
     /**
-     * Returns the DDL statements for creating the relational schema required by the {@link MappedApplicationSchema}.
+     * Returns the DDL statements for creating the relational schema required by the {@link MappedAppSchema}.
      * 
      * @return the DDL statements, never <code>null</code>
      */
@@ -217,7 +217,7 @@ public abstract class DDLCreator {
     protected abstract String getDBType( BaseType type );
 
     // TODO get rid of this (DDLCreator should be the only needed implementation)
-    public static DDLCreator newInstance( MappedApplicationSchema appSchema, SQLDialect dialect ) {
+    public static DDLCreator newInstance( MappedAppSchema appSchema, SQLDialect dialect ) {
         switch ( dialect.getDBType() ) {
         case PostgreSQL: {
             return new PostGISDDLCreator( appSchema, dialect );

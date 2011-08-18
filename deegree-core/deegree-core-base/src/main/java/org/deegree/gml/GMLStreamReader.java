@@ -48,7 +48,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.StreamFeatureCollection;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.dictionary.Dictionary;
@@ -82,7 +82,7 @@ public class GMLStreamReader {
 
     private GMLReferenceResolver resolver;
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     private ICRS defaultCRS;
 
@@ -115,7 +115,7 @@ public class GMLStreamReader {
      *            application schema, can be <code>null</code> (use xsi:schemaLocation attribute to build the
      *            application schema)
      */
-    public void setApplicationSchema( ApplicationSchema schema ) {
+    public void setApplicationSchema( AppSchema schema ) {
         this.schema = schema;
         idContext.setApplicationSchema( schema );
     }

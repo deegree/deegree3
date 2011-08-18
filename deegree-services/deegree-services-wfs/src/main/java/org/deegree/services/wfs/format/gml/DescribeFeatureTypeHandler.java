@@ -73,7 +73,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.URITranslator;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -416,7 +416,7 @@ class DescribeFeatureTypeHandler {
                 LOG.debug( "Adding requested namespaces." );
                 for ( String ns : request.getNsBindings().values() ) {
                     for ( FeatureStore fs : service.getStores() ) {
-                        ApplicationSchema schema = fs.getSchema();
+                        AppSchema schema = fs.getSchema();
                         if ( schema.getNamespaceBindings().values().contains( ns ) ) {
                             set.add( ns );
                             break;
@@ -467,7 +467,7 @@ class DescribeFeatureTypeHandler {
                 LOG.debug( "Adding requested namespaces." );
                 for ( String ns : request.getNsBindings().values() ) {
                     for ( FeatureStore fs : service.getStores() ) {
-                        ApplicationSchema schema = fs.getSchema();
+                        AppSchema schema = fs.getSchema();
                         if ( schema.getNamespaceBindings().values().contains( ns ) ) {
                             set.add( ns );
                             break;
@@ -501,7 +501,7 @@ class DescribeFeatureTypeHandler {
         Set<String> dependentNamespaces = new HashSet<String>();
         for ( String ns : set ) {
             for ( FeatureStore fs : service.getStores() ) {
-                ApplicationSchema schema = fs.getSchema();
+                AppSchema schema = fs.getSchema();
                 List<String> depNs = schema.getNamespacesDependencies( ns );
                 for ( String n : depNs ) {
                     if ( !set.contains( n ) ) {

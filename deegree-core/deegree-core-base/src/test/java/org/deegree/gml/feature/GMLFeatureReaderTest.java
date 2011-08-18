@@ -64,7 +64,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -261,7 +261,7 @@ public class GMLFeatureReaderTest {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = new URL( "file:/home/schneider/Desktop/waldbruecke_v1.0.0.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
@@ -359,7 +359,7 @@ public class GMLFeatureReaderTest {
             return;
         }
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses1.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
@@ -381,7 +381,7 @@ public class GMLFeatureReaderTest {
             return;
         }
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses1.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
@@ -405,7 +405,7 @@ public class GMLFeatureReaderTest {
             return;
         }
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses2.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
@@ -427,7 +427,7 @@ public class GMLFeatureReaderTest {
             return;
         }
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
-        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses2.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );

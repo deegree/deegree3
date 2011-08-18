@@ -73,7 +73,7 @@ import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
@@ -133,7 +133,7 @@ public class ApplicationSchemaTool {
     private static void analyze( InputFormat inputFormat, String inputFileName )
                             throws ClassCastException, MalformedURLException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException, JAXBException {
-        ApplicationSchema schema = loadAppSchema( inputFormat, inputFileName );
+        AppSchema schema = loadAppSchema( inputFormat, inputFileName );
 
         Set<String> ftNames = new TreeSet<String>();
         Set<String> propNames = new TreeSet<String>();
@@ -171,7 +171,7 @@ public class ApplicationSchemaTool {
             System.err.println( "Continuing without rules file." );
         }
 
-        ApplicationSchema schema = loadAppSchema( inputFormat, inputFileName );
+        AppSchema schema = loadAppSchema( inputFormat, inputFileName );
 
         Map<QName, FeatureTypeMapping> ftNameToHints = new HashMap<QName, FeatureTypeMapping>();
         FeatureType[] fts = schema.getFeatureTypes();
@@ -409,7 +409,7 @@ public class ApplicationSchemaTool {
                                                                                           GML_32,
                                                                                           null,
                                                                                           inputURLs.toArray( new String[inputURLs.size()] ) );
-                ApplicationSchema schema = xsdDecoder.extractFeatureTypeSchema();
+                AppSchema schema = xsdDecoder.extractFeatureTypeSchema();
 
                 System.out.println( "- Total feature types: " + schema.getFeatureTypes().length );
                 System.out.println( "- Non-abstract feature types: "
@@ -445,10 +445,10 @@ public class ApplicationSchemaTool {
         }
     }
 
-    private static ApplicationSchema loadAppSchema( InputFormat inputFormat, String inputFileName )
+    private static AppSchema loadAppSchema( InputFormat inputFormat, String inputFileName )
                             throws ClassCastException, MalformedURLException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException, JAXBException {
-        ApplicationSchema schema = null;
+        AppSchema schema = null;
         switch ( inputFormat ) {
         case deegree:
             break;
@@ -495,7 +495,7 @@ public class ApplicationSchemaTool {
     // return mappedSchema;
     // }
 
-    private static void printFtHierarchy( ApplicationSchema schema, Set<String> ftNames, Set<String> propNames ) {
+    private static void printFtHierarchy( AppSchema schema, Set<String> ftNames, Set<String> propNames ) {
         int concrete = 0;
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             if ( !ft.isAbstract() ) {

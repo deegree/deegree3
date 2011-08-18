@@ -56,7 +56,7 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
@@ -77,7 +77,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for builders that create {@link MappedApplicationSchema} instances from JAXB configuration objects.
+ * Base class for builders that create {@link MappedAppSchema} instances from JAXB configuration objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -88,7 +88,7 @@ public class AbstractMappedSchemaBuilder {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractMappedSchemaBuilder.class );
 
-    public static MappedApplicationSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect )
+    public static MappedAppSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect )
                             throws SQLException, FeatureStoreException {
         if ( config.getGMLSchema() == null || config.getGMLSchema().isEmpty() ) {
             MappedSchemaBuilderTable builder = new MappedSchemaBuilderTable( config.getJDBCConnId(),

@@ -76,12 +76,12 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreProvider;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -195,7 +195,7 @@ public class PostGISFeatureStoreTst {
     public void testInsertInspireAU()
                             throws Throwable {
 
-        ApplicationSchema appSchema = getInspireSchemaAU();
+        AppSchema appSchema = getInspireSchemaAU();
         if ( appSchema == null ) {
             return;
         }
@@ -207,7 +207,7 @@ public class PostGISFeatureStoreTst {
                                                     "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
         Assert.assertNotNull( fs );
 
-        MappedApplicationSchema mappedSchema = (MappedApplicationSchema) fs.getSchema();
+        MappedAppSchema mappedSchema = (MappedAppSchema) fs.getSchema();
         Assert.assertNotNull( mappedSchema );
 
         SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter( mappedSchema );
@@ -244,7 +244,7 @@ public class PostGISFeatureStoreTst {
     @Test
     public void testQueryInspireAU()
                             throws Throwable {
-        ApplicationSchema appSchema = getInspireSchemaAU();
+        AppSchema appSchema = getInspireSchemaAU();
         if ( appSchema == null ) {
             return;
         }
@@ -273,7 +273,7 @@ public class PostGISFeatureStoreTst {
     public void testInspireAUEnvelope()
                             throws Throwable {
 
-        ApplicationSchema appSchema = getInspireSchemaAU();
+        AppSchema appSchema = getInspireSchemaAU();
         if ( appSchema == null ) {
             return;
         }
@@ -301,7 +301,7 @@ public class PostGISFeatureStoreTst {
                                                                                                                       configURL );
             fs.init( workspace );
 
-            ApplicationSchema schema = fs.getSchema();
+            AppSchema schema = fs.getSchema();
             Assert.assertEquals( 4, schema.getFeatureTypes().length );
 
             FeatureType ft = schema.getFeatureTypes()[0];
@@ -327,7 +327,7 @@ public class PostGISFeatureStoreTst {
                                                                                                                       configURL );
             fs.init( workspace );
 
-            MappedApplicationSchema schema = fs.getSchema();
+            MappedAppSchema schema = fs.getSchema();
             Assert.assertEquals( 75, schema.getFeatureTypes().length );
 
             FeatureType ft = schema.getFeatureType( QName.valueOf( "{urn:x-inspire:specification:gmlas:Addresses:3.0}Address" ) );
@@ -590,7 +590,7 @@ public class PostGISFeatureStoreTst {
         return Filter110XMLDecoder.parse( xmlStream );
     }
 
-    private ApplicationSchema getInspireSchemaAU()
+    private AppSchema getInspireSchemaAU()
                             throws MalformedURLException, ClassCastException, UnsupportedEncodingException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         return null;

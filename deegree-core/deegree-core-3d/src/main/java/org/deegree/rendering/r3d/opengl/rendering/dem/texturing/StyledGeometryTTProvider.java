@@ -71,7 +71,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
@@ -149,7 +149,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
             throw new NullPointerException( "The feature store may not be null." );
         }
         this.featureStore = featureStore;
-        ApplicationSchema schema = this.featureStore.getSchema();
+        AppSchema schema = this.featureStore.getSchema();
         if ( schema == null ) {
             throw new NullPointerException( "The feature store must have an application schema to work with." );
         }

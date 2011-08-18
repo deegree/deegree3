@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,15 +58,15 @@ public class IdAnalyzer {
 
     private final Map<String, FeatureType> prefixToFt = new HashMap<String, FeatureType>();
 
-    private final MappedApplicationSchema schema;
+    private final MappedAppSchema schema;
 
     /**
-     * Creates a new {@link IdAnalyzer} instance for the given {@link MappedApplicationSchema}.
+     * Creates a new {@link IdAnalyzer} instance for the given {@link MappedAppSchema}.
      * 
      * @param schema
      *            application schema with mapping information, must not be <code>null</code>
      */
-    public IdAnalyzer( MappedApplicationSchema schema ) {
+    public IdAnalyzer( MappedAppSchema schema ) {
         this.schema = schema;
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             if ( !ft.isAbstract() ) {

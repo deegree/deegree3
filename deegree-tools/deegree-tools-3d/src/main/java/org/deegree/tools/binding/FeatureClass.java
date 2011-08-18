@@ -54,7 +54,7 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
@@ -102,7 +102,7 @@ public class FeatureClass extends ModelClass {
         super( ft.getName(), D_PACKAGE, PACKAGE_DIR, null, false, ft.isAbstract() );
         this.ft = ft;
         this.baseType = parent;
-        ApplicationSchema schema = ft.getSchema();
+        AppSchema schema = ft.getSchema();
         propertyDeclarations = schema.getNewPropertyDecls( ft );
     }
 

@@ -76,9 +76,9 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericApplicationSchema;
+import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -121,7 +121,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     ICRS crs;
 
-    private ApplicationSchema schema;
+    private AppSchema schema;
 
     private GeometryFactory fac = new GeometryFactory();
 
@@ -251,7 +251,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         throw new FeatureStoreException( "Getting objects by id is not implemented for the simple SQL datastore." );
     }
 
-    public ApplicationSchema getSchema() {
+    public AppSchema getSchema() {
         return schema;
     }
 
@@ -269,7 +269,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         if ( featureType == null ) {
             available = false;
         } else {
-            schema = new GenericApplicationSchema( new FeatureType[] { featureType }, null, null, null );
+            schema = new GenericAppSchema( new FeatureType[] { featureType }, null, null, null );
             available = true;
         }
     }

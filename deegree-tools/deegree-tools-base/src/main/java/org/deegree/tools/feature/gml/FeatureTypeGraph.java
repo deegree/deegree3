@@ -47,7 +47,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.GraphvizDot;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 
@@ -70,7 +70,7 @@ public class FeatureTypeGraph {
      * @param fileName
      * @throws IOException
      */
-    public static void createDotGraph( ApplicationSchema schema, String fileName )
+    public static void createDotGraph( AppSchema schema, String fileName )
                             throws IOException {
         File f = new File( fileName );
         BufferedWriter out = new BufferedWriter( new FileWriter( f ) );
@@ -98,7 +98,7 @@ public class FeatureTypeGraph {
         out.close();
     }
 
-    private static void createGraph( BufferedWriter out, ApplicationSchema schema, FeatureType root )
+    private static void createGraph( BufferedWriter out, AppSchema schema, FeatureType root )
                             throws IOException {
         if ( root != null ) {
             addNode( out, root );

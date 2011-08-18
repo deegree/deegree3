@@ -66,16 +66,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generic {@link ApplicationSchema} implementation, can be used for representing arbitrary application schemas.
+ * Generic {@link AppSchema} implementation, can be used for representing arbitrary application schemas.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class GenericApplicationSchema implements ApplicationSchema {
+public class GenericAppSchema implements AppSchema {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GenericApplicationSchema.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GenericAppSchema.class );
 
     private final Map<QName, FeatureType> ftNameToFt = new LinkedHashMap<QName, FeatureType>();
 
@@ -100,7 +100,7 @@ public class GenericApplicationSchema implements ApplicationSchema {
     private final Map<XSElementDeclaration, ObjectPropertyType> elDeclToGMLObjectPropDecl = new HashMap<XSElementDeclaration, ObjectPropertyType>();
 
     /**
-     * Creates a new {@link GenericApplicationSchema} instance from the given {@link FeatureType}s and their derivation
+     * Creates a new {@link GenericAppSchema} instance from the given {@link FeatureType}s and their derivation
      * hierarchy.
      * 
      * @param fts
@@ -117,7 +117,7 @@ public class GenericApplicationSchema implements ApplicationSchema {
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
-    public GenericApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
+    public GenericAppSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                                      Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel )
                             throws IllegalArgumentException {
 
@@ -288,7 +288,7 @@ public class GenericApplicationSchema implements ApplicationSchema {
      * @see org.deegree.feature.types.ApplicationSchema#getParentFt(org.deegree.feature.types.FeatureType)
      */
     @Override
-    public FeatureType getParentFt( FeatureType ft ) {
+    public FeatureType getParent( FeatureType ft ) {
         return ftToSuperFt.get( ft );
     }
 
@@ -386,7 +386,7 @@ public class GenericApplicationSchema implements ApplicationSchema {
     public List<PropertyType> getNewPropertyDecls( FeatureType ft ) {
 
         List<PropertyType> propDecls = ft.getPropertyDeclarations();
-        FeatureType parentFt = getParentFt( ft );
+        FeatureType parentFt = getParent( ft );
         int firstNewIdx = 0;
         if ( parentFt != null ) {
             for ( PropertyType parentPropDecl : parentFt.getPropertyDeclarations() ) {
@@ -509,8 +509,8 @@ public class GenericApplicationSchema implements ApplicationSchema {
                         }
                     }
                 }
-                if ( getParentFt( ft ) != null ) {
-                    dependencies.add( getParentFt( ft ).getName().getNamespaceURI() );
+                if ( getParent( ft ) != null ) {
+                    dependencies.add( getParent( ft ).getName().getNamespaceURI() );
                 }
             }
 

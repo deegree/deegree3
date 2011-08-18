@@ -72,12 +72,12 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
-import org.deegree.feature.persistence.sql.MappedApplicationSchema;
+import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.sqldialect.SQLDialect;
@@ -107,11 +107,11 @@ public class MappingWizardSQL {
 
     private String[] selectedAppSchemaFiles = new String[0];
 
-    private ApplicationSchema appSchema;
+    private AppSchema appSchema;
 
     private AppSchemaInfo appSchemaInfo;
 
-    private MappedApplicationSchema mappedSchema;
+    private MappedAppSchema mappedSchema;
 
     private String storageCrs = "urn:ogc:def:crs:EPSG::4326";
 

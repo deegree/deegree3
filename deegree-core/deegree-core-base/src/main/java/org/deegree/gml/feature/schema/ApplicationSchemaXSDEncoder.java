@@ -108,7 +108,7 @@ import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.URITranslator;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -280,7 +280,7 @@ public class ApplicationSchemaXSDEncoder {
         writeWrapperDoc( writer, targetNs, nsImports );
     }
 
-    public void export( XMLStreamWriter writer, ApplicationSchema schema )
+    public void export( XMLStreamWriter writer, AppSchema schema )
                             throws XMLStreamException {
         export( writer, schema.getFeatureTypes( null, true, true ) );
     }
@@ -340,7 +340,7 @@ public class ApplicationSchemaXSDEncoder {
         // writer.writeEndElement();
         // }
 
-        Set<ApplicationSchema> schemas = new HashSet<ApplicationSchema>();
+        Set<AppSchema> schemas = new HashSet<AppSchema>();
 
         // export feature type declarations (in the target namespace)
         for ( FeatureType ft : fts ) {
@@ -352,7 +352,7 @@ public class ApplicationSchemaXSDEncoder {
 
         // export element declarations and type declarations (in the target namespace) that are not feature type related
         try {
-            for ( ApplicationSchema schema : schemas ) {
+            for ( AppSchema schema : schemas ) {
                 GMLSchemaInfoSet analyzer = schema.getGMLSchema();
                 if ( analyzer != null ) {
                     XSModel xsModel = analyzer.getXSModel();
@@ -402,17 +402,17 @@ public class ApplicationSchemaXSDEncoder {
         exportedElements.add( ft.getName().getLocalPart() );
 
         // export parent feature types
-        ApplicationSchema schema = ft.getSchema();
+        AppSchema schema = ft.getSchema();
         FeatureType parentFt = null;
         if ( schema != null ) {
-            parentFt = schema.getParentFt( ft );
+            parentFt = schema.getParent( ft );
             if ( parentFt != null ) {
                 export( writer, parentFt );
             }
         }
 
         LOG.debug( "Exporting feature type declaration: " + ft.getName() );
-        LOG.debug( "Parent: " + ft.getSchema().getParentFt( ft ) );
+        LOG.debug( "Parent: " + ft.getSchema().getParent( ft ) );
         writer.writeStartElement( "element" );
         writer.writeAttribute( "name", ft.getName().getLocalPart() );
 
@@ -461,7 +461,7 @@ public class ApplicationSchemaXSDEncoder {
             exportedTypes.add( typeName );
         }
 
-        ApplicationSchema schema = ft.getSchema();
+        AppSchema schema = ft.getSchema();
 
         writer.writeStartElement( "complexType" );
         if ( typeName != null ) {
@@ -523,7 +523,7 @@ public class ApplicationSchemaXSDEncoder {
 
         // export parent feature types
         boolean hasSubTypes = false;
-        ApplicationSchema schema = ft.getSchema();
+        AppSchema schema = ft.getSchema();
         if ( schema != null ) {
             hasSubTypes = schema.getDirectSubtypes( ft ).length > 0;
         }

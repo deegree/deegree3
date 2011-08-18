@@ -63,7 +63,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLOutputFactory;
@@ -209,7 +209,7 @@ public class BlobCodec {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    public GMLObject decode( InputStream is, Map<String, String> nsContext, ApplicationSchema schema, ICRS crs,
+    public GMLObject decode( InputStream is, Map<String, String> nsContext, AppSchema schema, ICRS crs,
                              GMLReferenceResolver idResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
