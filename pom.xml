@@ -204,4 +204,13 @@
     <module>deegree-tools</module>
     <module>deegree-workspaces</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <modules>
+        <module>deegree-tests</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
