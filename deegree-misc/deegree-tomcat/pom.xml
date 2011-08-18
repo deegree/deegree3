@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>
-    <version>3.1-pre12</version>
+    <version>3.1-pre13-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -104,7 +104,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-javacheck</artifactId>
-      <version>3.1-pre12</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
