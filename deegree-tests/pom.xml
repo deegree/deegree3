@@ -107,6 +107,7 @@
   </dependencies>
 
   <modules>
+    <!-- workspace tests must run first! -->
     <module>deegree-workspace-tests</module>
     <module>deegree-cite-tests</module>
     <module>deegree-wms-similarity-tests</module>
