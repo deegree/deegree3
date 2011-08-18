@@ -35,14 +35,139 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.feature.types.property.ObjectPropertyType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
+
 /**
- * {@link AppSchema} that provides methods for changing defined {@link FeatureTypes} during runtime.
+ * {@link AppSchema} that allows to add {@link FeatureTypes} during runtime.
  * 
  * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DynamicAppSchema {
+public class DynamicAppSchema implements AppSchema {
 
+    private final LinkedHashMap<QName, FeatureType> ftNameToFt = new LinkedHashMap<QName, FeatureType>();
+
+    private final Set<String> namespaces = new HashSet<String>();
+
+    // key: namespace prefix, value: namespace URI
+    private final Map<String, String> prefixToNs = new HashMap<String, String>();
+
+    /**
+     * Adds a new {@link DynamicFeatureType} for the given feature type name.
+     * 
+     * @param ftName
+     *            feature type name, must not be <code>null</code>
+     * @return new (and added) feature type instance, never <code>null</code>
+     */
+    public DynamicFeatureType addFeatureType( QName ftName ) {
+        DynamicFeatureType ft = new DynamicFeatureType( ftName, this );
+        ftNameToFt.put( ftName, ft );
+        namespaces.add( ftName.getNamespaceURI() );
+        prefixToNs.put( ftName.getPrefix(), ftName.getNamespaceURI() );
+        return ft;
+    }
+
+    @Override
+    public FeatureType[] getFeatureTypes() {
+        return ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
+    }
+
+    @Override
+    public List<FeatureType> getFeatureTypes( String namespace, boolean includeCollections, boolean includeAbstracts ) {
+        return new ArrayList<FeatureType>( ftNameToFt.values() );
+    }
+
+    @Override
+    public FeatureType[] getRootFeatureTypes() {
+        return getFeatureTypes();
+    }
+
+    @Override
+    public FeatureType getFeatureType( QName ftName ) {
+        return ftNameToFt.get( ftName );
+    }
+
+    @Override
+    public FeatureType[] getDirectSubtypes( FeatureType ft ) {
+        return new FeatureType[0];
+    }
+
+    @Override
+    public FeatureType getParent( FeatureType ft ) {
+        return null;
+    }
+
+    @Override
+    public FeatureType[] getSubtypes( FeatureType ft ) {
+        return new FeatureType[0];
+    }
+
+    @Override
+    public FeatureType[] getConcreteSubtypes( FeatureType ft ) {
+        return new FeatureType[0];
+    }
+
+    @Override
+    public GMLSchemaInfoSet getGMLSchema() {
+        return null;
+    }
+
+    @Override
+    public boolean isSubType( FeatureType ft, FeatureType substitution ) {
+        return ft == substitution;
+    }
+
+    @Override
+    public List<PropertyType> getNewPropertyDecls( FeatureType ft ) {
+        return ft.getPropertyDeclarations();
+    }
+
+    @Override
+    public Map<FeatureType, FeatureType> getFtToSuperFt() {
+        return emptyMap();
+    }
+
+    @Override
+    public Map<String, String> getNamespaceBindings() {
+        return prefixToNs;
+    }
+
+    @Override
+    public Map<QName, XSElementDeclaration> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
+        return emptyMap();
+    }
+
+    @Override
+    public Set<String> getAppNamespaces() {
+        return namespaces;
+    }
+
+    @Override
+    public List<String> getNamespacesDependencies( String ns ) {
+        return emptyList();
+    }
+
+    @Override
+    public ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
+        return null;
+    }
 }

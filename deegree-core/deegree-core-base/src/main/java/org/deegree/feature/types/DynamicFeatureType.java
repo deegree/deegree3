@@ -35,14 +35,91 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
+import org.deegree.feature.Feature;
+import org.deegree.feature.property.ExtraProps;
+import org.deegree.feature.property.Property;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.gml.GMLVersion;
+
 /**
- * {@link FeatureType} that provides methods for changing property declarations after construction.
+ * {@link FeatureType} that allows to add property declarations after construction.
  * 
  * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DynamicFeatureType {
+public class DynamicFeatureType implements FeatureType {
 
+    private final QName ftName;
+
+    private final DynamicAppSchema appSchema;
+
+    private final List<PropertyType> props = new LinkedList<PropertyType>();
+
+    private final Map<QName, PropertyType> propNameToDecl = new HashMap<QName, PropertyType>();
+
+    public DynamicFeatureType( QName ftName, DynamicAppSchema appSchema ) {
+        this.ftName = ftName;
+        this.appSchema = appSchema;
+    }
+
+    @Override
+    public QName getName() {
+        return ftName;
+    }
+
+    @Override
+    public PropertyType getPropertyDeclaration( QName propName ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public PropertyType getPropertyDeclaration( QName propName, GMLVersion version ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<PropertyType> getPropertyDeclarations() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<PropertyType> getPropertyDeclarations( GMLVersion version ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return true;
+    }
+
+    @Override
+    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public AppSchema getSchema() {
+        return appSchema;
+    }
 }

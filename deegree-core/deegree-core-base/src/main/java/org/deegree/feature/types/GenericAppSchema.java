@@ -118,12 +118,12 @@ public class GenericAppSchema implements AppSchema {
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public GenericAppSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
-                                     Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel )
-                            throws IllegalArgumentException {
+                             Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel ) throws IllegalArgumentException {
 
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
-            ft.setSchema( this );
+            // TODO change constructor to only allow this subtype
+            ( (GenericFeatureType) ft ).setSchema( this );
             appNamespaces.add( ft.getName().getNamespaceURI() );
         }
 
@@ -207,11 +207,6 @@ public class GenericAppSchema implements AppSchema {
         this.gmlSchema = xsModel;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getFeatureTypes()
-     */
     @Override
     public FeatureType[] getFeatureTypes() {
         FeatureType[] fts = new FeatureType[ftNameToFt.values().size()];
@@ -222,11 +217,6 @@ public class GenericAppSchema implements AppSchema {
         return fts;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getFeatureTypes(java.lang.String, boolean, boolean)
-     */
     @Override
     public List<FeatureType> getFeatureTypes( String namespace, boolean includeCollections, boolean includeAbstracts ) {
         List<FeatureType> fts = new ArrayList<FeatureType>( ftNameToFt.values().size() );
@@ -242,11 +232,6 @@ public class GenericAppSchema implements AppSchema {
         return fts;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getRootFeatureTypes()
-     */
     @Override
     public FeatureType[] getRootFeatureTypes() {
         // start with all feature types
@@ -256,21 +241,11 @@ public class GenericAppSchema implements AppSchema {
         return fts.toArray( new FeatureType[fts.size()] );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getFeatureType(javax.xml.namespace.QName)
-     */
     @Override
     public FeatureType getFeatureType( QName ftName ) {
         return ftNameToFt.get( ftName );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getDirectSubtypes(org.deegree.feature.types.FeatureType)
-     */
     @Override
     public FeatureType[] getDirectSubtypes( FeatureType ft ) {
         List<FeatureType> fts = new ArrayList<FeatureType>( ftNameToFt.size() );
@@ -282,21 +257,11 @@ public class GenericAppSchema implements AppSchema {
         return fts.toArray( new FeatureType[fts.size()] );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getParentFt(org.deegree.feature.types.FeatureType)
-     */
     @Override
     public FeatureType getParent( FeatureType ft ) {
         return ftToSuperFt.get( ft );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getSubtypes(org.deegree.feature.types.FeatureType)
-     */
     @Override
     public FeatureType[] getSubtypes( FeatureType ft ) {
         FeatureType[] directSubtypes = getDirectSubtypes( ft );
@@ -315,11 +280,6 @@ public class GenericAppSchema implements AppSchema {
         return result.toArray( new FeatureType[result.size()] );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getConcreteSubtypes(org.deegree.feature.types.FeatureType)
-     */
     @Override
     public FeatureType[] getConcreteSubtypes( FeatureType ft ) {
         FeatureType[] directSubtypes = getDirectSubtypes( ft );
@@ -344,22 +304,11 @@ public class GenericAppSchema implements AppSchema {
         return result.toArray( new FeatureType[result.size()] );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getGMLSchema()
-     */
     @Override
     public GMLSchemaInfoSet getGMLSchema() {
         return gmlSchema;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#isSubType(org.deegree.feature.types.FeatureType,
-     * org.deegree.feature.types.FeatureType)
-     */
     @Override
     public boolean isSubType( FeatureType ft, FeatureType substitution ) {
         if ( substitution == null || ft == null ) {
@@ -377,11 +326,6 @@ public class GenericAppSchema implements AppSchema {
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getNewPropertyDecls(org.deegree.feature.types.FeatureType)
-     */
     @Override
     public List<PropertyType> getNewPropertyDecls( FeatureType ft ) {
 
@@ -410,33 +354,16 @@ public class GenericAppSchema implements AppSchema {
         return propDecls.subList( firstNewIdx, propDecls.size() );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getFtToSuperFt()
-     */
     @Override
     public Map<FeatureType, FeatureType> getFtToSuperFt() {
         return ftToSuperFt;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getNamespaceBindings()
-     */
     @Override
     public Map<String, String> getNamespaceBindings() {
         return prefixToNs;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.deegree.feature.types.ApplicationSchema#getAllowedChildElementDecls(org.apache.xerces.xs.XSComplexTypeDefinition
-     * )
-     */
     @Override
     public synchronized Map<QName, XSElementDeclaration> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
 
@@ -477,21 +404,11 @@ public class GenericAppSchema implements AppSchema {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getAppNamespaces()
-     */
     @Override
     public Set<String> getAppNamespaces() {
         return appNamespaces;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getNamespacesDependencies(java.lang.String)
-     */
     @Override
     public List<String> getNamespacesDependencies( String ns ) {
 
@@ -525,11 +442,6 @@ public class GenericAppSchema implements AppSchema {
         return nsDependencies;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.feature.types.ApplicationSchema#getCustomElDecl(org.apache.xerces.xs.XSElementDeclaration)
-     */
     @Override
     public synchronized ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
         ObjectPropertyType pt = null;

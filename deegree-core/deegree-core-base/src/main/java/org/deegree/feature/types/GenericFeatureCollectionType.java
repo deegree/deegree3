@@ -36,10 +36,7 @@
 package org.deegree.feature.types;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -49,13 +46,11 @@ import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.StandardGMLFeatureProps;
 
 /**
- * Generic implementation of {@link FeatureCollectionType}, can be used for representing arbitrary feature collection
+ * Generic {@link FeatureCollectionType} implementation, can be used for representing arbitrary feature collection
  * types.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -63,25 +58,15 @@ import org.deegree.gml.feature.StandardGMLFeatureProps;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GenericFeatureCollectionType implements FeatureCollectionType {
-
-    private QName name;
-
-    // maps property names to their declaration (LinkedHashMap respects the correct key order)
-    private Map<QName, PropertyType> propNameToDecl = new LinkedHashMap<QName, PropertyType>();
+public class GenericFeatureCollectionType extends GenericFeatureType implements FeatureCollectionType {
 
     private final List<FeaturePropertyType> memberDecls = new ArrayList<FeaturePropertyType>();
 
     private final List<ArrayPropertyType> membersDecls = new ArrayList<ArrayPropertyType>();
 
-    private boolean isAbstract;
-
-    private AppSchema schema;
-
     public GenericFeatureCollectionType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
-        this.name = name;
+        super( name, propDecls, isAbstract );
         for ( PropertyType propDecl : propDecls ) {
-            propNameToDecl.put( propDecl.getName(), propDecl );
             // TODO is this test sufficient?
             if ( propDecl instanceof FeaturePropertyType ) {
                 memberDecls.add( (FeaturePropertyType) propDecl );
@@ -89,71 +74,11 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
                 membersDecls.add( (ArrayPropertyType) propDecl );
             }
         }
-        this.isAbstract = isAbstract;
-    }
-
-    @Override
-    public QName getName() {
-        return name;
-    }
-
-    @Override
-    public PropertyType getPropertyDeclaration( QName propName ) {
-        return propNameToDecl.get( propName );
-    }
-
-    @Override
-    public PropertyType getPropertyDeclaration( QName propName, GMLVersion version ) {
-        PropertyType pt = StandardGMLFeatureProps.getPropertyType( propName, version );
-        if ( pt == null ) {
-            pt = propNameToDecl.get( propName );
-        }
-        return pt;
-    }
-
-    @Override
-    public List<PropertyType> getPropertyDeclarations() {
-        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() );
-        for ( QName propName : propNameToDecl.keySet() ) {
-            propDecls.add( propNameToDecl.get( propName ) );
-        }
-        return propDecls;
-    }
-
-    @Override
-    public List<PropertyType> getPropertyDeclarations( GMLVersion version ) {
-        Collection<PropertyType> stdProps = StandardGMLFeatureProps.getPropertyTypes( version );
-        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() + stdProps.size() );
-        propDecls.addAll( stdProps );
-        for ( QName propName : propNameToDecl.keySet() ) {
-            propDecls.add( propNameToDecl.get( propName ) );
-        }
-        return propDecls;
-    }
-
-    @Override
-    public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
-        return null;
     }
 
     @Override
     public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version ) {
         return new GenericFeatureCollection( this, fid, props, extraProps, version );
-    }
-
-    @Override
-    public boolean isAbstract() {
-        return isAbstract;
-    }
-
-    @Override
-    public AppSchema getSchema() {
-        return schema;
-    }
-
-    @Override
-    public void setSchema( AppSchema schema ) {
-        this.schema = schema;
     }
 
     @Override
@@ -168,9 +93,8 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
 
     @Override
     public String toString() {
-        String s = "- Feature collection type '" + name + "', abstract: " + isAbstract;
-        for ( QName ptName : propNameToDecl.keySet() ) {
-            PropertyType pt = propNameToDecl.get( ptName );
+        String s = "- Feature collection type '" + getName() + "', abstract: " + isAbstract();
+        for ( PropertyType pt : getPropertyDeclarations() ) {
             s += "\n" + pt;
         }
         return s;

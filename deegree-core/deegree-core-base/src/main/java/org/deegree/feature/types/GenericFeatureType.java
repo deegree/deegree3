@@ -146,8 +146,13 @@ public class GenericFeatureType implements FeatureType {
         return schema;
     }
 
-    @Override
-    public void setSchema( AppSchema schema ) {
+    /**
+     * Sets the {@link AppSchema} that this feature type belongs to.
+     * 
+     * @param schema
+     *            application schema, must not be <code>null</code>
+     */
+    void setSchema( AppSchema schema ) {
         this.schema = schema;
     }
 
