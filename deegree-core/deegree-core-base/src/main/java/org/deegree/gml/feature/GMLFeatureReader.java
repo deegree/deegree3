@@ -56,7 +56,6 @@ import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLE
 import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML321_FEATURECOLLECTION;
 import static org.deegree.gml.feature.schema.DefaultGMLTypes.WFS110_FEATURECOLLECTION;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,7 +99,8 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.feature.types.GenericAppSchema;
+import org.deegree.feature.types.DynamicAppSchema;
+import org.deegree.feature.types.DynamicFeatureType;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.ArrayPropertyType;
@@ -176,8 +176,7 @@ public class GMLFeatureReader extends XMLAdapter {
      *            defaultValue for coordinate dimension, only used when a posList is parsed and no dimension information
      *            from CRS is available (unknown CRS)
      */
-    public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext,
-                             int defaultCoordDim ) {
+    public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext, int defaultCoordDim ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext != null ? idContext : new GMLDocumentIdContext( version );
@@ -209,8 +208,8 @@ public class GMLFeatureReader extends XMLAdapter {
      *            from CRS is available (unknown CRS) *
      * @param resolver
      */
-    public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext,
-                             int defaultCoordDim, GMLReferenceResolver resolver ) {
+    public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext, int defaultCoordDim,
+                             GMLReferenceResolver resolver ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
@@ -240,7 +239,7 @@ public class GMLFeatureReader extends XMLAdapter {
      * 
      * @return the associated {@link AppSchema}
      */
-    public AppSchema getApplicationSchema() {
+    public AppSchema getAppSchema() {
         return schema;
     }
 
@@ -271,8 +270,77 @@ public class GMLFeatureReader extends XMLAdapter {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         if ( schema == null ) {
-            schema = buildApplicationSchema( xmlStream );
+            schema = buildAppSchema( xmlStream );
         }
+        if ( schema instanceof DynamicAppSchema ) {
+            throw new XMLParsingException(
+                                           "Parsing GML features without application schema is currently not supported." );
+            // return parseFeature( xmlStream, crs, (DynamicAppSchema) schema );
+        }
+        return parseFeatureStatic( xmlStream, crs );
+    }
+
+    private Feature parseFeature( XMLStreamReaderWrapper xmlStream, ICRS crs, DynamicAppSchema appSchema )
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        Feature feature = null;
+        String fid = parseFeatureId( xmlStream );
+
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
+        }
+
+        QName featureName = xmlStream.getName();
+        DynamicFeatureType ft = appSchema.getFeatureType( featureName );
+        if ( ft == null ) {
+            LOG.debug( "- adding feature type '" + featureName + "'" );
+            ft = appSchema.addFeatureType( featureName );
+        }
+
+        int propOccurences = 0;
+        ICRS activeCRS = crs;
+        List<Property> propList = new ArrayList<Property>();
+        PropertyType lastPropDecl = null;
+
+        xmlStream.nextTag();
+
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
+            QName propName = xmlStream.getName();
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "- property '" + propName + "'" );
+
+                PropertyType propDecl = ft.getPropertyDeclaration( propName );
+                if ( propName == null ) {
+                    // propDecl = next
+                }
+
+                Property property = parseProperty( xmlStream, findConcretePropertyType( propName, propDecl ),
+                                                   activeCRS, propOccurences );
+                if ( property != null ) {
+                    // if this is the "gml:boundedBy" property, override active CRS
+                    // (see GML spec. (where???))
+                    if ( PT_BOUNDED_BY_GML31.getName().equals( propDecl.getName() )
+                         || PT_BOUNDED_BY_GML32.getName().equals( propDecl.getName() ) ) {
+                        Envelope bbox = (Envelope) property.getValue();
+                        if ( bbox.getCoordinateSystem() != null ) {
+                            activeCRS = bbox.getCoordinateSystem();
+                            LOG.debug( "- crs (from boundedBy): '" + activeCRS + "'" );
+                        }
+                    }
+
+                    propList.add( property );
+                }
+                propOccurences++;
+                xmlStream.nextTag();
+                lastPropDecl = propDecl;
+            }
+        }
+
+        return feature;
+    }
+
+    private Feature parseFeatureStatic( XMLStreamReaderWrapper xmlStream, ICRS crs )
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Feature feature = null;
         String fid = parseFeatureId( xmlStream );
@@ -397,7 +465,7 @@ public class GMLFeatureReader extends XMLAdapter {
                             throws XMLStreamException {
 
         if ( schema == null ) {
-            schema = buildApplicationSchema( xmlStream );
+            schema = buildAppSchema( xmlStream );
         }
         String fid = parseFeatureId( xmlStream );
         QName featureName = xmlStream.getName();
@@ -405,18 +473,18 @@ public class GMLFeatureReader extends XMLAdapter {
         return new GMLStreamFeatureCollection( fid, ft, this, xmlStream, crs );
     }
 
-    private AppSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream )
+    private AppSchema buildAppSchema( XMLStreamReaderWrapper xmlStream )
                             throws XMLParsingException {
         String schemaLocation = xmlStream.getAttributeValue( XSINS, "schemaLocation" );
         if ( schemaLocation == null ) {
-            throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_NO_SCHEMA_LOCATION",
-                                                                           xmlStream.getSystemId() ) );
+            LOG.warn( Messages.getMessage( "NO_SCHEMA_LOCATION", xmlStream.getSystemId() ) );
+            return new DynamicAppSchema();
         }
 
         String[] tokens = schemaLocation.trim().split( "\\s+" );
         if ( tokens.length % 2 != 0 ) {
-            throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_SCHEMA_LOCATION_TOKENS_COUNT",
-                                                                           xmlStream.getSystemId() ) );
+            LOG.warn( Messages.getMessage( "ERROR_SCHEMA_LOCATION_TOKENS_COUNT", xmlStream.getSystemId() ) );
+            return new DynamicAppSchema();
         }
         String[] schemaUrls = new String[tokens.length / 2];
         for ( int i = 0; i < schemaUrls.length; i++ ) {
@@ -428,11 +496,9 @@ public class GMLFeatureReader extends XMLAdapter {
                 } else {
                     schemaUrls[i] = new URL( new URL( xmlStream.getSystemId() ), schemaUrl ).toString();
                 }
-            } catch ( MalformedURLException e ) {
-                throw new XMLParsingException( xmlStream, "Error parsing referenced application schema. Schema URL '"
-                                                          + schemaUrl + "' from xsi:schemaLocation attribute is "
-                                                          + "invalid/cannot be resolved." );
-
+            } catch ( Throwable t ) {
+                LOG.warn( Messages.getMessage( "INVALID_SCHEMA_LOCATION", xmlStream.getSystemId() ) );
+                return new DynamicAppSchema();
             }
         }
 
@@ -441,11 +507,9 @@ public class GMLFeatureReader extends XMLAdapter {
         try {
             ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( version, null, schemaUrls );
             schema = decoder.extractFeatureTypeSchema();
-            FeatureType ft = schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/cite/complex}Complex" ) );
-            System.out.println( ft );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            throw new XMLParsingException( xmlStream, "Error parsing application schema: " + e.getMessage() );
+        } catch ( Throwable t ) {
+            LOG.warn( Messages.getMessage( "BROKEN_SCHEMA", xmlStream.getSystemId(), t.getMessage() ), t );
+            return new DynamicAppSchema();
         }
         return schema;
     }
