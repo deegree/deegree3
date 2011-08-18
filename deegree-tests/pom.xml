@@ -107,9 +107,9 @@
   </dependencies>
 
   <modules>
+    <module>deegree-workspace-tests</module>
     <module>deegree-cite-tests</module>
     <module>deegree-wms-similarity-tests</module>
-    <module>deegree-workspace-tests</module>
   </modules>
 
 </project>
