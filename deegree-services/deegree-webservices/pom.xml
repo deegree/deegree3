@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.1-pre12-SNAPSHOT</version>
+    <version>3.1-pre12</version>
   </parent>
 
   <repositories>
@@ -132,62 +132,62 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-console</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-config</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-csw</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-memory</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-sql</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-shape</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-simplesql</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-iso</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>    
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

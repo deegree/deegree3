@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-remoteows</artifactId>
-    <version>3.1-pre12-SNAPSHOT</version>
+    <version>3.1-pre12</version>
   </parent>
 
   <repositories>
@@ -49,12 +49,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-remoteows-commons</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre12</version>
     </dependency>
   </dependencies>
 </project>
