@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-mdstores</artifactId>
-    <version>3.1-pre13</version>
+    <version>3.1-pre14-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -49,12 +49,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-commons</artifactId>
-      <version>3.1-pre13</version>
+      <version>3.1-pre14-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
-      <version>3.1-pre13</version>
+      <version>3.1-pre14-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
