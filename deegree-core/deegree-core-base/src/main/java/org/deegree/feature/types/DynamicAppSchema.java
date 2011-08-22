@@ -64,7 +64,7 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
  */
 public class DynamicAppSchema implements AppSchema {
 
-    private final LinkedHashMap<QName, FeatureType> ftNameToFt = new LinkedHashMap<QName, FeatureType>();
+    private final LinkedHashMap<QName, DynamicFeatureType> ftNameToFt = new LinkedHashMap<QName, DynamicFeatureType>();
 
     private final Set<String> namespaces = new HashSet<String>();
 
@@ -102,7 +102,7 @@ public class DynamicAppSchema implements AppSchema {
     }
 
     @Override
-    public FeatureType getFeatureType( QName ftName ) {
+    public DynamicFeatureType getFeatureType( QName ftName ) {
         return ftNameToFt.get( ftName );
     }
 

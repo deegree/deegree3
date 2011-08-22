@@ -37,14 +37,13 @@ package org.deegree.tools.feature.persistence;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -52,7 +51,6 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -81,7 +79,7 @@ public class FeatureStoreLoader {
     // command line parameters
     private static final String OPT_ACTION = "action";
 
-    private static final String OPT_JDBC_CONFIG_FILE = "jdbcconfig";
+    private static final String OPT_WORKSPACE = "workspace";
 
     private static final String OPT_FS_CONFIG_FILE = "fsconfig";
 
@@ -93,27 +91,6 @@ public class FeatureStoreLoader {
 
     private enum Action {
         insert, stats
-    }
-
-    private static void initJDBCConnections( String jdbcConfigFile )
-                            throws JAXBException, MalformedURLException {
-        File f = new File( jdbcConfigFile );
-        String connId = f.getName();
-        int delimPos = connId.indexOf( '.' );
-        connId = connId.substring( 0, delimPos );
-        URL configURL = f.toURI().toURL();
-        ConnectionManager.addConnection( configURL, connId, null );
-    }
-
-    private static FeatureStore initFeatureStore( String fsConfigFile )
-                            throws MalformedURLException, ResourceInitException {
-        File f = new File( fsConfigFile );
-        URL configURL = f.toURI().toURL();
-        FeatureStoreManager mgr = new FeatureStoreManager();
-        mgr.startup( DeegreeWorkspace.getInstance() );
-        FeatureStore fs = mgr.create( f.getName(), configURL );
-        fs.init( DeegreeWorkspace.getInstance() );
-        return fs;
     }
 
     private static void insert( FeatureStore fs, String datasetFile, GMLVersion gmlVersion, IDGenMode mode )
@@ -151,7 +128,6 @@ public class FeatureStoreLoader {
     /**
      * @param args
      * @throws FeatureStoreException
-     * @throws JAXBException
      * @throws UnknownCRSException
      * @throws IOException
      * @throws FactoryConfigurationError
@@ -160,62 +136,58 @@ public class FeatureStoreLoader {
      * @throws ResourceInitException
      */
     public static void main( String[] args )
-                            throws FeatureStoreException, JAXBException, XMLParsingException, XMLStreamException,
-                            FactoryConfigurationError, IOException, UnknownCRSException,
-                            ResourceInitException {
-
-        Options options = initOptions();
+                            throws FeatureStoreException, XMLParsingException, XMLStreamException,
+                            FactoryConfigurationError, IOException, UnknownCRSException, ResourceInitException {
 
         // for the moment, using the CLI API there is no way to respond to a help argument; see
         // https://issues.apache.org/jira/browse/CLI-179
         if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
-            printHelp( options );
+            printHelp( initOptions() );
         }
 
         try {
-            new PosixParser().parse( options, args );
+            CommandLine cmdline = new PosixParser().parse( initOptions(), args );
 
             Action action = null;
             try {
-                action = Action.valueOf( options.getOption( OPT_ACTION ).getValue() );
+                action = Action.valueOf( cmdline.getOptionValue( OPT_ACTION ) );
             } catch ( IllegalArgumentException e ) {
-                System.out.println( "Unknown action '" + options.getOption( OPT_ACTION ).getValue()
+                System.out.println( "Unknown action '" + cmdline.getOptionValue( OPT_ACTION )
                                     + "'. Call with '-help' for displaying available actions." );
                 System.exit( 0 );
             }
 
-            String jdbcConfigFileName = options.getOption( OPT_JDBC_CONFIG_FILE ).getValue();
-            String fsConfigFileName = options.getOption( OPT_FS_CONFIG_FILE ).getValue();
+            String workspace = cmdline.getOptionValue( OPT_WORKSPACE );
+            String fsConfigId = cmdline.getOptionValue( OPT_FS_CONFIG_FILE );
 
             GMLVersion format = null;
             try {
-                format = GMLVersion.valueOf( options.getOption( OPT_INPUT_FORMAT ).getValue() );
+                format = GMLVersion.valueOf( cmdline.getOptionValue( OPT_INPUT_FORMAT ) );
             } catch ( IllegalArgumentException e ) {
-                System.out.println( "Unknown input format '" + options.getOption( OPT_INPUT_FORMAT ).getValue()
+                System.out.println( "Unknown input format '" + cmdline.getOptionValue( OPT_INPUT_FORMAT )
                                     + "'. Call with '-help' for displaying valid formats." );
                 System.exit( 0 );
             }
 
             IDGenMode idGenMode = null;
             try {
-                idGenMode = IDGenMode.valueOf( options.getOption( OPT_IDGEN_MODE ).getValue() );
+                idGenMode = IDGenMode.valueOf( cmdline.getOptionValue( OPT_IDGEN_MODE ) );
                 if ( idGenMode == IDGenMode.REPLACE_DUPLICATE ) {
                     throw new IllegalArgumentException();
                 }
             } catch ( IllegalArgumentException e ) {
-                System.out.println( "Unknown id generation mode '" + options.getOption( OPT_IDGEN_MODE ).getValue()
+                System.out.println( "Unknown id generation mode '" + cmdline.getOptionValue( OPT_IDGEN_MODE )
                                     + "'. Call with '-help' for displaying valid modes." );
                 System.exit( 0 );
             }
 
-            String inputFileName = options.getOption( OPT_DATASET_FILE ).getValue();
+            String inputFileName = cmdline.getOptionValue( OPT_DATASET_FILE );
 
-            if ( jdbcConfigFileName != null ) {
-                initJDBCConnections( jdbcConfigFileName );
-            }
-            System.out.print( "Initializing feature store..." );
-            FeatureStore fs = initFeatureStore( fsConfigFileName );
-            System.out.println( "done." );
+            DeegreeWorkspace ws = DeegreeWorkspace.getInstance( workspace, new File( workspace ) );
+            ws.initAll();
+            FeatureStoreManager mgr = ws.getSubsystemManager( FeatureStoreManager.class );
+
+            FeatureStore fs = mgr.get( fsConfigId );
 
             switch ( action ) {
             case insert:
@@ -253,11 +225,11 @@ public class FeatureStoreLoader {
             formatsList += ", " + formats[i].name();
         }
 
-        opt = new Option( OPT_JDBC_CONFIG_FILE, true, "jdbc config filename" );
-        opt.setRequired( false );
+        opt = new Option( OPT_WORKSPACE, true, "workspace name" );
+        opt.setRequired( true );
         opts.addOption( opt );
 
-        opt = new Option( OPT_FS_CONFIG_FILE, true, "feature store config filename" );
+        opt = new Option( OPT_FS_CONFIG_FILE, true, "feature store config id" );
         opt.setRequired( true );
         opts.addOption( opt );
 

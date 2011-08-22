@@ -45,7 +45,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
@@ -82,8 +82,7 @@ public class GenericFeature extends AbstractFeature {
      * @param extraProps
      *            extra properties, may be <code>null</code>
      */
-    public GenericFeature( GenericFeatureType ft, String fid, List<Property> props, GMLVersion version,
-                           ExtraProps extraProps ) {
+    public GenericFeature( FeatureType ft, String fid, List<Property> props, GMLVersion version, ExtraProps extraProps ) {
         super( fid, ft, extraProps );
         if ( version == null ) {
             this.props = new ArrayList<Property>( props );
