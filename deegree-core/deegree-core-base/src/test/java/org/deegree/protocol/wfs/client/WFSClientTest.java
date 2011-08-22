@@ -61,6 +61,8 @@ public class WFSClientTest {
     private static Logger LOG = LoggerFactory.getLogger( WFSClientTest.class );
 
     private static final String WFS_UTAH_DEMO_100_URL = "wfs.utahdemo100.url";
+    
+    private static final String WFS_UTAH_DEMO_110_URL = "wfs.utahdemo110.url";
 
     @Test
     public void testGetCapabilities100Utah()
@@ -74,15 +76,39 @@ public class WFSClientTest {
 
         URL wfsCapaUrl = new URL( wfsUtahDemo100Url );
         WFSClient client = new WFSClient( wfsCapaUrl );
-        Assert.equals( 18, client.getApplicationSchema().getFeatureTypes().length );
-        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
-        try {
-            Feature feature = null;
-            while ( ( feature = fc.read() ) != null ) {
-                System.out.println( feature.getId() );
-            }
-        } finally {
-            fc.close();
+        Assert.equals( 18, client.getAppSchema().getFeatureTypes().length );
+//        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
+//        try {
+//            Feature feature = null;
+//            while ( ( feature = fc.read() ) != null ) {
+//                System.out.println( feature.getId() );
+//            }
+//        } finally {
+//            fc.close();
+//        }
+    }
+    
+    @Test
+    public void testGetCapabilities110Utah()
+                            throws Exception {
+
+        String wfsUtahDemo100Url = TestProperties.getProperty( WFS_UTAH_DEMO_110_URL );
+        if ( wfsUtahDemo100Url == null ) {
+            LOG.warn( "Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties" );
+            return;
         }
+
+        URL wfsCapaUrl = new URL( wfsUtahDemo100Url );
+        WFSClient client = new WFSClient( wfsCapaUrl );
+        Assert.equals( 18, client.getAppSchema().getFeatureTypes().length );
+//        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
+//        try {
+//            Feature feature = null;
+//            while ( ( feature = fc.read() ) != null ) {
+//                System.out.println( feature.getId() );
+//            }
+//        } finally {
+//            fc.close();
+//        }
     }
 }

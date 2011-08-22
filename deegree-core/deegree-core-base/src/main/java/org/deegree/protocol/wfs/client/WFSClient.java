@@ -36,11 +36,15 @@
 package org.deegree.protocol.wfs.client;
 
 import static org.deegree.protocol.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -49,7 +53,6 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
@@ -58,6 +61,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceMetadata;
+import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.WFSVersion;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.slf4j.Logger;
@@ -68,7 +72,7 @@ import org.slf4j.LoggerFactory;
  * href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service (WFS) 1.0.0/1.1.0/2.0.0</a> protocol.
  * 
  * <h4>Initialization</h4> In the initial step, one constructs a new {@link WFSClient} instance by invoking the
- * constructor with a URL to a WFS capabilities document. In most cases, this will be a GetCapabilities request
+ * constructor with a URL to a WFS capabilities document. This usually is a <code>GetCapabilities</code> request
  * (including necessary parameters) to a WFS service.
  * 
  * <pre>
@@ -78,11 +82,11 @@ import org.slf4j.LoggerFactory;
  * ...
  * </pre>
  * 
- * Afterwards, the {@link WFSClient} instance is bound to the specified service and allows to access service metadata,
- * feature type information as well as performing queries and transactions.
+ * Afterwards, the initialized {@link WFSClient} instance is bound to the specified service and allows to access service
+ * metadata, feature type information as well as performing queries and transactions.
  * 
- * <h4>Accessing service metadata</h4> The method {@link #getMetadata()} allows to access the metadata announced by the
- * service, such as title, abstract, provider etc.
+ * <h4>Accessing service metadata</h4> The method {@link #getMetadata()} allows to access service metadata announced by
+ * the service, such as title, abstract, provider etc.
  * 
  * <h4>Accessing feature type information</h4> ...
  * 
@@ -103,23 +107,18 @@ public class WFSClient {
 
     private static Logger LOG = LoggerFactory.getLogger( WFSClient.class );
 
-    // [0]: GET, [1]: POST
-    private final URL[] describeFeatureTypeURLs = new URL[2];
-
-    // [0]: GET, [1]: POST
-    private final URL[] getFeatureURLs = new URL[2];
-
-    // [0]: GET, [1]: POST
-    private final URL[] getGmlObjectURLs = new URL[2];
+    private final URL capaUrl;
 
     private WFSVersion version;
+
+    private final Map<WFSRequestType, URL[]> requestTypeToURLs = new HashMap<WFSRequestType, URL[]>();
 
     private final WFSFeatureType[] wfsFts;
 
     private AppSchema schema;
 
     /**
-     * Creates a new {@link WFSClient} instance.
+     * Creates a new {@link WFSClient} instance with default behavior.
      * 
      * @param capabilitiesURL
      *            url of a WFS capabilities document, usually this is a GetCapabilities request to a WFS service, must
@@ -127,17 +126,38 @@ public class WFSClient {
      * @throws IOException
      *             if a communication/network problem occured
      * @throws OWSException
-     *             if the server replied with an exception
+     *             if the server replied with a service exception report
      */
     public WFSClient( URL capabilitiesURL ) throws IOException, OWSException {
+        this.capaUrl = capabilitiesURL;
         WFSCapabilitiesAdapter capaAdapter = retrieveCapabilities( capabilitiesURL );
 
-        // TODO
-        this.describeFeatureTypeURLs[0] = new URL( "http://deegree3-testing.deegree.org/deegree-utah-demo/services?" );
-        this.describeFeatureTypeURLs[1] = new URL( "http://deegree3-testing.deegree.org/deegree-utah-demo/services" );
+        for ( WFSRequestType requestType : WFSRequestType.values() ) {
+            // TODO should we only consider the operations supported by the actual version?
+            addURLs( requestType, capaAdapter );
+        }
 
         List<WFSFeatureType> wfsFts = capaAdapter.getFeatureTypes();
         this.wfsFts = wfsFts.toArray( new WFSFeatureType[wfsFts.size()] );
+    }
+
+    /**
+     * Creates a new {@link WFSClient} instance with options.
+     * 
+     * @param capabilitiesURL
+     *            url of a WFS capabilities document, usually this is a GetCapabilities request to a WFS service, must
+     *            not be <code>null</code>
+     * @param schema
+     *            application schema that describes the feature types offered by the service, can be <code>null</code>
+     *            (in this case, the client performs <code>DescribeFeatureType</code> requests to determine the schema)
+     * @throws IOException
+     *             if a communication/network problem occured
+     * @throws OWSException
+     *             if the server replied with a service exception report
+     */
+    public WFSClient( URL capabilitiesURL, AppSchema schema ) throws IOException, OWSException {
+        this( capabilitiesURL );
+        this.schema = schema;
     }
 
     /**
@@ -183,7 +203,7 @@ public class WFSClient {
                 LOG.warn( "No version attribute in WFS capabilities document. Defaulting to 1.0.0." );
             }
 
-            capaDoc = new WFSCapabilitiesAdapter( version );
+            capaDoc = new WFSCapabilitiesAdapter( this );
             capaDoc.setRootElement( responseDoc.getRootElement() );
             capaDoc.setSystemId( responseDoc.getSystemId() );
         } else if ( "ExceptionReport".equalsIgnoreCase( rootEl.getLocalPart() ) ) {
@@ -195,6 +215,25 @@ public class WFSClient {
             throw new OWSException( msg, VERSION_NEGOTIATION_FAILED );
         }
         return capaDoc;
+    }
+
+    private void addURLs( WFSRequestType request, WFSCapabilitiesAdapter capaDoc ) {
+        URL[] urls = new URL[2];
+        try {
+            urls[0] = capaDoc.getOperationURL( request.name(), false );
+            LOG.debug( "URL for operation: '" + request + "' (GET): " + urls[0] );
+        } catch ( Throwable t ) {
+            String msg = "Error retrieving URL for operation '" + request + "' (GET): " + t.getMessage();
+            LOG.warn( msg );
+        }
+        try {
+            urls[1] = capaDoc.getOperationURL( request.name(), false );
+            LOG.debug( "URL for operation: '" + request + "' (GET): " + urls[1] );
+        } catch ( Throwable t ) {
+            String msg = "Error retrieving URL for operation '" + request + "' (POST): " + t.getMessage();
+            LOG.warn( msg );
+        }
+        requestTypeToURLs.put( request, urls );
     }
 
     /**
@@ -240,12 +279,13 @@ public class WFSClient {
      * 
      * @return application schema, never <code>null</code>
      */
-    public AppSchema getApplicationSchema() {
+    public AppSchema getAppSchema() {
         if ( schema == null ) {
             try {
-                String url = "http://deegree3-testing.deegree.org/deegree-utah-demo/services?version=1.0.0&service=WFS&request=DescribeFeatureType";
-                System.out.println( "URL: " + url );
-                ApplicationSchemaXSDDecoder schemaDecoder = new ApplicationSchemaXSDDecoder( null, null, url );
+
+                URL url = getOperationURL( DescribeFeatureType, false );
+                String requestUrl = url + "?version=1.0.0&service=WFS&request=DescribeFeatureType";
+                ApplicationSchemaXSDDecoder schemaDecoder = new ApplicationSchemaXSDDecoder( null, null, requestUrl );
                 schema = schemaDecoder.extractFeatureTypeSchema();
             } catch ( Throwable t ) {
                 t.printStackTrace();
@@ -256,14 +296,19 @@ public class WFSClient {
 
     public StreamFeatureCollection getFeatures( QName ftName )
                             throws OWSException {
-        // TODO
-        String url = "http://deegree3-testing.deegree.org/deegree-utah-demo/services?version=1.0.0&service=WFS&request=GetFeature&typeName="
-                     + ftName.getLocalPart();
 
+        URL requestUrl = null;
+        try {
+            URL url = getOperationURL( WFSRequestType.GetFeature, false );
+            requestUrl = new URL( url.toString() + "?version=1.0.0&service=WFS&request=GetFeature&typeName="
+                                  + ftName.getLocalPart() );
+        } catch ( MalformedURLException e ) {
+            // should never happen
+        }
         StreamFeatureCollection fc = null;
         try {
-            GMLVersion gmlVersion = getApplicationSchema().getGMLSchema().getVersion();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, new URL( url ) );
+            GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, requestUrl );
             gmlReader.setApplicationSchema( schema );
             // TODO default SRS
             fc = gmlReader.readStreamFeatureCollection();
@@ -279,4 +324,19 @@ public class WFSClient {
     }
 
     // TODO Transaction, LockFeature, GetFeatureWithLock, WFS 2.0 requests
+
+    private URL getOperationURL( WFSRequestType request, boolean post ) {
+        URL[] urls = requestTypeToURLs.get( request );
+        URL url = post ? urls[1] : urls[0];
+        if ( url == null ) {
+            LOG.warn( "Capabilities don't contain endpoint URL for operation '" + request
+                      + "': Deriving from capabilities base URL." );
+            try {
+                url = new URL( capaUrl, "" );
+            } catch ( MalformedURLException e ) {
+                // should never happen
+            }
+        }
+        return url;
+    }
 }

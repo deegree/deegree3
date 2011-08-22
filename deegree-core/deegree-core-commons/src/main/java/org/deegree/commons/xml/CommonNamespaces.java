@@ -72,6 +72,11 @@ public class CommonNamespaces {
     public static final String OGCNS = "http://www.opengis.net/ogc";
 
     /**
+     * The OWS_NS namespace is currently bound to: "http://www.opengis.net/ows"
+     */
+    public static final String OWS_NS = "http://www.opengis.net/ows";
+
+    /**
      * The OWS_11_NS namespace is currently bound to: "http://www.opengis.net/ows/1.1"
      */
     public static final String OWS_11_NS = "http://www.opengis.net/ows/1.1";

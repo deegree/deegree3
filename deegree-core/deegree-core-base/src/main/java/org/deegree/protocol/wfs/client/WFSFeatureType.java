@@ -35,15 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 
 /**
- * TODO add class documentation here
+ * {@link FeatureType} metadata announced by a <code>WFS</code>.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -52,63 +55,91 @@ import org.deegree.geometry.Envelope;
  */
 public class WFSFeatureType {
 
+    private final WFSClient client;
+
     private final QName name;
 
-    private final String title;
+    private final List<LanguageString> titles;
 
-    private final String ftAbstract;
+    private final List<LanguageString> abstracts;
 
-    private final String keywords;
+    private final List<String> outputFormats;
 
-    private final CRSRef defaultSrs;
+    private final List<Object> keywords;
+
+    private final CRSRef defaultCrs;
+
+    private final List<CRSRef> otherCrs;
+
+    private Envelope wgs84BBox;
 
     private final List<Envelope> wgs84BBoxes;
 
-    private final Envelope wgs84BBox;
+    private final List<Object> mdReferences;
 
-    public WFSFeatureType( QName name, String title, String ftAbstract, String keywords, CRSRef srs,
-                           List<Envelope> ftBboxes, Envelope ftBBox ) {
+    private final Object extendedDescription;
+
+    public WFSFeatureType( WFSClient client, QName name, List<LanguageString> titles, List<LanguageString> abstracts,
+                           List<String> outputFormats, List<Object> keywords, CRSRef defaultCrs, List<CRSRef> otherCrs,
+                           List<Envelope> wgs84BBoxes, List<Object> mdReferences, Object extendedDescription ) {
+        this.client = client;
         this.name = name;
-        this.title = title;
-        this.ftAbstract = ftAbstract;
+        this.titles = titles;
+        this.abstracts = abstracts;
+        this.outputFormats = outputFormats;
         this.keywords = keywords;
-        this.defaultSrs = srs;
-        this.wgs84BBoxes = ftBboxes;
-        this.wgs84BBox = ftBBox;
+        this.defaultCrs = defaultCrs;
+        this.otherCrs = otherCrs;
+        this.wgs84BBoxes = wgs84BBoxes;
+        wgs84BBox = wgs84BBoxes.isEmpty() ? null : wgs84BBoxes.get( 0 );
+        for ( int i = 1; i < wgs84BBoxes.size(); i++ ) {
+            wgs84BBox = wgs84BBox.merge( wgs84BBoxes.get( i ) );
+        }
+        this.mdReferences = Collections.emptyList();
+        this.extendedDescription = extendedDescription;
     }
 
     public QName getName() {
         return name;
     }
 
-    public String getTitle() {
-        return title;
+    public List<LanguageString> getTitles() {
+        return titles;
     }
 
-    public String getAbstract() {
-        return ftAbstract;
-    }
-    
-    public CRSRef getDefaultSrs() {
-        return defaultSrs;
+    public List<LanguageString> getAbstracts() {
+        return abstracts;
     }
 
-    public CRSRef getOtherSrs() {
-        return null;
+    public List<String> getOutputFormats() {
+        return outputFormats;
+    }
+
+    public List<Object> getKeywords() {
+        return keywords;
+    }
+
+    public CRSRef getDefaultCrs() {
+        return defaultCrs;
+    }
+
+    public List<CRSRef> getOtherCrs() {
+        return otherCrs;
     }
 
     public Envelope getWGS84BoundingBox() {
         return wgs84BBox;
     }
 
-    public List<String> getOutputFormats() {
-        return null;
+    public List<Envelope> getWGS84BoundingBoxes() {
+        return wgs84BBoxes;
     }
 
-    @Override
-    public String toString() {
-        return "WFSFeatureType [name=" + name + ", title=" + title + ", ftAbstract=" + ftAbstract + ", keywords="
-               + keywords + ", defaultSrs=" + defaultSrs + ", wgs84BBoxes=" + wgs84BBoxes + ", wgs84BBox=" + wgs84BBox
-               + "]";
+    public List<Object> getMetadataReferences() {
+        return mdReferences;
+    }
+
+    public FeatureType getSchema() {
+        return client.getAppSchema().getFeatureType( name );
     }
 }
