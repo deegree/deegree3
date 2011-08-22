@@ -2,13 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-wfs-cite100</artifactId>
   <packaging>war</packaging>
-  <version>3.1-pre12-SNAPSHOT</version>
+  <version>3.1-pre13-SNAPSHOT</version>
   <name>deegree-wfs-cite100</name>
   
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-cite-tests</artifactId>
-    <version>3.1-pre12-SNAPSHOT</version>
+    <version>3.1-pre13-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -41,12 +41,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-memory</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

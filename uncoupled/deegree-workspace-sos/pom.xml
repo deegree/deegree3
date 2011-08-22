@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tomcat-parent</artifactId>
-    <version>3.1-pre12-SNAPSHOT</version>
+    <version>3.1-pre13-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -28,19 +28,19 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sos-webclient</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sos-webclient</artifactId>
-      <version>3.1-pre12-SNAPSHOT</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>zip</type>
       <classifier>sos-webclient-template</classifier>
       <scope>compile</scope>
