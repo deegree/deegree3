@@ -52,6 +52,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -98,8 +99,12 @@ public class WorkspaceBean implements Serializable {
 
     private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
 
+    private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
+
     // only used when no module version information is available
     private static final String DEFAULT_VERSION = "3.1-pre10-SNAPSHOT";
+
+    private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
 
     @Getter
     private String lastMessage = "Workspace initialized.";
@@ -190,21 +195,10 @@ public class WorkspaceBean implements Serializable {
 
     public void downloadWorkspace() {
         String wsName = (String) getParam1();
+        String location = workspaceLocations.get( wsName );
         InputStream in = null;
         try {
-            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, getDownloadBaseUrl(), null, null,
-                                                                           null );
-            in = p.getFirst();
-            if ( p.second.getStatusLine().getStatusCode() != 200 ) {
-                throw new Exception( "Server responded with HTTP status code "
-                                     + p.second.getStatusLine().getStatusCode() );
-            }
-            for ( String s : readLines( in ) ) {
-                String[] ss = s.split( " ", 2 );
-                if ( ss[1].equals( wsName ) ) {
-                    importWorkspace( ss[0] );
-                }
-            }
+            importWorkspace( location );
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to download workspace: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
@@ -289,10 +283,9 @@ public class WorkspaceBean implements Serializable {
         importWorkspace( workspaceImportUrl );
     }
 
-    public List<String> getRemoteWorkspaces() {
+    public List<String> downloadWorkspaceList( String url ) {
         InputStream in = null;
         try {
-            String url = getDownloadBaseUrl();
             Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, url, null, null, null );
             LOG.debug( "Retrieving list of remote workspaces from {} ", url );
             in = p.getFirst();
@@ -303,10 +296,9 @@ public class WorkspaceBean implements Serializable {
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
             for ( String s : list ) {
-                String[] tokens = s.split( " " );
-                if ( tokens.length > 2 ) {
-                    res.add( s.split( " ", 2 )[1] );
-                }
+                String[] tokens = s.split( " ", 2 );
+                res.add( tokens[1] );
+                workspaceLocations.put( tokens[1], tokens[0] );
             }
             return res;
         } catch ( Throwable t ) {
@@ -318,6 +310,15 @@ public class WorkspaceBean implements Serializable {
             closeQuietly( in );
         }
         return Collections.emptyList();
+    }
+
+    public List<String> getRemoteWorkspaces() {
+        workspaceLocations.clear();
+        List<String> list = downloadWorkspaceList( getDownloadBaseUrl() );
+        for ( String url : WS_DOWNLOAD_URLS ) {
+            list.addAll( downloadWorkspaceList( url ) );
+        }
+        return list;
     }
 
     private String getDownloadBaseUrl() {
@@ -336,7 +337,7 @@ public class WorkspaceBean implements Serializable {
         } else {
             LOG.warn( "No valid version information for modules available. Defaulting to " + DEFAULT_VERSION );
         }
-        if (version == null) {
+        if ( version == null ) {
             version = DEFAULT_VERSION;
         }
         return version;
