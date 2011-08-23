@@ -58,11 +58,11 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 import static org.deegree.services.wms.controller.ops.GetMap.Antialias.BOTH;
 import static org.deegree.services.wms.controller.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
 import static org.deegree.services.wms.controller.ops.GetMap.Quality.NORMAL;
 import static org.deegree.services.wms.model.layers.Layer.render;
+import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -108,9 +108,9 @@ import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.rendering.r2d.context.RenderContext;
+import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.rendering.r2d.legends.Legends;
-import org.deegree.style.se.unevaluated.Style;
-import org.deegree.style.utils.ImageUtils;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
 import org.deegree.services.jaxb.wms.DynamicLayer;
@@ -132,6 +132,11 @@ import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.model.layers.RasterLayer;
 import org.deegree.services.wms.model.layers.RemoteWMSLayer;
+import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.utils.ImageUtils;
+import org.deegree.theme.Theme;
+import org.deegree.theme.Themes;
+import org.deegree.theme.persistence.ThemeManager;
 import org.slf4j.Logger;
 
 /**
@@ -190,6 +195,10 @@ public class MapService {
 
     private DeegreeWorkspace workspace;
 
+    private List<Theme> themes;
+
+    private HashMap<String, org.deegree.layer.Layer> newLayers;
+
     /**
      * @param conf
      * @param adapter
@@ -227,6 +236,23 @@ public class MapService {
             styleUpdateTimer = new Timer();
             styleUpdateTimer.schedule( registry, 0, 1000 );
         }
+        if ( conf != null && conf.getThemeId() != null && !conf.getThemeId().isEmpty() ) {
+            ThemeManager mgr = workspace.getSubsystemManager( ThemeManager.class );
+            themes = new ArrayList<Theme>();
+            newLayers = new HashMap<String, org.deegree.layer.Layer>();
+            for ( String id : conf.getThemeId() ) {
+                Theme thm = mgr.get( id );
+                if ( thm == null ) {
+                    LOG.warn( "Theme with id {} was not available.", id );
+                } else {
+                    themes.add( thm );
+
+                    for ( org.deegree.layer.Layer l : Themes.getAllLayers( thm ) ) {
+                        newLayers.put( l.getIdentifier(), l );
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -235,6 +261,20 @@ public class MapService {
     public MapService() {
         layers = new HashMap<String, Layer>();
         root = new EmptyLayer( this, null, "Root Layer", null );
+    }
+
+    /**
+     * @return the list of themes if configuration is based on themes, else null
+     */
+    public List<Theme> getThemes() {
+        return themes;
+    }
+
+    /**
+     * @return true, if configuration is based on themes
+     */
+    public boolean isNewStyle() {
+        return themes != null;
     }
 
     private static <T extends Enum<T>> T handleDefaultValue( String val, Class<T> enumType, T defaultValue ) {
@@ -565,6 +605,7 @@ public class MapService {
 
     private static Mapper<Boolean, Layer> getFeatureLayerCollector( final LinkedList<FeatureLayer> list ) {
         return new Mapper<Boolean, Layer>() {
+            @Override
             public Boolean apply( Layer u ) {
                 return collectFeatureLayers( u, list );
             }
@@ -727,6 +768,14 @@ public class MapService {
             applyHints( l, qualities, interpolations, antialiases, g );
 
             warnings.addAll( paintLayer( l, s, g, gm ) );
+        }
+    }
+
+    public void getMapImage( RenderContext ctx, RenderingInfo info, List<String> layers )
+                            throws MissingDimensionValue, InvalidDimensionValue {
+        for ( String n : layers ) {
+            org.deegree.layer.Layer l = newLayers.get( n );
+            l.paintMap( ctx, info, null );
         }
     }
 

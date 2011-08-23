@@ -65,7 +65,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.style.se.unevaluated.Style;
 import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.ServiceContactType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
@@ -75,6 +74,8 @@ import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.model.Dimension;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.style.se.unevaluated.Style;
+import org.deegree.theme.Theme;
 import org.slf4j.Logger;
 
 /**
@@ -155,11 +156,49 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writeElement( writer, "Format", "application/vnd.ogc.se_inimage" );
         writeElement( writer, "Format", "application/vnd.ogc.se_blank" );
         writer.writeEndElement();
-        writeLayers( writer, service.getRootLayer() );
+
+        if ( service.isNewStyle() ) {
+            writeThemes( writer, service.getThemes() );
+        } else {
+            writeLayers( writer, service.getRootLayer() );
+        }
 
         writer.writeEndElement();
     }
 
+    private void writeTheme( XMLStreamWriter writer, Theme theme )
+                            throws XMLStreamException {
+        writer.writeStartElement( "Layer" );
+        // TODO
+        writer.writeAttribute( "queryable", "1" );
+        if ( theme.getIdentifier() != null ) {
+            writeElement( writer, "Name", theme.getIdentifier() );
+        }
+        writeElement( writer, "Title", theme.getIdentifier() );
+        for ( Theme t : theme.getThemes() ) {
+            writeTheme( writer, t );
+        }
+        writer.writeEndElement();
+    }
+
+    private void writeThemes( XMLStreamWriter writer, List<Theme> themes )
+                            throws XMLStreamException {
+        if ( themes.size() == 1 ) {
+            writeTheme( writer, themes.get( 0 ) );
+        } else {
+            // synthetic root layer needed
+            writer.writeStartElement( "Layer" );
+            // TODO
+            writer.writeAttribute( "queryable", "1" );
+            writeElement( writer, "Title", "Root" );
+            for ( Theme t : themes ) {
+                writeTheme( writer, t );
+            }
+            writer.writeEndElement();
+        }
+    }
+
+    @Deprecated
     private void writeLayers( XMLStreamWriter writer, Layer layer )
                             throws XMLStreamException {
         if ( layer.getTitle() == null || !layer.isAvailable() ) {

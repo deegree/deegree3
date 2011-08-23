@@ -26,6 +26,7 @@ public class RemoteWMSLayer extends AbstractLayer {
         super( md );
         this.client = client;
         this.name = name;
+        setIdentifier( name );
     }
 
     @Override

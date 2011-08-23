@@ -52,7 +52,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>      
+      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2</version>
@@ -183,10 +183,20 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-iso</artifactId>
       <version>3.1-pre13-SNAPSHOT</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
+      <version>3.1-pre13-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-themes-remotewms</artifactId>
+      <version>3.1-pre13-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-remotewms</artifactId>
       <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
     <dependency>

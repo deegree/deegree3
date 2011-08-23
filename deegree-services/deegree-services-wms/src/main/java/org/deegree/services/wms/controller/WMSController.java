@@ -92,6 +92,7 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -120,6 +121,9 @@ import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.rendering.r2d.context.DefaultRenderContext;
+import org.deegree.rendering.r2d.context.RenderContext;
+import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.AbstractOWS;
@@ -215,12 +219,14 @@ public class WMSController extends AbstractOWS {
     }
 
     private void handleMetadata( String url, String storeid ) {
+        if ( service.isNewStyle() ) {
+            return;
+        }
         this.metadataURL = url;
         HashMap<String, String> dataMetadataIds = new HashMap<String, String>();
         traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
         if ( storeid != null ) {
             MetadataStoreManager mdmanager = workspace.getSubsystemManager( MetadataStoreManager.class );
-            @SuppressWarnings("unchecked")
             MetadataStore<ISORecord> store = mdmanager.get( storeid );
             if ( store == null ) {
                 LOG.warn( "Metadata store with id {} is not available, metadata ids will not be checked.", storeid );
@@ -423,12 +429,15 @@ public class WMSController extends AbstractOWS {
             LOG.trace( "Stack trace of OWSException being sent", e );
 
             controllers.get( version ).handleException( map, req, e, response, this );
+        } catch ( org.deegree.protocol.ows.exception.OWSException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
     private void handleRequest( WMSRequestType req, HttpResponseBuffer response, Map<String, String> map,
                                 Version version )
-                            throws IOException, OWSException {
+                            throws IOException, OWSException, org.deegree.protocol.ows.exception.OWSException {
         try {
             switch ( req ) {
             case GetCapabilities:
@@ -477,7 +486,7 @@ public class WMSController extends AbstractOWS {
     /**
      * @param response
      */
-    private void getDtd( HttpResponseBuffer response ) {
+    private static void getDtd( HttpResponseBuffer response ) {
         InputStream in = WMSController.class.getResourceAsStream( "WMS_MS_Capabilities.dtd.invalid" );
         try {
             OutputStream out = response.getOutputStream();
@@ -510,8 +519,8 @@ public class WMSController extends AbstractOWS {
         sendImage( img, response, glg.getFormat() );
     }
 
-    private void runTemplate( HttpResponseBuffer response, String fiFile, GenericFeatureCollection col,
-                              GetFeatureInfo fi )
+    private static void runTemplate( HttpResponseBuffer response, String fiFile, GenericFeatureCollection col,
+                                     GetFeatureInfo fi )
                             throws UnsupportedEncodingException, IOException {
         PrintWriter out = new PrintWriter( new OutputStreamWriter( response.getOutputStream(), "UTF-8" ) );
 
@@ -680,15 +689,31 @@ public class WMSController extends AbstractOWS {
     }
 
     protected void getMap( Map<String, String> map, HttpResponseBuffer response, Version version )
-                            throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
-        GetMap gm = new GetMap( map, version, service );
-        if ( securityManager != null ) {
-            gm = securityManager.preprocess( gm, OGCFrontController.getContext().getCredentials() );
+                            throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue,
+                            org.deegree.protocol.ows.exception.OWSException {
+
+        if ( service.isNewStyle() ) {
+            System.out.println(service.getThemes());
+            org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version );
+
+            RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(),
+                                                    gm2.getTransparent(), gm2.getBgColor(), gm2.getBoundingBox(),
+                                                    gm2.getPixelSize() );
+            RenderContext ctx = new DefaultRenderContext( info );
+            ctx.setOutput( response.getOutputStream() );
+            service.getMapImage( ctx, info, gm2.getLayers() );
+            ctx.close();
+        } else {
+            GetMap gm = new GetMap( map, version, service );
+            checkGetMap( version, gm );
+
+            if ( securityManager != null ) {
+                gm = securityManager.preprocess( gm, OGCFrontController.getContext().getCredentials() );
+            }
+            final Pair<BufferedImage, LinkedList<String>> pair = service.getMapImage( gm );
+            addHeaders( response, pair.second );
+            sendImage( pair.first, response, gm.getFormat() );
         }
-        checkGetMap( version, gm );
-        final Pair<BufferedImage, LinkedList<String>> pair = service.getMapImage( gm );
-        addHeaders( response, pair.second );
-        sendImage( pair.first, response, gm.getFormat() );
     }
 
     private void checkGetFeatureInfo( GetFeatureInfo gfi )

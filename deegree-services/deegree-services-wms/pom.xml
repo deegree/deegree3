@@ -73,6 +73,11 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-theme</artifactId>
+      <version>3.1-pre13-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-simplesql</artifactId>
       <version>3.1-pre13-SNAPSHOT</version>
     </dependency>

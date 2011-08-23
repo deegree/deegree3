@@ -43,7 +43,8 @@
         </element>
         <!-- if set, it will be checked upon startup if metadata ids for layers actually exist -->
         <element name="MetadataStoreId" type="string" minOccurs="0" />
-        <!-- if set, this base URL will be used for generating MetadataURL elements for layers (default is to use an internal CSW if available) -->
+        <!-- if set, this base URL will be used for generating MetadataURL elements for layers (default is to use an internal 
+          CSW if available) -->
         <element name="MetadataServiceURL" minOccurs="0" type="string" />
         <element name="ServiceConfiguration" type="wms:ServiceConfigurationType" />
         <element name="FeatureInfoFormats" minOccurs="0" type="wms:FeatureInfoFormatsType" />
@@ -55,7 +56,10 @@
   <complexType name="ServiceConfigurationType">
     <sequence>
       <element name="DefaultLayerOptions" type="wms:LayerOptionsType" minOccurs="0" />
-      <element ref="wms:AbstractLayer" minOccurs="0" />
+      <choice>
+        <element name="ThemeId" type="string" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="wms:AbstractLayer" minOccurs="0" />
+      </choice>
     </sequence>
   </complexType>
 
@@ -312,13 +316,13 @@
     <restriction base="string">
       <enumeration value="1.1.1" />
       <enumeration value="1.3.0" />
-			<!-- enumeration value="2.0.0" / -->
+      <!-- enumeration value="2.0.0" / -->
     </restriction>
   </simpleType>
 
-	<!-- ========================================================== -->
+  <!-- ========================================================== -->
   <element name="Keywords" type="wms:KeywordsType" />
-	<!-- ========================================================== -->
+  <!-- ========================================================== -->
   <complexType name="KeywordsType">
     <annotation>
       <documentation>
@@ -346,7 +350,7 @@
         complex information that
         could
         be referenced by the codeSpace attribute of the Type element.
-			</documentation>
+      </documentation>
     </annotation>
     <sequence>
       <element name="Keyword" type="wms:LanguageStringType" maxOccurs="unbounded" />

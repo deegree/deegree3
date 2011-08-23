@@ -52,6 +52,7 @@ import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.theme.persistence.ThemeManager;
 
 /**
  * 
@@ -96,12 +97,12 @@ public class WMSProvider implements OWSProvider {
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { RemoteOWSStoreManager.class, FeatureStoreManager.class, CoverageBuilderManager.class,
-                            MetadataStoreManager.class, StyleStoreManager.class };
+                            MetadataStoreManager.class, StyleStoreManager.class, ThemeManager.class };
     }
 
     @Override
     public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub
-
+        // nothing to do
     }
+
 }
