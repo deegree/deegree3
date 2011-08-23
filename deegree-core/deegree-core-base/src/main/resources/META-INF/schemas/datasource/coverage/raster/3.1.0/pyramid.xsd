@@ -13,7 +13,7 @@
   <element name="Pyramid">
     <complexType>
       <sequence>
-        <element name="PyramidFile" type="string" maxOccurs="unbounded" />
+        <element name="PyramidFile" type="string" />
       </sequence>
       <attribute name="nodata" type="decimal" />
       <attribute name="configVersion" use="required" fixed="3.1.0" />
