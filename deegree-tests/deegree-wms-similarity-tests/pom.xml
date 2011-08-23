@@ -3,10 +3,10 @@
   <artifactId>deegree-wms-similarity-tests</artifactId>
   <packaging>war</packaging>
   <name>deegree-wms-similarity-tests</name>
-  
+
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-services-tests</artifactId>
+    <artifactId>deegree-tests</artifactId>
     <version>3.1-pre13-SNAPSHOT</version>
   </parent>
 
