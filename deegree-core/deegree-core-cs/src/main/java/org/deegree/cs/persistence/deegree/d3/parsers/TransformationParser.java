@@ -38,8 +38,8 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValue;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsDouble;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValue;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -59,7 +59,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -199,8 +199,8 @@ public class TransformationParser extends DefinitionParser {
 
         CRSResource identifiable = parseIdentifiable( reader );
 
-        String sourceCRS = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "SourceCRS" ), true );
-        String targetCRS = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "TargetCRS" ), true );
+        String sourceCRS = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "SourceCRS" ), true );
+        String targetCRS = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "TargetCRS" ), true );
 
         ICRS src = getStore().getCRSByCode( new CRSCodeType( sourceCRS ) );
         ICRS tar = getStore().getCRSByCode( new CRSCodeType( targetCRS ) );
@@ -305,7 +305,7 @@ public class TransformationParser extends DefinitionParser {
         List<Double> bValues = new LinkedList<Double>();
         String tmpValues = null;
         try {
-            tmpValues = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "XParameters" ), true );
+            tmpValues = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "XParameters" ), true );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( e );
         }
@@ -317,7 +317,7 @@ public class TransformationParser extends DefinitionParser {
             }
         }
         try {
-            tmpValues = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "YParameters" ), true );
+            tmpValues = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "YParameters" ), true );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( e );
         }
@@ -360,8 +360,8 @@ public class TransformationParser extends DefinitionParser {
                             throws XMLStreamException {
         URL gridFile = null;
         try {
-            String file = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "Gridfile" ), true );
-            gridFile = StAXParsingHelper.resolve( file, reader );
+            String file = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "Gridfile" ), true );
+            gridFile = XMLStreamUtils.resolve( file, reader );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( e );
         } catch ( MalformedURLException e ) {

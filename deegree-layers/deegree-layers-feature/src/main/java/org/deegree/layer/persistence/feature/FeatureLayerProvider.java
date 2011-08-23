@@ -41,7 +41,7 @@
 package org.deegree.layer.persistence.feature;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 
 import java.net.URL;
 import java.util.ArrayList;

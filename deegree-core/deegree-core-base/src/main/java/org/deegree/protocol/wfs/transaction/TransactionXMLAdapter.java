@@ -39,11 +39,11 @@ package org.deegree.protocol.wfs.transaction;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValue;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsQName;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQName;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.requireNextTag;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValue;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsQName;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsQName;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
@@ -57,7 +57,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
@@ -423,10 +423,10 @@ public class TransactionXMLAdapter {
         String handle = xmlStream.getAttributeValue( null, "handle" );
 
         // required: '@vendorId'
-        String vendorId = StAXParsingHelper.getRequiredAttributeValue( xmlStream, "vendorId" );
+        String vendorId = XMLStreamUtils.getRequiredAttributeValue( xmlStream, "vendorId" );
 
         // required: '@safeToIgnore'
-        boolean safeToIgnore = StAXParsingHelper.getRequiredAttributeValueAsBoolean( xmlStream, null, "safeToIgnore" );
+        boolean safeToIgnore = XMLStreamUtils.getRequiredAttributeValueAsBoolean( xmlStream, null, "safeToIgnore" );
         return new Native( handle, vendorId, safeToIgnore, xmlStream );
     }
 }

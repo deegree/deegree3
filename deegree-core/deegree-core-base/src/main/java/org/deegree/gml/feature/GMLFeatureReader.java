@@ -49,12 +49,13 @@ import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
-import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLECTION;
-import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML321_FEATURECOLLECTION;
-import static org.deegree.gml.feature.schema.DefaultGMLTypes.WFS110_FEATURECOLLECTION;
+import static org.deegree.gml.feature.schema.WellKnownGMLTypes.GML311_FEATURECOLLECTION;
+import static org.deegree.gml.feature.schema.WellKnownGMLTypes.GML321_FEATURECOLLECTION;
+import static org.deegree.gml.feature.schema.WellKnownGMLTypes.WFS110_FEATURECOLLECTION;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -87,8 +88,8 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -168,51 +169,23 @@ public class GMLFeatureReader extends XMLAdapter {
      * @param version
      *            GML version, must not be <code>null</code>
      * @param schema
-     *            application schema that defines the feature types, must not be <code>null</code>
+     *            application schema that defines the feature types, can be <code>null</code>. If <code>null</code>, the
+     *            <code>xsi:schemaLocation</code> attribute is used to construct the schema. If this doesn't exist
+     *            either, the parser falls back to dynamic feature type generation from the input GML.
      * @param idContext
      *            id context to be used for registering gml:ids (features and geometries) and resolving local xlinks,
      *            can be <code>null</code>
      * @param defaultCoordDim
-     *            defaultValue for coordinate dimension, only used when a posList is parsed and no dimension information
-     *            from CRS is available (unknown CRS)
-     */
-    public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext, int defaultCoordDim ) {
-        this.schema = schema;
-        this.geomFac = new GeometryFactory();
-        this.idContext = idContext != null ? idContext : new GMLDocumentIdContext( version );
-        if ( version.equals( GMLVersion.GML_2 ) ) {
-            this.geomReader = new GML2GeometryReader( geomFac, idContext );
-        } else {
-            this.geomReader = new GML3GeometryReader( version, geomFac, idContext, defaultCoordDim );
-        }
-        this.version = version;
-        if ( version.equals( GMLVersion.GML_32 ) ) {
-            gmlNs = CommonNamespaces.GML3_2_NS;
-        } else {
-            gmlNs = CommonNamespaces.GMLNS;
-        }
-    }
-
-    /**
-     * Creates a new {@link GMLFeatureReader} instance that is configured for building features with the specified
-     * feature types.
-     * 
-     * @param version
-     *            GML version, must not be <code>null</code>
-     * @param schema
-     *            application schema that defines the feature types, must not be <code>null</code>
-     * @param idContext
-     *            id context to be used for registering gml:ids (features and geometries and resolving local xlinks and
-     * @param defaultCoordDim
-     *            defaultValue for coordinate dimension, only used when a posList is parsed and no dimension information
-     *            from CRS is available (unknown CRS) *
+     *            defaultValue for coordinate dimension, only used when a gml:posList is parsed and no dimension
+     *            information from CRS is available (unknown CRS)
      * @param resolver
+     *            used for resolving xlink-references, can be <code>null</code>
      */
     public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext, int defaultCoordDim,
                              GMLReferenceResolver resolver ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
-        this.idContext = idContext;
+        this.idContext = idContext != null ? idContext : new GMLDocumentIdContext( version );
         this.specialResolver = resolver;
         if ( version.equals( GMLVersion.GML_2 ) ) {
             this.geomReader = new GML2GeometryReader( geomFac, idContext );
@@ -273,17 +246,14 @@ public class GMLFeatureReader extends XMLAdapter {
             schema = buildAppSchema( xmlStream );
         }
         if ( schema instanceof DynamicAppSchema ) {
-            throw new XMLParsingException(
-                                           "Parsing GML features without application schema is currently not supported." );
-            // return parseFeature( xmlStream, crs, (DynamicAppSchema) schema );
+            return parseFeatureDynamic( xmlStream, crs, (DynamicAppSchema) schema );
         }
         return parseFeatureStatic( xmlStream, crs );
     }
 
-    private Feature parseFeature( XMLStreamReaderWrapper xmlStream, ICRS crs, DynamicAppSchema appSchema )
+    private Feature parseFeatureDynamic( XMLStreamReaderWrapper xmlStream, ICRS crs, DynamicAppSchema appSchema )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        Feature feature = null;
         String fid = parseFeatureId( xmlStream );
 
         if ( LOG.isDebugEnabled() ) {
@@ -291,52 +261,115 @@ public class GMLFeatureReader extends XMLAdapter {
         }
 
         QName featureName = xmlStream.getName();
-        DynamicFeatureType ft = appSchema.getFeatureType( featureName );
+        FeatureType ft = lookupFeatureType( xmlStream, featureName, false );
         if ( ft == null ) {
             LOG.debug( "- adding feature type '" + featureName + "'" );
             ft = appSchema.addFeatureType( featureName );
+        } else {
+            LOG.debug( "- found feature type '" + featureName + "'" );
         }
 
         int propOccurences = 0;
         ICRS activeCRS = crs;
-        List<Property> propList = new ArrayList<Property>();
+        List<Property> props = new ArrayList<Property>();
         PropertyType lastPropDecl = null;
 
-        xmlStream.nextTag();
+        nextElement( xmlStream );
 
         while ( xmlStream.getEventType() == START_ELEMENT ) {
             QName propName = xmlStream.getName();
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "- property '" + propName + "'" );
+            LOG.debug( "- property '" + propName + "'" );
 
-                PropertyType propDecl = ft.getPropertyDeclaration( propName );
-                if ( propName == null ) {
-                    // propDecl = next
-                }
+            Property property = null;
+            PropertyType propDecl = ft.getPropertyDeclaration( propName );
+            if ( propDecl == null ) {
+                property = parsePropertyDynamic( propName, xmlStream, activeCRS, ft, lastPropDecl, appSchema );
+                propDecl = property.getType();
+            } else {
+                property = parseProperty( xmlStream, propDecl, activeCRS, propOccurences );
+            }
 
-                Property property = parseProperty( xmlStream, findConcretePropertyType( propName, propDecl ),
-                                                   activeCRS, propOccurences );
-                if ( property != null ) {
-                    // if this is the "gml:boundedBy" property, override active CRS
-                    // (see GML spec. (where???))
-                    if ( PT_BOUNDED_BY_GML31.getName().equals( propDecl.getName() )
-                         || PT_BOUNDED_BY_GML32.getName().equals( propDecl.getName() ) ) {
-                        Envelope bbox = (Envelope) property.getValue();
-                        if ( bbox.getCoordinateSystem() != null ) {
-                            activeCRS = bbox.getCoordinateSystem();
-                            LOG.debug( "- crs (from boundedBy): '" + activeCRS + "'" );
-                        }
+            if ( property != null ) {
+                // if this is the "gml:boundedBy" property, override active CRS
+                // (see GML spec. (where???))
+                if ( PT_BOUNDED_BY_GML31.getName().equals( propDecl.getName() )
+                     || PT_BOUNDED_BY_GML32.getName().equals( propDecl.getName() ) ) {
+                    Envelope bbox = (Envelope) property.getValue();
+                    if ( bbox.getCoordinateSystem() != null ) {
+                        activeCRS = bbox.getCoordinateSystem();
+                        LOG.debug( "- crs (from boundedBy): '" + activeCRS + "'" );
                     }
-
-                    propList.add( property );
                 }
-                propOccurences++;
-                xmlStream.nextTag();
+
+                props.add( property );
+            }
+
+            xmlStream.nextTag();
+            if ( lastPropDecl != propDecl ) {
                 lastPropDecl = propDecl;
+                propOccurences = 1;
+            } else {
+                propOccurences++;
             }
         }
 
-        return feature;
+        return ft.newFeature( fid, props, null, version );
+    }
+
+    private Property parsePropertyDynamic( QName propName, XMLStreamReaderWrapper xmlStream, ICRS activeCRS,
+                                           FeatureType ft, PropertyType lastPropDecl, DynamicAppSchema appSchema )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+
+        Map<QName, String> propAttributes = XMLStreamUtils.getAttributes( xmlStream );
+        StringBuffer text = new StringBuffer();
+        QName childElName = null;
+        xmlStream.next();
+        while ( !xmlStream.isStartElement() && !xmlStream.isEndElement() ) {
+            if ( xmlStream.isCharacters() ) {
+                text.append( xmlStream.getText() );
+            }
+            xmlStream.next();
+        }
+        if ( xmlStream.isStartElement() ) {
+            childElName = xmlStream.getName();
+        }
+
+        PropertyType propDecl = null;
+        if ( xmlStream.isEndElement() ) {
+            LOG.debug( "Detected simple property '" + propName + "'." );
+            if ( propAttributes.containsKey( new QName( XLNNS, "href" ) ) ) {
+                String msg = "Detected property element with 'xlink:href' attribute. This implies a "
+                             + "referenced object, but parsing this is currently not implemented in "
+                             + "dynamic schema mode. Please specify the schema location.";
+                throw new XMLParsingException( xmlStream, msg );
+            } else {
+                propDecl = ( (DynamicFeatureType) ft ).addSimplePropertyDeclaration( lastPropDecl, propName );
+            }
+        } else {
+            if ( geomReader.isGeometryElement( xmlStream ) ) {
+                LOG.debug( "Detected geometry property '" + propName + "'." );
+                propDecl = ( (DynamicFeatureType) ft ).addGeometryPropertyDeclaration( lastPropDecl, propName );
+            } else {
+                LOG.debug( "Detected complex non-geometry property '" + propName + "'. Treating as feature property." );
+                FeatureType valueFt = schema.getFeatureType( childElName );
+                if ( valueFt == null ) {
+                    valueFt = appSchema.addFeatureType( childElName );
+                }
+                propDecl = ( (DynamicFeatureType) ft ).addFeaturePropertyDeclaration( lastPropDecl, propName, valueFt );
+            }
+        }
+
+        TypedObjectNode value = null;
+        if ( propDecl instanceof SimplePropertyType ) {
+            value = new PrimitiveValue( text.toString(), new PrimitiveType( STRING ) );
+        } else if ( propDecl instanceof GeometryPropertyType ) {
+            value = geomReader.parse( xmlStream, activeCRS );
+            XMLStreamUtils.nextElement( xmlStream );
+        } else if ( propDecl instanceof FeaturePropertyType ) {
+            value = parseFeatureDynamic( xmlStream, activeCRS, appSchema );
+            XMLStreamUtils.nextElement( xmlStream );
+        }
+        return new GenericProperty( propDecl, value );
     }
 
     private Feature parseFeatureStatic( XMLStreamReaderWrapper xmlStream, ICRS crs )
@@ -346,7 +379,7 @@ public class GMLFeatureReader extends XMLAdapter {
         String fid = parseFeatureId( xmlStream );
 
         QName featureName = xmlStream.getName();
-        FeatureType ft = lookupFeatureType( xmlStream, featureName );
+        FeatureType ft = lookupFeatureType( xmlStream, featureName, true );
 
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
@@ -469,7 +502,7 @@ public class GMLFeatureReader extends XMLAdapter {
         }
         String fid = parseFeatureId( xmlStream );
         QName featureName = xmlStream.getName();
-        FeatureCollectionType ft = (FeatureCollectionType) lookupFeatureType( xmlStream, featureName );
+        FeatureCollectionType ft = (FeatureCollectionType) lookupFeatureType( xmlStream, featureName, true );
         return new GMLStreamFeatureCollection( fid, ft, this, xmlStream, crs );
     }
 
@@ -591,7 +624,7 @@ public class GMLFeatureReader extends XMLAdapter {
         if ( attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue() ) {
             property = new GenericProperty( propDecl, propName, null, true );
             // TODO need to check that element is indeed empty?
-            StAXParsingHelper.nextElement( xmlStream );
+            XMLStreamUtils.nextElement( xmlStream );
         } else {
             property = createSimpleProperty( xmlStream, propDecl, xmlStream.getElementText().trim() );
         }
@@ -617,7 +650,7 @@ public class GMLFeatureReader extends XMLAdapter {
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
             values.add( refFeature );
             property = new GenericProperty( propDecl, propName, refFeature, attrs, values );
-            StAXParsingHelper.skipElement( xmlStream );
+            XMLStreamUtils.skipElement( xmlStream );
         } else {
             // inline feature
             if ( xmlStream.nextTag() == START_ELEMENT ) {
@@ -625,7 +658,7 @@ public class GMLFeatureReader extends XMLAdapter {
                 // type) better
                 if ( propDecl.getFTName() != null ) {
                     FeatureType expectedFt = propDecl.getValueFt();
-                    FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
+                    FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName(), true );
                     if ( !schema.isSubType( expectedFt, presentFt ) ) {
                         String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE", expectedFt.getName(),
                                                           propName, presentFt.getName() );
@@ -664,7 +697,7 @@ public class GMLFeatureReader extends XMLAdapter {
             }
             idContext.addReference( refGeometry );
             property = new GenericProperty( propDecl, propName, refGeometry, isNilled );
-            StAXParsingHelper.skipElement( xmlStream );
+            XMLStreamUtils.skipElement( xmlStream );
         } else {
             if ( xmlStream.nextTag() == START_ELEMENT ) {
                 Geometry geometry = geomReader.parse( xmlStream, crs );
@@ -702,11 +735,11 @@ public class GMLFeatureReader extends XMLAdapter {
         xmlStream.nextTag();
         if ( xmlStream.getName().equals( new QName( gmlNs, "Null" ) ) ) {
             // TODO extract
-            StAXParsingHelper.skipElement( xmlStream );
+            XMLStreamUtils.skipElement( xmlStream );
         } else if ( xmlStream.getName().equals( new QName( gmlNs, "null" ) ) ) {
             // GML 2 uses "null" instead of "Null"
             // TODO
-            StAXParsingHelper.skipElement( xmlStream );
+            XMLStreamUtils.skipElement( xmlStream );
         } else {
             env = geomReader.parseEnvelope( xmlStream, crs );
             property = new GenericProperty( propDecl, propName, env, isNilled );
@@ -756,11 +789,11 @@ public class GMLFeatureReader extends XMLAdapter {
         QName propName = xmlStream.getName();
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
         boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
-        StAXParsingHelper.nextElement( xmlStream );
+        XMLStreamUtils.nextElement( xmlStream );
         while ( !xmlStream.isEndElement() ) {
             Feature elem = parseFeature( xmlStream, crs );
             elems.add( elem );
-            StAXParsingHelper.nextElement( xmlStream );
+            XMLStreamUtils.nextElement( xmlStream );
         }
         Feature[] elemArray = elems.toArray( new Feature[elems.size()] );
         TypedObjectNodeArray<Feature> value = new TypedObjectNodeArray<Feature>( elemArray );
@@ -892,7 +925,7 @@ public class GMLFeatureReader extends XMLAdapter {
             break;
         }
         case CONTENTTYPE_EMPTY: {
-            if ( StAXParsingHelper.nextElement( xmlStream ) != END_ELEMENT ) {
+            if ( XMLStreamUtils.nextElement( xmlStream ) != END_ELEMENT ) {
                 throw new XMLParsingException( xmlStream, "Empty element types don't allow content." );
             }
             break;
@@ -1042,7 +1075,7 @@ public class GMLFeatureReader extends XMLAdapter {
      * @throws XMLParsingException
      *             if no feature type with the given name is defined
      */
-    protected FeatureType lookupFeatureType( XMLStreamReaderWrapper xmlStreamReader, QName ftName )
+    private FeatureType lookupFeatureType( XMLStreamReaderWrapper xmlStreamReader, QName ftName, boolean exception )
                             throws XMLParsingException {
 
         FeatureType ft = null;
@@ -1058,8 +1091,10 @@ public class GMLFeatureReader extends XMLAdapter {
             if ( ftName.equals( WFS110_FEATURECOLLECTION.getName() ) ) {
                 return WFS110_FEATURECOLLECTION;
             }
-            String msg = Messages.getMessage( "ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName );
-            throw new XMLParsingException( xmlStreamReader, msg );
+            if ( exception ) {
+                String msg = Messages.getMessage( "ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName );
+                throw new XMLParsingException( xmlStreamReader, msg );
+            }
         }
         return ft;
     }

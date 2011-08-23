@@ -60,7 +60,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -339,7 +339,7 @@ public class ISORecord implements MetadataRecord {
                             throws XMLStreamException {
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
         XMLStreamReader xmlStream = root.getXMLStreamReader();
-        StAXParsingHelper.skipStartDocument( xmlStream );
+        XMLStreamUtils.skipStartDocument( xmlStream );
         return xmlStream;
     }
 
@@ -383,19 +383,19 @@ public class ISORecord implements MetadataRecord {
 
         switch ( returnType ) {
         case brief:
-            StAXParsingHelper.skipStartDocument( xmlStream );
+            XMLStreamUtils.skipStartDocument( xmlStream );
             toISOBrief( writer, xmlStream );
             break;
         case summary:
-            StAXParsingHelper.skipStartDocument( xmlStream );
+            XMLStreamUtils.skipStartDocument( xmlStream );
             toISOSummary( writer, xmlStream );
             break;
         case full:
-            StAXParsingHelper.skipStartDocument( xmlStream );
+            XMLStreamUtils.skipStartDocument( xmlStream );
             XMLAdapter.writeElement( writer, xmlStream );
             break;
         default:
-            StAXParsingHelper.skipStartDocument( xmlStream );
+            XMLStreamUtils.skipStartDocument( xmlStream );
             toISOSummary( writer, xmlStream );
             break;
         }

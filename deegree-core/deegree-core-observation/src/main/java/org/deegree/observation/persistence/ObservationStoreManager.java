@@ -59,7 +59,7 @@ import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,7 +188,7 @@ public class ObservationStoreManager extends AbstractBasicResourceManager implem
         String namespace = null;
         try {
             XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( url.openStream() );
-            StAXParsingHelper.nextElement( xmlReader );
+            XMLStreamUtils.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
         } catch ( Exception e ) {
             String msg = "Error determining configuration namespace for file '" + url + "'";

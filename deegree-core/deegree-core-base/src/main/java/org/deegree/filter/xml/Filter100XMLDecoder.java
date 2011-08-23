@@ -38,11 +38,11 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.requireNextTag;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 
 import java.util.ArrayList;
 import java.util.HashMap;

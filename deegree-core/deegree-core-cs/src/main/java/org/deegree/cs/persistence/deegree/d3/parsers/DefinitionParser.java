@@ -38,9 +38,9 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getSimpleUnboundedAsStrings;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.moveReaderToFirstMatch;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getSimpleUnboundedAsStrings;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -60,7 +60,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -203,7 +203,7 @@ public abstract class DefinitionParser {
                 this.configReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.toExternalForm(),
                                                                                          this.configStream );
                 // move from start document.
-                StAXParsingHelper.nextElement( configReader );
+                XMLStreamUtils.nextElement( configReader );
                 if ( !expectedRootName().equals( configReader.getName() ) ) {
                     LOG.error( "The root element of the crs configuration at location: " + configURL
                                + " is not the expected: " + expectedRootName() + " is your configuration correct?" );
@@ -243,9 +243,9 @@ public abstract class DefinitionParser {
         }
         try {
             if ( required ) {
-                unitId = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "Units" ), true );
+                unitId = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "Units" ), true );
             } else {
-                unitId = StAXParsingHelper.getText( reader, new QName( CRS_NS, "Units" ), null, true );
+                unitId = XMLStreamUtils.getText( reader, new QName( CRS_NS, "Units" ), null, true );
                 if ( unitId == null ) {
                     return null;
                 }
@@ -304,8 +304,8 @@ public abstract class DefinitionParser {
                             throws XMLStreamException {
         double result = defaultValue;
         if ( reader.isStartElement() && qName.equals( reader.getName() ) ) {
-            boolean inDegrees = StAXParsingHelper.getAttributeValueAsBoolean( reader, null, "inDegrees", true );
-            result = StAXParsingHelper.getElementTextAsDouble( reader, qName, defaultValue, true );
+            boolean inDegrees = XMLStreamUtils.getAttributeValueAsBoolean( reader, null, "inDegrees", true );
+            result = XMLStreamUtils.getElementTextAsDouble( reader, qName, defaultValue, true );
             result = ( !Double.isNaN( result ) && result != 0 && inDegrees ) ? Math.toRadians( result ) : result;
         } else {
             if ( required ) {
@@ -326,7 +326,7 @@ public abstract class DefinitionParser {
      */
     public boolean moveReaderToNextIdentifiable( XMLStreamReader reader, Set<QName> allowedElements )
                             throws XMLStreamException {
-        return StAXParsingHelper.moveReaderToFirstMatch( reader, allowedElements );
+        return XMLStreamUtils.moveReaderToFirstMatch( reader, allowedElements );
     }
 
     /**

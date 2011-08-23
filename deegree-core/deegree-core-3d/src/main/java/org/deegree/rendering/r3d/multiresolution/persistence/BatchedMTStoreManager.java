@@ -61,7 +61,7 @@ import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,7 +176,7 @@ public class BatchedMTStoreManager extends AbstractBasicResourceManager {
         String namespace = null;
         try {
             XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
-            StAXParsingHelper.nextElement( xmlReader );
+            XMLStreamUtils.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
         } catch ( Exception e ) {
             String msg = "Error determining configuration namespace for file '" + configURL + "'";

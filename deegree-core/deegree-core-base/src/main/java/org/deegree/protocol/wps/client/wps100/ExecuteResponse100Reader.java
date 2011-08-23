@@ -55,7 +55,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
@@ -154,10 +154,10 @@ public class ExecuteResponse100Reader {
 
         List<ExecutionOutput> outputs = new ArrayList<ExecutionOutput>();
         try {
-            StAXParsingHelper.nextElement( reader );
+            XMLStreamUtils.nextElement( reader );
             while ( START_ELEMENT == reader.getEventType() && "Output".equals( reader.getName().getLocalPart() ) ) {
                 ExecutionOutput output = null;
-                StAXParsingHelper.nextElement( reader );
+                XMLStreamUtils.nextElement( reader );
                 CodeType id = parseIdentifier();
 
                 int eventType;
@@ -176,16 +176,16 @@ public class ExecuteResponse100Reader {
                     String mimeType = attribs.getMimeType();
                     output = new ComplexOutput( id, new URL( href ), mimeType, attribs.getEncoding(),
                                                 attribs.getSchema() );
-                    StAXParsingHelper.nextElement( reader );
+                    XMLStreamUtils.nextElement( reader );
                 }
                 if ( reader.getName().getLocalPart().equals( "Data" ) ) {
                     output = parseOutput( id );
-                    StAXParsingHelper.nextElement( reader );
+                    XMLStreamUtils.nextElement( reader );
                 }
 
                 outputs.add( output );
-                StAXParsingHelper.nextElement( reader ); // </Output>
-                StAXParsingHelper.nextElement( reader );
+                XMLStreamUtils.nextElement( reader ); // </Output>
+                XMLStreamUtils.nextElement( reader );
             }
         } catch ( MalformedURLException e ) {
             e.printStackTrace();
@@ -208,7 +208,7 @@ public class ExecuteResponse100Reader {
     private ExecutionOutput parseOutput( CodeType id )
                             throws XMLStreamException {
         ExecutionOutput dataType = null;
-        StAXParsingHelper.nextElement( reader );
+        XMLStreamUtils.nextElement( reader );
         String localName = reader.getName().getLocalPart();
         if ( "ComplexData".equals( localName ) ) {
             dataType = parseComplexOutput( id );
@@ -252,20 +252,20 @@ public class ExecuteResponse100Reader {
 
         String crs = reader.getAttributeValue( null, "crs" );
 
-        StAXParsingHelper.nextElement( reader ); // <LowerCorner>
+        XMLStreamUtils.nextElement( reader ); // <LowerCorner>
         String[] coordStr = reader.getElementText().split( "\\s" );
         double[] lower = new double[coordStr.length];
         for ( int i = 0; i < lower.length; i++ ) {
             lower[i] = Double.parseDouble( coordStr[i] );
         }
 
-        StAXParsingHelper.nextElement( reader ); // <UpperCorner>
+        XMLStreamUtils.nextElement( reader ); // <UpperCorner>
         coordStr = reader.getElementText().split( "\\s" );
         double[] upper = new double[coordStr.length];
         for ( int i = 0; i < upper.length; i++ ) {
             upper[i] = Double.parseDouble( coordStr[i] );
         }
-        StAXParsingHelper.nextElement( reader );
+        XMLStreamUtils.nextElement( reader );
         return new BBoxOutput( id, lower, upper, crs );
     }
 
@@ -291,12 +291,12 @@ public class ExecuteResponse100Reader {
                 fac.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
                 XMLStreamWriter xmlWriter = fac.createXMLStreamWriter( tmpSink, "UTF-8" );
 
-                StAXParsingHelper.nextElement( reader );
+                XMLStreamUtils.nextElement( reader );
 
                 xmlWriter.writeStartDocument( "UTF-8", "1.0" );
                 if ( reader.getEventType() == START_ELEMENT ) {
                     XMLAdapter.writeElement( xmlWriter, reader );
-                    StAXParsingHelper.nextElement( reader );
+                    XMLStreamUtils.nextElement( reader );
                 } else {
                     LOG.debug( "Response document contains empty complex data output '" + id + "'" );
                 }
@@ -370,7 +370,7 @@ public class ExecuteResponse100Reader {
             creationTime = attribute;
         }
 
-        StAXParsingHelper.nextElement( reader );
+        XMLStreamUtils.nextElement( reader );
         String localName = reader.getName().getLocalPart();
         if ( "ProcessAccepted".equals( localName ) ) {
             state = ExecutionState.ACCEPTED;
@@ -385,7 +385,7 @@ public class ExecuteResponse100Reader {
                 percent = Integer.parseInt( percentStr );
             }
             statusMsg = reader.getElementText();
-            StAXParsingHelper.nextElement( reader );
+            XMLStreamUtils.nextElement( reader );
         } else if ( "ProcessPaused".equals( localName ) ) {
             state = ExecutionState.PAUSED;
             String percentStr = reader.getAttributeValue( null, "percentCompleted" );
@@ -393,13 +393,13 @@ public class ExecuteResponse100Reader {
                 percent = Integer.parseInt( percentStr );
             }
             statusMsg = reader.getElementText();
-            StAXParsingHelper.nextElement( reader );
+            XMLStreamUtils.nextElement( reader );
         } else if ( "ProcessFailed".equals( localName ) ) {
             state = ExecutionState.FAILED;
-            StAXParsingHelper.nextElement( reader ); // ProcessFailed
+            XMLStreamUtils.nextElement( reader ); // ProcessFailed
             exceptionReport = OWSExceptionReader.parseException( reader );
         }
-        StAXParsingHelper.nextElement( reader ); // </Status>
+        XMLStreamUtils.nextElement( reader ); // </Status>
         return new ExecutionStatus( state, statusMsg, percent, creationTime, exceptionReport );
     }
 }

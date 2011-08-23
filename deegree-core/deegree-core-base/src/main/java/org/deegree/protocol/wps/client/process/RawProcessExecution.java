@@ -53,7 +53,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.client.WPSClient;
@@ -186,7 +186,7 @@ public class RawProcessExecution extends AbstractProcessExecution {
         String outputContent = conn.getContentType();
         if ( outputContent.startsWith( "text/xml" ) || outputContent.startsWith( "application/xml" ) ) {
             XMLStreamReader reader = inFactory.createXMLStreamReader( responseStream );
-            StAXParsingHelper.nextElement( reader );
+            XMLStreamUtils.nextElement( reader );
             if ( OWSExceptionReader.isException( reader ) ) {
                 throw OWSExceptionReader.parseException( reader );
             }

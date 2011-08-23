@@ -55,7 +55,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.slf4j.Logger;
 
 /**
@@ -185,7 +185,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         try {
             is = new FileInputStream( file );
             XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
-            StAXParsingHelper.nextElement( xmlReader );
+            XMLStreamUtils.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
             LOG.debug( "Config namespace: '" + namespace + "'" );
             xmlReader.close();

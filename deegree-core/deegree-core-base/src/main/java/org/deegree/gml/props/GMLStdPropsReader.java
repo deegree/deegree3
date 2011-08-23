@@ -50,7 +50,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.gml.GMLVersion;
 
 /**
@@ -205,7 +205,7 @@ public class GMLStdPropsReader {
 
     private Object readMetadataProperty( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        StAXParsingHelper.skipElement( xmlStream );
+        XMLStreamUtils.skipElement( xmlStream );
         // TODO
         return null;
     }

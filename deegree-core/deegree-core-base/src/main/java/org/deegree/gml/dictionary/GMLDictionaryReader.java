@@ -47,7 +47,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -142,7 +142,7 @@ public class GMLDictionaryReader {
             xmlStream.nextTag();
         }
 
-        StAXParsingHelper.require( xmlStream, END_ELEMENT );
+        XMLStreamUtils.require( xmlStream, END_ELEMENT );
         Dictionary def = new GenericDictionary( id, standardProps, members, isDefinitionCollection );
         idContext.addObject( def );
         return def;

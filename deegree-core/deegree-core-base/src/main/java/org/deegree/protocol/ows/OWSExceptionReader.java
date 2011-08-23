@@ -41,7 +41,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.exception.OWSException;
 
 /**
@@ -80,10 +80,10 @@ public class OWSExceptionReader {
         String locator = null;
         String message = null;
         try {
-            StAXParsingHelper.nextElement( reader ); // "ExceptionReport"
+            XMLStreamUtils.nextElement( reader ); // "ExceptionReport"
             code = reader.getAttributeValue( null, "exceptionCode" );
             locator = reader.getAttributeValue( null, "locator" );
-            StAXParsingHelper.nextElement( reader ); // "Exception"
+            XMLStreamUtils.nextElement( reader ); // "Exception"
             message = reader.getElementText();
         } catch ( XMLStreamException e ) {
             throw new RuntimeException( "Error parsing OWSExceptionReport: " + e.getMessage() );

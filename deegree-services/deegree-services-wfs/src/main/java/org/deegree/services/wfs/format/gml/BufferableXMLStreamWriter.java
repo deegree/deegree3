@@ -59,7 +59,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.gml.GMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,7 +191,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
         }
         close();
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( buffer.getInputStream(), "UTF-8" );
-        StAXParsingHelper.skipStartDocument( reader );
+        XMLStreamUtils.skipStartDocument( reader );
         return reader;
     }
 

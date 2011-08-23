@@ -102,7 +102,7 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
@@ -464,7 +464,7 @@ public class OGCFrontController extends HttpServlet {
                     XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId,
                                                                                                      requestInputStream );
                     // skip to start tag of root element
-                    StAXParsingHelper.nextElement( xmlStream );
+                    XMLStreamUtils.nextElement( xmlStream );
                     if ( isSOAPRequest( xmlStream ) ) {
                         dispatchSOAPRequest( xmlStream, request, response, multiParts );
                     } else {

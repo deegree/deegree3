@@ -68,7 +68,7 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -489,7 +489,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         XMLStreamWriter xmlWriter = null;
         try {
             xmlWriter = xmlOutputFactory.createXMLStreamWriter( store );
-            StAXParsingHelper.skipStartDocument( xmlReader );
+            XMLStreamUtils.skipStartDocument( xmlReader );
             XMLAdapter.writeElement( xmlWriter, xmlReader );
         } catch ( Throwable t ) {
             String msg = "Unable to extract embedded complex input: " + t.getMessage();

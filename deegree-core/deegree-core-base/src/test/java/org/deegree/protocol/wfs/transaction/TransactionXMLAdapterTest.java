@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.junit.Test;
@@ -111,7 +111,7 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( null, insert.getInputFormat() );
         assertEquals( null, insert.getSRSName() );
         XMLStreamReader xmlStream = insert.getFeatures();
-        StAXParsingHelper.skipElement( xmlStream );
+        XMLStreamUtils.skipElement( xmlStream );
         xmlStream.nextTag();
         assertFalse( iter.hasNext() );
     }
@@ -181,7 +181,7 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( null, insert.getSRSName() );
         XMLStreamReader xmlStream = insert.getFeatures();
         // contract: read until feature/featureCollection END_ELEMENT
-        StAXParsingHelper.skipElement( xmlStream );
+        XMLStreamUtils.skipElement( xmlStream );
         // contract: skip to wfs:Insert END_ELEMENT
         xmlStream.nextTag();
         // contract: skip to next operation

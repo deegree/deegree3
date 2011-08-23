@@ -53,6 +53,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -102,6 +103,7 @@ public class DynamicFeatureType implements FeatureType {
     public SimplePropertyType addSimplePropertyDeclaration( PropertyType pre, QName propName ) {
         SimplePropertyType pt = new SimplePropertyType( propName, 0, 1, STRING, null, null );
         props.add( props.indexOf( pre ) + 1, pt );
+        propNameToDecl.put( propName, pt );
         return pt;
     }
 
@@ -117,6 +119,25 @@ public class DynamicFeatureType implements FeatureType {
     public GeometryPropertyType addGeometryPropertyDeclaration( PropertyType pre, QName propName ) {
         GeometryPropertyType pt = new GeometryPropertyType( propName, 0, 1, null, null, GEOMETRY, DIM_2, BOTH );
         props.add( props.indexOf( pre ) + 1, pt );
+        propNameToDecl.put( propName, pt );
+        return pt;
+    }
+
+    /**
+     * Adds a new {@link FeaturePropertyType} declaration.
+     * 
+     * @param pre
+     *            predecessor property, can be <code>null</code>
+     * @param propName
+     *            property name, must not be <code>null</code>
+     * @param valueFt
+     *            value feature type, must not be <code>null</code>
+     * @return new (and added) property declaration, never <code>null</code>
+     */
+    public FeaturePropertyType addFeaturePropertyDeclaration( PropertyType pre, QName propName, FeatureType valueFt ) {
+        FeaturePropertyType pt = new FeaturePropertyType( propName, 0, 1, null, null, valueFt.getName(), BOTH );
+        props.add( props.indexOf( pre ) + 1, pt );
+        propNameToDecl.put( propName, pt );
         return pt;
     }
 
@@ -181,5 +202,15 @@ public class DynamicFeatureType implements FeatureType {
     @Override
     public AppSchema getSchema() {
         return appSchema;
+    }
+
+    @Override
+    public String toString() {
+        String s = "- Feature type '" + ftName + "'";
+        for ( QName ptName : propNameToDecl.keySet() ) {
+            PropertyType pt = propNameToDecl.get( ptName );
+            s += "\n" + pt;
+        }
+        return s;
     }
 }

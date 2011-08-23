@@ -83,7 +83,7 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -465,12 +465,12 @@ public class WFSController extends AbstractOWS {
             WFSRequestType requestType = getRequestTypeByName( requestName );
 
             // check if requested version is supported and offered (except for GetCapabilities)
-            requestVersion = getVersion( StAXParsingHelper.getAttributeValue( xmlStream, "version" ) );
+            requestVersion = getVersion( XMLStreamUtils.getAttributeValue( xmlStream, "version" ) );
             if ( requestType != WFSRequestType.GetCapabilities ) {
                 requestVersion = checkVersion( requestVersion );
 
                 // needed for CITE 1.1.0 compliance
-                String serviceAttr = StAXParsingHelper.getAttributeValue( xmlStream, "service" );
+                String serviceAttr = XMLStreamUtils.getAttributeValue( xmlStream, "service" );
                 if ( serviceAttr != null && !( "WFS".equals( serviceAttr ) || "".equals( serviceAttr ) ) ) {
                     throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'WFS'.",
                                             OWSException.INVALID_PARAMETER_VALUE, "service" );

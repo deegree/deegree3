@@ -54,7 +54,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.WPSConstants;
@@ -229,7 +229,7 @@ public class ProcessExecution extends AbstractProcessExecution {
             XMLInputFactory inFactory = XMLInputFactory.newInstance();
             InputStream is = statusLocation.openStream();
             XMLStreamReader xmlReader = inFactory.createXMLStreamReader( is );
-            StAXParsingHelper.nextElement( xmlReader );
+            XMLStreamUtils.nextElement( xmlReader );
             if ( OWSExceptionReader.isException( xmlReader ) ) {
                 throw OWSExceptionReader.parseException( xmlReader );
             }
@@ -371,7 +371,7 @@ public class ProcessExecution extends AbstractProcessExecution {
         // String outputContent = conn.getContentType();
         // TODO determine XML reader encoding based on mime type
         XMLStreamReader reader = inFactory.createXMLStreamReader( responseStream );
-        StAXParsingHelper.nextElement( reader );
+        XMLStreamUtils.nextElement( reader );
         if ( OWSExceptionReader.isException( reader ) ) {
             throw OWSExceptionReader.parseException( reader );
         }

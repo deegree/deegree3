@@ -46,7 +46,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.wps.client.param.ComplexFormat;
 
 /**
@@ -142,7 +142,7 @@ public class XMLInput extends ExecutionInput {
             reader = inFactory.createXMLStreamReader( url.openStream() );
         }
         if ( reader.getEventType() == XMLStreamConstants.START_DOCUMENT ) {
-            StAXParsingHelper.nextElement( reader );
+            XMLStreamUtils.nextElement( reader );
         }
         return reader;
     }

@@ -74,7 +74,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -460,11 +460,11 @@ class TransactionHandler {
                     }
                 } else {
                     LOG.debug( "Ignoring element '" + elName + "'" );
-                    StAXParsingHelper.skipElement( xmlStream );
+                    XMLStreamUtils.skipElement( xmlStream );
                 }
             } else {
                 LOG.debug( "Ignoring element '" + elName + "'" );
-                StAXParsingHelper.skipElement( xmlStream );
+                XMLStreamUtils.skipElement( xmlStream );
             }
         }
 
@@ -483,7 +483,7 @@ class TransactionHandler {
 
         XMLStreamReader xmlStream = nativeOp.getVendorSpecificData();
         try {
-            StAXParsingHelper.skipElement( xmlStream );
+            XMLStreamUtils.skipElement( xmlStream );
         } catch ( XMLStreamException e ) {
             String msg = "Error in native operation: " + e.getMessage();
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );

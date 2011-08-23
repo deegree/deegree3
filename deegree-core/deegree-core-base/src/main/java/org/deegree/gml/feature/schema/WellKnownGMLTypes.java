@@ -46,20 +46,23 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.types.FeatureCollectionType;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
- * <code>DefaultGMLTypes</code>
+ * Defines well-known {@link FeatureType}s from the GML / OGC core schemas to support GML processing without schema
+ * assistance.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DefaultGMLTypes {
+public class WellKnownGMLTypes {
 
     /**
      * 

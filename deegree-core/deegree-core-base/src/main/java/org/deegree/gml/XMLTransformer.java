@@ -55,7 +55,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.OutsideCRSDomainException;
 import org.deegree.cs.exceptions.TransformationException;
@@ -176,7 +176,7 @@ public class XMLTransformer extends GeometryTransformer {
         XMLStreamReader input = gmlReader.getXMLReader();
         int eventType = input.getEventType();
         if ( eventType == XMLStreamConstants.START_DOCUMENT ) {
-            StAXParsingHelper.nextElement( input );
+            XMLStreamUtils.nextElement( input );
         }
         eventType = input.getEventType();
         if ( input.getEventType() != XMLStreamConstants.START_ELEMENT ) {

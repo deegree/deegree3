@@ -62,7 +62,7 @@ import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -221,7 +221,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         String namespace = null;
         try {
             XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
-            StAXParsingHelper.nextElement( xmlReader );
+            XMLStreamUtils.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
         } catch ( Exception e ) {
             String msg = Messages.get( "CRSManager.CREATING_STORE_FAILED", configURL );

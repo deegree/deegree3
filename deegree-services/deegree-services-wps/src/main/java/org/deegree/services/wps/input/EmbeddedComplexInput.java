@@ -46,7 +46,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.io.StreamBufferStore;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class EmbeddedComplexInput extends ComplexInputImpl {
             } catch ( Throwable t ) {
                 throw new RuntimeException( t.getMessage() );
             }
-            StAXParsingHelper.skipStartDocument( xmlStream );
+            XMLStreamUtils.skipStartDocument( xmlStream );
             textValue = xmlStream.getElementText();
         } catch ( XMLStreamException e ) {
             LOG.error( e.getMessage(), e );
@@ -135,8 +135,8 @@ public class EmbeddedComplexInput extends ComplexInputImpl {
         } catch ( Throwable t ) {
             throw new RuntimeException( t.getMessage() );
         }
-        StAXParsingHelper.skipStartDocument( xmlReader );
-        StAXParsingHelper.nextElement( xmlReader );
+        XMLStreamUtils.skipStartDocument( xmlReader );
+        XMLStreamUtils.nextElement( xmlReader );
         return xmlReader;
     }
 
@@ -148,7 +148,7 @@ public class EmbeddedComplexInput extends ComplexInputImpl {
         } catch ( Throwable t ) {
             throw new RuntimeException( t.getMessage() );
         }
-        StAXParsingHelper.skipStartDocument( xmlReader );
+        XMLStreamUtils.skipStartDocument( xmlReader );
         return xmlReader;
     }
 

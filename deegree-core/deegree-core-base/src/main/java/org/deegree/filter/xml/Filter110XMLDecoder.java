@@ -39,11 +39,11 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.requireStartElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,7 +68,7 @@ import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPathUtils;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.Expression;
@@ -614,11 +614,11 @@ public class Filter110XMLDecoder {
 
         boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
 
-        StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
+        XMLStreamUtils.requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter1 = parseExpression( xmlStream );
-        StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
+        XMLStreamUtils.requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter2 = parseExpression( xmlStream );
-        StAXParsingHelper.requireNextTag( xmlStream, END_ELEMENT );
+        XMLStreamUtils.requireNextTag( xmlStream, END_ELEMENT );
 
         switch ( type ) {
         case PROPERTY_IS_EQUAL_TO:

@@ -36,8 +36,8 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredText;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredText;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 
 import java.io.IOException;
@@ -57,7 +57,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
@@ -214,7 +214,7 @@ public class CoordinateSystemParser extends DefinitionParser {
         List<Axis> confAxis = new ArrayList<Axis>();
         while ( new QName( CRS_NS, "Axis" ).equals( reader.getName() ) ) {
             // end tag Axis
-            StAXParsingHelper.nextElement( reader );
+            XMLStreamUtils.nextElement( reader );
             try {
                 confAxis.add( parseAxis( reader ) );
             } catch ( XMLParsingException e ) {
@@ -400,14 +400,14 @@ public class CoordinateSystemParser extends DefinitionParser {
         // get the datum
         Axis heightAxis = null;
         try {
-            StAXParsingHelper.skipRequiredElement( reader, new QName( CRS_NS, "HeightAxis" ) );
+            XMLStreamUtils.skipRequiredElement( reader, new QName( CRS_NS, "HeightAxis" ) );
             heightAxis = parseAxis( reader );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "HeightAxis",
                                                                       e.getLocalizedMessage() ), e );
         }
 
-        double defaultHeight = StAXParsingHelper.getElementTextAsDouble( reader, new QName( CRS_NS, "DefaultHeight" ),
+        double defaultHeight = XMLStreamUtils.getElementTextAsDouble( reader, new QName( CRS_NS, "DefaultHeight" ),
                                                                          0, true );
         // adding to cache will be done in AbstractCRSProvider.
         return new CompoundCRS( heightAxis, usedCoordinateSystem, defaultHeight, id );
@@ -459,7 +459,7 @@ public class CoordinateSystemParser extends DefinitionParser {
             confStream = url.openStream();
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( url.toExternalForm(),
                                                                                           confStream );
-            StAXParsingHelper.nextElement( reader );
+            XMLStreamUtils.nextElement( reader );
 
             CRS crs = parseCoordinateSystem( reader );
             while ( crs != null ) {

@@ -37,7 +37,7 @@ package org.deegree.services.wms.controller.sld;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.skipElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.ops.GetMap.parseDimensionValues;

@@ -63,7 +63,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
@@ -541,7 +541,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream(
                                                                                                               new File(
                                                                                                                         fileString ) ) );
-        StAXParsingHelper.skipStartDocument( xmlStream );
+        XMLStreamUtils.skipStartDocument( xmlStream );
         return xmlStream;
     }
 }

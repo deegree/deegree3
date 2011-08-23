@@ -38,7 +38,7 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsDouble;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -54,7 +54,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.IUnit;
@@ -140,10 +140,10 @@ public class ProjectionParser extends DefinitionParser {
         boolean tmercNorthern = true;
         if ( TMERC_ELEM.equals( projectionName ) ) {
             // change schema to let projection be identifiable. fix method geodetic
-            tmercNorthern = StAXParsingHelper.getAttributeValueAsBoolean( reader, null, "northernHemisphere", true );
+            tmercNorthern = XMLStreamUtils.getAttributeValueAsBoolean( reader, null, "northernHemisphere", true );
         }
         LOG.debug( "At element: " + projectionName );
-        String className = StAXParsingHelper.getAttributeValue( reader, "class" );
+        String className = XMLStreamUtils.getAttributeValue( reader, "class" );
 
         CRSResource id = parseIdentifiable( reader );
         // All projections will have following parameters
@@ -153,7 +153,7 @@ public class ProjectionParser extends DefinitionParser {
         double longitudeOfNaturalOrigin = parseLatLonType( reader, new QName( CRS_NS, "LongitudeOfNaturalOrigin" ),
                                                            false, 0 );
 
-        double scaleFactor = StAXParsingHelper.getElementTextAsDouble( reader, new QName( CRS_NS, "ScaleFactor" ), 1,
+        double scaleFactor = XMLStreamUtils.getElementTextAsDouble( reader, new QName( CRS_NS, "ScaleFactor" ), 1,
                                                                        true );
         double falseEasting = getElementTextAsDouble( reader, new QName( CRS_NS, "FalseEasting" ), 0, true );
         double falseNorthing = getElementTextAsDouble( reader, new QName( CRS_NS, "FalseNorthing" ), 0, true );

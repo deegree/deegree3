@@ -38,9 +38,9 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsDouble;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredElementTextAsDouble;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredElementTextAsDouble;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 

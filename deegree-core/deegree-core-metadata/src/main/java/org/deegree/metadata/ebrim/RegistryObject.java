@@ -53,7 +53,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
@@ -233,7 +233,7 @@ public class RegistryObject implements MetadataRecord {
             break;
         case full:
             XMLStreamReader xmlStream = adapter.getRootElement().getXMLStreamReader();
-            StAXParsingHelper.skipStartDocument( xmlStream );
+            XMLStreamUtils.skipStartDocument( xmlStream );
             XMLAdapter.writeElement( writer, xmlStream );
             break;
         default:
@@ -252,7 +252,7 @@ public class RegistryObject implements MetadataRecord {
                             throws XMLStreamException {
 
         XMLStreamReader inStream = adapter.getRootElement().getXMLStreamReader();
-        StAXParsingHelper.skipStartDocument( inStream );
+        XMLStreamUtils.skipStartDocument( inStream );
         if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
             throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
         }
@@ -297,7 +297,7 @@ public class RegistryObject implements MetadataRecord {
                 if ( RIM_NS.equals( elName.getNamespaceURI() ) && "VersionInfo".equals( elName.getLocalPart() ) ) {
                     XMLAdapter.writeElement( writer, inStream );
                 } else {
-                    StAXParsingHelper.skipElement( inStream );
+                    XMLStreamUtils.skipElement( inStream );
                 }
             }
         }
@@ -316,7 +316,7 @@ public class RegistryObject implements MetadataRecord {
                             throws XMLStreamException {
 
         XMLStreamReader inStream = adapter.getRootElement().getXMLStreamReader();
-        StAXParsingHelper.skipStartDocument( inStream );
+        XMLStreamUtils.skipStartDocument( inStream );
         if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
             throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
         }
@@ -364,7 +364,7 @@ public class RegistryObject implements MetadataRecord {
                         XMLAdapter.writeElement( writer, inStream );
                     }
                 } else {
-                    StAXParsingHelper.skipElement( inStream );
+                    XMLStreamUtils.skipElement( inStream );
                 }
             }
         }

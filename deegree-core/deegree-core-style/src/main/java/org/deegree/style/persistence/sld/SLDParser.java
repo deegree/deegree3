@@ -36,7 +36,7 @@
 package org.deegree.style.persistence.sld;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.skipElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 
 import java.util.HashMap;
 import java.util.LinkedList;

@@ -66,7 +66,7 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
@@ -153,7 +153,7 @@ public class TestWMSContentProviderTest {
         XMLStreamWriter xmlWriter = null;
         try {
             xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( store );
-            StAXParsingHelper.skipStartDocument( xmlReader );
+            XMLStreamUtils.skipStartDocument( xmlReader );
             XMLAdapter.writeElement( xmlWriter, xmlReader );
         } finally {
             try {

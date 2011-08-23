@@ -38,7 +38,7 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
-import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -49,7 +49,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.components.IEllipsoid;
@@ -130,7 +130,7 @@ public class DatumParser extends DefinitionParser {
         CRSResource id = parseIdentifiable( reader );
 
         // get the ellipsoid.
-        String ellipsID = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "UsedEllipsoid" ), true );
+        String ellipsID = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "UsedEllipsoid" ), true );
         if ( ellipsID == null || ellipsID.trim().length() == 0 ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_STAX_CONFIG_DATUM_HAS_NO_ELLIPSOID",
                                                                       reader.getLocation() ) );
@@ -138,7 +138,7 @@ public class DatumParser extends DefinitionParser {
         IEllipsoid ellipsoid = new EllipsoidRef( store.getResolver( RESOURCETYPE.ELLIPSOID ), '#' + ellipsID, null );
 
         // get the primemeridian if any.
-        String pMeridianID = StAXParsingHelper.getText( getConfigReader(), new QName( CRS_NS, "UsedPrimeMeridian" ),
+        String pMeridianID = XMLStreamUtils.getText( getConfigReader(), new QName( CRS_NS, "UsedPrimeMeridian" ),
                                                         null, true );
         IPrimeMeridian pMeridian = null;
         if ( pMeridianID != null && pMeridianID.trim().length() > 0 ) {
