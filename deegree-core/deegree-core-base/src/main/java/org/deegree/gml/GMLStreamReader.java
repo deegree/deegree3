@@ -59,10 +59,52 @@ import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
 
 /**
- * Stream-based reader for GML instance documents or GML fragments.
- * <p>
- * Instances of this class are not thread-safe.
- * </p>
+ * Stream-based reader for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
+ * 
+ * <h4>Initialization</h4> A {@link GMLStreamReader} always works on top of a {@link XMLStreamReader} instance. Use the
+ * methods provided in {@link GMLInputFactory} to create a {@link GMLStreamReader} instance.
+ * 
+ * <pre>
+ * ...
+ *   GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, new URL ("...") );
+ * ...
+ * </pre>
+ * 
+ * <h4>General usage</h4> After initialization, {@link #read()} is used to consume the next GML object element
+ * (geometry, feature, feature collection, etc.) from the stream and turn it into an object representation.
+ * 
+ * <pre>
+ * ...
+ *   GMLObject object = gmlReader.read();
+ * ...
+ * </pre>
+ * 
+ * It's vital that the underlying {@link XMLStreamReader} points to the <code>START_ELEMENT</code> event of the GML
+ * element to be read. After calling, the underlying {@link XMLStreamReader} will be positioned on the event after the
+ * corresponding <code>END_ELEMENT</code> event.
+ * 
+ * Depending on the actual element, a corresponding {@link GMLObject} instance will be created ({@link Geometry},
+ * {@link FeatureCollection}, {@link Feature}, etc.). In order to work with the object, it has to be cast to the
+ * concrete type. Alternatively (if one knows the type of element to be read beforehand), use on of the specific
+ * <code>read</code> methods to avoid the cast:
+ * 
+ * <pre>
+ * ...
+ *   Feature feature = gmlReader.readFeature();
+ * ...
+ * </pre>
+ * 
+ * <h4>Reading GML features/feature collections</h4> TODO
+ * 
+ * <h4>Specifying the application schema</h4> TODO
+ * 
+ * <h4>Streaming vs. non-streaming</h4> TODO
+ * 
+ * <h4>Reading other GML objects</h4> TODO
+ * 
+ * <h4>Advanced options</h4> ...
+ * 
+ * <h4>Notes</h4> Instances of this class are not thread-safe.
  * 
  * @see GMLObject
  * @see GMLInputFactory

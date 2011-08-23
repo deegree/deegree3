@@ -68,7 +68,7 @@ import org.deegree.gml.geometry.GMLGeometryWriter;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
- * Stream-based writer for GML instance documents or GML fragments.
+ * Stream-based writer for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
  * <p>
  * Instances of this class are not thread-safe.
  * </p>
@@ -140,6 +140,9 @@ public class GMLStreamWriter {
      */
     public void setOutputCRS( ICRS crs ) {
         this.crs = crs;
+        
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, new URL ("...") );
+        GMLObject object = gmlReader.read();
     }
 
     /**
