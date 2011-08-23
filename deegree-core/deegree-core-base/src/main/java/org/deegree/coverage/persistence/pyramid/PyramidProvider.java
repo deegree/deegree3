@@ -88,7 +88,7 @@ public class PyramidProvider implements CoverageBuilder {
         this.workspace = workspace;
     }
 
-    private ICRS getCRS( IIOMetadata metaData ) {
+    private static ICRS getCRS( IIOMetadata metaData ) {
         GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
         try {
             int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
@@ -128,35 +128,35 @@ public class PyramidProvider implements CoverageBuilder {
             }
 
             MultiResolutionRaster mrr = new MultiResolutionRaster();
-            for ( String file : config.getPyramidFile() ) {
-                ImageInputStream iis = ImageIO.createImageInputStream( new File( file ) );
-                reader.setInput( iis );
+            String file = config.getPyramidFile();
 
-                IIOMetadata md = reader.getStreamMetadata();
-                ICRS crs = getCRS( md );
+            ImageInputStream iis = ImageIO.createImageInputStream( new File( file ) );
+            reader.setInput( iis );
 
-                if ( reader instanceof GeoTiffImageReader ) {
-                    GeoTiffImageReader gt = (GeoTiffImageReader) reader;
-                    String proj = gt.getProjection( 0 );
-                    crs = WKTParser.parse( proj );
-                }
+            IIOMetadata md = reader.getStreamMetadata();
+            ICRS crs = getCRS( md );
 
-                int num = reader.getNumImages( true );
-                iis.close();
-                for ( int i = 0; i < num; ++i ) {
-                    RasterIOOptions opts = new RasterIOOptions();
-                    opts.add( IMAGE_INDEX, "" + i );
-                    opts.add( OPT_FORMAT, "tif" );
-                    if ( crs != null ) {
-                        opts.add( CRS, crs.getAlias() );
-                    } else {
-                        opts.add( CRS, "EPSG:25832" );
-                    }
-                    AbstractRaster raster = RasterFactory.loadRasterFromFile( new File( file ), opts );
-                    mrr.addRaster( raster );
-                }
-                mrr.setCoordinateSystem( crs );
+            if ( reader instanceof GeoTiffImageReader ) {
+                GeoTiffImageReader gt = (GeoTiffImageReader) reader;
+                String proj = gt.getProjection( 0 );
+                crs = WKTParser.parse( proj );
             }
+
+            int num = reader.getNumImages( true );
+            iis.close();
+            for ( int i = 0; i < num; ++i ) {
+                RasterIOOptions opts = new RasterIOOptions();
+                opts.add( IMAGE_INDEX, "" + i );
+                opts.add( OPT_FORMAT, "tif" );
+                if ( crs != null ) {
+                    opts.add( CRS, crs.getAlias() );
+                } else {
+                    opts.add( CRS, "EPSG:25832" );
+                }
+                AbstractRaster raster = RasterFactory.loadRasterFromFile( new File( file ), opts );
+                mrr.addRaster( raster );
+            }
+            mrr.setCoordinateSystem( crs );
             return mrr;
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not read pyramid configuration file.", e );
