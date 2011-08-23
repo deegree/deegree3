@@ -37,6 +37,7 @@ package org.deegree.gml.feature;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -496,7 +497,21 @@ public class GMLFeatureReaderTest {
     }
 
     @Test
-    public void testGeoServerWFS110FCNoSchema()
+    public void testGeoServerWFS100DynamicNoSchema()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FC_WFS100_no_schema.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_2, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+        Assert.assertEquals( 4, fc.size() );
+        Assert.assertEquals( 1, gmlReader.getFeatureReader().getAppSchema().getFeatureTypes().length );
+        Assert.assertEquals( 23, gmlReader.getFeatureReader().getAppSchema().getFeatureTypes()[0].getPropertyDeclarations().size() );
+    }
+
+    @Test
+    public void testGeoServerWFS110DynamicNoSchema()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
@@ -505,8 +520,7 @@ public class GMLFeatureReaderTest {
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
         Assert.assertEquals( 4, fc.size() );
-        for ( FeatureType ft : gmlReader.getFeatureReader().getAppSchema().getFeatureTypes() ) {
-            System.out.println( ft );
-        }
+        Assert.assertEquals( 1, gmlReader.getFeatureReader().getAppSchema().getFeatureTypes().length );
+        Assert.assertEquals( 23, gmlReader.getFeatureReader().getAppSchema().getFeatureTypes()[0].getPropertyDeclarations().size() );
     }
 }

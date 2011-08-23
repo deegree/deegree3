@@ -281,7 +281,7 @@ public class GMLFeatureReader extends XMLAdapter {
             LOG.debug( "- property '" + propName + "'" );
 
             Property property = null;
-            PropertyType propDecl = ft.getPropertyDeclaration( propName );
+            PropertyType propDecl = ft.getPropertyDeclaration( propName, version );
             if ( propDecl == null ) {
                 property = parsePropertyDynamic( propName, xmlStream, activeCRS, ft, lastPropDecl, appSchema );
                 propDecl = property.getType();
@@ -361,7 +361,7 @@ public class GMLFeatureReader extends XMLAdapter {
 
         TypedObjectNode value = null;
         if ( propDecl instanceof SimplePropertyType ) {
-            value = new PrimitiveValue( text.toString(), new PrimitiveType( STRING ) );
+            value = new PrimitiveValue( text.toString().trim(), new PrimitiveType( STRING ) );
         } else if ( propDecl instanceof GeometryPropertyType ) {
             value = geomReader.parse( xmlStream, activeCRS );
             XMLStreamUtils.nextElement( xmlStream );

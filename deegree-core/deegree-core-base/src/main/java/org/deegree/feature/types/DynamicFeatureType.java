@@ -207,8 +207,7 @@ public class DynamicFeatureType implements FeatureType {
     @Override
     public String toString() {
         String s = "- Feature type '" + ftName + "'";
-        for ( QName ptName : propNameToDecl.keySet() ) {
-            PropertyType pt = propNameToDecl.get( ptName );
+        for ( PropertyType pt : props ) {
             s += "\n" + pt;
         }
         return s;
