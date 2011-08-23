@@ -67,6 +67,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.Triple;
@@ -78,9 +79,9 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.style.se.unevaluated.Continuation;
+import org.deegree.style.se.unevaluated.Continuation.Updater;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.se.unevaluated.Symbolizer;
-import org.deegree.style.se.unevaluated.Continuation.Updater;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
 import org.deegree.style.styling.PolygonStyling;
@@ -91,8 +92,8 @@ import org.deegree.style.styling.components.Font;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Halo;
 import org.deegree.style.styling.components.LinePlacement;
-import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Mark.SimpleMark;
+import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineCap;
 import org.deegree.style.styling.components.Stroke.LineJoin;
 import org.slf4j.Logger;
@@ -181,6 +182,7 @@ public class PostgreSQLReader {
                 String sizeExpr = (String) rs.getObject( "sizeexpr" );
                 if ( sizeExpr != null ) {
                     contn = getContn( sizeExpr, contn, new Updater<Styling<?>>() {
+                        @Override
                         public void update( Styling<?> obj, String val ) {
                             ( (PointStyling) obj ).graphic.size = Double.parseDouble( val );
                         }
@@ -193,6 +195,7 @@ public class PostgreSQLReader {
                 String rotationExpr = (String) rs.getObject( "rotationexpr" );
                 if ( rotationExpr != null ) {
                     contn = getContn( rotationExpr, contn, new Updater<Styling<?>>() {
+                        @Override
                         public void update( Styling<?> obj, String val ) {
                             ( (PointStyling) obj ).graphic.rotation = Double.parseDouble( val );
                         }
@@ -294,10 +297,11 @@ public class PostgreSQLReader {
                 if ( width != null ) {
                     res.width = width;
                 }
-                String widthExpr = (String) rs.getObject( "widthexpr" );
+                final String widthExpr = (String) rs.getObject( "widthexpr" );
                 if ( widthExpr != null ) {
                     res.width = -1;
                     contn = getContn( widthExpr, contn, new Updater<Styling<?>>() {
+                        @Override
                         public void update( Styling<?> obj, String val ) {
                             if ( obj instanceof LineStyling ) {
                                 ( (LineStyling) obj ).stroke.width = Double.parseDouble( val );
@@ -703,8 +707,8 @@ public class PostgreSQLReader {
         }
     }
 
-    private Continuation<Styling<?>> getContn( String text, Continuation<Styling<?>> contn,
-                                               final Updater<Styling<?>> updater ) {
+    private static Continuation<Styling<?>> getContn( String text, Continuation<Styling<?>> contn,
+                                                      final Updater<Styling<?>> updater ) {
         XMLInputFactory fac = XMLInputFactory.newInstance();
         Expression expr;
         try {
@@ -926,7 +930,9 @@ public class PostgreSQLReader {
                     };
                     rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scale ) );
 
-                    return new Style( rules, labels, null, name == null ? ( "" + id ) : name, null );
+                    Style result = new Style( rules, labels, null, name == null ? ( "" + id ) : name, null );
+                    pool.put( id, result );
+                    return result;
                 }
                 String sld = rs.getString( "sld" );
                 if ( sld != null ) {
@@ -936,6 +942,7 @@ public class PostgreSQLReader {
                         if ( name != null ) {
                             res.setName( name );
                         }
+                        pool.put( id, res );
                         return res;
                     } catch ( XMLStreamException e ) {
                         LOG.debug( "Could not parse SLD snippet for id '{}', error was '{}'", id,
@@ -951,47 +958,12 @@ public class PostgreSQLReader {
                 LOG.debug( "For style id '{}', no SLD snippet was found and no symbolizer referenced.", id );
             }
             return null;
-        } catch ( SQLException e ) {
-            LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return null;
-        } catch ( XMLStreamException e ) {
-            LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return null;
-        } catch ( XMLParsingException e ) {
-            LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return null;
-        } catch ( FactoryConfigurationError e ) {
+        } catch ( Throwable e ) {
             LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
             return null;
         } finally {
-            if ( rs != null ) {
-                try {
-                    rs.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
+            JDBCUtils.close( rs, stmt, conn, LOG );
         }
     }
 }
