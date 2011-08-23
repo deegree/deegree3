@@ -140,9 +140,6 @@ public class GMLStreamWriter {
      */
     public void setOutputCRS( ICRS crs ) {
         this.crs = crs;
-        
-        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, new URL ("...") );
-        GMLObject object = gmlReader.read();
     }
 
     /**
