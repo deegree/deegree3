@@ -41,7 +41,8 @@ import java.util.List;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.StreamFeatureCollection;
+import org.deegree.gml.feature.StreamFeatureCollection;
+
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.parameters.Parameter;

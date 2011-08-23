@@ -53,9 +53,11 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.StreamFeatureCollection;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Features;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -73,11 +75,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-class GMLStreamFeatureCollection implements StreamFeatureCollection {
+public class StreamFeatureCollection implements FeatureInputStream {
 
-    private static Logger LOG = LoggerFactory.getLogger( GMLStreamFeatureCollection.class );
-    
-    private final String fid;   
+    private static Logger LOG = LoggerFactory.getLogger( StreamFeatureCollection.class );
+
+    private final String fid;
 
     private final FeatureCollectionType ft;
 
@@ -94,12 +96,12 @@ class GMLStreamFeatureCollection implements StreamFeatureCollection {
     private int propOccurences;
 
     // stores non-feature member properties
-    private final List<Property> propertyList = new ArrayList<Property>();
+    private final List<Property> nonMemberProps = new ArrayList<Property>();
 
     private boolean featureArrayMode;
 
     /**
-     * Creates a new {@link GMLStreamFeatureCollection} from the given {@link GMLStreamReader}.
+     * Creates a new {@link StreamFeatureCollection} from the given {@link GMLStreamReader}.
      * 
      * @param fid
      * @param ft
@@ -108,8 +110,8 @@ class GMLStreamFeatureCollection implements StreamFeatureCollection {
      * @param crs
      * @throws XMLStreamException
      */
-    GMLStreamFeatureCollection( String fid, FeatureCollectionType ft, GMLFeatureReader featureReader,
-                                XMLStreamReaderWrapper xmlStream, ICRS crs ) throws XMLStreamException {
+    StreamFeatureCollection( String fid, FeatureCollectionType ft, GMLFeatureReader featureReader,
+                             XMLStreamReaderWrapper xmlStream, ICRS crs ) throws XMLStreamException {
         this.fid = fid;
         this.ft = ft;
         this.featureReader = featureReader;
@@ -122,10 +124,8 @@ class GMLStreamFeatureCollection implements StreamFeatureCollection {
         activeCRS = crs;
     }
 
-    @Override
     public Feature read()
                             throws IOException {
-
         Feature feature = null;
         try {
             while ( feature == null && xmlStream.getEventType() != END_ELEMENT ) {
@@ -218,7 +218,7 @@ class GMLStreamFeatureCollection implements StreamFeatureCollection {
                         }
                     }
 
-                    propertyList.add( property );
+                    nonMemberProps.add( property );
                 }
                 propOccurences++;
             }
@@ -228,7 +228,42 @@ class GMLStreamFeatureCollection implements StreamFeatureCollection {
     }
 
     @Override
-    public void close()
-                            throws IOException {
+    public void close() {
+        // TODO what to do on close?
+    }
+
+    @Override
+    public Iterator<Feature> iterator() {
+        final Feature nextFeature;
+        try {
+            nextFeature = read();
+        } catch ( IOException e ) {
+            throw new RuntimeException();
+        }
+        return new Iterator<Feature>() {
+
+            Feature next = nextFeature;
+
+            @Override
+            public boolean hasNext() {
+                return next == null;
+            }
+
+            @Override
+            public Feature next() {
+                Feature currentFeature = nextFeature;
+                return currentFeature;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    @Override
+    public FeatureCollection toCollection() {
+        return Features.toCollection( this );
     }
 }

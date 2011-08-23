@@ -79,6 +79,4 @@ public interface FeatureCollection extends Feature, Collection<Feature> {
      */
     public FeatureCollection getMembers( Filter filter, XPathEvaluator<Feature> evaluator )
                             throws FilterEvaluationException;
-
-    public FeatureInputStream getFeatureStream();
 }

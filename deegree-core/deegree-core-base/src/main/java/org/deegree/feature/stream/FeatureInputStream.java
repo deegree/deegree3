@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.query;
+package org.deegree.feature.stream;
 
 import java.sql.ResultSet;
 import java.util.Iterator;
@@ -42,7 +42,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 
 /**
- * Provides access to the results of a {@link Query} operation.
+ * Provides streaming access to {@link Feature} objects provide by a source.
  * <p>
  * The primary means of accessing the individual result features is to use the {@link #iterator()} method and
  * subsequently call it's {@link Iterator#next()} methods. Depending on the implementation (e.g. when backed by an SQL
@@ -51,24 +51,25 @@ import org.deegree.feature.FeatureCollection;
  * open SQL result sets).
  * </p>
  * <p>
- * A typical use of a {@link FeatureResultSet} looks like this:
+ * A safe use of a {@link FeatureInputStream} looks like this:
+ * 
  * <pre>
  *   ...
- *   FeatureResultSet rs = null;
- *    try {
- *        // retrieve the FeatureResultSet
- *        rs = ...
- *        for ( Feature f : rs ) {
- *            // do something with the feature
- *            // ...
- *        }
- *    } finally {
- *        // make sure that the FeatureResultSet always gets closed
- *        if ( rs != null ) {
- *            rs.close();
- *        }
- *    }
- *    ...
+ *   FeatureInputStream fis = null;
+ *   try {
+ *       // retrieve the FeatureInputStream
+ *       fis = ...
+ *       for ( Feature f : fis ) {
+ *           // do something with the feature
+ *           // ...
+ *       }
+ *   } finally {
+ *       // make sure that the FeatureResultSet always gets closed
+ *       if ( fis != null ) {
+ *           rs.close();
+ *       }
+ *   }
+ *   ...
  * </pre>
  * 
  * </p>
@@ -78,7 +79,7 @@ import org.deegree.feature.FeatureCollection;
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureResultSet extends Iterable<Feature> {
+public interface FeatureInputStream extends Iterable<Feature> {
 
     /**
      * Must be invoked after using to close underlying resources, e.g. SQL {@link ResultSet}s.
@@ -86,7 +87,7 @@ public interface FeatureResultSet extends Iterable<Feature> {
     public void close();
 
     /**
-     * Returns all members of the {@link FeatureResultSet} as a {@link FeatureCollection}.
+     * Returns all members of the {@link FeatureInputStream} as a {@link FeatureCollection}.
      * <p>
      * NOTE: This method should not be called for very large result sets, as it introduces the overhead of keeping all
      * created feature instances in memory. The returned collection will contain all {@link Feature}s instances from the

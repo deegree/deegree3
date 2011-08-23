@@ -68,12 +68,10 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
@@ -81,6 +79,7 @@ import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreProvider;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
@@ -96,6 +95,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.junit.Assert;
@@ -264,7 +264,7 @@ public class PostGISFeatureStoreTst {
 
         QName countryName = QName.valueOf( "{urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0}AdministrativeUnit" );
         Query query = new Query( countryName, null, -1, -1, -1.0 );
-        FeatureResultSet rs = fs.query( query );
+        FeatureInputStream rs = fs.query( query );
         gmlWriter.write( rs.iterator().next() );
         gmlWriter.close();
     }
@@ -393,7 +393,7 @@ public class PostGISFeatureStoreTst {
             gmlReader.setApplicationSchema( fs.getSchema() );
             gmlReader.getIdContext().resolveLocalRefs();
 
-            StreamFeatureCollection fc = gmlReader.readStreamFeatureCollection();
+            StreamFeatureCollection fc = gmlReader.readFeatureCollectionStream();
             FeatureStoreTransaction ta = fs.acquireTransaction();
             Feature f = null;
             // while ((f = fc.read()) != null) {
@@ -457,7 +457,7 @@ public class PostGISFeatureStoreTst {
             QName ftName = QName.valueOf( "{http://www.deegree.org/app}Country" );
             TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
             Query query = new Query( typeNames, null, null, null, null );
-            FeatureResultSet rs = fs.query( query );
+            FeatureInputStream rs = fs.query( query );
             FeatureCollection fc = rs.toCollection();
             print( fc );
         } finally {
@@ -490,7 +490,7 @@ public class PostGISFeatureStoreTst {
             PropertyIsEqualTo propIsEqualTo = new PropertyIsEqualTo( propName, literal, false );
             Filter filter = new OperatorFilter( propIsEqualTo );
             Query query = new Query( typeNames, filter, null, null, null );
-            FeatureResultSet rs = fs.query( query );
+            FeatureInputStream rs = fs.query( query );
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
@@ -523,7 +523,7 @@ public class PostGISFeatureStoreTst {
             TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Place" ),
                                                                   null ) };
             Query query = new Query( typeNames, null, null, null, null );
-            FeatureResultSet rs = fs.query( query );
+            FeatureInputStream rs = fs.query( query );
             try {
                 FeatureCollection fc = rs.toCollection();
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
@@ -562,7 +562,7 @@ public class PostGISFeatureStoreTst {
                                                                   QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
                                                                   null ) };
             Query query = new Query( typeNames, filter, null, null, null );
-            FeatureResultSet rs = fs.query( query );
+            FeatureInputStream rs = fs.query( query );
             FeatureCollection fc = rs.toCollection();
 
             print( fc );

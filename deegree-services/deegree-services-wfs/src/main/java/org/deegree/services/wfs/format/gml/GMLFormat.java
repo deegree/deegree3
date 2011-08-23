@@ -79,8 +79,8 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -484,7 +484,7 @@ public class GMLFormat implements Format {
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
-            FeatureResultSet rs = fs.query( queries );
+            FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature member : rs ) {
                     writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0 );
@@ -515,7 +515,7 @@ public class GMLFormat implements Format {
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
-            FeatureResultSet rs = fs.query( queries );
+            FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature feature : rs ) {
                     if ( !fids.contains( feature.getId() ) ) {

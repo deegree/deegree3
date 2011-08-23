@@ -56,9 +56,9 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.query.FeatureResultSet;
-import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.stream.FeatureInputStream;
+import org.deegree.feature.stream.MemoryFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
@@ -189,7 +189,7 @@ class StoredFeatures {
         LOG.debug( "Building id lookup table took {} [ms]", elapsed );
     }
 
-    FeatureResultSet query( Query query )
+    FeatureInputStream query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
@@ -253,7 +253,7 @@ class StoredFeatures {
             fc = Features.sortFc( fc, sortCrit );
         }
 
-        return new MemoryFeatureResultSet( fc );
+        return new MemoryFeatureInputStream( fc );
     }
 
     GMLObject getObjectById( String id ) {

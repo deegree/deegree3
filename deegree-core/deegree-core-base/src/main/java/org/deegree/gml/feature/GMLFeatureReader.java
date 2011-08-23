@@ -93,7 +93,6 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
@@ -313,7 +312,16 @@ public class GMLFeatureReader extends XMLAdapter {
             }
         }
 
-        return ft.newFeature( fid, props, null, version );
+        Feature feature = ft.newFeature( fid, props, null, version );
+        if ( fid != null && !"".equals( fid ) ) {
+            if ( idContext.getObject( fid ) != null ) {
+                String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            idContext.addObject( feature );
+        }
+        
+        return feature;
     }
 
     private Property parsePropertyDynamic( QName propName, XMLStreamReaderWrapper xmlStream, ICRS activeCRS,
@@ -336,13 +344,11 @@ public class GMLFeatureReader extends XMLAdapter {
 
         PropertyType propDecl = null;
         if ( xmlStream.isEndElement() ) {
-            LOG.debug( "Detected simple property '" + propName + "'." );
             if ( propAttributes.containsKey( new QName( XLNNS, "href" ) ) ) {
-                String msg = "Detected property element with 'xlink:href' attribute. This implies a "
-                             + "referenced object, but parsing this is currently not implemented in "
-                             + "dynamic schema mode. Please specify the schema location.";
-                throw new XMLParsingException( xmlStream, msg );
+                LOG.debug( "Detected complex (xlink-valued) property '" + propName + "'. Treating as feature property." );
+                propDecl = ( (DynamicFeatureType) ft ).addFeaturePropertyDeclaration( lastPropDecl, propName, null );
             } else {
+                LOG.debug( "Detected simple property '" + propName + "'." );
                 propDecl = ( (DynamicFeatureType) ft ).addSimplePropertyDeclaration( lastPropDecl, propName );
             }
         } else {
@@ -366,8 +372,20 @@ public class GMLFeatureReader extends XMLAdapter {
             value = geomReader.parse( xmlStream, activeCRS );
             XMLStreamUtils.nextElement( xmlStream );
         } else if ( propDecl instanceof FeaturePropertyType ) {
-            value = parseFeatureDynamic( xmlStream, activeCRS, appSchema );
-            XMLStreamUtils.nextElement( xmlStream );
+            String href = propAttributes.get( new QName( XLNNS, "href" ) );
+            if ( href != null ) {
+                FeatureReference refFeature = null;
+                if ( specialResolver != null ) {
+                    refFeature = new FeatureReference( specialResolver, href, xmlStream.getSystemId() );
+                } else {
+                    refFeature = new FeatureReference( idContext, href, xmlStream.getSystemId() );
+                }
+                idContext.addReference( refFeature );
+                value = refFeature;
+            } else {
+                value = parseFeatureDynamic( xmlStream, activeCRS, appSchema );
+                XMLStreamUtils.nextElement( xmlStream );
+            }
         }
         return new GenericProperty( propDecl, value );
     }
@@ -485,8 +503,8 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     /**
-     * Returns a {@link StreamFeatureCollection} for iterating over the members of the feature collection that the
-     * cursor of the given <code>XMLStreamReader</code> points at.
+     * Returns a {@link StreamFeatureCollection} that allows stream-based access to the members of the feature
+     * collection that the cursor of the given <code>XMLStreamReader</code> points at.
      * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of a feature collection element
@@ -503,7 +521,7 @@ public class GMLFeatureReader extends XMLAdapter {
         String fid = parseFeatureId( xmlStream );
         QName featureName = xmlStream.getName();
         FeatureCollectionType ft = (FeatureCollectionType) lookupFeatureType( xmlStream, featureName, true );
-        return new GMLStreamFeatureCollection( fid, ft, this, xmlStream, crs );
+        return new StreamFeatureCollection( fid, ft, this, xmlStream, crs );
     }
 
     private AppSchema buildAppSchema( XMLStreamReaderWrapper xmlStream )

@@ -98,9 +98,9 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.query.ThreadedResultSet;
+import org.deegree.feature.stream.FeatureInputStream;
+import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
@@ -721,14 +721,14 @@ public class MapService {
                 FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
 
                 Collection<LinkedList<Query>> qs = queries.values();
-                FeatureResultSet rs = null;
+                FeatureInputStream rs = null;
                 try {
                     FeatureStore store = queries.keySet().iterator().next();
                     LinkedList<Query> queriesList = qs.iterator().next();
                     if ( !queriesList.isEmpty() ) {
                         rs = store.query( queriesList.toArray( new Query[queriesList.size()] ) );
                         // TODO Should this always be done on this level? What about min and maxFill values?
-                        rs = new ThreadedResultSet( rs, 100, 20 );
+                        rs = new ThreadedFeatureInputStream( rs, 100, 20 );
                         for ( Feature f : rs ) {
                             QName name = f.getType().getName();
                             FeatureLayer l = ftToLayer.get( name );

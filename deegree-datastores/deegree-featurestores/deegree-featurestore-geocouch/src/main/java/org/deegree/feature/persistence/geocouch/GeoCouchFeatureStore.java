@@ -70,14 +70,14 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.CombinedResultSet;
-import org.deegree.feature.persistence.query.FeatureResultSet;
-import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
-import org.deegree.feature.persistence.query.IteratorResultSet;
-import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobCodec.Compression;
+import org.deegree.feature.stream.CombinedFeatureInputStream;
+import org.deegree.feature.stream.FeatureInputStream;
+import org.deegree.feature.stream.FilteredFeatureInputStream;
+import org.deegree.feature.stream.IteratorFeatureInputStream;
+import org.deegree.feature.stream.MemoryFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
@@ -184,14 +184,14 @@ public class GeoCouchFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureResultSet query( Query query )
+    public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
             String msg = "Join queries between multiple feature types are not supported yet.";
             throw new UnsupportedOperationException( msg );
         }
 
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
         Filter filter = query.getFilter();
 
         if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
@@ -213,13 +213,13 @@ public class GeoCouchFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureResultSet queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
 
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
         BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), Compression.NONE );
         try {
-            result = new IteratorResultSet( new IDIterator( filter.getMatchingIds().iterator(), codec ) );
+            result = new IteratorFeatureInputStream( new IDIterator( filter.getMatchingIds().iterator(), codec ) );
         } catch ( Throwable e ) {
             String msg = "Error performing id query: " + e.getMessage();
             LOG.debug( msg, e );
@@ -228,15 +228,15 @@ public class GeoCouchFeatureStore implements FeatureStore {
 
         // sort features
         if ( sortCrit.length > 0 ) {
-            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(), sortCrit ) );
         }
         return result;
     }
 
-    private FeatureResultSet queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
                             throws FeatureStoreException {
         LOG.debug( "Performing blob query by operator filter" );
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
 
         try {
             if ( query.getPrefilterBBox() != null ) {
@@ -262,7 +262,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 }
 
                 BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), Compression.NONE );
-                result = new IteratorResultSet( new IDIterator( ids.iterator(), codec ) );
+                result = new IteratorFeatureInputStream( new IDIterator( ids.iterator(), codec ) );
 
                 // mangle filter to exclude bbox
                 if ( filter != null && filter.getOperator() instanceof BBOX ) {
@@ -294,18 +294,18 @@ public class GeoCouchFeatureStore implements FeatureStore {
 
         if ( filter != null ) {
             LOG.debug( "Applying in-memory post-filtering." );
-            result = new FilteredFeatureResultSet( result, filter );
+            result = new FilteredFeatureInputStream( result, filter );
         }
 
         if ( query.getSortProperties().length > 0 ) {
             LOG.debug( "Applying in-memory post-sorting." );
-            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
+            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
         }
         return result;
     }
 
     @Override
-    public FeatureResultSet query( final Query[] queries )
+    public FeatureInputStream query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
 
         // check for most common case: multiple featuretypes, same bbox (WMS), no filter
@@ -326,7 +326,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
             // return queryMultipleFts( queries, env );
         }
 
-        Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
+        Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
             int i = 0;
 
             @Override
@@ -335,11 +335,11 @@ public class GeoCouchFeatureStore implements FeatureStore {
             }
 
             @Override
-            public FeatureResultSet next() {
+            public FeatureInputStream next() {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
-                FeatureResultSet rs;
+                FeatureInputStream rs;
                 try {
                     rs = query( queries[i++] );
                 } catch ( Throwable e ) {
@@ -354,7 +354,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 throw new UnsupportedOperationException();
             }
         };
-        return new CombinedResultSet( rsIter );
+        return new CombinedFeatureInputStream( rsIter );
     }
 
     @Override

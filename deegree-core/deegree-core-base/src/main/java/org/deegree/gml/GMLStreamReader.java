@@ -47,13 +47,13 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.dictionary.Dictionary;
 import org.deegree.gml.dictionary.GMLDictionaryReader;
 import org.deegree.gml.feature.GMLFeatureReader;
+import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
@@ -220,7 +220,7 @@ public class GMLStreamReader {
      * Returns the deegree model representation for the GML feature collection element event that the cursor of the
      * underlying xml stream points to.
      * <p>
-     * Please note that {@link #readStreamFeatureCollection()} should be preferred (especially for large feature
+     * Please note that {@link #readFeatureCollectionStream()} should be preferred (especially for large feature
      * collections), because it does not build and store all features in memory at once.
      * </p>
      * 
@@ -235,8 +235,8 @@ public class GMLStreamReader {
     }
 
     /**
-     * Returns the deegree model representation for the GML feature collection element event that the cursor of the
-     * underlying xml stream points to.
+     * Returns a {@link StreamFeatureCollection} that allows stream-based access to the members of the feature
+     * collection that the cursor of the given <code>XMLStreamReader</code> points at.
      * <p>
      * This method does not automatically consume all events from the underlying XML stream. Instead, it allows the
      * caller to control the consumption by iterating over the features in the returned collection.
@@ -247,7 +247,7 @@ public class GMLStreamReader {
      * @throws XMLParsingException
      * @throws UnknownCRSException
      */
-    public StreamFeatureCollection readStreamFeatureCollection()
+    public StreamFeatureCollection readFeatureCollectionStream()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         return getFeatureReader().getFeatureStream( xmlStream, defaultCRS );
     }

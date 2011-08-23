@@ -51,13 +51,13 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceMetadata;
@@ -311,7 +311,7 @@ public class WFSClient {
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, requestUrl );
             gmlReader.setApplicationSchema( schema );
             // TODO default SRS
-            fc = gmlReader.readStreamFeatureCollection();
+            fc = gmlReader.readFeatureCollectionStream();
         } catch ( Throwable t ) {
             t.printStackTrace();
         }

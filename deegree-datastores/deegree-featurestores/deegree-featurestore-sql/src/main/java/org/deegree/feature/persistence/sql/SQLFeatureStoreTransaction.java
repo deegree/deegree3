@@ -66,7 +66,6 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
@@ -78,6 +77,7 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.Filter;
@@ -682,7 +682,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
         Set<String> ids = new HashSet<String>();
         Query query = new Query( ftName, filter, -1, -1, -1 );
-        FeatureResultSet rs = null;
+        FeatureInputStream rs = null;
         try {
             rs = fs.query( query );
             for ( Feature feature : rs ) {

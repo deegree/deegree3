@@ -37,11 +37,7 @@ package org.deegree.protocol.wfs.client;
 
 import java.net.URL;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.utils.test.TestProperties;
-import org.deegree.feature.Feature;
-import org.deegree.feature.StreamFeatureCollection;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +57,7 @@ public class WFSClientTest {
     private static Logger LOG = LoggerFactory.getLogger( WFSClientTest.class );
 
     private static final String WFS_UTAH_DEMO_100_URL = "wfs.utahdemo100.url";
-    
+
     private static final String WFS_UTAH_DEMO_110_URL = "wfs.utahdemo110.url";
 
     @Test
@@ -77,17 +73,17 @@ public class WFSClientTest {
         URL wfsCapaUrl = new URL( wfsUtahDemo100Url );
         WFSClient client = new WFSClient( wfsCapaUrl );
         Assert.equals( 18, client.getAppSchema().getFeatureTypes().length );
-//        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
-//        try {
-//            Feature feature = null;
-//            while ( ( feature = fc.read() ) != null ) {
-//                System.out.println( feature.getId() );
-//            }
-//        } finally {
-//            fc.close();
-//        }
+        // StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
+        // try {
+        // Feature feature = null;
+        // while ( ( feature = fc.read() ) != null ) {
+        // System.out.println( feature.getId() );
+        // }
+        // } finally {
+        // fc.close();
+        // }
     }
-    
+
     @Test
     public void testGetCapabilities110Utah()
                             throws Exception {
@@ -101,14 +97,14 @@ public class WFSClientTest {
         URL wfsCapaUrl = new URL( wfsUtahDemo100Url );
         WFSClient client = new WFSClient( wfsCapaUrl );
         Assert.equals( 18, client.getAppSchema().getFeatureTypes().length );
-//        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
-//        try {
-//            Feature feature = null;
-//            while ( ( feature = fc.read() ) != null ) {
-//                System.out.println( feature.getId() );
-//            }
-//        } finally {
-//            fc.close();
-//        }
+        // StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
+        // try {
+        // Feature feature = null;
+        // while ( ( feature = fc.read() ) != null ) {
+        // System.out.println( feature.getId() );
+        // }
+        // } finally {
+        // fc.close();
+        // }
     }
 }

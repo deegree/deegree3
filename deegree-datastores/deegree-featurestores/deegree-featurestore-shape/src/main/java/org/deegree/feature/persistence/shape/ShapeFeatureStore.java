@@ -80,15 +80,15 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.CombinedResultSet;
-import org.deegree.feature.persistence.query.FeatureResultSet;
-import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
-import org.deegree.feature.persistence.query.IteratorResultSet;
-import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.stream.CombinedFeatureInputStream;
+import org.deegree.feature.stream.FeatureInputStream;
+import org.deegree.feature.stream.FilteredFeatureInputStream;
+import org.deegree.feature.stream.IteratorFeatureInputStream;
+import org.deegree.feature.stream.MemoryFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
@@ -426,7 +426,7 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureResultSet query( Query query )
+    public FeatureInputStream query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
@@ -437,7 +437,7 @@ public class ShapeFeatureStore implements FeatureStore {
         QName featureType = query.getTypeNames()[0].getFeatureTypeName();
         if ( featureType != null && !featureType.equals( ft.getName() ) ) {
             // or null?
-            return new MemoryFeatureResultSet( new GenericFeatureCollection() );
+            return new MemoryFeatureInputStream( new GenericFeatureCollection() );
         }
 
         checkForUpdate();
@@ -469,25 +469,25 @@ public class ShapeFeatureStore implements FeatureStore {
             p = new Pair<Filter, SortProperty[]>( filterPair.first, query.getSortProperties() );
         }
 
-        FeatureResultSet rs = new IteratorResultSet( new FeatureIterator( recNumsAndPos.iterator() ) );
+        FeatureInputStream rs = new IteratorFeatureInputStream( new FeatureIterator( recNumsAndPos.iterator() ) );
 
         if ( p.first != null ) {
             LOG.debug( "Applying in-memory filtering." );
-            rs = new FilteredFeatureResultSet( rs, p.first );
+            rs = new FilteredFeatureInputStream( rs, p.first );
         }
 
         if ( p.second != null && p.second.length > 0 ) {
             LOG.debug( "Applying in-memory sorting." );
-            rs = new MemoryFeatureResultSet( Features.sortFc( rs.toCollection(), p.second ) );
+            rs = new MemoryFeatureInputStream( Features.sortFc( rs.toCollection(), p.second ) );
         }
 
         return rs;
     }
 
     @Override
-    public FeatureResultSet query( final Query[] queries )
+    public FeatureInputStream query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
+        Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
             int i = 0;
 
             @Override
@@ -496,11 +496,11 @@ public class ShapeFeatureStore implements FeatureStore {
             }
 
             @Override
-            public FeatureResultSet next() {
+            public FeatureInputStream next() {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
-                FeatureResultSet rs;
+                FeatureInputStream rs;
                 try {
                     rs = query( queries[i++] );
                 } catch ( Exception e ) {
@@ -514,7 +514,7 @@ public class ShapeFeatureStore implements FeatureStore {
                 throw new UnsupportedOperationException();
             }
         };
-        return new CombinedResultSet( rsIter );
+        return new CombinedFeatureInputStream( rsIter );
     }
 
     private Feature retrieveFeature( Pair<Integer, Long> recNumAndPos )

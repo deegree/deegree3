@@ -47,9 +47,9 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
@@ -75,7 +75,7 @@ import es.unex.sextante.parameters.Parameter;
  * @version $Revision: $, $Date: $
  */
 public class SextanteFeatureCollectionStreamer {
-    
+
     public static final boolean ENABLED = false;
 
     // algorithm and input data
@@ -219,10 +219,9 @@ public class SextanteFeatureCollectionStreamer {
 
                 // create feature collection input stream
                 XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
-                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(
-                                                                                   FormatHelper.determineGMLVersion( gmlInput ),
+                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( FormatHelper.determineGMLVersion( gmlInput ),
                                                                                    xmlReader );
-                StreamFeatureCollection sfc = gmlReader.readStreamFeatureCollection();
+                StreamFeatureCollection sfc = gmlReader.readFeatureCollectionStream();
 
                 featureCollectionsForAExecute.add( new SextanteFeatureCollectionStreamReader( param, sfc ) );
             }

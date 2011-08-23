@@ -57,9 +57,9 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.CombinedResultSet;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.stream.CombinedFeatureInputStream;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
@@ -159,15 +159,15 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureResultSet query( Query query )
+    public FeatureInputStream query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
         return storedFeatures.query( query );
     }
 
     @Override
-    public FeatureResultSet query( final Query[] queries )
+    public FeatureInputStream query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
+        Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
             int i = 0;
 
             @Override
@@ -176,11 +176,11 @@ public class MemoryFeatureStore implements FeatureStore {
             }
 
             @Override
-            public FeatureResultSet next() {
+            public FeatureInputStream next() {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
-                FeatureResultSet rs;
+                FeatureInputStream rs;
                 try {
                     rs = query( queries[i++] );
                 } catch ( Exception e ) {
@@ -195,7 +195,7 @@ public class MemoryFeatureStore implements FeatureStore {
                 throw new UnsupportedOperationException();
             }
         };
-        return new CombinedResultSet( rsIter );
+        return new CombinedFeatureInputStream( rsIter );
     }
 
     @Override

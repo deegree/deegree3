@@ -33,11 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.query;
+package org.deegree.feature.stream;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -46,21 +44,21 @@ import java.util.concurrent.Executors;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.Features;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link FeatureResultSet} that uses a separate thread to keep an internal queue of features filled.
+ * {@link FeatureInputStream} that uses a separate thread to keep an internal queue of features filled.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class ThreadedResultSet implements FeatureResultSet {
+public class ThreadedFeatureInputStream implements FeatureInputStream {
 
-    private static Logger LOG = LoggerFactory.getLogger( ThreadedResultSet.class );
+    private static Logger LOG = LoggerFactory.getLogger( ThreadedFeatureInputStream.class );
 
     // TODO where to manage this?
     private static ExecutorService service = Executors.newFixedThreadPool( 10 );
@@ -68,14 +66,14 @@ public class ThreadedResultSet implements FeatureResultSet {
     private final QueueFiller producer;
 
     /**
-     * Creates a new {@link ThreadedResultSet} based on the given {@link FeatureResultSet} that uses the given thread to
+     * Creates a new {@link ThreadedFeatureInputStream} based on the given {@link FeatureInputStream} that uses the given thread to
      * keep the internal queue of results filled.
      * 
      * @param rs
      * @param maxFill
      * @param minFill
      */
-    public ThreadedResultSet( FeatureResultSet rs, int maxFill, int minFill ) {
+    public ThreadedFeatureInputStream( FeatureInputStream rs, int maxFill, int minFill ) {
         producer = new QueueFiller( rs, maxFill, minFill );
         service.execute( producer );
     }
@@ -87,12 +85,7 @@ public class ThreadedResultSet implements FeatureResultSet {
 
     @Override
     public FeatureCollection toCollection() {
-        List<Feature> members = new ArrayList<Feature>();
-        for ( Feature feature : this ) {
-            members.add( feature );
-        }
-        close();
-        return new GenericFeatureCollection( null, members );
+        return Features.toCollection( this );
     }
 
     @Override
@@ -118,7 +111,7 @@ public class ThreadedResultSet implements FeatureResultSet {
 
     private class QueueFiller implements Runnable {
 
-        private final FeatureResultSet rs;
+        private final FeatureInputStream rs;
 
         private final Queue<Feature> featureQueue;
 
@@ -130,7 +123,7 @@ public class ThreadedResultSet implements FeatureResultSet {
 
         private boolean finished;
 
-        private QueueFiller( FeatureResultSet rs, int maxFill, int minFill ) {
+        private QueueFiller( FeatureInputStream rs, int maxFill, int minFill ) {
             this.rs = rs;
             this.featureQueue = new ArrayBlockingQueue<Feature>( maxFill, true );
             this.minFill = minFill;

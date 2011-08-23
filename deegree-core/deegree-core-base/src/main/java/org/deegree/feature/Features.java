@@ -37,7 +37,6 @@ package org.deegree.feature;
 
 import static org.deegree.gml.GMLVersion.GML_31;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -48,6 +47,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
@@ -67,12 +67,22 @@ public class Features {
 
     private static final Logger LOG = LoggerFactory.getLogger( Features.class );
 
-    public static FeatureCollection toCollection( FeatureInputStream is ) throws IOException {
+    /**
+     * Returns all members of the given {@link FeatureInputStream} as a {@link FeatureCollection}.
+     * <p>
+     * NOTE: This method should not be called for very large result sets, as it introduces the overhead of keeping all
+     * created feature instances in memory. The returned collection will contain all {@link Feature}s instances from the
+     * current position in the iteration sequence.
+     * </p>
+     * 
+     * @return members as feature collection, never <code>null</code>
+     */
+    public static FeatureCollection toCollection( FeatureInputStream is ) {
         List<Feature> members = new ArrayList<Feature>();
-        Feature feature = null;
-        while ((feature = is.read()) != null) {
-            members.add (feature);
+        for ( Feature feature : is ) {
+            members.add( feature );
         }
+        is.close();
         return new GenericFeatureCollection( null, members );
     }
 

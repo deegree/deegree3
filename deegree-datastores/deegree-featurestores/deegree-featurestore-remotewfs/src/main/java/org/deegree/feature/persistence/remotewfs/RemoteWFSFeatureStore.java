@@ -44,8 +44,8 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
@@ -116,14 +116,14 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureResultSet query( Query query )
+    public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public FeatureResultSet query( Query[] queries )
+    public FeatureInputStream query( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO Auto-generated method stub
         return null;

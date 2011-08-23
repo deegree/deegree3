@@ -41,8 +41,8 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.config.Resource;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
@@ -113,7 +113,7 @@ public interface FeatureStore extends Resource {
                             throws FeatureStoreException;
 
     /**
-     * Performs the given query and returns the matching features as a {@link FeatureResultSet}.
+     * Performs the given query and returns the matching features as a {@link FeatureInputStream}.
      * 
      * @param query
      *            query to be performed, must not be <code>null</code>
@@ -123,11 +123,11 @@ public interface FeatureStore extends Resource {
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    FeatureResultSet query( Query query )
+    FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**
-     * Performs the given queries and returns the matching features as a {@link FeatureResultSet}.
+     * Performs the given queries and returns the matching features as a {@link FeatureInputStream}.
      * 
      * @param queries
      *            queries to be performed, must not be <code>null</code> and contain at least one entry
@@ -137,7 +137,7 @@ public interface FeatureStore extends Resource {
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    FeatureResultSet query( Query[] queries )
+    FeatureInputStream query( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**

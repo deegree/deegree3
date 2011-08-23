@@ -135,7 +135,8 @@ public class DynamicFeatureType implements FeatureType {
      * @return new (and added) property declaration, never <code>null</code>
      */
     public FeaturePropertyType addFeaturePropertyDeclaration( PropertyType pre, QName propName, FeatureType valueFt ) {
-        FeaturePropertyType pt = new FeaturePropertyType( propName, 0, 1, null, null, valueFt.getName(), BOTH );
+        QName valueFtName = valueFt == null ? null : valueFt.getName();
+        FeaturePropertyType pt = new FeaturePropertyType( propName, 0, 1, null, null, valueFtName, BOTH );
         props.add( props.indexOf( pre ) + 1, pt );
         propNameToDecl.put( propName, pt );
         return pt;

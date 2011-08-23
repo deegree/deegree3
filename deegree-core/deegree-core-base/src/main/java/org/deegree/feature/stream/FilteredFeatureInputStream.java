@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,106 +33,88 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.query;
+package org.deegree.feature.stream;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
+import static org.deegree.gml.GMLVersion.GML_31;
+
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.Features;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 
 /**
- * {@link ResultSet} that encapsulates a sequence of {@link ResultSet}s.
+ * {@link FeatureInputStream} that is derived by filtering another {@link FeatureInputStream}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class CombinedResultSet implements FeatureResultSet {
+public class FilteredFeatureInputStream implements FeatureInputStream {
 
-    Iterator<FeatureResultSet> resultSetIter;
+    private FeatureInputStream rs;
 
-    FeatureResultSet currentResultSet;
-
-    boolean lastClosed = false;
+    private Filter filter;
 
     /**
-     * Creates a new {@link CombinedResultSet} that is backed by the given {@link FeatureResultSet}.
+     * Creates a new {@link FilteredFeatureInputStream} that is backed by the given {@link FeatureInputStream}.
      * 
-     * @param resultSetIter
+     * @param rs
      *            FeatureResultSet to back the result set, must not be <code>null</code>
+     * @param filter
+     *            filter, must not be <code>null</code>
      */
-    public CombinedResultSet( Iterator<FeatureResultSet> resultSetIter ) {
-        this.resultSetIter = resultSetIter;
+    public FilteredFeatureInputStream( FeatureInputStream rs, Filter filter ) {
+        this.rs = rs;
+        this.filter = filter;
     }
 
     @Override
     public void close() {
-        if ( currentResultSet != null ) {
-            currentResultSet.close();
-        }
-        while ( resultSetIter.hasNext() ) {
-            resultSetIter.next().close();
-        }
+        rs.close();
     }
 
     @Override
     public FeatureCollection toCollection() {
-        List<Feature> members = new ArrayList<Feature>();
-        for ( Feature feature : this ) {
-            members.add( feature );
-        }
-        close();
-        return new GenericFeatureCollection( null, members );
+        return Features.toCollection( this );
     }
 
     @Override
     public Iterator<Feature> iterator() {
         return new Iterator<Feature>() {
 
-            Iterator<Feature> featureIter;
+            // TODO
+            FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
 
-            boolean nextRead = true;
+            Iterator<Feature> iter = rs.iterator();
+
+            boolean nextCalled = true;
 
             Feature next = null;
 
             @Override
             public boolean hasNext() {
-                if ( !nextRead ) {
+                if ( !nextCalled ) {
                     return next != null;
                 }
-                if ( featureIter == null ) {
-                    if ( !resultSetIter.hasNext() ) {
-                        return false;
-                    }
-                    // only happens for the first call of #hasNext()
-                    currentResultSet = resultSetIter.next();
-                    featureIter = currentResultSet.iterator();
-                }
-
-                while ( !featureIter.hasNext() ) {
-                    if ( resultSetIter.hasNext() ) {
-                        currentResultSet.close();
-                        currentResultSet = resultSetIter.next();
-                        featureIter = currentResultSet.iterator();
-                    } else {
-                        // lastClosed = true;
-                        break;
+                next = null;
+                while ( iter.hasNext() ) {
+                    Feature candidate = iter.next();
+                    try {
+                        if ( filter.evaluate( candidate, evaluator ) ) {
+                            nextCalled = false;
+                            next = candidate;
+                            break;
+                        }
+                    } catch ( FilterEvaluationException e ) {
+                        throw new RuntimeException( e.getMessage(), e );
                     }
                 }
-
-                if ( featureIter.hasNext() ) {
-                    next = featureIter.next();
-                    nextRead = false;
-                } else {
-                    next = null;
-                }
-
                 return next != null;
             }
 
@@ -141,7 +123,7 @@ public class CombinedResultSet implements FeatureResultSet {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
-                nextRead = true;
+                nextCalled = true;
                 return next;
             }
 

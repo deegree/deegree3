@@ -82,11 +82,6 @@ import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.CombinedResultSet;
-import org.deegree.feature.persistence.query.FeatureResultSet;
-import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
-import org.deegree.feature.persistence.query.IteratorResultSet;
-import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
@@ -105,6 +100,11 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.Mappings;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.stream.CombinedFeatureInputStream;
+import org.deegree.feature.stream.FeatureInputStream;
+import org.deegree.feature.stream.FilteredFeatureInputStream;
+import org.deegree.feature.stream.IteratorFeatureInputStream;
+import org.deegree.feature.stream.MemoryFeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
@@ -538,7 +538,7 @@ public class SQLFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
-        FeatureResultSet rs = queryByIdFilterRelational( new IdFilter( id ), null );
+        FeatureInputStream rs = queryByIdFilterRelational( new IdFilter( id ), null );
         try {
             Iterator<Feature> iter = rs.iterator();
             if ( iter.hasNext() ) {
@@ -650,7 +650,7 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureResultSet query( Query query )
+    public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
@@ -658,7 +658,7 @@ public class SQLFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
         Filter filter = query.getFilter();
 
         if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
@@ -681,7 +681,7 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureResultSet query( final Query[] queries )
+    public FeatureInputStream query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
 
         // check for most common case: multiple featuretypes, same bbox (WMS), no filter
@@ -703,7 +703,7 @@ public class SQLFeatureStore implements FeatureStore {
             return queryMultipleFts( queries, env );
         }
 
-        Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
+        Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
             int i = 0;
 
             @Override
@@ -712,11 +712,11 @@ public class SQLFeatureStore implements FeatureStore {
             }
 
             @Override
-            public FeatureResultSet next() {
+            public FeatureInputStream next() {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
-                FeatureResultSet rs;
+                FeatureInputStream rs;
                 try {
                     rs = query( queries[i++] );
                 } catch ( Throwable e ) {
@@ -731,10 +731,10 @@ public class SQLFeatureStore implements FeatureStore {
                 throw new UnsupportedOperationException();
             }
         };
-        return new CombinedResultSet( rsIter );
+        return new CombinedFeatureInputStream( rsIter );
     }
 
-    private FeatureResultSet queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
         if ( blobMapping != null ) {
             return queryByIdFilterBlob( filter, sortCrit );
@@ -742,10 +742,10 @@ public class SQLFeatureStore implements FeatureStore {
         return queryByIdFilterRelational( filter, sortCrit );
     }
 
-    private FeatureResultSet queryByIdFilterBlob( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilterBlob( IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
 
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -766,7 +766,7 @@ public class SQLFeatureStore implements FeatureStore {
             rs = stmt.executeQuery();
 
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
-            result = new IteratorResultSet( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+            result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
             String msg = "Error performing id query: " + e.getMessage();
@@ -776,12 +776,12 @@ public class SQLFeatureStore implements FeatureStore {
 
         // sort features
         if ( sortCrit.length > 0 ) {
-            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(), sortCrit ) );
         }
         return result;
     }
 
-    private FeatureResultSet queryByIdFilterRelational( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilterRelational( IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
 
         LinkedHashMap<QName, List<IdAnalysis>> ftNameToIdAnalysis = new LinkedHashMap<QName, List<IdAnalysis>>();
@@ -811,7 +811,7 @@ public class SQLFeatureStore implements FeatureStore {
         FIDMapping fidMapping = ftMapping.getFidMapping();
         List<IdAnalysis> idKernels = ftNameToIdAnalysis.get( ftName );
 
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Connection conn = null;
@@ -869,7 +869,7 @@ public class SQLFeatureStore implements FeatureStore {
             begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
-            result = new IteratorResultSet( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+            result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
             String msg = "Error performing query by id filter (relational mode): " + e.getMessage();
@@ -887,13 +887,13 @@ public class SQLFeatureStore implements FeatureStore {
         return conn;
     }
 
-    private FeatureResultSet queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter )
                             throws FeatureStoreException {
         LOG.debug( "Performing blob query by operator filter" );
 
         AbstractWhereBuilder wb = null;
         Connection conn = null;
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
@@ -1012,7 +1012,7 @@ public class SQLFeatureStore implements FeatureStore {
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
-            result = new IteratorResultSet( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+            result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
             String msg = "Error performing query by operator filter: " + e.getMessage();
@@ -1022,17 +1022,17 @@ public class SQLFeatureStore implements FeatureStore {
 
         if ( filter != null ) {
             LOG.debug( "Applying in-memory post-filtering." );
-            result = new FilteredFeatureResultSet( result, filter );
+            result = new FilteredFeatureInputStream( result, filter );
         }
 
         if ( query.getSortProperties().length > 0 ) {
             LOG.debug( "Applying in-memory post-sorting." );
-            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
+            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
         }
         return result;
     }
 
-    private FeatureResultSet queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing query by operator filter" );
@@ -1043,7 +1043,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         AbstractWhereBuilder wb = null;
         Connection conn = null;
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
@@ -1128,7 +1128,7 @@ public class SQLFeatureStore implements FeatureStore {
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
-            result = new IteratorResultSet( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+            result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
             String msg = "Error performing query by operator filter: " + e.getMessage();
@@ -1138,19 +1138,19 @@ public class SQLFeatureStore implements FeatureStore {
 
         if ( wb.getPostFilter() != null ) {
             LOG.debug( "Applying in-memory post-filtering." );
-            result = new FilteredFeatureResultSet( result, wb.getPostFilter() );
+            result = new FilteredFeatureInputStream( result, wb.getPostFilter() );
         }
         if ( wb.getPostSortCriteria() != null ) {
             LOG.debug( "Applying in-memory post-sorting." );
-            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
+            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
         }
         return result;
     }
 
-    private FeatureResultSet queryMultipleFts( Query[] queries, Envelope looseBBox )
+    private FeatureInputStream queryMultipleFts( Query[] queries, Envelope looseBBox )
                             throws FeatureStoreException {
 
-        FeatureResultSet result = null;
+        FeatureInputStream result = null;
 
         short[] ftId = new short[queries.length];
         for ( int i = 0; i < ftId.length; i++ ) {
@@ -1205,7 +1205,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             rs = stmt.executeQuery();
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
-            result = new IteratorResultSet( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+            result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
             String msg = "Error performing query: " + e.getMessage();

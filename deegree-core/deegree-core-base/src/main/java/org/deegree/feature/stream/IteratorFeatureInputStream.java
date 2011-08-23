@@ -33,47 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.query;
+package org.deegree.feature.stream;
 
 import java.util.Iterator;
 
+import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Features;
 
 /**
- * {@link FeatureResultSet} that stores all features in memory.
+ * {@link FeatureInputStream} backed by a {@link CloseableIterator}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class MemoryFeatureResultSet implements FeatureResultSet {
+public class IteratorFeatureInputStream implements FeatureInputStream {
 
-    private FeatureCollection fc;
+    private CloseableIterator<Feature> featureIter;
 
     /**
-     * Creates a new {@link MemoryFeatureResultSet} that is backed by the given {@link FeatureCollection}.
+     * Creates a new {@link IteratorFeatureInputStream} that is backed by the given {@link FeatureCollection}.
      * 
-     * @param fc
-     *            FeatureCollection to back the result set
+     * @param featureIter
+     * 
      */
-    public MemoryFeatureResultSet( FeatureCollection fc ) {
-        this.fc = fc;
+    public IteratorFeatureInputStream( CloseableIterator<Feature> featureIter ) {
+        this.featureIter = featureIter;
     }
 
     @Override
     public void close() {
-        // noting to do
+        featureIter.close();
     }
 
     @Override
     public FeatureCollection toCollection() {
-        return fc;
+        return Features.toCollection( this );
     }
 
     @Override
     public Iterator<Feature> iterator() {
-        return fc.iterator();
+        return featureIter;
     }
 }

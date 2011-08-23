@@ -133,7 +133,7 @@ public class DynamicAppSchema implements AppSchema {
 
     @Override
     public boolean isSubType( FeatureType ft, FeatureType substitution ) {
-        return ft == substitution;
+        return ft == null || ft == substitution;
     }
 
     @Override

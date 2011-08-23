@@ -52,10 +52,10 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
@@ -133,7 +133,7 @@ public class DynamicSQLLayer extends Layer {
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
         Envelope clickBox = fi.getClickBox();
-        FeatureResultSet rs = null;
+        FeatureInputStream rs = null;
         try {
             GenericFeatureType ft = datastore.getFeatureType();
             PropertyName propName = new PropertyName( ft.getDefaultGeometryPropertyDeclaration().getName() );
@@ -173,7 +173,7 @@ public class DynamicSQLLayer extends Layer {
 
         Integer maxFeats = gm.getMaxFeatures().get( this );
         int maxFeatures = maxFeats == null ? -1 : maxFeats;
-        FeatureResultSet rs = null;
+        FeatureInputStream rs = null;
         final double resolution = gm.getResolution();
         try {
             rs = datastore.query( new Query( datastore.getFeatureType().getName(),

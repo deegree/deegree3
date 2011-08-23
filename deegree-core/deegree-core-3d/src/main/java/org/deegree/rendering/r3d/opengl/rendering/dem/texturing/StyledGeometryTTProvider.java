@@ -69,8 +69,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -307,7 +307,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
             // }
 
             Query q = new Query( this.rootFT, Filters.addBBoxConstraint( tileEnv, null, null ), -1, -1, -1 );
-            FeatureResultSet frs = null;
+            FeatureInputStream frs = null;
             long sT = currentTimeMillis();
             try {
                 frs = this.featureStore.query( q );

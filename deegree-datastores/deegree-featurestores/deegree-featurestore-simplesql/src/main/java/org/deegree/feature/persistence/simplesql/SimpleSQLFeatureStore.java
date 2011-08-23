@@ -68,14 +68,14 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.CombinedResultSet;
-import org.deegree.feature.persistence.query.FeatureResultSet;
-import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
-import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
+import org.deegree.feature.stream.CombinedFeatureInputStream;
+import org.deegree.feature.stream.FeatureInputStream;
+import org.deegree.feature.stream.FilteredFeatureInputStream;
+import org.deegree.feature.stream.IteratorFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
@@ -279,19 +279,19 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         return available;
     }
 
-    public FeatureResultSet query( Query query )
+    public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
         return query( new Query[] { query } );
     }
 
-    public FeatureResultSet query( final Query[] queries )
+    public FeatureInputStream query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
         PreparedStatement stmt = null;
         Connection conn = null;
-        FeatureResultSet set = null;
+        FeatureInputStream set = null;
         try {
 
-            LinkedList<FeatureResultSet> list = new LinkedList<FeatureResultSet>();
+            LinkedList<FeatureInputStream> list = new LinkedList<FeatureInputStream>();
 
             for ( final Query q : queries ) {
 
@@ -342,7 +342,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                 LOG.debug( "Statement to fetch features was '{}'.", connType == Type.Oracle ? sql : stmt );
                 stmt.execute();
 
-                set = new IteratorResultSet( new ResultSetIterator<Feature>( stmt.getResultSet(), conn, stmt ) {
+                set = new IteratorFeatureInputStream( new ResultSetIterator<Feature>( stmt.getResultSet(), conn, stmt ) {
 
                     @Override
                     protected Feature createElement( ResultSet rs )
@@ -375,13 +375,13 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                 } );
 
                 if ( q.getFilter() != null ) {
-                    set = new FilteredFeatureResultSet( set, q.getFilter() );
+                    set = new FilteredFeatureInputStream( set, q.getFilter() );
                 }
 
                 list.add( set );
             }
 
-            return new CombinedResultSet( list.iterator() );
+            return new CombinedFeatureInputStream( list.iterator() );
         } catch ( SQLException e ) {
             LOG.info( "Data store could not be accessed: '{}'.", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

@@ -76,10 +76,10 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
+import org.deegree.feature.stream.FeatureInputStream;
+import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -319,11 +319,11 @@ public class FeatureLayer extends Layer {
             return warnings;
         }
 
-        FeatureResultSet rs = null;
+        FeatureInputStream rs = null;
         try {
             rs = datastore.query( queries.toArray( new Query[queries.size()] ) );
             // TODO Should this always be done on this level? What about min and maxFill values?
-            rs = new ThreadedResultSet( rs, 100, 20 );
+            rs = new ThreadedFeatureInputStream( rs, 100, 20 );
             Integer maxFeats = gm.getMaxFeatures().get( this );
             int max = maxFeats == null ? -1 : maxFeats;
             int cnt = 0;
@@ -416,7 +416,7 @@ public class FeatureLayer extends Layer {
         return new OperatorFilter( operator );
     }
 
-    private FeatureCollection clearDuplicates( FeatureResultSet rs ) {
+    private FeatureCollection clearDuplicates( FeatureInputStream rs ) {
         FeatureCollection col = null;
         try {
             col = new GenericFeatureCollection();
