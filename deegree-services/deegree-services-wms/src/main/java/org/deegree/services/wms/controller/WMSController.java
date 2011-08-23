@@ -693,7 +693,6 @@ public class WMSController extends AbstractOWS {
                             org.deegree.protocol.ows.exception.OWSException {
 
         if ( service.isNewStyle() ) {
-            System.out.println(service.getThemes());
             org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version );
 
             RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(),
