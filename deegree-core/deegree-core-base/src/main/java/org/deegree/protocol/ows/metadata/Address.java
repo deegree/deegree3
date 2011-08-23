@@ -50,6 +50,22 @@ import java.util.List;
  */
 public class Address {
 
+    /**
+     * @param deliveryPoint
+     *            the deliveryPoint to set
+     */
+    public void setDeliveryPoint( List<String> deliveryPoint ) {
+        this.deliveryPoint = deliveryPoint;
+    }
+
+    /**
+     * @param electronicMailAddress
+     *            the electronicMailAddress to set
+     */
+    public void setElectronicMailAddress( List<String> electronicMailAddress ) {
+        this.electronicMailAddress = electronicMailAddress;
+    }
+
     private List<String> deliveryPoint;
 
     private String city;

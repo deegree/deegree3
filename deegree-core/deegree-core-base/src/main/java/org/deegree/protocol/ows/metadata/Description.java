@@ -60,6 +60,18 @@ public class Description {
 
     private List<Pair<List<LanguageString>, CodeType>> keywords;
 
+    public void setTitle( List<LanguageString> title ) {
+        this.title = title;
+    }
+
+    public void setAbstract( List<LanguageString> abstract_ ) {
+        this.serviceAbstract = abstract_;
+    }
+
+    public void setKeywords( List<Pair<List<LanguageString>, CodeType>> keywords ) {
+        this.keywords = keywords;
+    }
+
     /**
      * @return title, never <code>null</code>
      */

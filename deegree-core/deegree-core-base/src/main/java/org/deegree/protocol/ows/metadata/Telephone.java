@@ -55,6 +55,22 @@ public class Telephone {
     private List<String> facsimile;
 
     /**
+     * @param voice
+     *            the voice to set
+     */
+    public void setVoice( List<String> voice ) {
+        this.voice = voice;
+    }
+
+    /**
+     * @param facsimile
+     *            the facsimile to set
+     */
+    public void setFacsimile( List<String> facsimile ) {
+        this.facsimile = facsimile;
+    }
+
+    /**
      * @return voice, may be empty but never <code>null</code>.
      */
     public List<String> getVoice() {

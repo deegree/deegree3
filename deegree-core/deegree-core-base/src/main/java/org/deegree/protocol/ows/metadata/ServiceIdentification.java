@@ -66,6 +66,37 @@ public class ServiceIdentification {
     private List<String> accessConstraints;
 
     /**
+     * @return the fees
+     */
+    public String getFees() {
+        return fees;
+    }
+
+    /**
+     * @param serviceTypeVersion
+     *            the serviceTypeVersion to set
+     */
+    public void setServiceTypeVersion( List<Version> serviceTypeVersion ) {
+        this.serviceTypeVersion = serviceTypeVersion;
+    }
+
+    /**
+     * @param profiles
+     *            the profiles to set
+     */
+    public void setProfiles( List<String> profiles ) {
+        this.profiles = profiles;
+    }
+
+    /**
+     * @param accessConstraints
+     *            the accessConstraints to set
+     */
+    public void setAccessConstraints( List<String> accessConstraints ) {
+        this.accessConstraints = accessConstraints;
+    }
+
+    /**
      * @param description
      */
     public void setDescription( Description description ) {
