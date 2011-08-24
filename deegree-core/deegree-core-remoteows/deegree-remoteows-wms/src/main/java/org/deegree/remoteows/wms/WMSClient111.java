@@ -1005,6 +1005,22 @@ public class WMSClient111 implements WMSClient {
             desc.setAbstract( singletonList( new LanguageString( abstract_, null ) ) );
         }
         desc.setKeywords( keywords );
+
+        // use first envelope that we can find
+        Envelope envelope = getLatLonBoundingBox( name );
+        for ( String crs : getCoordinateSystems( name ) ) {
+            if ( envelope != null ) {
+                break;
+            }
+            envelope = getBoundingBox( crs, name );
+        }
+        md.setEnvelope( envelope );
+        List<ICRS> crsList = new ArrayList<ICRS>();
+        for ( String crs : getCoordinateSystems( name ) ) {
+            crsList.add( CRSManager.getCRSRef( crs, true ) );
+        }
+        md.setCoordinateSystems( crsList );
+
         return md;
     }
 

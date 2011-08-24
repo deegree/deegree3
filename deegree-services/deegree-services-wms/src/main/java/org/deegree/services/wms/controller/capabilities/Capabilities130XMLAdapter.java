@@ -226,6 +226,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             }
             writer.writeEndElement();
         }
+
+        writeSrsAndEnvelope( writer, md.getCoordinateSystems(), md.getEnvelope() );
+
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
         }
@@ -249,36 +252,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         }
     }
 
-    @Deprecated
-    private void writeLayers( XMLStreamWriter writer, Layer layer )
+    private static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> crsList, Envelope layerEnv )
                             throws XMLStreamException {
-        if ( layer.getTitle() == null || !layer.isAvailable() ) {
-            return;
-        }
-
-        writer.writeStartElement( WMSNS, "Layer" );
-        if ( layer.isQueryable() ) {
-            writer.writeAttribute( "queryable", "1" );
-        }
-
-        maybeWriteElementNS( writer, WMSNS, "Name", layer.getName() );
-        writeElement( writer, WMSNS, "Title", layer.getTitle() );
-        maybeWriteElementNS( writer, WMSNS, "Abstract", layer.getAbstract() );
-
-        if ( !layer.getKeywords().isEmpty() ) {
-            writer.writeStartElement( WMSNS, "KeywordList" );
-            for ( Pair<org.deegree.commons.tom.ows.CodeType, LanguageStringType> p : layer.getKeywords() ) {
-                writer.writeStartElement( WMSNS, "Keyword" );
-                if ( p.first != null ) {
-                    writer.writeAttribute( "vocabulary", p.first.getCodeSpace() );
-                }
-                writer.writeCharacters( p.second.getValue() );
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-        }
-
-        for ( ICRS crs : layer.getSrs() ) {
+        for ( ICRS crs : crsList ) {
             if ( crs.getAlias().startsWith( "AUTO" ) ) {
                 writeElement( writer, WMSNS, "CRS", crs.getAlias().replace( "AUTO", "AUTO2" ) );
             } else {
@@ -289,7 +265,6 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         ICRS latlon;
         try {
             latlon = lookup( "CRS:84" );
-            Envelope layerEnv = layer.getBbox();
             if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
                 Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
                 writer.writeStartElement( WMSNS, "EX_GeographicBoundingBox" );
@@ -308,7 +283,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 writeElement( writer, WMSNS, "northBoundLatitude", max.get1() + "" );
                 writer.writeEndElement();
 
-                for ( ICRS crs : layer.getSrs() ) {
+                for ( ICRS crs : crsList ) {
                     if ( crs.getAlias().startsWith( "AUTO" ) ) {
                         continue;
                     }
@@ -329,11 +304,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                         } else {
                             envelope = transformer.transform( layerEnv );
                         }
-                    } catch ( IllegalArgumentException e ) {
-                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                        continue;
-                    } catch ( TransformationException e ) {
+                    } catch ( Throwable e ) {
                         LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
                         LOG.trace( "Stack trace:", e );
                         continue;
@@ -377,13 +348,42 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     writer.writeEndElement();
                 }
             }
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
         } catch ( Throwable e ) {
             LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
+    }
+
+    @Deprecated
+    private void writeLayers( XMLStreamWriter writer, Layer layer )
+                            throws XMLStreamException {
+        if ( layer.getTitle() == null || !layer.isAvailable() ) {
+            return;
+        }
+
+        writer.writeStartElement( WMSNS, "Layer" );
+        if ( layer.isQueryable() ) {
+            writer.writeAttribute( "queryable", "1" );
+        }
+
+        maybeWriteElementNS( writer, WMSNS, "Name", layer.getName() );
+        writeElement( writer, WMSNS, "Title", layer.getTitle() );
+        maybeWriteElementNS( writer, WMSNS, "Abstract", layer.getAbstract() );
+
+        if ( !layer.getKeywords().isEmpty() ) {
+            writer.writeStartElement( WMSNS, "KeywordList" );
+            for ( Pair<org.deegree.commons.tom.ows.CodeType, LanguageStringType> p : layer.getKeywords() ) {
+                writer.writeStartElement( WMSNS, "Keyword" );
+                if ( p.first != null ) {
+                    writer.writeAttribute( "vocabulary", p.first.getCodeSpace() );
+                }
+                writer.writeCharacters( p.second.getValue() );
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        }
+
+        writeSrsAndEnvelope( writer, layer.getSrs(), layer.getBbox() );
 
         Map<String, Dimension<?>> dims = layer.getDimensions();
         for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {

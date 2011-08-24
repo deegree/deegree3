@@ -191,7 +191,9 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             }
             writer.writeEndElement();
         }
-        // TODO write bboxes etc
+
+        writeSrsAndEnvelope( writer, md.getCoordinateSystems(), md.getEnvelope() );
+
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
         }
@@ -212,6 +214,63 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                 writeTheme( writer, t );
             }
             writer.writeEndElement();
+        }
+    }
+
+    private static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> srs, Envelope layerEnv )
+                            throws XMLStreamException {
+        for ( ICRS crs : srs ) {
+            writeElement( writer, "SRS", crs.getAlias() );
+        }
+
+        ICRS latlon;
+        try {
+            latlon = CRSManager.lookup( "CRS:84" );
+            if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
+                Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
+                writer.writeStartElement( "LatLonBoundingBox" );
+                writer.writeAttribute( "minx", Double.toString( bbox.getMin().get0() ) );
+                writer.writeAttribute( "miny", Double.toString( bbox.getMin().get1() ) );
+                writer.writeAttribute( "maxx", Double.toString( bbox.getMax().get0() ) );
+                writer.writeAttribute( "maxy", Double.toString( bbox.getMax().get1() ) );
+                writer.writeEndElement();
+
+                for ( ICRS crs : srs ) {
+                    if ( crs.getAlias().startsWith( "AUTO" ) ) {
+                        continue;
+                    }
+                    // try {
+                    // crs
+                    // } catch ( UnknownCRSException e ) {
+                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+                    // LOG.trace( "Stack trace:", e );
+                    // continue;
+                    // }
+                    Envelope envelope;
+                    try {
+                        if ( layerEnv.getCoordinateSystem() == null ) {
+                            envelope = new GeometryTransformer( crs ).transform( layerEnv, latlon );
+                        } else {
+                            envelope = new GeometryTransformer( crs ).transform( layerEnv );
+                        }
+                    } catch ( Throwable e ) {
+                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                        continue;
+                    }
+
+                    writer.writeStartElement( "BoundingBox" );
+                    writer.writeAttribute( "SRS", crs.getAlias() );
+                    writer.writeAttribute( "minx", Double.toString( envelope.getMin().get0() ) );
+                    writer.writeAttribute( "miny", Double.toString( envelope.getMin().get1() ) );
+                    writer.writeAttribute( "maxx", Double.toString( envelope.getMax().get0() ) );
+                    writer.writeAttribute( "maxy", Double.toString( envelope.getMax().get1() ) );
+                    writer.writeEndElement();
+                }
+            }
+        } catch ( Throwable e ) {
+            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         }
     }
 
@@ -239,70 +298,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        for ( ICRS crs : layer.getSrs() ) {
-            writeElement( writer, "SRS", crs.getAlias() );
-        }
-
-        ICRS latlon;
-        try {
-            latlon = CRSManager.lookup( "CRS:84" );
-            Envelope layerEnv = layer.getBbox();
-            if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
-                Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
-                writer.writeStartElement( "LatLonBoundingBox" );
-                writer.writeAttribute( "minx", Double.toString( bbox.getMin().get0() ) );
-                writer.writeAttribute( "miny", Double.toString( bbox.getMin().get1() ) );
-                writer.writeAttribute( "maxx", Double.toString( bbox.getMax().get0() ) );
-                writer.writeAttribute( "maxy", Double.toString( bbox.getMax().get1() ) );
-                writer.writeEndElement();
-
-                for ( ICRS crs : layer.getSrs() ) {
-                    if ( crs.getAlias().startsWith( "AUTO" ) ) {
-                        continue;
-                    }
-                    // try {
-                    // crs
-                    // } catch ( UnknownCRSException e ) {
-                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                    // LOG.trace( "Stack trace:", e );
-                    // continue;
-                    // }
-                    Envelope envelope;
-                    try {
-                        if ( layerEnv.getCoordinateSystem() == null ) {
-                            envelope = new GeometryTransformer( crs ).transform( layerEnv, latlon );
-                        } else {
-                            envelope = new GeometryTransformer( crs ).transform( layerEnv );
-                        }
-                    } catch ( IllegalArgumentException e ) {
-                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                        continue;
-                    } catch ( TransformationException e ) {
-                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                        continue;
-                    }
-
-                    writer.writeStartElement( "BoundingBox" );
-                    writer.writeAttribute( "SRS", crs.getAlias() );
-                    writer.writeAttribute( "minx", Double.toString( envelope.getMin().get0() ) );
-                    writer.writeAttribute( "miny", Double.toString( envelope.getMin().get1() ) );
-                    writer.writeAttribute( "maxx", Double.toString( envelope.getMax().get0() ) );
-                    writer.writeAttribute( "maxy", Double.toString( envelope.getMax().get1() ) );
-                    writer.writeEndElement();
-                }
-            }
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( IllegalArgumentException e ) {
-            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( TransformationException e ) {
-            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
+        writeSrsAndEnvelope( writer, layer.getSrs(), layer.getBbox() );
 
         final Map<String, Dimension<?>> dims = layer.getDimensions();
         for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
