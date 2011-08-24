@@ -41,9 +41,9 @@ import java.util.LinkedList;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
@@ -59,24 +59,9 @@ import org.deegree.style.se.unevaluated.Style;
 public interface Layer {
 
     /**
-     * @return the name of the layer (nowadays called identifier)
-     */
-    String getIdentifier();
-
-    /**
      * @return the layer metadata
      */
     LayerMetadata getMetadata();
-
-    /**
-     * @return the layer envelope, may be null, may be in any CRS
-     */
-    Envelope getEnvelope();
-
-    /**
-     * @param envelope
-     */
-    void setEnvelope( Envelope envelope );
 
     /**
      * Method to paint on a graphics object.

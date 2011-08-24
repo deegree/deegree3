@@ -43,11 +43,11 @@ import java.util.Map;
 
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 
 /**
  * 
@@ -90,6 +90,6 @@ public interface WMSClient {
                                              Envelope bbox, ICRS srs, int count, Map<String, String> hardParameters )
                             throws IOException;
 
-    public Tree<StringPair> getLayerTree();
+    public Tree<LayerMetadata> getLayerTree();
 
 }

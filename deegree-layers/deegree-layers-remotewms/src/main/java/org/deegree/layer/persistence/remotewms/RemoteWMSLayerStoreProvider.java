@@ -10,15 +10,14 @@ import java.util.Map;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.layer.Layer;
-import org.deegree.layer.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
-import org.deegree.remoteows.RemoteOWSManager;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.remoteows.RemoteOWS;
+import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wms.RemoteWMS;
 import org.deegree.remoteows.wms.WMSClient;
 
@@ -50,10 +49,10 @@ public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
             Map<String, Layer> map = new LinkedHashMap<String, Layer>();
 
             WMSClient client = ( (RemoteWMS) store ).getClient();
-            List<StringPair> layers = client.getLayerTree().flattenDepthFirst();
-            for ( StringPair p : layers ) {
-                if ( p.first != null ) {
-                    map.put( p.first, new RemoteWMSLayer( new LayerMetadata(), client, p.first ) );
+            List<LayerMetadata> layers = client.getLayerTree().flattenDepthFirst();
+            for ( LayerMetadata md : layers ) {
+                if ( md.getName() != null ) {
+                    map.put( md.getName(), new RemoteWMSLayer( md, client ) );
                 }
             }
             return new MultipleLayerStore( map );

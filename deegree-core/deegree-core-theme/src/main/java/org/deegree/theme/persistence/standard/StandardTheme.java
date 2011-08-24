@@ -46,9 +46,8 @@ import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.utils.StringUtils;
 import org.deegree.layer.Layer;
-import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.theme.Theme;
 
 /**
@@ -59,14 +58,14 @@ public class StandardTheme implements Theme {
 
     // private DeegreeWorkspace workspace;
 
-    private final String identifier;
-
     private final List<Theme> themes;
 
     private final List<Layer> layers;
 
-    public StandardTheme( String identifier, List<Theme> themes, List<Layer> layers ) {
-        this.identifier = identifier;
+    private LayerMetadata metadata;
+
+    public StandardTheme( LayerMetadata metadata, List<Theme> themes, List<Layer> layers ) {
+        this.metadata = metadata;
         this.themes = themes;
         this.layers = layers;
     }
@@ -83,14 +82,8 @@ public class StandardTheme implements Theme {
     }
 
     @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public Description getDescription() {
-        // TODO should be possible to configure first
-        return null;
+    public LayerMetadata getMetadata() {
+        return metadata;
     }
 
     @Override
@@ -107,7 +100,7 @@ public class StandardTheme implements Theme {
         StringBuilder sb = new StringBuilder();
         sb.append( repeat( indent, "  " ) );
         sb.append( " - " );
-        sb.append( identifier );
+        sb.append( metadata.getName() );
         sb.append( " " );
         sb.append( layers.size() );
         sb.append( " layers\n" );

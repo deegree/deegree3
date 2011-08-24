@@ -45,10 +45,10 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.struct.Tree;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreManager;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wms.RemoteWMS;
@@ -76,17 +76,17 @@ public class RemoteWMSThemeProvider implements ThemeProvider {
         this.workspace = workspace;
     }
 
-    private Theme buildTheme( Tree<StringPair> tree, LayerStore store ) {
+    private Theme buildTheme( Tree<LayerMetadata> tree, LayerStore store ) {
         List<Theme> thms = new ArrayList<Theme>();
         List<Layer> lays = new ArrayList<Layer>();
-        if ( tree.value.first != null ) {
-            Layer l = store.get( tree.value.first );
+        if ( tree.value.getName() != null ) {
+            Layer l = store.get( tree.value.getName() );
             if ( l != null ) {
                 lays.add( l );
             }
         }
-        Theme thm = new StandardTheme( tree.value.first, thms, lays );
-        for ( Tree<StringPair> child : tree.children ) {
+        Theme thm = new StandardTheme( tree.value, thms, lays );
+        for ( Tree<LayerMetadata> child : tree.children ) {
             thms.add( buildTheme( child, store ) );
         }
         return thm;
@@ -115,7 +115,7 @@ public class RemoteWMSThemeProvider implements ThemeProvider {
             }
 
             WMSClient client = ( (RemoteWMS) ows ).getClient();
-            Tree<StringPair> tree = client.getLayerTree();
+            Tree<LayerMetadata> tree = client.getLayerTree();
 
             return buildTheme( tree, store );
         } catch ( Throwable e ) {

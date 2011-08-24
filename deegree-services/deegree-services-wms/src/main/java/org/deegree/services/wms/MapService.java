@@ -248,7 +248,7 @@ public class MapService {
                     themes.add( thm );
 
                     for ( org.deegree.layer.Layer l : Themes.getAllLayers( thm ) ) {
-                        newLayers.put( l.getIdentifier(), l );
+                        newLayers.put( l.getMetadata().getName(), l );
                     }
                 }
             }

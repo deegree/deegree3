@@ -53,6 +53,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreManager;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.theme.persistence.standard.jaxb.ThemeType;
@@ -98,7 +99,9 @@ public class StandardThemeProvider implements ThemeProvider {
         for ( ThemeType tt : themes ) {
             thms.add( buildTheme( tt.getIdentifier(), tt.getLayer(), tt.getTheme(), stores ) );
         }
-        return new StandardTheme( identifier, thms, lays );
+        LayerMetadata md = new LayerMetadata();
+        md.setName( identifier );
+        return new StandardTheme( md, thms, lays );
     }
 
     @Override

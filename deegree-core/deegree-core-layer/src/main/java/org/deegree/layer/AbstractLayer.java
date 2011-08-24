@@ -46,9 +46,9 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
 
@@ -63,8 +63,6 @@ import org.deegree.style.se.unevaluated.Style;
 @LoggingNotes(warn = "logs information about dimension handling")
 public abstract class AbstractLayer implements Layer {
 
-    private Envelope bbox;
-
     Dimension<Date> time;
 
     HashMap<String, Dimension<Object>> dimensions = new HashMap<String, Dimension<Object>>();
@@ -74,7 +72,7 @@ public abstract class AbstractLayer implements Layer {
     public static final Mapper<String, Layer> LAYER_NAME = new Mapper<String, Layer>() {
         @Override
         public String apply( Layer u ) {
-            return u.getIdentifier();
+            return u.getMetadata().getName();
         }
     };
 
@@ -85,34 +83,13 @@ public abstract class AbstractLayer implements Layer {
         }
     };
 
-    private String identifier;
-
     protected AbstractLayer( LayerMetadata md ) {
         this.metadata = md;
     }
 
     @Override
-    public Envelope getEnvelope() {
-        return bbox;
-    }
-
-    @Override
     public LayerMetadata getMetadata() {
         return metadata;
-    }
-
-    public void setIdentifier( String identifier ) {
-        this.identifier = identifier;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public void setEnvelope( Envelope envelope ) {
-        this.bbox = envelope;
     }
 
     @Override

@@ -70,12 +70,12 @@ public class SingleLayerStore implements LayerStore {
 
     @Override
     public List<Layer> getAll() {
-        return Collections.singletonList( get( layer.getIdentifier() ) );
+        return Collections.singletonList( get( layer.getMetadata().getName() ) );
     }
 
     @Override
     public Layer get( String identifier ) {
-        if ( layer.getIdentifier().equals( identifier ) ) {
+        if ( layer.getMetadata().getName().equals( identifier ) ) {
             return layer;
         }
         return null;

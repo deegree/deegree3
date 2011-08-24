@@ -7,10 +7,10 @@ import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.layer.AbstractLayer;
-import org.deegree.layer.LayerMetadata;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.remoteows.wms.WMSClient;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
@@ -20,21 +20,17 @@ public class RemoteWMSLayer extends AbstractLayer {
 
     private final WMSClient client;
 
-    private final String name;
-
-    protected RemoteWMSLayer( LayerMetadata md, WMSClient client, String name ) {
+    protected RemoteWMSLayer( LayerMetadata md, WMSClient client ) {
         super( md );
         this.client = client;
-        this.name = name;
-        setIdentifier( name );
     }
 
     @Override
     public LinkedList<String> paintMap( RenderContext context, RenderingInfo info, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
         try {
-            Pair<BufferedImage, String> map = client.getMap( singletonList( name ), info.getWidth(), info.getHeight(),
-                                                             info.getEnvelope(),
+            Pair<BufferedImage, String> map = client.getMap( singletonList( getMetadata().getName() ), info.getWidth(),
+                                                             info.getHeight(), info.getEnvelope(),
                                                              info.getEnvelope().getCoordinateSystem(),
                                                              client.getFormats( WMSRequestType.GetMap ).getFirst(),
                                                              true, true, 60, false, null, null );

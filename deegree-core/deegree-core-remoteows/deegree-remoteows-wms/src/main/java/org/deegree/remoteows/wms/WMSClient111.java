@@ -37,6 +37,7 @@
 package org.deegree.remoteows.wms;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyPassword;
@@ -81,9 +82,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.struct.Tree;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -108,7 +110,9 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.slf4j.Logger;
 
 /**
@@ -975,24 +979,49 @@ public class WMSClient111 implements WMSClient {
         }
     }
 
-    private void buildLayerTree( Tree<StringPair> node, OMElement lay ) {
+    private LayerMetadata extractMetadata( OMElement lay ) {
+        String name = capabilities.getNodeAsString( lay, new XPath( "Name" ), null );
+        String title = capabilities.getNodeAsString( lay, new XPath( "Title" ), null );
+        String abstract_ = capabilities.getNodeAsString( lay, new XPath( "Abstract" ), null );
+        List<Pair<List<LanguageString>, CodeType>> keywords = null;
+        OMElement kwlist = capabilities.getElement( lay, new XPath( "KeywordList" ) );
+        if ( kwlist != null ) {
+            keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+            Pair<List<LanguageString>, CodeType> p = new Pair<List<LanguageString>, CodeType>();
+            p.first = new ArrayList<LanguageString>();
+            keywords.add( p );
+            String[] kws = capabilities.getNodesAsStrings( kwlist, new XPath( "Keyword" ) );
+            for ( String kw : kws ) {
+                p.first.add( new LanguageString( kw, null ) );
+            }
+        }
+
+        LayerMetadata md = new LayerMetadata();
+        Description desc = new Description();
+        md.setName( name );
+        md.setDescription( desc );
+        desc.setTitle( singletonList( new LanguageString( title, null ) ) );
+        if ( abstract_ != null ) {
+            desc.setAbstract( singletonList( new LanguageString( abstract_, null ) ) );
+        }
+        desc.setKeywords( keywords );
+        return md;
+    }
+
+    private void buildLayerTree( Tree<LayerMetadata> node, OMElement lay ) {
         for ( OMElement l : capabilities.getElements( lay, new XPath( "Layer" ) ) ) {
-            Tree<StringPair> child = new Tree<StringPair>();
-            String name = capabilities.getNodeAsString( l, new XPath( "Name" ), null );
-            String title = capabilities.getNodeAsString( l, new XPath( "Title" ), null );
-            child.value = new StringPair( name, title );
+            Tree<LayerMetadata> child = new Tree<LayerMetadata>();
+            child.value = extractMetadata( l );
             node.children.add( child );
             buildLayerTree( child, l );
         }
     }
 
     @Override
-    public Tree<StringPair> getLayerTree() {
-        Tree<StringPair> tree = new Tree<StringPair>();
+    public Tree<LayerMetadata> getLayerTree() {
+        Tree<LayerMetadata> tree = new Tree<LayerMetadata>();
         OMElement lay = capabilities.getElement( capabilities.getRootElement(), new XPath( "//Capability/Layer" ) );
-        String name = capabilities.getNodeAsString( lay, new XPath( "Name" ), null );
-        String title = capabilities.getNodeAsString( lay, new XPath( "Title" ), null );
-        tree.value = new StringPair( name, title );
+        tree.value = extractMetadata( lay );
         buildLayerTree( tree, lay );
         return tree;
     }

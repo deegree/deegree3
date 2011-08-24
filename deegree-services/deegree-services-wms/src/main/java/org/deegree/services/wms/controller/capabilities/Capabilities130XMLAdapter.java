@@ -77,6 +77,7 @@ import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.ServiceContact;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
@@ -208,10 +209,23 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeStartElement( WMSNS, "Layer" );
         // TODO
         writer.writeAttribute( "queryable", "1" );
-        if ( theme.getIdentifier() != null ) {
-            writeElement( writer, WMSNS, "Name", theme.getIdentifier() );
+        LayerMetadata md = theme.getMetadata();
+        if ( md.getName() != null ) {
+            writeElement( writer, WMSNS, "Name", md.getName() );
         }
-        writeElement( writer, WMSNS, "Title", theme.getIdentifier() );
+        writeElement( writer, WMSNS, "Title", md.getDescription().getTitle().get( 0 ).getString() );
+        List<LanguageString> abs = md.getDescription().getAbstract();
+        if ( abs != null && !abs.isEmpty() ) {
+            writeElement( writer, WMSNS, "Abstract", abs.get( 0 ).getString() );
+        }
+        List<Pair<List<LanguageString>, CodeType>> kws = md.getDescription().getKeywords();
+        if ( kws != null && !kws.isEmpty() && !kws.get( 0 ).first.isEmpty() ) {
+            writer.writeStartElement( WMSNS, "KeywordList" );
+            for ( LanguageString ls : kws.get( 0 ).first ) {
+                writeElement( writer, WMSNS, "Keyword", ls.getString() );
+            }
+            writer.writeEndElement();
+        }
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
         }

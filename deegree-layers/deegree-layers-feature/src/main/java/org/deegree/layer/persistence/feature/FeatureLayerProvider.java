@@ -62,12 +62,12 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.layer.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.SingleLayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayer;
 import org.deegree.layer.persistence.feature.jaxb.ScaleDenominatorsType;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 
 /**
  * @author stranger

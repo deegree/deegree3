@@ -44,16 +44,14 @@ import java.util.List;
 
 import org.deegree.commons.config.Resource;
 import org.deegree.layer.Layer;
-import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.protocol.wms.metadata.LayerMetadata;
 
 public interface Theme extends Resource {
 
-    String getIdentifier();
-    
-    Description getDescription();
-    
+    LayerMetadata getMetadata();
+
     List<Layer> getLayers();
-    
+
     List<Theme> getThemes();
-    
+
 }
