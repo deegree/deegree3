@@ -1,11 +1,13 @@
 package org.deegree.layer.persistence.remotewms;
 
 import static java.util.Collections.singletonList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
@@ -16,8 +18,11 @@ import org.deegree.remoteows.wms.WMSClient;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
+import org.slf4j.Logger;
 
 public class RemoteWMSLayer extends AbstractLayer {
+
+    private static final Logger LOG = getLogger( RemoteWMSLayer.class );
 
     private final WMSClient client;
 
@@ -39,9 +44,16 @@ public class RemoteWMSLayer extends AbstractLayer {
                 context.paintImage( map.first );
             }
         } catch ( Throwable e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.warn( "Error when retrieving remote map: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         }
         return new LinkedList<String>();
     }
+
+    @Override
+    public Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, Style style )
+                            throws MissingDimensionValue, InvalidDimensionValue {
+        return super.getFeatures( info, style );
+    }
+
 }

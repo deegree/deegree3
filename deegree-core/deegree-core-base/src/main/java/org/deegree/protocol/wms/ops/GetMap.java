@@ -75,7 +75,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31400 $, $Date: 2011-08-02 10:11:48 +0200 (Tue, 02 Aug 2011) $
  */
-@LoggingNotes(trace = "logs stack traces", debug = "logs request scale", warn = "logs if scale could not be calculated, also logs values of invalid VSPs, like ANTIALIAS, PIXELSIZE etc.", error = "logs errors when handling dimension values")
+@LoggingNotes(trace = "logs stack traces", debug = "logs request scale", warn = "logs if scale could not be calculated")
 public class GetMap {
 
     private static final Logger LOG = getLogger( GetMap.class );
