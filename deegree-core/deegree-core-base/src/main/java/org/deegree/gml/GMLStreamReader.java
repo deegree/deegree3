@@ -42,6 +42,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
+import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.CRS;

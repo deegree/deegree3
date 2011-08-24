@@ -40,11 +40,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.feature.FeatureReference;
 
 /**
