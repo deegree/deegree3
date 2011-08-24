@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs.coverages;
 
+import static org.deegree.coverage.raster.utils.CoverageTransform.transform;
+
 import org.deegree.coverage.filter.raster.RasterFilter;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -81,7 +83,12 @@ public class SimpleCoverage extends WCSCoverage {
     public CoverageResult getCoverageResult( Envelope env, Grid grid, String format, String interpolation,
                                              RangeSet requestedRangeset )
                             throws WCServiceException {
-        AbstractRaster result = CoverageTransform.transform( (AbstractRaster) coverage, env, grid, interpolation );
+        AbstractRaster result;
+        try {
+            result = transform( (AbstractRaster) coverage, env, grid, interpolation );
+        } catch ( Exception e ) {
+            throw new RuntimeException( "error while transforming raster result: " + e.getMessage(), e );
+        }
         if ( requestedRangeset != null ) {
             RasterFilter filter = new RasterFilter( result );
             result = filter.apply( getRangeSet(), requestedRangeset );

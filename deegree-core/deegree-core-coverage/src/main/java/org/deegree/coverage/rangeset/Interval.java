@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/services/wcs/model/Interval.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -42,8 +42,8 @@ package org.deegree.coverage.rangeset;
  * The <code>Interval</code> an intervall.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: 19041 $, $Date: 2009-08-11 17:04:57 +0200 (Di, 11 Aug 2009) $
+ * @author last edited by: $Author$
+ * @version $Revision$, $Date$
  * @param <T>
  *            of the values in this interval
  * @param <R>
@@ -72,8 +72,8 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
      * The <code>Closure</code> of an interval
      * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * @author last edited by: $Author: rbezema $
-     * @version $Revision: 19041 $, $Date: 2009-08-11 17:04:57 +0200 (Di, 11 Aug 2009) $
+     * @author last edited by: $Author$
+     * @version $Revision$, $Date$
      * 
      */
     public enum Closure {

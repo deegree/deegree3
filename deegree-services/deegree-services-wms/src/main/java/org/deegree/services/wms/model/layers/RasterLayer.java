@@ -42,6 +42,7 @@ import static org.deegree.coverage.rangeset.RangeSetBuilder.createBandRangeSetFr
 import static org.deegree.coverage.rangeset.ValueType.Void;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOR;
+import static org.deegree.coverage.raster.utils.CoverageTransform.transform;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -89,7 +90,6 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.dims.DimensionInterval;
@@ -178,9 +178,8 @@ public class RasterLayer extends Layer {
             if ( raster == null ) {
                 raster = multiraster.getRaster( bbox.getSpan0() );
             }
-            SimpleRaster res = CoverageTransform.transform( raster, fi.getClickBox(),
-                                                            Grid.fromSize( 1, 1, MAX_VALUE, bbox ),
-                                                            InterpolationType.NEAREST_NEIGHBOR.toString() ).getAsSimpleRaster();
+            SimpleRaster res = transform( raster, fi.getClickBox(), Grid.fromSize( 1, 1, MAX_VALUE, bbox ),
+                                               InterpolationType.NEAREST_NEIGHBOR.toString() ).getAsSimpleRaster();
             RasterData data = res.getRasterData();
             GenericFeatureCollection col = new GenericFeatureCollection();
             List<Property> props = new LinkedList<Property>();
@@ -221,9 +220,6 @@ public class RasterLayer extends Layer {
             LOG.trace( "Stack trace:", e );
         } catch ( UnknownCRSException e ) {
             LOG.warn( "Could not transform bbox of request to raster CRS." );
-            LOG.trace( "Stack trace:", e );
-        } catch ( WCServiceException e ) {
-            LOG.debug( "No raster data was found for this bbox." );
             LOG.trace( "Stack trace:", e );
         }
         return new Pair<FeatureCollection, LinkedList<String>>( null, new LinkedList<String>() );
@@ -277,8 +273,8 @@ public class RasterLayer extends Layer {
             }
 
             raster = CoverageTransform.transform( raster, bbox,
-                                                  Grid.fromSize( gm.getWidth(), gm.getHeight(), MAX_VALUE, bbox ),
-                                                  interpol.toString() );
+                                                       Grid.fromSize( gm.getWidth(), gm.getHeight(), MAX_VALUE, bbox ),
+                                                       interpol.toString() );
 
             if ( p != null && p.first != null ) {
                 RangeSet cbr = createBandRangeSetFromRaster( null, null, raster );
@@ -306,9 +302,6 @@ public class RasterLayer extends Layer {
             LOG.trace( "Stack trace:", e );
         } catch ( UnknownCRSException e ) {
             LOG.warn( "Could not transform bbox of request to raster CRS." );
-            LOG.trace( "Stack trace:", e );
-        } catch ( WCServiceException e ) {
-            LOG.debug( "No raster data was found for this bbox." );
             LOG.trace( "Stack trace:", e );
         }
         return warnings;

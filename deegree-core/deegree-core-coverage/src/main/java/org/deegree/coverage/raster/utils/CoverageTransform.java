@@ -41,8 +41,8 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.wcs.WCServiceException;
 import org.slf4j.Logger;
 
 /**
@@ -66,11 +66,11 @@ public class CoverageTransform {
      * @param grid
      * @param interpolation
      * @return the transformation result
-     * @throws WCServiceException
+     * @throws TransformationException
      *             if the transformation fails
      */
     public static AbstractRaster transform( AbstractRaster raster, Envelope env, Grid grid, String interpolation )
-                            throws WCServiceException {
+                            throws TransformationException {
         LOG.debug( "Transforming raster with envelope '{}' and grid '{}', interpolation method '{}'.",
                    new Object[] { env, grid, interpolation } );
         AbstractRaster result;
@@ -80,7 +80,7 @@ public class CoverageTransform {
                                        InterpolationType.fromString( interpolation ) );
         } catch ( Exception e ) {
             LOG.debug( "Original stack trace", e );
-            throw new WCServiceException( "error while transforming raster result: " + e.getMessage(), e );
+            throw new TransformationException( "error while transforming raster result: " + e.getMessage(), e );
         }
         return result;
     }

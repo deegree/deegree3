@@ -1,3 +1,1 @@
-org.deegree.coverage.raster.utils.RasterBuilder
 org.deegree.protocol.wms.raster.WMSBuilder
-org.deegree.coverage.persistence.pyramid.PyramidProvider

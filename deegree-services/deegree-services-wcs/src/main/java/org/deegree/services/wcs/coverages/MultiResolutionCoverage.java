@@ -41,6 +41,7 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.utils.CoverageTransform;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.services.wcs.model.CoverageOptions;
@@ -85,7 +86,12 @@ public class MultiResolutionCoverage extends WCSCoverage {
                             throws WCServiceException {
         AbstractRaster rasterLevel = ( (MultiResolutionRaster) coverage ).getRaster( grid.getResolution() );
 
-        AbstractRaster result = CoverageTransform.transform( rasterLevel, env, grid, interpolation );
+        AbstractRaster result;
+        try {
+            result = CoverageTransform.transform( rasterLevel, env, grid, interpolation );
+        } catch ( TransformationException e ) {
+            throw new RuntimeException( "error while transforming raster result: " + e.getMessage(), e );
+        }
         if ( requestedRangeset != null ) {
             RasterFilter filter = new RasterFilter( result );
             result = filter.apply( getRangeSet(), requestedRangeset );

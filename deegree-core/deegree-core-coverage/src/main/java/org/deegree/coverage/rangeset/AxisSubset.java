@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/services/wcs/model/AxisSubset.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -46,8 +46,8 @@ import java.util.List;
  * The <code>AxisSubset</code> class represents the subset defined on one of the axis of the coverage.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: 19041 $, $Date: 2009-08-11 17:04:57 +0200 (Di, 11 Aug 2009) $
+ * @author last edited by: $Author$
+ * @version $Revision$, $Date$
  * 
  */
 public class AxisSubset {
