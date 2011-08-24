@@ -92,7 +92,7 @@ public interface Envelope extends Geometry {
     public double getSpan1();
 
     /**
-     * Returns the envelope's span of the second dimension (in units of the associated coordinate system).
+     * Returns the envelope's span of the specified dimension (in units of the associated coordinate system).
      * 
      * @param dim
      *            index of the span to be returned
