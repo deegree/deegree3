@@ -73,6 +73,11 @@ public class DefaultMultiPoint extends DefaultMultiGeometry<Point> implements Mu
     }
 
     @Override
+    public boolean isSFSCompliant() {
+        return true;
+    }
+    
+    @Override
     protected com.vividsolutions.jts.geom.MultiPoint buildJTSGeometry() {
         com.vividsolutions.jts.geom.Point [] jtsMembers = new com.vividsolutions.jts.geom.Point[size()];
         int i = 0;

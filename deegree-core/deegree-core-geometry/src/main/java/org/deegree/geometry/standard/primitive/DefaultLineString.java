@@ -88,6 +88,11 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     public LineString getAsLineString() {
         return this;
     }
+    
+    @Override
+    public boolean isSFSCompliant() {
+        return true;
+    }
 
     @Override
     protected com.vividsolutions.jts.geom.LineString buildJTSGeometry() {

@@ -41,18 +41,21 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
 
 /**
  * Base interface for all vector geometry types.
  * <p>
- * Root of the ISO 19107/GML 3.1.1/GML 3.2.1 compliant geometry type hierarchy. All geometries inherit methods for the
- * common topological predicates (e.g. {@link #intersects(Geometry)} and {@link #touches(Geometry)} as well as the usual
- * geometry creation methods (e.g {@link #getIntersection(Geometry)} and {@link #getBuffer(Measure)}).
+ * Root of deegree's ISO 19107/GML 3.1.1/GML 3.2.1 compliant geometry type hierarchy. All geometries inherit methods for
+ * the common topological predicates (e.g. {@link #intersects(Geometry)} and {@link #touches(Geometry)} as well as the
+ * usual geometry creation methods (e.g {@link #getIntersection(Geometry)} and {@link #getBuffer(Measure)}).
  * </p>
  * <p>
  * <h4>Topological predicates</h4>
- * These are the methods for evaluting the common topological predicates:
+ * These are the methods for evaluating the common topological predicates:
  * <ul>
  * <li>{@link #contains(Geometry)}</li>
  * <li>{@link #crosses(Geometry)}</li>
@@ -82,7 +85,25 @@ import org.deegree.geometry.primitive.Point;
  * </ul>
  * </p>
  * <p>
- * <h4>Notes on the representation of GML geometries</h4>
+ * <h4>Simple Feature Specification (SFS) compliance</h4>
+ * TODO: check with specification<br>
+ * As the expressiveness of the ISO 19107 model is much more powerful than the <a
+ * href="http://www.opengeospatial.org/standards/sfa">Simple Feature Specification (SFS)</a>, a deegree {@link Geometry}
+ * is not automatically a compliant SFS geometry. {@link #isSFSCompliant()} can be used to check if this is the case, it
+ * returns <code>true</code> for the following subtypes / configurations:
+ * <ul>
+ * <li>{@link Point}</li>
+ * <li>{@link LineString}</li>
+ * <li>{@link Polygon} (with {@link LinearRing} boundaries)</li>
+ * <li>{@link MultiPoint}</li>
+ * <li>{@link MultiLineString}</li>
+ * <li>{@link MultiPolygon} (if the members are SFS-compliant)</li>
+ * <li>{@link MultiGeometry} (if the members are SFS-compliant)</li>
+ * </ul>
+ * If the geometry is not SFS-compliant, {@link SFSProfiler} can be used to simplify it into an SFS geometry.
+ * </p>
+ * <p>
+ * <h4>Representation of GML geometries</h4>
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
  * They are modelled using the {@link GMLStdProps} class. This design decision has been driven by the goal to make the
@@ -175,6 +196,13 @@ public interface Geometry extends GMLObject {
      *            properties to be attached
      */
     public void setGMLProperties( GMLStdProps props );
+
+    /**
+     * Returns whether this geometry complies with the <i>Simple Feature Specification (SFS)</i>.
+     * 
+     * @return <code>true</code>, if this geometry complies with the SFS, <code>false</code> otherwise
+     */
+    public boolean isSFSCompliant();
 
     /**
      * Returns the coordinate dimension, i.e. the dimension of the space that the geometry is embedded in.

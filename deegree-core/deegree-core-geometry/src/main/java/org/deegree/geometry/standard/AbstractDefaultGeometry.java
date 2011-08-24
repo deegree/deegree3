@@ -393,6 +393,11 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
+    public boolean isSFSCompliant() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         String wkt = WKTWriter.write( this );
         if ( wkt.length() > 1000 ) {

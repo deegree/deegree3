@@ -77,6 +77,11 @@ public class DefaultMultiLineString extends DefaultMultiGeometry<LineString> imp
     public MultiGeometryType getMultiGeometryType() {
         return MultiGeometryType.MULTI_LINE_STRING;
     }
+    
+    @Override
+    public boolean isSFSCompliant() {
+        return true;
+    }
 
     @Override
     protected com.vividsolutions.jts.geom.MultiLineString buildJTSGeometry() {

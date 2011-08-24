@@ -213,6 +213,16 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
     }
 
     @Override
+    public boolean isSFSCompliant() {
+        for ( Geometry member : this ) {
+            if ( !( member.isSFSCompliant() ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public MultiGeometryType getMultiGeometryType() {
         return MultiGeometryType.MULTI_GEOMETRY;
     }

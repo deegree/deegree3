@@ -59,7 +59,8 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
 
 /**
  * Converts a generic deegree {@link Geometry} instance (which may be anything from the ISO 19107 model) into a
- * {@link Geometry} that matches the capabilities of the Simple Feature Specification (SFS).
+ * {@link Geometry} that matches the capabilities of the <a href="http://www.opengeospatial.org/standards/sfa">Simple
+ * Feature Specification (SFS)</a>
  * <p/>
  * <h4>General conversion scheme</h4>
  * <ul>

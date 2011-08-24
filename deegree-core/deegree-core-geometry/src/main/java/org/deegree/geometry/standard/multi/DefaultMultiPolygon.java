@@ -38,6 +38,7 @@ package org.deegree.geometry.standard.multi;
 import java.util.List;
 
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Polygon;
@@ -76,6 +77,16 @@ public class DefaultMultiPolygon extends DefaultMultiGeometry<Polygon> implement
     @Override
     public MultiGeometryType getMultiGeometryType() {
         return MultiGeometryType.MULTI_POLYGON;
+    }
+    
+    @Override
+    public boolean isSFSCompliant() {
+        for ( Geometry member : this ) {
+            if ( !( member.isSFSCompliant() ) ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

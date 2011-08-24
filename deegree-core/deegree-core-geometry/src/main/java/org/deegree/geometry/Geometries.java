@@ -83,7 +83,7 @@ public class Geometries {
 
         MultiGeometry<?> homogenized = null;
 
-        List<?> deepMembers = new ArrayList( geometry.size() );
+        List<?> deepMembers = new ArrayList<Object>( geometry.size() );
         for ( Geometry member : geometry ) {
             collectMembersDeep( member, (List<GeometricPrimitive>) deepMembers );
         }
@@ -173,7 +173,7 @@ public class Geometries {
     }
 
     /**
-     * Returns a corresponding {@link Geometry} object for the given {@link Envelope}.
+     * Returns a corresponding {@link GeometricPrimitive} object for the given {@link Envelope}.
      * <p>
      * Depending on the extent, this can either be:
      * <ul>
@@ -187,7 +187,7 @@ public class Geometries {
      *            envelope, must not be <code>null</code>
      * @return corresponding geometry object, never <code>null</code>
      */
-    public static Geometry getAsGeometry( Envelope env ) {
+    public static GeometricPrimitive getAsGeometry( Envelope env ) {
         Point min = env.getMin();
         Point max = env.getMax();
         ICRS crs = env.getCoordinateSystem();

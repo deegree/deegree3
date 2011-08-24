@@ -143,6 +143,11 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     }
 
     @Override
+    public boolean isSFSCompliant() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         String s = "(" + coordinates[0];
         for ( int i = 1; i < coordinates.length; i++ ) {

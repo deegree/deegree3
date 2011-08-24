@@ -208,4 +208,9 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
     public void setPrecision( PrecisionModel pm ) {
         getReferencedObject().setPrecision( pm );
     }
+
+    @Override
+    public boolean isSFSCompliant() {
+        return getReferencedObject().isSFSCompliant();
+    }
 }

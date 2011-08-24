@@ -44,6 +44,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.Ring.RingType;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
@@ -110,6 +111,21 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     @Override
     public List<PolygonPatch> getPatches() {
         return (List<PolygonPatch>) patches;
+    }
+
+    @Override
+    public boolean isSFSCompliant() {
+        if ( exteriorRing == null || exteriorRing.getRingType() != RingType.LinearRing ) {
+            return false;
+        }
+        if ( interiorRings != null ) {
+            for ( Ring interiorRing : interiorRings ) {
+                if ( interiorRing.getRingType() != RingType.LinearRing ) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
