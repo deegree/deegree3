@@ -771,6 +771,22 @@ public class MapService {
         }
     }
 
+    public Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, List<String> layers )
+                            throws MissingDimensionValue, InvalidDimensionValue {
+        Pair<FeatureCollection, LinkedList<String>> p = null;
+        for ( String n : layers ) {
+            org.deegree.layer.Layer l = newLayers.get( n );
+            Pair<FeatureCollection, LinkedList<String>> p2 = l.getFeatures( info, null );
+            if ( p == null ) {
+                p = p2;
+            } else {
+                p.first.addAll( p2.first );
+                p.second.addAll( p2.second );
+            }
+        }
+        return p;
+    }
+
     public void getMapImage( RenderContext ctx, RenderingInfo info, List<String> layers )
                             throws MissingDimensionValue, InvalidDimensionValue {
         for ( String n : layers ) {
@@ -830,7 +846,7 @@ public class MapService {
      * @throws InvalidDimensionValue
      * @throws MissingDimensionValue
      */
-    public Pair<GenericFeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi )
+    public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi )
                             throws MissingDimensionValue, InvalidDimensionValue {
         List<Feature> list = new LinkedList<Feature>();
         LinkedList<String> warnings = new LinkedList<String>();
@@ -845,7 +861,7 @@ public class MapService {
 
         GenericFeatureCollection col = new GenericFeatureCollection();
         col.addAll( list );
-        return new Pair<GenericFeatureCollection, LinkedList<String>>( col, warnings );
+        return new Pair<FeatureCollection, LinkedList<String>>( col, warnings );
     }
 
     private void getFeatureTypes( Collection<FeatureType> types, Layer l ) {

@@ -103,7 +103,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.Feature;
-import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.utils.templating.TemplatingLexer;
@@ -137,13 +137,10 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
-import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetFeatureInfoSchema;
@@ -522,8 +519,8 @@ public class WMSController extends AbstractOWS {
         sendImage( img, response, glg.getFormat() );
     }
 
-    private static void runTemplate( HttpResponseBuffer response, String fiFile, GenericFeatureCollection col,
-                                     GetFeatureInfo fi )
+    private static void runTemplate( HttpResponseBuffer response, String fiFile, FeatureCollection col,
+                                     boolean geometries )
                             throws UnsupportedEncodingException, IOException {
         PrintWriter out = new PrintWriter( new OutputStreamWriter( response.getOutputStream(), "UTF-8" ) );
 
@@ -539,7 +536,7 @@ public class WMSController extends AbstractOWS {
             @SuppressWarnings(value = "unchecked")
             HashMap<String, Object> tmpl = (HashMap<String, Object>) s.value;
             StringBuilder sb = new StringBuilder();
-            new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, tmpl, col, fi.returnGeometries() );
+            new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, tmpl, col, geometries );
             out.println( sb.toString() );
         } catch ( Exception e ) {
             if ( fiFile == null ) {
@@ -556,16 +553,51 @@ public class WMSController extends AbstractOWS {
     }
 
     private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
-                            throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
-        GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
-                                                   : securityManager.preprocess( new GetFeatureInfo( map, version,
-                                                                                                     service ),
-                                                                                 OGCFrontController.getContext().getCredentials() );
-        checkGetFeatureInfo( fi );
-        Pair<GenericFeatureCollection, LinkedList<String>> pair = service.getFeatures( fi );
-        GenericFeatureCollection col = pair.first;
+                            throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue,
+                            org.deegree.protocol.ows.exception.OWSException {
+
+        Pair<FeatureCollection, LinkedList<String>> pair;
+        String format;
+        List<String> queryLayers;
+        boolean geometries;
+        FeatureType type = null;
+        ICRS crs;
+        if ( service.isNewStyle() ) {
+            org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map,
+                                                                                                              version );
+            crs = fi.getCoordinateSystem();
+            geometries = fi.returnGeometries();
+            queryLayers = fi.getQueryLayers();
+            RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
+                                                    fi.getEnvelope(), 0.28 );
+            format = fi.getInfoFormat();
+            info.setFormat( format );
+            info.setFeatureCount( fi.getFeatureCount() );
+            info.setX( fi.getX() );
+            info.setY( fi.getY() );
+            pair = service.getFeatures( info, fi.getQueryLayers() );
+        } else {
+            GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
+                                                       : securityManager.preprocess( new GetFeatureInfo( map, version,
+                                                                                                         service ),
+                                                                                     OGCFrontController.getContext().getCredentials() );
+            type = fi.getQueryLayers().get( 0 ).getFeatureType();
+            crs = fi.getCoordinateSystem();
+            geometries = fi.returnGeometries();
+            format = fi.getInfoFormat();
+            checkGetFeatureInfo( fi );
+            pair = service.getFeatures( fi );
+            Mapper<String, Layer> layerNameMapper = new Mapper<String, Layer>() {
+                @Override
+                public String apply( Layer u ) {
+                    return u.getName();
+                }
+            };
+            queryLayers = map( fi.getQueryLayers(), layerNameMapper );
+        }
+
+        FeatureCollection col = pair.first;
         addHeaders( response, pair.second );
-        String format = fi.getInfoFormat();
         format = format == null ? "application/vnd.ogc.gml" : format;
         response.setContentType( format );
         response.setCharacterEncoding( "UTF-8" );
@@ -573,13 +605,7 @@ public class WMSController extends AbstractOWS {
         FeatureInfoSerializer serializer = featureInfoSerializers.get( format );
         if ( serializer != null ) {
             Map<String, String> fismap = new HashMap<String, String>();
-            Mapper<String, Layer> layerNameMapper = new Mapper<String, Layer>() {
-                @Override
-                public String apply( Layer u ) {
-                    return u.getName();
-                }
-            };
-            fismap.put( "LAYERS", reduce( "", map( fi.getQueryLayers(), layerNameMapper ), getStringJoiner( "," ) ) );
+            fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
             GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
             serializer.serialize( service.getSchema( fis ).get( 0 ).getSchema(), col, response.getOutputStream() );
             response.flushBuffer();
@@ -588,7 +614,7 @@ public class WMSController extends AbstractOWS {
 
         String fiFile = supportedFeatureInfoFormats.get( format );
         if ( !fiFile.isEmpty() ) {
-            runTemplate( response, fiFile, col, fi );
+            runTemplate( response, fiFile, col, geometries );
             return;
         }
 
@@ -606,11 +632,10 @@ public class WMSController extends AbstractOWS {
                     }
                 }
                 xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-                String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", fi.getQueryLayers() );
+                String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
 
                 // for more than just quick 'hacky' schemaLocation attributes one should use a proper WFS
                 HashMap<String, String> bindings = new HashMap<String, String>();
-                FeatureType type = fi.getQueryLayers().get( 0 ).getFeatureType();
                 String ns = type == null ? null : type.getName().getNamespaceURI();
                 if ( ns != null && ns.isEmpty() ) {
                     ns = null;
@@ -623,21 +648,17 @@ public class WMSController extends AbstractOWS {
                 // GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GMLVersion.GML_2,xmlWriter );
                 // gmlWriter.setOutputCRS(fi.getCoordinateSystem() );
                 // gmlWriter.set
-                new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, fi.getCoordinateSystem(), null, "#{}", null, 0, -1,
-                                      null, false, fi.returnGeometries(), null, null, false ).export( col,
-                                                                                                      ns == null ? loc
-                                                                                                                : null,
-                                                                                                      bindings );
+                new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, crs, null, "#{}", null, 0, -1, null, false,
+                                      geometries, null, null, false ).export( col, ns == null ? loc : null, bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
             } catch ( UnknownCRSException e ) {
                 LOG.warn( "Could not instantiate the geometry transformer for output srs '{}'."
-                          + " Aborting GetFeatureInfo response.", fi.getCoordinateSystem() );
+                          + " Aborting GetFeatureInfo response.", crs );
                 LOG.trace( "Stack trace:", e );
             } catch ( TransformationException e ) {
-                LOG.warn( "Could transform to output srs '{}'. Aborting GetFeatureInfo response.",
-                          fi.getCoordinateSystem() );
+                LOG.warn( "Could transform to output srs '{}'. Aborting GetFeatureInfo response.", crs );
                 LOG.trace( "Stack trace:", e );
             }
         }
@@ -654,7 +675,7 @@ public class WMSController extends AbstractOWS {
         }
 
         if ( format.equalsIgnoreCase( "text/html" ) ) {
-            runTemplate( response, null, col, fi );
+            runTemplate( response, null, col, geometries );
         }
     }
 

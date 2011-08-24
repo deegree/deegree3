@@ -60,8 +60,8 @@ public class RemoteWMSLayer extends AbstractLayer {
                                                  info.getHeight(), info.getX(), info.getY(), info.getEnvelope(),
                                                  info.getEnvelope().getCoordinateSystem(), info.getFeatureCount() );
         try {
-            return new Pair<FeatureCollection, LinkedList<String>>( client.getFeatureInfo( gfi, null ),
-                                                                    new LinkedList<String>() );
+            FeatureCollection col = client.getFeatureInfo( gfi, null );
+            return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
         } catch ( IOException e ) {
             LOG.warn( "Error when retrieving remote feature info: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
