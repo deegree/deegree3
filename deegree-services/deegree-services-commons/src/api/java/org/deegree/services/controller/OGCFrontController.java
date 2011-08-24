@@ -49,7 +49,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -103,6 +102,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
@@ -1069,16 +1069,10 @@ public class OGCFrontController extends HttpServlet {
      */
     private void plugClassLoaderLeaks() {
         // if the feature store manager does this, it breaks
-        // use dirty reflection hack to avoid code dependency
         try {
-            Class<?> trs = Class.forName( "org.deegree.feature.persistence.query.ThreadedResultSet" );
-            if ( trs != null ) {
-                Method m = trs.getMethod( "shutdown" );
-                m.invoke( null );
-            }
-        } catch ( Exception e ) {
+            ThreadedFeatureInputStream.shutdown();
+        } catch ( Throwable e ) {
             // just eat it
-            e.printStackTrace();
         }
         Executor.getInstance().shutdown();
 

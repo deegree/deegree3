@@ -42,11 +42,11 @@ import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.style.utils.ImageUtils.prepareImage;
 import static org.deegree.services.controller.ows.OWSException.CURRENT_UPDATE_SEQUENCE;
 import static org.deegree.services.controller.ows.OWSException.INVALID_UPDATE_SEQUENCE;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
+import static org.deegree.style.utils.ImageUtils.prepareImage;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -59,6 +59,8 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.xml.stream.XMLOutputFactory;
 
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -85,6 +87,7 @@ public abstract class WMSControllerBase implements Controller {
 
     protected String EXCEPTION_MIME = "text/xml";
 
+    @Override
     public void handleException( Map<String, String> map, WMSRequestType req, OWSException e,
                                  HttpResponseBuffer response, WMSController controller )
                             throws ServletException {
@@ -123,8 +126,8 @@ public abstract class WMSControllerBase implements Controller {
                                 Color color, boolean transparent, String format, WMSController controller )
                             throws ServletException {
         if ( type.equalsIgnoreCase( EXCEPTION_DEFAULT ) ) {
-            AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
-                                                        IMPLEMENTATION_METADATA, ex, response );
+            AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
+                                       response );
         } else if ( type.equalsIgnoreCase( EXCEPTION_INIMAGE ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
             Graphics2D g = img.createGraphics();
@@ -148,32 +151,33 @@ public abstract class WMSControllerBase implements Controller {
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
-                                                            IMPLEMENTATION_METADATA, ex, response );
+                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
+                                           response );
             } catch ( IOException e ) {
-                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
-                                                            IMPLEMENTATION_METADATA, ex, response );
+                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
+                                           response );
             }
         } else if ( type.equalsIgnoreCase( EXCEPTION_BLANK ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
-                                                            IMPLEMENTATION_METADATA, ex, response );
+                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
+                                           response );
             } catch ( IOException e ) {
-                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
-                                                            IMPLEMENTATION_METADATA, ex, response );
+                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
+                                           response );
             }
         } else {
-            AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS,
-                                                        IMPLEMENTATION_METADATA, ex, response );
+            AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
+                                       response );
         }
     }
 
+    @Override
     public void getCapabilities( String getUrl, String postUrl, String updateSequence, MapService service,
-                                 HttpResponseBuffer response, ServiceIdentificationType identification,
-                                 ServiceProviderType provider, Map<String, String> customParameters,
+                                 HttpResponseBuffer response, ServiceIdentification identification,
+                                 ServiceProvider provider, Map<String, String> customParameters,
                                  WMSController controller )
                             throws OWSException, IOException {
         getUrl = getUrl.substring( 0, getUrl.length() - 1 );
@@ -199,8 +203,8 @@ public abstract class WMSControllerBase implements Controller {
     }
 
     protected abstract void exportCapas( String getUrl, String postUrl, MapService service,
-                                         HttpResponseBuffer response, ServiceIdentificationType identification,
-                                         ServiceProviderType provider, WMSController controller )
+                                         HttpResponseBuffer response, ServiceIdentification identification,
+                                         ServiceProvider provider, WMSController controller )
                             throws IOException;
 
 }

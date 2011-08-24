@@ -48,13 +48,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ows.NamespacelessOWSExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities111XMLAdapter;
 
@@ -81,12 +81,14 @@ public class WMSController111 extends WMSControllerBase {
         EXCEPTION_MIME = EXCEPTION_DEFAULT;
     }
 
+    @Override
     public void sendException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
         AbstractOWS.sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, EXCEPTIONS,
-                                                    IMPLEMENTATION_METADATA, ex, response );
+                                   IMPLEMENTATION_METADATA, ex, response );
     }
 
+    @Override
     public void throwSRSException( String name )
                             throws OWSException {
         throw new OWSException( get( "WMS.INVALID_SRS", name ), INVALID_SRS );
@@ -112,8 +114,7 @@ public class WMSController111 extends WMSControllerBase {
 
     @Override
     protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
-                                ServiceIdentificationType identification, ServiceProviderType provider,
-                                WMSController controller )
+                                ServiceIdentification identification, ServiceProvider provider, WMSController controller )
                             throws IOException {
         response.setContentType( "application/vnd.ogc.wms_xml" );
         try {

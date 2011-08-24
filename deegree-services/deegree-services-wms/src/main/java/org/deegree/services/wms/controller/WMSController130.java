@@ -50,13 +50,13 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter;
 
@@ -81,12 +81,13 @@ public class WMSController130 extends WMSControllerBase {
         EXCEPTIONS = new OGCExceptionXMLAdapter();
     }
 
+    @Override
     public void sendException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        AbstractOWS.sendException( "text/xml", "UTF-8", null, 200, EXCEPTIONS,
-                                                    IMPLEMENTATION_METADATA, ex, response );
+        AbstractOWS.sendException( "text/xml", "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex, response );
     }
 
+    @Override
     public void throwSRSException( String name )
                             throws OWSException {
         throw new OWSException( get( "WMS.INVALID_SRS", name ), INVALID_CRS );
@@ -122,8 +123,7 @@ public class WMSController130 extends WMSControllerBase {
 
     @Override
     protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
-                                ServiceIdentificationType identification, ServiceProviderType provider,
-                                WMSController controller )
+                                ServiceIdentification identification, ServiceProvider provider, WMSController controller )
                             throws IOException {
         response.setContentType( "text/xml" );
         try {

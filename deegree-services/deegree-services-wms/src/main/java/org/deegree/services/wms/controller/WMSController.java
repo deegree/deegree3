@@ -52,6 +52,7 @@ import static org.deegree.services.controller.ows.OWSException.INVALID_FORMAT;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -92,7 +93,6 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -118,6 +118,8 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
@@ -141,6 +143,7 @@ import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
+import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetFeatureInfoSchema;
@@ -184,9 +187,9 @@ public class WMSController extends AbstractOWS {
 
     private WMSSecurityManager securityManager;
 
-    protected ServiceIdentificationType identification;
+    protected ServiceIdentification identification;
 
-    protected ServiceProviderType provider;
+    protected ServiceProvider provider;
 
     protected TreeMap<Version, WMSControllerBase> controllers = new TreeMap<Version, WMSControllerBase>();
 
@@ -283,8 +286,8 @@ public class WMSController extends AbstractOWS {
 
         super.init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
 
-        identification = mainMetadataConf.getServiceIdentification();
-        provider = mainMetadataConf.getServiceProvider();
+        identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
+        provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
 
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
@@ -894,9 +897,8 @@ public class WMSController extends AbstractOWS {
          * @throws IOException
          */
         void getCapabilities( String getUrl, String postUrl, String updateSequence, MapService service,
-                              HttpResponseBuffer response, ServiceIdentificationType identification,
-                              ServiceProviderType provider, Map<String, String> customParameters,
-                              WMSController controller )
+                              HttpResponseBuffer response, ServiceIdentification identification,
+                              ServiceProvider provider, Map<String, String> customParameters, WMSController controller )
                                 throws OWSException, IOException;
 
         /**

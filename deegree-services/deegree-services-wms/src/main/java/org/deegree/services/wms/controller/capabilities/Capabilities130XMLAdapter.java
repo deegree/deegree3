@@ -59,6 +59,8 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -70,11 +72,11 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.services.jaxb.metadata.AddressType;
-import org.deegree.services.jaxb.metadata.CodeType;
-import org.deegree.services.jaxb.metadata.ServiceContactType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.protocol.ows.metadata.Address;
+import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.protocol.ows.metadata.ServiceContact;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
@@ -103,9 +105,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
     private final String postUrl;
 
-    private final ServiceIdentificationType identification;
+    private final ServiceIdentification identification;
 
-    private final ServiceProviderType provider;
+    private final ServiceProvider provider;
 
     private MapService service;
 
@@ -119,8 +121,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
      * @param service
      * @param controller
      */
-    public Capabilities130XMLAdapter( ServiceIdentificationType identification, ServiceProviderType provider,
-                                      String getUrl, String postUrl, MapService service, WMSController controller ) {
+    public Capabilities130XMLAdapter( ServiceIdentification identification, ServiceProvider provider, String getUrl,
+                                      String postUrl, MapService service, WMSController controller ) {
         this.identification = identification;
         this.provider = provider;
         this.getUrl = getUrl;
@@ -569,28 +571,29 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         writeElement( writer, WMSNS, "Name", "WMS" );
 
-        List<String> titles = identification == null ? null : identification.getTitle();
-        String title = ( titles != null && !titles.isEmpty() ) ? titles.get( 0 ) : "deegree 3 WMS";
+        Description desc = identification == null ? null : identification.getDescription();
+
+        List<LanguageString> titles = desc == null ? null : desc.getTitle();
+        String title = ( titles != null && !titles.isEmpty() ) ? titles.get( 0 ).getString() : "deegree 3 WMS";
         writeElement( writer, WMSNS, "Title", title );
 
-        List<String> abstracts = identification == null ? null : identification.getAbstract();
+        List<LanguageString> abstracts = desc == null ? null : desc.getAbstract();
         if ( abstracts != null && !abstracts.isEmpty() ) {
-            writeElement( writer, WMSNS, "Abstract", abstracts.get( 0 ) );
+            writeElement( writer, WMSNS, "Abstract", abstracts.get( 0 ).getString() );
         }
 
-        List<org.deegree.services.jaxb.metadata.KeywordsType> keywords = identification == null ? null
-                                                                                               : identification.getKeywords();
+        List<Pair<List<LanguageString>, CodeType>> keywords = desc == null ? null : desc.getKeywords();
         if ( keywords != null && !keywords.isEmpty() ) {
             writer.writeStartElement( WMSNS, "KeywordList" );
 
-            for ( org.deegree.services.jaxb.metadata.KeywordsType key : keywords ) {
-                CodeType type = key.getType();
-                for ( org.deegree.services.jaxb.metadata.LanguageStringType lanString : key.getKeyword() ) {
+            for ( Pair<List<LanguageString>, CodeType> key : keywords ) {
+                CodeType type = key.second;
+                for ( LanguageString lanString : key.first ) {
                     writer.writeStartElement( WMSNS, "Keyword" );
                     if ( type != null ) {
                         writer.writeAttribute( "vocabulary", type.getCodeSpace() );
                     }
-                    writer.writeCharacters( lanString.getValue() );
+                    writer.writeCharacters( lanString.getString() );
                     writer.writeEndElement();
                 }
             }
@@ -600,8 +603,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         String url = getUrl;
         if ( provider != null && provider.getServiceContact() != null
-             && provider.getServiceContact().getOnlineResource() != null ) {
-            url = provider.getServiceContact().getOnlineResource();
+             && provider.getServiceContact().getContactInfo() != null
+             && provider.getServiceContact().getContactInfo().getOnlineResource() != null ) {
+            url = provider.getServiceContact().getContactInfo().getOnlineResource().toExternalForm();
         }
         writer.writeStartElement( WMSNS, "OnlineResource" );
         writer.writeAttribute( XLNNS, "type", "simple" );
@@ -609,7 +613,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeEndElement();
 
         if ( provider != null ) {
-            ServiceContactType contact = provider.getServiceContact();
+            ServiceContact contact = provider.getServiceContact();
             if ( contact != null ) {
                 writer.writeStartElement( WMSNS, "ContactInformation" );
 
@@ -621,7 +625,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 }
 
                 maybeWriteElementNS( writer, WMSNS, "ContactPosition", contact.getPositionName() );
-                AddressType addr = contact.getAddress();
+                Address addr = contact.getContactInfo().getAddress();
                 if ( addr != null ) {
                     writer.writeStartElement( WMSNS, "ContactAddress" );
                     writeElement( writer, WMSNS, "AddressType", "postal" );
@@ -635,10 +639,14 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     writer.writeEndElement();
                 }
 
-                maybeWriteElementNS( writer, WMSNS, "ContactVoiceTelephone", contact.getPhone() );
-                maybeWriteElementNS( writer, WMSNS, "ContactFacsimileTelephone", contact.getFacsimile() );
-                for ( String email : contact.getElectronicMailAddress() ) {
-                    maybeWriteElementNS( writer, WMSNS, "ContactElectronicMailAddress", email );
+                maybeWriteElementNS( writer, WMSNS, "ContactVoiceTelephone",
+                                     contact.getContactInfo().getPhone().getVoice().get( 0 ) );
+                maybeWriteElementNS( writer, WMSNS, "ContactFacsimileTelephone",
+                                     contact.getContactInfo().getPhone().getFacsimile().get( 0 ) );
+                if ( addr != null ) {
+                    for ( String email : addr.getElectronicMailAddress() ) {
+                        maybeWriteElementNS( writer, WMSNS, "ContactElectronicMailAddress", email );
+                    }
                 }
 
                 writer.writeEndElement();
