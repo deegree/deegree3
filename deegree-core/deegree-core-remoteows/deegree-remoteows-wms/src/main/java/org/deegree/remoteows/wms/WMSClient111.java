@@ -1007,19 +1007,31 @@ public class WMSClient111 implements WMSClient {
         desc.setKeywords( keywords );
 
         // use first envelope that we can find
-        Envelope envelope = getLatLonBoundingBox( name );
-        for ( String crs : getCoordinateSystems( name ) ) {
-            if ( envelope != null ) {
-                break;
+        if ( name != null ) {
+            Envelope envelope = getLatLonBoundingBox( name );
+            for ( String crs : getCoordinateSystems( name ) ) {
+                if ( envelope != null ) {
+                    break;
+                }
+                envelope = getBoundingBox( crs, name );
             }
-            envelope = getBoundingBox( crs, name );
+            md.setEnvelope( envelope );
+            List<ICRS> crsList = new ArrayList<ICRS>();
+            for ( String crs : getCoordinateSystems( name ) ) {
+                crsList.add( CRSManager.getCRSRef( crs, true ) );
+            }
+            md.setCoordinateSystems( crsList );
         }
-        md.setEnvelope( envelope );
-        List<ICRS> crsList = new ArrayList<ICRS>();
-        for ( String crs : getCoordinateSystems( name ) ) {
-            crsList.add( CRSManager.getCRSRef( crs, true ) );
+
+        String casc = lay.getAttributeValue( new QName( "cascaded" ) );
+        if ( casc != null ) {
+            try {
+                md.setCascaded( Integer.parseInt( casc ) );
+            } catch ( NumberFormatException nfe ) {
+                md.setCascaded( 1 );
+            }
         }
-        md.setCoordinateSystems( crsList );
+        md.setQueryable( capabilities.getNodeAsBoolean( lay, new XPath( "@queryable" ), false ) );
 
         return md;
     }

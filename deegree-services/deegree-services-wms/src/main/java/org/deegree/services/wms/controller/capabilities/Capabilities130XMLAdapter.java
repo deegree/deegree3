@@ -206,10 +206,16 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
     private void writeTheme( XMLStreamWriter writer, Theme theme )
                             throws XMLStreamException {
-        writer.writeStartElement( WMSNS, "Layer" );
-        // TODO
-        writer.writeAttribute( "queryable", "1" );
         LayerMetadata md = theme.getMetadata();
+        writer.writeStartElement( WMSNS, "Layer" );
+
+        if ( md.isQueryable() ) {
+            writer.writeAttribute( "queryable", "1" );
+        }
+        if ( md.getCascaded() != 0 ) {
+            writer.writeAttribute( "cascaded", md.getCascaded() + "" );
+        }
+
         if ( md.getName() != null ) {
             writeElement( writer, WMSNS, "Name", md.getName() );
         }

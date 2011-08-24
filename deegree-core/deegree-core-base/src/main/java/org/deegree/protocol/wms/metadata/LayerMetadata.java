@@ -65,6 +65,10 @@ public class LayerMetadata {
 
     private Description description;
 
+    private boolean queryable = true;
+
+    private int cascaded;
+
     public void setDescription( Description description ) {
         this.description = description;
     }
@@ -131,6 +135,36 @@ public class LayerMetadata {
      */
     public void setName( String name ) {
         this.name = name;
+    }
+
+    /**
+     * @return the cascaded
+     */
+    public int getCascaded() {
+        return cascaded;
+    }
+
+    /**
+     * @param cascaded
+     *            the cascaded to set
+     */
+    public void setCascaded( int cascaded ) {
+        this.cascaded = cascaded;
+    }
+
+    /**
+     * @return the queryable
+     */
+    public boolean isQueryable() {
+        return queryable;
+    }
+
+    /**
+     * @param queryable
+     *            the queryable to set
+     */
+    public void setQueryable( boolean queryable ) {
+        this.queryable = queryable;
     }
 
 }

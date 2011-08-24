@@ -22,6 +22,7 @@ public class RemoteWMSLayer extends AbstractLayer {
 
     protected RemoteWMSLayer( LayerMetadata md, WMSClient client ) {
         super( md );
+        md.setCascaded( md.getCascaded() + 1 );
         this.client = client;
     }
 

@@ -173,8 +173,12 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( "Layer" );
         LayerMetadata md = theme.getMetadata();
-        // TODO
-        writer.writeAttribute( "queryable", "1" );
+        if ( md.isQueryable() ) {
+            writer.writeAttribute( "queryable", "1" );
+        }
+        if ( md.getCascaded() != 0 ) {
+            writer.writeAttribute( "cascaded", md.getCascaded() + "" );
+        }
         if ( md.getName() != null ) {
             writeElement( writer, "Name", md.getName() );
         }
