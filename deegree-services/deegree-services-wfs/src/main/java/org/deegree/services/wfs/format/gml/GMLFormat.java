@@ -52,6 +52,8 @@ import static org.deegree.services.controller.exception.ControllerException.NO_A
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -107,13 +109,14 @@ import org.deegree.protocol.wfs.lockfeature.BBoxLock;
 import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
 import org.deegree.protocol.wfs.lockfeature.FilterLock;
 import org.deegree.protocol.wfs.lockfeature.LockOperation;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse;
 import org.deegree.services.wfs.GetFeatureAnalyzer;
-import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.WFSFeatureStoreManager;
+import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -275,7 +278,7 @@ public class GMLFormat implements Format {
         String schemaLocation = null;
         if ( o instanceof Feature ) {
             schemaLocation = WebFeatureService.getSchemaLocation( request.getVersion(), gmlVersion,
-                                                              ( (Feature) o ).getName() );
+                                                                  ( (Feature) o ).getName() );
         } else if ( o instanceof Geometry ) {
             switch ( gmlVersion ) {
             case GML_2:
@@ -300,7 +303,7 @@ public class GMLFormat implements Format {
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCRS( master.getDefaultQueryCrs() );
-        gmlStream.setRemoteXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
+        gmlStream.setRemoteXLinkTemplate( getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
@@ -326,7 +329,7 @@ public class GMLFormat implements Format {
 
         int traverseXLinkDepth = 0;
         int traverseXLinkExpiry = -1;
-        String xLinkTemplate = master.getObjectXlinkTemplate( request.getVersion(), gmlVersion );
+        String xLinkTemplate = getObjectXlinkTemplate( request.getVersion(), gmlVersion );
 
         if ( VERSION_110.equals( request.getVersion() ) || VERSION_200.equals( request.getVersion() ) ) {
             if ( request.getTraverseXlinkDepth() != null ) {
@@ -748,21 +751,21 @@ public class GMLFormat implements Format {
                         schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
                     } else {
                         schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
-                                                                          wfsFeatureCollection );
+                                                                              wfsFeatureCollection );
                     }
                 } else if ( VERSION_110.equals( requestVersion ) ) {
                     if ( GML_31 == gmlVersion ) {
                         schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
                     } else {
                         schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
-                                                                          wfsFeatureCollection );
+                                                                              wfsFeatureCollection );
                     }
                 } else if ( VERSION_200.equals( requestVersion ) ) {
                     if ( GML_32 == gmlVersion ) {
                         schemaLocation = WFS_200_NS + " http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";
                     } else {
                         schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
-                                                                          wfsFeatureCollection );
+                                                                              wfsFeatureCollection );
                     }
                 } else {
                     throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
@@ -890,5 +893,53 @@ public class GMLFormat implements Format {
             throw new OWSException( new InvalidParameterValueException( msg ) );
         }
         return o;
+    }
+
+    /**
+     * Returns an URL template for requesting individual objects (feature or geometries) from the server by the object's
+     * id.
+     * <p>
+     * The form of the URL depends on the protocol version:
+     * <ul>
+     * <li>WFS 1.0.0: not possible, an <code>UnsupportedOperation</code> exception is thrown</li>
+     * <li>WFS 1.1.0: GetGmlObject request</li>
+     * <li>WFS 2.0.0: GetPropertyValue request</li>
+     * </ul>
+     * </p>
+     * 
+     * @param version
+     *            WFS protocol version, must not be <code>null</code>
+     * @param gmlVersion
+     *            GML version, must not be <code>null</code>
+     * @return URI template that contains <code>{}</code> as the placeholder for the object id
+     * @throws UnsupportedOperationException
+     *             if the protocol version does not support requesting individual objects by id
+     */
+    private String getObjectXlinkTemplate( Version version, GMLVersion gmlVersion ) {
+
+        String baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=" + version + "&";
+        String template = null;
+        try {
+            if ( VERSION_100.equals( version ) ) {
+                baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=1.1.0&";
+                template = baseUrl + "REQUEST=GetGmlObject&OUTPUTFORMAT="
+                           + URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" )
+                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
+            } else if ( VERSION_110.equals( version ) ) {
+                template = baseUrl + "REQUEST=GetGmlObject&OUTPUTFORMAT="
+                           + URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" )
+                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
+            } else if ( VERSION_200.equals( version ) ) {
+                // TODO check spec.
+                template = baseUrl + "REQUEST=GetPropertyValue&OUTPUTFORMAT="
+                           + URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" )
+                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
+            } else {
+                throw new UnsupportedOperationException( Messages.getMessage( "WFS_BACKREFERENCE_UNSUPPORTED", version ) );
+            }
+        } catch ( UnsupportedEncodingException e ) {
+            // should never happen (UTF-8 is known)
+        }
+        return template;
     }
 }

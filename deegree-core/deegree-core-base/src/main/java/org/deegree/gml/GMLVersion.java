@@ -53,21 +53,24 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 public enum GMLVersion {
 
     /** GML 2 versions (any in the range from 2.0.0 to 2.1.2) */
-    GML_2( GMLNS, "text/xml; subtype=gml/2.1.2" ),
+    GML_2( GMLNS, "2.1", "2.1.2" ),
     /** GML 3.0 versions (either 3.0.0 or 3.0.1) */
-    GML_30( GMLNS, "text/xml; subtype=gml/3.0.1" ),
+    GML_30( GMLNS, "3.0", "3.0.1" ),
     /** GML 3.1 versions (either 3.1.0 or 3.1.1) */
-    GML_31( GMLNS, "text/xml; subtype=gml/3.1.1" ),
+    GML_31( GMLNS, "3.1", "3.1.1" ),
     /** GML 3.2 versions (3.2.1) */
-    GML_32( GML3_2_NS, "text/xml; subtype=gml/3.2.1" );
+    GML_32( GML3_2_NS, "3.2", "3.2.1" );
 
     private final String ns;
 
-    private final String mimeType;
+    private String mimeType;
 
-    private GMLVersion( String ns, String mimeType ) {
+    private final String mimeTypeOld;
+
+    private GMLVersion( String ns, String mimeVersionNew, String mimeVersionOld ) {
         this.ns = ns;
-        this.mimeType = mimeType;
+        this.mimeType = "application/gml+xml; version=" + mimeVersionNew;
+        this.mimeTypeOld = "text/xml; subtype=gml/" + mimeVersionOld;
     }
 
     /**
@@ -88,9 +91,13 @@ public enum GMLVersion {
         return mimeType;
     }
 
-    @Override
-    public String toString() {
-        return mimeType;
+    /**
+     * Returns the mime type for this GML version (deprecated style).
+     * 
+     * @return the mime type (deprecated style), never <code>null</code>
+     */
+    public String getMimeTypeOldStyle() {
+        return mimeTypeOld;
     }
 
     /**
@@ -142,5 +149,10 @@ public enum GMLVersion {
             }
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return mimeTypeOld;
     }
 }

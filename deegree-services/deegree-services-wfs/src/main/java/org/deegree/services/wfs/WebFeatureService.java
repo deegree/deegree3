@@ -145,7 +145,7 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>1.0.0</li>
  * <li>1.1.0</li>
- * <li>2.0.0 (started)</li>
+ * <li>2.0.0 (in implementation)</li>
  * </ul>
  * </p>
  * 
@@ -282,14 +282,27 @@ public class WebFeatureService extends AbstractOWS {
 
         if ( formatList == null || formatList.isEmpty() ) {
             LOG.debug( "Using default format configuration." );
-            String mimeType = "text/xml; subtype=gml/2.1.2";
-            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, GML_2 ) );
-            mimeType = "text/xml; subtype=gml/3.0.1";
-            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, GML_30 ) );
-            mimeType = "text/xml; subtype=gml/3.1.1";
-            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, GML_31 ) );
-            mimeType = "text/xml; subtype=gml/3.2.1";
-            mimeTypeToFormat.put( mimeType, new org.deegree.services.wfs.format.gml.GMLFormat( this, GML_32 ) );
+            org.deegree.services.wfs.format.gml.GMLFormat gml21 = new org.deegree.services.wfs.format.gml.GMLFormat(
+                                                                                                                     this,
+                                                                                                                     GML_2 );
+            org.deegree.services.wfs.format.gml.GMLFormat gml30 = new org.deegree.services.wfs.format.gml.GMLFormat(
+                                                                                                                     this,
+                                                                                                                     GML_30 );
+            org.deegree.services.wfs.format.gml.GMLFormat gml31 = new org.deegree.services.wfs.format.gml.GMLFormat(
+                                                                                                                     this,
+                                                                                                                     GML_31 );
+            org.deegree.services.wfs.format.gml.GMLFormat gml32 = new org.deegree.services.wfs.format.gml.GMLFormat(
+                                                                                                                     this,
+
+                                                                                                                     GML_32 );
+            mimeTypeToFormat.put( "application/gml+xml; version=2.1", gml21 );
+            mimeTypeToFormat.put( "application/gml+xml; version=3.0", gml21 );
+            mimeTypeToFormat.put( "application/gml+xml; version=3.1", gml21 );
+            mimeTypeToFormat.put( "application/gml+xml; version=3.2", gml21 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/2.1.2", gml21 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.0.1", gml30 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.1.1", gml31 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.1", gml32 );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -570,54 +583,6 @@ public class WebFeatureService extends AbstractOWS {
     }
 
     /**
-     * Returns an URL template for requesting individual objects (feature or geometries) from the server by the object's
-     * id.
-     * <p>
-     * The form of the URL depends on the protocol version:
-     * <ul>
-     * <li>WFS 1.0.0: not possible, an <code>UnsupportedOperation</code> exception is thrown</li>
-     * <li>WFS 1.1.0: GetGmlObject request</li>
-     * <li>WFS 2.0.0: GetPropertyValue request</li>
-     * </ul>
-     * </p>
-     * 
-     * @param version
-     *            WFS protocol version, must not be <code>null</code>
-     * @param gmlVersion
-     *            GML version, must not be <code>null</code>
-     * @return URI template that contains <code>{}</code> as the placeholder for the object id
-     * @throws UnsupportedOperationException
-     *             if the protocol version does not support requesting individual objects by id
-     */
-    public String getObjectXlinkTemplate( Version version, GMLVersion gmlVersion ) {
-
-        String baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=" + version + "&";
-        String template = null;
-        try {
-            if ( VERSION_100.equals( version ) ) {
-                baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=1.1.0&";
-                template = baseUrl + "REQUEST=GetGmlObject&OUTPUTFORMAT="
-                           + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" )
-                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
-            } else if ( VERSION_110.equals( version ) ) {
-                template = baseUrl + "REQUEST=GetGmlObject&OUTPUTFORMAT="
-                           + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" )
-                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
-            } else if ( VERSION_200.equals( version ) ) {
-                // TODO check spec.
-                template = baseUrl + "REQUEST=GetPropertyValue&OUTPUTFORMAT="
-                           + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" )
-                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
-            } else {
-                throw new UnsupportedOperationException( Messages.getMessage( "WFS_BACKREFERENCE_UNSUPPORTED", version ) );
-            }
-        } catch ( UnsupportedEncodingException e ) {
-            // should never happen (UTF-8 is known)
-        }
-        return template;
-    }
-
-    /**
      * Returns the value for the 'xsi:schemaLocation' attribute to be included in a <code>GetGmlObject</code> or
      * <code>GetFeature</code> response.
      * 
@@ -638,7 +603,7 @@ public class WebFeatureService extends AbstractOWS {
             if ( VERSION_100.equals( version ) && gmlVersion == GMLVersion.GML_2 ) {
                 baseUrl += "XMLSCHEMA";
             } else {
-                baseUrl += URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" );
+                baseUrl += URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" );
             }
 
             if ( fts.length > 0 ) {

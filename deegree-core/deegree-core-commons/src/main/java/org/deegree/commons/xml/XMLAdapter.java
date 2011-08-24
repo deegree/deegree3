@@ -49,6 +49,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -853,6 +854,20 @@ public class XMLAdapter {
             value = parseFloat( s );
         }
         return value;
+    }
+
+    public BigInteger getNodeAsBigInt( OMElement context, XPath xpath, BigInteger defaultValue )
+                            throws XMLParsingException {
+
+        String s = getNodeAsString( context, xpath, null );
+        if ( s != null ) {
+            try {
+                return new BigInteger( s );
+            } catch ( NumberFormatException e ) {
+                throw new XMLParsingException (this, context, e.getMessage());
+            }
+        }
+        return defaultValue;
     }
 
     public int getNodeAsInt( OMElement context, XPath xpath, int defaultValue )

@@ -259,7 +259,8 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            operations, e.g. "GetCapabilities", must not be <code>null</code>
      * @throws XMLStreamException
      */
-    public static void exportOperationsMetadata110( XMLStreamWriter writer, List<OWSOperation> operations )
+    public static void exportOperationsMetadata110( XMLStreamWriter writer, List<OWSOperation> operations,
+                                                    List<Pair<String,String>> profileConstraints )
                             throws XMLStreamException {
         writer.writeStartElement( OWS110_NS, "OperationsMetadata" );
 
@@ -295,6 +296,18 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
                 writer.writeEndElement();
             }
             writer.writeEndElement();
+        }
+
+        if ( profileConstraints != null ) {
+            for ( Pair<String,String> constraint : profileConstraints ) {
+                writer.writeStartElement( OWS110_NS, "Constraint" );
+                writer.writeAttribute( "name", constraint.first );                
+                writer.writeEmptyElement( OWS110_NS, "NoValues" );
+                writer.writeStartElement( OWS110_NS, "DefaultValue" );
+                writer.writeCharacters( constraint.second );
+                writer.writeEndElement();
+                writer.writeEndElement();
+            }
         }
 
         writer.writeEndElement();

@@ -212,6 +212,6 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
             }
         }
 
-        return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames, null );
+        return new DescribeFeatureType( VERSION_200, handle, outputFormat, typeNames, null );
     }
 }

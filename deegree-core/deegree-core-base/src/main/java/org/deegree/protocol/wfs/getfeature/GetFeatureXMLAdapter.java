@@ -36,10 +36,14 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
+import static java.math.BigInteger.ZERO;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,12 +89,13 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * <ul>
      * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
+     * <li>WFS 2.0.0</li>
      * </ul>
      * 
      * @param version
      *            version of the request, may be <code>null</code> (in that case, a version attribute must be present in
      *            the root element)
-     * @return parsed {@link GetFeature} request
+     * @return parsed {@link GetFeature} request, never <code>null</code>
      * @throws Exception
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
@@ -108,15 +113,16 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         GetFeature result = null;
 
-        if ( VERSION_100.equals( version ) )
+        if ( VERSION_100.equals( version ) ) {
             result = parse100();
-        else if ( VERSION_110.equals( version ) )
+        } else if ( VERSION_110.equals( version ) ) {
             result = parse110();
-        else {
-            throw new Exception(
-                                 "Version "
-                                                         + version
-                                                         + " is not supported for parsing (for now). Only 1.0.0 and 1.1.0 versions are supported." );
+        } else if ( VERSION_200.equals( version ) ) {
+            result = parse200();
+        } else {
+            String msg = "Version " + version
+                         + " is not supported for parsing (for now). Only 1.0.0 and 1.1.0 versions are supported.";
+            throw new Exception( msg );
         }
 
         return result;
@@ -378,5 +384,115 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         return new GetFeature( VERSION_110, handle, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
                                traverseXlinkExpiry, queryArray );
+    }
+
+    /**
+     * Parses a WFS 2.0.0 <code>GetFeature</code> document into a {@link GetFeature} object.
+     * 
+     * @return corresponding GetFeature instance, never <code>null</code>
+     */
+    public GetFeature parse200() {
+
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+
+        // <xsd:attribute name="startIndex" type="xsd:nonNegativeInteger" default="0"/>
+        BigInteger startIndex = getNodeAsBigInt( rootElement, new XPath( "@startIndex", nsContext ), ZERO );
+
+        // <xsd:attribute name="count" type="xsd:nonNegativeInteger"/>
+        BigInteger count = getNodeAsBigInt( rootElement, new XPath( "@count", nsContext ), null );
+
+        // <xsd:attribute name="resultType" type="wfs:ResultTypeType" default="results"/>
+        ResultType resultType = null;
+        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
+        if ( resultTypeStr != null ) {
+            if ( resultTypeStr.equals( "results" ) ) {
+                resultType = ResultType.RESULTS;
+            } else if ( resultTypeStr.equals( "hits" ) ) {
+                resultType = ResultType.HITS;
+            }
+        }
+
+        // <xsd:attribute name="outputFormat" type="xsd:string" default="application/gml+xml; version=3.2"/>
+        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ),
+                                               "application/gml+xml; version=3.2" );
+
+        // <xsd:attribute name="resolve" type="wfs:ResolveValueType" default="none"/>
+        // TODO
+
+        // <xsd:attribute name="resolveDepth" type="wfs:positiveIntegerWithStar" default="*"/>
+        String resolveDepth = getNodeAsString( rootElement, new XPath( "@resolveDepth", nsContext ), "*" );
+
+        // <xsd:attribute name="resolveTimeout" type="xsd:positiveInteger" default="300"/>
+        BigInteger resolveTimeout = getNodeAsBigInt( rootElement, new XPath( "@resolveTimeout", nsContext ),
+                                                     new BigInteger( "300" ) );
+
+        List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
+        List<Query> queries = new ArrayList<Query>( queryElements.size() );
+        for ( OMElement queryEl : queryElements ) {
+            // <xsd:element ref="fes:AbstractQueryExpression" maxOccurs="unbounded"/>
+            queries.add( parseAbstractQuery200( queryEl ) );
+        }
+
+        Query[] queryArray = new FilterQuery[queries.size()];
+        queries.toArray( queryArray );
+        
+        Integer countInt = null;
+        if (count != null ){
+            countInt = count.intValue();
+        }
+        Integer resolveTimeoutInt = null;
+        if (resolveTimeout != null ){
+            resolveTimeoutInt = resolveTimeout.intValue();
+        }
+
+        return new GetFeature( VERSION_200, handle, resultType, outputFormat, countInt, resolveDepth,
+                               resolveTimeoutInt, queryArray );
+    }
+
+    private Query parseAbstractQuery200( OMElement queryEl ) {
+        QName elName = queryEl.getQName();
+        if ( new QName( WFS_200_NS, "Query" ).equals( elName ) ) {
+            return parseQuery200( queryEl );
+        } else if ( new QName( WFS_200_NS, "StoredQuery" ).equals( elName ) ) {
+            return parseStoredQuery200( queryEl );
+        }
+        String msg = "Unexpected query element '" + elName + "' in GetFeature request.";
+        throw new XMLParsingException( this, queryEl, msg );
+    }
+
+    // <xsd:element name="Query" type="wfs:QueryType" substitutionGroup="fes:AbstractAdhocQueryExpression"/>
+    private Query parseQuery200( OMElement queryEl ) {
+
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+
+        // <xsd:attribute name="typeNames" type="fes:TypeNamesListType" use="required"/>
+        String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeNames", nsContext ) );
+        TypeName[] typeNames = TypeName.valuesOf( queryEl, typeNameStr );
+
+        // <xsd:attribute name="aliases" type="fes:TypeNamesListType" use="required"/>
+
+        // <xsd:element ref="fes:AbstractProjectionClause" minOccurs="0" maxOccurs="unbounded"/>
+
+        // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
+
+        // <xsd:element ref="fes:AbstractSortingClause" minOccurs="0"/>
+
+        String featureVersion = null;
+        ICRS crs = null;
+        PropertyName[] propNamesArray = null;
+        XLinkPropertyName[] xlinkPropNamesArray = null;
+        Function[] functionsArray = null;
+        SortProperty[] sortPropsArray = null;
+        Filter filter = null;
+
+        return new FilterQuery( handle, typeNames, featureVersion, crs, propNamesArray, xlinkPropNamesArray,
+                                functionsArray, sortPropsArray, filter );
+    }
+
+    // <xsd:element name="StoredQuery" type="wfs:StoredQueryType" substitutionGroup="fes:AbstractQueryExpression"/>
+    private Query parseStoredQuery200( OMElement queryEl ) {
+        throw new XMLParsingException( "Parsing of stored queries not supported yet." );
     }
 }
