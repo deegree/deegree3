@@ -42,7 +42,9 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 
 /**
@@ -61,15 +63,16 @@ public interface JrxmlContentProvider {
      * 
      * @param inputs
      *            list of {@link ProcessletInputDefinition}s, never <code>null</code>, append new inputs here
-     * @param textParameters
-     *            list of parameters found in textExpressions in the jrxml file, without beginning '$P{' and leading
-     *            '}', can be empty, but never <code>null</code>
-     * @param imgParameters
-     *            list of parameters found in imageExpressions in the jrxml file, without beginning '$P{' and leading
-     *            '}', can be empty, but never <code>null</code>
+     * @param jrxmlAdapter
+     *            adapter containing the jrxml
+     * @param parameters
+     *            list of all parameters out of the jrxml file
+     * @param handledParameters
+     *            list of parameters out of the jrxml file, which are handled already!
      */
     void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
-                                          List<String> textParameters, List<String> imgParameters );
+                                          XMLAdapter jrxmlAdapter, Map<String, String> parameters,
+                                          List<String> handledParameters );
 
     /**
      * prepare the jrxml and read input parameters from WPSProcess providers to append them in the list of parameters to
@@ -82,10 +85,13 @@ public interface JrxmlContentProvider {
      *            parameters here, never <code>null</code>
      * @param in
      *            contains the WPSProcess input parameters, never <code>null</code>
-     * @param handledIds
+     * @param processedIds
      *            a list if ids which are already precessed. insert ids here, if they are processed. never
      *            <code>null</code>
+     * @param parameters
+     *            metainformation about the parameters (name, type)
      */
     InputStream prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params, ProcessletInputs in,
-                                                    List<CodeType> processedIds );
+                                                    List<CodeType> processedIds, Map<String, String> parameters )
+                            throws ProcessletException;
 }

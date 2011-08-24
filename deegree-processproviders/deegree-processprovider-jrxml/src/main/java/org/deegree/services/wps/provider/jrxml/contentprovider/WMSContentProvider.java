@@ -67,6 +67,7 @@ import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
+import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,27 +89,30 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
     @Override
     public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
-                                                 List<String> textParameters, List<String> imgParameters ) {
-        // for a wms, parameters starting with map are important. three different types are supported:
+                                                 XMLAdapter jrxmlAdapter, Map<String, String> parameters,
+                                                 List<String> handledParameters ) {
+        // for a wms, parameters starting with 'map' are important. three different types are supported:
         // * wmsXYZ_map -> as image parameter
         // * wmsXYZ_legend -> as imgage parameter
         // * wmsXYZ_layerList -> as frame key
         // where XYZ is a string which is the identifier of the process parameter.
         List<String> mapIds = new ArrayList<String>();
-        List<String> idsToRemove = new ArrayList<String>();
-        for ( String imgParameter : imgParameters ) {
-            if ( isMapParameter( imgParameter ) ) {
-                String mapId = getMapIdentifier( imgParameter );
-                if ( !mapIds.contains( mapId ) ) {
-                    mapIds.add( mapId );
+        for ( String parameterName : parameters.keySet() ) {
+            if ( !handledParameters.contains( parameterName ) ) {
+                if ( jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                              new XPath( ".//jasper:image/jasper:imageExpression[text()='$P{"
+                                                         + parameterName + "}']", JrxmlUtils.nsContext ) ) != null ) {
+                    if ( isMapParameter( parameterName ) ) {
+                        String mapId = getMapIdentifier( parameterName );
+                        if ( !mapIds.contains( mapId ) ) {
+                            mapIds.add( mapId );
+                        }
+                        // TODO: maybe a status information would be the better way?
+                        // remove used parameter
+                        handledParameters.add( parameterName );
+                    }
                 }
-                // TODO: maybe a status information would be the better way?
-                // remove used parameter
-                idsToRemove.add( imgParameter );
             }
-        }
-        for ( String idToRemove : idsToRemove ) {
-            imgParameters.remove( idToRemove );
         }
 
         for ( String mapId : mapIds ) {
@@ -149,7 +153,8 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
     @Override
     public InputStream prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
-                                                           ProcessletInputs in, List<CodeType> processedIds ) {
+                                                           ProcessletInputs in, List<CodeType> processedIds,
+                                                           Map<String, String> parameters ) {
         for ( ProcessletInput input : in.getParameters() ) {
             if ( !processedIds.contains( input ) && input instanceof ComplexInput ) {
                 ComplexInput complexIn = (ComplexInput) input;

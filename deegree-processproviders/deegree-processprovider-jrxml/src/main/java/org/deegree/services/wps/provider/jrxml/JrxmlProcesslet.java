@@ -79,15 +79,19 @@ public class JrxmlProcesslet implements Processlet {
 
     private final List<JrxmlContentProvider> contentProviders;
 
+    private final Map<String, String> parameters;
+
     /**
      * @param jrxml
      *            the jrxml file, never <code>null</code>
      * @param contentProviders
      *            a list of {@link JrxmlContentProvider}, never <code>null</code>
+     * @param second
      */
-    public JrxmlProcesslet( URL jrxml, List<JrxmlContentProvider> contentProviders ) {
+    public JrxmlProcesslet( URL jrxml, List<JrxmlContentProvider> contentProviders, Map<String, String> second ) {
         this.jrxml = jrxml;
         this.contentProviders = contentProviders;
+        this.parameters = second;
     }
 
     @Override
@@ -98,7 +102,7 @@ public class JrxmlProcesslet implements Processlet {
             Map<String, Object> params = new HashMap<String, Object>();
             List<CodeType> processedIds = new ArrayList<CodeType>();
             for ( JrxmlContentProvider contentProvider : contentProviders ) {
-                is = contentProvider.prepareJrxmlAndReadInputParameters( is, params, in, processedIds );
+                is = contentProvider.prepareJrxmlAndReadInputParameters( is, params, in, processedIds, parameters );
             }
 
             JasperPrint fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is ), params,

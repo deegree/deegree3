@@ -38,42 +38,42 @@ package org.deegree.services.wps.provider.jrxml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
+import javax.xml.bind.JAXBElement;
+
 import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
+import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.junit.Test;
 
 /**
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class TestJrxmlParserTest {
+public class TestJrxmlWPSProcessTest {
 
-    /**
-     * Test method for {@link org.deegree.services.wps.provider.jrxml.JrxmlWPSProcess}.
-     */
     @Test
-    public void testParse() {
-        XMLAdapter jrxmlAdapter = new XMLAdapter(
-                                                  TestJrxmlParserTest.class.getResourceAsStream( "testWPSreportTemplate.jrxml" ) );
-        JrxmlParser p = new JrxmlParser();
-        Pair<ProcessDefinition, Map<String, String>> parsed = p.parse( "processId", "testWPSreportTemplate",
-                                                                       jrxmlAdapter,
-                                                                       new ArrayList<JrxmlContentProvider>() );
-        assertNotNull( parsed );
-        ProcessDefinition pd = parsed.first;
+    public void test() {
+        JrxmlWPSProcess wpsProcess = new JrxmlWPSProcess(
+                                                          "id",
+                                                          TestJrxmlParserTest.class.getResource( "testWPSreportTemplate.jrxml" ) );
+        ProcessDefinition pd = wpsProcess.getDescription();
         assertNotNull( pd );
         assertNotNull( pd.getIdentifier() );
-        assertEquals( "processId", pd.getIdentifier().getValue() );
+        assertEquals( "id", pd.getIdentifier().getValue() );
         assertEquals( "createReportByAWPSProcess", pd.getTitle().getValue() );
 
+        InputParameters inputParameters = pd.getInputParameters();
+        assertNotNull( inputParameters );
+
+        List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParameters.getProcessInput();
+        assertNotNull( processInput );
+        assertEquals( 9, processInput.size() );
     }
 
 }

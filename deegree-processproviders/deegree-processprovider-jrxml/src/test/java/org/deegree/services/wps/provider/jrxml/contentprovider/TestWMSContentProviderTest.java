@@ -93,20 +93,22 @@ public class TestWMSContentProviderTest {
     @Test
     public void testInspectInputParametersFromJrxml() {
         WMSContentProvider wmsContentProvider = new WMSContentProvider();
-        List<String> textParameters = new ArrayList<String>();
-        textParameters.add( "parameterXYZ" );
-        List<String> imgParameters = new ArrayList<String>();
-        imgParameters.add( "wmsMAP1_map" );
-        imgParameters.add( "wmsMAP1_legend" );
-        imgParameters.add( "wmsMAP1_usualParam" );
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put( "wmsMAP_map", "java.lang.String" );
+        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "LEGEND", "java.lang.String" );
         List<JAXBElement<? extends ProcessletInputDefinition>> inputs = new ArrayList<JAXBElement<? extends ProcessletInputDefinition>>();
-        wmsContentProvider.inspectInputParametersFromJrxml( inputs, textParameters, imgParameters );
+        XMLAdapter adapter = new XMLAdapter(
+                                             TestWMSContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" ) );
+        List<String> handledParams = new ArrayList<String>();
+        wmsContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
 
-        assertEquals( 1, textParameters.size() );
-        assertEquals( 1, imgParameters.size() );
+        assertEquals( 3, parameters.size() );
 
+        // handled
+        assertEquals( 2, handledParams.size() );
         assertEquals( 1, inputs.size() );
-        assertEquals( "MAP1", inputs.get( 0 ).getValue().getIdentifier().getValue() );
+        assertEquals( "MAP", inputs.get( 0 ).getValue().getIdentifier().getValue() );
     }
 
     /**
@@ -174,7 +176,8 @@ public class TestWMSContentProviderTest {
                                                                    store );
 
         inputs.add( mapProcesslet );
-        jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds );
+        jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds,
+                                                                       new HashMap<String, String>() );
 
         assertEquals( 2, params.size() );
         assertEquals( 1, processedIds.size() );

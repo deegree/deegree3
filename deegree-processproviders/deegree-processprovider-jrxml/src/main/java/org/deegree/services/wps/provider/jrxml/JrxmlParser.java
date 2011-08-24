@@ -40,12 +40,15 @@ import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageSt
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.LiteralOutputDefinition;
@@ -80,45 +83,30 @@ public class JrxmlParser {
      *            a list of {@link JrxmlContentProvider}s, never <code>null</code>
      * @return
      */
-    public ProcessDefinition parse( String processId, String name, XMLAdapter jrxmlAdapter,
-                                    List<JrxmlContentProvider> contentProviders ) {
+    public Pair<ProcessDefinition,Map<String,String>> parse( String processId, String name,
+                                                                      XMLAdapter jrxmlAdapter,
+                                                                      List<JrxmlContentProvider> contentProviders ) {
 
         OMElement root = jrxmlAdapter.getRootElement();
-
-        // textFields
-        String[] textFieldExprs = jrxmlAdapter.getNodesAsStrings( root,
-                                                                  new XPath(
-                                                                             ".//jasper:textField/jasper:textFieldExpression",
-                                                                             nsContext ) );
-        List<String> textParameters = new ArrayList<String>();
-        for ( String textFieldExpr : textFieldExprs ) {
-            if ( isParameter( textFieldExpr ) ) {
-                String normalizedParameter = normalize( textFieldExpr );
-                LOG.debug( "Found textFieldExpression parameter: " + normalizedParameter );
-                textParameters.add( normalizedParameter );
-            }
-        }
-
-        // images
-        String[] imgExprs = jrxmlAdapter.getNodesAsStrings( root, new XPath( ".//jasper:image/jasper:imageExpression",
-                                                                             nsContext ) );
-        List<String> imgParameters = new ArrayList<String>();
-        for ( String imgExpr : imgExprs ) {
-            if ( isParameter( imgExpr ) ) {
-                String normalizedParameter = normalize( imgExpr );
-                LOG.debug( "Found imageExpression parameter: " + normalizedParameter );
-                imgParameters.add( normalizedParameter );
-            }
-        }
-
-        // tables
         String processName = jrxmlAdapter.getNodeAsString( root, new XPath( "/jasper:jasperReport/@name", nsContext ),
                                                            name );
 
+        Map<String, String> parameters = new HashMap<String, String>();
+        List<OMElement> paramElements = jrxmlAdapter.getElements( root,
+                                                                  new XPath( "/jasper:jasperReport/jasper:parameter",
+                                                                             nsContext ) );
+        for ( OMElement paramElement : paramElements ) {
+            String paramName = paramElement.getAttributeValue( new QName( "name" ) );
+            String paramType = paramElement.getAttributeValue( new QName( "class" ) );
+            LOG.debug( "Found parameter '{}', type {}", paramName, paramType );
+            parameters.put( paramName, paramType );
+        }
+
         InputParameters inputParams = new InputParameters();
         List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParams.getProcessInput();
+        List<String> handledParameters = new ArrayList<String>();
         for ( JrxmlContentProvider contentProvider : contentProviders ) {
-            contentProvider.inspectInputParametersFromJrxml( processInput, textParameters, imgParameters );
+            contentProvider.inspectInputParametersFromJrxml( processInput, jrxmlAdapter, parameters, handledParameters );
         }
 
         OutputParameters outputParams = new OutputParameters();
@@ -144,18 +132,7 @@ public class JrxmlParser {
         processDefinition.setTitle( getAsLanguageStringType( processName ) );
         processDefinition.setInputParameters( inputParams );
         processDefinition.setOutputParameters( outputParams );
-        return processDefinition;
-    }
-
-    private String normalize( String parameter ) {
-        if ( isParameter( parameter ) ) {
-            return parameter.substring( 3, parameter.length() - 1 );
-        }
-        return parameter;
-    }
-
-    private boolean isParameter( String text ) {
-        return text.matches( "\\$P\\{(\\w*)\\}" );
+        return new Pair<ProcessDefinition, Map<String, String>>( processDefinition, parameters );
     }
 
 }

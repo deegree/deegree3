@@ -13,11 +13,12 @@
 	<parameter name="LEGEND" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="DESCRIPTION" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="TITLE" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="DATE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="DATE" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="AUTHOR" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="MAPSCALE" class="java.lang.String"/>
+	<parameter name="MAPSCALE" class="java.lang.Integer"/>
 	<parameter name="SCALEBAR" class="java.awt.Image"/>
 	<parameter name="wmsMAP_legend" class="java.lang.String"/>
+	<parameter name="printOptTxt" class="java.lang.Boolean"/>
 	<detail>
 		<band height="549">
 			<rectangle>
@@ -112,7 +113,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
 					<font fontName="SansSerif" size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{DATE}]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{DATE}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="staticText-3" mode="Transparent" x="661" y="352" width="110" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
@@ -165,7 +166,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{MAPSCALE}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{MAPSCALE}]]></textFieldExpression>
 			</textField>
 			<image>
 				<reportElement key="scaleBar" x="331" y="508" width="122" height="40"/>
@@ -195,6 +196,13 @@
 					<text><![CDATA[Static text]]></text>
 				</staticText>
 			</frame>
+			<staticText>
+				<reportElement mode="Opaque" x="667" y="52" width="100" height="20" backcolor="#DF2020">
+					<printWhenExpression><![CDATA[$P{printOptTxt}]]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<text><![CDATA[Optionaler Text]]></text>
+			</staticText>
 		</band>
 	</detail>
 </jasperReport>

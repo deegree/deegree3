@@ -39,17 +39,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPSProcess;
+import org.deegree.services.wps.provider.jrxml.contentprovider.ImageContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
-import org.deegree.services.wps.provider.jrxml.contentprovider.SimpleContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider;
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A generic {@link WPSProcess} encapsulating an jrxml file. The input parameters are the parameter out of the jrxml
@@ -61,6 +65,8 @@ import org.jfree.util.Log;
  * @version $Revision: $, $Date: $
  */
 public class JrxmlWPSProcess implements WPSProcess {
+
+    private static final Logger LOG = LoggerFactory.getLogger( JrxmlWPSProcess.class );
 
     private final Processlet processlet;
 
@@ -74,7 +80,8 @@ public class JrxmlWPSProcess implements WPSProcess {
      */
     public JrxmlWPSProcess( String processId, URL jrxml ) {
         contentProviders.add( new WMSContentProvider() );
-        contentProviders.add( new SimpleContentProvider() );
+        contentProviders.add( new ImageContentProvider() );
+        contentProviders.add( new OtherContentProvider() );
         try {
             XMLAdapter a = new XMLAdapter( jrxml.openStream() );
             String name = jrxml.getFile();
@@ -83,15 +90,17 @@ public class JrxmlWPSProcess implements WPSProcess {
             if ( name.contains( "/" ) )
                 name = name.substring( name.lastIndexOf( '/' ) + 1, name.length() );
 
-            this.description = new JrxmlParser().parse( processId, name, a, contentProviders );
-            this.processlet = new JrxmlProcesslet( jrxml, contentProviders );
+            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( processId, name, a,
+                                                                                                  contentProviders );
+            this.description = parsed.first;
+            this.processlet = new JrxmlProcesslet( jrxml, contentProviders, parsed.second );
         } catch ( XMLProcessingException e ) {
             String msg = "could not parse jrxml file: " + e.getMessage();
-            Log.error( msg, e );
+            LOG.error( msg, e );
             throw new IllegalArgumentException( msg );
         } catch ( IOException e ) {
             String msg = "could not read jrxml file: " + e.getMessage();
-            Log.error( msg, e );
+            LOG.error( msg, e );
             throw new IllegalArgumentException( msg );
         }
     }
