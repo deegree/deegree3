@@ -34,16 +34,9 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.gml.geometry.refs;
+package org.deegree.geometry.refs;
 
-import java.util.List;
-
-import org.deegree.commons.uom.Measure;
-import org.deegree.commons.uom.Unit;
-import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.gml.GMLReferenceResolver;
 
 /**
@@ -56,10 +49,10 @@ import org.deegree.gml.GMLReferenceResolver;
  * 
  * @version $Revision: $, $Date: $
  */
-public class SurfaceReference<T extends Surface> extends GeometricPrimitiveReference<T> implements Surface {
-
+public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements
+                                                                                                   GeometricPrimitive {
     /**
-     * Creates a new {@link SurfaceReference} instance.
+     * Creates a new {@link GeometricPrimitiveReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
@@ -68,42 +61,17 @@ public class SurfaceReference<T extends Surface> extends GeometricPrimitiveRefer
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public SurfaceReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
+    public GeometricPrimitiveReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
     @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        return getReferencedObject().getArea( requestedBaseUnit );
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
     }
 
     @Override
-    public SurfaceType getSurfaceType() {
-        return getReferencedObject().getSurfaceType();
-    }
-
-    @Override
-    public Point getCentroid() {
-        return getReferencedObject().getCentroid();
-    }
-
-    @Override
-    public Points getExteriorRingCoordinates() {
-        return getReferencedObject().getExteriorRingCoordinates();
-    }
-
-    @Override
-    public List<Points> getInteriorRingsCoordinates() {
-        return getReferencedObject().getInteriorRingsCoordinates();
-    }
-
-    @Override
-    public List<? extends SurfacePatch> getPatches() {
-        return getReferencedObject().getPatches();
-    }
-
-    @Override
-    public Measure getPerimeter( Unit requestedUnit ) {
-        return getReferencedObject().getPerimeter( requestedUnit );
+    public PrimitiveType getPrimitiveType() {
+        return getReferencedObject().getPrimitiveType();
     }
 }

@@ -33,30 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml;
+package org.deegree.commons.tom.gml;
 
 import org.deegree.commons.tom.Object;
-import org.deegree.cs.coordinatesystems.CRS;
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Geometry;
-import org.deegree.gml.dictionary.Definition;
-import org.deegree.gml.props.GMLStdProps;
 
 /**
- * Basic interface for GML objects.
- * <p>
- * Currently, deegree supports the following types of GML objects:
- * <ul>
- * <li>{@link Feature}</li>
- * <li>{@link Geometry}</li>
- * <li>{@link Definition}</li>
- * <li>{@link CRS} (TODO needs integration with the GML package)</li>
- * </ul>
- * 
- * @see Feature
- * @see Geometry
- * @see Definition
- * @see CRS
+ * Base interface for GML objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

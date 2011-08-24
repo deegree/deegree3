@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.gml.GMLObject;
 
 /**
  * Base interface for all GML definition objects.

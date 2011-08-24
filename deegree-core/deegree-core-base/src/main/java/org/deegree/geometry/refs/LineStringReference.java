@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,27 +32,25 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 
-package org.deegree.gml.geometry.refs;
+package org.deegree.geometry.refs;
 
-import org.deegree.geometry.primitive.GeometricPrimitive;
+import org.deegree.geometry.primitive.LineString;
 import org.deegree.gml.GMLReferenceResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
- * @param <T>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
-public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements
-                                                                                                   GeometricPrimitive {
+public class LineStringReference extends CurveReference<LineString> implements LineString {
+
     /**
-     * Creates a new {@link GeometricPrimitiveReference} instance.
+     * Creates a new {@link LineStringReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
@@ -61,17 +59,12 @@ public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends G
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public GeometricPrimitiveReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
+    public LineStringReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
     @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
-
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return getReferencedObject().getPrimitiveType();
+    public CurveType getCurveType() {
+        return CurveType.LineString;
     }
 }

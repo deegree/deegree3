@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
-import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLReference;
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLReference;
 
 /**
  * Handler that is invoked by the {@link GMLFeatureWriter} when a reference to a {@link GMLObject} is written.

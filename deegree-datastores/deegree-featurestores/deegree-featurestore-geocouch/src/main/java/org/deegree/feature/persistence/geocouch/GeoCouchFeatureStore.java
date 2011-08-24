@@ -61,6 +61,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -90,7 +91,6 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.gml.GMLObject;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.slf4j.Logger;
 

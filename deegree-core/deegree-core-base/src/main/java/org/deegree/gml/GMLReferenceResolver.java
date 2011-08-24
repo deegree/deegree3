@@ -36,6 +36,8 @@
 package org.deegree.gml;
 
 import org.deegree.commons.tom.ReferenceResolver;
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLReference;
 
 /**
  * Implementations provide the functionality to retrieve {@link GMLObject} instances by their URI (which may be document

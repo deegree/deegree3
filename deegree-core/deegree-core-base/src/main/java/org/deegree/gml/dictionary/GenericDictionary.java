@@ -40,7 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.gml.props.GMLStdProps;
+import org.deegree.commons.tom.gml.GMLStdProps;
 
 /**
  * Default implementation of {@link Dictionary}.

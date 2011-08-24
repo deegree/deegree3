@@ -34,8 +34,10 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.gml.geometry.refs;
+package org.deegree.geometry.refs;
 
+import org.deegree.commons.tom.gml.GMLReference;
+import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -43,9 +45,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLReferenceResolver;
-import org.deegree.gml.props.GMLStdProps;
 
 /**
  * Represents a reference to the GML representation of a geometry, which is usually expressed using an

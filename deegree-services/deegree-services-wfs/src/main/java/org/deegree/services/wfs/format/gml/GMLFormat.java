@@ -69,6 +69,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
@@ -91,9 +93,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
-import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;

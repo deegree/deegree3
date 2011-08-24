@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.gml.GMLObject;
-import org.deegree.gml.props.GMLStdProps;
 
 /**
  * Base interface for all vector geometry types.

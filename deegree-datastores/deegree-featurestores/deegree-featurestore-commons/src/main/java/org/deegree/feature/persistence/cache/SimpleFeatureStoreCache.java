@@ -40,8 +40,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.gml.GMLObject;
 
 /**
  * {@link FeatureStoreCache} that uses a Java's {@link SoftReference} as eviction strategy and allows to limit the maximum

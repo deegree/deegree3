@@ -40,8 +40,8 @@ import java.util.LinkedHashMap;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLReference;
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.slf4j.Logger;

@@ -38,6 +38,8 @@ package org.deegree.gml;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.gml.GMLObject;
+
 /**
  * Factory for creating {@link GMLStreamWriter} instances.
  * 

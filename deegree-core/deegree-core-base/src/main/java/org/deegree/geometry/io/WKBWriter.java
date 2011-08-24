@@ -39,9 +39,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.gml.geometry.refs.GeometryReference;
 
 import com.vividsolutions.jts.io.OutputStreamOutStream;
 import com.vividsolutions.jts.io.ParseException;

@@ -55,6 +55,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
@@ -92,7 +93,6 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
-import org.deegree.gml.GMLObject;
 import org.slf4j.Logger;
 
 import com.vividsolutions.jts.io.ParseException;

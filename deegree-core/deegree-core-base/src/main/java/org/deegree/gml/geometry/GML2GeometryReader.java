@@ -70,12 +70,12 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.refs.GeometryReference;
+import org.deegree.geometry.refs.LineStringReference;
+import org.deegree.geometry.refs.PointReference;
+import org.deegree.geometry.refs.PolygonReference;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.refs.GeometryReference;
-import org.deegree.gml.geometry.refs.LineStringReference;
-import org.deegree.gml.geometry.refs.PointReference;
-import org.deegree.gml.geometry.refs.PolygonReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

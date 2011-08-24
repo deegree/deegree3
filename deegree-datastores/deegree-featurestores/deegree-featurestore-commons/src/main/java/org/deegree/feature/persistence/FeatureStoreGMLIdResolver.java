@@ -36,7 +36,7 @@
 package org.deegree.feature.persistence;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
-import org.deegree.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.gml.GMLReferenceResolver;
 
 /**

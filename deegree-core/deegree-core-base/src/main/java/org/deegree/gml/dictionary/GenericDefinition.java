@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
+import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.gml.props.GMLStdProps;
 
 /**
  * Default implementation of {@link Definition}.

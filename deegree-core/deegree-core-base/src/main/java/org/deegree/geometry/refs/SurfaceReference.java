@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,25 +32,34 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
-package org.deegree.gml.geometry.refs;
+package org.deegree.geometry.refs;
 
-import org.deegree.geometry.primitive.LineString;
+import java.util.List;
+
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.gml.GMLReferenceResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
+ * @param <T>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class LineStringReference extends CurveReference<LineString> implements LineString {
+public class SurfaceReference<T extends Surface> extends GeometricPrimitiveReference<T> implements Surface {
 
     /**
-     * Creates a new {@link LineStringReference} instance.
+     * Creates a new {@link SurfaceReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
@@ -59,12 +68,42 @@ public class LineStringReference extends CurveReference<LineString> implements L
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public LineStringReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
+    public SurfaceReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
     @Override
-    public CurveType getCurveType() {
-        return CurveType.LineString;
+    public Measure getArea( Unit requestedBaseUnit ) {
+        return getReferencedObject().getArea( requestedBaseUnit );
+    }
+
+    @Override
+    public SurfaceType getSurfaceType() {
+        return getReferencedObject().getSurfaceType();
+    }
+
+    @Override
+    public Point getCentroid() {
+        return getReferencedObject().getCentroid();
+    }
+
+    @Override
+    public Points getExteriorRingCoordinates() {
+        return getReferencedObject().getExteriorRingCoordinates();
+    }
+
+    @Override
+    public List<Points> getInteriorRingsCoordinates() {
+        return getReferencedObject().getInteriorRingsCoordinates();
+    }
+
+    @Override
+    public List<? extends SurfacePatch> getPatches() {
+        return getReferencedObject().getPatches();
+    }
+
+    @Override
+    public Measure getPerimeter( Unit requestedUnit ) {
+        return getReferencedObject().getPerimeter( requestedUnit );
     }
 }

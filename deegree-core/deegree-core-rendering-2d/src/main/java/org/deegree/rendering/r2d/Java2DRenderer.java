@@ -109,7 +109,7 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
-import org.deegree.gml.geometry.refs.GeometryReference;
+import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.ShapeStroke;
 import org.deegree.style.styling.LineStyling;

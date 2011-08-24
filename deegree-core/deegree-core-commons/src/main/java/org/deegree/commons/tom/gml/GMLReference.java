@@ -1,10 +1,10 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,58 +32,42 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
-package org.deegree.gml.geometry.refs;
+package org.deegree.commons.tom.gml;
 
-import java.util.List;
-
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.gml.GMLReferenceResolver;
+import org.deegree.commons.tom.Reference;
+import org.deegree.commons.tom.ReferenceResolver;
 
 /**
- * The <code></code> class TODO add class documentation here.
- *
+ * A {@link Reference} to a {@link GMLObject}, corresponds to a GML property with an <code>xlink:href</code> attribute.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ * 
+ * @param <T>
+ *            type of the referenced object
  */
-public class PolygonReference extends SurfaceReference<Polygon> implements Polygon {
+public class GMLReference<T extends GMLObject> extends Reference<T> implements GMLObject {
 
     /**
-     * Creates a new {@link PolygonReference} instance.
+     * Creates a new {@link GMLReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
      * @param uri
-     *            the geometry's uri, must not be <code>null</code>
+     *            the object's uri, must not be <code>null</code>
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public PolygonReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
+    public GMLReference( ReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
     @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.Polygon;
-    }
-
-    @Override
-    public Ring getExteriorRing() {
-        return getReferencedObject().getExteriorRing();
-    }
-
-    @Override
-    public List<Ring> getInteriorRings() {
-        return getReferencedObject().getInteriorRings();
-    }
-    
-    @Override
-    public List<PolygonPatch> getPatches() {
-        return getReferencedObject().getPatches();
+    public GMLStdProps getGMLProperties() {
+        return getReferencedObject().getGMLProperties();
     }
 }

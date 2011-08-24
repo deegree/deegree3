@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.Feature;
-import org.deegree.gml.GMLObject;
 
 /**
  * {@link XPathNode} that represents an XML document node.

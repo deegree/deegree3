@@ -47,12 +47,12 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.Property;
-import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
 import org.jaxen.DefaultNavigator;
 import org.jaxen.JaxenConstants;

@@ -38,6 +38,7 @@ package org.deegree.geometry.standard;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -52,6 +53,7 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.multi.DefaultMultiGeometry;
 import org.deegree.geometry.standard.multi.DefaultMultiLineString;
 import org.deegree.geometry.standard.multi.DefaultMultiPoint;
@@ -61,8 +63,6 @@ import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
-import org.deegree.gml.geometry.refs.GeometryReference;
-import org.deegree.gml.props.GMLStdProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

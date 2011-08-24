@@ -48,6 +48,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.index.RTree;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -68,7 +69,6 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.gml.GMLObject;
 import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
 import org.slf4j.Logger;

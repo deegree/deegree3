@@ -74,8 +74,8 @@ import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
+import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.points.PointsArray;
-import org.deegree.gml.geometry.refs.GeometryReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

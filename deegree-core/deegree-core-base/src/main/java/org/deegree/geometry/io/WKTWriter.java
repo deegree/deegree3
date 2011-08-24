@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
@@ -94,10 +95,9 @@ import org.deegree.geometry.primitive.segments.Geodesic;
 import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
+import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
-import org.deegree.gml.geometry.refs.GeometryReference;
-import org.deegree.gml.props.GMLStdProps;
 import org.slf4j.Logger;
 
 /**

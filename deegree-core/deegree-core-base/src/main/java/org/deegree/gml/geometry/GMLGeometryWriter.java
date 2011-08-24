@@ -53,7 +53,7 @@ import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
-import org.deegree.gml.geometry.refs.GeometryReference;
+import org.deegree.geometry.refs.GeometryReference;
 
 /**
  * Interface that makes the usage of Geometry Encoders simpler, not depending on their version anymore. Any new version

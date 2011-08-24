@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -34,41 +34,63 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.gml;
+package org.deegree.geometry.refs;
 
-import org.deegree.commons.tom.Reference;
-import org.deegree.commons.tom.ReferenceResolver;
-import org.deegree.gml.props.GMLStdProps;
+import java.util.List;
+
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
+import org.deegree.geometry.primitive.Solid;
+import org.deegree.geometry.primitive.Surface;
+import org.deegree.gml.GMLReferenceResolver;
 
 /**
- * A {@link Reference} to a {@link GMLObject}, corresponds to a GML property with an <code>xlink:href</code> attribute.
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: schneider $
  * 
- * @version $Revision$, $Date$
- * 
- * @param <T>
- *            type of the referenced object
+ * @version $Revision: $, $Date: $
  */
-public class GMLReference<T extends GMLObject> extends Reference<T> implements GMLObject {
+public class SolidReference<T extends Solid> extends GeometryReference<T> implements Solid {
 
     /**
-     * Creates a new {@link GMLReference} instance.
+     * Creates a new {@link SolidReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
      * @param uri
-     *            the object's uri, must not be <code>null</code>
+     *            the geometry's uri, must not be <code>null</code>
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public GMLReference( ReferenceResolver resolver, String uri, String baseURL ) {
+    public SolidReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
+    public Measure getArea( Unit requestedBaseUnit ) {
+        return getReferencedObject().getArea( requestedBaseUnit );
+    }
+
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Solid;
+    }
+
+    public SolidType getSolidType() {
+        return getReferencedObject().getSolidType();
+    }
+
+    public Measure getVolume( Unit requestedBaseUnit ) {
+        return getReferencedObject().getVolume( requestedBaseUnit );
+    }
+
     @Override
-    public GMLStdProps getGMLProperties() {
-        return getReferencedObject().getGMLProperties();
+    public Surface getExteriorSurface() {
+        return getReferencedObject().getExteriorSurface();
+    }
+
+    @Override
+    public List<Surface> getInteriorSurfaces() {
+        return getReferencedObject().getInteriorSurfaces();
     }
 }

@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.cache;
 
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.gml.GMLObject;
 
 /**
  * Cache for persistent {@link GMLObject} instances that are stored in a {@link FeatureStore}.

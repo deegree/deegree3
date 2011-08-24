@@ -41,6 +41,8 @@ import java.util.Set;
 
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
@@ -69,8 +71,6 @@ import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
-import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLReference;
 
 /**
  * Provides

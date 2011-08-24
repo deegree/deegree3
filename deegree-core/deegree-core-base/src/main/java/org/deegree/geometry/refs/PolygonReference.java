@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,30 +32,29 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 
-package org.deegree.gml.geometry.refs;
+package org.deegree.geometry.refs;
 
 import java.util.List;
 
-import org.deegree.commons.uom.Measure;
-import org.deegree.commons.uom.Unit;
-import org.deegree.geometry.primitive.Solid;
-import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.gml.GMLReferenceResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
-public class SolidReference<T extends Solid> extends GeometryReference<T> implements Solid {
+public class PolygonReference extends SurfaceReference<Polygon> implements Polygon {
 
     /**
-     * Creates a new {@link SolidReference} instance.
+     * Creates a new {@link PolygonReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
@@ -64,33 +63,27 @@ public class SolidReference<T extends Solid> extends GeometryReference<T> implem
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public SolidReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
+    public PolygonReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
-    public Measure getArea( Unit requestedBaseUnit ) {
-        return getReferencedObject().getArea( requestedBaseUnit );
-    }
-
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Solid;
-    }
-
-    public SolidType getSolidType() {
-        return getReferencedObject().getSolidType();
-    }
-
-    public Measure getVolume( Unit requestedBaseUnit ) {
-        return getReferencedObject().getVolume( requestedBaseUnit );
+    @Override
+    public SurfaceType getSurfaceType() {
+        return SurfaceType.Polygon;
     }
 
     @Override
-    public Surface getExteriorSurface() {
-        return getReferencedObject().getExteriorSurface();
+    public Ring getExteriorRing() {
+        return getReferencedObject().getExteriorRing();
     }
 
     @Override
-    public List<Surface> getInteriorSurfaces() {
-        return getReferencedObject().getInteriorSurfaces();
+    public List<Ring> getInteriorRings() {
+        return getReferencedObject().getInteriorRings();
+    }
+    
+    @Override
+    public List<PolygonPatch> getPatches() {
+        return getReferencedObject().getPatches();
     }
 }

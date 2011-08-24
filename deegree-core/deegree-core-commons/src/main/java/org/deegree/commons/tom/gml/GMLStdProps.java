@@ -34,24 +34,11 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.gml.props;
-
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-
-import javax.xml.namespace.QName;
+package org.deegree.commons.tom.gml;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.feature.Feature;
-import org.deegree.feature.types.property.CodePropertyType;
-import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLObject;
 
 /**
  * Version-agnostic representation of the standard properties that any {@link GMLObject} allows for.
@@ -133,150 +120,33 @@ import org.deegree.gml.GMLObject;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GMLStdProps {
-
-    /** GML 2 standard property type 'gml:description' */
-    public static final SimplePropertyType PT_DESCRIPTION_GML2;
-
-    /** GML 2 standard property type 'gml:name' */
-    public static final SimplePropertyType PT_NAME_GML2;
-
-    /** GML 3.0/3.1 standard property type 'gml:metaDataProperty' */
-    public static final CustomPropertyType PT_META_DATA_PROPERTY_GML31;
-
-    /** GML 3.0/3.1 standard property type 'gml:description' */
-    public static final StringOrRefPropertyType PT_DESCRIPTION_GML31;
-
-    /** GML 3.0/3.1 standard property type 'gml:name' */
-    public static final CodePropertyType PT_NAME_GML31;
-
-    /** GML 3.2 standard property type 'gml:metaDataProperty' */
-    public static final CustomPropertyType PT_META_DATA_PROPERTY_GML32;
-
-    /** GML 3.2 standard property type 'gml:description' */
-    public static final StringOrRefPropertyType PT_DESCRIPTION_GML32;
-
-    /** GML 3.2 standard property type 'gml:descriptionReference' */
-    public static final StringOrRefPropertyType PT_DESCRIPTION_REFERENCE_GML32;
-
-    /** GML 3.2 standard property type 'gml:identifier' */
-    public static final CodePropertyType PT_IDENTIFIER_GML32;
-
-    /** GML 3.2 standard property type 'gml:name' */
-    public static final CodePropertyType PT_NAME_GML32;
-
-    static {
-        PT_DESCRIPTION_GML2 = new SimplePropertyType( new QName( GMLNS, "description" ), 0, 1, STRING, null, null );
-        PT_NAME_GML2 = new SimplePropertyType( new QName( GMLNS, "name" ), 0, 1, STRING, null, null );
-
-        // TODO correct this (should be a MetaDataPropertyType)
-        PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null, null );
-        // TODO correct this (should be a StringOrRefType)
-        PT_DESCRIPTION_GML31 = new StringOrRefPropertyType( new QName( GMLNS, "description" ), 0, 1, null, null );
-        PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1, null, null );
-
-        // TODO correct this (should be a MetaDataPropertyType)
-        PT_META_DATA_PROPERTY_GML32 = new CustomPropertyType( new QName( GML3_2_NS, "metaDataProperty" ), 0, -1, null,
-                                                              null );
-        // TODO correct this (should be a StringOrRefType)
-        PT_DESCRIPTION_GML32 = new StringOrRefPropertyType( new QName( GML3_2_NS, "description" ), 0, 1, null, null );
-        // TODO correct this (should be a ReferenceType)
-        PT_DESCRIPTION_REFERENCE_GML32 = new StringOrRefPropertyType( new QName( GML3_2_NS, "descriptionReference" ),
-                                                                      0, 1, null, null );
-        PT_IDENTIFIER_GML32 = new CodePropertyType( new QName( GML3_2_NS, "identifier" ), 0, 1, null, null );
-        PT_NAME_GML32 = new CodePropertyType( new QName( GML3_2_NS, "name" ), 0, -1, null, null );
-    }
-
-    protected TypedObjectNode[] metadata;
-
-    protected StringOrRef description;
-
-    protected CodeType identifier;
-
-    protected CodeType[] names;
-
-    /**
-     * Creates a new {@link GMLStdProps} instance.
-     * 
-     * @param metadata
-     *            metadata values, may be <code>null</code>
-     * @param description
-     *            description, may be <code>null</code>
-     * @param identifier
-     *            identifier, may be <code>null</code>
-     * @param names
-     *            names, may be <code>null</code>
-     */
-    public GMLStdProps( TypedObjectNode[] metadata, StringOrRef description, CodeType identifier, CodeType[] names ) {
-        if ( metadata == null ) {
-            this.metadata = new TypedObjectNode[0];
-        } else {
-            this.metadata = metadata;
-        }
-        this.description = description;
-        this.identifier = identifier;
-        if ( names == null ) {
-            this.names = new CodeType[0];
-        } else {
-            this.names = names;
-        }
-    }
+public interface GMLStdProps {
 
     /**
      * Returns the metadata values.
      * 
      * @return the metadata values, may be empty, but never <code>null</code>
      */
-    public TypedObjectNode[] getMetadata() {
-        return metadata;
-    }
+    public TypedObjectNode[] getMetadata();
 
     /**
      * Returns the description.
      * 
      * @return the description, may be <code>null</code>
      */
-    public StringOrRef getDescription() {
-        return description;
-    }
+    public StringOrRef getDescription();
 
     /**
      * Returns the identifier.
      * 
      * @return the identifier, may be <code>null</code>
      */
-    public CodeType getIdentifier() {
-        return identifier;
-    }
+    public CodeType getIdentifier();
 
     /**
      * Returns the names.
      * 
      * @return the names, may be empty, but never <code>null</code>
      */
-    public CodeType[] getNames() {
-        return names;
-    }
-
-    @Override
-    public String toString() {
-        String s = "";
-        for ( int i = 0; i < metadata.length; i++ ) {
-            s += "metadata={" + metadata[i] + "}";
-            if ( i != metadata.length - 1 ) {
-                s += ',';
-            }
-        }
-        s += ",";
-        s += "description={" + description + "}";
-        s += ",";
-        for ( int i = 0; i < names.length; i++ ) {
-            s += "name={" + names[i] + "}";
-            if ( i != names.length - 1 ) {
-                s += ',';
-            }
-        }
-        s += "identifier={" + identifier + "}";
-        return s;
-    }
+    public CodeType[] getNames();
 }

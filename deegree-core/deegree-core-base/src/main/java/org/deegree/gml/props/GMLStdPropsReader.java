@@ -47,6 +47,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -135,7 +136,7 @@ public class GMLStdPropsReader {
             xmlStream.nextTag();
         }
 
-        return new GMLStdProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
+        return new GMLStdPropsImpl( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
     }
 
     private GMLStdProps readGML31( XMLStreamReader xmlStream )
@@ -164,7 +165,7 @@ public class GMLStdPropsReader {
             xmlStream.nextTag();
         }
 
-        return new GMLStdProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
+        return new GMLStdPropsImpl( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
     }
 
     private GMLStdProps readGML32( XMLStreamReader xmlStream )
@@ -200,7 +201,7 @@ public class GMLStdPropsReader {
             xmlStream.nextTag();
         }
 
-        return new GMLStdProps( metadata, description, identifier, names.toArray( new CodeType[names.size()] ) );
+        return new GMLStdPropsImpl( metadata, description, identifier, names.toArray( new CodeType[names.size()] ) );
     }
 
     private Object readMetadataProperty( XMLStreamReader xmlStream )

@@ -38,9 +38,9 @@ package org.deegree.feature.xpath;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
 
 /**

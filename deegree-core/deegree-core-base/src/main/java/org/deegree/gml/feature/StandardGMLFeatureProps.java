@@ -49,6 +49,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -61,7 +62,7 @@ import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.props.GMLStdProps;
+import org.deegree.gml.props.GMLStdPropsImpl;
 
 /**
  * Version-agnostic representation of the standard properties that any GML {@link Feature} allows for.
@@ -73,7 +74,7 @@ import org.deegree.gml.props.GMLStdProps;
  * 
  * @version $Revision$, $Date$
  */
-public class StandardGMLFeatureProps extends GMLStdProps {
+public class StandardGMLFeatureProps extends GMLStdPropsImpl {
 
     /** GML 2 standard property type 'gml:boundedBy' */
     public static final PropertyType PT_BOUNDED_BY_GML2;
