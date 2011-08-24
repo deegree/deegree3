@@ -157,9 +157,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 15339 $, $Date: 2008-12-11 18:40:09 +0100 (Do, 11 Dez 2008) $
  */
-public class WFSController extends AbstractOWS {
+public class WebFeatureService extends AbstractOWS {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WFSController.class );
+    private static final Logger LOG = LoggerFactory.getLogger( WebFeatureService.class );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
 
@@ -167,7 +167,7 @@ public class WFSController extends AbstractOWS {
 
     private static final int DEFAULT_MAX_FEATURES = 15000;
 
-    private WFService service;
+    private WFSFeatureStoreManager service;
 
     private LockFeatureHandler lockFeatureHandler;
 
@@ -191,7 +191,7 @@ public class WFSController extends AbstractOWS {
 
     private boolean checkAreaOfUse;
 
-    public WFSController( URL configURL, ImplementationMetadata serviceInfo ) {
+    public WebFeatureService( URL configURL, ImplementationMetadata serviceInfo ) {
         super( configURL, serviceInfo );
     }
 
@@ -222,7 +222,7 @@ public class WFSController extends AbstractOWS {
             ftNameToFtMetadata.put( ftMd.getName(), ftMd );
         }
 
-        service = new WFService();
+        service = new WFSFeatureStoreManager();
         try {
             service.init( jaxbConfig, controllerConf.getSystemId(), workspace );
         } catch ( Exception e ) {
@@ -246,6 +246,9 @@ public class WFSController extends AbstractOWS {
             LOG.info( "No protocol versions configured. Using all implemented versions." );
             versions = new ArrayList<String>( serviceInfo.getImplementedVersions().size() );
             for ( Version version : serviceInfo.getImplementedVersions() ) {
+                if ( version.toString().equals( "2.0.0" ) ) {
+                    LOG.info( "Deactivating 2.0.0 support (not stable yet). Activate manually in WFS config." );
+                }
                 versions.add( version.toString() );
             }
         }
@@ -322,11 +325,11 @@ public class WFSController extends AbstractOWS {
     }
 
     /**
-     * Returns the underlying {@link WFService} instance.
+     * Returns the underlying {@link WFSFeatureStoreManager} instance.
      * 
-     * @return the underlying {@link WFService}
+     * @return the underlying {@link WFSFeatureStoreManager}
      */
-    public WFService getService() {
+    public WFSFeatureStoreManager getService() {
         return service;
     }
 

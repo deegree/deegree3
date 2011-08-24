@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format;
 
-import org.deegree.services.wfs.WFSController;
+import org.deegree.services.wfs.WebFeatureService;
 
 /**
- * Implementations provide input / output formats for the {@link WFSController}.
+ * Implementations provide input / output formats for the {@link WebFeatureService}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -48,12 +48,12 @@ import org.deegree.services.wfs.WFSController;
 public interface CustomFormat extends Format {
 
     /**
-     * Called by the {@link WFSController} to initialize and configure this {@link CustomFormat}.
+     * Called by the {@link WebFeatureService} to initialize and configure this {@link CustomFormat}.
      * 
      * @param master
      *            wfs controller, never <code>null</code>
      * @param config
      *            content of the Config element (from CustomFormat element)
      */
-    public void init( WFSController master, Object config );
+    public void init( WebFeatureService master, Object config );
 }

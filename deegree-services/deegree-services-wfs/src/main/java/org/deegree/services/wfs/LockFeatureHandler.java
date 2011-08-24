@@ -61,9 +61,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles {@link LockFeature} requests for the {@link WFSController}.
+ * Handles {@link LockFeature} requests for the {@link WebFeatureService}.
  * 
- * @see WFSController
+ * @see WebFeatureService
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -74,7 +74,7 @@ class LockFeatureHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( LockFeatureHandler.class );
 
-    private final WFSController master;
+    private final WebFeatureService master;
 
     /**
      * Creates a new {@link LockFeatureHandler} instance that uses the given service to lookup requested
@@ -83,7 +83,7 @@ class LockFeatureHandler {
      * @param master
      * 
      */
-    LockFeatureHandler( WFSController master ) {
+    LockFeatureHandler( WebFeatureService master ) {
         this.master = master;
     }
 
@@ -139,7 +139,7 @@ class LockFeatureHandler {
 
             lock = manager.acquireLock( request.getLocks(), lockAll, expiry );
 
-            XMLStreamWriter writer = WFSController.getXMLResponseWriter( response, "text/xml", schemaLocation );
+            XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter( response, "text/xml", schemaLocation );
             if ( request.getVersion() == WFSConstants.VERSION_100 ) {
                 writer.writeStartElement( "wfs", "WFS_LockFeatureResponse", ns );
             } else {

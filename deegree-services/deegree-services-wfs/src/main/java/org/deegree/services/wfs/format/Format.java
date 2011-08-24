@@ -39,10 +39,10 @@ import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.wfs.WFSController;
+import org.deegree.services.wfs.WebFeatureService;
 
 /**
- * Implementations provide input / output formats for the {@link WFSController}.
+ * Implementations provide input / output formats for the {@link WebFeatureService}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -52,12 +52,12 @@ import org.deegree.services.wfs.WFSController;
 public interface Format {
 
     /**
-     * Called by the {@link WFSController} to indicate that this {@link Format} is taken out of service.
+     * Called by the {@link WebFeatureService} to indicate that this {@link Format} is taken out of service.
      */
     public void destroy();
 
     /**
-     * Invoked by the {@link WFSController} to perform a <code>DescribeFeatureType</code> request for this format.
+     * Invoked by the {@link WebFeatureService} to perform a <code>DescribeFeatureType</code> request for this format.
      * 
      * @param request
      *            request to be performed, never <code>null</code>
@@ -68,7 +68,7 @@ public interface Format {
                             throws Exception;
 
     /**
-     * Invoked by the {@link WFSController} to perform a <code>GetFeature</code> request for this format.
+     * Invoked by the {@link WebFeatureService} to perform a <code>GetFeature</code> request for this format.
      * 
      * @param request
      *            request to be performed, never <code>null</code>
@@ -79,7 +79,7 @@ public interface Format {
                             throws Exception;
 
     /**
-     * Invoked by the {@link WFSController} to perform a <code>GetGmlObject</code> request for this format.
+     * Invoked by the {@link WebFeatureService} to perform a <code>GetGmlObject</code> request for this format.
      * 
      * @param request
      *            request to be performed, never <code>null</code>

@@ -51,7 +51,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
-import static org.deegree.services.wfs.WFSController.getXMLResponseWriter;
+import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -120,9 +120,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles a single {@link Transaction} request for the {@link WFSController}.
+ * Handles a single {@link Transaction} request for the {@link WebFeatureService}.
  * 
- * @see WFSController
+ * @see WebFeatureService
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -133,9 +133,9 @@ class TransactionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
 
-    private final WFSController master;
+    private final WebFeatureService master;
 
-    private final WFService service;
+    private final WFSFeatureStoreManager service;
 
     private final Transaction request;
 
@@ -159,7 +159,7 @@ class TransactionHandler {
      * @param request
      *            request to be handled
      */
-    TransactionHandler( WFSController master, WFService service, Transaction request ) {
+    TransactionHandler( WebFeatureService master, WFSFeatureStoreManager service, Transaction request ) {
         this.master = master;
         this.service = service;
         this.request = request;

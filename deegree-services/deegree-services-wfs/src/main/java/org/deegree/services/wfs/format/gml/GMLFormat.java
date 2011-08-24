@@ -112,8 +112,8 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse;
 import org.deegree.services.wfs.GetFeatureAnalyzer;
-import org.deegree.services.wfs.WFSController;
-import org.deegree.services.wfs.WFService;
+import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.WFSFeatureStoreManager;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,9 +140,9 @@ public class GMLFormat implements Format {
 
     private boolean disableStreaming;
 
-    private final WFSController master;
+    private final WebFeatureService master;
 
-    private final WFService service;
+    private final WFSFeatureStoreManager service;
 
     private final int featureLimit;
 
@@ -156,7 +156,7 @@ public class GMLFormat implements Format {
 
     private String appSchemaBaseURL;
 
-    public GMLFormat( WFSController master, GMLVersion gmlVersion ) {
+    public GMLFormat( WebFeatureService master, GMLVersion gmlVersion ) {
 
         this.master = master;
         this.service = master.getService();
@@ -167,7 +167,7 @@ public class GMLFormat implements Format {
         this.gmlVersion = gmlVersion;
     }
 
-    public GMLFormat( WFSController master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
+    public GMLFormat( WebFeatureService master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
                             throws ResourceInitException {
 
         this.master = master;
@@ -274,7 +274,7 @@ public class GMLFormat implements Format {
 
         String schemaLocation = null;
         if ( o instanceof Feature ) {
-            schemaLocation = WFSController.getSchemaLocation( request.getVersion(), gmlVersion,
+            schemaLocation = WebFeatureService.getSchemaLocation( request.getVersion(), gmlVersion,
                                                               ( (Feature) o ).getName() );
         } else if ( o instanceof Geometry ) {
             switch ( gmlVersion ) {
@@ -297,7 +297,7 @@ public class GMLFormat implements Format {
         }
 
         String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
-        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, contentType, schemaLocation );
+        XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCRS( master.getDefaultQueryCrs() );
         gmlStream.setRemoteXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
@@ -355,7 +355,7 @@ public class GMLFormat implements Format {
         boolean localReferencesPossible = localReferencesPossible( analyzer, traverseXLinkDepth );
 
         String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
-        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, contentType, schemaLocation );
+        XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         xmlStream = new BufferableXMLStreamWriter( xmlStream, xLinkTemplate );
 
         // open "wfs:FeatureCollection" element
@@ -682,7 +682,7 @@ public class GMLFormat implements Format {
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
         String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
-        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, contentType, schemaLocation );
+        XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
 
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
@@ -747,21 +747,21 @@ public class GMLFormat implements Format {
                     if ( GML_2 == gmlVersion ) {
                         schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
                     } else {
-                        schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion,
+                        schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
                                                                           wfsFeatureCollection );
                     }
                 } else if ( VERSION_110.equals( requestVersion ) ) {
                     if ( GML_31 == gmlVersion ) {
                         schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
                     } else {
-                        schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion,
+                        schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
                                                                           wfsFeatureCollection );
                     }
                 } else if ( VERSION_200.equals( requestVersion ) ) {
                     if ( GML_32 == gmlVersion ) {
                         schemaLocation = WFS_200_NS + " http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";
                     } else {
-                        schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion,
+                        schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
                                                                           wfsFeatureCollection );
                     }
                 } else {
@@ -781,9 +781,9 @@ public class GMLFormat implements Format {
         }
 
         if ( schemaLocation == null || schemaLocation.isEmpty() ) {
-            schemaLocation = WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
+            schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
         } else {
-            schemaLocation += " " + WFSController.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
+            schemaLocation += " " + WebFeatureService.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
         }
 
         return schemaLocation;

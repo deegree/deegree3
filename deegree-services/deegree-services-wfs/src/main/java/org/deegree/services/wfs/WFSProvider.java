@@ -37,7 +37,9 @@ package org.deegree.services.wfs;
 
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import java.net.URL;
 
@@ -51,6 +53,7 @@ import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
 
 /**
+ * {@link OWSProvider} for the {@link WebFeatureService}.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -61,8 +64,8 @@ public class WFSProvider implements OWSProvider {
 
     protected static final ImplementationMetadata<WFSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WFSRequestType>() {
         {
-            supportedVersions = new Version[] { VERSION_100, VERSION_110 };
-            handledNamespaces = new String[] { WFS_NS };
+            supportedVersions = new Version[] { VERSION_100, VERSION_110, VERSION_200 };
+            handledNamespaces = new String[] { WFS_NS, WFS_200_NS };
             handledRequests = WFSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
             serviceName = new String[] { "WFS" };
@@ -86,7 +89,7 @@ public class WFSProvider implements OWSProvider {
 
     @Override
     public OWS create( URL configURL ) {
-        return new WFSController( configURL, getImplementationMetadata() );
+        return new WebFeatureService( configURL, getImplementationMetadata() );
     }
 
     @Override

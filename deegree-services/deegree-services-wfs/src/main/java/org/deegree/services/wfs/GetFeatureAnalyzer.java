@@ -101,9 +101,9 @@ public class GetFeatureAnalyzer {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetFeatureAnalyzer.class );
 
-    private final WFSController controller;
+    private final WebFeatureService controller;
 
-    private final WFService service;
+    private final WFSFeatureStoreManager service;
 
     private final GMLVersion outputFormat;
 
@@ -129,7 +129,7 @@ public class GetFeatureAnalyzer {
      * @param request
      *            get feature request to be performed, must not be <code>null</code>
      * @param service
-     *            {@link WFService} to be used, must not be <code>null</code>
+     *            {@link WFSFeatureStoreManager} to be used, must not be <code>null</code>
      * @param outputFormat
      *            output format, must not be <code>null</code>
      * @param checkInputDomain
@@ -138,7 +138,7 @@ public class GetFeatureAnalyzer {
      * @throws OWSException
      *             if the request cannot be performed, e.g. because it queries feature types that are not served
      */
-    public GetFeatureAnalyzer( GetFeature request, WFSController controller, WFService service,
+    public GetFeatureAnalyzer( GetFeature request, WebFeatureService controller, WFSFeatureStoreManager service,
                                GMLVersion outputFormat, boolean checkInputDomain ) throws OWSException {
 
         this.controller = controller;

@@ -96,15 +96,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles {@link GetCapabilities} requests for the {@link WFSController}.
- * <p>
- * Supported WFS protocol versions:
- * <ul>
- * <li>1.0.0 (in implementation, nearly finished)</li>
- * <li>1.1.0 (in implementation, nearly finished)</li>
- * <li>2.0.0 (started, standard is still tentative)</li>
- * </ul>
- * </p>
+ * Handles {@link GetCapabilities} requests for the {@link WebFeatureService}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -146,11 +138,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private List<ICRS> querySRS;
 
-    private WFService service;
+    private WFSFeatureStoreManager service;
 
-    private WFSController master;
+    private WebFeatureService master;
 
-    GetCapabilitiesHandler( WFSController master, WFService service, Version version, XMLStreamWriter xmlWriter,
+    GetCapabilitiesHandler( WebFeatureService master, WFSFeatureStoreManager service, Version version, XMLStreamWriter xmlWriter,
                             ServiceIdentificationType serviceId, ServiceProviderType serviceProvider,
                             Collection<FeatureType> servedFts, Map<QName, FeatureTypeMetadata> ftNameToFtMetadata,
                             Set<String> sections, boolean enableTransactions, List<ICRS> querySRS ) {

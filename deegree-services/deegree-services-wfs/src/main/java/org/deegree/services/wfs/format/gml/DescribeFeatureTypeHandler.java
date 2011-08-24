@@ -88,8 +88,8 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.resources.ResourcesServlet;
-import org.deegree.services.wfs.WFSController;
-import org.deegree.services.wfs.WFService;
+import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.WFSFeatureStoreManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +109,7 @@ class DescribeFeatureTypeHandler {
 
     private static final String APPSCHEMAS = "appschemas";
 
-    private WFService service;
+    private WFSFeatureStoreManager service;
 
     // URL of workspace appschema directory
     private String wsAppSchemaBaseURL;
@@ -133,7 +133,7 @@ class DescribeFeatureTypeHandler {
      *            base URL to use for referring to static appschema fragments, can be <code>null</code> (use resources
      *            servlet)
      */
-    DescribeFeatureTypeHandler( WFService service, boolean exportOriginalSchema, String appSchemaBaseURL ) {
+    DescribeFeatureTypeHandler( WFSFeatureStoreManager service, boolean exportOriginalSchema, String appSchemaBaseURL ) {
         this.service = service;
         try {
             File wsBaseDir = OGCFrontController.getServiceWorkspace().getLocation();
@@ -182,7 +182,7 @@ class DescribeFeatureTypeHandler {
         LOG.debug( "contentType:" + response.getContentType() );
         LOG.debug( "characterEncoding:" + response.getCharacterEncoding() );
 
-        XMLStreamWriter writer = WFSController.getXMLResponseWriter( response, mimeType, null );
+        XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter( response, mimeType, null );
 
         // check for deegree-specific DescribeFeatureType request that asks for the WFS schema in a GML
         // version that does not match the WFS schema (e.g. WFS 1.1.0, GML 2)

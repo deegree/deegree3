@@ -63,18 +63,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages the {@link FeatureStore} instances for the {@link WFSController}.
+ * Manages the {@link FeatureStore} instances for the {@link WebFeatureService}.
  * 
- * @see WFSController
+ * @see WebFeatureService
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WFService {
+public class WFSFeatureStoreManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WFService.class );
+    private static final Logger LOG = LoggerFactory.getLogger( WFSFeatureStoreManager.class );
 
     private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
