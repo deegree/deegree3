@@ -4,6 +4,8 @@ import static java.util.Collections.singletonList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
@@ -13,6 +15,7 @@ import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.remoteows.wms.WMSClient;
 import org.deegree.rendering.r2d.context.RenderContext;
@@ -53,7 +56,17 @@ public class RemoteWMSLayer extends AbstractLayer {
     @Override
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
-        return super.getFeatures( info, style );
+        GetFeatureInfo gfi = new GetFeatureInfo( Collections.singletonList( getMetadata().getName() ), info.getWidth(),
+                                                 info.getHeight(), info.getX(), info.getY(), info.getEnvelope(),
+                                                 info.getEnvelope().getCoordinateSystem(), info.getFeatureCount() );
+        try {
+            return new Pair<FeatureCollection, LinkedList<String>>( client.getFeatureInfo( gfi, null ),
+                                                                    new LinkedList<String>() );
+        } catch ( IOException e ) {
+            LOG.warn( "Error when retrieving remote feature info: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+        return new Pair<FeatureCollection, LinkedList<String>>( null, new LinkedList<String>() );
     }
 
 }

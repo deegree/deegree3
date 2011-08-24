@@ -109,6 +109,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.slf4j.Logger;
 
@@ -499,8 +500,7 @@ public class WMSClient111 implements WMSClient {
      * @throws IOException
      */
     @Override
-    public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,
-                                             Envelope bbox, ICRS srs, int count, Map<String, String> hardParameters )
+    public FeatureCollection getFeatureInfo( GetFeatureInfo gfi, Map<String, String> hardParameters )
                             throws IOException {
         String url = getAddress( GetFeatureInfo, true );
         if ( url == null ) {
@@ -510,7 +510,7 @@ public class WMSClient111 implements WMSClient {
         if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
             url += url.indexOf( "?" ) == -1 ? "?" : "&";
         }
-        String lays = join( ",", queryLayers );
+        String lays = join( ",", gfi.getQueryLayers() );
 
         Map<String, String> map = new HashMap<String, String>();
         map.put( "request", "GetFeatureInfo" );
@@ -519,16 +519,17 @@ public class WMSClient111 implements WMSClient {
         map.put( "layers", lays );
         map.put( "query_layers", lays );
         map.put( "styles", "" );
-        map.put( "width", Integer.toString( width ) );
-        map.put( "height", Integer.toString( height ) );
+        map.put( "width", Integer.toString( gfi.getWidth() ) );
+        map.put( "height", Integer.toString( gfi.getHeight() ) );
+        Envelope bbox = gfi.getEnvelope();
         map.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
                          + bbox.getMax().get1() );
-        map.put( "srs", srs.getAlias() );
+        map.put( "srs", gfi.getCoordinateSystem().getAlias() );
         map.put( "format", getFormats( GetMap ).getFirst() );
         map.put( "info_format", "application/vnd.ogc.gml" );
-        map.put( "x", Integer.toString( x ) );
-        map.put( "y", Integer.toString( y ) );
-        map.put( "feature_count", Integer.toString( count ) );
+        map.put( "x", Integer.toString( gfi.getX() ) );
+        map.put( "y", Integer.toString( gfi.getY() ) );
+        map.put( "feature_count", Integer.toString( gfi.getFeatureCount() ) );
         if ( hardParameters != null ) {
             for ( Entry<String, String> e : hardParameters.entrySet() ) {
                 if ( map.containsKey( e.getKey().toLowerCase() ) ) {

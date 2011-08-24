@@ -43,11 +43,11 @@ import java.util.Map;
 
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 
 /**
@@ -84,8 +84,7 @@ public interface WMSClient {
     public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout )
                             throws IOException;
 
-    public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,
-                                             Envelope bbox, ICRS srs, int count, Map<String, String> hardParameters )
+    public FeatureCollection getFeatureInfo( GetFeatureInfo getFeatureInfo, Map<String, String> hardParameters )
                             throws IOException;
 
     public Tree<LayerMetadata> getLayerTree();

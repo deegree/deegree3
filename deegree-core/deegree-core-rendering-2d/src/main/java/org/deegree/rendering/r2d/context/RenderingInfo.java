@@ -60,6 +60,9 @@ public class RenderingInfo {
 
     private double pixelSize;
 
+    // for GetFeatureInfo
+    private int x, y, featureCount;
+
     public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
                           double pixelSize ) {
         this.format = format;
@@ -101,6 +104,51 @@ public class RenderingInfo {
 
     public double getPixelSize() {
         return pixelSize;
+    }
+
+    /**
+     * @return the x
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * @param x
+     *            the x to set
+     */
+    public void setX( int x ) {
+        this.x = x;
+    }
+
+    /**
+     * @return the y
+     */
+    public int getY() {
+        return y;
+    }
+
+    /**
+     * @param y
+     *            the y to set
+     */
+    public void setY( int y ) {
+        this.y = y;
+    }
+
+    /**
+     * @return the featureCount
+     */
+    public int getFeatureCount() {
+        return featureCount;
+    }
+
+    /**
+     * @param featureCount
+     *            the featureCount to set
+     */
+    public void setFeatureCount( int featureCount ) {
+        this.featureCount = featureCount;
     }
 
 }
