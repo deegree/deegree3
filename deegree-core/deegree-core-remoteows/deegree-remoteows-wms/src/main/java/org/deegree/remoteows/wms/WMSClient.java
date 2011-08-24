@@ -48,6 +48,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.wms.ops.GetMap;
 
 /**
  * 
@@ -80,10 +81,7 @@ public interface WMSClient {
 
     public Envelope getBoundingBox( String srs, List<String> layers );
 
-    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, ICRS srs,
-                                               String format, boolean transparent, boolean errorsInImage, int timeout,
-                                               boolean validate, List<String> validationErrors,
-                                               Map<String, String> hardParameters )
+    public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout )
                             throws IOException;
 
     public FeatureCollection getFeatureInfo( List<String> queryLayers, int width, int height, int x, int y,

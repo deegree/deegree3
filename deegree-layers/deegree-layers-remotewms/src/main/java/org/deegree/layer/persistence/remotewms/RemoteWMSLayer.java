@@ -11,6 +11,7 @@ import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.remoteows.wms.WMSClient;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
@@ -30,11 +31,10 @@ public class RemoteWMSLayer extends AbstractLayer {
     public LinkedList<String> paintMap( RenderContext context, RenderingInfo info, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
         try {
-            Pair<BufferedImage, String> map = client.getMap( singletonList( getMetadata().getName() ), info.getWidth(),
-                                                             info.getHeight(), info.getEnvelope(),
-                                                             info.getEnvelope().getCoordinateSystem(),
-                                                             client.getFormats( WMSRequestType.GetMap ).getFirst(),
-                                                             true, true, 60, false, null, null );
+            GetMap gm = new GetMap( singletonList( getMetadata().getName() ), info.getWidth(), info.getHeight(),
+                                    info.getEnvelope(), info.getEnvelope().getCoordinateSystem(),
+                                    client.getFormats( WMSRequestType.GetMap ).getFirst() );
+            Pair<BufferedImage, String> map = client.getMap( gm, null, 60 );
             if ( map.first != null ) {
                 context.paintImage( map.first );
             }

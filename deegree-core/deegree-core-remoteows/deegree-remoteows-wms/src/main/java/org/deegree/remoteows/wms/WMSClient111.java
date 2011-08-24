@@ -90,12 +90,8 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -113,6 +109,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.slf4j.Logger;
 
 /**
@@ -470,49 +467,16 @@ public class WMSClient111 implements WMSClient {
     }
 
     /**
-     * 
-     * @param layers
-     * @param width
-     * @param height
-     * @param bbox
-     * @param srs
-     * @param format
-     * @param transparent
-     * @param errorsInImage
-     *            if true, no exceptions are thrown or validation errors are returned. The returned pair allows contains
-     *            an image of the expected size.
-     * @param timeout
-     *            number of seconds to wait for a response from the WMS, use -1 for no constraints
-     * @param validate
-     *            whether to validate the values against the capabilities. Example: a format is requested that the
-     *            server does not advertise. So the first advertised format will be used, and an entry will be put in
-     *            the validationErrors list that says just that.
-     * @param validationErrors
-     *            a list of validation actions
-     * @return an image from the server, or an error message from the service exception
-     * @throws IOException
-     */
-    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, ICRS srs,
-                                               String format, boolean transparent, boolean errorsInImage, int timeout,
-                                               boolean validate, List<String> validationErrors )
-                            throws IOException {
-        return getMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, timeout, validate,
-                       validationErrors, null );
-    }
-
-    /**
      * @param hardParameters
      *            parameters to override in the request, may be null
      * @throws IOException
      */
     @Override
-    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, ICRS srs,
-                                               String format, boolean transparent, boolean errorsInImage, int timeout,
-                                               boolean validate, List<String> validationErrors,
-                                               Map<String, String> hardParameters )
+    public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout )
                             throws IOException {
-        Worker worker = new Worker( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
-                                    validationErrors, hardParameters );
+        Worker worker = new Worker( getMap.getLayers(), getMap.getWidth(), getMap.getHeight(), getMap.getBoundingBox(),
+                                    getMap.getCoordinateSystem(), getMap.getFormat(), getMap.getTransparent(), true,
+                                    false, null, hardParameters );
 
         Pair<BufferedImage, String> result;
         try {
@@ -685,51 +649,6 @@ public class WMSClient111 implements WMSClient {
         }
 
         return col;
-    }
-
-    /**
-     * @param layers
-     * @param width
-     * @param height
-     * @param bbox
-     * @param srs
-     * @param format
-     * @param transparent
-     * @param errorsInImage
-     *            if true, no exceptions are thrown or validation errors are returned. The returned pair allows contains
-     *            an image of the expected size.
-     * @param timeout
-     *            number of seconds to wait for a response from the WMS, use -1 for no constraints
-     * @param validate
-     *            whether to validate the values against the capabilities. Example: a format is requested that the
-     *            server does not advertise. So the first advertised format will be used, and an entry will be put in
-     *            the validationErrors list that says just that.
-     * @param validationErrors
-     *            a list of validation actions
-     * @return an image from the server (using RGB or RGB color model, encoded as {@link PixelInterleavedRasterData}),
-     *         or an error message from the service exception
-     * @throws IOException
-     */
-    public Pair<SimpleRaster, String> getMapAsSimpleRaster( List<String> layers, int width, int height, Envelope bbox,
-                                                            ICRS srs, String format, boolean transparent,
-                                                            boolean errorsInImage, int timeout, boolean validate,
-                                                            List<String> validationErrors )
-                            throws IOException {
-
-        Pair<BufferedImage, String> imageResponse = getMap( layers, width, height, bbox, srs, format, transparent,
-                                                            errorsInImage, timeout, validate, validationErrors );
-        Pair<SimpleRaster, String> response = new Pair<SimpleRaster, String>();
-        if ( imageResponse.first != null ) {
-            BufferedImage img = imageResponse.first;
-            RasterData rasterData = RasterFactory.rasterDataFromImage( img );
-            RasterGeoReference rasterEnv = RasterGeoReference.create( OriginLocation.OUTER, bbox, img.getWidth(),
-                                                                      img.getHeight() );
-            SimpleRaster raster = new SimpleRaster( rasterData, bbox, rasterEnv );
-            response.first = raster;
-        } else {
-            response.second = imageResponse.second;
-        }
-        return response;
     }
 
     // -----------------------------------------------------------------------

@@ -162,6 +162,15 @@ public class GetMap {
         }
     }
 
+    public GetMap( List<String> layers, int width, int height, Envelope envelope, ICRS coordinateSystem, String format ) {
+        this.layers.addAll( layers );
+        this.width = width;
+        this.height = height;
+        this.bbox = envelope;
+        this.crs = coordinateSystem;
+        this.format = format;
+    }
+
     /**
      * @param crs
      * @return the auto crs as defined in WMS 1.1.1 spec Annex E

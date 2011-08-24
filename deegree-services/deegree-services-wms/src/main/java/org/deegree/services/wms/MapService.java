@@ -879,8 +879,12 @@ public class MapService {
 
     /***/
     public void close() {
-        styleUpdateTimer.cancel();
-        close( root );
+        if ( styleUpdateTimer != null ) {
+            styleUpdateTimer.cancel();
+        }
+        if ( root != null ) {
+            close( root );
+        }
     }
 
     /**
