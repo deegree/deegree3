@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-webservices</artifactId>
   <packaging>war</packaging>
@@ -82,46 +83,46 @@
   <profiles>
     <profile>
       <id>activate-dependency-plugin</id>
-        <activation>
-          <property>
-            <name>!deactivateDependencyPlugin</name>
-          </property>
-        </activation>
+      <activation>
+        <property>
+          <name>!deactivateDependencyPlugin</name>
+        </property>
+      </activation>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <version>2.3</version>
-          <executions>
-          <execution>
-            <id>jsf-console</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <classifier>webapp-template</classifier>
-              <type>zip</type>
-              <includeGroupIds>org.deegree</includeGroupIds>
-              <includeArtifactIds>deegree-jsf-console</includeArtifactIds>
-              <outputDirectory>src/main/webapp</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>tomcat</id>
-            <phase>package</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <type>zip</type>
-              <includeGroupIds>org.deegree</includeGroupIds>
-              <includeArtifactIds>deegree-tomcat</includeArtifactIds>
-              <outputDirectory>target/deegree-tomcat</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
+            <executions>
+              <execution>
+                <id>jsf-console</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>unpack-dependencies</goal>
+                </goals>
+                <configuration>
+                  <classifier>webapp-template</classifier>
+                  <type>zip</type>
+                  <includeGroupIds>org.deegree</includeGroupIds>
+                  <includeArtifactIds>deegree-jsf-console</includeArtifactIds>
+                  <outputDirectory>src/main/webapp</outputDirectory>
+                </configuration>
+              </execution>
+              <execution>
+                <id>tomcat</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>unpack-dependencies</goal>
+                </goals>
+                <configuration>
+                  <type>zip</type>
+                  <includeGroupIds>org.deegree</includeGroupIds>
+                  <includeArtifactIds>deegree-tomcat</includeArtifactIds>
+                  <outputDirectory>target/deegree-tomcat</outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
