@@ -179,7 +179,7 @@ public class RasterLayer extends Layer {
                 raster = multiraster.getRaster( bbox.getSpan0() );
             }
             SimpleRaster res = transform( raster, fi.getClickBox(), Grid.fromSize( 1, 1, MAX_VALUE, bbox ),
-                                               InterpolationType.NEAREST_NEIGHBOR.toString() ).getAsSimpleRaster();
+                                          InterpolationType.NEAREST_NEIGHBOR.toString() ).getAsSimpleRaster();
             RasterData data = res.getRasterData();
             GenericFeatureCollection col = new GenericFeatureCollection();
             List<Property> props = new LinkedList<Property>();
@@ -273,8 +273,8 @@ public class RasterLayer extends Layer {
             }
 
             raster = CoverageTransform.transform( raster, bbox,
-                                                       Grid.fromSize( gm.getWidth(), gm.getHeight(), MAX_VALUE, bbox ),
-                                                       interpol.toString() );
+                                                  Grid.fromSize( gm.getWidth(), gm.getHeight(), MAX_VALUE, bbox ),
+                                                  interpol.toString() );
 
             if ( p != null && p.first != null ) {
                 RangeSet cbr = createBandRangeSetFromRaster( null, null, raster );

@@ -36,7 +36,8 @@
 package org.deegree.coverage.raster.io.imageio;
 
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
-import it.geosolutions.imageio.plugins.geotiff.GeoTiffImageReader;
+
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -120,8 +121,6 @@ public class IIORasterDataReader implements RasterDataReader {
 
     private final int imageIndex;
 
-    private boolean useGdal;
-
     /**
      * Create a IIORasterDataReader for given file
      * 
@@ -130,8 +129,8 @@ public class IIORasterDataReader implements RasterDataReader {
      * @param options
      *            with values.
      */
-    public IIORasterDataReader( File file, RasterIOOptions options, int imageIndex, boolean useGdal ) {
-        this( options, false, imageIndex, useGdal );
+    public IIORasterDataReader( File file, RasterIOOptions options, int imageIndex ) {
+        this( options, false, imageIndex );
         this.file = file;
     }
 
@@ -143,17 +142,16 @@ public class IIORasterDataReader implements RasterDataReader {
      * @param options
      *            with values
      */
-    public IIORasterDataReader( InputStream stream, RasterIOOptions options, int imageIndex, boolean useGdal ) {
-        this( options, ( stream != null && stream.markSupported() ), imageIndex, useGdal );
+    public IIORasterDataReader( InputStream stream, RasterIOOptions options, int imageIndex ) {
+        this( options, ( stream != null && stream.markSupported() ), imageIndex );
         this.inputStream = stream;
     }
 
-    private IIORasterDataReader( RasterIOOptions options, boolean resetableStream, int imageIndex, boolean useGdal ) {
+    private IIORasterDataReader( RasterIOOptions options, boolean resetableStream, int imageIndex ) {
         this.imageIndex = imageIndex;
         this.format = options.get( RasterIOOptions.OPT_FORMAT );
         this.options = options;
         this.resetableStream = resetableStream;
-        this.useGdal = useGdal;
     }
 
     /**
@@ -304,6 +302,7 @@ public class IIORasterDataReader implements RasterDataReader {
     /**
      * Removes the internal references to the loaded raster to allow garbage collection of the raster.
      */
+    @Override
     public void close() {
         synchronized ( LOCK ) {
             if ( reader != null && reader.getInput() != null ) {
@@ -334,17 +333,11 @@ public class IIORasterDataReader implements RasterDataReader {
                         }
                         iis = ImageIO.createImageInputStream( inputStream );
                     }
-                    Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix( format );
-                    if ( iter.hasNext() ) {
-                        if ( useGdal ) {
-                            while ( iter.hasNext() && ( reader == null || !( reader instanceof GeoTiffImageReader ) ) ) {
-                                reader = iter.next();
-                            }
-                        } else {
-                            while ( iter.hasNext() && ( reader == null || reader instanceof GeoTiffImageReader ) ) {
-                                reader = iter.next();
-                            }
-                        }
+                    Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName( format );
+                    while ( iter.hasNext() && !( reader instanceof TIFFImageReader ) ) {
+                        this.reader = iter.next();
+                    }
+                    if ( reader != null ) {
                         reader.setInput( iis );
                         // done creating a reader.
                         return true;
@@ -477,31 +470,4 @@ public class IIORasterDataReader implements RasterDataReader {
         }
     }
 
-    protected ImageReader getImageReader() {
-        return reader;
-    }
-
-    /**
-     * rb: Below is a method to get started with tiling on image io
-     */
-
-    // @SuppressWarnings("unused")
-    // private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis ) {
-    // ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
-    // pbj.setParameter( "Input", iis );
-    //
-    // RenderedOp result = JAI.create( "ImageRead", pbj, null );
-    //
-    // int width = result.getWidth();
-    // int height = result.getHeight();
-    // int numberOfTiles = Rasters.calcApproxTiles( width, height, 500 );
-    // int tileWidth = Rasters.calcTileSize( width, numberOfTiles );
-    // int tileHeight = Rasters.calcTileSize( height, numberOfTiles );
-    //
-    // ImageLayout layout = new ImageLayout();
-    // layout.setTileWidth( tileWidth );
-    // layout.setTileHeight( tileHeight );
-    // result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
-    // // return result;
-    // }
 }

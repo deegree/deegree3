@@ -35,13 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io.imageio;
 
-import it.geosolutions.imageio.plugins.geotiff.GeoTiffImageReader;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,13 +51,12 @@ import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.cs.configuration.wkt.WKTParser;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -132,8 +127,7 @@ public class IIORasterReader implements RasterReader {
                             throws IOException {
         String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
         LOG.debug( "reading " + file + " with ImageIO" );
-        reader = new IIORasterDataReader( file, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ),
-                                          imageIndex != null );
+        reader = new IIORasterDataReader( file, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ) );
         AbstractRaster r = loadFromReader( reader, options );
         return r;
     }
@@ -142,8 +136,7 @@ public class IIORasterReader implements RasterReader {
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
         String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
-        reader = new IIORasterDataReader( stream, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ),
-                                          imageIndex != null );
+        reader = new IIORasterDataReader( stream, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ) );
         return loadFromReader( reader, options );
     }
 
@@ -161,49 +154,23 @@ public class IIORasterReader implements RasterReader {
             factor = Integer.parseInt( imageIndex );
         }
         factor = 1 << factor;
+        MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc, factor );
+        ICRS crs = metaDataReader.getCRS();
+        rasterReference = metaDataReader.getRasterReference();
 
-        ICRS crs = null;
-
-        int imageIdx = imageIndex == null ? 0 : Integer.parseInt( imageIndex );
-
-        if ( reader.getImageReader() instanceof GeoTiffImageReader ) {
-            try {
-                StringWriter out = new StringWriter();
-                GeoTiffImageReader gt = (GeoTiffImageReader) reader.getImageReader();
-                crs = WKTParser.parse( gt.getProjection( imageIdx ) );
-                double[] georef = gt.getGeoTransform( imageIdx );
-                out.write( georef[1] + "\n" );
-                out.write( georef[2] + "\n" );
-                out.write( georef[4] + "\n" );
-                out.write( georef[5] + "\n" );
-                out.write( georef[0] + "\n" );
-                out.write( georef[3] + "\n" );
-                out.close();
-                rasterReference = WorldFileAccess.readWorldFile( new StringReader( out.toString() ), opts );
-            } catch ( Throwable e ) {
-                LOG.info( "Could not use GeoTiffImageReader, proceeding with standard TIFF reader." );
-                // e.printStackTrace();
-            }
-        }
         if ( rasterReference == null ) {
-            MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc, factor );
-            crs = metaDataReader.getCRS();
-            rasterReference = metaDataReader.getRasterReference();
-
-            if ( rasterReference == null ) {
-                if ( opts.hasRasterGeoReference() ) {
-                    rasterReference = opts.getRasterGeoReference();
-                } else {
-                    // create a 1:1 mapping
-                    rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
-                    if ( opts.readWorldFile() ) {
-                        try {
-                            if ( reader.file() != null ) {
-                                rasterReference = WorldFileAccess.readWorldFile( reader.file(), opts );
-                            }
-                        } catch ( IOException e ) {
-                            //
+            if ( opts.hasRasterGeoReference() ) {
+                rasterReference = opts.getRasterGeoReference();
+            } else {
+                // create a 1:1 mapping
+                rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
+                if ( opts.readWorldFile() ) {
+                    try {
+                        if ( reader.file() != null ) {
+                            rasterReference = WorldFileAccess.readWorldFile( reader.file(), opts );
                         }
+                    } catch ( IOException e ) {
+                        //
                     }
                 }
             }
@@ -219,6 +186,7 @@ public class IIORasterReader implements RasterReader {
         }
 
         Envelope envelope = rasterReference.getEnvelope( width, height, readCRS );
+
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
         // RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy()
         // );

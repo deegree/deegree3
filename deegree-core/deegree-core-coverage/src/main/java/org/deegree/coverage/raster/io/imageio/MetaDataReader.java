@@ -97,7 +97,8 @@ public class MetaDataReader {
     }
 
     private void init( OriginLocation definedRasterOrigLoc ) {
-        if ( metaData.getNativeMetadataFormatName().equals( TIFF_MD_FORMAT ) ) {
+        if ( metaData.getNativeMetadataFormatName().equals( TIFF_MD_FORMAT )
+             || metaData.getNativeMetadataFormatName().equals( "it_geosolutions_imageioimpl_plugins_tiff_image_1.0" ) ) {
             initGeoTIFF( definedRasterOrigLoc );
         }
 
