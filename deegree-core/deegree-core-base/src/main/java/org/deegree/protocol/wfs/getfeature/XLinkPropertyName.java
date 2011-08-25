@@ -36,7 +36,7 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
  * Specifies a feature property for which the resolving behaviour for xlink-references should be altered selectively.
@@ -48,7 +48,7 @@ import org.deegree.filter.expression.PropertyName;
  */
 public class XLinkPropertyName {
 
-    private final PropertyName propertyName;
+    private final ValueReference propertyName;
 
     // positive Integer or "*" (unlimited)
     private final String traverseXlinkDepth;
@@ -70,7 +70,7 @@ public class XLinkPropertyName {
      *            minutes), this attribute is only relevant if a value is specified for the traverseXlinkDepth
      *            attribute, may be null
      */
-    public XLinkPropertyName( PropertyName propertyName, String traverseXlinkDepth, Integer traverseXlinkExpiry ) {
+    public XLinkPropertyName( ValueReference propertyName, String traverseXlinkDepth, Integer traverseXlinkExpiry ) {
         this.propertyName = propertyName;
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
@@ -81,7 +81,7 @@ public class XLinkPropertyName {
      *
      * @return the targeted property name, never null
      */
-    public PropertyName getPropertyName() {
+    public ValueReference getPropertyName() {
         return propertyName;
     }
 

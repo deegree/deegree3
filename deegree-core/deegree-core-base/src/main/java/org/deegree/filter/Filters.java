@@ -44,7 +44,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.comparison.ComparisonOperator;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.spatial.BBOX;
@@ -79,7 +79,7 @@ public class Filters {
      *            can be <code>null</code>
      * @return combined filter or <code>null</code> (if bbox and filter are <code>null</code>)
      */
-    public static Filter addBBoxConstraint( Envelope bbox, Filter filter, PropertyName propName ) {
+    public static Filter addBBoxConstraint( Envelope bbox, Filter filter, ValueReference propName ) {
 
         if ( bbox == null ) {
             return filter;
@@ -131,18 +131,18 @@ public class Filters {
     }
 
     /**
-     * Returns all {@link PropertyName}s contained in the given {@link Filter} (taking nesting into account).
+     * Returns all {@link ValueReference}s contained in the given {@link Filter} (taking nesting into account).
      * 
      * @param filter
      *            filter to be traversed, must not be <code>null</code>
-     * @return {@link PropertyName}s found on any nodes of the {@link Filter}, can be empty, but never <code>null</code>
+     * @return {@link ValueReference}s found on any nodes of the {@link Filter}, can be empty, but never <code>null</code>
      */
-    public static PropertyName[] getPropertyNames( Filter filter ) {
+    public static ValueReference[] getPropertyNames( Filter filter ) {
 
-        List<PropertyName> propNames = null;
+        List<ValueReference> propNames = null;
         switch ( filter.getType() ) {
         case OPERATOR_FILTER: {
-            propNames = new LinkedList<PropertyName>();
+            propNames = new LinkedList<ValueReference>();
             addPropertyNames( ( (OperatorFilter) filter ).getOperator(), propNames );
             break;
         }
@@ -151,10 +151,10 @@ public class Filters {
             break;
         }
         }
-        return propNames.toArray( new PropertyName[propNames.size()] );
+        return propNames.toArray( new ValueReference[propNames.size()] );
     }
 
-    private static void addPropertyNames( Operator operator, List<PropertyName> propNames ) {
+    private static void addPropertyNames( Operator operator, List<ValueReference> propNames ) {
         Operator.Type type = operator.getType();
         switch ( type ) {
         case COMPARISON:
@@ -180,9 +180,9 @@ public class Filters {
         }
     }
 
-    private static void addPropertyNames( Expression expr, List<PropertyName> propNames ) {
-        if ( expr instanceof PropertyName ) {
-            propNames.add( (PropertyName) expr );
+    private static void addPropertyNames( Expression expr, List<ValueReference> propNames ) {
+        if ( expr instanceof ValueReference ) {
+            propNames.add( (ValueReference) expr );
         } else {
             for ( Expression child : expr.getParams() ) {
                 addPropertyNames( child, propNames );

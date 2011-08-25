@@ -38,7 +38,7 @@ package org.deegree.filter.spatial;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -51,11 +51,11 @@ import org.deegree.geometry.Geometry;
  */
 public class Within extends SpatialOperator {
 
-    private final PropertyName propName;
+    private final ValueReference propName;
 
     private final Geometry geometry;
 
-    public Within( PropertyName param1, Geometry param2 ) {
+    public Within( ValueReference param1, Geometry param2 ) {
         this.propName = param1;
         this.geometry = param2;
     }
@@ -81,7 +81,7 @@ public class Within extends SpatialOperator {
     }
 
     @Override
-    public PropertyName getPropName() {
+    public ValueReference getPropName() {
         return propName;
     }
 

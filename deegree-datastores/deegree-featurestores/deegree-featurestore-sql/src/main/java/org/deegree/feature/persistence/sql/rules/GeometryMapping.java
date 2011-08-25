@@ -42,7 +42,7 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.filter.MappingExpression;
 
@@ -62,7 +62,7 @@ public class GeometryMapping extends Mapping {
 
     private final GeometryStorageParams geometryParams;
 
-    public GeometryMapping( PropertyName path, boolean voidable, MappingExpression mapping, GeometryType type,
+    public GeometryMapping( ValueReference path, boolean voidable, MappingExpression mapping, GeometryType type,
                             GeometryStorageParams geometryParams, List<TableJoin> tableChange ) {
         super( path, voidable, tableChange );
         this.mapping = mapping;

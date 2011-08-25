@@ -42,7 +42,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
@@ -147,7 +147,7 @@ public interface MetadataRecord {
      * @param replaceValue
      *            the new string, must not be <Code>null</Code>
      */
-    public void update( PropertyName propName, String replaceValue );
+    public void update( ValueReference propName, String replaceValue );
 
     /**
      * 
@@ -156,11 +156,11 @@ public interface MetadataRecord {
      * @param replaceValue
      *            the new {@link OMElement} to update the, must not be <Code>null</Code>
      */
-    public void update( PropertyName propName, OMElement replaceValue );
+    public void update( ValueReference propName, OMElement replaceValue );
 
     /**
      * @param propName
      *            property name indicating the property to remove, must not be <Code>null</Code>
      */
-    public void removeNode( PropertyName propName );
+    public void removeNode( ValueReference propName );
 }

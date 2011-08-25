@@ -51,7 +51,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Function;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -214,9 +214,9 @@ public class GetFeature110XMLEncoder {
         }
 
         /* write child elements */
-        PropertyName[] propertyNames = query.getPropertyNames();
+        ValueReference[] propertyNames = query.getPropertyNames();
         if ( propertyNames != null ) {
-            for ( PropertyName nextProperty : propertyNames ) {
+            for ( ValueReference nextProperty : propertyNames ) {
                 if ( nextProperty != null ) {
 
                     QName qname = nextProperty.getAsQName();
@@ -297,7 +297,7 @@ public class GetFeature110XMLEncoder {
 
     /**
      * Writes property-names and declares corresponding namespaces inside a naming xml-element (e.g. <PropertyName>
-     * relating to {@link PropertyName} or <XlinkPropertyName> relating to {@link XLinkPropertyName})
+     * relating to {@link ValueReference} or <XlinkPropertyName> relating to {@link XLinkPropertyName})
      * 
      * @param propertyName
      *            name of the property which encapsulates the characters and namespace-prefix-mappings which are
@@ -307,7 +307,7 @@ public class GetFeature110XMLEncoder {
      * @throws XMLStreamException
      * @throws FilterEvaluationException
      */
-    private static void writePropertyNameCharacters( PropertyName propertyName, XMLStreamWriter writer )
+    private static void writePropertyNameCharacters( ValueReference propertyName, XMLStreamWriter writer )
                             throws XMLStreamException, FilterEvaluationException {
 
         if ( propertyName.getAsQName() != null ) { /* has just one element step */

@@ -44,7 +44,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -119,7 +119,7 @@ public abstract class SpatialOperator implements Operator {
      * 
      * @return the name of the property, may be <code>null</code> (only for {@link BBOX})
      */
-    public abstract PropertyName getPropName();
+    public abstract ValueReference getPropName();
 
     /**
      * Performs a checked cast to {@link Geometry}. If the given value is neither null nor a {@link Geometry} instance,

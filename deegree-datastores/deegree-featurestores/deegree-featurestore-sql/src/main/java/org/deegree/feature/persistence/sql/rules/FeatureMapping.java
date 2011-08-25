@@ -41,7 +41,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
@@ -58,7 +58,7 @@ public class FeatureMapping extends Mapping {
 
     private QName valueFtName;
 
-    public FeatureMapping( PropertyName path, boolean voidable, MappingExpression hrefMapping, QName valueFtName,
+    public FeatureMapping( ValueReference path, boolean voidable, MappingExpression hrefMapping, QName valueFtName,
                            List<TableJoin> tableChange ) {
         super( path, voidable, tableChange );
         this.hrefMapping = hrefMapping;

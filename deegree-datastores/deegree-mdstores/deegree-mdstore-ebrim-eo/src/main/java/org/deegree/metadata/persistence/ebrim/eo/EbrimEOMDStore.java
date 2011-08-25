@@ -81,7 +81,7 @@ import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.ebrim.AdhocQuery;
 import org.deegree.metadata.ebrim.AliasedRIMType;
@@ -285,7 +285,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                 if ( regPackId != null ) {
                     LOG.info( "profile has changed: Delete old profile with id " + regPackId + ", last inserted: "
                               + lastInserted );
-                    PropertyName propertyName = new PropertyName( "rim:RegistryPackage/@id", nsContext );
+                    ValueReference propertyName = new ValueReference( "rim:RegistryPackage/@id", nsContext );
                     Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>(
                                                                                new PrimitiveValue(
                                                                                                    regPackId,

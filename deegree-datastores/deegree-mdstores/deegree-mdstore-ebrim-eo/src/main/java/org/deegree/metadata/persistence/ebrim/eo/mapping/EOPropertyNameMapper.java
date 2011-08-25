@@ -61,7 +61,7 @@ import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.metadata.ebrim.AliasedRIMType;
 import org.deegree.metadata.ebrim.RIMType;
@@ -115,9 +115,9 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
 
     private final LinkedHashMap<String, Table> aliasToTable = new LinkedHashMap<String, Table>();
 
-    private final Map<PropertyName, PropertyNameMapping> propNameToMapping = new HashMap<PropertyName, PropertyNameMapping>();
+    private final Map<ValueReference, PropertyNameMapping> propNameToMapping = new HashMap<ValueReference, PropertyNameMapping>();
 
-    private final Map<PropertyName, SlotType> propNameToDataType = new HashMap<PropertyName, SlotType>();
+    private final Map<ValueReference, SlotType> propNameToDataType = new HashMap<ValueReference, SlotType>();
 
     private final List<Join> additionalJoins = new ArrayList<Join>();
 
@@ -241,7 +241,7 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
     }
 
     @Override
-    public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
+    public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
 
         if ( propNameToMapping.containsKey( propName ) ) {
@@ -336,7 +336,7 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
         return propNameToMapping.get( propName );
     }
 
-    private void addMapping( PropertyName propName, AliasedRIMType type, List<NameStep> remainingSteps, List<Join> joins )
+    private void addMapping( ValueReference propName, AliasedRIMType type, List<NameStep> remainingSteps, List<Join> joins )
                             throws UnmappableException {
 
         if ( remainingSteps.isEmpty() ) {
@@ -467,7 +467,7 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
         }
     }
 
-    private SlotMapping getSlot( PropertyName propName, NameStep slotStep )
+    private SlotMapping getSlot( ValueReference propName, NameStep slotStep )
                             throws UnmappableException {
         List<?> predicates = slotStep.getPredicates();
         if ( predicates == null || predicates.isEmpty() ) {
@@ -512,7 +512,7 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
         return slot;
     }
 
-    private void addMapping( PropertyName propName, List<Join> joins, AliasedRIMType type, String column,
+    private void addMapping( ValueReference propName, List<Join> joins, AliasedRIMType type, String column,
                              SlotType dataType ) {
         String table = getTableAlias( joins, type );
         PropertyNameMapping propMapping = null;

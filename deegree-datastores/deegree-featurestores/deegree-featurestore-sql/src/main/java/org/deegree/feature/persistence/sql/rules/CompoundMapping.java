@@ -39,7 +39,7 @@ import java.util.List;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
  * Composite {@link Mapping} of complex particles.
@@ -55,7 +55,7 @@ public class CompoundMapping extends Mapping {
 
     private final XSElementDeclaration elDecl;
 
-    public CompoundMapping( PropertyName path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
+    public CompoundMapping( ValueReference path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
                             XSElementDeclaration elDecl ) {
         super( path, voidable, tableChange );
         this.particles = particles;

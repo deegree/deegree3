@@ -90,7 +90,7 @@ import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
 import org.deegree.filter.expression.custom.CustomExpressionManager;
 import org.deegree.filter.expression.custom.CustomExpressionProvider;
@@ -180,7 +180,7 @@ public class Filter100XMLDecoder {
         addElementToExpressionMapping( new QName( OGC_NS, "Sub" ), Expression.Type.SUB );
         addElementToExpressionMapping( new QName( OGC_NS, "Mul" ), Expression.Type.MUL );
         addElementToExpressionMapping( new QName( OGC_NS, "Div" ), Expression.Type.DIV );
-        addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
+        addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.VALUE_REFERENCE );
         addElementToExpressionMapping( new QName( OGC_NS, "Function" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
 
@@ -376,7 +376,7 @@ public class Filter100XMLDecoder {
             nextElement( xmlStream );
             break;
         }
-        case PROPERTY_NAME: {
+        case VALUE_REFERENCE: {
             expression = parsePropertyName( xmlStream );
             break;
         }
@@ -682,7 +682,7 @@ public class Filter100XMLDecoder {
         return attrs;
     }
 
-    private static PropertyName parsePropertyName( XMLStreamReader xmlStream )
+    private static ValueReference parsePropertyName( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         String propName = xmlStream.getElementText().trim();
@@ -693,7 +693,7 @@ public class Filter100XMLDecoder {
                                                                            new QName( OGC_NS, "PropertyName" ) ) );
         }
         Set<String> prefixes = XPathUtils.extractPrefixes( propName );
-        return new PropertyName( propName, new NamespaceBindings( xmlStream.getNamespaceContext(), prefixes ) );
+        return new ValueReference( propName, new NamespaceBindings( xmlStream.getNamespaceContext(), prefixes ) );
     }
 
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
@@ -733,7 +733,7 @@ public class Filter100XMLDecoder {
         String escapeChar = getRequiredAttributeValue( xmlStream, "escape" );
 
         nextElement( xmlStream );
-        PropertyName propName = parsePropertyName( xmlStream );
+        ValueReference propName = parsePropertyName( xmlStream );
 
         nextElement( xmlStream );
         Literal<?> literal = parseLiteral( xmlStream );
@@ -744,7 +744,7 @@ public class Filter100XMLDecoder {
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         nextElement( xmlStream );
-        PropertyName propName = parsePropertyName( xmlStream );
+        ValueReference propName = parsePropertyName( xmlStream );
         nextElement( xmlStream );
         return new PropertyIsNull( propName, null );
     }
@@ -822,7 +822,7 @@ public class Filter100XMLDecoder {
         GML2GeometryReader geomParser = new GML2GeometryReader();
 
         // always first parameter: 'ogc:PropertyName'
-        PropertyName param1 = parsePropertyName( xmlStream );
+        ValueReference param1 = parsePropertyName( xmlStream );
         nextElement( xmlStream );
 
         try {

@@ -36,7 +36,7 @@
 
 package org.deegree.filter.sort;
 
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
  * A sort criterion that consist of a property name plus sort order (ascending or descending).
@@ -48,7 +48,7 @@ import org.deegree.filter.expression.PropertyName;
  */
 public class SortProperty {
 
-    private PropertyName propName;
+    private ValueReference propName;
 
     private boolean sortAscending;
 
@@ -60,7 +60,7 @@ public class SortProperty {
      * @param sortAscending
      *            true: sort ascending, false: descending
      */
-    public SortProperty( PropertyName propName, boolean sortAscending ) {
+    public SortProperty( ValueReference propName, boolean sortAscending ) {
         this.propName = propName;
         this.sortAscending = sortAscending;
     }
@@ -70,7 +70,7 @@ public class SortProperty {
      *
      * @return the property that acts as the sort criterion
      */
-    public PropertyName getSortProperty() {
+    public ValueReference getSortProperty() {
         return this.propName;
     }
 

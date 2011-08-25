@@ -115,7 +115,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
@@ -1228,7 +1228,7 @@ public class SQLFeatureStore implements FeatureStore {
         final String undefinedSrid = dialect.getUndefinedSrid();
         PropertyNameMapper mapper = new PropertyNameMapper() {
             @Override
-            public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
+            public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {
                 GeometryStorageParams geometryParams = new GeometryStorageParams( blobMapping.getCRS(), undefinedSrid,
                                                                                   CoordinateDimension.DIM_2 );

@@ -59,7 +59,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.jaxen.expr.AllNodeStep;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
@@ -91,7 +91,7 @@ public class XPathSchemaWalker {
     }
 
     public Pair<XSElementDeclaration, Boolean> getTargetElement( Pair<XSElementDeclaration, Boolean> context,
-                                                                 PropertyName propName ) {
+                                                                 ValueReference propName ) {
 
         Expr path = propName.getAsXPath();
         if ( !( path instanceof LocationPath ) ) {
@@ -143,7 +143,7 @@ public class XPathSchemaWalker {
     }
 
     public Pair<PrimitiveType, Boolean> getTargetType( Pair<XSElementDeclaration, Boolean> context,
-                                                       PropertyName propName ) {
+                                                       ValueReference propName ) {
 
         Expr path = propName.getAsXPath();
         if ( !( path instanceof LocationPath ) ) {

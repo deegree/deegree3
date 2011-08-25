@@ -76,7 +76,7 @@ import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Continuation.Updater;
@@ -717,10 +717,10 @@ public class PostgreSQLReader {
             expr = Filter110XMLDecoder.parseExpression( reader );
         } catch ( XMLParsingException e ) {
             String[] ss = text.split( "}" );
-            expr = new PropertyName( new QName( ss[0].substring( 1 ), ss[1] ) );
+            expr = new ValueReference( new QName( ss[0].substring( 1 ), ss[1] ) );
         } catch ( XMLStreamException e ) {
             String[] ss = text.split( "}" );
-            expr = new PropertyName( new QName( ss[0].substring( 1 ), ss[1] ) );
+            expr = new ValueReference( new QName( ss[0].substring( 1 ), ss[1] ) );
         }
         final Expression expr2 = expr;
         return new Continuation<Styling<?>>( contn ) {

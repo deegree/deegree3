@@ -94,7 +94,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -303,7 +303,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     private Mapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                   PrimitiveParticleJAXB config ) {
 
-        PropertyName path = new PropertyName( config.getPath(), nsBindings );
+        ValueReference path = new ValueReference( config.getPath(), nsBindings );
         Pair<PrimitiveType, Boolean> pt = schemaWalker.getTargetType( elDecl, path );
         MappingExpression me = parseMappingExpression( config.getMapping() );
 
@@ -323,7 +323,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private GeometryMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                           GeometryParticleJAXB config ) {
-        PropertyName path = new PropertyName( config.getPath(), nsBindings );
+        ValueReference path = new ValueReference( config.getPath(), nsBindings );
         MappingExpression me = parseMappingExpression( config.getMapping() );
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         LOG.warn( "Determining geometry type from element decls is not implemented." );
@@ -334,7 +334,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private FeatureMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                          FeatureParticleJAXB config ) {
-        PropertyName path = new PropertyName( config.getPath(), nsBindings );
+        ValueReference path = new ValueReference( config.getPath(), nsBindings );
         MappingExpression hrefMe = null;
         if ( config.getHref() != null ) {
             hrefMe = parseMappingExpression( config.getHref().getMapping() );
@@ -350,7 +350,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private CompoundMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                           ComplexParticleJAXB config ) {
-        PropertyName path = new PropertyName( config.getPath(), nsBindings );
+        ValueReference path = new ValueReference( config.getPath(), nsBindings );
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         List<JAXBElement<? extends AbstractParticleJAXB>> children = config.getAbstractParticle();
         List<Mapping> particles = new ArrayList<Mapping>( children.size() );

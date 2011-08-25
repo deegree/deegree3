@@ -41,7 +41,7 @@ import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
 import org.deegree.filter.expression.custom.CustomExpressionProvider;
 
@@ -49,7 +49,7 @@ import org.deegree.filter.expression.custom.CustomExpressionProvider;
  * An <code>Expression</code> describes a rule to obtain a value that may be derived from the properties of an object.
  * <p>
  * Note that the objects returned by {@link #evaluate(Object, XPathEvaluator)} is an <code>TypedObjectNode[]</code>, as
- * an expression may evaluate to multiple values, e.g. a {@link PropertyName} that targets a multi property of a
+ * an expression may evaluate to multiple values, e.g. a {@link ValueReference} that targets a multi property of a
  * feature. Values in the returned array may also be <code>null</code>.
  * </p>
  * 
@@ -73,9 +73,10 @@ public interface Expression {
         /** Value is computed by dividing two values. The {@link Expression} is an instance of {@link Div}. */
         DIV,
         /**
-         * Expression references a property of an object. The {@link Expression} is an instance of {@link PropertyName}.
+         * Expression references a property of an object (aka PropertyName). The {@link Expression} is an instance of
+         * {@link PropertyName}.
          */
-        PROPERTY_NAME,
+        VALUE_REFERENCE,
         /**
          * Value is given as a literal. The {@link Expression} is an instance of {@link Literal}.
          */
@@ -102,7 +103,7 @@ public interface Expression {
      * Determines the values of the expression for the given context object.
      * <p>
      * Note that this returns an <code>TypedObjectNode[]</code>, as an expression may evaluate to multiple values, e.g.
-     * a {@link PropertyName} that targets a multi property of a feature.
+     * a {@link ValueReference} that targets a multi property of a feature.
      * </p>
      * 
      * @param <T>

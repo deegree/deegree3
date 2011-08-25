@@ -39,7 +39,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.uom.Measure;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -52,13 +52,13 @@ import org.deegree.geometry.Geometry;
  */
 public class DWithin extends SpatialOperator {
 
-    private final PropertyName propName;
+    private final ValueReference propName;
 
     private final Geometry geometry;
 
     private final Measure distance;
 
-    public DWithin( PropertyName propName, Geometry geometry, Measure distance ) {
+    public DWithin( ValueReference propName, Geometry geometry, Measure distance ) {
         this.propName = propName;
         this.geometry = geometry;
         this.distance = distance;
@@ -82,7 +82,7 @@ public class DWithin extends SpatialOperator {
      * @return the propName
      */
     @Override
-    public PropertyName getPropName() {
+    public ValueReference getPropName() {
         return propName;
     }
 

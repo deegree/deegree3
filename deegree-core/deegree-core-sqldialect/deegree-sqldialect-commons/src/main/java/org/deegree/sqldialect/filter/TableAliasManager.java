@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter;
 
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
- * Creates and tracks table aliases that are needed for mapping {@link PropertyName}s to a relational schema.
+ * Creates and tracks table aliases that are needed for mapping {@link ValueReference}s to a relational schema.
  * 
  * @see AbstractWhereBuilder
  * 

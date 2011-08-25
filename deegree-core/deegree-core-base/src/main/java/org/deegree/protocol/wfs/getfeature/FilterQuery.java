@@ -40,7 +40,7 @@ import javax.xml.namespace.QName;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 
 /**
@@ -59,7 +59,7 @@ public class FilterQuery extends Query {
     private final Filter filter;
 
     // TODO has to be PropertyName[][] for KVP filter queries that use multiple typenames
-    private final PropertyName[] propertyNames;
+    private final ValueReference[] propertyNames;
 
     private final Function[] functions;
 
@@ -91,7 +91,7 @@ public class FilterQuery extends Query {
      *            filter constraint, may be null
      */
     public FilterQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                        PropertyName[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
+                        ValueReference[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
                         SortProperty[] sortBy, Filter filter ) {
         super( handle, typeNames, featureVersion, srsName, sortBy );
         if ( typeNames == null || typeNames.length == 0 ) {
@@ -142,7 +142,7 @@ public class FilterQuery extends Query {
      * 
      * @return the properties of the features that should be retrieved, may be null
      */
-    public PropertyName[] getPropertyNames() {
+    public ValueReference[] getPropertyNames() {
         return propertyNames;
     }
 

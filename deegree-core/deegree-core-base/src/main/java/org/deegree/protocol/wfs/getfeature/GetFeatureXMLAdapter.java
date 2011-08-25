@@ -62,7 +62,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -168,11 +168,11 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
-            List<PropertyName> propNames = new ArrayList<PropertyName>();
+            List<ValueReference> propNames = new ArrayList<ValueReference>();
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "ogc:PropertyName", nsContext ) );
 
             for ( OMElement propertyNameEl : propertyNameElements ) {
-                PropertyName propertyName = new PropertyName( propertyNameEl.getText(),
+                ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                               getNamespaceContext( propertyNameEl ) );
                 propNames.add( propertyName );
             }
@@ -204,7 +204,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
             // convert some lists to arrays to conform the FilterQuery constructor signature
-            PropertyName[] propNamesArray = new PropertyName[propNames.size()];
+            ValueReference[] propNamesArray = new ValueReference[propNames.size()];
             propNames.toArray( propNamesArray );
 
             // build Query
@@ -267,10 +267,10 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
-            List<PropertyName> propNames = new ArrayList<PropertyName>();
+            List<ValueReference> propNames = new ArrayList<ValueReference>();
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
             for ( OMElement propertyNameEl : propertyNameElements ) {
-                PropertyName propertyName = new PropertyName( propertyNameEl.getText(),
+                ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                               getNamespaceContext( propertyNameEl ) );
                 propNames.add( propertyName );
             }
@@ -279,7 +279,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             List<OMElement> xlinkPropertyElements = getElements( queryEl,
                                                                  new XPath( "wfs:XlinkPropertyName", nsContext ) );
             for ( OMElement xlinkPropertyEl : xlinkPropertyElements ) {
-                PropertyName xlinkProperty = new PropertyName( xlinkPropertyEl.getText(),
+                ValueReference xlinkProperty = new ValueReference( xlinkPropertyEl.getText(),
                                                                getNamespaceContext( xlinkPropertyEl ) );
                 String xlinkDepth = getRequiredNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkDepth",
                                                                                          nsContext ) );
@@ -340,7 +340,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                     OMElement propNameEl = getRequiredElement( sortPropertyEl,
                                                                new XPath( "ogc:PropertyName", nsContext ) );
                     String sortOrder = getNodeAsString( sortPropertyEl, new XPath( "ogc:SortOrder", nsContext ), "ASC" );
-                    SortProperty sortProp = new SortProperty( new PropertyName( propNameEl.getText(),
+                    SortProperty sortProp = new SortProperty( new ValueReference( propNameEl.getText(),
                                                                                 getNamespaceContext( propNameEl ) ),
                                                               sortOrder.equals( "ASC" ) );
                     sortProps.add( sortProp );
@@ -361,7 +361,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             }
 
             // convert some lists to arrays to conform the FilterQuery constructor signature
-            PropertyName[] propNamesArray = new PropertyName[propNames.size()];
+            ValueReference[] propNamesArray = new ValueReference[propNames.size()];
             propNames.toArray( propNamesArray );
 
             XLinkPropertyName[] xlinkPropNamesArray = new XLinkPropertyName[xlinkPropNames.size()];
@@ -481,7 +481,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         String featureVersion = null;
         ICRS crs = null;
-        PropertyName[] propNamesArray = null;
+        ValueReference[] propNamesArray = null;
         XLinkPropertyName[] xlinkPropNamesArray = null;
         Function[] functionsArray = null;
         SortProperty[] sortPropsArray = null;

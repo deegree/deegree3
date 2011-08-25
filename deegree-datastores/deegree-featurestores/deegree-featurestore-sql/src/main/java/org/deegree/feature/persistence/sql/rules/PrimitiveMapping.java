@@ -41,7 +41,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
@@ -72,7 +72,7 @@ public class PrimitiveMapping extends Mapping {
      * @param tableChange
      *            table joins, can be <code>null</code> (no joins involved)
      */
-    public PrimitiveMapping( PropertyName path, boolean voidable, MappingExpression mapping, PrimitiveType pt,
+    public PrimitiveMapping( ValueReference path, boolean voidable, MappingExpression mapping, PrimitiveType pt,
                              List<TableJoin> tableChange, CustomConverterJAXB converter ) {
         super( path, voidable, tableChange );
         this.pt = pt;

@@ -80,7 +80,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.GeometryFactory;
@@ -253,7 +253,7 @@ public class TOPPStatesTest {
     @Test
     public void queryByStateName()
                             throws FeatureStoreException, FilterEvaluationException {
-        PropertyName propName = new PropertyName( STATE_NAME );
+        ValueReference propName = new ValueReference( STATE_NAME );
         Literal literal = new Literal( "Illinois" );
         PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false, null );
         Filter filter = new OperatorFilter( oper );

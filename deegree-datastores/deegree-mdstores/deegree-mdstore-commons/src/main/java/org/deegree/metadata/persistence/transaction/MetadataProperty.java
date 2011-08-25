@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.transaction;
 
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
  * To specify individual property values to be updated.
@@ -47,7 +47,7 @@ import org.deegree.filter.expression.PropertyName;
  */
 public class MetadataProperty {
 
-    private PropertyName propertyName;
+    private ValueReference propertyName;
 
     private Object replacementValue;
 
@@ -59,7 +59,7 @@ public class MetadataProperty {
      * @param replacementValue
      *            can be anyType [0..1]
      */
-    public MetadataProperty( PropertyName propertyName, Object replacementValue ) {
+    public MetadataProperty( ValueReference propertyName, Object replacementValue ) {
         this.propertyName = propertyName;
         this.replacementValue = replacementValue;
     }
@@ -69,7 +69,7 @@ public class MetadataProperty {
      * @return the propertyName element contains the name of a property to be updated. The name may be a path
      *         expression.
      */
-    public PropertyName getPropertyName() {
+    public ValueReference getPropertyName() {
         return propertyName;
     }
 

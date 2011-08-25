@@ -63,7 +63,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
@@ -136,7 +136,7 @@ public class DynamicSQLLayer extends Layer {
         FeatureInputStream rs = null;
         try {
             GenericFeatureType ft = datastore.getFeatureType();
-            PropertyName propName = new PropertyName( ft.getDefaultGeometryPropertyDeclaration().getName() );
+            ValueReference propName = new ValueReference( ft.getDefaultGeometryPropertyDeclaration().getName() );
             OperatorFilter fil = new OperatorFilter( new Intersects( propName, clickBox ) );
             Filter filter = Filters.addBBoxConstraint( clickBox, fil, propName );
             rs = datastore.query( new Query( ft.getName(), filter, -1, fi.getFeatureCount(), -1 ) );

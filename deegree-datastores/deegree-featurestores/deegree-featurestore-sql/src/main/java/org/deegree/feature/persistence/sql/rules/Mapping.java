@@ -38,7 +38,7 @@ package org.deegree.feature.persistence.sql.rules;
 import java.util.List;
 
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
  * A {@link Mapping} describes how a particle of a feature type is mapped to a relational model (tables/columns).
@@ -54,7 +54,7 @@ import org.deegree.filter.expression.PropertyName;
  */
 public abstract class Mapping {
 
-    private final PropertyName path;
+    private final ValueReference path;
 
     private final List<TableJoin> tableChange;
 
@@ -71,7 +71,7 @@ public abstract class Mapping {
      * @param tableChange
      *            table joins, can be <code>null</code> (no joins involved)
      */
-    protected Mapping( PropertyName path, boolean voidable, List<TableJoin> tableChange ) {
+    protected Mapping( ValueReference path, boolean voidable, List<TableJoin> tableChange ) {
         this.path = path;
         this.voidable = voidable;
         this.tableChange = tableChange;
@@ -83,7 +83,7 @@ public abstract class Mapping {
      * 
      * @return a relative xpath expression, never <code>null</code>
      */
-    public PropertyName getPath() {
+    public ValueReference getPath() {
         return path;
     }
 

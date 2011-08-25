@@ -47,7 +47,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Beyond;
@@ -89,7 +89,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * @param dialect
      *            SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
      * @param mapper
-     *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
+     *            provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
@@ -100,7 +100,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      *            if true, legacy-style PostGIS spatial predicates are used (e.g. <code>Intersects</code> instead of
      *            <code>ST_Intersects</code>)
      * @throws FilterEvaluationException
-     *             if the expression contains invalid {@link PropertyName}s
+     *             if the expression contains invalid {@link ValueReference}s
      * @throws UnmappableException
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
@@ -125,7 +125,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the expression contains invalid {@link PropertyName}s
+     *             if the expression contains invalid {@link ValueReference}s
      */
     @Override
     protected SQLOperation toProtoSQL( PropertyIsLike op )

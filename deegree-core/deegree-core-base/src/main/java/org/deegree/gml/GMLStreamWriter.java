@@ -57,7 +57,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.dictionary.Definition;
@@ -103,7 +103,7 @@ public class GMLStreamWriter {
 
     private GMLDictionaryWriter dictionaryWriter;
 
-    private PropertyName[] featureProps;
+    private ValueReference[] featureProps;
 
     private XLinkPropertyName[] xlinkProps;
 
@@ -203,7 +203,7 @@ public class GMLStreamWriter {
      * @param featureProps
      *            feature properties to be included, or <code>null</code> (include all feature props)
      */
-    public void setFeatureProperties( PropertyName[] featureProps ) {
+    public void setFeatureProperties( ValueReference[] featureProps ) {
         this.featureProps = featureProps;
     }
 

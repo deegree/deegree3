@@ -37,7 +37,7 @@ package org.deegree.feature.persistence.sql;
 
 import org.deegree.feature.persistence.sql.xpath.MappedXPath;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
@@ -63,7 +63,7 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
     }
 
     @Override
-    public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
+    public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
         return new MappedXPath( fs, ftMapping, propName, aliasManager ).getPropertyNameMapping();
     }

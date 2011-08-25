@@ -87,7 +87,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLInputFactory;
@@ -484,7 +484,7 @@ public class PostGISFeatureStoreTst {
             TypeName[] typeNames = new TypeName[] { new TypeName(
                                                                   QName.valueOf( "{http://www.deegree.org/app}Country" ),
                                                                   null ) };
-            PropertyName propName = new PropertyName( QName.valueOf( "{http://www.deegree.org/app}name" ) );
+            ValueReference propName = new ValueReference( QName.valueOf( "{http://www.deegree.org/app}name" ) );
             Literal literal = new Literal( "United Kingdom" );
 
             PropertyIsEqualTo propIsEqualTo = new PropertyIsEqualTo( propName, literal, false, null );

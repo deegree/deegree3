@@ -36,7 +36,7 @@
 package org.deegree.feature.persistence.sql.rules;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
  * {@link Mapping} of a particle to a fixed value.
@@ -58,7 +58,7 @@ public class ConstantMapping<T extends TypedObjectNode> extends Mapping {
      * @param value
      *            the value of the particle, must not be <code>null</code>
      */
-    public ConstantMapping( PropertyName path, T value ) {
+    public ConstantMapping( ValueReference path, T value ) {
         super( path, false, null );
         this.value = value;
     }

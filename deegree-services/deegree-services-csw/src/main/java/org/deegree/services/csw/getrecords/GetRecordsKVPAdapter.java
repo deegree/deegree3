@@ -57,7 +57,7 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -274,15 +274,15 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
             for ( String s : sortByStrList ) {
                 if ( s.endsWith( " D" ) ) {
                     String sortbyProp = s.substring( 0, s.indexOf( " " ) );
-                    result[counter++] = new SortProperty( new PropertyName( sortbyProp, nsContext ), false );
+                    result[counter++] = new SortProperty( new ValueReference( sortbyProp, nsContext ), false );
 
                 } else {
                     if ( s.endsWith( " A" ) ) {
                         String sortbyProp = s.substring( 0, s.indexOf( " " ) );
-                        result[counter++] = new SortProperty( new PropertyName( sortbyProp, nsContext ), true );
+                        result[counter++] = new SortProperty( new ValueReference( sortbyProp, nsContext ), true );
 
                     } else {
-                        result[counter++] = new SortProperty( new PropertyName( s, nsContext ), true );
+                        result[counter++] = new SortProperty( new ValueReference( s, nsContext ), true );
                     }
                 }
             }

@@ -69,7 +69,7 @@ import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.iso.ISORecord;
@@ -203,14 +203,14 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         }
 
         // constraint
-        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+        Operator op = new PropertyIsEqualTo( new ValueReference( "apiso:identifier", nsContext ),
                                              new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // create recordProperty
         List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
         String xPath = "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
-        PropertyName name = new PropertyName( xPath, nsContext );
+        ValueReference name = new ValueReference( xPath, nsContext );
         String value = "UPDATED ORGANISATIONNAME";
         recordProperties.add( new MetadataProperty( name, value ) );
 
@@ -248,14 +248,14 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         }
 
         // constraint
-        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+        Operator op = new PropertyIsEqualTo( new ValueReference( "apiso:identifier", nsContext ),
                                              new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // create recordProperty
         List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
         String xPath = "/apiso:Modified";
-        PropertyName name = new PropertyName( xPath, nsContext );
+        ValueReference name = new ValueReference( xPath, nsContext );
         String value = "3333-11-22";
         recordProperties.add( new MetadataProperty( name, value ) );
 
@@ -295,14 +295,14 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         }
 
         // constraint
-        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+        Operator op = new PropertyIsEqualTo( new ValueReference( "apiso:identifier", nsContext ),
                                              new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // create recordProperty
         List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
         String xPath = "/gmd:MD_Metadata/gmd:contact";
-        PropertyName name = new PropertyName( xPath, nsContext );
+        ValueReference name = new ValueReference( xPath, nsContext );
         InputStream is = ParseISOTest.class.getResourceAsStream( "../update/replace.xml" );
         XMLAdapter a = new XMLAdapter( is );
         OMElement value = a.getRootElement();
@@ -348,14 +348,14 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         }
 
         // constraint
-        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+        Operator op = new PropertyIsEqualTo( new ValueReference( "apiso:identifier", nsContext ),
                                              new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // create recordProperty
         List<MetadataProperty> recordProperties = new ArrayList<MetadataProperty>();
         String xPath = "/gmd:MD_Metadata/gmd:dataQualityInfo";
-        PropertyName name = new PropertyName( xPath, nsContext );
+        ValueReference name = new ValueReference( xPath, nsContext );
         recordProperties.add( new MetadataProperty( name, null ) );
 
         // get record which should be updated
@@ -415,7 +415,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         mst.commit();
 
         // get record which should be updated
-        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+        Operator op = new PropertyIsEqualTo( new ValueReference( "apiso:identifier", nsContext ),
                                              new Literal<PrimitiveValue>( idToUpdate ), true, null );
         MetadataQuery query = new MetadataQuery( null, null, new OperatorFilter( op ), null, 1, 10 );
         resultSet = store.getRecords( query );
@@ -449,7 +449,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         }
 
         // constraint
-        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+        Operator op = new PropertyIsEqualTo( new ValueReference( "apiso:identifier", nsContext ),
                                              new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
@@ -498,7 +498,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         }
 
         // constraint
-        Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
+        Operator op = new PropertyIsEqualTo( new ValueReference( "apiso:identifier", nsContext ),
                                              new Literal<PrimitiveValue>( "dummyDoesNotExist" ), true, null );
         Filter constraint = new OperatorFilter( op );
 

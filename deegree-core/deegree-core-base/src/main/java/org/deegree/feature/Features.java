@@ -50,7 +50,7 @@ import org.deegree.feature.property.Property;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +108,7 @@ public class Features {
                 public int compare( Feature f1, Feature f2 ) {
                     int order = 0;
                     for ( SortProperty sortCrit : sortCrits ) {
-                        PropertyName propName = sortCrit.getSortProperty();
+                        ValueReference propName = sortCrit.getSortProperty();
                         try {
                             // TODO handle multi properties correctly
                             TypedObjectNode[] values1 = evaluator.eval( f1, propName );

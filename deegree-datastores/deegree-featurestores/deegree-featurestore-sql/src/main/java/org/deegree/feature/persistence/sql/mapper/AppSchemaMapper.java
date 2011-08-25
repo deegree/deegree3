@@ -98,7 +98,7 @@ import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -249,7 +249,7 @@ public class AppSchemaMapper {
 
         XSElementDeclaration elDecl = pt.getElementDecl();
         if ( elDecl != null && elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) {
-            PropertyName path = getPropName( pt.getName() );
+            ValueReference path = getPropName( pt.getName() );
 
             MappingContext propMc = null;
             List<TableJoin> jc = null;
@@ -289,7 +289,7 @@ public class AppSchemaMapper {
 
     private PrimitiveMapping generatePropMapping( SimplePropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping simple property '" + pt.getName() + "'" );
-        PropertyName path = getPropName( pt.getName() );
+        ValueReference path = getPropName( pt.getName() );
         MappingContext propMc = null;
         List<TableJoin> jc = null;
         if ( pt.getMaxOccurs() == 1 ) {
@@ -304,7 +304,7 @@ public class AppSchemaMapper {
 
     private GeometryMapping generatePropMapping( GeometryPropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping geometry property '" + pt.getName() + "'" );
-        PropertyName path = getPropName( pt.getName() );
+        ValueReference path = getPropName( pt.getName() );
         MappingContext propMc = null;
         List<TableJoin> jc = null;
         if ( pt.getMaxOccurs() == 1 ) {
@@ -319,7 +319,7 @@ public class AppSchemaMapper {
 
     private Mapping generatePropMapping( FeaturePropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping feature property '" + pt.getName() + "'" );
-        PropertyName path = getPropName( pt.getName() );
+        ValueReference path = getPropName( pt.getName() );
         List<TableJoin> jc = null;
         MappingContext fkMC = null;
         MappingContext hrefMC = null;
@@ -364,7 +364,7 @@ public class AppSchemaMapper {
             return null;
         }
 
-        PropertyName path = getPropName( pt.getName() );
+        ValueReference path = getPropName( pt.getName() );
 
         MappingContext propMc = null;
         List<TableJoin> jc = null;
@@ -381,7 +381,7 @@ public class AppSchemaMapper {
 
     private CompoundMapping generatePropMapping( CodePropertyType pt, MappingContext mc ) {
         LOG.debug( "Mapping code property '" + pt.getName() + "'" );
-        PropertyName path = getPropName( pt.getName() );
+        ValueReference path = getPropName( pt.getName() );
         MappingContext propMc = null;
         MappingContext codeSpaceMc = null;
         List<TableJoin> jc = null;
@@ -398,9 +398,9 @@ public class AppSchemaMapper {
         }
         MappingExpression csMapping = new DBField( codeSpaceMc.getColumn() );
         List<Mapping> particles = new ArrayList<Mapping>();
-        particles.add( new PrimitiveMapping( new PropertyName( "text()", null ), false, mapping,
+        particles.add( new PrimitiveMapping( new ValueReference( "text()", null ), false, mapping,
                                              new PrimitiveType( STRING ), null, null ) );
-        particles.add( new PrimitiveMapping( new PropertyName( "@codeSpace", null ), true, csMapping,
+        particles.add( new PrimitiveMapping( new ValueReference( "@codeSpace", null ), true, csMapping,
                                              new PrimitiveType( STRING ), null, null ) );
         return new CompoundMapping( path, pt.getMinOccurs() == 0, particles, jc, pt.getElementDecl() );
     }
@@ -437,7 +437,7 @@ public class AppSchemaMapper {
         if ( typeDef.getContentType() != CONTENTTYPE_EMPTY && typeDef.getContentType() != CONTENTTYPE_ELEMENT ) {
             // TODO
             NamespaceContext nsContext = null;
-            PropertyName path = new PropertyName( "text()", nsContext );
+            ValueReference path = new ValueReference( "text()", nsContext );
             String column = mc.getColumn();
             if ( column == null || column.isEmpty() ) {
                 column = "value";
@@ -462,7 +462,7 @@ public class AppSchemaMapper {
             MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
             // TODO
             NamespaceContext nsContext = null;
-            PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
+            ValueReference path = new ValueReference( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             PrimitiveType pt = new PrimitiveType( attrDecl.getTypeDefinition() );
             particles.add( new PrimitiveMapping( path, !attrUse.getRequired(), dbField, pt, null, null ) );
@@ -472,7 +472,7 @@ public class AppSchemaMapper {
         if ( isNillable ) {
             QName attrName = new QName( XSINS, "nil", "xsi" );
             MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
-            PropertyName path = new PropertyName( "@" + getName( attrName ), null );
+            ValueReference path = new ValueReference( "@" + getName( attrName ), null );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( BOOLEAN ), null, null ) );
         }
@@ -507,7 +507,7 @@ public class AppSchemaMapper {
             MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
             // TODO
             NamespaceContext nsContext = null;
-            PropertyName path = new PropertyName( "@" + getName( attrName ), nsContext );
+            ValueReference path = new ValueReference( "@" + getName( attrName ), nsContext );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             PrimitiveType pt = new PrimitiveType( attrDecl.getTypeDefinition() );
             particles.add( new PrimitiveMapping( path, !attrUse.getRequired(), dbField, pt, null, null ) );
@@ -517,12 +517,12 @@ public class AppSchemaMapper {
         if ( opt.isNillable() ) {
             QName attrName = new QName( XSINS, "nil", "xsi" );
             MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
-            PropertyName path = new PropertyName( "@" + getName( attrName ), null );
+            ValueReference path = new ValueReference( "@" + getName( attrName ), null );
             DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
             particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( BOOLEAN ), null, null ) );
         }
 
-        PropertyName path = new PropertyName( ".", null );
+        ValueReference path = new ValueReference( ".", null );
         if ( opt instanceof GeometryPropertyType ) {
             GeometryType gt = GeometryType.GEOMETRY;
             // TODO
@@ -677,7 +677,7 @@ public class AppSchemaMapper {
                     jc = generateJoinChain( mc, elMC );
                 }
 
-                PropertyName path = new PropertyName( getName( elName ), nsContext );
+                ValueReference path = new ValueReference( getName( elName ), nsContext );
                 if ( typeDef instanceof XSComplexTypeDefinition ) {
                     List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, elements2,
                                                                substitution.getNillable() );
@@ -742,7 +742,7 @@ public class AppSchemaMapper {
         return name.getLocalPart();
     }
 
-    private PropertyName getPropName( QName name ) {
+    private ValueReference getPropName( QName name ) {
         if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
             String prefix = name.getPrefix();
             if ( prefix == null || prefix.isEmpty() ) {
@@ -750,6 +750,6 @@ public class AppSchemaMapper {
             }
             name = new QName( name.getNamespaceURI(), name.getLocalPart(), prefix );
         }
-        return new PropertyName( name );
+        return new ValueReference( name );
     }
 }

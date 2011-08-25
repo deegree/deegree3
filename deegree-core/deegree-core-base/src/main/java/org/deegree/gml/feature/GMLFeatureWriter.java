@@ -88,7 +88,7 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
@@ -189,7 +189,7 @@ public class GMLFeatureWriter {
      *            if true, {@link ExtraProps} associated with features are exported as property elements
      */
     public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, ICRS outputCRS, CoordinateFormatter formatter,
-                             String remoteXlinkTemplate, PropertyName[] requestedProps, int traverseXlinkDepth,
+                             String remoteXlinkTemplate, ValueReference[] requestedProps, int traverseXlinkDepth,
                              int traverseXlinkExpiry, XLinkPropertyName[] xlinkProps, boolean exportSfGeometries,
                              boolean outputGeometries, Map<String, String> prefixToNs,
                              GMLForwardReferenceHandler additionalObjectHandler, boolean exportExtraProps ) {
@@ -202,7 +202,7 @@ public class GMLFeatureWriter {
             this.remoteXlinkTemplate = "#{}";
         }
         if ( requestedProps != null ) {
-            for ( PropertyName propertyName : requestedProps ) {
+            for ( ValueReference propertyName : requestedProps ) {
                 QName qName = propertyName.getAsQName();
                 if ( qName != null ) {
                     this.propNames.add( qName );

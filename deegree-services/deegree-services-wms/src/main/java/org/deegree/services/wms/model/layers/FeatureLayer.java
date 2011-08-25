@@ -94,7 +94,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.BBOX;
@@ -259,14 +259,14 @@ public class FeatureLayer extends Layer {
 
         Set<Expression> exprs = new HashSet<Expression>();
 
-        final PropertyName geomProp;
+        final ValueReference geomProp;
 
         for ( Style s : gm.getStyles() ) {
             exprs.addAll( Styles.getGeometryExpressions( s ) );
         }
 
-        if ( exprs.size() == 1 && exprs.iterator().next() instanceof PropertyName ) {
-            geomProp = (PropertyName) exprs.iterator().next();
+        if ( exprs.size() == 1 && exprs.iterator().next() instanceof ValueReference ) {
+            geomProp = (ValueReference) exprs.iterator().next();
         } else {
             geomProp = null;
         }
@@ -393,8 +393,8 @@ public class FeatureLayer extends Layer {
         for ( PropertyType pt : u.getPropertyDeclarations() ) {
             if ( pt instanceof GeometryPropertyType
                  && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
-                list.add( new And( new BBOX( new PropertyName( pt.getName() ), clickBox ),
-                                   new Intersects( new PropertyName( pt.getName() ), clickBox ) ) );
+                list.add( new And( new BBOX( new ValueReference( pt.getName() ), clickBox ),
+                                   new Intersects( new ValueReference( pt.getName() ), clickBox ) ) );
             }
         }
         if ( list.size() > 1 ) {
@@ -498,7 +498,7 @@ public class FeatureLayer extends Layer {
         LinkedList<Operator> ops = new LinkedList<Operator>();
 
         if ( time != null ) {
-            final PropertyName property = new PropertyName( time.getPropertyName() );
+            final ValueReference property = new ValueReference( time.getPropertyName() );
 
             List<?> vals = dims.get( "time" );
 
@@ -563,7 +563,7 @@ public class FeatureLayer extends Layer {
 
         for ( String name : dimensions.keySet() ) {
             Dimension<Object> dim = dimensions.get( name );
-            final PropertyName property = new PropertyName( dim.getPropertyName() );
+            final ValueReference property = new ValueReference( dim.getPropertyName() );
 
             List<?> vals = dims.get( name );
 
@@ -624,7 +624,7 @@ public class FeatureLayer extends Layer {
                             }
                         }
                     }
-                    os[i++] = new PropertyIsEqualTo( new PropertyName( dim.getPropertyName() ),
+                    os[i++] = new PropertyIsEqualTo( new ValueReference( dim.getPropertyName() ),
                                                      new Literal<PrimitiveValue>( o.toString() ), false, null );
                 }
             }

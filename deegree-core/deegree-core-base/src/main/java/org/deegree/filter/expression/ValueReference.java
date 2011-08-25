@@ -54,7 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link Expression} that contains an XPath 1.0 expression, a simple property name or an arbitrary identifier.
+ * {@link Expression} that contains an XPath 1.0 expression, a simple property name or an arbitrary identifier. Before
+ * Filter Encoding 2.0.0, this kind of expression was known as <code>PropertyName</code>.
  * <p>
  * Depending on the content, the targeted property can be accessed as follows:
  * <ul>
@@ -69,9 +70,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class PropertyName implements Expression {
+public class ValueReference implements Expression {
 
-    private static Logger LOG = LoggerFactory.getLogger( PropertyName.class );
+    private static Logger LOG = LoggerFactory.getLogger( ValueReference.class );
 
     private NamespaceBindings bindings = new NamespaceBindings();
 
@@ -82,25 +83,25 @@ public class PropertyName implements Expression {
     private QName qName;
 
     /**
-     * Creates a new {@link PropertyName} instance from an encoded XPath-expression and the namespace bindings.
+     * Creates a new {@link ValueReference} instance from an encoded XPath-expression and the namespace bindings.
      * 
      * @param text
      *            must be a valid XPath 1.0-expression, must not be <code>null</code>
      * @param nsContext
      *            binding of the namespaces used in the XPath expression, may be <code>null</code>
      */
-    public PropertyName( String text, NamespaceContext nsContext ) throws IllegalArgumentException {
+    public ValueReference( String text, NamespaceContext nsContext ) throws IllegalArgumentException {
         this.text = text;
         init( nsContext );
     }
 
     /**
-     * Creates a new {@link PropertyName} instance that selects a property.
+     * Creates a new {@link ValueReference} instance that selects a property.
      * 
      * @param name
      *            qualified name of the property, never <code>null</code>
      */
-    public PropertyName( QName name ) {
+    public ValueReference( QName name ) {
         NamespaceBindings nsContext = new NamespaceBindings();
         if ( name.getNamespaceURI() != null ) {
             String prefix = ( name.getPrefix() != null && !"".equals( name.getPrefix() ) ) ? name.getPrefix() : "app";
@@ -195,7 +196,7 @@ public class PropertyName implements Expression {
 
     @Override
     public Type getType() {
-        return Type.PROPERTY_NAME;
+        return Type.VALUE_REFERENCE;
     }
 
     @Override
@@ -224,15 +225,14 @@ public class PropertyName implements Expression {
     // at least using the text is a better bet than using object identity
     @Override
     public boolean equals( Object other ) {
-        if ( other == null || !( other instanceof PropertyName ) ) {
+        if ( other == null || !( other instanceof ValueReference ) ) {
             return false;
         }
-        return text.equals( ( (PropertyName) other ).text );
+        return text.equals( ( (ValueReference) other ).text );
     }
 
     @Override
     public int hashCode() {
         return text.hashCode();
     }
-
 }

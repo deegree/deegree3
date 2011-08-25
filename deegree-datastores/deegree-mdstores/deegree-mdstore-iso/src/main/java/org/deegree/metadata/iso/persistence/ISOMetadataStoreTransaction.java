@@ -14,7 +14,7 @@ import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
@@ -171,7 +171,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                             && ( update.getRecordProperty() != null && update.getRecordProperty().size() > 0 ) ) {
                     List<MetadataProperty> recordProperty = update.getRecordProperty();
                     for ( MetadataProperty metadataProperty : recordProperty ) {
-                        PropertyName name = metadataProperty.getPropertyName();
+                        ValueReference name = metadataProperty.getPropertyName();
                         Object value = metadataProperty.getReplacementValue();
 
                         if ( value == null ) {

@@ -60,7 +60,7 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Not;
@@ -109,7 +109,7 @@ public class Filter100XMLDecoderTest extends TestCase {
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
-        assertEquals( "SomeProperty", ( (PropertyName) prop.getParameter1() ).getAsText() );
+        assertEquals( "SomeProperty", ( (ValueReference) prop.getParameter1() ).getAsText() );
         assertEquals( "100", ( (Literal<?>) prop.getParameter2() ).getValue().toString() );
     }
 
@@ -125,7 +125,7 @@ public class Filter100XMLDecoderTest extends TestCase {
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsLessThan prop = (PropertyIsLessThan) opFilter.getOperator();
-        assertEquals( "DEPTH", ( (PropertyName) prop.getParameter1() ).getAsText() );
+        assertEquals( "DEPTH", ( (ValueReference) prop.getParameter1() ).getAsText() );
         assertEquals( "30", ( (Literal<?>) prop.getParameter2() ).getValue().toString() );
     }
 
@@ -143,7 +143,7 @@ public class Filter100XMLDecoderTest extends TestCase {
         Not op = (Not) opFilter.getOperator();
         Disjoint op1 = (Disjoint) op.getParameter();
         Object[] params = op1.getParams();
-        assertEquals( "Geometry", ( (PropertyName) params[0] ).getAsText() );
+        assertEquals( "Geometry", ( (ValueReference) params[0] ).getAsText() );
     }
 
     /**
@@ -182,7 +182,7 @@ public class Filter100XMLDecoderTest extends TestCase {
 
         And op = (And) opFilter.getOperator();
         PropertyIsLessThan prop = (PropertyIsLessThan) op.getParameter( 0 );
-        PropertyName propName = (PropertyName) prop.getParameter1();
+        ValueReference propName = (ValueReference) prop.getParameter1();
         assertEquals( "DEPTH", propName.getAsText() );
         Literal<PrimitiveValue> literal = (Literal<PrimitiveValue>) prop.getParameter2();
         assertEquals( "30", literal.getValue().toString() );
@@ -190,7 +190,7 @@ public class Filter100XMLDecoderTest extends TestCase {
         Not not = (Not) op.getParameter( 1 );
         Disjoint disjoint = (Disjoint) not.getParameter();
         Object[] params = disjoint.getParams();
-        PropertyName dPropName = (PropertyName) params[0];
+        ValueReference dPropName = (ValueReference) params[0];
         assertEquals( "Geometry", dPropName.getAsText() );
         Envelope box = (Envelope) params[1];
 
@@ -253,7 +253,7 @@ public class Filter100XMLDecoderTest extends TestCase {
         Function func = (Function) prop.getParameter1();
         assertEquals( "SIN", func.getName() );
         List<Expression> params = func.getParameters();
-        PropertyName propName = (PropertyName) params.get( 0 );
+        ValueReference propName = (ValueReference) params.get( 0 );
         assertEquals( "DISPERSION_ANGLE", propName.getAsText() );
 
         Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) prop.getParameter2();
@@ -273,11 +273,11 @@ public class Filter100XMLDecoderTest extends TestCase {
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
-        PropertyName propName = (PropertyName) prop.getParameter1();
+        ValueReference propName = (ValueReference) prop.getParameter1();
         assertEquals( "PROPA", propName.getAsText() );
 
         Add add = (Add) prop.getParameter2();
-        PropertyName propB = (PropertyName) add.getParameter1();
+        ValueReference propB = (ValueReference) add.getParameter1();
         assertEquals( "PROPB", propB.getAsText() );
 
         Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) add.getParameter2();
@@ -303,7 +303,7 @@ public class Filter100XMLDecoderTest extends TestCase {
         Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
         assertEquals( "200", ub.getValue().toString() );
 
-        PropertyName propName = (PropertyName) prop.getExpression();
+        ValueReference propName = (ValueReference) prop.getExpression();
         assertEquals( "DEPTH", propName.getAsText() );
     }
 
@@ -326,7 +326,7 @@ public class Filter100XMLDecoderTest extends TestCase {
         Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
         assertEquals( "2001-03-06T12:00:00.00", ub.getValue().toString() );
 
-        PropertyName propName = (PropertyName) prop.getExpression();
+        ValueReference propName = (ValueReference) prop.getExpression();
         assertEquals( "SAMPLE_DATE", propName.getAsText() );
     }
 
@@ -361,7 +361,7 @@ public class Filter100XMLDecoderTest extends TestCase {
 
         Overlaps overlaps = (Overlaps) opFilter.getOperator();
         Object[] params = overlaps.getParams();
-        PropertyName propName = (PropertyName) params[0];
+        ValueReference propName = (ValueReference) params[0];
         assertEquals( "Geometry", propName.getAsText() );
 
         Polygon polygon = (Polygon) params[1];
@@ -392,15 +392,15 @@ public class Filter100XMLDecoderTest extends TestCase {
         And and = (And) opFilter.getOperator();
         Or or = (Or) and.getParameter( 0 );
         PropertyIsEqualTo prop0 = (PropertyIsEqualTo) or.getParameter( 0 );
-        assertEquals( "FIELD1", ( (PropertyName) prop0.getParameter1() ).getAsText() );
+        assertEquals( "FIELD1", ( (ValueReference) prop0.getParameter1() ).getAsText() );
         assertEquals( "10", ( (Literal<PrimitiveValue>) prop0.getParameter2() ).getValue().toString() );
 
         PropertyIsEqualTo prop1 = (PropertyIsEqualTo) or.getParameter( 1 );
-        assertEquals( "FIELD1", ( (PropertyName) prop1.getParameter1() ).getAsText() );
+        assertEquals( "FIELD1", ( (ValueReference) prop1.getParameter1() ).getAsText() );
         assertEquals( "20", ( (Literal<PrimitiveValue>) prop1.getParameter2() ).getValue().toString() );
 
         PropertyIsEqualTo prop01 = (PropertyIsEqualTo) and.getParameter( 1 );
-        assertEquals( "STATUS", ( (PropertyName) prop01.getParameter1() ).getAsText() );
+        assertEquals( "STATUS", ( (ValueReference) prop01.getParameter1() ).getAsText() );
         assertEquals( "VALID", ( (Literal<PrimitiveValue>) prop01.getParameter2() ).getValue().toString() );
     }
 
@@ -418,7 +418,7 @@ public class Filter100XMLDecoderTest extends TestCase {
 
         And and = (And) opFilter.getOperator();
         Within within = (Within) and.getParameter( 0 );
-        PropertyName propName = within.getPropName();
+        ValueReference propName = within.getPropName();
         assertEquals( "WKB_GEOM", propName.getAsText() );
         Polygon polygon = (Polygon) within.getGeometry();
         Points points = polygon.getExteriorRingCoordinates();
@@ -447,13 +447,13 @@ public class Filter100XMLDecoderTest extends TestCase {
 
         And and = (And) opFilter.getOperator();
         PropertyIsGreaterThan pg = (PropertyIsGreaterThan) and.getParameter( 0 );
-        PropertyName pn1 = (PropertyName) pg.getParameter1();
+        ValueReference pn1 = (ValueReference) pg.getParameter1();
         assertEquals( "Person/Age", pn1.getAsText() );
         Literal<PrimitiveValue> lit1 = (Literal<PrimitiveValue>) pg.getParameter2();
         assertEquals( "50", lit1.getValue().toString() );
 
         PropertyIsEqualTo pe = (PropertyIsEqualTo) and.getParameter( 1 );
-        PropertyName pn2 = (PropertyName) pe.getParameter1();
+        ValueReference pn2 = (ValueReference) pe.getParameter1();
         assertEquals( "Person/Address/City", pn2.getAsText() );
         Literal<PrimitiveValue> lit2 = (Literal<PrimitiveValue>) pe.getParameter2();
         assertEquals( "Toronto", lit2.getValue().toString() );

@@ -61,7 +61,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -178,7 +178,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        PropertyName[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        ValueReference[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: FEATUREVERSION
         String featureVersion = kvpParams.get( "FEATUREVERSION" );
@@ -328,7 +328,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        PropertyName[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        ValueReference[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: SORTBY
         String sortbyStr = kvpParams.get( "SORTBY" );
@@ -518,7 +518,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return gf.createEnvelope( lowerCorner, upperCorner, srs );
     }
 
-    private static XLinkPropertyName[][] getXLinkPropNames( PropertyName[][] propertyNames, String[][] ptxDepthAr,
+    private static XLinkPropertyName[][] getXLinkPropNames( ValueReference[][] propertyNames, String[][] ptxDepthAr,
                                                             Integer[][] ptxExpAr, String traverseXlinkDepth,
                                                             Integer traverseXlinkExpiry ) {
         XLinkPropertyName[][] result = null;
@@ -621,16 +621,16 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             for ( int i = 0; i < sortbyComm.length; i++ ) {
                 if ( sortbyComm[i].endsWith( " D" ) ) {
                     String sortbyProp = sortbyComm[i].substring( 0, sortbyComm[i].indexOf( " " ) );
-                    result[i] = new SortProperty( new PropertyName( sortbyProp, nsContext ), false );
+                    result[i] = new SortProperty( new ValueReference( sortbyProp, nsContext ), false );
 
                 } else {
 
                     if ( sortbyComm[i].endsWith( " A" ) ) {
                         String sortbyProp = sortbyComm[i].substring( 0, sortbyComm[i].indexOf( " " ) );
-                        result[i] = new SortProperty( new PropertyName( sortbyProp, nsContext ), true );
+                        result[i] = new SortProperty( new ValueReference( sortbyProp, nsContext ), true );
 
                     } else {
-                        result[i] = new SortProperty( new PropertyName( sortbyComm[i], nsContext ), true );
+                        result[i] = new SortProperty( new ValueReference( sortbyComm[i], nsContext ), true );
                     }
                 }
             }
@@ -638,17 +638,17 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return result;
     }
 
-    private static PropertyName[][] getPropertyNames( String propertyStr, NamespaceBindings nsContext ) {
-        PropertyName[][] result = null;
+    private static ValueReference[][] getPropertyNames( String propertyStr, NamespaceBindings nsContext ) {
+        ValueReference[][] result = null;
         if ( propertyStr != null ) {
             String[][] propComm = parseParamList( propertyStr );
 
-            result = new PropertyName[propComm.length][];
+            result = new ValueReference[propComm.length][];
             for ( int i = 0; i < propComm.length; i++ ) {
-                result[i] = new PropertyName[propComm[i].length];
+                result[i] = new ValueReference[propComm[i].length];
 
                 for ( int j = 0; j < propComm[i].length; j++ ) {
-                    result[i][j] = new PropertyName( propComm[i][j], nsContext );
+                    result[i][j] = new ValueReference( propComm[i][j], nsContext );
                 }
             }
         }

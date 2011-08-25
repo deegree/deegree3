@@ -46,7 +46,7 @@ import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.sqldialect.SQLDialect;
@@ -90,7 +90,7 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
     }
 
     @Override
-    protected SQLExpression toProtoSQL( PropertyName expr )
+    protected SQLExpression toProtoSQL( ValueReference expr )
                             throws UnmappableException, FilterEvaluationException {
         // TODO
         PrimitiveType pt = new PrimitiveType( STRING );

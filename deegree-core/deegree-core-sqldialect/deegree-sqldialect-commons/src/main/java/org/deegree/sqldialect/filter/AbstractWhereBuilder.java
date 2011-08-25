@@ -65,7 +65,7 @@ import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.sort.SortProperty;
@@ -90,7 +90,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Note that the generated WHERE and ORDER-BY expressions are sometimes not sufficient to guarantee that a
  * <code>ResultSet</code> only contains the targeted objects and/or keeps the requested order. This happens when the
- * {@link PropertyName}s used in the filter/sort criteria are not mappable to columns in the database or the contained
+ * {@link ValueReference}s used in the filter/sort criteria are not mappable to columns in the database or the contained
  * XPath expressions are not mappable to an equivalent SQL expression. In these cases, one or both of the methods
  * {@link #getPostFilter()}/{@link #getPostSortCriteria()} return not <code>null</code> and the objects extracted from
  * the corresponding {@link ResultSet} must be filtered/sorted in memory to guarantee the requested constraints/order.
@@ -138,13 +138,13 @@ public abstract class AbstractWhereBuilder {
      * @param dialect
      *            SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
      * @param mapper
-     *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
+     *            provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
      *            criteria to use for generating the ORDER-BY clause, can be <code>null</code>
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected AbstractWhereBuilder( SQLDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
                                     SortProperty[] sortCrit ) throws FilterEvaluationException {
@@ -255,7 +255,7 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
-     * Returns the mappings of all {@link PropertyName}s from the filter / sort criteria that have been mapped to the
+     * Returns the mappings of all {@link ValueReference}s from the filter / sort criteria that have been mapped to the
      * relational model.
      * 
      * @return the successful mappings, can be empty but never <code>null</code>
@@ -273,7 +273,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected SQLExpression toProtoSQL( Operator op )
                             throws UnmappableException, FilterEvaluationException {
@@ -305,7 +305,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected SQLExpression toProtoSQL( ComparisonOperator op )
                             throws UnmappableException, FilterEvaluationException {
@@ -346,7 +346,7 @@ public abstract class AbstractWhereBuilder {
             } else {
                 Expression propName = propIsEqualTo.getParameter1();
                 Expression literal = propIsEqualTo.getParameter2();
-                if ( propName instanceof PropertyName && literal instanceof Literal ) {
+                if ( propName instanceof ValueReference && literal instanceof Literal ) {
                     PropertyIsLike propIsLike = buildIsLike( propName, literal, propIsEqualTo.isMatchCase() );
                     sqlOper = toProtoSQL( propIsLike );
                 } else {
@@ -422,7 +422,7 @@ public abstract class AbstractWhereBuilder {
             } else {
                 Expression propName = propIsNotEqualTo.getParameter1();
                 Expression literal = propIsNotEqualTo.getParameter2();
-                if ( propName instanceof PropertyName && literal instanceof Literal ) {
+                if ( propName instanceof ValueReference && literal instanceof Literal ) {
                     PropertyIsLike propIsLike = buildIsLike( propName, literal, propIsNotEqualTo.isMatchCase() );
                     sqlOper = toProtoSQL( new Not( propIsLike ) );
                 } else {
@@ -477,7 +477,7 @@ public abstract class AbstractWhereBuilder {
     private PropertyIsLike buildIsLike( Expression propName, Expression literal, boolean matchCase )
                             throws UnmappableException {
 
-        if ( !( propName instanceof PropertyName ) || !( literal instanceof Literal ) ) {
+        if ( !( propName instanceof ValueReference ) || !( literal instanceof Literal ) ) {
             String msg = "Can not map filter. Multi-valued columns can only be compared to literals.";
             throw new UnmappableException( msg );
         }
@@ -490,7 +490,7 @@ public abstract class AbstractWhereBuilder {
         s = StringUtils.replaceAll( s, singleChar, escapeChar + singleChar );
         s = StringUtils.replaceAll( s, wildCard, escapeChar + wildCard );
         Literal<PrimitiveValue> escapedLiteral = new Literal<PrimitiveValue>( new PrimitiveValue( s ) );
-        return new PropertyIsLike( (PropertyName) propName, escapedLiteral, wildCard, singleChar, escapeChar,
+        return new PropertyIsLike( (ValueReference) propName, escapedLiteral, wildCard, singleChar, escapeChar,
                                    matchCase, null );
     }
 
@@ -503,7 +503,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected SQLOperation toProtoSQL( PropertyIsLike op )
                             throws UnmappableException, FilterEvaluationException {
@@ -553,7 +553,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected SQLOperation toProtoSQL( LogicalOperator op )
                             throws UnmappableException, FilterEvaluationException {
@@ -600,7 +600,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected abstract SQLOperation toProtoSQL( SpatialOperator op )
                             throws UnmappableException, FilterEvaluationException;
@@ -614,7 +614,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected SQLExpression toProtoSQL( Expression expr )
                             throws UnmappableException, FilterEvaluationException {
@@ -660,8 +660,8 @@ public abstract class AbstractWhereBuilder {
             sql = builder.toOperation();
             break;
         }
-        case PROPERTY_NAME: {
-            sql = toProtoSQL( (PropertyName) expr );
+        case VALUE_REFERENCE: {
+            sql = toProtoSQL( (ValueReference) expr );
             break;
         }
         case SUB: {
@@ -696,7 +696,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected SQLExpression toProtoSQL( Function function )
                             throws UnmappableException, FilterEvaluationException {
@@ -759,7 +759,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected SQLExpression toProtoSQL( Literal<?> literal )
                             throws UnmappableException, FilterEvaluationException {
@@ -777,7 +777,7 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
-     * Translates the given {@link PropertyName} into an {@link SQLExpression}.
+     * Translates the given {@link ValueReference} into an {@link SQLExpression}.
      * 
      * @param expr
      *            expression to be translated, must not be <code>null</code>
@@ -785,9 +785,9 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
-    protected SQLExpression toProtoSQL( PropertyName propName )
+    protected SQLExpression toProtoSQL( ValueReference propName )
                             throws UnmappableException, FilterEvaluationException {
         SQLExpression sql = null;
         PropertyNameMapping propMapping = mapper.getMapping( propName, aliasManager );
@@ -819,7 +819,7 @@ public abstract class AbstractWhereBuilder {
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
+     *             if the filter contains invalid {@link ValueReference}s
      */
     protected SQLExpression toProtoSQL( SortProperty[] sortCrits )
                             throws UnmappableException, FilterEvaluationException {

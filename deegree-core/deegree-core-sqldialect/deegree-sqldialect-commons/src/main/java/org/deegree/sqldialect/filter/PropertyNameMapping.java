@@ -40,10 +40,10 @@ import static java.util.Collections.emptyList;
 import java.util.List;
 
 import org.deegree.commons.tom.sql.ParticleConverter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
- * A {@link PropertyName} that's mapped to database column(s).
+ * A {@link ValueReference} that's mapped to database column(s).
  * 
  * @see AbstractWhereBuilder
  * 

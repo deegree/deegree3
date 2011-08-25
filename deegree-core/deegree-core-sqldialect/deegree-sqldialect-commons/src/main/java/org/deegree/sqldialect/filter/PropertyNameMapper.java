@@ -36,10 +36,10 @@
 package org.deegree.sqldialect.filter;
 
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
- * Implementations provide {@link PropertyName} to table/column mappings for {@link AbstractWhereBuilder}
+ * Implementations provide {@link ValueReference} to table/column mappings for {@link AbstractWhereBuilder}
  * implementations.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -50,7 +50,7 @@ import org.deegree.filter.expression.PropertyName;
 public interface PropertyNameMapper {
 
     /**
-     * Returns the {@link PropertyNameMapping} for the given {@link PropertyName}.
+     * Returns the {@link PropertyNameMapping} for the given {@link ValueReference}.
      * 
      * @param propName
      *            property name, can be <code>null</code> (indicates that the default geometry property of the root
@@ -59,9 +59,9 @@ public interface PropertyNameMapper {
      *            manager for creating and tracking table aliases, never <code>null</code>
      * @return relational mapping, may be <code>null</code> (if no mapping is possible)
      * @throws FilterEvaluationException
-     *             indicates that the {@link PropertyName} is invalid
+     *             indicates that the {@link ValueReference} is invalid
      * @throws UnmappableException
      */
-    public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
+    public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException;
 }

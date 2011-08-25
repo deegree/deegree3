@@ -93,7 +93,7 @@ import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
 import org.deegree.filter.expression.custom.CustomExpressionManager;
 import org.deegree.filter.expression.custom.CustomExpressionProvider;
@@ -173,7 +173,7 @@ public class Filter110XMLDecoder {
         addElementToExpressionMapping( new QName( OGC_NS, "Sub" ), Expression.Type.SUB );
         addElementToExpressionMapping( new QName( OGC_NS, "Mul" ), Expression.Type.MUL );
         addElementToExpressionMapping( new QName( OGC_NS, "Div" ), Expression.Type.DIV );
-        addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
+        addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.VALUE_REFERENCE );
         addElementToExpressionMapping( new QName( OGC_NS, "Function" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
 
@@ -366,7 +366,7 @@ public class Filter110XMLDecoder {
             nextElement( xmlStream );
             break;
         }
-        case PROPERTY_NAME: {
+        case VALUE_REFERENCE: {
             expression = parsePropertyName( xmlStream, false );
             break;
         }
@@ -694,7 +694,7 @@ public class Filter110XMLDecoder {
         return attrs;
     }
 
-    private static PropertyName parsePropertyName( XMLStreamReader xmlStream, boolean permitEmpty )
+    private static ValueReference parsePropertyName( XMLStreamReader xmlStream, boolean permitEmpty )
                             throws XMLStreamException {
         requireStartElement( xmlStream, Collections.singleton( new QName( OGC_NS, "PropertyName" ) ) );
         String xpath = xmlStream.getElementText().trim();
@@ -708,7 +708,7 @@ public class Filter110XMLDecoder {
             return null;
         }
         Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
-        return new PropertyName( xpath, new NamespaceBindings( xmlStream.getNamespaceContext(), prefixes ) );
+        return new ValueReference( xpath, new NamespaceBindings( xmlStream.getNamespaceContext(), prefixes ) );
     }
 
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
@@ -747,7 +747,7 @@ public class Filter110XMLDecoder {
         String escapeChar = getRequiredAttributeValue( xmlStream, "escapeChar" );
 
         nextElement( xmlStream );
-        PropertyName propName = parsePropertyName( xmlStream, false );
+        ValueReference propName = parsePropertyName( xmlStream, false );
 
         nextElement( xmlStream );
         Literal<?> literal = parseLiteral( xmlStream );
@@ -758,7 +758,7 @@ public class Filter110XMLDecoder {
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         nextElement( xmlStream );
-        PropertyName propName = parsePropertyName( xmlStream, false );
+        ValueReference propName = parsePropertyName( xmlStream, false );
         nextElement( xmlStream );
         return new PropertyIsNull( propName, null );
     }
@@ -839,7 +839,7 @@ public class Filter110XMLDecoder {
             case BBOX: {
                 // first parameter: 'ogc:PropertyName' (can be empty / omitted completely
                 // wfs-1.1.0-Basic-GetFeature-tc200.2)
-                PropertyName param1 = null;
+                ValueReference param1 = null;
                 if ( new QName( OGC_NS, "PropertyName" ).equals( xmlStream.getName() ) ) {
                     param1 = parsePropertyName( xmlStream, true );
                     nextElement( xmlStream );
@@ -852,7 +852,7 @@ public class Filter110XMLDecoder {
             }
             case BEYOND: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 // NOTE: 1.1.0 spec. actually disallows Envelope here !?
@@ -868,7 +868,7 @@ public class Filter110XMLDecoder {
             }
             case INTERSECTS: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
@@ -877,7 +877,7 @@ public class Filter110XMLDecoder {
             }
             case CONTAINS: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
@@ -886,7 +886,7 @@ public class Filter110XMLDecoder {
             }
             case CROSSES: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
@@ -895,7 +895,7 @@ public class Filter110XMLDecoder {
             }
             case DISJOINT: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
@@ -904,7 +904,7 @@ public class Filter110XMLDecoder {
             }
             case DWITHIN: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry'
                 // NOTE: 1.1.0 spec. actually disallows Envelope here !?
@@ -920,7 +920,7 @@ public class Filter110XMLDecoder {
             }
             case EQUALS: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
@@ -929,7 +929,7 @@ public class Filter110XMLDecoder {
             }
             case OVERLAPS: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
@@ -938,7 +938,7 @@ public class Filter110XMLDecoder {
             }
             case TOUCHES: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
@@ -947,7 +947,7 @@ public class Filter110XMLDecoder {
             }
             case WITHIN: {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
-                PropertyName param1 = parsePropertyName( xmlStream, false );
+                ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );

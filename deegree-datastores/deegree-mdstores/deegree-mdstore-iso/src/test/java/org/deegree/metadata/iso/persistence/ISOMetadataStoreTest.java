@@ -46,7 +46,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.GeometryFactory;
@@ -80,7 +80,7 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
 
         TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
         GeometryFactory gf = new GeometryFactory();
-        PropertyName pn = new PropertyName( "ows:BoundingBox", nsContext );
+        ValueReference pn = new ValueReference( "ows:BoundingBox", nsContext );
         Operator op = new BBOX( pn, gf.createEnvelope( 7.30, 49.30, 10.70, 51.70, CRSUtils.EPSG_4326 ) );
         Filter filter = new OperatorFilter( op );
         MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 10 );
@@ -101,10 +101,10 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
 
         TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
         Literal<PrimitiveValue> lit1 = new Literal<PrimitiveValue>( "Hessen Wasser Analyser" );
-        Operator op1 = new PropertyIsEqualTo( new PropertyName( "Title", nsContext ), lit1, true, null );
+        Operator op1 = new PropertyIsEqualTo( new ValueReference( "Title", nsContext ), lit1, true, null );
 
         Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "%Karte%" );
-        Operator op2 = new PropertyIsLike( new PropertyName( "Subject", nsContext ), lit2, "%", "_", "?", true, null );
+        Operator op2 = new PropertyIsLike( new ValueReference( "Subject", nsContext ), lit2, "%", "_", "?", true, null );
 
         Operator op = new And( op1, op2 );
         Filter filter = new OperatorFilter( op );
@@ -126,7 +126,7 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
 
         TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10 );
         Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "SPOT 5" );
-        Operator op = new PropertyIsEqualTo( new PropertyName( "Subject", nsContext ), lit2, true, null );
+        Operator op = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), lit2, true, null );
 
         Filter filter = new OperatorFilter( op );
         MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 10 );

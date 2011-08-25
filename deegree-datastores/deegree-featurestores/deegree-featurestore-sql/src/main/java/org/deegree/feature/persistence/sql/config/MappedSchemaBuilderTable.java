@@ -91,7 +91,7 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.DBField;
@@ -225,7 +225,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     BaseType type = BaseType.valueOf( md.sqlType );
                     PropertyType pt = new SimplePropertyType( ptName, 0, 1, type, null, null );
                     pts.add( pt );
-                    PropertyName path = new PropertyName( ptName );
+                    ValueReference path = new ValueReference( ptName );
                     PrimitiveType primType = new PrimitiveType( type );
                     PrimitiveMapping mapping = new PrimitiveMapping( path, true, dbField, primType, null, null );
                     mappings.add( mapping );
@@ -237,7 +237,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 PropertyType pt = new GeometryPropertyType( ptName, 0, 1, null, null, md.geomType,
                                                             md.geometryParams.getDim(), INLINE );
                 pts.add( pt );
-                PropertyName path = new PropertyName( ptName );
+                ValueReference path = new ValueReference( ptName );
                 GeometryMapping mapping = new GeometryMapping( path, true, dbField, md.geomType, md.geometryParams,
                                                                null );
                 mappings.add( mapping );
@@ -303,7 +303,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         }
         int maxOccurs = joinConfig != null ? -1 : 1;
 
-        PropertyName path = new PropertyName( propName );
+        ValueReference path = new ValueReference( propName );
         ColumnMetadata md = getColumn( valueTable, columnName.toLowerCase() );
         int minOccurs = joinConfig != null ? 0 : md.isNullable ? 0 : 1;
 

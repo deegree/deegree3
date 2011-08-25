@@ -55,7 +55,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
@@ -379,17 +379,17 @@ public class RegistryObject implements MetadataRecord {
     }
 
     @Override
-    public void update( PropertyName propName, String replaceValue ) {
+    public void update( ValueReference propName, String replaceValue ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void update( PropertyName propName, OMElement replaceValue ) {
+    public void update( ValueReference propName, OMElement replaceValue ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeNode( PropertyName propName ) {
+    public void removeNode( ValueReference propName ) {
         throw new UnsupportedOperationException();
     }
 

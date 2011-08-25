@@ -55,7 +55,7 @@ import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.sqldialect.filter.ConstantPropertyNameMapping;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.Join;
@@ -67,7 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A {@link PropertyName} that's mapped to the relational model defined by a {@link MappedAppSchema}.
+ * A {@link ValueReference} that's mapped to the relational model defined by a {@link MappedAppSchema}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -82,7 +82,7 @@ public class MappedXPath {
 
     private final MappedAppSchema schema;
 
-    private final PropertyName propName;
+    private final ValueReference propName;
 
     private final TableAliasManager aliasManager;
 
@@ -102,7 +102,7 @@ public class MappedXPath {
      * @throws UnmappableException
      *             if the propertyName can not be matched to the relational model
      */
-    public MappedXPath( SQLFeatureStore fs, FeatureTypeMapping ftMapping, PropertyName propName,
+    public MappedXPath( SQLFeatureStore fs, FeatureTypeMapping ftMapping, ValueReference propName,
                         TableAliasManager aliasManager ) throws UnmappableException {
 
         this.fs = fs;
@@ -119,7 +119,7 @@ public class MappedXPath {
                              + "' does not have a geometry property and PropertyName is missing / empty.";
                 throw new UnmappableException( msg );
             }
-            propName = new PropertyName( pt.getName() );
+            propName = new ValueReference( pt.getName() );
         }
 
         this.propName = propName;

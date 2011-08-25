@@ -74,7 +74,7 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 import org.deegree.sqldialect.filter.DBField;
@@ -233,7 +233,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
                 List<Property> props = new ArrayList<Property>();
                 for ( Mapping mapping : ftMapping.getMappings() ) {
-                    PropertyName propName = mapping.getPath();
+                    ValueReference propName = mapping.getPath();
                     if ( propName.getAsQName() != null ) {
                         PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName(), gmlVersion );
                         String idPrefix = gmlId + "_" + toIdPrefix( propName );
@@ -255,7 +255,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return feature;
     }
 
-    private String toIdPrefix( PropertyName propName ) {
+    private String toIdPrefix( ValueReference propName ) {
         String s = propName.getAsText();
         s = s.replace( "/", "_" );
         s = s.replace( ":", "_" );
@@ -536,7 +536,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return nilAttrs;
     }
 
-    private QName getName( PropertyName path ) {
+    private QName getName( ValueReference path ) {
         if ( path.getAsQName() != null ) {
             return path.getAsQName();
         }

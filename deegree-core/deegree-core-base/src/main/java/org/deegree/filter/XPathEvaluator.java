@@ -38,10 +38,10 @@ package org.deegree.filter;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 
 /**
- * Implementations enable the evaluation of XPath expressions (given as {@link PropertyName}s) on a specific class of
+ * Implementations enable the evaluation of XPath expressions (given as {@link ValueReference}s) on a specific class of
  * objects, e.g. {@link Feature} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -65,7 +65,7 @@ public interface XPathEvaluator<T> {
      * @throws FilterEvaluationException
      *             if an exception occurs during the evaluation of the XPath expression
      */
-    public TypedObjectNode[] eval( T context, PropertyName propName )
+    public TypedObjectNode[] eval( T context, ValueReference propName )
                             throws FilterEvaluationException;
 
     /**

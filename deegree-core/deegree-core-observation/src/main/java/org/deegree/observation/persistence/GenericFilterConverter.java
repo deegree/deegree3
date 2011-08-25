@@ -55,7 +55,7 @@ import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.observation.model.Offering;
 import org.deegree.protocol.sos.filter.BeginFilter;
 import org.deegree.protocol.sos.filter.DurationFilter;
@@ -193,7 +193,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
         PropertyIsBetween p = (PropertyIsBetween) op;
         String propName, lower, upper;
         try {
-            propName = ( (PropertyName) p.getExpression() ).getAsText();
+            propName = ( (ValueReference) p.getExpression() ).getAsText();
             lower = ( (Literal<?>) p.getLowerBoundary() ).getValue().toString();
             upper = ( (Literal<?>) p.getUpperBoundary() ).getValue().toString();
         } catch ( ClassCastException ex ) {
@@ -207,7 +207,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
 
     private void buildPropertyIsNullClause( QueryBuilder q, ComparisonOperator op ) {
         PropertyIsNull p = (PropertyIsNull) op;
-        String propName = ( (PropertyName) p.getPropertyName() ).getAsText();
+        String propName = ( (ValueReference) p.getPropertyName() ).getAsText();
         String colName = columnMap.get( propName );
         q.add( colName + " IS NOT NULL" );
     }
@@ -252,8 +252,8 @@ public class GenericFilterConverter implements SQLFilterConverter {
     private StringPair getSimplePropFilter( ComparisonOperator op ) {
         if ( op instanceof BinaryComparisonOperator ) {
             BinaryComparisonOperator bop = (BinaryComparisonOperator) op;
-            if ( bop.getParameter1().getType() == Expression.Type.PROPERTY_NAME ) {
-                PropertyName pname = (PropertyName) bop.getParameter1();
+            if ( bop.getParameter1().getType() == Expression.Type.VALUE_REFERENCE ) {
+                ValueReference pname = (ValueReference) bop.getParameter1();
                 if ( bop.getParameter2().getType() == Expression.Type.LITERAL ) {
                     Literal<?> value = (Literal<?>) bop.getParameter2();
                     return new StringPair( pname.getAsText(), value.getValue().toString() );

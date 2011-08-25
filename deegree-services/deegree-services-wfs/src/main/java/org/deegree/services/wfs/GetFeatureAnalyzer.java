@@ -64,7 +64,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
@@ -87,7 +87,7 @@ import org.slf4j.LoggerFactory;
  * Responsible for validating the queries contained in {@link GetFeature} requests and generating a corresponding
  * sequence of feature store queries.
  * <p>
- * Also performs some normalizing on the values of {@link PropertyName}s. TODO describe strategy
+ * Also performs some normalizing on the values of {@link ValueReference}s. TODO describe strategy
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -113,7 +113,7 @@ public class GetFeatureAnalyzer {
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
 
-    private PropertyName[] requestedProps = null;
+    private ValueReference[] requestedProps = null;
 
     private XLinkPropertyName[] xlinkProps = null;
 
@@ -261,7 +261,7 @@ public class GetFeatureAnalyzer {
      * 
      * @return features properties to be include or <code>null</code> (include all properties)
      */
-    public PropertyName[] getRequestedProps() {
+    public ValueReference[] getRequestedProps() {
         return requestedProps;
     }
 
@@ -327,7 +327,7 @@ public class GetFeatureAnalyzer {
         if ( wfsQuery instanceof FilterQuery ) {
             FilterQuery fQuery = ( (FilterQuery) wfsQuery );
             if ( fQuery.getPropertyNames() != null ) {
-                for ( PropertyName propName : fQuery.getPropertyNames() ) {
+                for ( ValueReference propName : fQuery.getPropertyNames() ) {
                     validatePropertyName( propName, typeNames );
                 }
             }
@@ -337,7 +337,7 @@ public class GetFeatureAnalyzer {
                 }
             }
             if ( fQuery.getFilter() != null ) {
-                for ( PropertyName pt : Filters.getPropertyNames( fQuery.getFilter() ) ) {
+                for ( ValueReference pt : Filters.getPropertyNames( fQuery.getFilter() ) ) {
                     validatePropertyName( pt, typeNames );
                 }
                 if ( checkAreaOfUse ) {
@@ -349,10 +349,10 @@ public class GetFeatureAnalyzer {
             filter = fQuery.getFilter();
         } else if ( wfsQuery instanceof BBoxQuery ) {
             BBoxQuery bboxQuery = (BBoxQuery) wfsQuery;
-            PropertyName[][] propNames = bboxQuery.getPropertyNames();
+            ValueReference[][] propNames = bboxQuery.getPropertyNames();
             if ( propNames != null ) {
-                for ( PropertyName[] propertyNames : propNames ) {
-                    for ( PropertyName propertyName : propertyNames ) {
+                for ( ValueReference[] propertyNames : propNames ) {
+                    for ( ValueReference propertyName : propertyNames ) {
                         validatePropertyName( propertyName, typeNames );
                     }
                 }
@@ -374,10 +374,10 @@ public class GetFeatureAnalyzer {
             filter = new OperatorFilter( bboxOperator );
         } else if ( wfsQuery instanceof FeatureIdQuery ) {
             FeatureIdQuery fidQuery = (FeatureIdQuery) wfsQuery;
-            PropertyName[][] propNames = fidQuery.getPropertyNames();
+            ValueReference[][] propNames = fidQuery.getPropertyNames();
             if ( propNames != null ) {
-                for ( PropertyName[] propertyNames : propNames ) {
-                    for ( PropertyName propertyName : propertyNames ) {
+                for ( ValueReference[] propertyNames : propNames ) {
+                    for ( ValueReference propertyName : propertyNames ) {
                         validatePropertyName( propertyName, typeNames );
                     }
                 }
@@ -413,7 +413,7 @@ public class GetFeatureAnalyzer {
         return new Query( typeNames, filter, wfsQuery.getFeatureVersion(), wfsQuery.getSrsName(), sortProps );
     }
 
-    private void validatePropertyName( PropertyName propName, TypeName[] typeNames )
+    private void validatePropertyName( ValueReference propName, TypeName[] typeNames )
                             throws OWSException {
 
         // no check possible if feature type is unknown
@@ -448,14 +448,14 @@ public class GetFeatureAnalyzer {
      * @param propName
      * @return
      */
-    private boolean isPrefixedAndBound( PropertyName propName ) {
+    private boolean isPrefixedAndBound( ValueReference propName ) {
         QName name = propName.getAsQName();
         return !name.getPrefix().equals( DEFAULT_NS_PREFIX )
                && !name.getNamespaceURI().equals( XMLConstants.NULL_NS_URI );
     }
 
     /**
-     * Repairs a {@link PropertyName} that contains the local name of a {@link FeatureType}'s property or a prefixed
+     * Repairs a {@link ValueReference} that contains the local name of a {@link FeatureType}'s property or a prefixed
      * name, but without a correct namespace binding.
      * <p>
      * This types of propertynames especially occurs in WFS 1.0.0 requests.
@@ -468,7 +468,7 @@ public class GetFeatureAnalyzer {
      * @throws OWSException
      *             if no match could be found
      */
-    private void repairSimpleUnqualified( PropertyName propName, TypeName typeName )
+    private void repairSimpleUnqualified( ValueReference propName, TypeName typeName )
                             throws OWSException {
 
         FeatureType ft = service.lookupFeatureType( typeName.getFeatureTypeName() );
@@ -500,7 +500,7 @@ public class GetFeatureAnalyzer {
     }
 
     // TODO do this properly
-    private QName getPropertyNameAsQName( PropertyName propName ) {
+    private QName getPropertyNameAsQName( ValueReference propName ) {
         QName name = null;
         NamespaceContext nsContext = propName.getNsContext();
         String s = propName.getAsText();

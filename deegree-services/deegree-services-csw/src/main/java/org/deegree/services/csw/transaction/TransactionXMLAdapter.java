@@ -52,7 +52,7 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.metadata.MetadataRecord;
@@ -242,7 +242,7 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                             LOG.debug( msg );
                             throw new InvalidParameterValueException( msg );
                         }
-                        recordProperty = new MetadataProperty( new PropertyName( name.trim(), nsContext ), value );
+                        recordProperty = new MetadataProperty( new ValueReference( name.trim(), nsContext ), value );
                         recordProperties.add( recordProperty );
                     }
                 } else if ( newRecordEl != null ) {

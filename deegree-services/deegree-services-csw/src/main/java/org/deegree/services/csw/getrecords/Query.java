@@ -60,7 +60,7 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -258,7 +258,7 @@ public class Query {
                         String sortOrder = adapter.getNodeAsString( sortPropertyEl, new XPath( "ogc:SortOrder",
                                                                                                nsContext ), "ASC" );
                         SortProperty sortProp = new SortProperty(
-                                                                  new PropertyName( propNameEl.getText(),
+                                                                  new ValueReference( propNameEl.getText(),
                                                                                     adapter.getNamespaceContext( propNameEl ) ),
                                                                   sortOrder.equals( "ASC" ) );
                         sortProps[counter++] = sortProp;

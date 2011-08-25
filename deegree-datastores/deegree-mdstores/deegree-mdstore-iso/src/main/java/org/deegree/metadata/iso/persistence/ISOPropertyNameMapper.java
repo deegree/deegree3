@@ -63,7 +63,7 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
@@ -268,7 +268,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
     }
 
     @Override
-    public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
+    public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException {
 
         PropertyNameMapping mapping = null;

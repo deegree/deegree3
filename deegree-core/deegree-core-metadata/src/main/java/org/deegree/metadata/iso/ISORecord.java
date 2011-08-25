@@ -65,7 +65,7 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.DCRecord;
@@ -534,7 +534,7 @@ public class ISORecord implements MetadataRecord {
 
     }
 
-    public void update( PropertyName propName, String s ) {
+    public void update( ValueReference propName, String s ) {
         AXIOMXPath path;
         Object node;
         try {
@@ -558,7 +558,7 @@ public class ISORecord implements MetadataRecord {
         el.setText( s );
     }
 
-    public void update( PropertyName propName, OMElement newEl ) {
+    public void update( ValueReference propName, OMElement newEl ) {
         AXIOMXPath path;
         Object rootNode;
         try {
@@ -594,7 +594,7 @@ public class ISORecord implements MetadataRecord {
         prevSib.insertSiblingAfter( newEl );
     }
 
-    public void removeNode( PropertyName propName ) {
+    public void removeNode( ValueReference propName ) {
         AXIOMXPath path;
         Object rootNode;
         try {
@@ -618,7 +618,7 @@ public class ISORecord implements MetadataRecord {
         rootEl.detach();
     }
 
-    private AXIOMXPath getAsXPath( PropertyName propName )
+    private AXIOMXPath getAsXPath( ValueReference propName )
                             throws JaxenException {
         AXIOMXPath path;
         XPath xPathFromCQP = ISOCQPMapping.getXPathFromCQP( propName.getAsQName(), getType() );

@@ -70,7 +70,7 @@ import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
@@ -357,8 +357,8 @@ public class AdhocQueryAnalyzer {
         case MUL:
             Mul mul = (Mul) expr;
             return new Mul( copyExpression( mul.getParameter1(), values ), copyExpression( mul.getParameter2(), values ) );
-        case PROPERTY_NAME:
-            return copy( (PropertyName) expr );
+        case VALUE_REFERENCE:
+            return copy( (ValueReference) expr );
         case SUB:
             Sub sub = (Sub) expr;
             return new Sub( copyExpression( sub.getParameter1(), values ), copyExpression( sub.getParameter2(), values ) );
@@ -366,9 +366,9 @@ public class AdhocQueryAnalyzer {
         return newExpr;
     }
 
-    private PropertyName copy( Expression e ) {
-        PropertyName pn = (PropertyName) e;
-        return new PropertyName( pn.getAsText(), pn.getNsContext() );
+    private ValueReference copy( Expression e ) {
+        ValueReference pn = (ValueReference) e;
+        return new ValueReference( pn.getAsText(), pn.getNsContext() );
     }
 
     private Measure copy( Measure distance ) {

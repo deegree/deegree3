@@ -71,7 +71,7 @@ import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
@@ -120,7 +120,7 @@ public class Filter110XMLEncoder {
         addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Mul" ), Expression.Type.MUL );
         addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Div" ), Expression.Type.DIV );
         addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "PropertyName" ),
-                                       Expression.Type.PROPERTY_NAME );
+                                       Expression.Type.VALUE_REFERENCE );
         addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Function" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( CommonNamespaces.OGCNS, "Literal" ), Expression.Type.LITERAL );
 
@@ -384,7 +384,7 @@ public class Filter110XMLEncoder {
         // gmlWriter.setLocalXLinkTemplate( "#{}" );
         // gmlWriter.setXLinkDepth( 0 );
 
-        PropertyName propertyName = null;
+        ValueReference propertyName = null;
         Geometry geometry = null;
         Measure distance = null;
 
@@ -480,8 +480,8 @@ public class Filter110XMLEncoder {
         }
 
         switch ( expression.getType() ) {
-        case PROPERTY_NAME:
-            PropertyName propertyName = (PropertyName) expression;
+        case VALUE_REFERENCE:
+            ValueReference propertyName = (ValueReference) expression;
             NamespaceBindings nsBindings = propertyName.getNsContext();
             Iterator<String> prefixIter = nsBindings.getPrefixes();
             while ( prefixIter.hasNext() ) {

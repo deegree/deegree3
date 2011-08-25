@@ -59,7 +59,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.ebrim.RegistryObject;
 import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.persistence.MetadataInspectorException;
@@ -160,7 +160,7 @@ public class EbrimEOTransactionTest {
         EbrimEOMDStoreTransaction t1 = new EbrimEOMDStoreTransaction( conn, JDBCUtils.useLegayPostGISPredicates( conn,
                                                                                                                  LOG ) );
 
-        PropertyName propertyName = new PropertyName( "rim:RegistryPackage/@id", nsContext );
+        ValueReference propertyName = new ValueReference( "rim:RegistryPackage/@id", nsContext );
         Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>(
                                                                    new PrimitiveValue(
                                                                                        "urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:RP",

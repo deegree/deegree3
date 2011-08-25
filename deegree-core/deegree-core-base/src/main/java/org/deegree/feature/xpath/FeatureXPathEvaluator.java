@@ -50,7 +50,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.GMLVersion;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
@@ -67,13 +67,13 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
 
     private final GMLVersion version;
 
-    private static Map<Feature, Map<PropertyName, TypedObjectNode[]>> EVAL_CACHE = null;
+    private static Map<Feature, Map<ValueReference, TypedObjectNode[]>> EVAL_CACHE = null;
 
     /**
      * temporary hack to enable caching again
      */
     public static void enableCache() {
-        EVAL_CACHE = synchronizedMap( new HashMap<Feature, Map<PropertyName, TypedObjectNode[]>>() );
+        EVAL_CACHE = synchronizedMap( new HashMap<Feature, Map<ValueReference, TypedObjectNode[]>>() );
     }
 
     /**
@@ -86,7 +86,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
         this.version = version;
     }
 
-    public TypedObjectNode[] eval( TypedObjectNode particle, PropertyName path )
+    public TypedObjectNode[] eval( TypedObjectNode particle, ValueReference path )
                             throws FilterEvaluationException {
         if ( particle instanceof Feature ) {
             return eval( (Feature) particle, path );
@@ -99,7 +99,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
     }
 
     @Override
-    public TypedObjectNode[] eval( Feature context, PropertyName propName )
+    public TypedObjectNode[] eval( Feature context, ValueReference propName )
                             throws FilterEvaluationException {
 
         // simple property with just a simple element step?
@@ -112,7 +112,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
         try {
             synchronized ( context ) {
                 if ( EVAL_CACHE != null ) {
-                    Map<PropertyName, TypedObjectNode[]> map = EVAL_CACHE.get( context );
+                    Map<ValueReference, TypedObjectNode[]> map = EVAL_CACHE.get( context );
                     if ( map != null ) {
                         resultValues = map.get( propName );
                         if ( resultValues != null ) {
@@ -138,9 +138,9 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
                     }
                 }
                 if ( EVAL_CACHE != null ) {
-                    Map<PropertyName, TypedObjectNode[]> map = EVAL_CACHE.get( context );
+                    Map<ValueReference, TypedObjectNode[]> map = EVAL_CACHE.get( context );
                     if ( map == null ) {
-                        map = synchronizedMap( new HashMap<PropertyName, TypedObjectNode[]>() );
+                        map = synchronizedMap( new HashMap<ValueReference, TypedObjectNode[]>() );
                         EVAL_CACHE.put( context, map );
                     }
                     map.put( propName, resultValues );
@@ -180,7 +180,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
     // return resultValues;
     // }
 
-    public TypedObjectNode[] eval( ElementNode element, PropertyName propName )
+    public TypedObjectNode[] eval( ElementNode element, ValueReference propName )
                             throws FilterEvaluationException {
 
         TypedObjectNode[] resultValues = null;
@@ -208,7 +208,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
         return resultValues;
     }
 
-    public TypedObjectNode[] eval( Property element, PropertyName propName )
+    public TypedObjectNode[] eval( Property element, ValueReference propName )
                             throws FilterEvaluationException {
 
         TypedObjectNode[] resultValues = null;

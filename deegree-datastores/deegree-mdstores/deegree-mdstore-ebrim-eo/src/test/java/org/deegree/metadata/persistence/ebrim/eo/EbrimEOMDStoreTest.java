@@ -65,7 +65,7 @@ import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.ebrim.RegistryObject;
 import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.persistence.MetadataInspectorException;
@@ -210,7 +210,7 @@ public class EbrimEOMDStoreTest {
             return;
         }
 
-        Expression propName = new PropertyName( "/rim:RegistryPackage/@id", ns );
+        Expression propName = new ValueReference( "/rim:RegistryPackage/@id", ns );
         Expression lit = new Literal<PrimitiveValue>( id_rec1 );
         Operator rootOperator = new PropertyIsEqualTo( propName, lit, true, null );
         Filter filter = new OperatorFilter( rootOperator );

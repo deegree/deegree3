@@ -59,7 +59,7 @@ import org.deegree.filter.comparison.PropertyIsGreaterThan;
 import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.spatial.Within;
@@ -183,7 +183,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         GetFeature getFeature = getFeatureAdapter.parse( null );
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
-        PropertyName[] propertyNames = filterQuery.getPropertyNames();
+        ValueReference[] propertyNames = filterQuery.getPropertyNames();
 
         assertEquals( "myns:WKB_GEOM", propertyNames[0].getAsText() );
         assertEquals( "myns:TILE_ID", propertyNames[1].getAsText() );
@@ -213,7 +213,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
 
-        PropertyName[] propNames = filterQuery.getPropertyNames();
+        ValueReference[] propNames = filterQuery.getPropertyNames();
 
         assertEquals( propNames.length, 3 );
         assertEquals( propNames[0].getAsText(), "myns:wkbGeom" );
@@ -323,7 +323,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
 
-        PropertyName[] propNames = filterQuery.getPropertyNames();
+        ValueReference[] propNames = filterQuery.getPropertyNames();
 
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getAsText(), "myns:wkbGeom" );
@@ -526,7 +526,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         assertTrue( op0.getParameter( 0 ) instanceof PropertyIsGreaterThanOrEqualTo );
         PropertyIsGreaterThanOrEqualTo op00 = (PropertyIsGreaterThanOrEqualTo) op0.getParameter( 0 );
-        assertEquals( "myns:Person/myns:Address/myns:StreetNumber", ( (PropertyName) op00.getParameter1() ).getAsText() );
+        assertEquals( "myns:Person/myns:Address/myns:StreetNumber", ( (ValueReference) op00.getParameter1() ).getAsText() );
         assertEquals( "10000", ( (Literal<?>) op00.getParameter2() ).getValue().toString() );
 
         assertTrue( rootOp.getParameter( 1 ) instanceof And );
@@ -534,19 +534,19 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         assertTrue( op1.getParameter( 0 ) instanceof PropertyIsEqualTo );
         PropertyIsEqualTo op10 = (PropertyIsEqualTo) op1.getParameter( 0 );
-        assertEquals( "myns:Person/myns:Address/myns:StreetName", ( (PropertyName) op10.getParameter1() ).getAsText() );
+        assertEquals( "myns:Person/myns:Address/myns:StreetName", ( (ValueReference) op10.getParameter1() ).getAsText() );
         assertEquals( "Main St.", ( (Literal<?>) op10.getParameter2() ).getValue().toString() );
 
         PropertyIsEqualTo op11 = (PropertyIsEqualTo) op1.getParameter( 1 );
-        assertEquals( "myns:Person/myns:Address/myns:City", ( (PropertyName) op11.getParameter1() ).getAsText() );
+        assertEquals( "myns:Person/myns:Address/myns:City", ( (ValueReference) op11.getParameter1() ).getAsText() );
         assertEquals( "SomeTown", ( (Literal<?>) op11.getParameter2() ).getValue().toString() );
 
         PropertyIsEqualTo op12 = (PropertyIsEqualTo) op1.getParameter( 2 );
-        assertEquals( "myns:Person/myns:Sex", ( (PropertyName) op12.getParameter1() ).getAsText() );
+        assertEquals( "myns:Person/myns:Sex", ( (ValueReference) op12.getParameter1() ).getAsText() );
         assertEquals( "Female", ( (Literal<?>) op12.getParameter2() ).getValue().toString() );
 
         PropertyIsGreaterThan op13 = (PropertyIsGreaterThan) op1.getParameter( 3 );
-        assertEquals( "myns:Person/myns:Salary", ( (PropertyName) op13.getParameter1() ).getAsText() );
+        assertEquals( "myns:Person/myns:Salary", ( (ValueReference) op13.getParameter1() ).getAsText() );
         assertEquals( "35000", ( (Literal<?>) op13.getParameter2() ).getValue().toString() );
 
     }
@@ -592,8 +592,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( op11.getType(), COMPARISON );
         BinaryComparisonOperator compOp11 = (BinaryComparisonOperator) op11;
         assertTrue( compOp11 instanceof PropertyIsGreaterThanOrEqualTo );
-        assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter1() ).getAsText(),
+        assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter1() instanceof ValueReference );
+        assertEquals( ( (ValueReference) ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:mailAddress/myns:Address/myns:streetNumber" );
         assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter2() instanceof Literal<?> );
         assertEquals( ( (Literal<?>) ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter2() ).getValue().toString(),
@@ -603,8 +603,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( op12.getType(), COMPARISON );
         BinaryComparisonOperator compOp12 = (BinaryComparisonOperator) op12;
         assertTrue( compOp12 instanceof PropertyIsLessThanOrEqualTo );
-        assertTrue( ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter1() ).getAsText(),
+        assertTrue( ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter1() instanceof ValueReference );
+        assertEquals( ( (ValueReference) ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:mailAddress/myns:Address/myns:streetNumber" );
         assertTrue( ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter2() instanceof Literal<?> );
         assertEquals( ( (Literal<?>) ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter2() ).getValue().toString(),
@@ -621,8 +621,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( op21.getType(), COMPARISON );
         BinaryComparisonOperator compOp21 = (BinaryComparisonOperator) op21;
         assertTrue( compOp21 instanceof PropertyIsEqualTo );
-        assertTrue( ( (PropertyIsEqualTo) op21 ).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op21 ).getParameter1() ).getAsText(),
+        assertTrue( ( (PropertyIsEqualTo) op21 ).getParameter1() instanceof ValueReference );
+        assertEquals( ( (ValueReference) ( (PropertyIsEqualTo) op21 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:mailAddress/myns:Address/myns:streetName" );
         assertTrue( ( (PropertyIsEqualTo) op21 ).getParameter2() instanceof Literal<?> );
         assertEquals( ( (Literal<?>) ( (PropertyIsEqualTo) op21 ).getParameter2() ).getValue().toString(), "Main St." );
@@ -631,8 +631,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( op22.getType(), COMPARISON );
         BinaryComparisonOperator compOp22 = (BinaryComparisonOperator) op22;
         assertTrue( compOp22 instanceof PropertyIsEqualTo );
-        assertTrue( ( (PropertyIsEqualTo) op22 ).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op22 ).getParameter1() ).getAsText(),
+        assertTrue( ( (PropertyIsEqualTo) op22 ).getParameter1() instanceof ValueReference );
+        assertEquals( ( (ValueReference) ( (PropertyIsEqualTo) op22 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:mailAddress/myns:Address/myns:city" );
         assertTrue( ( (PropertyIsEqualTo) op22 ).getParameter2() instanceof Literal<?> );
         assertEquals( ( (Literal<?>) ( (PropertyIsEqualTo) op22 ).getParameter2() ).getValue().toString(), "SomeTown" );
@@ -641,8 +641,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( op23.getType(), COMPARISON );
         BinaryComparisonOperator compOp23 = (BinaryComparisonOperator) op23;
         assertTrue( compOp23 instanceof PropertyIsEqualTo );
-        assertTrue( ( (PropertyIsEqualTo) op23 ).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op23 ).getParameter1() ).getAsText(),
+        assertTrue( ( (PropertyIsEqualTo) op23 ).getParameter1() instanceof ValueReference );
+        assertEquals( ( (ValueReference) ( (PropertyIsEqualTo) op23 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:sex" );
         assertTrue( ( (PropertyIsEqualTo) op23 ).getParameter2() instanceof Literal<?> );
         assertEquals( ( (Literal<?>) ( (PropertyIsEqualTo) op23 ).getParameter2() ).getValue().toString(), "Female" );
@@ -651,8 +651,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( op24.getType(), COMPARISON );
         BinaryComparisonOperator compOp24 = (BinaryComparisonOperator) op24;
         assertTrue( compOp24 instanceof PropertyIsGreaterThan );
-        assertTrue( ( (PropertyIsGreaterThan) op24 ).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsGreaterThan) op24 ).getParameter1() ).getAsText(),
+        assertTrue( ( (PropertyIsGreaterThan) op24 ).getParameter1() instanceof ValueReference );
+        assertEquals( ( (ValueReference) ( (PropertyIsGreaterThan) op24 ).getParameter1() ).getAsText(),
                       "myns:Person/myns:salary" );
         assertTrue( ( (PropertyIsGreaterThan) op24 ).getParameter2() instanceof Literal<?> );
         assertEquals( ( (Literal<?>) ( (PropertyIsGreaterThan) op24 ).getParameter2() ).getValue().toString(), "35000" );
@@ -677,7 +677,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
 
-        PropertyName[] propNames = filterQuery.getPropertyNames();
+        ValueReference[] propNames = filterQuery.getPropertyNames();
 
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getAsText(), "gml:name" );
@@ -709,7 +709,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
 
-        PropertyName[] propNames = filterQuery.getPropertyNames();
+        ValueReference[] propNames = filterQuery.getPropertyNames();
 
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getAsText(), "gml:name" );
@@ -740,7 +740,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
 
-        PropertyName[] propNames = filterQuery.getPropertyNames();
+        ValueReference[] propNames = filterQuery.getPropertyNames();
 
         assertEquals( propNames.length, 1 );
         assertEquals( propNames[0].getAsText(), "gml:name" );

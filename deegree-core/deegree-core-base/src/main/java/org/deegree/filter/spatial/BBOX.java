@@ -40,14 +40,14 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 
 /**
  * {@link SpatialOperator} that checks for the intersection of the two geometry operands' envelopes.
  * <p>
- * Note that the {@link PropertyName} argument may be <code>null</code>: <br/>
+ * Note that the {@link ValueReference} argument may be <code>null</code>: <br/>
  * <br/>
  * From the Filter Encoding Implementation Specification 1.1: <i>If the optional &lt;PropertyName&gt; element is not
  * specified, the calling service must determine which spatial property is the spatial key and apply the BBOX operator
@@ -64,7 +64,7 @@ import org.deegree.geometry.Geometry;
  */
 public class BBOX extends SpatialOperator {
 
-    private final PropertyName propName;
+    private final ValueReference propName;
 
     private final Envelope bbox;
 
@@ -85,7 +85,7 @@ public class BBOX extends SpatialOperator {
      * @param bbox
      *            bounding box argument for intersection testing, never <code>null</code>
      */
-    public BBOX( PropertyName propName, Envelope bbox ) {
+    public BBOX( ValueReference propName, Envelope bbox ) {
         this.propName = propName;
         this.bbox = bbox;
     }
@@ -97,7 +97,7 @@ public class BBOX extends SpatialOperator {
      *         object should be used)
      */
     @Override
-    public PropertyName getPropName() {
+    public ValueReference getPropName() {
         return propName;
     }
 
@@ -115,12 +115,12 @@ public class BBOX extends SpatialOperator {
                             throws FilterEvaluationException {
 
         // handle the BBOX-specific case that the property name can be empty
-        PropertyName propName = this.propName;
+        ValueReference propName = this.propName;
         if ( propName == null ) {
             if ( obj instanceof Feature ) {
                 GeometryPropertyType pt = ( (Feature) obj ).getType().getDefaultGeometryPropertyDeclaration();
                 if ( pt != null ) {
-                    propName = new PropertyName( pt.getName() );
+                    propName = new ValueReference( pt.getName() );
                 }
             }
         }
