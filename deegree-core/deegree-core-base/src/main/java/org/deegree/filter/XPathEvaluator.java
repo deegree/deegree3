@@ -44,13 +44,13 @@ import org.deegree.filter.expression.ValueReference;
  * Implementations enable the evaluation of XPath expressions (given as {@link ValueReference}s) on a specific class of
  * objects, e.g. {@link Feature} instances.
  * 
+ * @param <T>
+ *            object type that this evaluator works on
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
- * @param <T>
- *            type that this evaluator works on
  */
 public interface XPathEvaluator<T> {
 
@@ -59,13 +59,13 @@ public interface XPathEvaluator<T> {
      * 
      * @param context
      *            object that the expression is evaluated upon, must not be <code>null</code>
-     * @param propName
-     *            XPath expression (usually selects a property, hence the name)
+     * @param valueRef
+     *            value reference, must not be <code>null</code>
      * @return the selected values, never <code>null</code> and contains at least one entry
      * @throws FilterEvaluationException
      *             if an exception occurs during the evaluation of the XPath expression
      */
-    public TypedObjectNode[] eval( T context, ValueReference propName )
+    public TypedObjectNode[] eval( T context, ValueReference valueRef )
                             throws FilterEvaluationException;
 
     /**
