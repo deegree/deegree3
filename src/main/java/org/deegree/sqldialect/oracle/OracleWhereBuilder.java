@@ -53,7 +53,7 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Beyond;
@@ -97,7 +97,7 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
      * @param dialect
      *            SQL dialect, must not be <code>null</code>
      * @param mapping
-     *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
+     *            provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
