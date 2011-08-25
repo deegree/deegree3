@@ -67,14 +67,14 @@ public class ApplicationSchemaXSDEncoderTest {
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf1.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
         OutputStream os = new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "out.xml" );
         XMLStreamWriter writer = new IndentingXMLStreamWriter( outputFactory.createXMLStreamWriter( os ) );
-        ApplicationSchemaXSDEncoder encoder = new ApplicationSchemaXSDEncoder( GMLVersion.GML_31,
+        AppSchemaXSDEncoder encoder = new AppSchemaXSDEncoder( GMLVersion.GML_31,
                                                                                "http://cite.opengeospatial.org/gmlsf",
                                                                                null, schema.getNamespaceBindings() );
         encoder.export( writer, schema );

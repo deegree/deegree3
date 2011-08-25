@@ -58,7 +58,7 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StreamFeatureCollection;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceMetadata;
 import org.deegree.protocol.wfs.WFSRequestType;
@@ -285,7 +285,7 @@ public class WFSClient {
 
                 URL url = getOperationURL( DescribeFeatureType, false );
                 String requestUrl = url + "?version=1.0.0&service=WFS&request=DescribeFeatureType";
-                ApplicationSchemaXSDDecoder schemaDecoder = new ApplicationSchemaXSDDecoder( null, null, requestUrl );
+                AppSchemaXSDDecoder schemaDecoder = new AppSchemaXSDDecoder( null, null, requestUrl );
                 schema = schemaDecoder.extractFeatureTypeSchema();
             } catch ( Throwable t ) {
                 t.printStackTrace();

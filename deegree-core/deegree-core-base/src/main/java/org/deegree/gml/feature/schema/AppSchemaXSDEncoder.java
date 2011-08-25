@@ -132,9 +132,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ApplicationSchemaXSDEncoder {
+public class AppSchemaXSDEncoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( AppSchemaXSDEncoder.class );
 
     public static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2/feature.xsd";
 
@@ -172,7 +172,7 @@ public class ApplicationSchemaXSDEncoder {
     private final Set<String> exportedTypes = new HashSet<String>();
 
     /**
-     * Creates a new {@link ApplicationSchemaXSDEncoder} for the given GML version and optional import URL.
+     * Creates a new {@link AppSchemaXSDEncoder} for the given GML version and optional import URL.
      * 
      * @param version
      *            gml version that exported schemas will comply to, must not be <code>null</code>
@@ -184,7 +184,7 @@ public class ApplicationSchemaXSDEncoder {
      * @param prefixToNs
      *            keys: namespace prefixes, values: namespaces, may be <code>null</code>
      */
-    public ApplicationSchemaXSDEncoder( GMLVersion version, String targetNamespace, Map<String, String> importURLs,
+    public AppSchemaXSDEncoder( GMLVersion version, String targetNamespace, Map<String, String> importURLs,
                                         Map<String, String> prefixToNs ) {
 
         this.version = version;

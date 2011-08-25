@@ -70,7 +70,7 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.After;
 import org.junit.Before;
@@ -99,7 +99,7 @@ public class MemoryFeatureStoreTest {
 
         DeegreeWorkspace.getInstance().initAll();
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );

@@ -58,7 +58,7 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,7 +85,7 @@ public class FilterEvaluationTest {
                             throws Exception {
 
         String schemaURL = this.getClass().getResource( "../gml/feature/testdata/schema/Philosopher.xsd" ).toString();
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+        AppSchemaXSDDecoder xsdAdapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = this.getClass().getResource( "../gml/feature/testdata/features/Philosopher_FeatureCollection.xml" );

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ll:FeatureCollection xmlns:ll="http://www.lat-lon.de" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <gml:boundedBy>
+    <gml:Box srsName="EPSG:26912">
+      <gml:coordinates>24470.66856124162,4094783.05 878005.0376887583,4653555.55</gml:coordinates>
+    </gml:Box>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <ll:ZipCodes fid="ID_79">
+      <ll:feature_id>79</ll:feature_id>
+      <ll:objectid>80</ll:objectid>
+      <ll:zip>84083</ll:zip>
+      <ll:po_name>Wendover</ll:po_name>
+      <ll:state>UT</ll:state>
+      <ll:sumblkpop>1807.0</ll:sumblkpop>
+      <ll:pop1999>2164.0</ll:pop1999>
+      <ll:shape_area>1.2962284544E10</ll:shape_area>
+      <ll:shape_len>770836.0625</ll:shape_len>
+    </ll:ZipCodes>
+  </gml:featureMember>
+</ll:FeatureCollection>

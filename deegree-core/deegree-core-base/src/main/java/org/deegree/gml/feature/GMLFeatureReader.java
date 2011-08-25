@@ -122,7 +122,8 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.WellKnownGMLTypes;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
@@ -320,7 +321,7 @@ public class GMLFeatureReader extends XMLAdapter {
             }
             idContext.addObject( feature );
         }
-        
+
         return feature;
     }
 
@@ -556,7 +557,7 @@ public class GMLFeatureReader extends XMLAdapter {
         // TODO handle multi-namespace schemas
         AppSchema schema = null;
         try {
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( version, null, schemaUrls );
+            AppSchemaXSDDecoder decoder = new AppSchemaXSDDecoder( version, null, schemaUrls );
             schema = decoder.extractFeatureTypeSchema();
         } catch ( Throwable t ) {
             LOG.warn( Messages.getMessage( "BROKEN_SCHEMA", xmlStream.getSystemId(), t.getMessage() ), t );
@@ -1099,20 +1100,11 @@ public class GMLFeatureReader extends XMLAdapter {
         FeatureType ft = null;
         ft = schema.getFeatureType( ftName );
         if ( ft == null ) {
-            // TODO implement this less hacky
-            if ( ftName.equals( GML311_FEATURECOLLECTION.getName() ) ) {
-                return GML311_FEATURECOLLECTION;
-            }
-            if ( ftName.equals( GML321_FEATURECOLLECTION.getName() ) ) {
-                return GML321_FEATURECOLLECTION;
-            }
-            if ( ftName.equals( WFS110_FEATURECOLLECTION.getName() ) ) {
-                return WFS110_FEATURECOLLECTION;
-            }
-            if ( exception ) {
-                String msg = Messages.getMessage( "ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName );
-                throw new XMLParsingException( xmlStreamReader, msg );
-            }
+            ft = WellKnownGMLTypes.getType( ftName );
+        }
+        if ( ft == null && exception ) {
+            String msg = Messages.getMessage( "ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName );
+            throw new XMLParsingException( xmlStreamReader, msg );
         }
         return ft;
     }

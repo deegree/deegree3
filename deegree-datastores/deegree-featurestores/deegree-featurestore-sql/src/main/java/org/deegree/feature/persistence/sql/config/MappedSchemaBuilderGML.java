@@ -96,7 +96,7 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -199,12 +199,12 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 schemaURLs[i++] = resolver.resolve( gmlSchema.trim() ).toString();
             }
 
-            ApplicationSchemaXSDDecoder decoder = null;
+            AppSchemaXSDDecoder decoder = null;
             if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
                 File file = new File( new URL( schemaURLs[0] ).toURI() );
-                decoder = new ApplicationSchemaXSDDecoder( null, null, file );
+                decoder = new AppSchemaXSDDecoder( null, null, file );
             } else {
-                decoder = new ApplicationSchemaXSDDecoder( null, null, schemaURLs );
+                decoder = new AppSchemaXSDDecoder( null, null, schemaURLs );
             }
             appSchema = decoder.extractFeatureTypeSchema();
         } catch ( Throwable t ) {

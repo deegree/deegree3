@@ -9,7 +9,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 
 public class AIXMLab {
 
@@ -21,7 +21,7 @@ public class AIXMLab {
                             throws Exception {
 
         System.out.print( "Loading GML schema from URL '" + AIXM_SCHEMA + "'..." );
-        ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GML_32, null, AIXM_SCHEMA );
+        AppSchemaXSDDecoder decoder = new AppSchemaXSDDecoder( GML_32, null, AIXM_SCHEMA );
         AppSchema schema = decoder.extractFeatureTypeSchema();
         System.out.println( "done.\nDetected " + schema.getFeatureTypes().length + " feature types." );
 

@@ -65,7 +65,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,13 +124,13 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                     gmlVersionType = jaxbSchemaURL.getVersion();
                 }
 
-                ApplicationSchemaXSDDecoder decoder = null;
+                AppSchemaXSDDecoder decoder = null;
                 if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
                     File file = new File( new URL( schemaURLs[0] ).toURI() );
-                    decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                    decoder = new AppSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
                                                                getHintMap( config.getNamespaceHint() ), file );
                 } else {
-                    decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                    decoder = new AppSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
                                                                getHintMap( config.getNamespaceHint() ), schemaURLs );
                 }
                 schema = decoder.extractFeatureTypeSchema();

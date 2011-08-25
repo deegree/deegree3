@@ -70,7 +70,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
         // TODO do more thorough testing
@@ -83,7 +83,7 @@ public class ApplicationSchemaXSDDecoderTest {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL, schemaURL2 );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL, schemaURL2 );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         LOG.debug( "" + fts[0].getName() );
         Assert.assertEquals( 5, fts.length );
@@ -96,7 +96,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 54, fts.length );
@@ -116,7 +116,7 @@ public class ApplicationSchemaXSDDecoderTest {
             return;
         }
 
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
         schema.getFeatureTypes();
     }
@@ -127,7 +127,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf0.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 3, fts.length );
     }
@@ -138,7 +138,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf1.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
         for ( FeatureType ft : fts ) {
@@ -155,7 +155,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf2.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( int i = 0; i < fts.length; i++ ) {
             LOG.debug( "" + fts[i] );
@@ -170,7 +170,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/all.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 19, fts.length );
     }
@@ -185,7 +185,7 @@ public class ApplicationSchemaXSDDecoderTest {
             return;
         }
 
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
         Assert.assertEquals( 132, schema.getFeatureTypes().length );
     }
@@ -200,7 +200,7 @@ public class ApplicationSchemaXSDDecoderTest {
             return;
         }
 
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_30, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_30, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
         Assert.assertEquals( 237, schema.getFeatureTypes().length );
 
@@ -223,7 +223,7 @@ public class ApplicationSchemaXSDDecoderTest {
             return;
         }
 
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 75, fts.length );
@@ -238,7 +238,7 @@ public class ApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/CustomProperties.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( null, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 1, fts.length );
         FeatureType ft = fts[0];

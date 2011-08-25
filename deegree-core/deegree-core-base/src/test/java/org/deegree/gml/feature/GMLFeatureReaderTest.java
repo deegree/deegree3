@@ -68,7 +68,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -261,7 +261,7 @@ public class GMLFeatureReaderTest {
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = new URL( "file:/home/schneider/Desktop/waldbruecke_v1.0.0.gml" );
@@ -359,7 +359,7 @@ public class GMLFeatureReaderTest {
         if ( schemaURL == null ) {
             return;
         }
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GML_32, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses1.gml" );
@@ -381,7 +381,7 @@ public class GMLFeatureReaderTest {
         if ( schemaURL == null ) {
             return;
         }
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GML_32, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses1.gml" );
@@ -405,7 +405,7 @@ public class GMLFeatureReaderTest {
         if ( schemaURL == null ) {
             return;
         }
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GML_32, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses2.gml" );
@@ -427,7 +427,7 @@ public class GMLFeatureReaderTest {
         if ( schemaURL == null ) {
             return;
         }
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GML_32, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses2.gml" );
@@ -560,5 +560,17 @@ public class GMLFeatureReaderTest {
         Assert.assertEquals( 1, gmlReader.getFeatureReader().getAppSchema().getFeatureTypes().length );
         Assert.assertEquals( 23,
                              gmlReader.getFeatureReader().getAppSchema().getFeatureTypes()[0].getPropertyDeclarations().size() );
+    }
+
+    @Test
+    public void testDeegree2GetFeatureInfoResponse()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "deegree2_getfeatureinfo.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_2, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        Assert.assertEquals( 1, fc.size() );
+        Assert.assertEquals( 1, gmlReader.getFeatureReader().getAppSchema().getFeatureTypes().length );
     }
 }

@@ -100,9 +100,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ApplicationSchemaXSDDecoder {
+public class AppSchemaXSDDecoder {
 
-    private Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDDecoder.class );
+    private Logger LOG = LoggerFactory.getLogger( AppSchemaXSDDecoder.class );
 
     private GMLSchemaInfoSet analyzer;
 
@@ -138,7 +138,7 @@ public class ApplicationSchemaXSDDecoder {
     private final String gmlNs;
 
     /**
-     * Creates a new {@link ApplicationSchemaXSDDecoder} from the given schema URL(s).
+     * Creates a new {@link AppSchemaXSDDecoder} from the given schema URL(s).
      * 
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
@@ -151,7 +151,7 @@ public class ApplicationSchemaXSDDecoder {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
+    public AppSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -195,7 +195,7 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     /**
-     * Creates a new {@link ApplicationSchemaXSDDecoder} from the given schema file (which may be a directory).
+     * Creates a new {@link AppSchemaXSDDecoder} from the given schema file (which may be a directory).
      * 
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
@@ -210,7 +210,7 @@ public class ApplicationSchemaXSDDecoder {
      * @throws MalformedURLException
      * @throws UnsupportedEncodingException
      */
-    public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, File schemaFile )
+    public AppSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, File schemaFile )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, MalformedURLException, UnsupportedEncodingException {
         this( gmlVersion, namespaceHints, getSchemaURLs( schemaFile ) );

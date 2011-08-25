@@ -55,7 +55,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
@@ -83,7 +83,7 @@ public class GMLFeatureWriterTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GML_31, null, schemaURL );
+        AppSchemaXSDDecoder xsdAdapter = new AppSchemaXSDDecoder( GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
@@ -118,7 +118,7 @@ public class GMLFeatureWriterTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GML_31, null, schemaURL );
+        AppSchemaXSDDecoder xsdAdapter = new AppSchemaXSDDecoder( GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );

@@ -79,7 +79,7 @@ import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectManager;
 import org.slf4j.Logger;
@@ -262,7 +262,7 @@ public class MappingWizardSQL {
         }
 
         try {
-            ApplicationSchemaXSDDecoder xsdDecoder = new ApplicationSchemaXSDDecoder( null, null, schemaUrls );
+            AppSchemaXSDDecoder xsdDecoder = new AppSchemaXSDDecoder( null, null, schemaUrls );
             appSchema = xsdDecoder.extractFeatureTypeSchema();
             appSchemaInfo = new AppSchemaInfo( appSchema );
         } catch ( Throwable t ) {

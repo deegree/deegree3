@@ -86,7 +86,7 @@ import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectManager;
 import org.deegree.sqldialect.filter.function.SQLFunctionManager;
@@ -202,7 +202,7 @@ public class TOPPStatesTest {
 
         // read application schema
         URL schemaUrl = TOPPStatesTest.class.getResource( "topp_states/schema/states.xsd" );
-        ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( null, null, schemaUrl.toString() );
+        AppSchemaXSDDecoder decoder = new AppSchemaXSDDecoder( null, null, schemaUrl.toString() );
         AppSchema appSchema = decoder.extractFeatureTypeSchema();
 
         // map application schema

@@ -111,7 +111,7 @@ import org.deegree.feature.utils.templating.TemplatingParser;
 import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDEncoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDEncoder;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -698,7 +698,7 @@ public class WMSController extends AbstractOWS {
             if ( namespace != null && !namespace.isEmpty() ) {
                 nsToPrefix.put( "app", namespace );
             }
-            new ApplicationSchemaXSDEncoder( GMLVersion.GML_2, namespace, null, nsToPrefix ).export( writer, schema );
+            new AppSchemaXSDEncoder( GMLVersion.GML_2, namespace, null, nsToPrefix ).export( writer, schema );
             writer.writeEndDocument();
         } catch ( XMLStreamException e ) {
             LOG.error( "Unknown error", e );

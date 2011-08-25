@@ -77,7 +77,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.tools.i18n.Messages;
 
 /**
@@ -405,7 +405,7 @@ public class ApplicationSchemaTool {
                     inputURLs.add( inputFile.toURI().toURL().toExternalForm() );
                 }
 
-                ApplicationSchemaXSDDecoder xsdDecoder = new ApplicationSchemaXSDDecoder(
+                AppSchemaXSDDecoder xsdDecoder = new AppSchemaXSDDecoder(
                                                                                           GML_32,
                                                                                           null,
                                                                                           inputURLs.toArray( new String[inputURLs.size()] ) );
@@ -462,13 +462,13 @@ public class ApplicationSchemaTool {
             break;
         case gml2: {
             String inputURL = new File( inputFileName ).toURI().toURL().toString();
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_2, null, inputURL );
+            AppSchemaXSDDecoder decoder = new AppSchemaXSDDecoder( GMLVersion.GML_2, null, inputURL );
             schema = decoder.extractFeatureTypeSchema();
             break;
         }
         case gml31: {
             String inputURL = new File( inputFileName ).toURI().toURL().toString();
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, inputURL );
+            AppSchemaXSDDecoder decoder = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, inputURL );
             schema = decoder.extractFeatureTypeSchema();
             System.err.println( "Mangled types:" );
             for ( QName typeName : decoder.getAllEncounteredTypes() ) {
@@ -478,7 +478,7 @@ public class ApplicationSchemaTool {
         }
         case gml32: {
             String inputURL = new File( inputFileName ).toURI().toURL().toString();
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, inputURL );
+            AppSchemaXSDDecoder decoder = new AppSchemaXSDDecoder( GMLVersion.GML_32, null, inputURL );
             schema = decoder.extractFeatureTypeSchema();
             break;
         }

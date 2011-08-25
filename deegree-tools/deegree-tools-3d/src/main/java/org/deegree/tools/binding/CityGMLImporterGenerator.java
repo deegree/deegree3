@@ -48,7 +48,7 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.tools.rendering.manager.buildings.importers.ModelImporter;
 
 /**
@@ -70,7 +70,7 @@ public class CityGMLImporterGenerator {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, IOException {
         String schemaURL = "file:/home/rutger/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = adapter.extractFeatureTypeSchema();
         // FeatureType[] fts = schema.getFeatureTypes();
         // Assert.assertEquals( 54, fts.length );
