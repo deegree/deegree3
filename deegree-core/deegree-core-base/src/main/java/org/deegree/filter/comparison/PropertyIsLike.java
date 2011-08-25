@@ -36,11 +36,11 @@
 package org.deegree.filter.comparison;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
 
 /**
  * TODO add documentation here
@@ -58,9 +58,9 @@ public class PropertyIsLike extends ComparisonOperator {
 
     private final String escapeChar;
 
-    private final PropertyName propName;
+    private final Expression propName;
 
-    private final Literal<?> literal;
+    private final Expression literal;
 
     private final boolean matchCase;
 
@@ -72,8 +72,8 @@ public class PropertyIsLike extends ComparisonOperator {
      * @param escapeChar
      * @param matchCase
      */
-    public PropertyIsLike( PropertyName propName, Literal<?> literal, String wildCard, String singleChar,
-                           String escapeChar, boolean matchCase ) {
+    public PropertyIsLike( Expression propName, Expression literal, String wildCard, String singleChar,
+                           String escapeChar, Boolean matchCase ) {
         super( matchCase );
         this.propName = propName;
         this.literal = literal;
@@ -83,12 +83,16 @@ public class PropertyIsLike extends ComparisonOperator {
         this.matchCase = matchCase;
     }
 
-    public PropertyName getPropertyName() {
+    public Expression getPropertyName() {
         return propName;
     }
 
-    public Literal<?> getLiteral() {
+    public Expression getLiteral() {
         return literal;
+    }
+
+    public Boolean isMatchCase() {
+        return matchCase;
     }
 
     public String getWildCard() {
@@ -112,12 +116,27 @@ public class PropertyIsLike extends ComparisonOperator {
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-        TypedObjectNode[] paramValues = propName.evaluate( obj, xpathEvaluator );
+        TypedObjectNode[] param1Values = propName.evaluate( obj, xpathEvaluator );
+        TypedObjectNode[] param2Values = literal.evaluate( obj, xpathEvaluator );
 
-        for ( TypedObjectNode value : paramValues ) {
-            if ( matchCase && matches( literal.getValue().toString().toLowerCase(), value.toString().toLowerCase() )
-                 || matches( literal.getValue().toString(), value.toString() ) ) {
-                return true;
+        // evaluate to true if at least one pair of values matches the condition
+        for ( TypedObjectNode value1 : param1Values ) {
+            for ( TypedObjectNode value2 : param2Values ) {
+                if ( value1 == null && value2 == null ) {
+                    return true;
+                }
+                if ( value1 != null && value2 != null ) {
+                    Pair<PrimitiveValue, PrimitiveValue> primitivePair = getPrimitives( value1, value2 );
+                    String s1 = primitivePair.first.toString();
+                    String s2 = primitivePair.second.toString();
+                    if ( !matchCase ) {
+                        s1 = s1.toLowerCase();
+                        s2 = s2.toLowerCase();
+                    }
+                    if ( matches( s2, s1 ) ) {
+                        return true;
+                    }
+                }
             }
         }
         return false;

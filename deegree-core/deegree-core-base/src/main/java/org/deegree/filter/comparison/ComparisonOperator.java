@@ -45,7 +45,7 @@ import org.deegree.filter.Operator;
 import org.deegree.filter.i18n.Messages;
 
 /**
- * TODO add documentation here
+ * Abstract base class for all comparison operators.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -61,15 +61,11 @@ public abstract class ComparisonOperator implements Operator {
     }
 
     public enum SubType {
-        PROPERTY_IS_EQUAL_TO, PROPERTY_IS_NOT_EQUAL_TO, PROPERTY_IS_LESS_THAN, PROPERTY_IS_GREATER_THAN, PROPERTY_IS_LESS_THAN_OR_EQUAL_TO, PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO, PROPERTY_IS_LIKE, PROPERTY_IS_NULL, PROPERTY_IS_BETWEEN;
+        PROPERTY_IS_EQUAL_TO, PROPERTY_IS_NOT_EQUAL_TO, PROPERTY_IS_LESS_THAN, PROPERTY_IS_GREATER_THAN, PROPERTY_IS_LESS_THAN_OR_EQUAL_TO, PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO, PROPERTY_IS_LIKE, PROPERTY_IS_NULL, PROPERTY_IS_NIL, PROPERTY_IS_BETWEEN;
     }
 
     public Type getType() {
         return Type.COMPARISON;
-    }
-
-    public boolean getMatchCase() {
-        return matchCase;
     }
 
     public abstract SubType getSubType();

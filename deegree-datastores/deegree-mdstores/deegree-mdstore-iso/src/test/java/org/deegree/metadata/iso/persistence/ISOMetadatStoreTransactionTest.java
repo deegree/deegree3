@@ -204,7 +204,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
-                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+                                             new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // create recordProperty
@@ -249,7 +249,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
-                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+                                             new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // create recordProperty
@@ -296,7 +296,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
-                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+                                             new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // create recordProperty
@@ -349,7 +349,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
-                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+                                             new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // create recordProperty
@@ -416,7 +416,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
         // get record which should be updated
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
-                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+                                             new Literal<PrimitiveValue>( idToUpdate ), true, null );
         MetadataQuery query = new MetadataQuery( null, null, new OperatorFilter( op ), null, 1, 10 );
         resultSet = store.getRecords( query );
         assertNotNull( resultSet );
@@ -450,7 +450,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
-                                             new Literal<PrimitiveValue>( idToUpdate ), true );
+                                             new Literal<PrimitiveValue>( idToUpdate ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // md to update
@@ -499,7 +499,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
         // constraint
         Operator op = new PropertyIsEqualTo( new PropertyName( "apiso:identifier", nsContext ),
-                                             new Literal<PrimitiveValue>( "dummyDoesNotExist" ), true );
+                                             new Literal<PrimitiveValue>( "dummyDoesNotExist" ), true, null );
         Filter constraint = new OperatorFilter( op );
 
         // md to update

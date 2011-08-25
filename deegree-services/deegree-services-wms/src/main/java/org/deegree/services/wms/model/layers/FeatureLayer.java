@@ -544,7 +544,7 @@ public class FeatureLayer extends Layer {
                         }
                     }
                     Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>( formatISO8601DateWOMS( theVal ) );
-                    os[i++] = new PropertyIsEqualTo( property, lit, false );
+                    os[i++] = new PropertyIsEqualTo( property, lit, false, null );
                 }
             }
             if ( os.length > 1 ) {
@@ -625,7 +625,7 @@ public class FeatureLayer extends Layer {
                         }
                     }
                     os[i++] = new PropertyIsEqualTo( new PropertyName( dim.getPropertyName() ),
-                                                     new Literal<PrimitiveValue>( o.toString() ), false );
+                                                     new Literal<PrimitiveValue>( o.toString() ), false, null );
                 }
             }
             if ( os.length > 1 ) {

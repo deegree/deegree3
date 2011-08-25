@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import static org.deegree.filter.comparison.ComparisonOperator.SubType.PROPERTY_IS_NIL;
+
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -46,37 +46,39 @@ import org.deegree.filter.XPathEvaluator;
  * TODO add documentation here
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class PropertyIsGreaterThanOrEqualTo extends BinaryComparisonOperator {
+public class PropertyIsNil extends ComparisonOperator {
 
-    public PropertyIsGreaterThanOrEqualTo( Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction ) {
-        super( param1, param2, matchCase, matchAction );
+    private final Expression propName;
+
+    public PropertyIsNil( Expression propName, String nilReason ) {
+        super( true );
+        this.propName = propName;
+    }
+
+    public Expression getPropertyName() {
+        return propName;
     }
 
     @Override
     public SubType getSubType() {
-        return SubType.PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO;
+        return PROPERTY_IS_NIL;
     }
 
     @Override
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-        TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
-        TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
-
-        // evaluate to true if at least one pair of values matches the condition
-        for ( TypedObjectNode value1 : param1Values ) {
-            for ( TypedObjectNode value2 : param2Values ) {
-                if ( value1 != null && value2 != null ) {
-                    Pair<PrimitiveValue, PrimitiveValue> comparablePair = getPrimitives( value1, value2 );
-                    if ( ( comparablePair.first ).compareTo( comparablePair.second ) >= 0 ) {
-                        return true;
-                    }
-                }
+        TypedObjectNode[] paramValues = propName.evaluate( obj, xpathEvaluator );
+        if ( paramValues.length == 0 ) {
+            return true;
+        }
+        for ( Object value : paramValues ) {
+            if ( value == null ) {
+                return true;
             }
         }
         return false;
@@ -84,9 +86,13 @@ public class PropertyIsGreaterThanOrEqualTo extends BinaryComparisonOperator {
 
     @Override
     public String toString( String indent ) {
-        String s = indent + "-PropertyIsGreaterThanOrEqualTo\n";
-        s += param1.toString( indent + "  " );
-        s += param2.toString( indent + "  " );
+        String s = indent + "-PropertyIsNil\n";
+        s += propName.toString( indent + "  " );
         return s;
+    }
+
+    @Override
+    public Expression[] getParams() {
+        return new Expression[] { propName };
     }
 }

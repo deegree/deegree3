@@ -101,7 +101,7 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
 
         TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
         Literal<PrimitiveValue> lit1 = new Literal<PrimitiveValue>( "Hessen Wasser Analyser" );
-        Operator op1 = new PropertyIsEqualTo( new PropertyName( "Title", nsContext ), lit1, true );
+        Operator op1 = new PropertyIsEqualTo( new PropertyName( "Title", nsContext ), lit1, true, null );
 
         Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "%Karte%" );
         Operator op2 = new PropertyIsLike( new PropertyName( "Subject", nsContext ), lit2, "%", "_", "?", true );
@@ -126,7 +126,7 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
 
         TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10 );
         Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "SPOT 5" );
-        Operator op = new PropertyIsEqualTo( new PropertyName( "Subject", nsContext ), lit2, true );
+        Operator op = new PropertyIsEqualTo( new PropertyName( "Subject", nsContext ), lit2, true, null );
 
         Filter filter = new OperatorFilter( op );
         MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 10 );

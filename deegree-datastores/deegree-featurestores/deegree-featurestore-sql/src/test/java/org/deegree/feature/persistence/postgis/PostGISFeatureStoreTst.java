@@ -487,7 +487,7 @@ public class PostGISFeatureStoreTst {
             PropertyName propName = new PropertyName( QName.valueOf( "{http://www.deegree.org/app}name" ) );
             Literal literal = new Literal( "United Kingdom" );
 
-            PropertyIsEqualTo propIsEqualTo = new PropertyIsEqualTo( propName, literal, false );
+            PropertyIsEqualTo propIsEqualTo = new PropertyIsEqualTo( propName, literal, false, null );
             Filter filter = new OperatorFilter( propIsEqualTo );
             Query query = new Query( typeNames, filter, null, null, null );
             FeatureInputStream rs = fs.query( query );

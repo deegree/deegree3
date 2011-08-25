@@ -340,8 +340,9 @@ public class Filter110XMLEncoder {
             writer.writeAttribute( "wildCard", isLikeOperator.getWildCard() );
             writer.writeAttribute( "singleChar", isLikeOperator.getSingleChar() );
             writer.writeAttribute( "escapeChar", isLikeOperator.getEscapeChar() );
-            if ( !isLikeOperator.getMatchCase() )
-                writer.writeAttribute( "matchCase", "" + isLikeOperator.getMatchCase() );
+            if ( isLikeOperator.isMatchCase() != null ) {
+                writer.writeAttribute( "matchCase", "" + isLikeOperator.isMatchCase() );
+            }
             export( isLikeOperator.getPropertyName(), writer );
             export( isLikeOperator.getLiteral(), writer );
             break;

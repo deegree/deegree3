@@ -80,6 +80,7 @@ import org.deegree.filter.ResourceId;
 import org.deegree.filter.comparison.BinaryComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator.SubType;
+import org.deegree.filter.comparison.MatchAction;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsGreaterThan;
@@ -612,6 +613,7 @@ public class Filter200XMLDecoder {
         BinaryComparisonOperator comparisonOperator = null;
 
         boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+        MatchAction matchAction = null;
 
         XMLStreamUtils.requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter1 = parseExpression( xmlStream );
@@ -621,22 +623,22 @@ public class Filter200XMLDecoder {
 
         switch ( type ) {
         case PROPERTY_IS_EQUAL_TO:
-            comparisonOperator = new PropertyIsEqualTo( parameter1, parameter2, matchCase );
+            comparisonOperator = new PropertyIsEqualTo( parameter1, parameter2, matchCase, matchAction );
             break;
         case PROPERTY_IS_NOT_EQUAL_TO:
-            comparisonOperator = new PropertyIsNotEqualTo( parameter1, parameter2, matchCase );
+            comparisonOperator = new PropertyIsNotEqualTo( parameter1, parameter2, matchCase, matchAction );
             break;
         case PROPERTY_IS_LESS_THAN:
-            comparisonOperator = new PropertyIsLessThan( parameter1, parameter2, matchCase );
+            comparisonOperator = new PropertyIsLessThan( parameter1, parameter2, matchCase, matchAction );
             break;
         case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
-            comparisonOperator = new PropertyIsLessThanOrEqualTo( parameter1, parameter2, matchCase );
+            comparisonOperator = new PropertyIsLessThanOrEqualTo( parameter1, parameter2, matchCase, matchAction );
             break;
         case PROPERTY_IS_GREATER_THAN:
-            comparisonOperator = new PropertyIsGreaterThan( parameter1, parameter2, matchCase );
+            comparisonOperator = new PropertyIsGreaterThan( parameter1, parameter2, matchCase, matchAction );
             break;
         case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
-            comparisonOperator = new PropertyIsGreaterThanOrEqualTo( parameter1, parameter2, matchCase );
+            comparisonOperator = new PropertyIsGreaterThanOrEqualTo( parameter1, parameter2, matchCase, matchAction );
             break;
         default:
             assert false;

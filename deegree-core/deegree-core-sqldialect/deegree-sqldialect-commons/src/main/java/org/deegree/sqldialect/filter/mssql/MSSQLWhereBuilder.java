@@ -46,6 +46,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsLike;
+import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
@@ -121,7 +122,12 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
     protected SQLOperation toProtoSQL( PropertyIsLike op )
                             throws UnmappableException, FilterEvaluationException {
 
-        String literal = op.getLiteral().getValue().toString();
+        if ( !( op.getLiteral() instanceof Literal ) ) {
+            String msg = "Mapping of PropertyIsLike with non-literal comparisons to SQL is not implemented yet.";
+            throw new UnsupportedOperationException( msg );
+        }
+
+        String literal = ( (Literal) op.getLiteral() ).getValue().toString();
         String escape = "" + op.getEscapeChar();
         String wildCard = "" + op.getWildCard();
         String singleChar = "" + op.getSingleChar();
@@ -129,7 +135,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
         SQLExpression propName = toProtoSQL( op.getPropertyName() );
 
         IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
-        String sqlEncoded = specialString.toSQL( !op.getMatchCase() );
+        String sqlEncoded = specialString.toSQL( !op.isMatchCase() );
 
         if ( propName.isMultiValued() ) {
             // TODO escaping of pipe symbols
@@ -137,7 +143,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
         }
 
         SQLOperationBuilder builder = new SQLOperationBuilder();
-        if ( !op.getMatchCase() ) {
+        if ( !op.isMatchCase() ) {
             builder.add( "LOWER (" + propName + ")" );
         } else {
             builder.add( propName );

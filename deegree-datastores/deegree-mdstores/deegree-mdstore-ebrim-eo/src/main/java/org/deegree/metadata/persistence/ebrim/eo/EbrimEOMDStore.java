@@ -291,7 +291,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                                                                                                    regPackId,
                                                                                                    new PrimitiveType(
                                                                                                                       BaseType.STRING ) ) );
-                    Filter constraint = new OperatorFilter( new PropertyIsEqualTo( propertyName, lit, true ) );
+                    Filter constraint = new OperatorFilter( new PropertyIsEqualTo( propertyName, lit, true, null ) );
                     trans.performDelete( new DeleteOperation( null, null, constraint ) );
                 }
                 List<String> performInsert = trans.performInsert( new InsertOperation(

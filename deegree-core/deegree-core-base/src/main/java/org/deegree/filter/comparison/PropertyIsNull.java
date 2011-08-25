@@ -39,7 +39,6 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.filter.expression.PropertyName;
 
 /**
  * TODO add documentation here
@@ -51,14 +50,14 @@ import org.deegree.filter.expression.PropertyName;
  */
 public class PropertyIsNull extends ComparisonOperator {
 
-    private final PropertyName propName;
+    private final Expression propName;
 
-    public PropertyIsNull( PropertyName propName ) {
+    public PropertyIsNull( Expression propName ) {
         super( true );
         this.propName = propName;
     }
 
-    public PropertyName getPropertyName() {
+    public Expression getPropertyName() {
         return propName;
     }
 

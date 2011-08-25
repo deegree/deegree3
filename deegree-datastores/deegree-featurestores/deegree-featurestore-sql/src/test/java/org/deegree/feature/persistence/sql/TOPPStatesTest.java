@@ -255,7 +255,7 @@ public class TOPPStatesTest {
                             throws FeatureStoreException, FilterEvaluationException {
         PropertyName propName = new PropertyName( STATE_NAME );
         Literal literal = new Literal( "Illinois" );
-        PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false );
+        PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false, null );
         Filter filter = new OperatorFilter( oper );
         Query query = new Query( TOPP_STATES, filter, -1, -1, -1 );
         FeatureCollection fc = fs.query( query ).toCollection();

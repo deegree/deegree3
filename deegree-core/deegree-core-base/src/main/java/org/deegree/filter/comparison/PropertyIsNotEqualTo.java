@@ -52,8 +52,8 @@ import org.deegree.filter.XPathEvaluator;
  */
 public class PropertyIsNotEqualTo extends BinaryComparisonOperator {
 
-    public PropertyIsNotEqualTo( Expression param1, Expression param2, boolean matchCase ) {
-        super( param1, param2, matchCase );
+    public PropertyIsNotEqualTo( Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction ) {
+        super( param1, param2, matchCase, matchAction );
     }
 
     @Override

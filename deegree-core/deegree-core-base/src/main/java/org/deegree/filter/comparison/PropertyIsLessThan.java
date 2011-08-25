@@ -52,8 +52,8 @@ import org.deegree.filter.XPathEvaluator;
  */
 public class PropertyIsLessThan extends BinaryComparisonOperator {
 
-    public PropertyIsLessThan( Expression parameter1, Expression parameter2, boolean matchCase ) {
-        super( parameter1, parameter2, matchCase );
+    public PropertyIsLessThan( Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction ) {
+        super( param1, param2, matchCase, matchAction );
     }
 
     @Override

@@ -211,38 +211,40 @@ public class AdhocQueryAnalyzer {
                 PropertyIsBetween piw = (PropertyIsBetween) op;
                 return new PropertyIsBetween( copyExpression( piw.getExpression(), values ),
                                               copyExpression( piw.getLowerBoundary(), values ),
-                                              copyExpression( piw.getUpperBoundary(), values ), piw.getMatchCase() );
+                                              copyExpression( piw.getUpperBoundary(), values ), piw.isMatchCase() );
             case PROPERTY_IS_EQUAL_TO:
                 PropertyIsEqualTo pie = (PropertyIsEqualTo) op;
                 return new PropertyIsEqualTo( copyExpression( pie.getParameter1(), values ),
-                                              copyExpression( pie.getParameter2(), values ), pie.getMatchCase() );
+                                              copyExpression( pie.getParameter2(), values ), pie.isMatchCase(), null );
             case PROPERTY_IS_GREATER_THAN:
                 PropertyIsGreaterThan pigt = (PropertyIsGreaterThan) op;
                 return new PropertyIsGreaterThan( copyExpression( pigt.getParameter1(), values ),
-                                                  copyExpression( pigt.getParameter2(), values ), pigt.getMatchCase() );
+                                                  copyExpression( pigt.getParameter2(), values ), pigt.isMatchCase(),
+                                                  null );
             case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
                 PropertyIsGreaterThanOrEqualTo pigte = (PropertyIsGreaterThanOrEqualTo) op;
                 return new PropertyIsGreaterThanOrEqualTo( copyExpression( pigte.getParameter1(), values ),
                                                            copyExpression( pigte.getParameter2(), values ),
-                                                           pigte.getMatchCase() );
+                                                           pigte.isMatchCase(), null );
             case PROPERTY_IS_LESS_THAN:
                 PropertyIsLessThan pilt = (PropertyIsLessThan) op;
                 return new PropertyIsLessThan( copyExpression( pilt.getParameter1(), values ),
-                                               copyExpression( pilt.getParameter2(), values ), pilt.getMatchCase() );
+                                               copyExpression( pilt.getParameter2(), values ), pilt.isMatchCase(), null );
             case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
                 PropertyIsLessThanOrEqualTo pilte = (PropertyIsLessThanOrEqualTo) op;
                 return new PropertyIsLessThanOrEqualTo( copyExpression( pilte.getParameter1(), values ),
                                                         copyExpression( pilte.getParameter2(), values ),
-                                                        pilte.getMatchCase() );
+                                                        pilte.isMatchCase(), null );
             case PROPERTY_IS_LIKE:
                 PropertyIsLike pil = (PropertyIsLike) op;
-                return new PropertyIsLike( copy( pil.getPropertyName() ), copy( pil.getLiteral(), values ),
+                return new PropertyIsLike( copy( pil.getPropertyName() ), copyExpression( pil.getLiteral(), values ),
                                            pil.getWildCard(), pil.getSingleChar(), pil.getEscapeChar(),
-                                           pil.getMatchCase() );
+                                           pil.isMatchCase() );
             case PROPERTY_IS_NOT_EQUAL_TO:
                 PropertyIsNotEqualTo pine = (PropertyIsNotEqualTo) op;
                 return new PropertyIsNotEqualTo( copyExpression( pine.getParameter1(), values ),
-                                                 copyExpression( pine.getParameter2(), values ), pine.getMatchCase() );
+                                                 copyExpression( pine.getParameter2(), values ), pine.isMatchCase(),
+                                                 null );
             case PROPERTY_IS_NULL:
                 PropertyIsNull pin = (PropertyIsNull) op;
                 return new PropertyIsNull( copy( pin.getPropertyName() ) );
@@ -361,7 +363,8 @@ public class AdhocQueryAnalyzer {
         return newExpr;
     }
 
-    private PropertyName copy( PropertyName pn ) {
+    private PropertyName copy( Expression e ) {
+        PropertyName pn = (PropertyName) e;
         return new PropertyName( pn.getAsText(), pn.getNsContext() );
     }
 

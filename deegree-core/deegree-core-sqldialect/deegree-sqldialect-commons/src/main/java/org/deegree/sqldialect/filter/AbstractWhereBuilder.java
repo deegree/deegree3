@@ -347,7 +347,7 @@ public abstract class AbstractWhereBuilder {
                 Expression propName = propIsEqualTo.getParameter1();
                 Expression literal = propIsEqualTo.getParameter2();
                 if ( propName instanceof PropertyName && literal instanceof Literal ) {
-                    PropertyIsLike propIsLike = buildIsLike( propName, literal, propIsEqualTo.getMatchCase() );
+                    PropertyIsLike propIsLike = buildIsLike( propName, literal, propIsEqualTo.isMatchCase() );
                     sqlOper = toProtoSQL( propIsLike );
                 } else {
                     String msg = "Can not map filter. Multi-valued columns can only be compared to literals.";
@@ -423,7 +423,7 @@ public abstract class AbstractWhereBuilder {
                 Expression propName = propIsNotEqualTo.getParameter1();
                 Expression literal = propIsNotEqualTo.getParameter2();
                 if ( propName instanceof PropertyName && literal instanceof Literal ) {
-                    PropertyIsLike propIsLike = buildIsLike( propName, literal, propIsNotEqualTo.getMatchCase() );
+                    PropertyIsLike propIsLike = buildIsLike( propName, literal, propIsNotEqualTo.isMatchCase() );
                     sqlOper = toProtoSQL( new Not( propIsLike ) );
                 } else {
                     String msg = "Can not map filter. Multi-valued columns can only be compared to literals.";
@@ -507,7 +507,12 @@ public abstract class AbstractWhereBuilder {
     protected SQLOperation toProtoSQL( PropertyIsLike op )
                             throws UnmappableException, FilterEvaluationException {
 
-        String literal = op.getLiteral().getValue().toString();
+        if ( !( op.getLiteral() instanceof Literal ) ) {
+            String msg = "Mapping of PropertyIsLike with non-literal comparisons to SQL is not implemented yet.";
+            throw new UnsupportedOperationException( msg );
+        }
+
+        String literal = ( (Literal) op.getLiteral() ).getValue().toString();
         String escape = "" + op.getEscapeChar();
         String wildCard = "" + op.getWildCard();
         String singleChar = "" + op.getSingleChar();
@@ -515,7 +520,7 @@ public abstract class AbstractWhereBuilder {
         SQLExpression propName = toProtoSQL( op.getPropertyName() );
 
         IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
-        String sqlEncoded = specialString.toSQL( !op.getMatchCase() );
+        String sqlEncoded = specialString.toSQL( !op.isMatchCase() );
 
         if ( propName.isMultiValued() ) {
             // TODO escaping of pipe symbols
@@ -523,7 +528,7 @@ public abstract class AbstractWhereBuilder {
         }
 
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-        if ( !op.getMatchCase() ) {
+        if ( !op.isMatchCase() ) {
             builder.add( "LOWER (" + propName + ")" );
         } else {
             builder.add( propName );

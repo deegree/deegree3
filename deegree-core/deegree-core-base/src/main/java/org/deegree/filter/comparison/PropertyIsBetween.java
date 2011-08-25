@@ -66,6 +66,10 @@ public class PropertyIsBetween extends ComparisonOperator {
         this.upperBoundary = upperBoundary;
     }
 
+    public boolean isMatchCase() {
+        return isMatchCase();
+    }
+
     public Expression getExpression() {
         return expression;
     }

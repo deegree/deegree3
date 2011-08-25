@@ -38,7 +38,7 @@ package org.deegree.filter.comparison;
 import org.deegree.filter.Expression;
 
 /**
- * TODO add documentation here
+ * Abstract base class for all binary comparison operators.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -47,15 +47,20 @@ import org.deegree.filter.Expression;
  */
 public abstract class BinaryComparisonOperator extends ComparisonOperator {
 
-    protected Expression param1;
+    protected final Boolean matchCase;
 
-    protected Expression param2;
+    protected final MatchAction matchAction;
 
-    protected BinaryComparisonOperator( Expression param1, Expression param2, boolean matchCase ) {
+    protected final Expression param1;
+
+    protected final Expression param2;
+
+    protected BinaryComparisonOperator( Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction ) {
         super( matchCase );
         this.param1 = param1;
         this.param2 = param2;
         this.matchCase = matchCase;
+        this.matchAction = matchAction;
     }
 
     public Expression getParameter1() {
@@ -64,6 +69,14 @@ public abstract class BinaryComparisonOperator extends ComparisonOperator {
 
     public Expression getParameter2() {
         return param2;
+    }
+
+    public Boolean isMatchCase() {
+        return matchCase;
+    }
+
+    public MatchAction getMatchAction() {
+        return matchAction;
     }
 
     @Override

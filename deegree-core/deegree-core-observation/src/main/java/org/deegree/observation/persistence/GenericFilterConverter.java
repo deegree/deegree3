@@ -207,7 +207,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
 
     private void buildPropertyIsNullClause( QueryBuilder q, ComparisonOperator op ) {
         PropertyIsNull p = (PropertyIsNull) op;
-        String propName = p.getPropertyName().getAsText();
+        String propName = ( (PropertyName) p.getPropertyName() ).getAsText();
         String colName = columnMap.get( propName );
         q.add( colName + " IS NOT NULL" );
     }

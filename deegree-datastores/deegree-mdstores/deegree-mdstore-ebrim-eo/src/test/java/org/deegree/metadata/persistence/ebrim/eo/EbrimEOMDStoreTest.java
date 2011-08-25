@@ -212,7 +212,7 @@ public class EbrimEOMDStoreTest {
 
         Expression propName = new PropertyName( "/rim:RegistryPackage/@id", ns );
         Expression lit = new Literal<PrimitiveValue>( id_rec1 );
-        Operator rootOperator = new PropertyIsEqualTo( propName, lit, true );
+        Operator rootOperator = new PropertyIsEqualTo( propName, lit, true, null );
         Filter filter = new OperatorFilter( rootOperator );
         MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 20 );
         MetadataResultSet<RegistryObject> recordById = store.getRecords( query );
