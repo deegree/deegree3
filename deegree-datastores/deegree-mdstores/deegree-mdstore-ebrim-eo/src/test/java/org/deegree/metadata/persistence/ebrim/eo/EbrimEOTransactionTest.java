@@ -165,7 +165,8 @@ public class EbrimEOTransactionTest {
                                                                    new PrimitiveValue(
                                                                                        "urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:RP",
                                                                                        new PrimitiveType(
-                                                                                                          BaseType.STRING ) ) );
+                                                                                                          BaseType.STRING ) ),
+                                                                   null );
         Filter constraint = new OperatorFilter( new PropertyIsEqualTo( propertyName, lit, true, null ) );
         DeleteOperation deleteOp = new DeleteOperation( null, null, constraint );
         t1.performDelete( deleteOp );

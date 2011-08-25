@@ -93,8 +93,8 @@ import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.custom.CustomExpressionManager;
 import org.deegree.filter.expression.custom.CustomExpressionProvider;
 import org.deegree.filter.function.FunctionManager;
@@ -665,7 +665,7 @@ public class Filter110XMLDecoder {
         } else {
             value = new GenericXMLElement( null, null, attrs, children );
         }
-        return new Literal<TypedObjectNode>( value );
+        return new Literal<TypedObjectNode>( value, null );
     }
 
     private static GenericXMLElement parseElement( XMLStreamReader xmlStream )

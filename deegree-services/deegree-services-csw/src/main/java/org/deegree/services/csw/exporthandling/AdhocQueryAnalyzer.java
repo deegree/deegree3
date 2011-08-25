@@ -70,8 +70,8 @@ import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
@@ -327,10 +327,12 @@ public class AdhocQueryAnalyzer {
             String text = pv.getAsText();
             if ( pv.getType().getBaseType().equals( BaseType.STRING ) && text.startsWith( "$" ) ) {
                 String newValue = values.get( text.substring( 1 ) );
-                return new Literal<PrimitiveValue>( new PrimitiveValue( newValue, new PrimitiveType( BaseType.STRING ) ) );
+                return new Literal<PrimitiveValue>(
+                                                    new PrimitiveValue( newValue, new PrimitiveType( BaseType.STRING ) ),
+                                                    null );
             }
         }
-        return new Literal<TypedObjectNode>( literal.getValue() );
+        return new Literal<TypedObjectNode>( literal.getValue(), literal.getTypeName() );
     }
 
     private Expression copyExpression( Expression expr, Map<String, String> values ) {

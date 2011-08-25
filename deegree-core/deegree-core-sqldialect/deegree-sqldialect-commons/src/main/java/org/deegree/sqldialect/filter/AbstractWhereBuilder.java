@@ -489,7 +489,7 @@ public abstract class AbstractWhereBuilder {
         s = StringUtils.replaceAll( s, escapeChar, escapeChar + escapeChar );
         s = StringUtils.replaceAll( s, singleChar, escapeChar + singleChar );
         s = StringUtils.replaceAll( s, wildCard, escapeChar + wildCard );
-        Literal<PrimitiveValue> escapedLiteral = new Literal<PrimitiveValue>( new PrimitiveValue( s ) );
+        Literal<PrimitiveValue> escapedLiteral = new Literal<PrimitiveValue>( new PrimitiveValue( s ), null );
         return new PropertyIsLike( (ValueReference) propName, escapedLiteral, wildCard, singleChar, escapeChar,
                                    matchCase, null );
     }

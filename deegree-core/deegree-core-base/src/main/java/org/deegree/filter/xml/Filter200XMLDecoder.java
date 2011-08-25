@@ -691,7 +691,7 @@ public class Filter200XMLDecoder {
         } else {
             value = new GenericXMLElement( null, null, attrs, children );
         }
-        return new Literal<TypedObjectNode>( value );
+        return new Literal<TypedObjectNode>( value, null );
     }
 
     private static GenericXMLElement parseElement( XMLStreamReader xmlStream )

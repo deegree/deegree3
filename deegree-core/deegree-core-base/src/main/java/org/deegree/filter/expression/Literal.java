@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
@@ -45,6 +47,7 @@ import org.deegree.filter.XPathEvaluator;
  * 
  * @param <V>
  *            type of the contained value, in most cases {@link PrimitiveValue}
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
@@ -52,11 +55,14 @@ import org.deegree.filter.XPathEvaluator;
  */
 public class Literal<V extends TypedObjectNode> implements Expression {
 
-    private V value;
+    private final V value;
+
+    private final QName type;
 
     @SuppressWarnings("unchecked")
     public Literal( String value ) {
         this.value = (V) new PrimitiveValue( value );
+        this.type = null;
     }
 
     /**
@@ -64,9 +70,12 @@ public class Literal<V extends TypedObjectNode> implements Expression {
      * 
      * @param value
      *            value of the literal
+     * @param type
+     *            name of the type, can be <code>null</code>
      */
-    public Literal( V value ) {
+    public Literal( V value, QName type ) {
         this.value = value;
+        this.type = type;
     }
 
     /**
@@ -76,6 +85,15 @@ public class Literal<V extends TypedObjectNode> implements Expression {
      */
     public V getValue() {
         return value;
+    }
+
+    /**
+     * Returns the name of the value type.
+     * 
+     * @return the name of the value type, can be <code>null</code> (no explicit type information available)
+     */
+    public QName getTypeName() {
+        return type;
     }
 
     @Override
