@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>deegree-processprovider-jrxml</artifactId>
 	<packaging>jar</packaging>
@@ -10,36 +11,53 @@
 		<version>3.1-pre13-SNAPSHOT</version>
 	</parent>
 
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+	<repositories>
+		<repository>
+			<id>deegree-repo</id>
+			<url>http://artefacts.deegree.org/repo</url>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>1.3</version>
+				<version>1.3.1</version>
 				<executions>
 					<execution>
+						<id>process-schema</id>
 						<goals>
 							<goal>xjc</goal>
 						</goals>
+						<configuration>
+							<staleFile>${project.build.directory}/generated-sources/process/.xjcStaleFlag</staleFile>
+							<schemaFiles>processes/jrxml/0.1.0/jrxmlProcess.xsd</schemaFiles>
+							<schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
+							<packageName>org.deegree.services.wps.provider.jrxml.jaxb.process</packageName>
+        					<outputDirectory>${project.build.directory}/generated-sources/process</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>map-schema</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<staleFile>${project.build.directory}/generated-sources/map/.xjcStaleFlag</staleFile>
+							<packageName>org.deegree.services.wps.provider.jrxml.jaxb.map</packageName> 
+							<schemaFiles>map/0.1.0/map.xsd</schemaFiles>
+							<schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
+        					<outputDirectory>${project.build.directory}/generated-sources/map</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<schemaFiles>processes/jrxml/0.1.0/jrxmlProcess.xsd</schemaFiles>
-					<schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

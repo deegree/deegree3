@@ -51,8 +51,8 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
-import org.deegree.services.wps.provider.jrxml.jaxb.JrxmlProcesses;
-import org.deegree.services.wps.provider.jrxml.jaxb.JrxmlProcesses.JrxmlProcess;
+import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcesses;
+import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcesses.JrxmlProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
