@@ -35,11 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
- * {@link Filter} that matches objects with certain ids.
+ * {@link Filter} that matches resources by {@link ResourceId}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -48,29 +50,49 @@ import java.util.Set;
  */
 public class IdFilter implements Filter {
 
-    private Set<String> matchingIds;
+    private final List<ResourceId> selectedIds;
+
+    private final Set<String> stringIds = new LinkedHashSet<String>();
 
     /**
-     * Creates a new {@link IdFilter} that matches the objects with the given ids.
+     * Creates a new {@link IdFilter} that selects the resources with the given ids.
      * 
      * @param ids
-     *            ids of the objects that the filter will match
+     *            ids of the resources that the filter will selects, must not be <code>null</code>
      */
-    public IdFilter( String... ids ) {
-        this.matchingIds = new HashSet<String>();
-        for ( String id : ids ) {
-            matchingIds.add( id );
+    public IdFilter( String... selectedIds ) {
+        this.selectedIds = new ArrayList<ResourceId>( selectedIds.length );
+        for ( String id : selectedIds ) {
+            this.selectedIds.add( new ResourceId( id, null, null, null, null ) );
+            stringIds.add( id );
         }
     }
 
     /**
-     * Creates a new {@link IdFilter} that matches the objects with the given ids.
+     * Creates a new {@link IdFilter} that selects the resources with the given ids.
      * 
-     * @param matchingIds
-     *            ids of the objects that the filter will match
+     * @param ids
+     *            ids of the resources that the filter will selects, must not be <code>null</code>
      */
-    public IdFilter( Set<String> matchingIds ) {
-        this.matchingIds = matchingIds;
+    public IdFilter( Set<String> selectedIds ) {
+        this.selectedIds = new ArrayList<ResourceId>( selectedIds.size() );
+        for ( String id : selectedIds ) {
+            this.selectedIds.add( new ResourceId( id, null, null, null, null ) );
+            stringIds.add( id );
+        }
+    }
+
+    /**
+     * Creates a new {@link IdFilter} that selects the resources with the given ids.
+     * 
+     * @param selectedIds
+     *            ids of the resources that the filter will selects, must not be <code>null</code>
+     */
+    public IdFilter( List<ResourceId> selectedIds ) {
+        this.selectedIds = selectedIds;
+        for ( ResourceId id : selectedIds ) {
+            stringIds.add( id.getRid() );
+        }
     }
 
     /**
@@ -84,12 +106,22 @@ public class IdFilter implements Filter {
     }
 
     /**
+     * Returns the ids of the resources that this filter selects.
+     * 
+     * @return the ids of the resources that this filter selects
+     */
+    public List<ResourceId> getSelectedIds() {
+        return selectedIds;
+    }
+
+    /**
      * Returns the ids of the objects that this filter matches.
      * 
      * @return the ids of the objects that this filter matches
+     * @deprecated use {@link #getSelectedIds()} instead
      */
     public Set<String> getMatchingIds() {
-        return matchingIds;
+        return stringIds;
     }
 
     @Override
@@ -98,7 +130,7 @@ public class IdFilter implements Filter {
 
         String id = xpathEvaluator.getId( obj );
         if ( id != null ) {
-            return matchingIds.contains( id );
+            return stringIds.contains( id );
         }
         return false;
     }

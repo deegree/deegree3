@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
-import static java.sql.Types.TIME;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;

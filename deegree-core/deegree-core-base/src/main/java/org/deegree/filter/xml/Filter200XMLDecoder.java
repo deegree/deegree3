@@ -45,10 +45,10 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,11 +56,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
@@ -68,14 +68,15 @@ import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPathUtils;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.ResourceId;
 import org.deegree.filter.comparison.BinaryComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator.SubType;
@@ -125,28 +126,32 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Decodes XML fragments that comply to the <a href="http://www.opengeospatial.org/standards/filter">OGC Filter Encoding
- * Specification</a> 1.1.0.
+ * Specification</a> 2.0.0.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class Filter110XMLDecoder {
+public class Filter200XMLDecoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Filter110XMLDecoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( Filter200XMLDecoder.class );
 
-    private static final String OGC_NS = "http://www.opengis.net/ogc";
+    private static final String FES_NS = "http://www.opengis.net/fes/2.0";
 
     private static final String GML_NS = "http://www.opengis.net/gml";
 
-    private static final QName FEATURE_ID_ELEMENT = new QName( OGC_NS, "FeatureId" );
+    private static final QName RESOURCE_ID_ELEMENT = new QName( FES_NS, "ResourceId" );
 
-    private static final QName FID_ATTR_NAME = new QName( "fid" );
+    private static final QName RID_ATTR_NAME = new QName( "rid" );
 
-    private static final QName GML_OBJECT_ID_ELEMENT = new QName( OGC_NS, "GmlObjectId" );
+    private static final QName PREVIOUS_RID_ATTR_NAME = new QName( "previousRid" );
 
-    private static final QName GML_ID_ATTR_NAME = new QName( GML_NS, "id" );
+    private static final QName VERSION_ATTR_NAME = new QName( "version" );
+
+    private static final QName START_DATE_ATTR_NAME = new QName( "startDate" );
+
+    private static final QName END_DATE_ATTR_NAME = new QName( "endDate" );
 
     private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
 
@@ -169,13 +174,13 @@ public class Filter110XMLDecoder {
     static {
 
         // element name <-> expression type
-        addElementToExpressionMapping( new QName( OGC_NS, "Add" ), Expression.Type.ADD );
-        addElementToExpressionMapping( new QName( OGC_NS, "Sub" ), Expression.Type.SUB );
-        addElementToExpressionMapping( new QName( OGC_NS, "Mul" ), Expression.Type.MUL );
-        addElementToExpressionMapping( new QName( OGC_NS, "Div" ), Expression.Type.DIV );
-        addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
-        addElementToExpressionMapping( new QName( OGC_NS, "Function" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
+        addElementToExpressionMapping( new QName( FES_NS, "Add" ), Expression.Type.ADD );
+        addElementToExpressionMapping( new QName( FES_NS, "Sub" ), Expression.Type.SUB );
+        addElementToExpressionMapping( new QName( FES_NS, "Mul" ), Expression.Type.MUL );
+        addElementToExpressionMapping( new QName( FES_NS, "Div" ), Expression.Type.DIV );
+        addElementToExpressionMapping( new QName( FES_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
+        addElementToExpressionMapping( new QName( FES_NS, "Function" ), Expression.Type.FUNCTION );
+        addElementToExpressionMapping( new QName( FES_NS, "Literal" ), Expression.Type.LITERAL );
 
         // element name <-> expression type (custom expressions)
         for ( CustomExpressionProvider ce : CustomExpressionManager.getCustomExpressions().values() ) {
@@ -183,41 +188,41 @@ public class Filter110XMLDecoder {
         }
 
         // element name <-> spatial operator type
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Beyond" ), SpatialOperator.SubType.BEYOND );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Contains" ), SpatialOperator.SubType.CONTAINS );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Crosses" ), SpatialOperator.SubType.CROSSES );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Equals" ), SpatialOperator.SubType.EQUALS );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Disjoint" ), SpatialOperator.SubType.DISJOINT );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "DWithin" ), SpatialOperator.SubType.DWITHIN );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Intersects" ), SpatialOperator.SubType.INTERSECTS );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Overlaps" ), SpatialOperator.SubType.OVERLAPS );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Touches" ), SpatialOperator.SubType.TOUCHES );
-        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Within" ), SpatialOperator.SubType.WITHIN );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Beyond" ), SpatialOperator.SubType.BEYOND );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Contains" ), SpatialOperator.SubType.CONTAINS );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Crosses" ), SpatialOperator.SubType.CROSSES );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Equals" ), SpatialOperator.SubType.EQUALS );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Disjoint" ), SpatialOperator.SubType.DISJOINT );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "DWithin" ), SpatialOperator.SubType.DWITHIN );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Intersects" ), SpatialOperator.SubType.INTERSECTS );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Overlaps" ), SpatialOperator.SubType.OVERLAPS );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Touches" ), SpatialOperator.SubType.TOUCHES );
+        addElementToSpatialOperatorMapping( new QName( FES_NS, "Within" ), SpatialOperator.SubType.WITHIN );
 
         // element name <-> logical operator type
-        addElementToLogicalOperatorMapping( new QName( OGC_NS, "And" ), LogicalOperator.SubType.AND );
-        addElementToLogicalOperatorMapping( new QName( OGC_NS, "Or" ), LogicalOperator.SubType.OR );
-        addElementToLogicalOperatorMapping( new QName( OGC_NS, "Not" ), LogicalOperator.SubType.NOT );
+        addElementToLogicalOperatorMapping( new QName( FES_NS, "And" ), LogicalOperator.SubType.AND );
+        addElementToLogicalOperatorMapping( new QName( FES_NS, "Or" ), LogicalOperator.SubType.OR );
+        addElementToLogicalOperatorMapping( new QName( FES_NS, "Not" ), LogicalOperator.SubType.NOT );
 
         // element name <-> comparison operator type
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsBetween" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsBetween" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_BETWEEN );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsEqualTo" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsEqualTo" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_EQUAL_TO );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsGreaterThan" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsGreaterThan" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_GREATER_THAN );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsGreaterThanOrEqualTo" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsGreaterThanOrEqualTo" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLessThan" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsLessThan" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_LESS_THAN );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLessThanOrEqualTo" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsLessThanOrEqualTo" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_LESS_THAN_OR_EQUAL_TO );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLike" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsLike" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_LIKE );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsNotEqualTo" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsNotEqualTo" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_NOT_EQUAL_TO );
-        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsNull" ),
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsNull" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_NULL );
     }
 
@@ -245,33 +250,34 @@ public class Filter110XMLDecoder {
     }
 
     /**
-     * Returns the object representation for the given <code>wfs:Filter</code> element event that the cursor of the
-     * associated <code>XMLStreamReader</code> points at.
+     * Returns the object representation for the given <code>fes:Filter</code> element event that the cursor of the
+     * given <code>XMLStreamReader</code> points at.
      * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Filter&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/wfs:Filter&gt;)</li>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:Filter&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:Filter&gt;)</li>
      * </ul>
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Filter&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/wfs:Filter&gt;) afterwards
-     * @return corresponding {@link Filter} object
+     *            must not be <code>null</code> and cursor must point at the <code>START_ELEMENT</code> event
+     *            (&lt;fes:Filter&gt;), points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:Filter&gt;)
+     *            afterwards
+     * @return corresponding {@link Filter} object, never <code>null</code>
      * @throws XMLParsingException
-     *             if the element is not a valid "wfs:Filter" element
+     *             if the element is not a valid "fes:Filter" element
      * @throws XMLStreamException
      */
     public static Filter parse( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
 
         Filter filter = null;
-        xmlStream.require( START_ELEMENT, OGC_NS, "Filter" );
+        xmlStream.require( START_ELEMENT, FES_NS, "Filter" );
         nextElement( xmlStream );
         if ( xmlStream.getEventType() != START_ELEMENT ) {
             throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_FILTER_EMPTY",
-                                                                           new QName( OGC_NS, "Filter" ) ) );
+                                                                           new QName( FES_NS, "Filter" ) ) );
         }
         QName elementName = xmlStream.getName();
-        if ( GML_OBJECT_ID_ELEMENT.equals( elementName ) || FEATURE_ID_ELEMENT.equals( elementName ) ) {
+        if ( RESOURCE_ID_ELEMENT.equals( elementName ) ) {
             LOG.debug( "Building id filter" );
             filter = parseIdFilter( xmlStream );
         } else {
@@ -281,7 +287,7 @@ public class Filter110XMLDecoder {
             nextElement( xmlStream );
         }
 
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "Filter" );
+        xmlStream.require( END_ELEMENT, FES_NS, "Filter" );
         return filter;
     }
 
@@ -407,7 +413,7 @@ public class Filter110XMLDecoder {
     public static Function parseFunction( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
+        xmlStream.require( START_ELEMENT, FES_NS, "Function" );
         String name = getRequiredAttributeValue( xmlStream, "name" );
         nextElement( xmlStream );
         List<Expression> params = new ArrayList<Expression>();
@@ -415,7 +421,7 @@ public class Filter110XMLDecoder {
             params.add( parseExpression( xmlStream ) );
             nextElement( xmlStream );
         }
-        xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
+        xmlStream.require( END_ELEMENT, FES_NS, "Function" );
 
         Function function = null;
         FunctionProvider cf = FunctionManager.getFunctionProvider( name );
@@ -561,51 +567,43 @@ public class Filter110XMLDecoder {
     private static IdFilter parseIdFilter( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        Set<String> matchingIds = new HashSet<String>();
-
-        // needed to check that only one type of identifier elements occur, OGC 04-095, 11.2, p.15
-        QName lastIdElement = null;
+        List<ResourceId> matchingIds = new ArrayList<ResourceId>();
 
         while ( xmlStream.getEventType() == START_ELEMENT ) {
-            QName childElementName = xmlStream.getName();
-            if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) ) {
-                if ( lastIdElement != null && !lastIdElement.equals( GML_OBJECT_ID_ELEMENT ) ) {
-                    String msg = Messages.getMessage( "FILTER_PARSER_ONLY_ONE_TYPE_OF_IDS" );
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-                lastIdElement = GML_OBJECT_ID_ELEMENT;
-                String id = xmlStream.getAttributeValue( GML_NS, "id" );
-                if ( id == null || id.length() == 0 ) {
-                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", GML_OBJECT_ID_ELEMENT,
-                                                      GML_ID_ATTR_NAME );
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-                matchingIds.add( id );
-                nextElement( xmlStream );
-                xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "GmlObjectId" );
-            } else if ( FEATURE_ID_ELEMENT.equals( childElementName ) ) {
-                if ( lastIdElement != null && !lastIdElement.equals( FEATURE_ID_ELEMENT ) ) {
-                    String msg = Messages.getMessage( "FILTER_PARSER_ONLY_ONE_TYPE_OF_IDS" );
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-                lastIdElement = FEATURE_ID_ELEMENT;
-                String id = xmlStream.getAttributeValue( null, "fid" );
-                if ( id == null || id.length() == 0 ) {
-                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", FEATURE_ID_ELEMENT,
-                                                      FID_ATTR_NAME );
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-                matchingIds.add( id );
-                nextElement( xmlStream );
-                xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "FeatureId" );
-            } else {
-                String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", childElementName,
-                                                  GML_OBJECT_ID_ELEMENT, FEATURE_ID_ELEMENT );
-                throw new XMLParsingException( xmlStream, msg );
-            }
+            matchingIds.add( parseAbstractId( xmlStream ) );
             nextElement( xmlStream );
         }
         return new IdFilter( matchingIds );
+    }
+
+    private static ResourceId parseAbstractId( XMLStreamReader xmlStream ) {
+        if ( !RESOURCE_ID_ELEMENT.equals( xmlStream.getName() ) ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+                                              RESOURCE_ID_ELEMENT, RESOURCE_ID_ELEMENT );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        String rid = getRequiredAttributeValue( xmlStream, "rid" );
+        String previousRid = xmlStream.getAttributeValue( null, "previousRid" );
+        String version = xmlStream.getAttributeValue( null, "version" );
+        DateTime startDate = null;
+        String startDateString = xmlStream.getAttributeValue( null, "startDate" );
+        if ( startDateString != null ) {
+            try {
+                startDate = new DateTime( startDateString );
+            } catch ( ParseException e ) {
+                throw new XMLParsingException( xmlStream, e.getMessage() );
+            }
+        }
+        DateTime endDate = null;
+        String endDateString = xmlStream.getAttributeValue( null, "endDate" );
+        if ( endDateString != null ) {
+            try {
+                endDate = new DateTime( endDateString );
+            } catch ( ParseException e ) {
+                throw new XMLParsingException( xmlStream, e.getMessage() );
+            }
+        }
+        return new ResourceId( rid, previousRid, version, startDate, endDate );
     }
 
     private static ComparisonOperator parseBinaryComparisonOperator( XMLStreamReader xmlStream, SubType type )
@@ -696,13 +694,13 @@ public class Filter110XMLDecoder {
 
     private static PropertyName parsePropertyName( XMLStreamReader xmlStream, boolean permitEmpty )
                             throws XMLStreamException {
-        requireStartElement( xmlStream, Collections.singleton( new QName( OGC_NS, "PropertyName" ) ) );
+        requireStartElement( xmlStream, Collections.singleton( new QName( FES_NS, "PropertyName" ) ) );
         String xpath = xmlStream.getElementText().trim();
         if ( !permitEmpty && xpath.isEmpty() ) {
             // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
             // GetObservation100XMLAdapter gets an exception from here as the compliance of the SOS hangs on it's thread
             throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_PROPERTY_NAME_EMPTY",
-                                                                           new QName( OGC_NS, "PropertyName" ) ) );
+                                                                           new QName( FES_NS, "PropertyName" ) ) );
         }
         if ( xpath.isEmpty() ) {
             return null;
@@ -721,13 +719,13 @@ public class Filter110XMLDecoder {
         Expression expression = parseExpression( xmlStream );
 
         nextElement( xmlStream );
-        xmlStream.require( START_ELEMENT, OGC_NS, "LowerBoundary" );
+        xmlStream.require( START_ELEMENT, FES_NS, "LowerBoundary" );
         nextElement( xmlStream );
         Expression lowerBoundary = parseExpression( xmlStream );
         nextElement( xmlStream );
 
         nextElement( xmlStream );
-        xmlStream.require( START_ELEMENT, OGC_NS, "UpperBoundary" );
+        xmlStream.require( START_ELEMENT, FES_NS, "UpperBoundary" );
         nextElement( xmlStream );
         Expression upperBoundary = parseExpression( xmlStream );
         nextElement( xmlStream );
@@ -840,7 +838,7 @@ public class Filter110XMLDecoder {
                 // first parameter: 'ogc:PropertyName' (can be empty / omitted completely
                 // wfs-1.1.0-Basic-GetFeature-tc200.2)
                 PropertyName param1 = null;
-                if ( new QName( OGC_NS, "PropertyName" ).equals( xmlStream.getName() ) ) {
+                if ( new QName( FES_NS, "PropertyName" ).equals( xmlStream.getName() ) ) {
                     param1 = parsePropertyName( xmlStream, true );
                     nextElement( xmlStream );
                 }
@@ -859,7 +857,7 @@ public class Filter110XMLDecoder {
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 // third parameter: 'ogc:Distance'
                 nextElement( xmlStream );
-                xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
+                xmlStream.require( START_ELEMENT, FES_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
                 String distanceValue = xmlStream.getElementText();
                 Measure distance = new Measure( distanceValue, distanceUnits );
@@ -911,7 +909,7 @@ public class Filter110XMLDecoder {
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 // third parameter: 'ogc:Distance'
                 nextElement( xmlStream );
-                xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
+                xmlStream.require( START_ELEMENT, FES_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
                 String distanceValue = xmlStream.getElementText();
                 Measure distance = new Measure( distanceValue, distanceUnits );

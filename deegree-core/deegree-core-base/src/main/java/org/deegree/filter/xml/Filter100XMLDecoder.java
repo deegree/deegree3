@@ -120,7 +120,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>Filter100XMLDecoder</code> class is identical to {@link Filter110XMLDecoder} except for:
+ * Decodes XML fragments that comply to the <a href="http://www.opengeospatial.org/standards/filter">OGC Filter Encoding
+ * Specification</a> 1.0.0.
  * 
  * <ul>
  * <li>the v1.1.0 element 'Envelope' was in v1.0.0 called 'Box'</li>
@@ -663,7 +664,7 @@ public class Filter100XMLDecoder {
             int eventType = xmlStream.getEventType();
             if ( eventType == START_ELEMENT ) {
                 children.add( parseElement( xmlStream ) );
-            } else if ( eventType == CHARACTERS ) {
+            } else if ( eventType == CHARACTERS || eventType == CDATA ) {
                 children.add( new PrimitiveValue( xmlStream.getText() ) );
             }
         }
