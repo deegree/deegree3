@@ -525,7 +525,7 @@ public class FeatureLayer extends Layer {
                     final String min = formatISO8601DateWOMS( (Date) iv.min );
                     final String max = formatISO8601DateWOMS( (Date) iv.max );
                     os[i++] = new PropertyIsBetween( property, new Literal<PrimitiveValue>( min ),
-                                                     new Literal<PrimitiveValue>( max ), false );
+                                                     new Literal<PrimitiveValue>( max ), false, null );
                 } else if ( o.toString().equalsIgnoreCase( "current" ) ) {
                     if ( !time.getCurrent() ) {
                         throw new InvalidDimensionValue( "time", "current" );
@@ -611,7 +611,7 @@ public class FeatureLayer extends Layer {
                         max = ( (Number) iv.max ).toString();
                     }
                     os[i++] = new PropertyIsBetween( property, new Literal<PrimitiveValue>( min ),
-                                                     new Literal<PrimitiveValue>( max ), false );
+                                                     new Literal<PrimitiveValue>( max ), false, null );
                 } else {
                     if ( dim.getNearestValue() ) {
                         Object nearest = dim.getNearestValue( o );

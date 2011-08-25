@@ -54,8 +54,8 @@ public class PropertyIsNil extends ComparisonOperator {
 
     private final Expression propName;
 
-    public PropertyIsNil( Expression propName, String nilReason ) {
-        super( true );
+    public PropertyIsNil( Expression propName, String nilReason, MatchAction matchAction ) {
+        super( true, matchAction );
         this.propName = propName;
     }
 

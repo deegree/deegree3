@@ -52,8 +52,8 @@ public class PropertyIsNull extends ComparisonOperator {
 
     private final Expression propName;
 
-    public PropertyIsNull( Expression propName ) {
-        super( true );
+    public PropertyIsNull( Expression propName, MatchAction matchAction ) {
+        super( true, matchAction );
         this.propName = propName;
     }
 

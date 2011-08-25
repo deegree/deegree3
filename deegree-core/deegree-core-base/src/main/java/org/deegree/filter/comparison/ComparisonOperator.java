@@ -54,10 +54,13 @@ import org.deegree.filter.i18n.Messages;
  */
 public abstract class ComparisonOperator implements Operator {
 
-    protected boolean matchCase;
+    protected final Boolean matchCase;
 
-    protected ComparisonOperator( boolean matchCase ) {
+    protected final MatchAction matchAction;
+
+    protected ComparisonOperator( Boolean matchCase, MatchAction matchAction ) {
         this.matchCase = matchCase;
+        this.matchAction = matchAction;
     }
 
     public enum SubType {
@@ -68,6 +71,14 @@ public abstract class ComparisonOperator implements Operator {
         return Type.COMPARISON;
     }
 
+    public Boolean isMatchCase() {
+        return matchCase;
+    }
+
+    public MatchAction getMatchAction() {
+        return matchAction;
+    }
+    
     public abstract SubType getSubType();
 
     /**

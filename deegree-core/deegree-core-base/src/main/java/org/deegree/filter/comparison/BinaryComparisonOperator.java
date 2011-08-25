@@ -47,20 +47,14 @@ import org.deegree.filter.Expression;
  */
 public abstract class BinaryComparisonOperator extends ComparisonOperator {
 
-    protected final Boolean matchCase;
-
-    protected final MatchAction matchAction;
-
     protected final Expression param1;
 
     protected final Expression param2;
 
     protected BinaryComparisonOperator( Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction ) {
-        super( matchCase );
+        super( matchCase, matchAction );
         this.param1 = param1;
         this.param2 = param2;
-        this.matchCase = matchCase;
-        this.matchAction = matchAction;
     }
 
     public Expression getParameter1() {
@@ -69,14 +63,6 @@ public abstract class BinaryComparisonOperator extends ComparisonOperator {
 
     public Expression getParameter2() {
         return param2;
-    }
-
-    public Boolean isMatchCase() {
-        return matchCase;
-    }
-
-    public MatchAction getMatchAction() {
-        return matchAction;
     }
 
     @Override

@@ -59,15 +59,11 @@ public class PropertyIsBetween extends ComparisonOperator {
     private final Expression expression;
 
     public PropertyIsBetween( Expression expression, Expression lowerBoundary, Expression upperBoundary,
-                              boolean matchCase ) {
-        super( matchCase );
+                              boolean matchCase, MatchAction matchAction ) {
+        super( matchCase, matchAction );
         this.expression = expression;
         this.lowerBoundary = lowerBoundary;
         this.upperBoundary = upperBoundary;
-    }
-
-    public boolean isMatchCase() {
-        return isMatchCase();
     }
 
     public Expression getExpression() {

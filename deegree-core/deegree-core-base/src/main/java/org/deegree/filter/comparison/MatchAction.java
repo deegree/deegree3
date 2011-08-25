@@ -49,6 +49,6 @@ public enum MatchAction {
     ALL,
     /** Match if one or more of the values in the collection satisfy the predicate */
     ANY,
-    /** Match if no values in the collection satisfy the predicate */
-    NONE
+    /** Match if exactly one value in the collection satisfies the predicate */
+    ONE
 }

@@ -36,7 +36,7 @@
 package org.deegree.filter;
 
 /**
- * {@link Filter} that matches objects which test positively against an expression built from operators.
+ * {@link Filter} that selects objects that test positively against {@link Operator}-based expressions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

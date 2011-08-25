@@ -68,8 +68,8 @@ import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPathUtils;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -733,7 +733,7 @@ public class Filter110XMLDecoder {
         nextElement( xmlStream );
         nextElement( xmlStream );
 
-        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase );
+        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase, null );
     }
 
     private static PropertyIsLike parsePropertyIsLikeOperator( XMLStreamReader xmlStream )
@@ -752,7 +752,7 @@ public class Filter110XMLDecoder {
         nextElement( xmlStream );
         Literal<?> literal = parseLiteral( xmlStream );
         nextElement( xmlStream );
-        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase );
+        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase, null );
     }
 
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
@@ -760,7 +760,7 @@ public class Filter110XMLDecoder {
         nextElement( xmlStream );
         PropertyName propName = parsePropertyName( xmlStream, false );
         nextElement( xmlStream );
-        return new PropertyIsNull( propName );
+        return new PropertyIsNull( propName, null );
     }
 
     private static LogicalOperator parseLogicalOperator( XMLStreamReader xmlStream )

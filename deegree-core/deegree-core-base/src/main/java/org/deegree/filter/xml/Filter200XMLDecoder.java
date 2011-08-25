@@ -44,6 +44,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeVa
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
+import static org.deegree.filter.comparison.MatchAction.ALL;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -88,6 +89,7 @@ import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLessThan;
 import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
+import org.deegree.filter.comparison.PropertyIsNil;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Add;
@@ -225,6 +227,8 @@ public class Filter200XMLDecoder {
                                                ComparisonOperator.SubType.PROPERTY_IS_NOT_EQUAL_TO );
         addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsNull" ),
                                                ComparisonOperator.SubType.PROPERTY_IS_NULL );
+        addElementToComparisonOperatorMapping( new QName( FES_NS, "PropertyIsNil" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_NIL );
     }
 
     private static void addElementToExpressionMapping( QName elementName, Expression.Type type ) {
@@ -464,20 +468,21 @@ public class Filter200XMLDecoder {
     }
 
     /**
-     * Returns the object representation for the given <code>ogc:comparisonOps</code> element event that the cursor of
-     * the associated <code>XMLStreamReader</code> points at.
+     * Returns the object representation for the given <code>fes:comparisonOps</code> element event that the cursor of
+     * the given <code>XMLStreamReader</code> points at.
      * <p>
      * The element must be one of the following:
      * <ul>
-     * <li>ogc:PropertyIsEqualTo</li>
-     * <li>ogc:PropertyIsGreaterThan</li>
-     * <li>ogc:PropertyIsGreaterThanOrEqualTo</li>
-     * <li>ogc:PropertyIsLessThan</li>
-     * <li>ogc:PropertyIsLessThanOrEqualTo</li>
-     * <li>ogc:PropertyIsNotEqualTo</li>
-     * <li>ogc:PropertyIsBetween</li>
-     * <li>ogc:PropertyIsLike</li>
-     * <li>ogc:PropertyIsNull</li>
+     * <li>fes:PropertyIsEqualTo</li>
+     * <li>fes:PropertyIsGreaterThan</li>
+     * <li>fes:PropertyIsGreaterThanOrEqualTo</li>
+     * <li>fes:PropertyIsLessThan</li>
+     * <li>fes:PropertyIsLessThanOrEqualTo</li>
+     * <li>fes:PropertyIsNotEqualTo</li>
+     * <li>fes:PropertyIsBetween</li>
+     * <li>fes:PropertyIsLike</li>
+     * <li>fes:PropertyIsNull</li>
+     * <li>fes:PropertyIsNil</li>
      * </ul>
      * </p>
      * <p>
@@ -489,9 +494,10 @@ public class Filter200XMLDecoder {
      * </p>
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:comparisonOps&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:comparisonOps&gt;) afterwards
-     * @return corresponding {@link Expression} object
+     *            must not be <code>null</code> and cursor must point at the <code>START_ELEMENT</code> event
+     *            (&lt;fes:comparisonOps&gt;), points at the corresponding <code>END_ELEMENT</code> event
+     *            (&lt;/fes:comparisonOps&gt;) afterwards
+     * @return corresponding {@link ComparisonOperator} object, never <code>null</code>
      * @throws XMLParsingException
      *             if the element is not a valid "ogc:comparisonOps" element
      * @throws XMLStreamException
@@ -528,6 +534,9 @@ public class Filter200XMLDecoder {
             break;
         case PROPERTY_IS_NULL:
             comparisonOperator = parsePropertyIsNullOperator( xmlStream );
+            break;
+        case PROPERTY_IS_NIL:
+            comparisonOperator = parsePropertyIsNilOperator( xmlStream );
             break;
         }
         return comparisonOperator;
@@ -568,13 +577,12 @@ public class Filter200XMLDecoder {
     private static IdFilter parseIdFilter( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        List<ResourceId> matchingIds = new ArrayList<ResourceId>();
-
+        List<ResourceId> selectedIds = new ArrayList<ResourceId>();
         while ( xmlStream.getEventType() == START_ELEMENT ) {
-            matchingIds.add( parseAbstractId( xmlStream ) );
+            selectedIds.add( parseAbstractId( xmlStream ) );
             nextElement( xmlStream );
         }
-        return new IdFilter( matchingIds );
+        return new IdFilter( selectedIds );
     }
 
     private static ResourceId parseAbstractId( XMLStreamReader xmlStream ) {
@@ -612,8 +620,14 @@ public class Filter200XMLDecoder {
 
         BinaryComparisonOperator comparisonOperator = null;
 
-        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+        // TODO should this be null, if not present?
+        Boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+
         MatchAction matchAction = null;
+        String s = XMLStreamUtils.getAttributeValue( xmlStream, "matchAction" );
+        if ( s != null ) {
+            matchAction = parseMatchAction( xmlStream, s );
+        }
 
         XMLStreamUtils.requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter1 = parseExpression( xmlStream );
@@ -644,6 +658,18 @@ public class Filter200XMLDecoder {
             assert false;
         }
         return comparisonOperator;
+    }
+
+    private static MatchAction parseMatchAction( XMLStreamReader xmlStream, String matchAction ) {
+        if ( "All".equals( matchAction ) )
+            return ALL;
+        if ( "Any".equals( matchAction ) )
+            return MatchAction.ANY;
+        if ( "One".equals( matchAction ) )
+            return MatchAction.ONE;
+        String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_VALUE", matchAction,
+                                          ArrayUtils.join( ",", "All", "Any", "None" ) );
+        throw new XMLParsingException( xmlStream, msg );
     }
 
     private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
@@ -714,8 +740,15 @@ public class Filter200XMLDecoder {
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        // this is a deegree extension over Filter 1.1.0 spec.
-        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+        // this is a deegree extension over Filter 2.0.0 spec. (TODO should this be null, if not present?)
+        Boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+
+        // this is a deegree extension over Filter 2.0.0 spec. (TODO should this be null, if not present?)
+        MatchAction matchAction = null;
+        String s = XMLStreamUtils.getAttributeValue( xmlStream, "matchAction" );
+        if ( s != null ) {
+            matchAction = parseMatchAction( xmlStream, s );
+        }
 
         nextElement( xmlStream );
         Expression expression = parseExpression( xmlStream );
@@ -733,7 +766,7 @@ public class Filter200XMLDecoder {
         nextElement( xmlStream );
         nextElement( xmlStream );
 
-        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase );
+        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase, matchAction );
     }
 
     private static PropertyIsLike parsePropertyIsLikeOperator( XMLStreamReader xmlStream )
@@ -752,7 +785,7 @@ public class Filter200XMLDecoder {
         nextElement( xmlStream );
         Literal<?> literal = parseLiteral( xmlStream );
         nextElement( xmlStream );
-        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase );
+        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase, null );
     }
 
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
@@ -760,7 +793,16 @@ public class Filter200XMLDecoder {
         nextElement( xmlStream );
         PropertyName propName = parsePropertyName( xmlStream, false );
         nextElement( xmlStream );
-        return new PropertyIsNull( propName );
+        return new PropertyIsNull( propName, null );
+    }
+
+    private static PropertyIsNil parsePropertyIsNilOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        String nilReason = XMLStreamUtils.getAttributeValue( xmlStream, "nilReason" );
+        nextElement( xmlStream );
+        PropertyName propName = parsePropertyName( xmlStream, false );
+        nextElement( xmlStream );
+        return new PropertyIsNil( propName, nilReason, null );
     }
 
     private static LogicalOperator parseLogicalOperator( XMLStreamReader xmlStream )

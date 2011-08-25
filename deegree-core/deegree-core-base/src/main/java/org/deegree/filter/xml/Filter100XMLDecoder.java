@@ -719,7 +719,7 @@ public class Filter100XMLDecoder {
 
         nextElement( xmlStream ); // </ expression >
         nextElement( xmlStream ); // </UowerBoundary>
-        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase );
+        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase, null );
     }
 
     private static PropertyIsLike parsePropertyIsLikeOperator( XMLStreamReader xmlStream )
@@ -738,7 +738,7 @@ public class Filter100XMLDecoder {
         nextElement( xmlStream );
         Literal<?> literal = parseLiteral( xmlStream );
         nextElement( xmlStream );
-        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase );
+        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase, null );
     }
 
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
@@ -746,7 +746,7 @@ public class Filter100XMLDecoder {
         nextElement( xmlStream );
         PropertyName propName = parsePropertyName( xmlStream );
         nextElement( xmlStream );
-        return new PropertyIsNull( propName );
+        return new PropertyIsNull( propName, null );
     }
 
     private static LogicalOperator parseLogicalOperator( XMLStreamReader xmlStream )

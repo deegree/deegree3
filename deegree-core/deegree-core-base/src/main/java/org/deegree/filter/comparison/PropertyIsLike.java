@@ -65,18 +65,18 @@ public class PropertyIsLike extends ComparisonOperator {
     private final boolean matchCase;
 
     /**
-     * @param propName
-     * @param literal
+     * @param testValue
+     * @param pattern
      * @param wildCard
      * @param singleChar
      * @param escapeChar
      * @param matchCase
      */
-    public PropertyIsLike( Expression propName, Expression literal, String wildCard, String singleChar,
-                           String escapeChar, Boolean matchCase ) {
-        super( matchCase );
-        this.propName = propName;
-        this.literal = literal;
+    public PropertyIsLike( Expression testValue, Expression pattern, String wildCard, String singleChar,
+                           String escapeChar, Boolean matchCase, MatchAction matchAction ) {
+        super( matchCase, matchAction );
+        this.propName = testValue;
+        this.literal = pattern;
         this.wildCard = wildCard;
         this.singleChar = singleChar;
         this.escapeChar = escapeChar;

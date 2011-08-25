@@ -104,7 +104,7 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
         Operator op1 = new PropertyIsEqualTo( new PropertyName( "Title", nsContext ), lit1, true, null );
 
         Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "%Karte%" );
-        Operator op2 = new PropertyIsLike( new PropertyName( "Subject", nsContext ), lit2, "%", "_", "?", true );
+        Operator op2 = new PropertyIsLike( new PropertyName( "Subject", nsContext ), lit2, "%", "_", "?", true, null );
 
         Operator op = new And( op1, op2 );
         Filter filter = new OperatorFilter( op );
