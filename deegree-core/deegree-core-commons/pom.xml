@@ -160,7 +160,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-ogcschemas</artifactId>
-      <version>20100506</version>
+      <version>20110513</version>
     </dependency>
   </dependencies>
 </project>
