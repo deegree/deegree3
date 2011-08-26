@@ -240,7 +240,7 @@ public class AdhocQueryAnalyzer {
                                                         pilte.isMatchCase(), pilte.getMatchAction() );
             case PROPERTY_IS_LIKE:
                 PropertyIsLike pil = (PropertyIsLike) op;
-                return new PropertyIsLike( copy( pil.getPropertyName() ), copyExpression( pil.getLiteral(), values ),
+                return new PropertyIsLike( copy( pil.getExpression() ), copyExpression( pil.getPattern(), values ),
                                            pil.getWildCard(), pil.getSingleChar(), pil.getEscapeChar(),
                                            pil.isMatchCase(), pil.getMatchAction() );
             case PROPERTY_IS_NOT_EQUAL_TO:

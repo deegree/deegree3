@@ -41,6 +41,7 @@ import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
@@ -55,6 +56,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -693,7 +695,7 @@ public class Filter200XMLDecoder {
         return new IdFilter( selectedIds );
     }
 
-    private static ResourceId parseAbstractId( XMLStreamReader xmlStream ) {
+    private static ResourceId parseAbstractId( XMLStreamReader xmlStream ) throws NoSuchElementException, XMLStreamException {
         if ( !RESOURCE_ID_ELEMENT.equals( xmlStream.getName() ) ) {
             String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               RESOURCE_ID_ELEMENT, RESOURCE_ID_ELEMENT );
@@ -720,6 +722,7 @@ public class Filter200XMLDecoder {
                 throw new XMLParsingException( xmlStream, e.getMessage() );
             }
         }
+        nextElement( xmlStream );
         return new ResourceId( rid, previousRid, version, startDate, endDate );
     }
 
@@ -783,7 +786,7 @@ public class Filter200XMLDecoder {
     private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        QName type = XMLStreamUtils.getAttributeValueAsQName( xmlStream, null, "type" );
+        QName type = getAttributeValueAsQName( xmlStream, null, "type", null );
         if ( type != null ) {
             LOG.warn( "Literal with type attribute. Not respecting type hint (needs implementation)." );
         }
@@ -1167,12 +1170,13 @@ public class Filter200XMLDecoder {
                             throws XMLStreamException {
         GMLGeometryReader gmlReader = GMLGeometryVersionHelper.getGeometryReader( xmlStream.getName() );
         try {
-            return gmlReader.parseGeometryOrEnvelope( new XMLStreamReaderWrapper( null ), null );
+            return gmlReader.parseGeometryOrEnvelope( new XMLStreamReaderWrapper( xmlStream, null ), null );
         } catch ( XMLParsingException e ) {
             throw e;
         } catch ( XMLStreamException e ) {
             throw e;
         } catch ( Throwable t ) {
+            t.printStackTrace();
             throw new XMLParsingException( xmlStream, t.getMessage() );
         }
     }

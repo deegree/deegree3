@@ -343,8 +343,8 @@ public class Filter110XMLEncoder {
             if ( isLikeOperator.isMatchCase() != null ) {
                 writer.writeAttribute( "matchCase", "" + isLikeOperator.isMatchCase() );
             }
-            export( isLikeOperator.getPropertyName(), writer );
-            export( isLikeOperator.getLiteral(), writer );
+            export( isLikeOperator.getExpression(), writer );
+            export( isLikeOperator.getPattern(), writer );
             break;
         case PROPERTY_IS_NOT_EQUAL_TO:
             export( ( (PropertyIsNotEqualTo) operator ).getParameter1(), writer );

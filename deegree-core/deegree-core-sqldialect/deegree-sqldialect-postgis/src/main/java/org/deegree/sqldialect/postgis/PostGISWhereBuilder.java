@@ -131,17 +131,17 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     protected SQLOperation toProtoSQL( PropertyIsLike op )
                             throws UnmappableException, FilterEvaluationException {
 
-        if ( !( op.getLiteral() instanceof Literal ) ) {
+        if ( !( op.getPattern() instanceof Literal ) ) {
             String msg = "Mapping of PropertyIsLike with non-literal comparisons to SQL is not implemented yet.";
             throw new UnsupportedOperationException( msg );
         }
 
-        String literal = ( (Literal) op.getLiteral() ).getValue().toString();
+        String literal = ( (Literal) op.getPattern() ).getValue().toString();
         String escape = "" + op.getEscapeChar();
         String wildCard = "" + op.getWildCard();
         String singleChar = "" + op.getSingleChar();
 
-        SQLExpression propName = toProtoSQL( op.getPropertyName() );
+        SQLExpression propName = toProtoSQL( op.getExpression() );
 
         IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
         String sqlEncoded = specialString.toSQL( !op.isMatchCase() );

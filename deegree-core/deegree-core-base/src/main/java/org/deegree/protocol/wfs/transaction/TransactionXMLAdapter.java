@@ -40,7 +40,7 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValue;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsQName;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
@@ -258,7 +258,7 @@ public class TransactionXMLAdapter {
         String handle = xmlStream.getAttributeValue( null, "handle" );
 
         // required: '@typeName'
-        QName ftName = getAttributeValueAsQName( xmlStream, null, "typeName" );
+        QName ftName = getRequiredAttributeValueAsQName( xmlStream, null, "typeName" );
 
         // required: 'ogc:Filter'
         xmlStream.nextTag();
@@ -346,7 +346,7 @@ public class TransactionXMLAdapter {
         String handle = xmlStream.getAttributeValue( null, "handle" );
 
         // required: '@typeName'
-        QName ftName = getAttributeValueAsQName( xmlStream, null, "typeName" );
+        QName ftName = getRequiredAttributeValueAsQName( xmlStream, null, "typeName" );
 
         // skip to first "wfs:Property" element
         xmlStream.nextTag();
@@ -362,7 +362,7 @@ public class TransactionXMLAdapter {
         String handle = xmlStream.getAttributeValue( null, "handle" );
 
         // required: '@typeName'
-        QName ftName = getAttributeValueAsQName( xmlStream, null, "typeName" );
+        QName ftName = getRequiredAttributeValueAsQName( xmlStream, null, "typeName" );
 
         // optional: '@inputFormat'
         String inputFormat = xmlStream.getAttributeValue( null, "inputFormat" );

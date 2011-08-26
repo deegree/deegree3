@@ -83,11 +83,11 @@ public class PropertyIsLike extends ComparisonOperator {
         this.matchCase = matchCase;
     }
 
-    public Expression getPropertyName() {
+    public Expression getExpression() {
         return propName;
     }
 
-    public Expression getLiteral() {
+    public Expression getPattern() {
         return literal;
     }
 

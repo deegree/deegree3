@@ -129,7 +129,11 @@ class GML3GeometryBaseReader {
 
         int coordDim = determineCoordDimensions( xmlStream, -1 );
         if ( coordDim == -1 && crs != null ) {
-            coordDim = crs.getDimension();
+            try {
+                coordDim = crs.getDimension();
+            } catch ( Throwable t ) {
+                LOG.debug( "Unable to retrieve coordinate dimension from CRS." );
+            }
         }
         if ( coordDim == -1 ) {
             if ( LOG.isDebugEnabled() ) {

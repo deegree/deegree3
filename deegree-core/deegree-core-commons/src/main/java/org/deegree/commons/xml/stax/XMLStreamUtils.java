@@ -225,7 +225,7 @@ public class XMLStreamUtils {
         return s;
     }
 
-    public static QName getAttributeValueAsQName( XMLStreamReader xmlStream, String namespaceURI, String localName )
+    public static QName getRequiredAttributeValueAsQName( XMLStreamReader xmlStream, String namespaceURI, String localName )
                             throws XMLParsingException {
         String s = xmlStream.getAttributeValue( namespaceURI, localName );
         if ( s == null ) {
@@ -234,6 +234,15 @@ public class XMLStreamUtils {
         return asQName( xmlStream, s );
     }
 
+    public static QName getAttributeValueAsQName( XMLStreamReader xmlStream, String namespaceURI, String localName, QName defaultValue )
+                            throws XMLParsingException {
+        String s = xmlStream.getAttributeValue( namespaceURI, localName );
+        if ( s == null ) {
+            return defaultValue;
+        }
+        return asQName( xmlStream, s );
+    }
+    
     private static boolean parseAsBoolean( XMLStreamReader xmlStream, String s ) {
         if ( "true".equals( s ) || "1".equals( s ) ) {
             return true;
