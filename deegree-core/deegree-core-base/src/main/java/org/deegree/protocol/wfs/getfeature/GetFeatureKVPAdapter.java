@@ -73,7 +73,14 @@ import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 /**
  * Adapter between KVP <code>GetFeature</code> requests and {@link GetFeature} objects.
  * <p>
- * Creating the GetFeature beans from the KVP keywords=value. There can be three types of queries in KVP:
+ * Supported WFS versions:
+ * <ul>
+ * <li>1.0.0</li>
+ * <li>1.1.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * There can be three types of queries in KVP:
  * <ul>
  * <li>{@link FeatureIdQuery}</li>
  * <li>{@link FilterQuery}</li>
@@ -92,12 +99,6 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
     /**
      * Parses a normalized KVP-map as a WFS {@link GetFeature} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * </ul>
      * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value

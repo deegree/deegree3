@@ -37,6 +37,7 @@
 package org.deegree.protocol.wfs.getfeature;
 
 import static java.math.BigInteger.ZERO;
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
@@ -66,13 +67,19 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.WFSConstants;
 
 /**
  * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
  * <p>
- * TODO code for exporting to XML
+ * Supported WFS versions:
+ * <ul>
+ * <li>1.0.0</li>
+ * <li>1.1.0</li>
+ * <li>2.0.0</li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -84,13 +91,6 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
     /**
      * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * <li>WFS 2.0.0</li>
-     * </ul>
      * 
      * @param version
      *            version of the request, may be <code>null</code> (in that case, a version attribute must be present in
@@ -120,8 +120,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         } else if ( VERSION_200.equals( version ) ) {
             result = parse200();
         } else {
-            String msg = "Version " + version
-                         + " is not supported for parsing (for now). Only 1.0.0 and 1.1.0 versions are supported.";
+            String msg = "Version '" + version + "' is not supported. Supported versions are 1.0.0, 1.1.0 and 2.0.0.";
             throw new Exception( msg );
         }
 
@@ -173,7 +172,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
-                                                              getNamespaceContext( propertyNameEl ) );
+                                                                  getNamespaceContext( propertyNameEl ) );
                 propNames.add( propertyName );
             }
 
@@ -271,7 +270,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
-                                                              getNamespaceContext( propertyNameEl ) );
+                                                                  getNamespaceContext( propertyNameEl ) );
                 propNames.add( propertyName );
             }
 
@@ -280,7 +279,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                  new XPath( "wfs:XlinkPropertyName", nsContext ) );
             for ( OMElement xlinkPropertyEl : xlinkPropertyElements ) {
                 ValueReference xlinkProperty = new ValueReference( xlinkPropertyEl.getText(),
-                                                               getNamespaceContext( xlinkPropertyEl ) );
+                                                                   getNamespaceContext( xlinkPropertyEl ) );
                 String xlinkDepth = getRequiredNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkDepth",
                                                                                          nsContext ) );
                 String xlinkExpiry = getNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkExpiry", nsContext ),
@@ -341,7 +340,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                new XPath( "ogc:PropertyName", nsContext ) );
                     String sortOrder = getNodeAsString( sortPropertyEl, new XPath( "ogc:SortOrder", nsContext ), "ASC" );
                     SortProperty sortProp = new SortProperty( new ValueReference( propNameEl.getText(),
-                                                                                getNamespaceContext( propNameEl ) ),
+                                                                                  getNamespaceContext( propNameEl ) ),
                                                               sortOrder.equals( "ASC" ) );
                     sortProps.add( sortProp );
                 }
@@ -436,13 +435,13 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
-        
+
         Integer countInt = null;
-        if (count != null ){
+        if ( count != null ) {
             countInt = count.intValue();
         }
         Integer resolveTimeoutInt = null;
-        if (resolveTimeout != null ){
+        if ( resolveTimeout != null ) {
             resolveTimeoutInt = resolveTimeout.intValue();
         }
 
@@ -476,6 +475,22 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         // <xsd:element ref="fes:AbstractProjectionClause" minOccurs="0" maxOccurs="unbounded"/>
 
         // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
+        Filter filter = null;
+        OMElement filterEl = queryEl.getFirstChildWithName( new QName( FES_20_NS, "Filter" ) );
+        if ( filterEl != null ) {
+            try {
+                // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
+                // XMLStreamReader)
+                XMLStreamReader xmlStream = new XMLStreamReaderWrapper( filterEl.getXMLStreamReaderWithoutCaching(),
+                                                                        null );
+                // skip START_DOCUMENT
+                xmlStream.nextTag();
+                filter = Filter200XMLDecoder.parse( xmlStream );
+            } catch ( XMLStreamException e ) {
+                e.printStackTrace();
+                throw new XMLParsingException( this, filterEl, e.getMessage() );
+            }
+        }
 
         // <xsd:element ref="fes:AbstractSortingClause" minOccurs="0"/>
 
@@ -485,7 +500,6 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         XLinkPropertyName[] xlinkPropNamesArray = null;
         Function[] functionsArray = null;
         SortProperty[] sortPropsArray = null;
-        Filter filter = null;
 
         return new FilterQuery( handle, typeNames, featureVersion, crs, propNamesArray, xlinkPropNamesArray,
                                 functionsArray, sortPropsArray, filter );
