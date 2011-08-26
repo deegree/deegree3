@@ -96,7 +96,7 @@ import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.Sub;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.custom.CustomExpressionManager;
-import org.deegree.filter.expression.custom.CustomExpressionProvider;
+import org.deegree.filter.expression.custom.CustomExpression;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.i18n.Messages;
@@ -178,7 +178,7 @@ public class Filter110XMLDecoder {
         addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
 
         // element name <-> expression type (custom expressions)
-        for ( CustomExpressionProvider ce : CustomExpressionManager.getCustomExpressions().values() ) {
+        for ( CustomExpression ce : CustomExpressionManager.getCustomExpressions().values() ) {
             addElementToExpressionMapping( ce.getElementName(), Expression.Type.CUSTOM );
         }
 
@@ -298,7 +298,7 @@ public class Filter110XMLDecoder {
      * <li>ogc:PropertyName</li>
      * <li>ogc:Literal</li>
      * <li>ogc:Function</li>
-     * <li>substitution for ogc:expression (handled by {@link CustomExpressionProvider} instance)</li>
+     * <li>substitution for ogc:expression (handled by {@link CustomExpression} instance)</li>
      * </ul>
      * </p>
      * <p>
@@ -440,15 +440,15 @@ public class Filter110XMLDecoder {
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
-     * @return corresponding {@link CustomExpressionProvider} object
+     * @return corresponding {@link CustomExpression} object
      * @throws XMLParsingException
      *             if the element is not a known or valid custom "ogc:expression" element
      * @throws XMLStreamException
      */
-    public static CustomExpressionProvider parseCustomExpression( XMLStreamReader xmlStream )
+    public static CustomExpression parseCustomExpression( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        CustomExpressionProvider expr = CustomExpressionManager.getExpression( xmlStream.getName() );
+        CustomExpression expr = CustomExpressionManager.getExpression( xmlStream.getName() );
         if ( expr == null ) {
             String msg = Messages.getMessage( "FILTER_PARSER_UNKNOWN_CUSTOM_EXPRESSION", xmlStream.getName() );
             throw new XMLParsingException( xmlStream, msg );

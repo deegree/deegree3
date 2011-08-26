@@ -42,6 +42,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.property.Property;
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
 import org.deegree.filter.expression.ValueReference;
@@ -64,6 +65,12 @@ public abstract class SpatialOperator implements Operator {
     private static final Logger LOG = LoggerFactory.getLogger( SpatialOperator.class );
 
     private final Map<String, Geometry> srsNameToTransformedGeometry = new HashMap<String, Geometry>();
+
+    protected final Expression propName;
+
+    protected SpatialOperator( Expression param1 ) {
+        this.propName = param1;
+    }
 
     /**
      * Convenience enum type for discriminating the different {@link SpatialOperator} types.
@@ -115,11 +122,23 @@ public abstract class SpatialOperator implements Operator {
     }
 
     /**
+     * Returns the first spatial parameter.
+     * 
+     * @return the first spatial parameter, may be <code>null</code> (target default geometry property of object)
+     */
+    public Expression getParam1() {
+        return propName;
+    }
+
+    /**
      * Returns the name of the spatial property to be considered.
      * 
-     * @return the name of the property, may be <code>null</code> (only for {@link BBOX})
+     * @return the name of the property, may be <code>null</code> (target default geometry property of object)
+     * @deprecated use {@link #getParam1()} instead
      */
-    public abstract ValueReference getPropName();
+    public ValueReference getPropName() {
+        return (ValueReference) propName;
+    }
 
     /**
      * Performs a checked cast to {@link Geometry}. If the given value is neither null nor a {@link Geometry} instance,

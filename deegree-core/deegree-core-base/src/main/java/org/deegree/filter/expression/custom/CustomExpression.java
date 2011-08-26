@@ -51,7 +51,7 @@ import org.deegree.filter.Expression;
  * 
  * @version $Revision$, $Date$
  */
-public interface CustomExpressionProvider extends Expression {
+public interface CustomExpression extends Expression {
 
     /**
      * Returns the element name used for encoding this expression.
@@ -78,7 +78,7 @@ public interface CustomExpressionProvider extends Expression {
      *             if the element is not a valid "ogc:Function" element
      * @throws XMLStreamException
      */
-    public CustomExpressionProvider parse100( XMLStreamReader xmlStream )
+    public CustomExpression parse100( XMLStreamReader xmlStream )
                             throws XMLStreamException;
 
     /**
@@ -99,7 +99,7 @@ public interface CustomExpressionProvider extends Expression {
      *             if the element is not a valid "ogc:Function" element
      * @throws XMLStreamException
      */
-    public CustomExpressionProvider parse110( XMLStreamReader xmlStream )
+    public CustomExpression parse110( XMLStreamReader xmlStream )
                             throws XMLStreamException;
 
     /**
@@ -120,6 +120,6 @@ public interface CustomExpressionProvider extends Expression {
      *             if the element is not a valid "ogc:Function" element
      * @throws XMLStreamException
      */
-    public CustomExpressionProvider parse200( XMLStreamReader xmlStream )
+    public CustomExpression parse200( XMLStreamReader xmlStream )
                             throws XMLStreamException;
 }

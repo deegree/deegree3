@@ -43,7 +43,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
-import org.deegree.filter.expression.custom.CustomExpressionProvider;
+import org.deegree.filter.expression.custom.CustomExpression;
 
 /**
  * An <code>Expression</code> describes a rule to obtain a value that may be derived from the properties of an object.

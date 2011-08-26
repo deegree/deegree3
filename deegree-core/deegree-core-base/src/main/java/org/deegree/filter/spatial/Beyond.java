@@ -37,9 +37,9 @@ package org.deegree.filter.spatial;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.uom.Measure;
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -52,24 +52,14 @@ import org.deegree.geometry.Geometry;
  */
 public class Beyond extends SpatialOperator {
 
-    private final ValueReference propName;
-
     private final Geometry geometry;
 
     private final Measure distance;
 
-    public Beyond( ValueReference propName, Geometry geometry, Measure distance ) {
-        this.propName = propName;
+    public Beyond( Expression propName, Geometry geometry, Measure distance ) {
+        super( propName );
         this.geometry = geometry;
         this.distance = distance;
-    }
-
-    /**
-     * @return the propName
-     */
-    @Override
-    public ValueReference getPropName() {
-        return propName;
     }
 
     /**

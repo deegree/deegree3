@@ -60,7 +60,9 @@ public interface Operator {
         /** Logical operator. The {@link Operator} is an instance of {@link LogicalOperator}. */
         LOGICAL,
         /** Comparison operator. The {@link Operator} is an instance of {@link ComparisonOperator}. */
-        COMPARISON;
+        COMPARISON,
+        /** Temporal operator. The {@link Operator} is an instance of {@link TemporalOperator}. */
+        TEMPORAL;
     }
 
     /**

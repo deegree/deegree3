@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,60 +33,66 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.expression.custom;
+package org.deegree.time.primitive;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import java.util.List;
 
-import org.deegree.filter.Expression;
+import org.deegree.commons.tom.gml.GMLStdProps;
+import org.deegree.time.position.TemporalPosition;
 
 /**
- * Base class for implementing {@link CustomExpression}s.
- * 
+ * Zero-dimensional geometric primitive that represents an identifiable position in time.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractCustomExpression implements CustomExpression {
+public class TimeInstant implements TimeGeometricPrimitive, Comparable<TimeInstant> {
 
-    @Override
-    public Type getType() {
-        return Type.CUSTOM;
+    private final String id;
+
+    private final GMLStdProps gmlProps;
+
+    private final TemporalPosition value;
+
+    public TimeInstant( String id, GMLStdProps stdProps, TemporalPosition value ) {
+        this.id = id;
+        this.gmlProps = stdProps;
+        this.value = value;
     }
 
-    @Override
-    public CustomExpression parse100( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        return parse( xmlStream );
+    public String getId() {
+        return id;
     }
 
-    @Override
-    public CustomExpression parse110( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        return parse( xmlStream );
-    }
-
-    @Override
-    public CustomExpression parse200( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        return parse( xmlStream );
+    public GMLStdProps getGMLProperties() {
+        return gmlProps;
     }
 
     /**
-     * @param xmlStream
-     * @throws XMLStreamException
+     * Returns the {@link TemporalPosition}.
+     * 
+     * @return temporal position, never <code>null</code>
      */
-    public abstract CustomExpression parse( XMLStreamReader xmlStream )
-                            throws XMLStreamException;
-
-    @Override
-    public Expression[] getParams() {
-        return new Expression[0];
+    public TemporalPosition getPosition() {
+        return value;
     }
 
     @Override
-    public String toString( String indent ) {
-        return indent + "CustomExpression (" + getElementName() + ")";
+    public List<?> getRelatedTimes() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getFrame() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int compareTo( TimeInstant that ) {
+        return value.compareTo( that.value );
     }
 }

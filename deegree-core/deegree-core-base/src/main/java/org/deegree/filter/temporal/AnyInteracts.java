@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,57 +33,37 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.spatial;
+package org.deegree.filter.temporal;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.geometry.Geometry;
 
 /**
- * TODO add documentation here
+ * {@link TemporalOperator} that...
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class Within extends SpatialOperator {
+public class AnyInteracts extends TemporalOperator {
 
-    private final Geometry geometry;
-
-    public Within( Expression param1, Geometry param2 ) {
-        super( param1 );
-        this.geometry = param2;
+    /**
+     * Creates a new instance of {@link AnyInteracts}.
+     * 
+     * @param param1
+     *            first temporal expression (time instant or period), must not be <code>null</code>
+     * @param param2
+     *            second temporal expression (time instant or period), must not be <code>null</code>
+     */
+    public AnyInteracts( Expression param1, Expression param2 ) {
+        super( param1, param2 );
     }
 
+    @Override
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
-            Geometry geom = checkGeometryOrNull( paramValue );
-            if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
-                return geom.isWithin( transformedLiteral );
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Within\n";
-        s += indent + propName + "\n";
-        s += indent + geometry;
-        return s;
-    }
-
-    public Geometry getGeometry() {
-        return geometry;
-    }
-
-    @Override
-    public Object[] getParams() {
-        return new Object[] { propName, geometry };
+        throw new UnsupportedOperationException( "Evaluation of operator " + getSubType() + " is not implemented yet." );
     }
 }
