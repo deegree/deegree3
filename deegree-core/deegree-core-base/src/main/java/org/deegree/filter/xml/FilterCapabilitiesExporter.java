@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.commons.xml.CommonNamespaces.FES_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 
 import java.util.Map;
@@ -47,16 +50,14 @@ import java.util.TreeSet;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.function.FunctionProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Writes (currently static) XML <code>ogc:Filter_Capabilities</code> documents that describes the capabilities of
- * deegree's filter implementation.
+ * Writes <code>Filter_Capabilities</code> documents that describe the capabilities of deegree's filter implementation.
  * 
- * TODO what about functions TODO what about restrictions of backends
+ * TODO what about backend restrictions
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
@@ -64,8 +65,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class FilterCapabilitiesExporter {
-
-    private static Logger LOG = LoggerFactory.getLogger( FilterCapabilitiesExporter.class );
 
     /**
      * Exports an <code>ogc:Filter_Capabilities</code> element (1.0.0) that describes the capabilities of deegree's
@@ -128,18 +127,233 @@ public class FilterCapabilitiesExporter {
     public static void export200( XMLStreamWriter writer )
                             throws XMLStreamException {
 
-        LOG.warn( "Exporting of 2.0.0 Filter_Capabilities is not implemented yet." );
-        // writer.setPrefix( FES_PREFIX, FES_20_NS );
-        // writer.writeStartElement( FES_20_NS, "Filter_Capabilities" );
-        // if ( writer.getPrefix( FES_20_NS ) == null ) {
-        // writer.writeNamespace( FES_PREFIX, FES_20_NS );
-        // }
-        //
-        // // exportSpatialCapabilities110( writer );
-        // // exportScalarCapabilities110( writer );
-        // // exportIdCapabilities110( writer );
-        //
-        // writer.writeEndElement();
+        writer.setPrefix( FES_PREFIX, FES_20_NS );
+        writer.writeStartElement( FES_20_NS, "Filter_Capabilities" );
+        if ( writer.getPrefix( FES_20_NS ) == null ) {
+            writer.writeNamespace( FES_PREFIX, FES_20_NS );
+        }
+        if ( writer.getPrefix( OWS_11_NS ) == null ) {
+            writer.writeNamespace( "ows", OWS_11_NS );
+        }
+
+        exportConformance200( writer );
+        exportIdCapabilities200( writer );
+        exportScalarCapabilities200( writer );
+        exportSpatialCapabilities200( writer );
+        exportTemporalCapabilities200( writer );
+        exportFunctions200( writer );
+        exportExtendedCapabilities200( writer );
+
+        writer.writeEndElement();
+    }
+
+    private static void exportConformance200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "Conformance" );
+        exportConstraint200( writer, "ImplementsQuery", true );
+        exportConstraint200( writer, "ImplementsAdHocQuery", true );
+        exportConstraint200( writer, "ImplementsFunctions", true );
+        exportConstraint200( writer, "ImplementsResourceId", true );
+        exportConstraint200( writer, "ImplementsMinStandardFilter", true );
+        exportConstraint200( writer, "ImplementsStandardFilter", true );
+        exportConstraint200( writer, "ImplementsMinSpatialFilter", true );
+        exportConstraint200( writer, "ImplementsSpatialFilter", true );
+        exportConstraint200( writer, "ImplementsMinTemporalFilter", true );
+        exportConstraint200( writer, "ImplementsTemporalFilter", true );
+        exportConstraint200( writer, "ImplementsVersionNav", false );
+        exportConstraint200( writer, "ImplementsSorting", true );
+        exportConstraint200( writer, "ImplementsExtendedOperators", false );
+        exportConstraint200( writer, "ImplementsMinimumXPath", true );
+        exportConstraint200( writer, "ImplementsSchemaElementFunc", false );
+        writer.writeEndElement();
+
+    }
+
+    private static void exportConstraint200( XMLStreamWriter writer, String conformanceClass, boolean implemented )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "Constraint" );
+        writer.writeAttribute( "name", conformanceClass );
+        writer.writeEmptyElement( OWS_11_NS, "NoValues" );
+        writer.writeStartElement( OWS_11_NS, "DefaultValue" );
+        if ( implemented ) {
+            writer.writeCharacters( "TRUE" );
+        } else {
+            writer.writeCharacters( "FALSE" );
+        }
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
+
+    private static void exportIdCapabilities200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "Id_Capabilities" );
+        writer.writeEmptyElement( FES_20_NS, "ResourceIdentifier" );
+        writer.writeAttribute( "name", "fes:ResourceId" );
+        writer.writeEndElement();
+    }
+
+    private static void exportScalarCapabilities200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "Scalar_Capabilities" );
+        writer.writeEmptyElement( FES_20_NS, "LogicalOperators" );
+        writer.writeStartElement( FES_20_NS, "ComparisonOperators" );
+        exportComparisonOperator( writer, "PropertyIsEqualTo" );
+        exportComparisonOperator( writer, "PropertyIsNotEqualTo" );
+        exportComparisonOperator( writer, "PropertyIsLessThan" );
+        exportComparisonOperator( writer, "PropertyIsGreaterThan" );
+        exportComparisonOperator( writer, "PropertyIsLessThanOrEqualTo" );
+        exportComparisonOperator( writer, "PropertyIsGreaterThanOrEqualTo" );
+        exportComparisonOperator( writer, "PropertyIsLike" );
+        exportComparisonOperator( writer, "PropertyIsNull" );
+        exportComparisonOperator( writer, "PropertyIsNil" );
+        exportComparisonOperator( writer, "PropertyIsBetween" );
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
+
+    private static void exportComparisonOperator( XMLStreamWriter writer, String name )
+                            throws XMLStreamException {
+        writer.writeEmptyElement( FES_20_NS, "ComparisonOperator" );
+        writer.writeAttribute( "name", name );
+    }
+
+    private static void exportSpatialCapabilities200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "Spatial_Capabilities" );
+        writer.writeStartElement( FES_20_NS, "GeometryOperands" );
+        writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
+        writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
+        exportGeometryOperand( writer, "gml:Box" );
+        exportGeometryOperand( writer, "gml:Envelope" );
+        exportGeometryOperand( writer, "gml:Point" );
+        exportGeometryOperand( writer, "gml:LineString" );
+        exportGeometryOperand( writer, "gml:Curve" );
+        exportGeometryOperand( writer, "gml:Polygon" );
+        exportGeometryOperand( writer, "gml:Surface" );
+        exportGeometryOperand( writer, "gml:MultiPoint" );
+        exportGeometryOperand( writer, "gml:MultiLineString" );
+        exportGeometryOperand( writer, "gml:MultiCurve" );
+        exportGeometryOperand( writer, "gml:MultiPolygon" );
+        exportGeometryOperand( writer, "gml:MultiSurface" );
+        exportGeometryOperand( writer, "gml:CompositeCurve" );
+        exportGeometryOperand( writer, "gml:CompositeSurface" );
+        exportGeometryOperand( writer, "gml32:Envelope" );
+        exportGeometryOperand( writer, "gml32:Point" );
+        exportGeometryOperand( writer, "gml32:Curve" );
+        exportGeometryOperand( writer, "gml32:Surface" );
+        exportGeometryOperand( writer, "gml32:MultiPoint" );
+        exportGeometryOperand( writer, "gml32:MultiCurve" );
+        exportGeometryOperand( writer, "gml32:MultiSurface" );
+        exportGeometryOperand( writer, "gml32:CompositeCurve" );
+        exportGeometryOperand( writer, "gml32:CompositeSurface" );
+        // TODO what about Solids?
+        writer.writeEndElement();
+        writer.writeStartElement( FES_20_NS, "SpatialOperators" );
+        exportSpatialOperator( writer, "BBOX" );
+        exportSpatialOperator( writer, "Equals" );
+        exportSpatialOperator( writer, "Disjoint" );
+        exportSpatialOperator( writer, "Intersects" );
+        exportSpatialOperator( writer, "Touches" );
+        exportSpatialOperator( writer, "Crosses" );
+        exportSpatialOperator( writer, "Within" );
+        exportSpatialOperator( writer, "Contains" );
+        exportSpatialOperator( writer, "Overlaps" );
+        exportSpatialOperator( writer, "Beyond" );
+        exportSpatialOperator( writer, "DWithin" );
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
+
+    private static void exportGeometryOperand( XMLStreamWriter writer, String name )
+                            throws XMLStreamException {
+        writer.writeEmptyElement( FES_20_NS, "GeometryOperand" );
+        writer.writeAttribute( "name", name );
+    }
+
+    private static void exportSpatialOperator( XMLStreamWriter writer, String name )
+                            throws XMLStreamException {
+        writer.writeEmptyElement( FES_20_NS, "SpatialOperator" );
+        writer.writeAttribute( "name", name );
+    }
+
+    private static void exportTemporalCapabilities200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "Temporal_Capabilities" );
+        writer.writeStartElement( FES_20_NS, "TemporalOperands" );
+        writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
+        writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
+        exportTemporalOperand( writer, "gml:TimeInstant" );
+        exportTemporalOperand( writer, "gml:TimePeriod" );
+        exportTemporalOperand( writer, "gml32:TimeInstant" );
+        exportTemporalOperand( writer, "gml32:TimePeriod" );
+        writer.writeEndElement();
+        writer.writeStartElement( FES_20_NS, "TemporalOperators" );
+        exportTemporalOperator( writer, "After" );
+        exportTemporalOperator( writer, "Before" );
+        exportTemporalOperator( writer, "Begins" );
+        exportTemporalOperator( writer, "BegunBy" );
+        exportTemporalOperator( writer, "TContains" );
+        exportTemporalOperator( writer, "During" );
+        exportTemporalOperator( writer, "TEquals" );
+        exportTemporalOperator( writer, "TOverlaps" );
+        exportTemporalOperator( writer, "Meets" );
+        exportTemporalOperator( writer, "OverlappedBy" );
+        exportTemporalOperator( writer, "MetBy" );
+        exportTemporalOperator( writer, "Ends" );
+        exportTemporalOperator( writer, "EndedBy" );
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
+
+    private static void exportTemporalOperand( XMLStreamWriter writer, String name )
+                            throws XMLStreamException {
+        writer.writeEmptyElement( FES_20_NS, "TemporalOperand" );
+        writer.writeAttribute( "name", name );
+    }
+
+    private static void exportTemporalOperator( XMLStreamWriter writer, String name )
+                            throws XMLStreamException {
+        writer.writeEmptyElement( FES_20_NS, "TemporalOperator" );
+        writer.writeAttribute( "name", name );
+    }
+
+    private static void exportFunctions200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+
+        Map<String, FunctionProvider> functions = FunctionManager.getFunctionProviders();
+        if ( !functions.isEmpty() ) {
+            writer.writeStartElement( FES_20_NS, "Functions" );
+            SortedSet<String> functionNames = new TreeSet<String>( functions.keySet() );
+            for ( String functionName : functionNames ) {
+                FunctionProvider provider = functions.get( functionName );
+                exportFunction200( writer, provider );
+            }
+            writer.writeEndElement();
+        }
+    }
+
+    private static void exportFunction200( XMLStreamWriter writer, FunctionProvider function )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "Function" );
+        writer.writeAttribute( "name", function.getName() );
+        writer.writeStartElement( FES_20_NS, "Returns" );
+        writer.writeCharacters( "TODO" );
+        writer.writeEndElement();
+        writer.writeStartElement( FES_20_NS, "Arguments" );
+        for ( int i = 1; i <= function.getArgCount(); i++ ) {
+            writer.writeStartElement( FES_20_NS, "Argument" );
+            writer.writeAttribute( "name", "arg" + 1 );
+            writer.writeStartElement( FES_20_NS, "Type" );
+            writer.writeCharacters( "TODO" );
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
+
+    private static void exportExtendedCapabilities200( XMLStreamWriter writer ) {
+        // TODO Auto-generated method stub
     }
 
     private static void exportIdCapabilities110( XMLStreamWriter writer )
