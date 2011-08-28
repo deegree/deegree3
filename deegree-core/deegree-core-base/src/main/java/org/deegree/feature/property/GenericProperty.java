@@ -58,7 +58,9 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Geometry;
 
 /**
- * TODO add documentation here
+ * Allows the representation of arbitrary {@link Property}s.
+ * 
+ * TODO Differentiation between value and children needs to be clarified and documented.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -69,9 +71,9 @@ public class GenericProperty implements Property {
 
     private static final QName XSI_NIL = new QName( XSINS, "nil" );
 
-    private PropertyType declaration;
+    private final QName name;
 
-    private QName name;
+    private final PropertyType declaration;
 
     private TypedObjectNode value;
 
@@ -105,9 +107,10 @@ public class GenericProperty implements Property {
      */
     public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value ) {
         this.declaration = declaration;
-        this.name = name;
         if ( name == null ) {
             this.name = declaration.getName();
+        } else {
+            this.name = name;
         }
         this.value = value;
         this.children = Collections.singletonList( value );
@@ -145,7 +148,12 @@ public class GenericProperty implements Property {
     public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value,
                             Map<QName, PrimitiveValue> attrs, List<TypedObjectNode> children,
                             XSElementDeclaration xsType ) {
-        this( declaration, name, value );
+        this.declaration = declaration;
+        if ( name == null ) {
+            this.name = declaration.getName();
+        } else {
+            this.name = name;
+        }
         this.attrs = attrs;
         this.children = children;
         this.xsType = xsType;
@@ -171,13 +179,13 @@ public class GenericProperty implements Property {
             return value;
         }
 
+        if ( children == null || children.isEmpty() ) {
+            return null;
+        }
+
         // // TODO
         if ( declaration instanceof CustomPropertyType ) {
             return new GenericXMLElement( name, xsType, attrs, children );
-        }
-
-        if ( children == null ) {
-            return null;
         }
 
         for ( TypedObjectNode child : children ) {

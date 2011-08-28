@@ -44,7 +44,10 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_100_BASIC_SCHEMA_URL;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
@@ -122,7 +125,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default {@link Format} implementation that can handle GML 2/3.0/3.1/3.2.
+ * Default {@link Format} implementation that can handle GML 2/3.0/3.1/3.2 and the specific requirements for WFS 2.0
+ * response <code>FeatureCollection</code>s (which are not GML feature collections in a strict sense).
+ * <p>
+ * NOTE: For WFS 1.1.0, some schema communities decided to use a different feature collection element than
+ * <code>wfs:FeatureCollection</code>. This practice is supported by this implementation for WFS 1.0.0 and WFS 1.1.0
+ * output. However, for WFS 2.0, there's hope that people will refrain from doing so (as WFS 2.0
+ * <code>FeatureCollection</code> is pretty much specializied for the requirements of a WFS response). Therefore, it is
+ * currently not supported to use any different output container for WFS 2.0.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -160,7 +171,6 @@ public class GMLFormat implements Format {
     private String appSchemaBaseURL;
 
     public GMLFormat( WebFeatureService master, GMLVersion gmlVersion ) {
-
         this.master = master;
         this.service = master.getService();
         this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema, null );
@@ -172,7 +182,6 @@ public class GMLFormat implements Format {
 
     public GMLFormat( WebFeatureService master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
                             throws ResourceInitException {
-
         this.master = master;
         this.service = master.getService();
 
@@ -384,16 +393,11 @@ public class GMLFormat implements Format {
                 xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
             }
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
-            if ( responseContainerEl != null ) {
-                xmlStream.writeStartElement( responseContainerEl.getPrefix(), responseContainerEl.getLocalPart(),
-                                             responseContainerEl.getNamespaceURI() );
-            } else {
-                xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
-                xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
-            }
+            xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
+            xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
         }
 
-        if ( GML_32 == gmlVersion ) {
+        if ( GML_32 == gmlVersion && !request.getVersion().equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "WFS_RESPONSE" );
         }
 
@@ -425,9 +429,18 @@ public class GMLFormat implements Format {
         }
 
         if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
-            xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
+            if ( request.getVersion().equals( VERSION_200 ) ) {
+                xmlStream.writeStartElement( "wfs", "additionalObjects", WFS_200_NS );
+                xmlStream.writeStartElement( "wfs", "SimpleFeatureCollection", WFS_200_NS );
+            } else {
+                xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
+            }
             writeAdditionalObjects( request.getVersion(), gmlStream, additionalObjects, traverseXLinkDepth,
                                     xLinkTemplate );
+            if ( request.getVersion().equals( VERSION_200 ) ) {
+                xmlStream.writeEndElement();
+                xmlStream.writeEndElement();
+            }
         }
 
         // close container element
@@ -473,6 +486,13 @@ public class GMLFormat implements Format {
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, IOException {
 
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
+
+        if ( wfsVersion.equals( VERSION_200 ) ) {
+            xmlStream.writeAttribute( "numberMatched", "unknown" );
+            // TODO this is not allowed
+            xmlStream.writeAttribute( "numberReturned", "unknown" );
+        }
+
         if ( outputFormat == GML_2 ) {
             // "gml:boundedBy" is necessary for GML 2 schema compliance
             xmlStream.writeStartElement( "gml", "boundedBy", GMLNS );
@@ -537,7 +557,10 @@ public class GMLFormat implements Format {
         }
 
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
-        if ( !wfsVersion.equals( VERSION_100 ) && responseContainerEl == null ) {
+        if ( wfsVersion.equals( VERSION_200 ) ) {
+            xmlStream.writeAttribute( "numberMatched", "" + allFeatures.size() );
+            xmlStream.writeAttribute( "numberReturned", "" + allFeatures.size() );
+        } else if ( !wfsVersion.equals( VERSION_100 ) && responseContainerEl == null ) {
             xmlStream.writeAttribute( "numberOfFeatures", "" + allFeatures.size() );
         }
 
@@ -576,31 +599,27 @@ public class GMLFormat implements Format {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( gmlStream.isObjectExported( member.getId() ) ) {
-            if ( responseFeatureMemberEl != null ) {
+            if ( VERSION_200.equals( wfsVersion ) ) {
+                xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
+            } else if ( responseFeatureMemberEl != null ) {
                 xmlStream.writeEmptyElement( responseFeatureMemberEl.getPrefix(),
                                              responseFeatureMemberEl.getLocalPart(),
                                              responseFeatureMemberEl.getNamespaceURI() );
             } else if ( GML_32 == gmlVersion ) {
-                if ( VERSION_200.equals( wfsVersion ) ) {
-                    xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
-                } else {
-                    xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
-                }
+                xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
             } else {
                 xmlStream.writeEmptyElement( "gml", "featureMember", GMLNS );
             }
             xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
         } else {
-            if ( responseFeatureMemberEl != null ) {
+            if ( VERSION_200.equals( wfsVersion ) ) {
+                xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
+            } else if ( responseFeatureMemberEl != null ) {
                 xmlStream.writeStartElement( responseFeatureMemberEl.getPrefix(),
                                              responseFeatureMemberEl.getLocalPart(),
                                              responseFeatureMemberEl.getNamespaceURI() );
             } else if ( GML_32 == gmlVersion ) {
-                if ( VERSION_200.equals( wfsVersion ) ) {
-                    xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
-                } else {
-                    xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
-                }
+                xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
             } else {
                 xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
             }
@@ -741,34 +760,30 @@ public class GMLFormat implements Format {
      */
     private String getSchemaLocation( Version requestVersion, Collection<FeatureType> requestedFts ) {
 
-        String schemaLocation = this.schemaLocation;
+        String schemaLocation = null;
+        if ( !VERSION_200.equals( requestVersion ) ) {
+            schemaLocation = this.schemaLocation;
+        } else {
+            schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
+        }
         if ( responseContainerEl == null ) {
             // use "wfs:FeatureCollection" then
             QName wfsFeatureCollection = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
             if ( responseContainerEl == null || wfsFeatureCollection.equals( responseContainerEl ) ) {
                 if ( VERSION_100.equals( requestVersion ) ) {
                     if ( GML_2 == gmlVersion ) {
-                        schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
+                        schemaLocation = WFS_NS + " " + WFS_100_BASIC_SCHEMA_URL;
                     } else {
                         schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
                                                                               wfsFeatureCollection );
                     }
                 } else if ( VERSION_110.equals( requestVersion ) ) {
                     if ( GML_31 == gmlVersion ) {
-                        schemaLocation = WFS_NS + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
+                        schemaLocation = WFS_NS + " " + WFS_110_SCHEMA_URL;
                     } else {
                         schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
                                                                               wfsFeatureCollection );
                     }
-                } else if ( VERSION_200.equals( requestVersion ) ) {
-                    if ( GML_32 == gmlVersion ) {
-                        schemaLocation = WFS_200_NS + " http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";
-                    } else {
-                        schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
-                                                                              wfsFeatureCollection );
-                    }
-                } else {
-                    throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
                 }
             }
         }
@@ -901,9 +916,9 @@ public class GMLFormat implements Format {
      * <p>
      * The form of the URL depends on the protocol version:
      * <ul>
-     * <li>WFS 1.0.0: not possible, an <code>UnsupportedOperation</code> exception is thrown</li>
+     * <li>WFS 1.0.0: GetGmlObject request (actually a 1.1.0 request, as 1.0.0 doesn't have it)</li>
      * <li>WFS 1.1.0: GetGmlObject request</li>
-     * <li>WFS 2.0.0: GetPropertyValue request</li>
+     * <li>WFS 2.0.0: GetFeature request using stored query (urn:ogc:def:query:OGC-WFS::GetFeatureById)</li>
      * </ul>
      * </p>
      * 
@@ -930,10 +945,9 @@ public class GMLFormat implements Format {
                            + URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" )
                            + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
             } else if ( VERSION_200.equals( version ) ) {
-                // TODO check spec.
-                template = baseUrl + "REQUEST=GetPropertyValue&OUTPUTFORMAT="
-                           + URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" )
-                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
+                template = baseUrl + "REQUEST=GetFeature&OUTPUTFORMAT="
+                           + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" )
+                           + "&STOREDQUERY_ID=urn:ogc:def:query:OGC-WFS::GetFeatureById&ID={}#{}";
             } else {
                 throw new UnsupportedOperationException( Messages.getMessage( "WFS_BACKREFERENCE_UNSUPPORTED", version ) );
             }
