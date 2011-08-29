@@ -24,6 +24,19 @@
     </repository>
   </repositories>
 
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>target/generated-resources</directory>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+  </build>
+
   <modules>
     <module>deegree-services-commons</module>
     <module>deegree-services-config</module>
