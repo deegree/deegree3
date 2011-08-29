@@ -40,7 +40,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 
 /**
- * A {@link Query} that selects features using a list of ids.
+ * A {@link AdHocQuery} that selects features using a list of ids.
  * <p>
  * NOTE: Only KVP-based queries can be of this type. For XML-requests its only possible to use a filter constraint.
  * 
@@ -49,7 +49,7 @@ import org.deegree.filter.sort.SortProperty;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FeatureIdQuery extends Query {
+public class FeatureIdQuery extends AdHocQuery {
 
     private final String[] featureIds;
 

@@ -134,7 +134,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
-        assertEquals( new QName( "INWATERA_1M" ), getFeature.getQueries()[0].getTypeNames()[0].getFeatureTypeName() );
+        assertEquals( new QName( "INWATERA_1M" ),
+                      ( (AdHocQuery) getFeature.getQueries()[0] ).getTypeNames()[0].getFeatureTypeName() );
     }
 
     /**

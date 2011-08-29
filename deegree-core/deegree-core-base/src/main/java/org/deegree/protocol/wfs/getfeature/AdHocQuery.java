@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/ogcwebservices/wfs/operation/DescribeFeatureType.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -35,22 +35,31 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.filter.sort.SortProperty;
+
 /**
  * Represents a <code>Query</code> operation as a part of a {@link GetFeature} request.
  * 
  * @see GetFeature
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public abstract class Query {
+public abstract class AdHocQuery extends Query {
 
-    private final String handle;
+    private final TypeName[] typeNames;
+
+    private final String featureVersion;
+
+    private final ICRS srsName;
+
+    private final SortProperty[] sortBy;
 
     /**
-     * Creates a new {@link Query} instance.
+     * Creates a new {@link AdHocQuery} instance.
      * 
      * @param handle
      *            client-generated query identifier, may be null
@@ -64,16 +73,47 @@ public abstract class Query {
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
      *            may be null
      */
-    protected Query( String handle ) {
-        this.handle = handle;
+    public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
+        super( handle );
+        this.typeNames = typeNames;
+        this.featureVersion = featureVersion;
+        this.srsName = srsName;
+        this.sortBy = sortBy;
     }
 
     /**
-     * Returns the client-generated identifier supplied with the query.
+     * Returns the requested feature types (with optional aliases).
      * 
-     * @return the client-generated identifier, may be null
+     * @return the requested feature types, never null and contains always one entry
      */
-    public String getHandle() {
-        return handle;
+    public TypeName[] getTypeNames() {
+        return typeNames;
+    }
+
+    /**
+     * Returns the version of the feature instances to be retrieved.
+     * 
+     * @return the version of the feature instances to be retrieved, may be null
+     */
+    public String getFeatureVersion() {
+        return featureVersion;
+    }
+
+    /**
+     * Returns the SRS that should be used for returned feature geometries.
+     * 
+     * @return the SRS that should be used for returned feature geometries, may be null
+     */
+    public ICRS getSrsName() {
+        return srsName;
+    }
+
+    /**
+     * Returns the properties whose values should be used to order the set of feature instances that satisfy the query.
+     * 
+     * @return sort criteria, may be null
+     */
+    public SortProperty[] getSortBy() {
+        return sortBy;
     }
 }

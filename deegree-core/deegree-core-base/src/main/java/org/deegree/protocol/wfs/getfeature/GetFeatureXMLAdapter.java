@@ -46,7 +46,9 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -433,7 +435,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             queries.add( parseAbstractQuery200( queryEl ) );
         }
 
-        Query[] queryArray = new FilterQuery[queries.size()];
+        Query[] queryArray = new Query[queries.size()];
         queries.toArray( queryArray );
 
         Integer countInt = null;
@@ -464,7 +466,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
     private Query parseQuery200( OMElement queryEl ) {
 
         // <xsd:attribute name="handle" type="xsd:string"/>
-        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+        String handle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
 
         // <xsd:attribute name="typeNames" type="fes:TypeNamesListType" use="required"/>
         String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeNames", nsContext ) );
@@ -506,7 +508,21 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
     }
 
     // <xsd:element name="StoredQuery" type="wfs:StoredQueryType" substitutionGroup="fes:AbstractQueryExpression"/>
-    private Query parseStoredQuery200( OMElement queryEl ) {
-        throw new XMLParsingException( "Parsing of stored queries not supported yet." );
+    private StoredQuery parseStoredQuery200( OMElement queryEl ) {
+
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
+
+        // <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
+        String id = getRequiredNodeAsString( queryEl, new XPath( "@id", nsContext ) );
+
+        // <xsd:element name="Parameter" type="wfs:ParameterType" minOccurs="0" maxOccurs="unbounded"/>
+        Map<String, OMElement> paramToValue = new HashMap<String, OMElement>();
+        List<OMElement> paramEls = getElements( queryEl, new XPath( "wfs200:Parameter", nsContext ) );
+        for ( OMElement paramEl : paramEls ) {
+            String paramName = getRequiredNodeAsString( paramEl, new XPath( "@name", nsContext ) );
+            paramToValue.put( paramName, paramEl );
+        }
+        return new StoredQuery( handle, id, paramToValue );
     }
 }

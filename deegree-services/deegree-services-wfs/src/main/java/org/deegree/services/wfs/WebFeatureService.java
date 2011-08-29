@@ -45,7 +45,9 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.wfs.WFSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
@@ -110,6 +112,17 @@ import org.deegree.protocol.wfs.getgmlobject.GetGmlObjectXMLAdapter;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.protocol.wfs.lockfeature.LockFeatureKVPAdapter;
 import org.deegree.protocol.wfs.lockfeature.LockFeatureXMLAdapter;
+import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
+import org.deegree.protocol.wfs.storedquery.CreateStoredQueryXMLAdapter;
+import org.deegree.protocol.wfs.storedquery.DescribeStoredQueries;
+import org.deegree.protocol.wfs.storedquery.DescribeStoredQueriesKVPAdapter;
+import org.deegree.protocol.wfs.storedquery.DescribeStoredQueriesXMLAdapter;
+import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
+import org.deegree.protocol.wfs.storedquery.DropStoredQueryKVPAdapter;
+import org.deegree.protocol.wfs.storedquery.DropStoredQueryXMLAdapter;
+import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
+import org.deegree.protocol.wfs.storedquery.ListStoredQueriesKVPAdapter;
+import org.deegree.protocol.wfs.storedquery.ListStoredQueriesXMLAdapter;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionKVPAdapter;
 import org.deegree.protocol.wfs.transaction.TransactionXMLAdapter;
@@ -171,6 +184,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private LockFeatureHandler lockFeatureHandler;
 
+    private StoredQueryHandler storedQueryHandler;
+
     private boolean enableTransactions;
 
     private boolean disableBuffering;
@@ -230,6 +245,7 @@ public class WebFeatureService extends AbstractOWS {
         }
 
         lockFeatureHandler = new LockFeatureHandler( this );
+        storedQueryHandler = new StoredQueryHandler( this );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
@@ -386,10 +402,21 @@ public class WebFeatureService extends AbstractOWS {
             }
 
             switch ( requestType ) {
+            case CreateStoredQuery:
+                throw new OWSException( Messages.get( "WFS_NO_KVP_BINDING", requestName, requestVersion ),
+                                        OPERATION_NOT_SUPPORTED );
             case DescribeFeatureType:
                 DescribeFeatureType describeFt = DescribeFeatureTypeKVPAdapter.parse( kvpParamsUC );
                 Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
                 format.doDescribeFeatureType( describeFt, response );
+                break;
+            case DescribeStoredQueries:
+                DescribeStoredQueries describeStoredQueries = DescribeStoredQueriesKVPAdapter.parse( kvpParamsUC );
+                storedQueryHandler.doDescribeStoredQueries( describeStoredQueries, response );
+                break;
+            case DropStoredQuery:
+                DropStoredQuery dropStoredQuery = DropStoredQueryKVPAdapter.parse( kvpParamsUC );
+                storedQueryHandler.doDropStoredQuery( dropStoredQuery, response );
                 break;
             case GetCapabilities:
                 GetCapabilities getCapabilities = GetCapabilitiesKVPAdapter.parse( requestVersion, kvpParamsUC );
@@ -411,24 +438,29 @@ public class WebFeatureService extends AbstractOWS {
                 format = determineFormat( requestVersion, getGmlObject.getOutputFormat(), "outputFormat" );
                 format.doGetGmlObject( getGmlObject, response );
                 break;
+            case GetPropertyValue:
+                throw new OWSException( Messages.get( "WFS_OPERATION_NOT_IMPLEMENTED_YET", requestName ),
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            case ListStoredQueries:
+                ListStoredQueries listStoredQueries = ListStoredQueriesKVPAdapter.parse( kvpParamsUC );
+                storedQueryHandler.doListStoredQueries( listStoredQueries, response );
+                break;
             case LockFeature:
                 checkTransactionsEnabled( requestName );
                 LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpParamsUC );
                 lockFeatureHandler.doLockFeature( lockFeature, response );
                 break;
             case Transaction:
+                if ( requestVersion.equals( VERSION_200 ) ) {
+                    throw new OWSException( Messages.get( "WFS_NO_KVP_BINDING", requestName, requestVersion ),
+                                            OPERATION_NOT_SUPPORTED );
+                }
                 checkTransactionsEnabled( requestName );
                 Transaction transaction = TransactionKVPAdapter.parse( kvpParamsUC );
                 new TransactionHandler( this, service, transaction ).doTransaction( response );
                 break;
-            // WFS 2.0.0 only request types
-            case CreateStoredQuery:
-            case DescribeStoredQueries:
-            case DropStoredQuery:
-            case GetPropertyValue:
-            case ListStoredQueries:
-                throw new OWSException( Messages.get( "WFS_OPERATION_NOT_IMPLEMENTED_YET", requestName ),
-                                        OWSException.OPERATION_NOT_SUPPORTED );
+            default:
+                throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
             }
         } catch ( OWSException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
@@ -489,7 +521,7 @@ public class WebFeatureService extends AbstractOWS {
                 String serviceAttr = XMLStreamUtils.getAttributeValue( xmlStream, "service" );
                 if ( serviceAttr != null && !( "WFS".equals( serviceAttr ) || "".equals( serviceAttr ) ) ) {
                     throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'WFS'.",
-                                            OWSException.INVALID_PARAMETER_VALUE, "service" );
+                                            INVALID_PARAMETER_VALUE, "service" );
                 }
             }
 
@@ -498,12 +530,30 @@ public class WebFeatureService extends AbstractOWS {
             }
 
             switch ( requestType ) {
+            case CreateStoredQuery:
+                CreateStoredQueryXMLAdapter createStoredQueryAdapter = new CreateStoredQueryXMLAdapter();
+                createStoredQueryAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
+                CreateStoredQuery createStoredQuery = createStoredQueryAdapter.parse();
+                storedQueryHandler.doCreateStoredQuery( createStoredQuery, response );
+                break;
             case DescribeFeatureType:
                 DescribeFeatureTypeXMLAdapter describeFtAdapter = new DescribeFeatureTypeXMLAdapter();
                 describeFtAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 DescribeFeatureType describeFt = describeFtAdapter.parse( requestVersion );
                 Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
                 format.doDescribeFeatureType( describeFt, response );
+                break;
+            case DropStoredQuery:
+                DropStoredQueryXMLAdapter dropStoredQueryAdapter = new DropStoredQueryXMLAdapter();
+                dropStoredQueryAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
+                DropStoredQuery dropStoredQuery = dropStoredQueryAdapter.parse();
+                storedQueryHandler.doDropStoredQuery( dropStoredQuery, response );
+                break;
+            case DescribeStoredQueries:
+                DescribeStoredQueriesXMLAdapter describeStoredQueriesAdapter = new DescribeStoredQueriesXMLAdapter();
+                describeStoredQueriesAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
+                DescribeStoredQueries describeStoredQueries = describeStoredQueriesAdapter.parse();
+                storedQueryHandler.doDescribeStoredQueries( describeStoredQueries, response );
                 break;
             case GetCapabilities:
                 GetCapabilitiesXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesXMLAdapter();
@@ -533,6 +583,15 @@ public class WebFeatureService extends AbstractOWS {
                 format = determineFormat( requestVersion, getGmlObject.getOutputFormat(), "outputFormat" );
                 format.doGetGmlObject( getGmlObject, response );
                 break;
+            case GetPropertyValue:
+                throw new OWSException( Messages.get( "WFS_OPERATION_NOT_IMPLEMENTED_YET", requestName ),
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            case ListStoredQueries:
+                ListStoredQueriesXMLAdapter listStoredQueriesAdapter = new ListStoredQueriesXMLAdapter();
+                listStoredQueriesAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
+                ListStoredQueries listStoredQueries = listStoredQueriesAdapter.parse();
+                storedQueryHandler.doListStoredQueries( listStoredQueries, response );
+                break;
             case LockFeature:
                 checkTransactionsEnabled( requestName );
                 LockFeatureXMLAdapter lockFeatureAdapter = new LockFeatureXMLAdapter();
@@ -545,14 +604,8 @@ public class WebFeatureService extends AbstractOWS {
                 Transaction transaction = TransactionXMLAdapter.parse( xmlStream );
                 new TransactionHandler( this, service, transaction ).doTransaction( response );
                 break;
-            // WFS 2.0.0 only request types
-            case CreateStoredQuery:
-            case DescribeStoredQueries:
-            case DropStoredQuery:
-            case GetPropertyValue:
-            case ListStoredQueries:
-                throw new OWSException( Messages.get( "WFS_OPERATION_NOT_IMPLEMENTED_YET", requestName ),
-                                        OWSException.OPERATION_NOT_SUPPORTED );
+            default:
+                throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
             }
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
@@ -565,7 +618,7 @@ public class WebFeatureService extends AbstractOWS {
         } catch ( XMLParsingException e ) {
             LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
-            sendServiceException110( new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE ), response );
+            sendServiceException110( new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), response );
         } catch ( MissingParameterException e ) {
             LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
@@ -577,8 +630,7 @@ public class WebFeatureService extends AbstractOWS {
         } catch ( Throwable e ) {
             LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
-            sendServiceException110( new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE ),
-                                     response );
+            sendServiceException110( new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }
     }
 

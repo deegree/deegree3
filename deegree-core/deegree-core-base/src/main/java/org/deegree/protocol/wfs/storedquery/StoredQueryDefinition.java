@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.storedquery;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -69,16 +70,27 @@ public class StoredQueryDefinition extends XMLAdapter {
 
     private final String id;
 
+    private final List<LanguageString> titles;
+
     public StoredQueryDefinition( OMElement el ) {
         setRootElement( el );
 
         // <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
-        this.id = getRequiredNodeAsString( el, new XPath( "id", nsContext ) );
+        this.id = getRequiredNodeAsString( el, new XPath( "@id", nsContext ) );
 
         // <xsd:element ref="wfs:Title" minOccurs="0" maxOccurs="unbounded"/>
+        List<OMElement> titleEls = getElements( el, new XPath( "wfs200:Title", nsContext ) );
+        titles = new ArrayList<LanguageString>( titleEls.size() );
+        for ( OMElement titleEl : titleEls ) {
+            String lang = getNodeAsString( titleEl, new XPath( "@xml:lang", nsContext ), null );
+            String value = titleEl.getText();
+            titles.add( new LanguageString( value, lang ) );
+        }
+
+        // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
         
-        // TODO: for every       
-        // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>        
+        
+        
         // <xsd:attribute name="isPrivate" type="xsd:boolean" default="false"/>
     }
 
@@ -95,7 +107,7 @@ public class StoredQueryDefinition extends XMLAdapter {
      * @return
      */
     public List<LanguageString> getTitles() {
-        return null;
+        return titles;
     }
 
     public List<QName> getReturnFeatureTypes() {

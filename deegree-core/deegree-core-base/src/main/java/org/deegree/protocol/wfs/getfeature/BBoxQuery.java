@@ -41,7 +41,7 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 
 /**
- * A {@link Query} that selects features using an {@link Envelope}.
+ * A {@link AdHocQuery} that selects features using an {@link Envelope}.
  * <p>
  * NOTE: Only KVP-based queries can be of this type. For XML-requests its only possible to use a filter constraint.
  * 
@@ -50,7 +50,7 @@ import org.deegree.geometry.Envelope;
  * 
  * @version $Revision: $, $Date: $
  */
-public class BBoxQuery extends Query {
+public class BBoxQuery extends AdHocQuery {
 
     private final Envelope bbox;
 
@@ -117,7 +117,7 @@ public class BBoxQuery extends Query {
     }
 
     /**
-     * Returns the properties of the features for which a specific XLink behaviour is requested. 
+     * Returns the properties of the features for which a specific XLink behaviour is requested.
      * <p>
      * Contains the Depth and Expiry properties for XLinks traversal. More precisely, the nested depth to which an
      * xlink:href should be traversed (or "*" for indefinite depth), respectively the number of minutes the WFS should

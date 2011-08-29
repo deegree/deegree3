@@ -44,7 +44,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 
 /**
- * A {@link Query} that selects features using an optional {@link Filter}.
+ * A {@link AdHocQuery} that selects features using an optional {@link Filter}.
  * <p>
  * NOTE: XML-based queries are always of this type. Only for KVP requests it is possible to specify a <code>BBOX</code>
  * or a <code>FEATUREID</code> parameter.
@@ -54,7 +54,7 @@ import org.deegree.filter.sort.SortProperty;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FilterQuery extends Query {
+public class FilterQuery extends AdHocQuery {
 
     private final Filter filter;
 

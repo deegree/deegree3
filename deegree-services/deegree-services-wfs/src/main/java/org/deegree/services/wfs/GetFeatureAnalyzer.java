@@ -72,6 +72,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLVersion;
+import org.deegree.protocol.wfs.getfeature.AdHocQuery;
 import org.deegree.protocol.wfs.getfeature.BBoxQuery;
 import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
@@ -161,8 +162,8 @@ public class GetFeatureAnalyzer {
             queryToWFSQuery.put( query, wfsQuery );
 
             // TODO what about queries with different SRS?
-            if ( wfsQuery.getSrsName() != null ) {
-                requestedCrs = wfsQuery.getSrsName();
+            if ( ((AdHocQuery) wfsQuery).getSrsName() != null ) {
+                requestedCrs = ((AdHocQuery) wfsQuery).getSrsName();
             } else {
                 requestedCrs = controller.getDefaultQueryCrs();
             }
@@ -294,7 +295,7 @@ public class GetFeatureAnalyzer {
                             throws OWSException {
 
         // requalify query typenames and keep track of them
-        TypeName[] wfsTypeNames = wfsQuery.getTypeNames();
+        TypeName[] wfsTypeNames = ((AdHocQuery) wfsQuery).getTypeNames();
         TypeName[] typeNames = new TypeName[wfsTypeNames.length];
         FeatureStore commonFs = null;
         for ( int i = 0; i < wfsTypeNames.length; i++ ) {
@@ -342,7 +343,7 @@ public class GetFeatureAnalyzer {
                 }
                 if ( checkAreaOfUse ) {
                     for ( Geometry geom : Filters.getGeometries( fQuery.getFilter() ) ) {
-                        validateGeometryConstraint( geom, wfsQuery.getSrsName() );
+                        validateGeometryConstraint( geom, ((AdHocQuery) wfsQuery).getSrsName() );
                     }
                 }
             }
@@ -366,7 +367,7 @@ public class GetFeatureAnalyzer {
                 }
             }
             if ( checkAreaOfUse ) {
-                validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), wfsQuery.getSrsName() );
+                validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), ((AdHocQuery) wfsQuery).getSrsName() );
             }
 
             Envelope bbox = bboxQuery.getBBox();
@@ -398,7 +399,7 @@ public class GetFeatureAnalyzer {
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
         }
 
-        SortProperty[] sortProps = wfsQuery.getSortBy();
+        SortProperty[] sortProps = ((AdHocQuery) wfsQuery).getSortBy();
         if ( sortProps != null ) {
             for ( SortProperty sortProperty : sortProps ) {
                 validatePropertyName( sortProperty.getSortProperty(), typeNames );
@@ -410,7 +411,7 @@ public class GetFeatureAnalyzer {
             Filters.setDefaultCRS( filter, controller.getDefaultQueryCrs() );
         }
 
-        return new Query( typeNames, filter, wfsQuery.getFeatureVersion(), wfsQuery.getSrsName(), sortProps );
+        return new Query( typeNames, filter, ((AdHocQuery) wfsQuery).getFeatureVersion(), ((AdHocQuery) wfsQuery).getSrsName(), sortProps );
     }
 
     private void validatePropertyName( ValueReference propName, TypeName[] typeNames )
