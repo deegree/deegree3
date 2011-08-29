@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,52 +33,52 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs;
+package org.deegree.protocol.wfs.storedquery;
+
+import static java.util.Collections.emptyList;
+
+import java.util.List;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**
- * Abstract base class for WFS request beans.
+ * Represents a <code>CreateStoredQuery</code> request to a WFS.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public abstract class AbstractWFSRequest {
+public class CreateStoredQuery extends AbstractWFSRequest {
 
-    private final Version version;
-
-    private final String handle;
+    private final List<StoredQueryDefinition> queryDefinitions;
 
     /**
-     * Creates a new {@link AbstractWFSRequest} request.
+     * Creates a new {@link CreateStoredQuery} instance.
      * 
      * @param version
-     *            protocol version, may not be null
+     *            protocol version, must not be <code>null</code>
      * @param handle
-     *            client-generated identifier, may be null
+     *            client-generated identifier, may be <code>null</code>
+     * @param queryDefinitions
+     *            query definitions to add, may be <code>null</code>
      */
-    public AbstractWFSRequest( Version version, String handle ) {
-        this.version = version;
-        this.handle = handle;
+    public CreateStoredQuery( Version version, String handle, List<StoredQueryDefinition> queryDefinitions ) {
+        super( version, handle );
+        if ( queryDefinitions == null ) {
+            this.queryDefinitions = emptyList();
+        } else {
+            this.queryDefinitions = queryDefinitions;
+        }
     }
 
     /**
-     * Returns the protocol version of the request.
+     * Returns the {@link StoredQueryDefinition}s to be added.
      * 
-     * @return the protocol version of the request, never null
+     * @return query definitions to be added, never <code>null</code>
      */
-    public Version getVersion() {
-        return this.version;
-    }
-
-    /**
-     * Returns the client-generated identifier supplied with the request.
-     * 
-     * @return the client-generated identifier, may be null
-     */
-    public String getHandle() {
-        return this.handle;
+    public List<StoredQueryDefinition> getQueryDefinitions() {
+        return queryDefinitions;
     }
 }

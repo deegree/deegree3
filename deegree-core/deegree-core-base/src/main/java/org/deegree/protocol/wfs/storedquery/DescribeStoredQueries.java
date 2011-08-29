@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,52 +33,48 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs;
+package org.deegree.protocol.wfs.storedquery;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**
- * Abstract base class for WFS request beans.
+ * Represents a <code>DescribeStoredQueries</code> request to a WFS.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public abstract class AbstractWFSRequest {
+public class DescribeStoredQueries extends AbstractWFSRequest {
 
-    private final Version version;
-
-    private final String handle;
+    private final String[] storedQueryIds;
 
     /**
-     * Creates a new {@link AbstractWFSRequest} request.
+     * Creates a new {@link DescribeStoredQueries} instance.
      * 
      * @param version
-     *            protocol version, may not be null
+     *            protocol version, must not be <code>null</code>
      * @param handle
-     *            client-generated identifier, may be null
+     *            client-generated identifier, may be <code>null</code>
+     * @param storedQueryIds
+     *            ids of stored queries to describe, may be <code>null</code>
      */
-    public AbstractWFSRequest( Version version, String handle ) {
-        this.version = version;
-        this.handle = handle;
+    public DescribeStoredQueries( Version version, String handle, String[] storedQueryIds ) {
+        super( version, handle );
+        if ( storedQueryIds == null ) {
+            this.storedQueryIds = new String[0];
+        } else {
+            this.storedQueryIds = storedQueryIds;
+        }
     }
 
     /**
-     * Returns the protocol version of the request.
+     * Returns the identifiers of the stored queries to be described.
      * 
-     * @return the protocol version of the request, never null
+     * @return identifiers of the stored queries, can be empty (describe all queries), but never <code>null</code>
      */
-    public Version getVersion() {
-        return this.version;
-    }
-
-    /**
-     * Returns the client-generated identifier supplied with the request.
-     * 
-     * @return the client-generated identifier, may be null
-     */
-    public String getHandle() {
-        return this.handle;
+    public String[] getStoredQueryIds() {
+        return storedQueryIds;
     }
 }
