@@ -86,7 +86,7 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
         List<Pair<String, URL>> processes = new ArrayList<Pair<String, URL>>();
         String jrxml = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.provider.jrxml.jaxb",
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.provider.jrxml.jaxb.process",
                                                       workspace.getModuleClassLoader() );
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             JrxmlProcesses config = (JrxmlProcesses) unmarshaller.unmarshal( configUrl );
