@@ -41,9 +41,10 @@ import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageSt
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,8 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link JrxmlContentProvider} for literal parameters
@@ -71,6 +74,8 @@ import org.deegree.services.wps.input.ProcessletInput;
  * @version $Revision: $, $Date: $
  */
 public class OtherContentProvider implements JrxmlContentProvider {
+
+    private static final Logger LOG = LoggerFactory.getLogger( OtherContentProvider.class );
 
     @Override
     public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
@@ -168,6 +173,8 @@ public class OtherContentProvider implements JrxmlContentProvider {
                     Object value = litValue;
                     String parameterType = parameters.get( litIn.getIdentifier().getCode() );
 
+                    LOG.debug( "Try to convert {} (parameter '{}') to {}", new Object[] { litIn.getIdentifier(),
+                                                                                         litValue, parameterType } );
                     if ( parameterType == null || "java.lang.String".equals( parameterType ) ) {
                     } else if ( "java.lang.Boolean".equals( parameterType ) ) {
                         value = Boolean.parseBoolean( litValue );
@@ -201,8 +208,9 @@ public class OtherContentProvider implements JrxmlContentProvider {
                         }
                     } else if ( "java.util.Date".equals( parameterType ) ) {
                         try {
-                            value = Date.valueOf( litValue );
-                        } catch ( NumberFormatException e ) {
+                            SimpleDateFormat df = new SimpleDateFormat( litValue );
+                            value = df.parse( litValue );
+                        } catch ( ParseException e ) {
                             throw new ProcessletException( "Invalid datatype for parameter '" + litIn.getIdentifier()
                                                            + "': " + litValue + " is not a date value!" );
                         }
