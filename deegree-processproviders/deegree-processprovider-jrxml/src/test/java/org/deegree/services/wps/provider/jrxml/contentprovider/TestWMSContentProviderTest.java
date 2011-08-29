@@ -35,12 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
+import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
 import static org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.MIME_TYPE;
 import static org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.SCHEMA;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +54,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -63,17 +68,20 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInputImpl;
 import org.deegree.services.wps.input.EmbeddedComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
+import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.DATASOURCE;
+import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
 import org.junit.Test;
 
 /**
@@ -120,10 +128,12 @@ public class TestWMSContentProviderTest {
      * @throws IOException
      * @throws FactoryConfigurationError
      * @throws XMLStreamException
+     * @throws ProcessletException
      */
     @Test
     public void testPrepareJrxmlAndReadInputParameters()
-                            throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError {
+                            throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
+                            ProcessletException {
         WMSContentProvider wmsContentProvider = new WMSContentProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
@@ -155,7 +165,9 @@ public class TestWMSContentProviderTest {
         XMLStreamWriter xmlWriter = null;
         try {
             xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( store );
-            XMLStreamUtils.skipStartDocument( xmlReader );
+            if ( xmlReader.getEventType() == START_DOCUMENT ) {
+                xmlReader.nextTag();
+            }
             XMLAdapter.writeElement( xmlWriter, xmlReader );
         } finally {
             try {
@@ -176,21 +188,68 @@ public class TestWMSContentProviderTest {
                                                                    store );
 
         inputs.add( mapProcesslet );
-        jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds,
-                                                                       new HashMap<String, String>() );
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put( "wmsMAP_map", "java.lang.String" );
+        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "LEGEND", "java.lang.String" );
+        jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
 
-        assertEquals( 2, params.size() );
+        // must be 2 (legend is not yet supported)
+        assertEquals( 1, params.size() );
         assertEquals( 1, processedIds.size() );
         XMLAdapter a = new XMLAdapter( jrxml );
         String[] elements = a.getNodesAsStrings( a.getRootElement(),
                                                  new XPath(
                                                             "/jasper:jasperReport/jasper:detail/jasper:band/jasper:frame/jasper:staticText/jasper:text/text()",
                                                             nsContext ) );
+        assertEquals( 2, elements.length );
+        boolean containsLake = false;
+        boolean containsOverview = false;
         for ( int i = 0; i < elements.length; i++ ) {
-            System.out.println( elements[i] );
+            if ( "Lake".equals( elements[i] ) )
+                containsLake = true;
+            if ( "StateOverview".equals( elements[i] ) )
+                containsOverview = true;
         }
-        System.out.println( a.toString() );
-        assertEquals( 4, elements.length );
+        assertTrue( containsOverview );
+        assertTrue( containsLake );
+    }
+
+    @Test
+    public void testAnaylizeRequestOrder()
+                            throws JAXBException, IOException {
+        WMSContentProvider wmsContentProvider = new WMSContentProvider();
+
+        JAXBContext jc = JAXBContext.newInstance( org.deegree.services.wps.provider.jrxml.jaxb.map.Map.class );
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        InputStream is = TestWMSContentProviderTest.class.getResourceAsStream( "mapDescription.xml" );
+        org.deegree.services.wps.provider.jrxml.jaxb.map.Map map = (org.deegree.services.wps.provider.jrxml.jaxb.map.Map) unmarshaller.unmarshal( is );
+
+        List<Pair<String, DATASOURCE>> anaylizeRequestOrder = wmsContentProvider.anaylizeRequestOrder( map.getDatasources().getWMSDatasource(),
+                                                                                                       new ArrayList<WFSDatasource>(),
+                                                                                                       250, 250,
+                                                                                                       "48,8,50,10",
+                                                                                                       "epsg:4326" );
+
+        List<Pair<String, String>> expectedParts = new ArrayList<Pair<String, String>>();
+        expectedParts.add( new Pair<String, String>( "http://demo.deegree.org:80/deegree-wms/services", "StateOverview" ) );
+        expectedParts.add( new Pair<String, String>( "http://testing.deegree.org:80/deegree-wms/services", "River" ) );
+        expectedParts.add( new Pair<String, String>( "http://demo.deegree.org:80/deegree-wms/services", "Lake" ) );
+        expectedParts.add( new Pair<String, String>( "http://testing.printer.org:80/deegree-wms/services",
+                                                     "Vegetation,Wood" ) );
+        expectedParts.add( new Pair<String, String>( "http://localhost:8080/deegree-wms/services", "Town,SmallTown" ) );
+
+        int index = 0;
+        assertEquals( expectedParts.size(), anaylizeRequestOrder.size() );
+        for ( Pair<String, DATASOURCE> request : anaylizeRequestOrder ) {
+            Pair<String, String> expected = expectedParts.get( index++ );
+            assertTrue( request.getSecond() == DATASOURCE.WMS );
+            String r = request.getFirst();
+            assertTrue( r.startsWith( expected.first ) );
+            assertTrue( r.contains( expected.second ) );
+        }
+
+        is.close();
     }
 
 }
