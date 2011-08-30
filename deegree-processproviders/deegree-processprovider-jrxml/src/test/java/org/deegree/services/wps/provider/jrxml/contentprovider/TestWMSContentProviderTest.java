@@ -80,8 +80,8 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInputImpl;
 import org.deegree.services.wps.input.EmbeddedComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
-import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.DATASOURCE;
-import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
+import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.OrderedDatasource;
+import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.WMSOrderedDatasource;
 import org.junit.Test;
 
 /**
@@ -202,7 +202,7 @@ public class TestWMSContentProviderTest {
                                                  new XPath(
                                                             "/jasper:jasperReport/jasper:detail/jasper:band/jasper:frame/jasper:staticText/jasper:text/text()",
                                                             nsContext ) );
-        assertEquals( 2, elements.length );
+        assertEquals( 3, elements.length );
         boolean containsLake = false;
         boolean containsOverview = false;
         for ( int i = 0; i < elements.length; i++ ) {
@@ -225,11 +225,7 @@ public class TestWMSContentProviderTest {
         InputStream is = TestWMSContentProviderTest.class.getResourceAsStream( "mapDescription.xml" );
         org.deegree.services.wps.provider.jrxml.jaxb.map.Map map = (org.deegree.services.wps.provider.jrxml.jaxb.map.Map) unmarshaller.unmarshal( is );
 
-        List<Pair<String, DATASOURCE>> anaylizeRequestOrder = wmsContentProvider.anaylizeRequestOrder( map.getDatasources().getWMSDatasource(),
-                                                                                                       new ArrayList<WFSDatasource>(),
-                                                                                                       250, 250,
-                                                                                                       "48,8,50,10",
-                                                                                                       "epsg:4326" );
+        List<OrderedDatasource<?>> anaylizeRequestOrder = wmsContentProvider.anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );
 
         List<Pair<String, String>> expectedParts = new ArrayList<Pair<String, String>>();
         expectedParts.add( new Pair<String, String>( "http://demo.deegree.org:80/deegree-wms/services", "StateOverview" ) );
@@ -241,13 +237,36 @@ public class TestWMSContentProviderTest {
 
         int index = 0;
         assertEquals( expectedParts.size(), anaylizeRequestOrder.size() );
-        for ( Pair<String, DATASOURCE> request : anaylizeRequestOrder ) {
+        for ( OrderedDatasource<?> ds : anaylizeRequestOrder ) {
+            assertTrue( ds instanceof WMSOrderedDatasource );
+            String r = ( (WMSOrderedDatasource) ds ).getRequest( 250, 250, "48,8,50,10", "epsg:4326" );
+            System.out.println(r);
             Pair<String, String> expected = expectedParts.get( index++ );
-            assertTrue( request.getSecond() == DATASOURCE.WMS );
-            String r = request.getFirst();
             assertTrue( r.startsWith( expected.first ) );
             assertTrue( r.contains( expected.second ) );
         }
+
+        is.close();
+    }
+
+    @Test
+    public void testAnaylizeRequestOrderSimple()
+                            throws JAXBException, IOException {
+        WMSContentProvider wmsContentProvider = new WMSContentProvider();
+
+        JAXBContext jc = JAXBContext.newInstance( org.deegree.services.wps.provider.jrxml.jaxb.map.Map.class );
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        InputStream is = TestWMSContentProviderTest.class.getResourceAsStream( "mapDescription_simple.xml" );
+        org.deegree.services.wps.provider.jrxml.jaxb.map.Map map = (org.deegree.services.wps.provider.jrxml.jaxb.map.Map) unmarshaller.unmarshal( is );
+
+        List<OrderedDatasource<?>> anaylizeRequestOrder = wmsContentProvider.anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );
+
+        assertEquals( 1, anaylizeRequestOrder.size() );
+        OrderedDatasource<?> ds = anaylizeRequestOrder.get( 0 );
+        assertTrue( ds instanceof WMSOrderedDatasource );
+        String r = ( (WMSOrderedDatasource) ds ).getRequest( 250, 250, "48,8,50,10", "epsg:4326" );
+        assertTrue( r.startsWith( "http://demo.deegree.org:80/deegree-wms/services" ) );
+        assertTrue( r.contains( "StateOverview,Lake" ) );
 
         is.close();
     }

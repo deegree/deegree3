@@ -40,6 +40,7 @@ import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -56,6 +57,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +75,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ComplexFormatType;
@@ -85,7 +86,6 @@ import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.AbstractDatasourceType;
-import org.deegree.services.wps.provider.jrxml.jaxb.map.Datasources;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WMSDatasource;
@@ -203,6 +203,8 @@ public class WMSContentProvider implements JrxmlContentProvider {
                         XMLAdapter jrxmlAdapter = new XMLAdapter( jrxml );
                         OMElement root = jrxmlAdapter.getRootElement();
 
+                        List<OrderedDatasource<?>> datasources = anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );
+
                         // create map
                         String mapKey = "wms" + mapId + "_map";
                         if ( parameters.containsKey( mapKey ) ) {
@@ -220,13 +222,17 @@ public class WMSContentProvider implements JrxmlContentProvider {
                                                                                                      nsContext ) );
                             int height = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep, new XPath( "@height",
                                                                                                       nsContext ) );
-                            params.put( mapKey, prepareMap( map, parameters.get( mapKey ), width, height ) );
+                            params.put( mapKey, prepareMap( map, datasources, parameters.get( mapKey ), width, height ) );
                         }
 
-                        prepareLayerlist( "wms" + mapId + "_layerList", jrxmlAdapter, map );
+                        prepareLayerlist( "wms" + mapId + "_layerList", jrxmlAdapter, map, datasources );
 
                         // TODO
-                        // params.put( "wms" + mapId + "_legend", legendUrl );
+                        // String legendKey = "wms" + mapId + "_legend";
+                        // if ( parameters.containsKey( legendKey ) ) {
+                        // params.put( "wms" + mapId + "_legend",
+                        // prepareLegend( legendKey, jrxmlAdapter, datasources, parameters.get( legendKey ) ) );
+                        // }
 
                         // get input stream
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -262,110 +268,125 @@ public class WMSContentProvider implements JrxmlContentProvider {
         return jrxml;
     }
 
-    private void prepareLayerlist( String layerListKey, XMLAdapter jrxmlAdapter,
-                                   org.deegree.services.wps.provider.jrxml.jaxb.map.Map map ) {
-        // remove this!
-        if ( map.getDatasources().getWMSDatasource().size() > 0 ) {
-            OMElement layerListFrame = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
-                                                                new XPath(
-                                                                           "/jasper:jasperReport/jasper:detail/jasper:band/jasper:frame[jasper:reportElement/@key='"
-                                                                                                   + layerListKey
-                                                                                                   + "']", nsContext ) );
-            if ( layerListFrame != null ) {
-                LOG.debug( "Found layer list with key '" + layerListKey + "' to adjust." );
-                List<OMElement> elements = jrxmlAdapter.getElements( layerListFrame, new XPath( "jasper:staticText",
-                                                                                                nsContext ) );
-                OMElement grpTemplate = elements.get( 0 );
-                // OMElement field = elements.get( 1 );
-                for ( OMElement element : elements ) {
-                    element.detach();
-                }
-                XMLAdapter grpAdapter = new XMLAdapter( grpTemplate );
-                int grpHeight = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@height",
-                                                                                 nsContext ), 15 );
-                int y = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@y", nsContext ), 0 );
-                OMFactory factory = OMAbstractFactory.getOMFactory();
+    private Object prepareLegend( String legendKey, XMLAdapter jrxmlAdapter, List<OrderedDatasource<?>> datasources,
+                                  String type )
+                            throws ProcessletException {
 
-                WMSDatasource wmsDatasource = map.getDatasources().getWMSDatasource().get( 0 );
-                int index = 0;
-                for ( Layer layer : wmsDatasource.getLayers().getLayer() ) {
-                    OMElement newGrp = grpTemplate.cloneOMElement();
-                    OMElement e = newGrp.getFirstChildWithName( new QName( JASPERREPORTS_NS, "reportElement" ) );
-                    e.addAttribute( "y", Integer.toString( y + grpHeight * index ), null );
-                    e = newGrp.getFirstChildWithName( new QName( JASPERREPORTS_NS, "text" ) );
-                    // this does not work:
-                    // e.setText( layer );
-                    // it attaches the text, but does not replace
-                    e.getFirstOMChild().detach();
-                    e.addChild( factory.createOMText( e, layer.getTitle() != null ? layer.getTitle() : layer.getName() ) );
-                    layerListFrame.addChild( newGrp );
-                    index++;
+        OMElement legendRE = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                      new XPath(
+                                                                 "/jasper:jasperReport/jasper:detail/jasper:band/jasper:image[jasper:imageExpression/text()='"
+                                                                                         + legendKey
+                                                                                         + "']/jasper:reportElement",
+                                                                 nsContext ) );
+        if ( legendRE != null ) {
+            int width = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@width", nsContext ) );
+            int height = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@height", nsContext ) );
+            // TODO: bgcolor?
+            Color bg = Color.decode( "0xFFFFFF" );
+            BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+            Graphics g = bi.getGraphics();
+            g.setColor( bg );
+            g.fillRect( 0, 0, bi.getWidth(), bi.getHeight() );
+            g.setColor( Color.BLACK );
+            int k = 0;
+
+            for ( int i = 0; i < datasources.size(); i++ ) {
+                if ( k > bi.getHeight() ) {
+                    LOG.warn( "The necessary legend size is larger than the available legend space." );
                 }
-            } else {
-                LOG.debug( "no layer list with key '" + layerListKey + "' found." );
+                BufferedImage img = datasources.get( i ).getLegend();
+                if ( img != null ) {
+                    if ( img.getWidth( null ) < 50 ) {
+                        // it is assumed that no label is assigned
+                        g.drawImage( img, 0, k, null );
+                        g.drawString( datasources.get( i ).datasource.getName(), img.getWidth( null ) + 10,
+                                      k + img.getHeight( null ) / 2 );
+                    } else {
+                        g.drawImage( img, 0, k, null );
+                    }
+                    k = k + img.getHeight( null ) + 10;
+                } else {
+                    g.drawString( "- " + datasources.get( i ).datasource.getName(), 0, k + 10 );
+                    k = k + 20;
+                }
             }
+            g.dispose();
+            return bi;
+        }
+        return null;
+    }
+
+    private void prepareLayerlist( String layerListKey, XMLAdapter jrxmlAdapter,
+                                   org.deegree.services.wps.provider.jrxml.jaxb.map.Map map,
+                                   List<OrderedDatasource<?>> datasources ) {
+
+        OMElement layerListFrame = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                            new XPath(
+                                                                       "/jasper:jasperReport/jasper:detail/jasper:band/jasper:frame[jasper:reportElement/@key='"
+                                                                                               + layerListKey + "']",
+                                                                       nsContext ) );
+        if ( layerListFrame != null ) {
+            LOG.debug( "Found layer list with key '" + layerListKey + "' to adjust." );
+            List<OMElement> elements = jrxmlAdapter.getElements( layerListFrame, new XPath( "jasper:staticText",
+                                                                                            nsContext ) );
+            OMElement grpTemplate = elements.get( 0 );
+            OMElement fieldTemplate = elements.get( 1 );
+            for ( OMElement element : elements ) {
+                element.detach();
+            }
+            XMLAdapter grpAdapter = new XMLAdapter( grpTemplate );
+            int grpHeight = grpAdapter.getNodeAsInt( grpTemplate,
+                                                     new XPath( "jasper:reportElement/@height", nsContext ), 15 );
+            int grpY = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@y", nsContext ), 0 );
+
+            XMLAdapter fieldAdapter = new XMLAdapter( fieldTemplate );
+            int fieldHeight = fieldAdapter.getNodeAsInt( fieldTemplate, new XPath( "jasper:reportElement/@height",
+                                                                                   nsContext ), 15 );
+            OMFactory factory = OMAbstractFactory.getOMFactory();
+            // y + height * index
+            int y = grpY;
+            for ( OrderedDatasource<?> datasource : datasources ) {
+                for ( String datasourceKey : datasource.getLayerList().keySet() ) {
+                    OMElement newGrp = createLayerEntry( grpTemplate, y, factory, datasourceKey );
+                    layerListFrame.addChild( newGrp );
+                    y += grpHeight;
+                    for ( String layerName : datasource.getLayerList().get( datasourceKey ) ) {
+                        OMElement newField = createLayerEntry( fieldTemplate, y, factory, layerName );
+                        layerListFrame.addChild( newField );
+                        y += fieldHeight;
+                    }
+                }
+            }
+        } else {
+            LOG.debug( "no layer list with key '" + layerListKey + "' found." );
         }
     }
 
-    private Object prepareMap( org.deegree.services.wps.provider.jrxml.jaxb.map.Map map, String type, int width,
-                               int height )
+    private OMElement createLayerEntry( OMElement template, int y, OMFactory factory, String text ) {
+        OMElement newGrp = template.cloneOMElement();
+        OMElement e = newGrp.getFirstChildWithName( new QName( JASPERREPORTS_NS, "reportElement" ) );
+        e.addAttribute( "y", Integer.toString( y ), null );
+        e = newGrp.getFirstChildWithName( new QName( JASPERREPORTS_NS, "text" ) );
+        // this does not work:
+        // e.setText( layer );
+        // it attaches the text, but does not replace
+        e.getFirstOMChild().detach();
+        e.addChild( factory.createOMText( e, text ) );
+        return newGrp;
+    }
+
+    private Object prepareMap( org.deegree.services.wps.provider.jrxml.jaxb.map.Map map,
+                               List<OrderedDatasource<?>> datasources, String type, int width, int height )
                             throws ProcessletException {
-        Datasources datasources = map.getDatasources();
-        List<WMSDatasource> wmsDatasources = datasources.getWMSDatasource();
-
-        if ( datasources.getWFSDatasource().size() > 0 ) {
-            LOG.info( "WFS datasources are not yet supported and will be ignored!" );
-        }
-
         BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
         Graphics g = bi.getGraphics();
 
-        List<Pair<String, DATASOURCE>> requests = anaylizeRequestOrder( wmsDatasources, datasources.getWFSDatasource(),
-                                                                        width, height, map.getDetail().getBbox(),
-                                                                        map.getDetail().getCrs() );
-
-        for ( Pair<String, DATASOURCE> request : requests ) {
-            // String getMapRequest = createGetMapRequest( wmsDatasource, width, height, map.getDetail().getBbox(),
-            // map.getDetail().getCrs() );
-            if ( request.second == DATASOURCE.WMS ) {
-                LOG.debug( "try to receive map: " + request.first );
-                InputStream is = null;
-                SeekableStream fss = null;
-                try {
-                    URLConnection conn = new URL( request.first ).openConnection();
-                    is = conn.getInputStream();
-
-                    if ( LOG.isDebugEnabled() ) {
-                        File logFile = File.createTempFile( "getMap", "response" );
-                        OutputStream logStream = new FileOutputStream( logFile );
-
-                        byte[] buffer = new byte[1024];
-                        int read = 0;
-                        while ( ( read = is.read( buffer ) ) != -1 ) {
-                            logStream.write( buffer, 0, read );
-                        }
-                        logStream.close();
-
-                        is = new FileInputStream( logFile );
-                        LOG.debug( "get map response response can be found at " + logFile );
-                    }
-
-                    fss = new MemoryCacheSeekableStream( is );
-                    RenderedOp ro = JAI.create( "stream", fss );
-                    BufferedImage img = ro.getAsBufferedImage();
-
-                    g.drawImage( img, 0, 0, null );
-                } catch ( Exception e ) {
-                    String msg = "could not load map from: " + request.first;
-                    LOG.error( msg, e );
-                    throw new ProcessletException( msg );
-                } finally {
-                    IOUtils.closeQuietly( fss );
-                    IOUtils.closeQuietly( is );
-                }
-                g.dispose();
-            }
+        String bbox = map.getDetail().getBbox();
+        String srs = map.getDetail().getCrs();
+        for ( OrderedDatasource<?> datasource : datasources ) {
+            g.drawImage( datasource.getImage( width, height, bbox, srs ), 0, 0, null );
         }
+        g.dispose();
 
         if ( type != null && type.equals( "java.io.File" ) ) {
             return writeImage( bi );
@@ -388,76 +409,101 @@ public class WMSContentProvider implements JrxmlContentProvider {
         return writeImage( bi ).toString();
     }
 
-    List<Pair<String, DATASOURCE>> anaylizeRequestOrder( List<WMSDatasource> wmsDatasources,
-                                                         List<WFSDatasource> wfsDatasources, int width, int height,
-                                                         String bbox, String crs ) {
-        List<Pair<String, DATASOURCE>> requests = new ArrayList<Pair<String, DATASOURCE>>();
+    List<OrderedDatasource<?>> anaylizeRequestOrder( List<AbstractDatasourceType> datasources ) {
 
-        List<IndicesDatasource<WMSDatasource>> orderedWMSDatasources = new ArrayList<IndicesDatasource<WMSDatasource>>();
-        for ( WMSDatasource wmsDatasource : wmsDatasources ) {
-            List<Layer> layers = wmsDatasource.getLayers().getLayer();
+        List<OrderedDatasource<?>> orderedDatasources = new ArrayList<OrderedDatasource<?>>();
+        for ( AbstractDatasourceType datasource : datasources ) {
+            if ( datasource instanceof WMSDatasource ) {
+                WMSDatasource wmsDatasource = (WMSDatasource) datasource;
+                List<Layer> layers = wmsDatasource.getLayers().getLayer();
+                int index = 0;
+                for ( Layer layer : layers ) {
+                    BigInteger position = layer.getPosition();
+                    if ( position != null ) {
+                        int intPos = position.intValue();
 
-            int index = 0;
-            for ( Layer layer : layers ) {
-                BigInteger position = layer.getPosition();
-                if ( position != null ) {
-                    int intPos = position.intValue();
-                    IndicesDatasource<WMSDatasource> contains = contains( orderedWMSDatasources, wmsDatasource, intPos );
-                    if ( contains != null ) {
-                        List<Layer> orderedLayers = contains.layers;
-                        int i = 0;
-                        for ( Layer orderedLayer : orderedLayers ) {
-                            if ( orderedLayer.getPosition().intValue() < intPos ) {
-                                i++;
+                        WMSOrderedDatasource contains = contains( orderedDatasources, wmsDatasource, intPos );
+                        // splitten! wenn position zwischen zwei
+                        if ( contains != null ) {
+                            List<Layer> orderedLayers = contains.layers;
+                            int i = 0;
+                            for ( Layer orderedLayer : orderedLayers ) {
+                                if ( orderedLayer.getPosition().intValue() < intPos ) {
+                                    i++;
+                                }
                             }
-                        }
-                        contains.layers.add( i, layer );
-                        contains.min = contains.min < intPos ? contains.min : intPos;
-                        contains.max = contains.max > intPos ? contains.max : intPos;
-                    } else {
-                        List<Layer> newLayerList = new ArrayList<Layer>();
-                        newLayerList.add( layer );
-                        int indexToAdd = 0;
-                        for ( IndicesDatasource<WMSDatasource> orderedWMSDatasource : orderedWMSDatasources ) {
-                            if ( orderedWMSDatasource.min > 0 && intPos > orderedWMSDatasource.min ) {
-                                indexToAdd++;
-                            } else {
-                                break;
+                            contains.layers.add( i, layer );
+                            contains.min = contains.min < intPos ? contains.min : intPos;
+                            contains.max = contains.max > intPos ? contains.max : intPos;
+                        } else {
+                            List<Layer> newLayerList = new ArrayList<Layer>();
+                            newLayerList.add( layer );
+                            int indexToAdd = 0;
+                            boolean isBetween = false;
+                            for ( OrderedDatasource<?> orderedDatasource : orderedDatasources ) {
+                                if ( orderedDatasource.min > 0 && intPos > orderedDatasource.min
+                                     && intPos < orderedDatasource.max ) {
+                                    indexToAdd++;
+                                    isBetween = true;
+                                    break;
+                                } else if ( orderedDatasource.min > 0 && intPos > orderedDatasource.max ) {
+                                    indexToAdd++;
+                                } else {
+                                    break;
+                                }
                             }
+                            if ( isBetween ) {
+                                OrderedDatasource<?> dsToSplit = orderedDatasources.get( indexToAdd - 1 );
+                                if ( dsToSplit instanceof WMSOrderedDatasource ) {
+                                    List<Layer> newLayerListFromSplit = new ArrayList<Layer>();
+                                    int newMinPos = 0;
+                                    int newMaxPos = 0;
+                                    for ( Layer l : ( (WMSOrderedDatasource) dsToSplit ).layers ) {
+                                        if ( l.getPosition() != null && l.getPosition().intValue() > intPos ) {
+                                            newLayerListFromSplit.add( l );
+                                            newMinPos = Math.min( l.getPosition().intValue(), newMinPos );
+                                            newMaxPos = Math.max( l.getPosition().intValue(), newMaxPos );
+                                        }
+                                    }
+                                    for ( Layer lToRemove : newLayerListFromSplit ) {
+                                        ( (WMSOrderedDatasource) dsToSplit ).layers.remove( lToRemove );
+                                    }
+                                    orderedDatasources.add( indexToAdd,
+                                                            new WMSOrderedDatasource(
+                                                                                      (WMSDatasource) dsToSplit.datasource,
+                                                                                      newLayerListFromSplit, intPos,
+                                                                                      intPos ) );
+
+                                }
+                            }
+                            orderedDatasources.add( indexToAdd, new WMSOrderedDatasource( wmsDatasource, newLayerList,
+                                                                                          intPos, intPos ) );
                         }
-                        orderedWMSDatasources.add( indexToAdd, new IndicesDatasource<WMSDatasource>( wmsDatasource,
-                                                                                                     newLayerList,
-                                                                                                     intPos, intPos ) );
-                    }
-                } else {
-                    IndicesDatasource<WMSDatasource> contains = contains( orderedWMSDatasources, wmsDatasource );
-                    if ( contains != null ) {
-                        contains.layers.add( layer );
                     } else {
-                        List<Layer> newLayerList = new ArrayList<Layer>();
-                        newLayerList.add( layer );
-                        orderedWMSDatasources.add( new IndicesDatasource<WMSDatasource>( wmsDatasource, newLayerList ) );
+                        WMSOrderedDatasource contains = contains( orderedDatasources, wmsDatasource );
+                        if ( contains != null ) {
+                            contains.layers.add( layer );
+                        } else {
+                            List<Layer> newLayerList = new ArrayList<Layer>();
+                            newLayerList.add( layer );
+                            orderedDatasources.add( new WMSOrderedDatasource( wmsDatasource, newLayerList ) );
+                        }
                     }
+                    index++;
                 }
-                index++;
             }
         }
-
-        for ( IndicesDatasource<WMSDatasource> orderedWMSDatasource : orderedWMSDatasources ) {
-            requests.add( new Pair<String, DATASOURCE>( createGetMapRequest( orderedWMSDatasource, width, height, bbox,
-                                                                             crs ), DATASOURCE.WMS ) );
-        }
-
-        return requests;
+        return orderedDatasources;
     }
 
-    private IndicesDatasource<WMSDatasource> contains( List<IndicesDatasource<WMSDatasource>> orderedDatasources,
-                                                       WMSDatasource datasource, int index ) {
+    private WMSOrderedDatasource contains( List<OrderedDatasource<?>> orderedDatasources, WMSDatasource datasource,
+                                           int index ) {
         int i = 0;
-        for ( IndicesDatasource<WMSDatasource> orderedDatasource : orderedDatasources ) {
+        for ( OrderedDatasource<?> orderedDatasource : orderedDatasources ) {
             if ( orderedDatasource.datasource.equals( datasource ) ) {
-                int maxBefore = 0;
-                int minNext = 0;
+                WMSOrderedDatasource wmsOrderedDatasource = (WMSOrderedDatasource) orderedDatasource;
+                int maxBefore = Integer.MIN_VALUE;
+                int minNext = Integer.MIN_VALUE;
                 if ( i - 1 > 0 && i - 1 < orderedDatasources.size() ) {
                     maxBefore = orderedDatasources.get( i - 1 ).max;
                 }
@@ -465,7 +511,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
                     minNext = orderedDatasources.get( i + 1 ).min;
                 }
                 if ( index > maxBefore && ( minNext < 0 || index < minNext ) ) {
-                    return orderedDatasource;
+                    return wmsOrderedDatasource;
                 }
             }
             i++;
@@ -473,36 +519,196 @@ public class WMSContentProvider implements JrxmlContentProvider {
         return null;
     }
 
-    private IndicesDatasource<WMSDatasource> contains( List<IndicesDatasource<WMSDatasource>> orderedDatasources,
-                                                       WMSDatasource datasource ) {
-        for ( IndicesDatasource<WMSDatasource> orderedDatasource : orderedDatasources ) {
+    private WMSOrderedDatasource contains( List<OrderedDatasource<?>> orderedDatasources, WMSDatasource datasource ) {
+        for ( OrderedDatasource<?> orderedDatasource : orderedDatasources ) {
             if ( orderedDatasource.datasource.equals( datasource ) ) {
-                return orderedDatasource;
+                return (WMSOrderedDatasource) orderedDatasource;
             }
         }
         return null;
     }
 
-    private class IndicesDatasource<T extends AbstractDatasourceType> {
+    abstract class OrderedDatasource<T extends AbstractDatasourceType> {
+        // OrderedDatasource
+        // abstract String getRequest( int width, int height, String bbox, String crs );
 
-        private final T datasource;
+        int min = Integer.MIN_VALUE;
+
+        int max = Integer.MIN_VALUE;
+
+        final T datasource;
+
+        public OrderedDatasource( T datasource ) {
+            this.datasource = datasource;
+        }
+
+        public abstract BufferedImage getLegend()
+                                throws ProcessletException;
+
+        public OrderedDatasource( T datasource, int min, int max ) {
+            this.datasource = datasource;
+            this.min = min;
+            this.max = max;
+        }
+
+        abstract BufferedImage getImage( int width, int height, String bbox, String srs )
+                                throws ProcessletException;
+
+        abstract Map<String, List<String>> getLayerList();
+    }
+
+    class WMSOrderedDatasource extends OrderedDatasource<WMSDatasource> {
 
         private List<Layer> layers;
 
-        private int min = Integer.MIN_VALUE;
-
-        private int max = Integer.MIN_VALUE;
-
-        public IndicesDatasource( T datasource, List<Layer> layers ) {
-            this.datasource = datasource;
+        public WMSOrderedDatasource( WMSDatasource datasource, List<Layer> layers ) {
+            super( datasource );
             this.layers = layers;
         }
 
-        public IndicesDatasource( T datasource, List<Layer> layers, int min, int max ) {
-            this.datasource = datasource;
+        public WMSOrderedDatasource( WMSDatasource datasource, List<Layer> layers, int min, int max ) {
+            super( datasource, min, max );
             this.layers = layers;
-            this.min = min;
-            this.max = max;
+        }
+
+        @Override
+        BufferedImage getImage( int width, int height, String bbox, String srs )
+                                throws ProcessletException {
+            String request = getRequest( width, height, bbox, srs );
+            LOG.debug( "try to receive map: " + request );
+            try {
+                return loadImage( request );
+            } catch ( IOException e ) {
+                String msg = "could not load image from: " + request;
+                LOG.error( msg, e );
+                throw new ProcessletException( msg );
+            }
+        }
+
+        private BufferedImage loadImage( String request )
+                                throws IOException {
+            LOG.debug( "try to load image from request " + request );
+            InputStream is = null;
+            SeekableStream fss = null;
+            try {
+                URLConnection conn = new URL( request ).openConnection();
+                is = conn.getInputStream();
+
+                if ( LOG.isDebugEnabled() ) {
+                    File logFile = File.createTempFile( "loadedImg", "response" );
+                    OutputStream logStream = new FileOutputStream( logFile );
+
+                    byte[] buffer = new byte[1024];
+                    int read = 0;
+                    while ( ( read = is.read( buffer ) ) != -1 ) {
+                        logStream.write( buffer, 0, read );
+                    }
+                    logStream.close();
+
+                    is = new FileInputStream( logFile );
+                    LOG.debug( "response can be found at " + logFile );
+                }
+
+                fss = new MemoryCacheSeekableStream( is );
+                RenderedOp ro = JAI.create( "stream", fss );
+                return ro.getAsBufferedImage();
+
+            } finally {
+                IOUtils.closeQuietly( fss );
+                IOUtils.closeQuietly( is );
+            }
+        }
+
+        String getRequest( int width, int height, String bbox, String srs ) {
+            String url = datasource.getUrl();
+            StringBuilder sb = new StringBuilder();
+            sb.append( url );
+            if ( !url.endsWith( "?" ) )
+                sb.append( '?' );
+            sb.append( "REQUEST=GetMap&" );
+            sb.append( "SERVICE=WMS&" );
+            sb.append( "VERSION=" ).append( datasource.getVersion() ).append( '&' );
+            sb.append( "WIDTH=" ).append( width ).append( '&' );
+            sb.append( "HEIGHT=" ).append( height ).append( '&' );
+
+            sb.append( "LAYERS=" );
+            boolean isFirst = true;
+            for ( Layer layer : layers ) {
+                if ( !isFirst )
+                    sb.append( ',' );
+                sb.append( layer.getName().trim() );
+                isFirst = false;
+            }
+            sb.append( '&' );
+
+            sb.append( "TRANSPARENT=" ).append( "TRUE" ).append( '&' );
+            sb.append( "FORMAT=" ).append( "image/png" ).append( '&' );
+
+            sb.append( "BBOX=" ).append( bbox.trim() ).append( '&' );
+            sb.append( "SRS=" ).append( srs.trim() );
+            // STYLES=
+            return sb.toString();
+        }
+
+        @Override
+        Map<String, List<String>> getLayerList() {
+            HashMap<String, List<String>> layerList = new HashMap<String, List<String>>();
+            ArrayList<String> layerNames = new ArrayList<String>( layers.size() );
+            for ( Layer layer : layers ) {
+                layerNames.add( layer.getTitle() != null ? layer.getTitle() : layer.getName() );
+            }
+            layerList.put( datasource.getName(), layerNames );
+            return layerList;
+        }
+
+        @Override
+        public BufferedImage getLegend()
+                                throws ProcessletException {
+            String legendUrl = getLegendUrl();
+            try {
+                return loadImage( legendUrl );
+            } catch ( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        String getLegendUrl() {
+            String legendUrl = "";
+            return legendUrl;
+        }
+
+    }
+
+    class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
+
+        public WFSOrderedDatasource( WFSDatasource datasource ) {
+            super( datasource );
+        }
+
+        public WFSOrderedDatasource( WFSDatasource datasource, int pos ) {
+            super( datasource, pos, pos );
+        }
+
+        @Override
+        BufferedImage getImage( int width, int height, String bbox, String srs )
+                                throws ProcessletException {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        Map<String, List<String>> getLayerList() {
+            HashMap<String, List<String>> layerList = new HashMap<String, List<String>>();
+            layerList.put( datasource.getName(), new ArrayList<String>() );
+            return layerList;
+        }
+
+        @Override
+        public BufferedImage getLegend() {
+            // TODO Auto-generated method stub
+            return null;
         }
 
     }
@@ -534,36 +740,4 @@ public class WMSContentProvider implements JrxmlContentProvider {
         }
     }
 
-    private String createGetMapRequest( IndicesDatasource<WMSDatasource> orderedWMSDatasource, int width, int height,
-                                        String bbox, String srs ) {
-        String url = orderedWMSDatasource.datasource.getUrl();
-        StringBuilder sb = new StringBuilder();
-        sb.append( url );
-        if ( !url.endsWith( "?" ) )
-            sb.append( '?' );
-        sb.append( "REQUEST=GetMap&" );
-        sb.append( "SERVICE=WMS&" );
-        sb.append( "VERSION=" ).append( orderedWMSDatasource.datasource.getVersion() ).append( '&' );
-        sb.append( "WIDTH=" ).append( width ).append( '&' );
-        sb.append( "HEIGHT=" ).append( height ).append( '&' );
-
-        sb.append( "LAYERS=" );
-        List<Layer> layers = orderedWMSDatasource.layers;
-        boolean isFirst = true;
-        for ( Layer layer : layers ) {
-            if ( !isFirst )
-                sb.append( ',' );
-            sb.append( layer.getName().trim() );
-            isFirst = false;
-        }
-        sb.append( '&' );
-
-        sb.append( "TRANSPARENT=" ).append( "TRUE" ).append( '&' );
-        sb.append( "FORMAT=" ).append( "image/png" ).append( '&' );
-
-        sb.append( "BBOX=" ).append( bbox.trim() ).append( '&' );
-        sb.append( "SRS=" ).append( srs.trim() );
-        // STYLES=
-        return sb.toString();
-    }
 }

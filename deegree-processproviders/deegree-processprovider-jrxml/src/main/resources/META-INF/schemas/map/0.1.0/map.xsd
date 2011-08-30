@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:n1="http://www.opengis.net/ogc"
 	xmlns:sld="http://www.opengis.net/sld" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.deegree.org/processprovider/map" xmlns:map="http://www.deegree.org/processprovider/map" elementFormDefault="qualified" >
+	targetNamespace="http://www.deegree.org/processprovider/map" xmlns:map="http://www.deegree.org/processprovider/map"
+	elementFormDefault="qualified">
 	<xs:import namespace="http://www.opengis.net/sld" /><!-- schemaLocation="http://schemas.opengeospatial.net/sld/1.0.20/StyledLayerDescriptor.xsd" -->
 	<xs:import namespace="http://www.opengis.net/ogc" /><!-- schemaLocation="http://schemas.opengeospatial.net/filter/1.1.0/filter.xsd" 
 		/> -->
@@ -63,6 +64,8 @@
 							minOccurs="1" />
 						<!-- <xs:element ref="n1:Filter" minOccurs="0" /> -->
 						<xs:element ref="map:Style" minOccurs="0" />
+						<xs:element name="position" type="xs:integer"
+							minOccurs="0" />
 					</xs:sequence>
 				</xs:extension>
 			</xs:complexContent>
@@ -97,12 +100,10 @@
 	</xs:element>
 	<xs:element name="Datasources">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="map:WMSDatasource" minOccurs="0"
-					maxOccurs="unbounded" />
-				<xs:element ref="map:WFSDatasource" minOccurs="0"
-					maxOccurs="unbounded" />
-			</xs:sequence>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element ref="map:WMSDatasource" />
+				<xs:element ref="map:WFSDatasource" />
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Authentification">
