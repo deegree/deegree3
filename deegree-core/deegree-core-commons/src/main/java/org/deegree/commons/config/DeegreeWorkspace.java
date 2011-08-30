@@ -59,6 +59,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+import javax.imageio.ImageIO;
+
 import org.deegree.commons.modules.ModuleInfo;
 import org.slf4j.Logger;
 
@@ -397,6 +399,7 @@ public class DeegreeWorkspace {
      */
     public synchronized void initAll()
                             throws ResourceInitException {
+        ImageIO.scanForPlugins();
         TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
         initManagers();
         for ( ResourceManager m : managers ) {
