@@ -63,4 +63,17 @@ public class Themes {
         return list;
     }
 
+    /**
+     * @param t
+     * @return all themes contained in this theme and subthemes
+     */
+    public static List<Theme> getAllThemes( Theme t ) {
+        List<Theme> list = new ArrayList<Theme>();
+        list.addAll( t.getThemes() );
+        for ( Theme c : t.getThemes() ) {
+            list.addAll( getAllThemes( c ) );
+        }
+        return list;
+    }
+
 }

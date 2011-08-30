@@ -40,6 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence.standard;
 
+import static java.util.Collections.singletonList;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -50,9 +51,13 @@ import java.util.List;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreManager;
+import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
@@ -77,9 +82,11 @@ public class StandardThemeProvider implements ThemeProvider {
         this.workspace = workspace;
     }
 
-    private Theme buildTheme( String identifier, List<String> layers, List<ThemeType> themes, List<LayerStore> stores )
+    private Theme buildTheme( ThemeType current, List<String> layers, List<ThemeType> themes, List<LayerStore> stores )
                             throws ResourceInitException {
         List<Layer> lays = new ArrayList<Layer>( layers.size() );
+
+        LayerMetadata md = new LayerMetadata();
 
         for ( String l : layers ) {
             Layer lay = null;
@@ -93,14 +100,30 @@ public class StandardThemeProvider implements ThemeProvider {
                 LOG.warn( "Layer with identifier {} is not available from any layer store.", l );
                 continue;
             }
+            md.setEnvelope( lay.getMetadata().getEnvelope() );
+            md.setCoordinateSystems( lay.getMetadata().getCoordinateSystems() );
             lays.add( lay );
         }
+        // TODO proper aggregation of envelope/crs and possibly other metadata
         List<Theme> thms = new ArrayList<Theme>( themes.size() );
         for ( ThemeType tt : themes ) {
-            thms.add( buildTheme( tt.getIdentifier(), tt.getLayer(), tt.getTheme(), stores ) );
+            thms.add( buildTheme( tt, tt.getLayer(), tt.getTheme(), stores ) );
         }
-        LayerMetadata md = new LayerMetadata();
-        md.setName( identifier );
+        md.setName( current.getIdentifier() );
+        Description desc = new Description();
+        desc.setTitle( singletonList( new LanguageString( current.getTitle(), null ) ) );
+        String crss = current.getCRS();
+        if ( crss != null ) {
+            List<ICRS> list = new ArrayList<ICRS>();
+            String[] cs = crss.trim().split( "[\\s\n]+" );
+            for ( String c : cs ) {
+                if ( !c.isEmpty() ) {
+                    list.add( CRSManager.getCRSRef( c ) );
+                }
+            }
+            md.setCoordinateSystems( list );
+        }
+        md.setDescription( desc );
         return new StandardTheme( md, thms, lays );
     }
 
@@ -126,7 +149,7 @@ public class StandardThemeProvider implements ThemeProvider {
             }
 
             ThemeType root = cfg.getTheme();
-            return buildTheme( root.getIdentifier(), root.getLayer(), root.getTheme(), stores );
+            return buildTheme( root, root.getLayer(), root.getTheme(), stores );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse theme configuration file.", e );
         }

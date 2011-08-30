@@ -8,10 +8,12 @@
 
   <Theme>
     <Identifier>base</Identifier>
+    <Title>Root theme</Title>
     <Layer>water</Layer>
     <Layer>water2</Layer>
     <Theme>
       <Identifier>water</Identifier>
+      <Title>water theme</Title>
       <Layer>water3</Layer>
       <Layer>water4</Layer>
     </Theme>

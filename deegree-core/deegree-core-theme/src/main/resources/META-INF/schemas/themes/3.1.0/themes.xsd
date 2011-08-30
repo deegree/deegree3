@@ -13,8 +13,20 @@
 
   <complexType name="ThemeType">
     <sequence>
-      <element name="Identifier" type="string" minOccurs="0" />
-      <!-- TODO description -->
+      <choice>
+        <element name="Metadata">
+          <complexType>
+            <attribute name="fromLayer" type="boolean" />
+          </complexType>
+        </element>
+        <sequence>
+          <!-- TODO maybe use a common format/beans for metadata instead? -->
+          <!-- TODO also implement stuff like bounding box/abstract etc. -->
+          <element name="Identifier" type="string" minOccurs="0" />
+          <element name="Title" type="string" />
+          <element name="CRS" type="string" minOccurs="0" />
+        </sequence>
+      </choice>
       <element name="Layer" type="string" minOccurs="0" maxOccurs="unbounded" />
       <element name="Theme" type="t:ThemeType" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
