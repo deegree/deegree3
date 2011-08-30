@@ -237,7 +237,7 @@ public class ISORecord implements MetadataRecord {
         int counter = 0;
         for ( BoundingBox box : bboxList ) {
             CRS bboxCRS = pElem.getQueryableProperties().getCrs().get( counter );
-            // convert to the deegree CRSCodeType - this is not nice! 
+            // convert to the deegree CRSCodeType - this is not nice!
             CRSCodeType crsCT = new CRSCodeType( bboxCRS.getCrsId(), bboxCRS.getAuthority() );
             ICRS crs = CRSManager.getCRSRef( crsCT.toString() );
             env[counter++] = new GeometryFactory().createEnvelope( box.getWestBoundLongitude(),
@@ -350,23 +350,11 @@ public class ISORecord implements MetadataRecord {
 
     public byte[] getAsByteArray()
                             throws FactoryConfigurationError {
-        // XMLStreamReader reader = new WhitespaceElementFilter( getAsXMLStream() );
-        // XMLStreamReader reader = getAsXMLStream();
-        // XMLStreamWriter writer = null;
-        // try {
-        // writer = XMLOutputFactory.newInstance().createXMLStreamWriter(
-        // new FileOutputStream(
-        // "/home/thomas/Desktop/ztest.xml" ) );
-        // } catch ( FileNotFoundException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // generateOutput( writer, reader );
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream( 20000 );
+            ByteArrayOutputStream out = new ByteArrayOutputStream( 20000 );           
             root.serialize( out );
-            out.close();
+            out.close();            
             return out.toByteArray();
         } catch ( XMLStreamException e ) {
             return root.toString().getBytes();
