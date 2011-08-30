@@ -61,7 +61,7 @@ public class JrxmlUtils {
 
     public enum OUTPUT_MIME_TYPES {
 
-        PDF( "application/pdf" );
+        PDF( "application/pdf" ), HTML( "text/html" );
 
         private final String mimeType;
 
@@ -71,6 +71,15 @@ public class JrxmlUtils {
 
         public String getMimeType() {
             return mimeType;
+        }
+
+        public static OUTPUT_MIME_TYPES valueOfMimeType( String mimeType ) {
+            for ( OUTPUT_MIME_TYPES omt : OUTPUT_MIME_TYPES.values() ) {
+                if ( omt.mimeType.equals( mimeType ) ) {
+                    return omt;
+                }
+            }
+            return null;
         }
 
     }

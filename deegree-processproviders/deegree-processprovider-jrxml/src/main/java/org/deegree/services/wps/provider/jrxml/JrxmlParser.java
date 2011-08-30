@@ -51,7 +51,8 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition;
+import org.deegree.process.jaxb.java.ComplexFormatType;
+import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
 import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
@@ -83,9 +84,8 @@ public class JrxmlParser {
      *            a list of {@link JrxmlContentProvider}s, never <code>null</code>
      * @return
      */
-    public Pair<ProcessDefinition,Map<String,String>> parse( String processId, String name,
-                                                                      XMLAdapter jrxmlAdapter,
-                                                                      List<JrxmlContentProvider> contentProviders ) {
+    public Pair<ProcessDefinition, Map<String, String>> parse( String processId, String name, XMLAdapter jrxmlAdapter,
+                                                               List<JrxmlContentProvider> contentProviders ) {
 
         OMElement root = jrxmlAdapter.getRootElement();
         String processName = jrxmlAdapter.getNodeAsString( root, new XPath( "/jasper:jasperReport/@name", nsContext ),
@@ -110,15 +110,19 @@ public class JrxmlParser {
         }
 
         OutputParameters outputParams = new OutputParameters();
-        LiteralOutputDefinition output = new LiteralOutputDefinition();
+        ComplexOutputDefinition output = new ComplexOutputDefinition();
         output.setTitle( getAsLanguageStringType( "report" ) );
         output.setIdentifier( getAsCodeType( "report" ) );
-        // TODO: check the output, is it a link or emebedded? the format is interesting also
-        // ComplexFormatType format = new ComplexFormatType();
-        // format.setMimeType( JrxmlConstants.OUTPUT_MIME_TYPES.PDF.getMimeType() );
-        // output.setDefaultFormat( format );
-        outputParams.getProcessOutput().add( new JAXBElement<LiteralOutputDefinition>( new QName( "ProcessOutput" ),
-                                                                                       LiteralOutputDefinition.class,
+        ComplexFormatType format = new ComplexFormatType();
+        format.setMimeType( JrxmlUtils.OUTPUT_MIME_TYPES.PDF.getMimeType() );
+        output.setDefaultFormat( format );
+        
+        // ComplexFormatType html = new ComplexFormatType();
+        // html.setMimeType( JrxmlUtils.OUTPUT_MIME_TYPES.HTML.getMimeType() );
+        // output.getOtherFormats().add( html );
+        
+        outputParams.getProcessOutput().add( new JAXBElement<ComplexOutputDefinition>( new QName( "report" ),
+                                                                                       ComplexOutputDefinition.class,
                                                                                        output ) );
 
         ProcessDefinition processDefinition = new ProcessDefinition();

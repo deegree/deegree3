@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,8 +57,9 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.output.LiteralOutput;
+import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.ProcessletOutput;
+import org.deegree.services.wps.provider.jrxml.JrxmlUtils.OUTPUT_MIME_TYPES;
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,11 +124,13 @@ public class JrxmlProcesslet implements Processlet {
 
     private void processOutput( ProcessletOutput output, JasperPrint fillReport )
                             throws IOException, JRException {
-        // TODO: check the fomat, it could be html, also!
-        LiteralOutput co = (LiteralOutput) output;
-        File tmp = File.createTempFile( "test", ".pdf" );
-        JasperExportManager.exportReportToPdfFile( fillReport, tmp.toString() );
-        co.setValue( tmp.toString() );
+        ComplexOutput co = (ComplexOutput) output;
+        if ( JrxmlUtils.OUTPUT_MIME_TYPES.valueOfMimeType( co.getRequestedMimeType() ) == OUTPUT_MIME_TYPES.PDF ) {
+            OutputStream outputStream = co.getBinaryOutputStream();
+            JasperExportManager.exportReportToPdfStream( fillReport, outputStream );
+            // } else if ( JrxmlUtils.OUTPUT_MIME_TYPES.valueOfMimeType(co.getRequestedMimeType() ) ==
+            // OUTPUT_MIME_TYPES.HTML ) {
+        }
     }
 
     @Override
