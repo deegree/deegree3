@@ -36,6 +36,8 @@
 
 package org.deegree.remoteows.wms;
 
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
+import static java.lang.Math.abs;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
@@ -43,10 +45,15 @@ import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyPassword;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyUser;
 import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
+import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.XML;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
+import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
+import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
+import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
@@ -88,12 +95,13 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.coverage.raster.RasterTransformer;
+import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -105,8 +113,10 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
@@ -568,13 +578,7 @@ public class WMSClient111 implements WMSClient {
             }
             GMLStreamReader reader = createGMLStreamReader( GML_2, xmlReader );
             return reader.readFeatureCollection();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLParsingException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( UnknownCRSException e ) {
+        } catch ( Throwable e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
@@ -726,6 +730,23 @@ public class WMSClient111 implements WMSClient {
                     // TODO validate srs, width, height, rest, etc
                 }
 
+                Envelope reqEnv = bbox;
+                int reqWidth = width;
+                int reqHeight = height;
+
+                RasterTransformer rtrans = new RasterTransformer( bbox.getCoordinateSystem() );
+                if ( bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().equals( srs ) ) {
+                    LOG.debug( "Transforming bbox {} to {}.", bbox, srs );
+                    reqEnv = new GeometryTransformer( srs ).transform( bbox );
+
+                    double scale = Utils.calcScaleWMS111( width, height, bbox, bbox.getCoordinateSystem() );
+                    double newScale = Utils.calcScaleWMS111( width, height, reqEnv, CRSManager.getCRSRef( srs ) );
+                    double ratio = scale / newScale;
+
+                    reqWidth = abs( round( ratio * width ) );
+                    reqHeight = abs( round( ratio * height ) );
+                }
+
                 String url = getAddress( GetMap, true );
                 if ( url == null ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
@@ -741,10 +762,10 @@ public class WMSClient111 implements WMSClient {
                 map.put( "service", "WMS" );
                 map.put( "layers", join( ",", layers ) );
                 map.put( "styles", "" );
-                map.put( "width", Integer.toString( width ) );
-                map.put( "height", Integer.toString( height ) );
-                map.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
-                                 + bbox.getMax().get1() );
+                map.put( "width", Integer.toString( reqWidth ) );
+                map.put( "height", Integer.toString( reqHeight ) );
+                map.put( "bbox", reqEnv.getMin().get0() + "," + reqEnv.getMin().get1() + "," + reqEnv.getMax().get0()
+                                 + "," + reqEnv.getMax().get1() );
                 map.put( "srs", srs.getAlias() );
                 map.put( "format", format );
                 map.put( "transparent", Boolean.toString( transparent ) );
@@ -786,8 +807,28 @@ public class WMSClient111 implements WMSClient {
                         res.second = XML.work( conn.getInputStream() ).toString();
                     }
                 }
+
+                // hack to ensure correct raster transformations. 4byte_abgr seems to be working best with current api
+                if ( res.first != null && res.first.getType() != TYPE_4BYTE_ABGR ) {
+                    BufferedImage img = new BufferedImage( res.first.getWidth(), res.first.getHeight(), TYPE_4BYTE_ABGR );
+                    Graphics2D g = img.createGraphics();
+                    g.drawImage( res.first, 0, 0, null );
+                    g.dispose();
+                    res.first = img;
+                }
+
+                if ( res.first != null ) {
+                    RasterGeoReference env = RasterGeoReference.create( OUTER, reqEnv, reqWidth, reqHeight );
+                    RasterData data = rasterDataFromImage( res.first );
+                    SimpleRaster raster = new SimpleRaster( data, reqEnv, env );
+
+                    SimpleRaster transformed = rtrans.transform( raster, bbox, width, height, BILINEAR ).getAsSimpleRaster();
+
+                    res.first = rasterDataToImage( transformed.getRasterData() );
+                }
+
                 LOG.debug( "Received response." );
-            } catch ( RuntimeException e ) {
+            } catch ( Throwable e ) {
                 LOG.info( "Error performing GetMap request: " + e.getMessage(), e );
                 res.second = e.getMessage();
             }

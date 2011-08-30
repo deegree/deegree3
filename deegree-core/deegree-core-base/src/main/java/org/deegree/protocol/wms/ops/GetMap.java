@@ -162,13 +162,15 @@ public class GetMap {
         }
     }
 
-    public GetMap( List<String> layers, int width, int height, Envelope envelope, ICRS coordinateSystem, String format ) {
+    public GetMap( List<String> layers, int width, int height, Envelope envelope, ICRS coordinateSystem, String format,
+                   boolean transparent ) {
         this.layers.addAll( layers );
         this.width = width;
         this.height = height;
         this.bbox = envelope;
         this.crs = coordinateSystem;
         this.format = format;
+        this.transparent = transparent;
     }
 
     /**

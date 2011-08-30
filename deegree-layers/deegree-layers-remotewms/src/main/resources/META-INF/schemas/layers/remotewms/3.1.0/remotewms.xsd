@@ -15,6 +15,7 @@
     <complexType>
       <sequence>
         <element name="RemoteWMSStoreId" type="string" />
+        <element name="RequestOptions" type="l:RequestOptionsType" minOccurs="0" />
       </sequence>
       <attribute name="configVersion" type="l:ConfigVersionType" use="required" />
     </complexType>
@@ -23,6 +24,55 @@
   <simpleType name="ConfigVersionType">
     <restriction base="string">
       <enumeration value="3.1.0" />
+    </restriction>
+  </simpleType>
+
+  <complexType name="RequestOptionsType">
+    <sequence>
+      <element name="ImageFormat" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="transparent" type="boolean" default="true" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="DefaultCRS" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="useAlways" type="boolean" default="false" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="name" type="string" use="required" />
+              <attribute name="use" type="l:ParameterUseType" use="optional" default="allowOverride" />
+              <attribute name="scope" type="l:ParameterScopeType" use="optional" default="All" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="ParameterUseType">
+    <restriction base="string">
+      <enumeration value="allowOverride" />
+      <enumeration value="fixed" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="ParameterScopeType">
+    <restriction base="string">
+      <enumeration value="GetMap" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="All" />
     </restriction>
   </simpleType>
 

@@ -15,6 +15,7 @@ import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
+import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
@@ -39,6 +40,8 @@ public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
             RemoteWMSLayers cfg = (RemoteWMSLayers) unmarshall( "org.deegree.layer.persistence.remotewms.jaxb",
                                                                 SCHEMA_URL, configUrl, workspace );
             String id = cfg.getRemoteWMSStoreId();
+            RequestOptionsType opts = cfg.getRequestOptions();
+
             RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
             RemoteOWS store = mgr.get( id );
             if ( !( store instanceof RemoteWMS ) ) {
@@ -52,7 +55,7 @@ public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
             List<LayerMetadata> layers = client.getLayerTree().flattenDepthFirst();
             for ( LayerMetadata md : layers ) {
                 if ( md.getName() != null ) {
-                    map.put( md.getName(), new RemoteWMSLayer( md, client ) );
+                    map.put( md.getName(), new RemoteWMSLayer( md, client, opts ) );
                 }
             }
             return new MultipleLayerStore( map );
