@@ -36,6 +36,7 @@
 package org.deegree.rendering.r2d.context;
 
 import java.awt.Color;
+import java.util.Map;
 
 import org.deegree.geometry.Envelope;
 
@@ -63,8 +64,10 @@ public class RenderingInfo {
     // for GetFeatureInfo
     private int x, y, featureCount;
 
+    private Map<String, String> parameters;
+
     public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
-                          double pixelSize ) {
+                          double pixelSize, Map<String, String> parameters ) {
         this.format = format;
         this.width = width;
         this.height = height;
@@ -72,6 +75,7 @@ public class RenderingInfo {
         this.bgcolor = bgcolor;
         this.envelope = envelope;
         this.pixelSize = pixelSize;
+        this.parameters = parameters;
     }
 
     public void setFormat( String format ) {
@@ -149,6 +153,13 @@ public class RenderingInfo {
      */
     public void setFeatureCount( int featureCount ) {
         this.featureCount = featureCount;
+    }
+
+    /**
+     * @return the original request parameters, if set
+     */
+    public Map<String, String> getParameterMap() {
+        return parameters;
     }
 
 }
