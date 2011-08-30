@@ -44,6 +44,7 @@ import org.deegree.commons.config.Resource;
  * 
  * @version $Revision$, $Date$
  */
+@Deprecated
 public interface RemoteOWSStore extends Resource {
 
     // probably does not make much sense to define something here, as the services are very different

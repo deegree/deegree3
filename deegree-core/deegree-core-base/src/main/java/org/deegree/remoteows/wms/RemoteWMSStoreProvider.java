@@ -72,6 +72,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@Deprecated
 public class RemoteWMSStoreProvider implements RemoteOWSStoreProvider {
 
     private static final Logger LOG = getLogger( RemoteWMSStoreProvider.class );
@@ -151,6 +152,8 @@ public class RemoteWMSStoreProvider implements RemoteOWSStoreProvider {
 
     @Override
     public RemoteOWSStore create( URL config ) {
+        LOG.warn( "The use of the old style remote WMS stores is deprecated." );
+        LOG.warn( "Please switch to the use of remote WMS layer/theme stores if possible." );
         try {
             RemoteWMSStore cfg = (RemoteWMSStore) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, config, workspace );
             XMLAdapter resolver = new XMLAdapter();

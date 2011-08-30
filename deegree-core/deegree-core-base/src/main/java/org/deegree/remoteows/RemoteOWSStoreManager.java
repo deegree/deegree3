@@ -49,6 +49,7 @@ import org.deegree.commons.utils.ProxyUtils;
  * 
  * @version $Revision$, $Date$
  */
+@Deprecated
 public class RemoteOWSStoreManager extends AbstractResourceManager<RemoteOWSStore> {
 
     private RemoteOWSManagerMetadata metadata;

@@ -46,6 +46,7 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
+@Deprecated
 public interface RemoteOWSStoreProvider extends ExtendedResourceProvider<RemoteOWSStore> {
 
     /**

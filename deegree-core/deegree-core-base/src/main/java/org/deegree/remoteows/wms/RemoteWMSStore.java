@@ -81,6 +81,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@Deprecated
 public class RemoteWMSStore implements RemoteOWSStore {
 
     private static final Logger LOG = getLogger( RemoteWMSStore.class );
