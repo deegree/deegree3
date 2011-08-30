@@ -39,7 +39,6 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.coverage.raster.io.RasterIOOptions.CRS;
 import static org.deegree.coverage.raster.io.RasterIOOptions.IMAGE_INDEX;
 import static org.deegree.coverage.raster.io.RasterIOOptions.OPT_FORMAT;
-
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
@@ -88,7 +87,7 @@ public class PyramidProvider implements CoverageBuilder {
         this.workspace = workspace;
     }
 
-    private ICRS getCRS( IIOMetadata metaData ) {
+    private static ICRS getCRS( IIOMetadata metaData ) {
         GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
         try {
             int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
@@ -129,7 +128,8 @@ public class PyramidProvider implements CoverageBuilder {
 
             MultiResolutionRaster mrr = new MultiResolutionRaster();
             String file = config.getPyramidFile();
-            ImageInputStream iis = ImageIO.createImageInputStream( new File( file ) );
+            File resolved = new File( configUrl.toURI().resolve( file ) );
+            ImageInputStream iis = ImageIO.createImageInputStream( resolved );
             reader.setInput( iis );
             int num = reader.getNumImages( true );
             IIOMetadata md = reader.getImageMetadata( 0 );
@@ -140,7 +140,7 @@ public class PyramidProvider implements CoverageBuilder {
                 opts.add( IMAGE_INDEX, "" + i );
                 opts.add( OPT_FORMAT, "tiff" );
                 opts.add( CRS, crs.getAlias() );
-                AbstractRaster raster = RasterFactory.loadRasterFromFile( new File( file ), opts );
+                AbstractRaster raster = RasterFactory.loadRasterFromFile( resolved, opts );
                 mrr.addRaster( raster );
             }
             mrr.setCoordinateSystem( crs );
