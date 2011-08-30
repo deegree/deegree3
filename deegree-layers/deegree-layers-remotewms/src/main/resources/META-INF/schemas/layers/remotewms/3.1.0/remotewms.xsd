@@ -14,7 +14,7 @@
   <element name="RemoteWMSLayers">
     <complexType>
       <sequence>
-        <element name="RemoteWMSStoreId" type="string" />
+        <element name="RemoteWMSId" type="string" />
         <element name="RequestOptions" type="l:RequestOptionsType" minOccurs="0" />
       </sequence>
       <attribute name="configVersion" type="l:ConfigVersionType" use="required" />
