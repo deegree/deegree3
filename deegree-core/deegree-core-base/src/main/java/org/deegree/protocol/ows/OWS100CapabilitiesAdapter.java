@@ -36,8 +36,8 @@
 package org.deegree.protocol.ows;
 
 import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
+import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -72,26 +72,24 @@ import org.deegree.protocol.ows.metadata.ValuesUnit;
 
 /**
  * {@link OWSCapabilitiesAdapter} for capabilities documents that comply to the <a
- * href="http://www.opengeospatial.org/standards/common">OWS 1.1.0</a> specification.
+ * href="http://www.opengeospatial.org/standards/common">OWS 1.0.0</a> specification.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class OWS110CapabilitiesAdapter extends XMLAdapter implements OWSCapabilitiesAdapter {
+public class OWS100CapabilitiesAdapter extends XMLAdapter implements OWSCapabilitiesAdapter {
 
     private static final String XML1998NS = "http://www.w3.org/XML/1998/namespace";
 
     private final NamespaceBindings nsContext = new NamespaceBindings();
 
     /**
-     * Creates a new {@link OWS110CapabilitiesAdapter} instance.
+     * Creates a new {@link OWS100CapabilitiesAdapter} instance.
      */
-    public OWS110CapabilitiesAdapter() {
-        nsContext.addNamespace( "wps", WPS_100_NS );
-        nsContext.addNamespace( "ows", OWS_11_NS );
+    public OWS100CapabilitiesAdapter() {
+        nsContext.addNamespace( "ows", OWS_NS );
         nsContext.addNamespace( "xlink", XLNNS );
     }
 

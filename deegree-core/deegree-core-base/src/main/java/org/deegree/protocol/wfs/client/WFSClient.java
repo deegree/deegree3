@@ -63,12 +63,15 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceMetadata;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.WFSVersion;
+import org.deegree.protocol.wfs.capabilities.WFS100CapabilitiesAdapter;
+import org.deegree.protocol.wfs.capabilities.WFSCapabilitiesAdapter;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
+import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * API-level client for accessing web services that implement the <a
+ * API-level client for accessing servers that implement the <a
  * href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service (WFS) 1.0.0/1.1.0/2.0.0</a> protocol.
  * 
  * <h4>Initialization</h4> In the initial step, one constructs a new {@link WFSClient} instance by invoking the
@@ -105,15 +108,17 @@ import org.slf4j.LoggerFactory;
  */
 public class WFSClient {
 
-    private static Logger LOG = LoggerFactory.getLogger( WFSClient.class );
+    private static final Logger LOG = LoggerFactory.getLogger( WFSClient.class );
 
     private final URL capaUrl;
 
+    private final WFSCapabilitiesAdapter capaDoc;
+
     private WFSVersion version;
 
-    private final Map<WFSRequestType, URL[]> requestTypeToURLs = new HashMap<WFSRequestType, URL[]>();
+    private final List<WFSFeatureType> wfsFts;
 
-    private final WFSFeatureType[] wfsFts;
+    private final Map<WFSRequestType, URL[]> requestTypeToURLs = new HashMap<WFSRequestType, URL[]>();
 
     private AppSchema schema;
 
@@ -130,23 +135,19 @@ public class WFSClient {
      */
     public WFSClient( URL capabilitiesURL ) throws IOException, OWSException {
         this.capaUrl = capabilitiesURL;
-        WFSCapabilitiesAdapter capaAdapter = retrieveCapabilities( capabilitiesURL );
+        capaDoc = retrieveCapabilities( capabilitiesURL );
 
-        for ( WFSRequestType requestType : WFSRequestType.values() ) {
-            // TODO should we only consider the operations supported by the actual version?
-            addURLs( requestType, capaAdapter );
-        }
+        initOperationUrls();
 
-        List<WFSFeatureType> wfsFts = capaAdapter.getFeatureTypes();
-        this.wfsFts = wfsFts.toArray( new WFSFeatureType[wfsFts.size()] );
+        wfsFts = capaDoc.parseFeatureTypeList();
     }
 
     /**
      * Creates a new {@link WFSClient} instance with options.
      * 
      * @param capabilitiesURL
-     *            url of a WFS capabilities document, usually this is a GetCapabilities request to a WFS service, must
-     *            not be <code>null</code>
+     *            url of a WFS capabilities document, usually this is a <code>GetCapabilities</code> request to a WFS
+     *            service, must not be <code>null</code>
      * @param schema
      *            application schema that describes the feature types offered by the service, can be <code>null</code>
      *            (in this case, the client performs <code>DescribeFeatureType</code> requests to determine the schema)
@@ -160,15 +161,13 @@ public class WFSClient {
         this.schema = schema;
     }
 
-    /**
-     * 
-     * TODO cope with WFS exception reports
-     * 
-     * @param capabilitiesURL
-     * @return
-     * @throws IOException
-     * @throws OWSException
-     */
+    private void initOperationUrls() {
+        for ( WFSRequestType requestType : WFSRequestType.values() ) {
+            // TODO should we only consider the operations supported by the actual version?
+            addURLs( requestType, capaDoc );
+        }
+    }
+
     private WFSCapabilitiesAdapter retrieveCapabilities( URL capabilitiesURL )
                             throws IOException, OWSException {
 
@@ -187,7 +186,6 @@ public class WFSClient {
         String versionAttr = root.getAttributeValue( new QName( "version" ) );
         LOG.trace( "Response document root element/version attribute: " + rootEl + "/" + versionAttr );
 
-        WFSCapabilitiesAdapter capaDoc = null;
         // for all versions (1.0.0/1.1.0/2.0.0), root element is "WFS_Capabilities"
         if ( "WFS_Capabilities".equalsIgnoreCase( rootEl.getLocalPart() ) ) {
             version = WFS_100;
@@ -202,10 +200,6 @@ public class WFSClient {
             } else {
                 LOG.warn( "No version attribute in WFS capabilities document. Defaulting to 1.0.0." );
             }
-
-            capaDoc = new WFSCapabilitiesAdapter( this );
-            capaDoc.setRootElement( responseDoc.getRootElement() );
-            capaDoc.setSystemId( responseDoc.getSystemId() );
         } else if ( "ExceptionReport".equalsIgnoreCase( rootEl.getLocalPart() ) ) {
             // TODO
             throw new OWSException( "Server responded with exception report", VERSION_NEGOTIATION_FAILED );
@@ -214,26 +208,44 @@ public class WFSClient {
             String msg = "Unexpected GetCapabilities response element: '" + rootEl + "'.";
             throw new OWSException( msg, VERSION_NEGOTIATION_FAILED );
         }
-        return capaDoc;
+
+        switch ( version ) {
+        case WFS_100: {
+            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
+            capaDoc.setRootElement( responseDoc.getRootElement() );
+            return capaDoc;
+        }
+        case WFS_110: {
+            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
+            capaDoc.setRootElement( responseDoc.getRootElement() );
+            return capaDoc;
+        }
+        case WFS_200: {
+            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
+            capaDoc.setRootElement( responseDoc.getRootElement() );
+            return capaDoc;
+        }
+        }
+        throw new RuntimeException( "Internal error: unhandled WFS service version '" + version + "'." );
     }
 
     private void addURLs( WFSRequestType request, WFSCapabilitiesAdapter capaDoc ) {
-        URL[] urls = new URL[2];
-        try {
-            urls[0] = capaDoc.getOperationURL( request.name(), false );
-            LOG.debug( "URL for operation: '" + request + "' (GET): " + urls[0] );
-        } catch ( Throwable t ) {
-            String msg = "Error retrieving URL for operation '" + request + "' (GET): " + t.getMessage();
-            LOG.warn( msg );
-        }
-        try {
-            urls[1] = capaDoc.getOperationURL( request.name(), false );
-            LOG.debug( "URL for operation: '" + request + "' (GET): " + urls[1] );
-        } catch ( Throwable t ) {
-            String msg = "Error retrieving URL for operation '" + request + "' (POST): " + t.getMessage();
-            LOG.warn( msg );
-        }
-        requestTypeToURLs.put( request, urls );
+//        URL[] urls = new URL[2];
+//        try {
+//            urls[0] = capaDoc.getOperationURL( request.name(), false );
+//            LOG.debug( "URL for operation: '" + request + "' (GET): " + urls[0] );
+//        } catch ( Throwable t ) {
+//            String msg = "Error retrieving URL for operation '" + request + "' (GET): " + t.getMessage();
+//            LOG.warn( msg );
+//        }
+//        try {
+//            urls[1] = capaDoc.getOperationURL( request.name(), true );
+//            LOG.debug( "URL for operation: '" + request + "' (POST): " + urls[1] );
+//        } catch ( Throwable t ) {
+//            String msg = "Error retrieving URL for operation '" + request + "' (POST): " + t.getMessage();
+//            LOG.warn( msg );
+//        }
+//        requestTypeToURLs.put( request, urls );
     }
 
     /**
@@ -260,7 +272,7 @@ public class WFSClient {
      * 
      * @return metadata of the feature types, never <code>null</code>
      */
-    public WFSFeatureType[] getFeatureTypes() {
+    public List<WFSFeatureType> getFeatureTypes() {
         return wfsFts;
     }
 

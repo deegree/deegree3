@@ -127,5 +127,4 @@ public class ServiceMetadata {
     public String getUpdateSequence() {
         return updateSequence;
     }
-
 }

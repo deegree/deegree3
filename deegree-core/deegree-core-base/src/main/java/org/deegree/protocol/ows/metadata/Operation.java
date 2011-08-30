@@ -45,11 +45,9 @@ import org.deegree.commons.utils.Pair;
  * The <code>Operation</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class Operation {
 
@@ -109,5 +107,4 @@ public class Operation {
     public void setName( String name ) {
         this.name = name;
     }
-
 }

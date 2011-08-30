@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,65 +33,44 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.protocol.wfs.capabilities;
 
-import java.net.URL;
+import java.util.List;
+
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.protocol.ows.OWSCapabilitiesAdapter;
+import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 
 /**
- * The <code>ServiceProvider</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * Base interface for {@link XMLAdapter} implementations that extract metadata from WFS capabilities documents.
  * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ServiceProvider {
-
-    private String providerName;
-
-    private URL providerSite;
-
-    private ServiceContact serviceContact;
+public interface WFSCapabilitiesAdapter extends OWSCapabilitiesAdapter {
 
     /**
-     * @param providerName
+     * Extracts the {@link FeatureTypeList} from the underlying XML document.
+     * 
+     * TODO return type
+     * 
+     * @return feature type list, can be <code>null</code> (if the document does not contain such a section)
+     * @throws XMLParsingException
+     *             if the <code>FeatureTypeList</code> section can not be parsed
      */
-    public void setProviderName( String providerName ) {
-        this.providerName = providerName;
-    }
+    List<WFSFeatureType> parseFeatureTypeList();
 
     /**
-     * @return providerName, may be <code>null</code>.
+     * Extracts the {@link FilterCapabilities} from the underlying XML document.
+     * 
+     * TODO return type
+     * 
+     * @return filter capabilities, can be <code>null</code> (if the document does not contain such a section)
+     * @throws XMLParsingException
+     *             if the <code>FeatureTypeList</code> section can not be parsed
      */
-    public String getProviderName() {
-        return providerName;
-    }
-
-    /**
-     * @param providerSite
-     */
-    public void setProviderSite( URL providerSite ) {
-        this.providerSite = providerSite;
-    }
-
-    /**
-     * @return providerSite, may be <code>null</code>.
-     */
-    public URL getProviderSite() {
-        return providerSite;
-    }
-
-    /**
-     * @param serviceContact
-     */
-    public void setServiceContact( ServiceContact serviceContact ) {
-        this.serviceContact = serviceContact;
-    }
-
-    /**
-     * @return serviceContact, may be <code>null</code>.
-     */
-    public ServiceContact getServiceContact() {
-        return serviceContact;
-    }
+    Object parseFilterCapabilities();
 }

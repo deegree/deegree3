@@ -54,8 +54,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.protocol.ows.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
 import org.deegree.protocol.wps.client.process.execute.OutputFormat;
@@ -188,7 +188,7 @@ public class RawProcessExecution extends AbstractProcessExecution {
             XMLStreamReader reader = inFactory.createXMLStreamReader( responseStream );
             XMLStreamUtils.nextElement( reader );
             if ( OWSExceptionReader.isException( reader ) ) {
-                throw OWSExceptionReader.parseException( reader );
+                throw OWSExceptionReader.parseExceptionReport( reader );
             }
         }
         return new ComplexOutput( null, responseStream, outputContent, null, null );

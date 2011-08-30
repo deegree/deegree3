@@ -41,11 +41,9 @@ import java.net.URL;
  * The <code>ContactInfo</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class ContactInfo {
 
@@ -128,5 +126,4 @@ public class ContactInfo {
     public String getContactInstruction() {
         return contactInstructions;
     }
-
 }

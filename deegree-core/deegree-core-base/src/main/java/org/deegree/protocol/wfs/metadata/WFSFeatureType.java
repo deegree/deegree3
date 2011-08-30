@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.client;
+package org.deegree.protocol.wfs.metadata;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,8 +54,6 @@ import org.deegree.geometry.Envelope;
  * @version $Revision$, $Date$
  */
 public class WFSFeatureType {
-
-    private final WFSClient client;
 
     private final QName name;
 
@@ -79,10 +77,9 @@ public class WFSFeatureType {
 
     private final Object extendedDescription;
 
-    public WFSFeatureType( WFSClient client, QName name, List<LanguageString> titles, List<LanguageString> abstracts,
+    public WFSFeatureType( QName name, List<LanguageString> titles, List<LanguageString> abstracts,
                            List<String> outputFormats, List<Object> keywords, CRSRef defaultCrs, List<CRSRef> otherCrs,
                            List<Envelope> wgs84BBoxes, List<Object> mdReferences, Object extendedDescription ) {
-        this.client = client;
         this.name = name;
         this.titles = titles;
         this.abstracts = abstracts;
@@ -137,9 +134,5 @@ public class WFSFeatureType {
 
     public List<Object> getMetadataReferences() {
         return mdReferences;
-    }
-
-    public FeatureType getSchema() {
-        return client.getAppSchema().getFeatureType( name );
     }
 }

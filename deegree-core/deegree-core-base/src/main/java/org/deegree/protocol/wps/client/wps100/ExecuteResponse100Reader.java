@@ -56,8 +56,8 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.protocol.ows.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.protocol.wps.client.output.BBoxOutput;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
@@ -397,7 +397,7 @@ public class ExecuteResponse100Reader {
         } else if ( "ProcessFailed".equals( localName ) ) {
             state = ExecutionState.FAILED;
             XMLStreamUtils.nextElement( reader ); // ProcessFailed
-            exceptionReport = OWSExceptionReader.parseException( reader );
+            exceptionReport = OWSExceptionReader.parseExceptionReport( reader );
         }
         XMLStreamUtils.nextElement( reader ); // </Status>
         return new ExecutionStatus( state, statusMsg, percent, creationTime, exceptionReport );

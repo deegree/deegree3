@@ -39,11 +39,9 @@ package org.deegree.protocol.ows.metadata;
  * The <code>Range</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class Range {
 
@@ -110,5 +108,4 @@ public class Range {
     public String getRangeClosure() {
         return rangeClosure;
     }
-
 }

@@ -55,8 +55,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.protocol.ows.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.protocol.wps.client.WPSClient;
@@ -231,7 +231,7 @@ public class ProcessExecution extends AbstractProcessExecution {
             XMLStreamReader xmlReader = inFactory.createXMLStreamReader( is );
             XMLStreamUtils.nextElement( xmlReader );
             if ( OWSExceptionReader.isException( xmlReader ) ) {
-                throw OWSExceptionReader.parseException( xmlReader );
+                throw OWSExceptionReader.parseExceptionReport( xmlReader );
             }
             ExecuteResponse100Reader reader = new ExecuteResponse100Reader( xmlReader );
             lastResponse = reader.parse100();
@@ -373,7 +373,7 @@ public class ProcessExecution extends AbstractProcessExecution {
         XMLStreamReader reader = inFactory.createXMLStreamReader( responseStream );
         XMLStreamUtils.nextElement( reader );
         if ( OWSExceptionReader.isException( reader ) ) {
-            throw OWSExceptionReader.parseException( reader );
+            throw OWSExceptionReader.parseExceptionReport( reader );
         }
         if ( new QName( WPSConstants.WPS_100_NS, "ExecuteResponse" ).equals( reader.getName() ) ) {
             ExecuteResponse100Reader responseReader = new ExecuteResponse100Reader( reader );

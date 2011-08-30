@@ -45,11 +45,9 @@ import org.deegree.commons.tom.ows.Version;
  * The <code>ServiceIdentification</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class ServiceIdentification {
 

@@ -42,11 +42,9 @@ import java.util.List;
  * The <code>PossibleValues</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class PossibleValues {
 
@@ -137,5 +135,4 @@ public class PossibleValues {
     public String getReferenceURL() {
         return referenceURL;
     }
-
 }
