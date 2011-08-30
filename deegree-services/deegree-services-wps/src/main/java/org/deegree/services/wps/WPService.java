@@ -36,8 +36,9 @@
 
 package org.deegree.services.wps;
 
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
-import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.File;
@@ -71,6 +72,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.WPSConstants.WPSRequestType;
 import org.deegree.protocol.wps.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wps.describeprocess.DescribeProcessRequest;
@@ -79,9 +81,7 @@ import org.deegree.protocol.wps.describeprocess.DescribeProcessRequestXMLAdapter
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
@@ -473,10 +473,10 @@ public class WPService extends AbstractOWS {
             e.printStackTrace();
             LOG.error( "Internal error: " + e.getMessage() );
             throw new OWSException( "Error occured while creating response for DescribeProcess operation",
-                                    ControllerException.NO_APPLICABLE_CODE );
+                                    NO_APPLICABLE_CODE );
         } catch ( IOException e ) {
             throw new OWSException( "Error occured while creating response for DescribeProcess operation",
-                                    ControllerException.NO_APPLICABLE_CODE );
+                                    NO_APPLICABLE_CODE );
         } catch ( Exception e ) {
             e.printStackTrace();
             LOG.error( "Internal error: " + e.getMessage() );
@@ -508,7 +508,7 @@ public class WPService extends AbstractOWS {
             throw e;
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
-            throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
+            throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
         }
 
         long elapsed = System.currentTimeMillis() - start;

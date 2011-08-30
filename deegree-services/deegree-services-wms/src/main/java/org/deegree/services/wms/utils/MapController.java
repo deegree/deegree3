@@ -68,11 +68,11 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
-import org.deegree.style.se.unevaluated.Style;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
  * 

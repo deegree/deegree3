@@ -37,6 +37,7 @@
 package org.deegree.services.wcs;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
 import static org.deegree.services.wcs.WCSProvider.IMPLEMENTATION_METADATA;
@@ -75,15 +76,14 @@ import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;
 import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.protocol.wcs.capabilities.GetCapabilities100KVPAdapter;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
@@ -249,7 +249,7 @@ public class WCSController extends AbstractOWS {
             sendServiceException( ex, response );
         } catch ( XMLStreamException e ) {
             sendServiceException( new OWSException( "an error occured while processing a request",
-                                                    ControllerException.NO_APPLICABLE_CODE ), response );
+                                                    OWSException.NO_APPLICABLE_CODE ), response );
             LOG.error( "an error occured while processing a request", e );
         }
     }
@@ -282,7 +282,7 @@ public class WCSController extends AbstractOWS {
             sendServiceException( ex, response );
         } catch ( XMLStreamException e ) {
             sendServiceException( new OWSException( "An error occured while processing a request",
-                                                    ControllerException.NO_APPLICABLE_CODE ), response );
+                                                    NO_APPLICABLE_CODE ), response );
             LOG.error( "an error occured while processing a request", e );
         }
     }
@@ -308,7 +308,7 @@ public class WCSController extends AbstractOWS {
                                                      coverageReq.getRangeSet() );
             } catch ( WCServiceException e ) {
                 throw new OWSException( "An error occured while creating the coverage result: " + e.getMessage(),
-                                        ControllerException.NO_APPLICABLE_CODE );
+                                        NO_APPLICABLE_CODE );
             }
             result.write( response.getOutputStream() );
 

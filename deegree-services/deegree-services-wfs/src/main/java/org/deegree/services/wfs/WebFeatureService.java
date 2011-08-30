@@ -42,12 +42,12 @@ import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.wfs.WFSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
@@ -93,6 +93,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.capabilities.GetCapabilitiesKVPAdapter;
@@ -129,10 +130,8 @@ import org.deegree.protocol.wfs.transaction.TransactionXMLAdapter;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException100XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -482,7 +481,7 @@ public class WebFeatureService extends AbstractOWS {
         } catch ( Throwable e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
-            sendServiceException110( new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE ),
+            sendServiceException110( new OWSException( e.getMessage(), NO_APPLICABLE_CODE ),
                                      response );
         }
     }

@@ -43,9 +43,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.NavigationPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
-import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
 
 /**

@@ -77,6 +77,7 @@ import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
@@ -92,7 +93,6 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManage
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.controller.WebServicesConfiguration;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wpvs.SkyImages;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;

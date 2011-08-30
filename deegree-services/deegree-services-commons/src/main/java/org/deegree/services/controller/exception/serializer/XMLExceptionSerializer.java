@@ -45,7 +45,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.services.controller.exception.ControllerException;
+import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * The <code>XMLExceptionSerializer</code> class TODO add class documentation here.
@@ -59,8 +59,8 @@ import org.deegree.services.controller.exception.ControllerException;
  *            the exception which will be serialized, a subtype of {@link ControllerException}
  * 
  */
-public abstract class XMLExceptionSerializer<T extends ControllerException> extends XMLAdapter implements
-                                                                                              ExceptionSerializer<T> {
+public abstract class XMLExceptionSerializer<T extends OWSException> extends XMLAdapter implements
+                                                                                       ExceptionSerializer<T> {
 
     /**
      * Wraps a {@link IndentingXMLStreamWriter} around the given output stream and calls

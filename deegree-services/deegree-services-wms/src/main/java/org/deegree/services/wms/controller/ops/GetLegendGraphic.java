@@ -36,19 +36,15 @@
 package org.deegree.services.wms.controller.ops;
 
 import static java.lang.Integer.parseInt;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.LAYER_NOT_DEFINED;
-import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.STYLE_NOT_DEFINED;
 import static org.deegree.services.i18n.Messages.get;
 
 import java.util.Map;
 
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r2d.legends.LegendOptions;
-import org.deegree.style.se.unevaluated.Style;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
  * <code>GetLegendGraphic</code>
@@ -76,20 +72,20 @@ public class GetLegendGraphic {
     public GetLegendGraphic( Map<String, String> map, MapService service ) throws OWSException {
         String layer = map.get( "LAYER" );
         if ( layer == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYER" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYER" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         Layer l = service.getLayer( layer );
         if ( l == null ) {
-            throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layer ), LAYER_NOT_DEFINED );
+            throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layer ), OWSException.LAYER_NOT_DEFINED );
         }
         String s = map.get( "STYLE" );
         style = service.getStyles().getLegendStyle( layer, s );
         if ( style == null ) {
-            throw new OWSException( get( "WMS.UNDEFINED_STYLE", s, layer ), STYLE_NOT_DEFINED );
+            throw new OWSException( get( "WMS.UNDEFINED_STYLE", s, layer ),OWSException.STYLE_NOT_DEFINED );
         }
         format = map.get( "FORMAT" );
         if ( format == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "FORMAT" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "FORMAT" ), OWSException.MISSING_PARAMETER_VALUE );
         }
 
         String w = map.get( "WIDTH" );
@@ -97,7 +93,7 @@ public class GetLegendGraphic {
             try {
                 width = parseInt( w );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "WIDTH", w ), INVALID_PARAMETER_VALUE );
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "WIDTH", w ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         String h = map.get( "HEIGHT" );
@@ -105,7 +101,7 @@ public class GetLegendGraphic {
             try {
                 height = parseInt( h );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "HEIGHT", h ), INVALID_PARAMETER_VALUE );
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "HEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         w = map.get( "BASEWIDTH" );
@@ -113,7 +109,7 @@ public class GetLegendGraphic {
             try {
                 opts.baseWidth = parseInt( w );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "BASEWIDTH", w ), INVALID_PARAMETER_VALUE );
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "BASEWIDTH", w ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         h = map.get( "BASEHEIGHT" );
@@ -121,7 +117,7 @@ public class GetLegendGraphic {
             try {
                 opts.baseHeight = parseInt( h );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "BASEHEIGHT", h ), INVALID_PARAMETER_VALUE );
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "BASEHEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         h = map.get( "TEXTSIZE" );
@@ -129,7 +125,7 @@ public class GetLegendGraphic {
             try {
                 opts.textSize = parseInt( h );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "TEXTSIZE", h ), INVALID_PARAMETER_VALUE );
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "TEXTSIZE", h ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         h = map.get( "SPACING" );
@@ -137,7 +133,7 @@ public class GetLegendGraphic {
             try {
                 opts.spacing = parseInt( h );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "SPACING", h ), INVALID_PARAMETER_VALUE );
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "SPACING", h ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
     }

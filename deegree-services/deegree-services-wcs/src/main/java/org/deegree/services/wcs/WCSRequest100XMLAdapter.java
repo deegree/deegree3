@@ -44,8 +44,8 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wcs.WCSConstants;
-import org.deegree.services.controller.ows.OWSException;
 
 /**
  * Base class for all WCS 1.0.0 XMLAdapter. Defines the WCS XML namespace.

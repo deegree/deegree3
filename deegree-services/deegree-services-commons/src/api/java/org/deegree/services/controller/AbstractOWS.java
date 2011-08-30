@@ -73,16 +73,15 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.SOAPException;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.SOAPExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.SerializerProvider;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
@@ -491,10 +490,10 @@ public abstract class AbstractOWS implements OWS {
         return agreedVersion;
     }
 
-    public <E extends ControllerException> void sendException( String contentType, String encoding,
-                                                               Map<String, String> additionalHeaders,
-                                                               int httpStatusCode, ExceptionSerializer<E> serializer,
-                                                               E exception, HttpServletResponse response )
+    public <E extends OWSException> void sendException( String contentType, String encoding,
+                                                        Map<String, String> additionalHeaders, int httpStatusCode,
+                                                        ExceptionSerializer<E> serializer, E exception,
+                                                        HttpServletResponse response )
                             throws ServletException {
         sendException( contentType, encoding, additionalHeaders, httpStatusCode, serializer,
                        getImplementationMetadata(), exception, response );
@@ -524,7 +523,7 @@ public abstract class AbstractOWS implements OWS {
      * @throws ServletException
      *             if the exception could not be sent.
      */
-    public static <E extends ControllerException> void sendException( String contentType, String encoding,
+    public static <E extends OWSException> void sendException( String contentType, String encoding,
                                                                       Map<String, String> additionalHeaders,
                                                                       int httpStatusCode,
                                                                       ExceptionSerializer<E> serializer,

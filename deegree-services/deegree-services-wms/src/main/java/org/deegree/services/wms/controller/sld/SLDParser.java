@@ -38,7 +38,6 @@ package org.deegree.services.wms.controller.sld;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.ops.GetMap.parseDimensionValues;
 import static org.deegree.services.wms.model.Dimension.parseTyped;
@@ -56,12 +55,12 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.style.se.parser.SymbologyParser;
-import org.deegree.style.se.unevaluated.Style;
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -107,7 +106,7 @@ public class SLDParser {
                 in.nextTag();
 
                 if ( layer == null ) {
-                    throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layerName ), INVALID_PARAMETER_VALUE, "layer" );
+                    throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layerName ), OWSException.INVALID_PARAMETER_VALUE, "layer" );
                 }
 
                 LOG.debug( "Extracted layer '{}' from SLD.", layerName );
@@ -168,7 +167,7 @@ public class SLDParser {
                     String name = in.getElementText();
                     Style style = service.getStyles().get( layer.getName(), name );
                     if ( style == null ) {
-                        throw new OWSException( get( "WMS.UNDEFINED_STYLE", name, layerName ), INVALID_PARAMETER_VALUE,
+                        throw new OWSException( get( "WMS.UNDEFINED_STYLE", name, layerName ), OWSException.INVALID_PARAMETER_VALUE,
                                                 "styles" );
                     }
                     layers.add( layer );

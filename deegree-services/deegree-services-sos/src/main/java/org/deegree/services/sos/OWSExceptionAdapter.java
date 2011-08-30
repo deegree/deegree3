@@ -35,8 +35,9 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.sos;
 
-import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.ows.OWSException;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+
+import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * This class can apdapt general SOServiceExceptions to OGC specific exceptions.
@@ -54,7 +55,7 @@ public class OWSExceptionAdapter {
      * @return adapted OWSException
      */
     public static OWSException adapt( SOServiceException e ) {
-        return new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
+        return new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
     }
 
 }

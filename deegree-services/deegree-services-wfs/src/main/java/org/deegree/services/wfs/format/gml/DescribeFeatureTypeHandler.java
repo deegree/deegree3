@@ -80,16 +80,16 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.AppSchemaXSDEncoder;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapter;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.resources.ResourcesServlet;
-import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.WFSFeatureStoreManager;
+import org.deegree.services.wfs.WebFeatureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

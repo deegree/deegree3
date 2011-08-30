@@ -59,7 +59,7 @@ import org.deegree.metadata.persistence.transaction.TransactionOperation;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.transaction.Transaction;
 import org.slf4j.Logger;

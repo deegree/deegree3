@@ -42,7 +42,7 @@ import java.util.List;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * The <code>ExceptionCustomizer</code> can be implemented to let a {@link Processlet} create an appropriate

@@ -37,6 +37,7 @@
 package org.deegree.services.wpvs.controller;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.services.wpvs.controller.WPVSProvider.IMPLEMENTATION_METADATA;
 
 import java.awt.image.BufferedImage;
@@ -70,14 +71,13 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -243,7 +243,7 @@ public class WPVSController extends AbstractOWS {
             }
         } catch ( Throwable t ) {
             sendServiceException( new OWSException( "An exception occurred while processing your request: "
-                                                    + t.getMessage(), ControllerException.NO_APPLICABLE_CODE ),
+                                                    + t.getMessage(), OWSException.NO_APPLICABLE_CODE ),
                                   response );
         }
 
@@ -277,7 +277,7 @@ public class WPVSController extends AbstractOWS {
                     ImageIO.write( gvResponseImage, ioFormat, response.getOutputStream() );
                 } catch ( IOException e ) {
                     throw new OWSException( "An error occurred while writing the result image to the stream because: "
-                                            + e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE );
+                                            + e.getLocalizedMessage(), NO_APPLICABLE_CODE );
                 }
                 response.setContentLength( response.getBufferSize() );
                 response.setContentType( format );

@@ -47,10 +47,6 @@ import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.LAYER_NOT_DEFINED;
-import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.STYLE_NOT_DEFINED;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.ops.GetMap.Antialias.BOTH;
 import static org.deegree.services.wms.controller.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
@@ -94,10 +90,10 @@ import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Or;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.dims.DimensionLexer;
 import org.deegree.protocol.wms.dims.parser;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.StyleRegistry;
 import org.deegree.services.wms.controller.WMSController111;
@@ -221,13 +217,13 @@ public class GetMap {
                             throws OWSException {
         String c = map.get( "SRS" );
         if ( c == null || c.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "SRS" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "SRS" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         crs = WMSController111.getCRS( c );
 
         String box = map.get( "BBOX" );
         if ( box == null || box.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "BBOX" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "BBOX" ), OWSException.MISSING_PARAMETER_VALUE );
         }
 
         double[] vals = splitAsDoubles( box, "," );
@@ -238,14 +234,14 @@ public class GetMap {
                                  parseDouble( ss[4] + "." + ss[5] ), parseDouble( ss[6] + "." + ss[7] ) };
         }
         if ( vals.length != 4 ) {
-            throw new OWSException( get( "WMS.BBOX_WRONG_FORMAT", box ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.BBOX_WRONG_FORMAT", box ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         if ( vals[2] <= vals[0] ) {
-            throw new OWSException( get( "WMS.MAXX_MINX" ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.MAXX_MINX" ), OWSException.INVALID_PARAMETER_VALUE );
         }
         if ( vals[3] <= vals[1] ) {
-            throw new OWSException( get( "WMS.MAXY_MINY" ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.MAXY_MINY" ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         bbox = fac.createEnvelope( new double[] { vals[0], vals[1] }, new double[] { vals[2], vals[3] }, crs );
@@ -259,7 +255,7 @@ public class GetMap {
         for ( String lay : lays ) {
             Layer l = service.getLayer( lay );
             if ( l == null ) {
-                throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", lay ), LAYER_NOT_DEFINED );
+                throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", lay ), OWSException.LAYER_NOT_DEFINED );
             }
             layers.add( l );
         }
@@ -287,7 +283,7 @@ public class GetMap {
             String[] styls = ss.split( "," );
             if ( styls.length != layers.size() ) {
                 throw new OWSException( get( "WMS.INVALID_NUMBER_OF_STYLES", layers.size(), styls.length ),
-                                        INVALID_PARAMETER_VALUE );
+                                        OWSException.INVALID_PARAMETER_VALUE );
             }
 
             int i = -1;
@@ -296,7 +292,7 @@ public class GetMap {
                     styles.add( registry.get( l.getName(), null ) );
                 } else {
                     if ( !registry.hasStyle( l.getName(), styls[i] ) ) {
-                        throw new OWSException( get( "WMS.UNDEFINED_STYLE", styls[i], l.getName() ), STYLE_NOT_DEFINED );
+                        throw new OWSException( get( "WMS.UNDEFINED_STYLE", styls[i], l.getName() ), OWSException.STYLE_NOT_DEFINED );
                     }
                     styles.add( registry.get( l.getName(), styls[i] ) );
                 }
@@ -313,7 +309,7 @@ public class GetMap {
         String sldBody = map.get( "SLD_BODY" );
 
         if ( ( ls == null || ls.trim().isEmpty() ) && sld == null && sldBody == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYERS" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         LinkedList<String> layers = ls == null ? new LinkedList<String>()
                                               : new LinkedList<String>( asList( ls.split( "," ) ) );
@@ -324,7 +320,7 @@ public class GetMap {
 
         String ss = map.get( "STYLES" );
         if ( ss == null && sld == null && sldBody == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "STYLES" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "STYLES" ), OWSException.MISSING_PARAMETER_VALUE );
         }
 
         if ( sld == null && sldBody == null ) {
@@ -347,27 +343,27 @@ public class GetMap {
 
         format = map.get( "FORMAT" );
         if ( format == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "FORMAT" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "FORMAT" ), OWSException.MISSING_PARAMETER_VALUE );
         }
 
         String w = map.get( "WIDTH" );
         if ( w == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "WIDTH" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "WIDTH" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         try {
             width = parseInt( w );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( get( "WMS.NOT_A_NUMBER", "WIDTH", w ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.NOT_A_NUMBER", "WIDTH", w ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         String h = map.get( "HEIGHT" );
         if ( h == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "HEIGHT" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "HEIGHT" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         try {
             height = parseInt( h );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( get( "WMS.NOT_A_NUMBER", "HEIGHT", h ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.NOT_A_NUMBER", "HEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
         }
         String t = map.get( "TRANSPARENT" );
         transparent = t != null && t.equalsIgnoreCase( "true" );
@@ -582,7 +578,7 @@ public class GetMap {
         } catch ( ParseException e ) {
             LOG.trace( "Stack trace:", e );
             throw new OWSException( get( "WMS.TIME_PARAMETER_NOT_ISO_FORMAT", e.getLocalizedMessage() ),
-                                    INVALID_PARAMETER_VALUE );
+                                    OWSException.INVALID_PARAMETER_VALUE );
         }
     }
 
@@ -599,14 +595,14 @@ public class GetMap {
             Symbol sym = parser.parse();
             if ( sym.value instanceof Exception ) {
                 final String msg = get( "WMS.DIMENSION_PARAMETER_INVALID", name, ( (Exception) sym.value ).getMessage() );
-                throw new OWSException( msg, INVALID_PARAMETER_VALUE );
+                throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );
             }
 
             return (LinkedList<?>) sym.value;
         } catch ( Exception e ) {
             LOG.error( "Unknown error", e );
             throw new OWSException( get( "WMS.DIMENSION_PARAMETER_INVALID", name, e.getLocalizedMessage() ),
-                                    INVALID_PARAMETER_VALUE );
+                                    OWSException.INVALID_PARAMETER_VALUE );
         }
     }
 
@@ -614,24 +610,24 @@ public class GetMap {
                             throws OWSException {
         String c = map.get( "CRS" );
         if ( c == null || c.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "CRS" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "CRS" ), OWSException.MISSING_PARAMETER_VALUE );
         }
 
         String box = map.get( "BBOX" );
         if ( box == null || box.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "BBOX" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "BBOX" ), OWSException.MISSING_PARAMETER_VALUE );
         }
 
         double[] vals = splitAsDoubles( box, "," );
         if ( vals.length != 4 ) {
-            throw new OWSException( get( "WMS.BBOX_WRONG_FORMAT", box ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.BBOX_WRONG_FORMAT", box ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         if ( vals[2] <= vals[0] ) {
-            throw new OWSException( get( "WMS.MAXX_MINX" ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.MAXX_MINX" ), OWSException.INVALID_PARAMETER_VALUE );
         }
         if ( vals[3] <= vals[1] ) {
-            throw new OWSException( get( "WMS.MAXY_MINY" ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.MAXY_MINY" ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         bbox = WMSController130.getCRSAndEnvelope( c, vals );

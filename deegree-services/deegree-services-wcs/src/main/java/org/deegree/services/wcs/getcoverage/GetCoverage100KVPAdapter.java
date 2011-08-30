@@ -66,8 +66,8 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryUtils;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wcs.WCSConstants;
-import org.deegree.services.controller.ows.OWSException;
 
 /**
  * This is a kvp adapter for WCS 1.0.0 GetCoverage requests.

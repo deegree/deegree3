@@ -49,7 +49,6 @@ import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.CodeType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.KeywordsType;

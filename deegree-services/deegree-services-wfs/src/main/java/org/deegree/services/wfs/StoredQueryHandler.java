@@ -37,9 +37,9 @@ package org.deegree.services.wfs;
 
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
@@ -56,13 +56,12 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
 import org.deegree.protocol.wfs.storedquery.DescribeStoredQueries;
 import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
 import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

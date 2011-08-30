@@ -38,7 +38,9 @@ package org.deegree.services.csw;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -80,14 +82,13 @@ import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.authentication.soapauthentication.FailedAuthentication;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.ows.OWSException120XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -319,7 +320,7 @@ public class CSWController extends AbstractOWS {
         } catch ( Throwable t ) {
             String msg = "An unexpected error occured: " + t.getMessage();
             LOG.debug( msg, t );
-            sendServiceException( new OWSException( msg, t, ControllerException.NO_APPLICABLE_CODE ), response );
+            sendServiceException( new OWSException( msg, t, NO_APPLICABLE_CODE ), response );
         }
     }
 
@@ -347,7 +348,7 @@ public class CSWController extends AbstractOWS {
         } catch ( Throwable t ) {
             String msg = "An unexpected error occured: " + t.getMessage();
             LOG.error( msg, t );
-            sendServiceException( new OWSException( msg, t, ControllerException.NO_APPLICABLE_CODE ), response );
+            sendServiceException( new OWSException( msg, t, NO_APPLICABLE_CODE ), response );
         }
     }
 
@@ -374,7 +375,7 @@ public class CSWController extends AbstractOWS {
         } catch ( XMLStreamException e ) {
             LOG.debug( e.getMessage(), e );
             sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             ControllerException.NO_APPLICABLE_CODE ),
+                                                                             NO_APPLICABLE_CODE ),
                                request, version );
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
@@ -382,28 +383,28 @@ public class CSWController extends AbstractOWS {
         } catch ( IOException e ) {
             LOG.debug( e.getMessage(), e );
             sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             ControllerException.NO_APPLICABLE_CODE ),
+                                                                             NO_APPLICABLE_CODE ),
                                request, version );
         } catch ( MissingParameterException e ) {
             LOG.debug( e.getMessage(), e );
             sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             OWSException.MISSING_PARAMETER_VALUE ),
+                                                                             MISSING_PARAMETER_VALUE ),
                                request, version );
         } catch ( InvalidParameterValueException e ) {
             LOG.debug( e.getMessage(), e );
             sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             OWSException.INVALID_PARAMETER_VALUE ),
+                                                                             INVALID_PARAMETER_VALUE ),
                                request, version );
         } catch ( FailedAuthentication e ) {
             LOG.debug( e.getMessage(), e );
             sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             ControllerException.NO_APPLICABLE_CODE ),
+                                                                             NO_APPLICABLE_CODE ),
                                request, version );
         } catch ( Throwable t ) {
             String msg = "An unexpected error occured: " + t.getMessage();
             LOG.debug( msg, t );
             sendSoapException( soapDoc, factory, response, new OWSException( msg, t,
-                                                                             ControllerException.NO_APPLICABLE_CODE ),
+                                                                             NO_APPLICABLE_CODE ),
                                request, version );
         }
     }

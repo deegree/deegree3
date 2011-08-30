@@ -38,8 +38,8 @@ package org.deegree.services.wfs;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.URL;
 

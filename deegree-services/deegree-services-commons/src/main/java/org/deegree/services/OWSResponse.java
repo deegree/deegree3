@@ -52,8 +52,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.slf4j.Logger;
 
@@ -269,7 +269,7 @@ public class OWSResponse {
     }
 
     /**
-     * Sends a {@link ControllerException} to the client.
+     * Sends an {@link OWSException} to the client.
      * 
      * @param <T>
      * @param contentType
@@ -279,10 +279,9 @@ public class OWSResponse {
      * @param serializer
      * @param exception
      */
-    public <T extends ControllerException> void sendException( String contentType,
-                                                               Map<String, String> additionalHeaders,
-                                                               int httpStatusCode, ExceptionSerializer<T> serializer,
-                                                               T exception ) {
+    public <T extends OWSException> void sendException( String contentType, Map<String, String> additionalHeaders,
+                                                        int httpStatusCode, ExceptionSerializer<T> serializer,
+                                                        T exception ) {
         rollback();
     }
 }

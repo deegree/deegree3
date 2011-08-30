@@ -42,6 +42,8 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -50,7 +52,6 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
@@ -74,8 +75,8 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -103,6 +104,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.gml.feature.GMLFeatureReader;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.transaction.Delete;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.deegree.protocol.wfs.transaction.Insert;
@@ -112,8 +114,6 @@ import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.TransactionOperation;
 import org.deegree.protocol.wfs.transaction.Update;
-import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.slf4j.Logger;
@@ -189,7 +189,7 @@ class TransactionHandler {
                 manager = service.getStores()[0].getLockManager();
             } catch ( FeatureStoreException e ) {
                 throw new OWSException( "Cannot acquire lock manager: " + e.getMessage(),
-                                        ControllerException.NO_APPLICABLE_CODE );
+                                        OWSException.NO_APPLICABLE_CODE );
             }
             if ( lockId != null && manager != null) {
                 lock = manager.getLock( lockId );
@@ -302,7 +302,7 @@ class TransactionHandler {
         FeatureStore fs = service.getStore( ftName );
         if ( fs == null ) {
             throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
-                                    OWSException.INVALID_PARAMETER_VALUE );
+                                    INVALID_PARAMETER_VALUE );
         }
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
@@ -519,7 +519,7 @@ class TransactionHandler {
             updated += ta.performUpdate( ftName, replacementProps, filter, lock );
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Error performing update: " + e.getMessage(), e,
-                                    ControllerException.NO_APPLICABLE_CODE );
+                                    NO_APPLICABLE_CODE );
         }
     }
 
@@ -559,7 +559,7 @@ class TransactionHandler {
                     xmlStream.nextTag();
                 } catch ( Exception e ) {
                     LOG.debug( e.getMessage(), e );
-                    throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
+                    throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
                 }
 
             } else {
@@ -582,7 +582,7 @@ class TransactionHandler {
                 acquiredTransactions.put( fs, ta );
             } catch ( FeatureStoreException e ) {
                 throw new OWSException( Messages.get( "WFS_CANNOT_ACQUIRE_TA", e.getMessage() ),
-                                        ControllerException.NO_APPLICABLE_CODE );
+                                        NO_APPLICABLE_CODE );
             }
         }
         return ta;

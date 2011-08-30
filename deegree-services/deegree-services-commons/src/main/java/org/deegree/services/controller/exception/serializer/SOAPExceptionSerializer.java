@@ -58,8 +58,8 @@ import org.apache.axiom.soap.SOAPFaultText;
 import org.apache.axiom.soap.SOAPFaultValue;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPVersion;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.SOAPException;
-import org.deegree.services.controller.ows.OWSException;
 
 /**
  * The <code>SoapExceptionSerializer</code> class TODO add class documentation here.

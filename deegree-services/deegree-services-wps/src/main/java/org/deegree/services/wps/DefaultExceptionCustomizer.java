@@ -38,14 +38,16 @@
 
 package org.deegree.services.wps;
 
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
-import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * The <code>ExceptionCustomizerImpl</code> class TODO add class documentation here.
@@ -83,25 +85,25 @@ public class DefaultExceptionCustomizer implements ExceptionCustomizer {
     @Override
     public OWSException missingParameter( String parameter ) {
         return new OWSException( processMsg + " the required parameter: " + parameter + " was missing.",
-                                 ControllerException.NO_APPLICABLE_CODE );
+                                 NO_APPLICABLE_CODE );
     }
 
     @Override
     public OWSException missingParameters( String... parameters ) {
         return new OWSException( processMsg + " At least one of following parameters is required but missing: "
-                                 + Arrays.toString( parameters ) + ".", ControllerException.NO_APPLICABLE_CODE );
+                                 + Arrays.toString( parameters ) + ".", NO_APPLICABLE_CODE );
     }
 
     @Override
     public OWSException mutualExclusive( String parameter, String excludes ) {
         return new OWSException( processMsg + ": given parameters '" + parameter + "' and '" + excludes
-                                 + "' are mutually exclusive.", OWSException.INVALID_PARAMETER_VALUE );
+                                 + "' are mutually exclusive.", INVALID_PARAMETER_VALUE );
     }
 
     @Override
     public OWSException inputMutualExclusive( CodeType identifier, String parameter, String excludes ) {
         return new OWSException( processMsg + "Input parameter" + identifier + " defines '" + parameter + "' and '"
-                                 + excludes + "' which are mutually exclusive.", OWSException.INVALID_PARAMETER_VALUE );
+                                 + excludes + "' which are mutually exclusive.", INVALID_PARAMETER_VALUE );
     }
 
     @Override
@@ -159,10 +161,10 @@ public class DefaultExceptionCustomizer implements ExceptionCustomizer {
     }
 
     @Override
-    public OWSException inputInvalidOccurrence( CodeType inputParameterId, int minOccurs, int maxOccurs, int actualOccurs ) {
+    public OWSException inputInvalidOccurrence( CodeType inputParameterId, int minOccurs, int maxOccurs,
+                                                int actualOccurs ) {
         StringBuilder msg = new StringBuilder( processMsg );
-        msg.append( "Input parameter '" ).append( inputParameterId ).append( "' is present " ).append( actualOccurs ).append(
-                                                                                                                              " times, " );
+        msg.append( "Input parameter '" ).append( inputParameterId ).append( "' is present " ).append( actualOccurs ).append( " times, " );
         if ( minOccurs < actualOccurs ) {
             msg.append( "but at least " ).append( minOccurs );
             msg.append( " occurrence(s) is/are required" );
@@ -221,6 +223,6 @@ public class DefaultExceptionCustomizer implements ExceptionCustomizer {
     public OWSException inputMissingParameters( CodeType inputParameterId, String... parameters ) {
         return new OWSException( processMsg + " missing parameters for input" + inputParameterId
                                  + ". At least one of following parameters is required but missing: "
-                                 + Arrays.toString( parameters ) + ".", ControllerException.NO_APPLICABLE_CODE );
+                                 + Arrays.toString( parameters ) + ".", OWSException.NO_APPLICABLE_CODE );
     }
 }

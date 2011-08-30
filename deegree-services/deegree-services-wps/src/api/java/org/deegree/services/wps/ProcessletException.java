@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps;
 
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * Indicates that the execution of a {@link Processlet} failed.

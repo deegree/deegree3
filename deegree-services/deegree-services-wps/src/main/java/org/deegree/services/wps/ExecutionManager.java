@@ -36,9 +36,8 @@
 
 package org.deegree.services.wps;
 
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wps.WPSConstants.ExecutionState.FAILED;
-import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
-import static org.deegree.services.controller.ows.OWSException.OPTION_NOT_SUPPORTED;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -65,9 +64,8 @@ import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralOutputDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wps.execute.ExecuteRequest;
 import org.deegree.services.wps.execute.ExecuteResponse;
@@ -218,7 +216,7 @@ public class ExecutionManager {
             OWSException e = state.getFailedException();
             if ( e == null ) {
                 e = new OWSException( "The execution of the process: " + process + " failed for unknown reasons.",
-                                      ControllerException.NO_APPLICABLE_CODE );
+                                      OWSException.NO_APPLICABLE_CODE );
             }
             throw e;
         }
@@ -288,7 +286,7 @@ public class ExecutionManager {
         for ( RequestedOutput outputDef : outputParams ) {
             if ( !processDef.isStoreSupported() && outputDef.getAsReference() ) {
                 String msg = "Process configuration does not allow to return outputs as references (storeSupported=false).";
-                throw new OWSException( msg, OPTION_NOT_SUPPORTED );
+                throw new OWSException( msg, OWSException.OPTION_NOT_SUPPORTED );
             }
             out.add( createOutputParameter( outputDef ) );
         }
@@ -447,13 +445,13 @@ public class ExecutionManager {
             } else {
                 String msg = "Process execution failed: " + e.getMessage();
                 LOG.debug( msg, e );
-                oe = new OWSException( msg, ControllerException.NO_APPLICABLE_CODE );
+                oe = new OWSException( msg, NO_APPLICABLE_CODE );
             }
             state.setFailed( oe );
         } catch ( Exception e ) {
             String msg = "Process execution failed: " + e.getMessage();
             LOG.debug( msg, e );
-            state.setFailed( new OWSException( msg, ControllerException.NO_APPLICABLE_CODE ) );
+            state.setFailed( new OWSException( msg, NO_APPLICABLE_CODE ) );
         }
     }
 

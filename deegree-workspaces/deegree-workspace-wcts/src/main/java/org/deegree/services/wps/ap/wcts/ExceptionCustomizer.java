@@ -39,11 +39,9 @@
 package org.deegree.services.wps.ap.wcts;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.utils.Pair;
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.wps.DefaultExceptionCustomizer;
 
 /**

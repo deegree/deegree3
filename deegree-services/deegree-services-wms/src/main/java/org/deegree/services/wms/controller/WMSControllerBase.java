@@ -42,8 +42,6 @@ import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.services.controller.ows.OWSException.CURRENT_UPDATE_SEQUENCE;
-import static org.deegree.services.controller.ows.OWSException.INVALID_UPDATE_SEQUENCE;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 import static org.deegree.style.utils.ImageUtils.prepareImage;
@@ -59,15 +57,13 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.xml.stream.XMLOutputFactory;
 
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController.Controller;
 
@@ -187,13 +183,13 @@ public abstract class WMSControllerBase implements Controller {
                 int seq = parseInt( updateSequence );
                 if ( seq > service.updateSequence ) {
                     throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ),
-                                            INVALID_UPDATE_SEQUENCE );
+                                            OWSException.INVALID_UPDATE_SEQUENCE );
                 }
                 if ( seq == service.updateSequence ) {
-                    throw new OWSException( get( "WMS.CURRENT_UPDATE_SEQUENCE" ), CURRENT_UPDATE_SEQUENCE );
+                    throw new OWSException( get( "WMS.CURRENT_UPDATE_SEQUENCE" ), OWSException.CURRENT_UPDATE_SEQUENCE );
                 }
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ), INVALID_UPDATE_SEQUENCE );
+                throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ), OWSException.INVALID_UPDATE_SEQUENCE );
             }
         }
 

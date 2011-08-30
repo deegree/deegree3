@@ -36,7 +36,7 @@
 
 package org.deegree.services.wms.controller;
 
-import static org.deegree.services.controller.ows.OWSException.INVALID_SRS;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_SRS;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 
@@ -48,12 +48,12 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ows.NamespacelessOWSExceptionXMLAdapter;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities111XMLAdapter;

@@ -36,7 +36,6 @@
 
 package org.deegree.services.wms.controller;
 
-import static org.deegree.services.controller.ows.OWSException.INVALID_CRS;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 
@@ -50,12 +49,12 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter;
@@ -90,7 +89,7 @@ public class WMSController130 extends WMSControllerBase {
     @Override
     public void throwSRSException( String name )
                             throws OWSException {
-        throw new OWSException( get( "WMS.INVALID_SRS", name ), INVALID_CRS );
+        throw new OWSException( get( "WMS.INVALID_SRS", name ), OWSException.INVALID_CRS );
     }
 
     /**

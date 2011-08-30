@@ -37,6 +37,7 @@ package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
 import static org.deegree.commons.modules.ModuleInfo.getModulesInfo;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.beans.Introspector;
@@ -103,11 +104,10 @@ import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -691,8 +691,7 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
-                               response, null );
+                sendException( new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
             }
         }
     }
@@ -776,8 +775,8 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
-                               response, null );
+                sendException( new OWSException( e.getLocalizedMessage(), OWSException.NO_APPLICABLE_CODE ), response,
+                               null );
             }
         }
     }
@@ -891,8 +890,8 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
-                               response, null );
+                sendException( new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response,
+                               null );
             }
         }
     }

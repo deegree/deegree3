@@ -36,8 +36,8 @@
 package org.deegree.services.controller.exception.serializer;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.controller.exception.ControllerException;
 
 /**
  * A provider can be used to provide multiple exception serializers for multiple services, identified by their
@@ -72,7 +72,7 @@ public interface SerializerProvider {
      * @return an exception serializer for the specified service. Must not return null if matches(metadata) would return
      *         true.
      */
-    <T extends ControllerException> ExceptionSerializer<T> getSerializer( ImplementationMetadata<?> metadata,
-                                                                          ExceptionSerializer<T> originalSerializer );
+    <T extends OWSException> ExceptionSerializer<T> getSerializer( ImplementationMetadata<?> metadata,
+                                                                   ExceptionSerializer<T> originalSerializer );
 
 }

@@ -40,6 +40,7 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**

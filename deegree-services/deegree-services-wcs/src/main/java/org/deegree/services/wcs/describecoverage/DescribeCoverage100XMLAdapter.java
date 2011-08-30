@@ -41,7 +41,7 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.wcs.WCSRequest100XMLAdapter;
 
 /**

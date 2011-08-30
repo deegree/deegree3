@@ -36,6 +36,8 @@
 
 package org.deegree.services.wpvs;
 
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -57,6 +59,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
@@ -64,16 +67,14 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingMa
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
-import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wpvs.Copyright;
+import org.deegree.services.jaxb.wpvs.Copyright.Image;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.SkyImages;
-import org.deegree.services.jaxb.wpvs.TranslationToLocalCRS;
-import org.deegree.services.jaxb.wpvs.Copyright.Image;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
+import org.deegree.services.jaxb.wpvs.TranslationToLocalCRS;
 import org.deegree.services.wpvs.config.ColormapDataset;
 import org.deegree.services.wpvs.config.DEMDataset;
 import org.deegree.services.wpvs.config.DEMTextureDataset;
@@ -302,8 +303,7 @@ public class PerspectiveViewService {
     private Envelope initDatasets( XMLAdapter configAdapter, ServiceConfiguration sc, DatasetDefinitions dsd )
                             throws ServiceInitException {
         // create a minimal bounding box
-        Envelope sceneEnvelope = geomFactory.createEnvelope(
-                                                             new double[] { -this.translationToLocalCRS[0],
+        Envelope sceneEnvelope = geomFactory.createEnvelope( new double[] { -this.translationToLocalCRS[0],
                                                                            -this.translationToLocalCRS[1], 0 },
                                                              new double[] {
                                                                            -this.translationToLocalCRS[0]
@@ -330,8 +330,7 @@ public class PerspectiveViewService {
 
         LOG.debug( "The scene envelope after loading the dem: {} ", sceneEnvelope );
 
-        List<TerrainRenderingManager> matchingDatasourceObjects = demDatasets.getMatchingDatasourceObjects(
-                                                                                                            demDatasets.datasetTitles(),
+        List<TerrainRenderingManager> matchingDatasourceObjects = demDatasets.getMatchingDatasourceObjects( demDatasets.datasetTitles(),
                                                                                                             null );
         if ( matchingDatasourceObjects.isEmpty() ) {
             throw new ServiceInitException( "No elevationmodels configured, this may not be." );
@@ -499,7 +498,7 @@ public class PerspectiveViewService {
             } catch ( Throwable t ) {
                 LOG.debug( "An eroor occurred while rendering the scene.", t );
                 throw new OWSException( "An error occurred while rendering the GetView requested scene: "
-                                        + t.getLocalizedMessage(), t, ControllerException.NO_APPLICABLE_CODE );
+                                        + t.getLocalizedMessage(), t, NO_APPLICABLE_CODE );
             } finally {
                 offscreenBuffer.removeGLEventListener( renderer );
             }
@@ -523,15 +522,13 @@ public class PerspectiveViewService {
         if ( width > this.maxRequestWidth || height > this.maxRequestHeight ) {
             StringBuilder errorMessage = new StringBuilder( "Requested" );
             if ( width > this.maxRequestWidth ) {
-                errorMessage.append( " width: " ).append( width ).append( " exceeds maximum request width: " ).append(
-                                                                                                                       maxRequestWidth );
+                errorMessage.append( " width: " ).append( width ).append( " exceeds maximum request width: " ).append( maxRequestWidth );
             }
             if ( height > this.maxRequestHeight ) {
                 if ( width > this.maxRequestWidth ) {
                     errorMessage.append( "," );
                 }
-                errorMessage.append( " height: " ).append( height ).append( " exceeds maximum request height: " ).append(
-                                                                                                                          maxRequestHeight );
+                errorMessage.append( " height: " ).append( height ).append( " exceeds maximum request height: " ).append( maxRequestHeight );
             }
             throw new OWSException( errorMessage.toString(), OWSException.INVALID_PARAMETER_VALUE );
             // double scale = ( width > height ) ? ( ( (double) this.maxRequestWidth ) / width )

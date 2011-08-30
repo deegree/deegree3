@@ -41,7 +41,6 @@ import org.deegree.coverage.filter.raster.RasterFilter;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.Grid;
-import org.deegree.coverage.raster.utils.CoverageTransform;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.services.wcs.model.CoverageOptions;

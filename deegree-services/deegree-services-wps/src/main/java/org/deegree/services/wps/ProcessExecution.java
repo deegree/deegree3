@@ -48,8 +48,8 @@ import java.util.List;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wps.execute.ExecuteRequest;
 import org.deegree.services.wps.execute.ExecuteResponse;
 import org.deegree.services.wps.execute.RequestedOutput;

@@ -46,8 +46,8 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
-import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
+import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 
 /**
  * 

@@ -41,10 +41,6 @@ import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.INVALID_POINT;
-import static org.deegree.services.controller.ows.OWSException.LAYER_NOT_DEFINED;
-import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.ops.GetMap.parseDimensionValues;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -60,12 +56,12 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.style.se.unevaluated.Style;
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController111;
 import org.deegree.services.wms.controller.WMSController130;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -160,7 +156,7 @@ public class GetFeatureInfo {
 
         String c = map.get( "SRS" );
         if ( c == null || c.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "SRS" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "SRS" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         crs = WMSController111.getCRS( c );
 
@@ -168,22 +164,22 @@ public class GetFeatureInfo {
 
         String xs = map.get( "X" );
         if ( xs == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "X" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "X" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         try {
             x = parseInt( xs );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( get( "WMS.NOT_A_NUMBER", "X", xs ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.NOT_A_NUMBER", "X", xs ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         String ys = map.get( "Y" );
         if ( ys == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "Y" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "Y" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         try {
             y = parseInt( ys );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( get( "WMS.NOT_A_NUMBER", "Y", ys ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.NOT_A_NUMBER", "Y", ys ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         calcClickBox( map );
@@ -195,7 +191,7 @@ public class GetFeatureInfo {
 
         String c = map.get( "CRS" );
         if ( c == null || c.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "CRS" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "CRS" ), OWSException.MISSING_PARAMETER_VALUE );
         }
 
         bbox = WMSController130.getCRSAndEnvelope( c, vals );
@@ -203,26 +199,26 @@ public class GetFeatureInfo {
 
         String xs = map.get( "I" );
         if ( xs == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "I" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "I" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         try {
             x = parseInt( xs );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( get( "WMS.NOT_A_NUMBER", "I", xs ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.NOT_A_NUMBER", "I", xs ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         String ys = map.get( "J" );
         if ( ys == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "J" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "J" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         try {
             y = parseInt( ys );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( get( "WMS.NOT_A_NUMBER", "J", ys ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.NOT_A_NUMBER", "J", ys ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         if ( x > width || y > height || x < 1 || y < 1 ) {
-            throw new OWSException( get( "WMS.INVALID_POINT" ), INVALID_POINT );
+            throw new OWSException( get( "WMS.INVALID_POINT" ), OWSException.INVALID_POINT );
         }
 
         calcClickBox( map );
@@ -254,28 +250,28 @@ public class GetFeatureInfo {
                             throws OWSException {
         String box = map.get( "BBOX" );
         if ( box == null || box.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "BBOX" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "BBOX" ), OWSException.MISSING_PARAMETER_VALUE );
         }
 
         double[] vals = splitAsDoubles( box, "," );
         if ( vals.length != 4 ) {
-            throw new OWSException( get( "WMS.BBOX_WRONG_FORMAT", box ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.BBOX_WRONG_FORMAT", box ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         if ( vals[2] <= vals[0] ) {
-            throw new OWSException( get( "WMS.MAXX_MINX" ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.MAXX_MINX" ), OWSException.INVALID_PARAMETER_VALUE );
         }
         if ( vals[3] <= vals[1] ) {
-            throw new OWSException( get( "WMS.MAXY_MINY" ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.MAXY_MINY" ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         String qls = map.get( "QUERY_LAYERS" );
         if ( qls == null || qls.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "QUERY_LAYERS" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "QUERY_LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         String ls = map.get( "LAYERS" );
         if ( ls == null || ls.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYERS" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         String ss = map.get( "STYLES" );
         if ( ss == null ) {
@@ -290,7 +286,7 @@ public class GetFeatureInfo {
         LinkedList<String> qlayers = new LinkedList<String>( asList( qls.split( "," ) ) );
         for ( String l : qlayers ) {
             if ( service.getLayer( l ) == null ) {
-                throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", l ), LAYER_NOT_DEFINED );
+                throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", l ), OWSException.LAYER_NOT_DEFINED );
             }
         }
         ListIterator<Layer> lays = this.layers.listIterator();
@@ -312,22 +308,22 @@ public class GetFeatureInfo {
 
         String w = map.get( "WIDTH" );
         if ( w == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "WIDTH" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "WIDTH" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         try {
             width = parseInt( w );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( get( "WMS.NOT_A_NUMBER", "WIDTH", w ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.NOT_A_NUMBER", "WIDTH", w ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         String h = map.get( "HEIGHT" );
         if ( h == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "HEIGHT" ), MISSING_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.PARAM_MISSING", "HEIGHT" ), OWSException.MISSING_PARAMETER_VALUE );
         }
         try {
             height = parseInt( h );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( get( "WMS.NOT_A_NUMBER", "HEIGHT", h ), INVALID_PARAMETER_VALUE );
+            throw new OWSException( get( "WMS.NOT_A_NUMBER", "HEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
         String fc = map.get( "FEATURE_COUNT" );
@@ -335,7 +331,7 @@ public class GetFeatureInfo {
             try {
                 featureCount = parseInt( fc );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "FEATURE_COUNT", fc ), INVALID_PARAMETER_VALUE );
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "FEATURE_COUNT", fc ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
 

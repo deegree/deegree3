@@ -119,6 +119,11 @@ public class OWSException extends Exception {
      */
     public static final String INVALID_DATE = "InvalidDate";
 
+    /**
+     * exception code for all not known exceptions
+     */
+    public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
+
     private final String exceptionCode;
 
     private final String locator;
@@ -198,5 +203,9 @@ public class OWSException extends Exception {
      */
     public final String getLocator() {
         return locator;
+    }
+
+    public final String getExceptionCode() {
+        return exceptionCode;
     }
 }

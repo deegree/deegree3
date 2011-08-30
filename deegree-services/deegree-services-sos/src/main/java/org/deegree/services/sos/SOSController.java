@@ -41,11 +41,9 @@ import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
-import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
-import static org.deegree.services.controller.ows.OWSException.INVALID_DATE;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.VERSION_NEGOTIATION_FAILED;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_DATE;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
 import static org.deegree.services.sos.SOSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.BufferedReader;
@@ -97,6 +95,7 @@ import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.sos.SOSConstants.SOSRequestType;
 import org.deegree.protocol.sos.describesensor.DescribeSensor;
 import org.deegree.protocol.sos.describesensor.DescribeSensor100KVPAdapter;
@@ -113,9 +112,7 @@ import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.ResultFilterException;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
@@ -282,8 +279,8 @@ public class SOSController extends AbstractOWS {
         } catch ( OWSException ex ) {
             sendServiceException( ex, response );
         } catch ( XMLStreamException e ) {
-            sendServiceException( new OWSException( "an error occured while processing a request",
-                                                    ControllerException.NO_APPLICABLE_CODE ), response );
+            sendServiceException( new OWSException( "an error occured while processing a request", NO_APPLICABLE_CODE ),
+                                  response );
             LOG.error( "an error occured while processing a request", e );
         } catch ( ObservationDatastoreException e ) {
             sendServiceException( new OWSException( "an error occured while processing a request", "" ), response );
@@ -330,12 +327,12 @@ public class SOSController extends AbstractOWS {
             sendServiceException( ex, response );
         } catch ( ResultFilterException e ) {
             LOG.debug( "Stack trace:", e );
-            sendServiceException( new OWSException( e.getLocalizedMessage(), INVALID_PARAMETER_VALUE, "result" ),
-                                  response );
+            sendServiceException( new OWSException( e.getLocalizedMessage(), OWSException.INVALID_PARAMETER_VALUE,
+                                                    "result" ), response );
         } catch ( EventTimeXMLParsingException e ) {
             LOG.debug( "Stack trace:", e );
-            sendServiceException( new OWSException( e.getLocalizedMessage(), INVALID_PARAMETER_VALUE, "eventTime" ),
-                                  response );
+            sendServiceException( new OWSException( e.getLocalizedMessage(), OWSException.INVALID_PARAMETER_VALUE,
+                                                    "eventTime" ), response );
         } catch ( XMLStreamException e ) {
             LOG.error( "an error occured while processing the request", e );
             sendServiceException( new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
@@ -434,7 +431,7 @@ public class SOSController extends AbstractOWS {
 
         } else {
             throw new OWSException( "the offering " + observationReq.getOffering() + " is invalid",
-                                    INVALID_PARAMETER_VALUE, "offering" );
+                                    OWSException.INVALID_PARAMETER_VALUE, "offering" );
         }
         xmlWriter.flush();
     }
@@ -469,7 +466,8 @@ public class SOSController extends AbstractOWS {
         } else if ( model.endsWith( "Measurement" ) ) {
             Observation100XMLAdapter.exportOMMeasurement( xmlWriter, observation );
         } else {
-            throw new OWSException( "the resultModel " + model + " is invalid", INVALID_PARAMETER_VALUE, "resultModel" );
+            throw new OWSException( "the resultModel " + model + " is invalid", OWSException.INVALID_PARAMETER_VALUE,
+                                    "resultModel" );
         }
     }
 
@@ -480,7 +478,7 @@ public class SOSController extends AbstractOWS {
                 CRSManager.lookup( observationReq.getSRSName() );
             } catch ( UnknownCRSException e ) {
                 throw new OWSException( "Invalid SRS name given: " + observationReq.getSRSName(),
-                                        INVALID_PARAMETER_VALUE, "srsName" );
+                                        OWSException.INVALID_PARAMETER_VALUE, "srsName" );
             }
         }
         validateParameterValue( "resultModel", observationReq.getResultModel(), "", "Observation", "om:Observation",
@@ -523,7 +521,8 @@ public class SOSController extends AbstractOWS {
     private void validateParameterValue( String locator, String value, String... validValues )
                             throws OWSException {
         if ( value == null ) {
-            throw new OWSException( "the " + locator + " parameter is missing", MISSING_PARAMETER_VALUE, locator );
+            throw new OWSException( "the " + locator + " parameter is missing", OWSException.MISSING_PARAMETER_VALUE,
+                                    locator );
         }
         boolean isValid = false;
         for ( String valid : validValues ) {
@@ -533,7 +532,8 @@ public class SOSController extends AbstractOWS {
             }
         }
         if ( !isValid ) {
-            throw new OWSException( "the " + locator + " " + value + " is invalid", INVALID_PARAMETER_VALUE, locator );
+            throw new OWSException( "the " + locator + " " + value + " is invalid",
+                                    OWSException.INVALID_PARAMETER_VALUE, locator );
         }
     }
 
@@ -541,7 +541,8 @@ public class SOSController extends AbstractOWS {
                             throws OWSException {
         validateParameterValue( "outputFormat", req.getOutputFormat(), "text/xml;subtype=\"sensorML/1.0.1\"" );
         if ( req.getProcedure() == null ) {
-            throw new OWSException( "The procedure parameter is missing.", MISSING_PARAMETER_VALUE, "procedure" );
+            throw new OWSException( "The procedure parameter is missing.", OWSException.MISSING_PARAMETER_VALUE,
+                                    "procedure" );
         }
     }
 
@@ -582,8 +583,8 @@ public class SOSController extends AbstractOWS {
             }
         }
         if ( !found ) {
-            throw new OWSException( "the procedure " + requestedProcedure + " is invalid", INVALID_PARAMETER_VALUE,
-                                    "procedure" );
+            throw new OWSException( "the procedure " + requestedProcedure + " is invalid",
+                                    OWSException.INVALID_PARAMETER_VALUE, "procedure" );
         }
         writer.flush();
     }
@@ -636,11 +637,13 @@ public class SOSController extends AbstractOWS {
         try {
             String service = KVPUtils.getRequired( param, "SERVICE" );
             if ( !"SOS".equalsIgnoreCase( service ) ) {
-                throw new OWSException( "SERVICE " + service + " is not supported", INVALID_PARAMETER_VALUE, "SERVICE" );
+                throw new OWSException( "SERVICE " + service + " is not supported",
+                                        OWSException.INVALID_PARAMETER_VALUE, "SERVICE" );
             }
             String request = KVPUtils.getRequired( param, "REQUEST" );
             if ( !getHandledRequests().contains( request ) ) {
-                throw new OWSException( "REQUEST " + request + " is not supported", INVALID_PARAMETER_VALUE, "REQUEST" );
+                throw new OWSException( "REQUEST " + request + " is not supported",
+                                        OWSException.INVALID_PARAMETER_VALUE, "REQUEST" );
             }
             String version;
             if ( IMPLEMENTATION_METADATA.getRequestTypeByName( request ) != SOSRequestType.GetCapabilities ) { // no
@@ -653,7 +656,7 @@ public class SOSController extends AbstractOWS {
                 }
             }
         } catch ( MissingParameterException e ) {
-            throw new OWSException( e.getMessage(), MISSING_PARAMETER_VALUE );
+            throw new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE );
         }
     }
 

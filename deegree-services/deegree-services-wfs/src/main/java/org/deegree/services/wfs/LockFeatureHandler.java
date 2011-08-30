@@ -37,10 +37,10 @@
 package org.deegree.services.wfs;
 
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
-import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 
 import java.io.IOException;
 
@@ -53,9 +53,9 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

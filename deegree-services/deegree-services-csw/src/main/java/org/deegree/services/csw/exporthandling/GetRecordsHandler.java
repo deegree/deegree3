@@ -38,6 +38,7 @@ package org.deegree.services.csw.exporthandling;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -76,8 +77,7 @@ import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.ows.OWSException;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.csw.getrecords.GetRecords;
@@ -137,7 +137,7 @@ public class GetRecordsHandler {
             throw new InvalidParameterValueException( e.getMessage() );
         } catch ( MetadataStoreException e ) {
             LOG.debug( e.getMessage() );
-            throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
+            throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
         }
         xmlWriter.flush();
     }

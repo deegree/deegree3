@@ -44,13 +44,10 @@ import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
+import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
-import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
-import static org.deegree.services.controller.ows.OWSException.INVALID_FORMAT;
-import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
@@ -118,6 +115,7 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
@@ -133,7 +131,6 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
@@ -409,11 +406,13 @@ public class WMSController extends AbstractOWS {
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
                                                                              map.get( "REQUEST" ) ),
-                                                                        OPERATION_NOT_SUPPORTED ), response );
+                                                                        OWSException.OPERATION_NOT_SUPPORTED ),
+                                                      response );
             return;
         } catch ( NullPointerException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.PARAM_MISSING", "REQUEST" ),
-                                                                        OPERATION_NOT_SUPPORTED ), response );
+                                                                        OWSException.OPERATION_NOT_SUPPORTED ),
+                                                      response );
             return;
         }
 
@@ -429,9 +428,6 @@ public class WMSController extends AbstractOWS {
             LOG.trace( "Stack trace of OWSException being sent", e );
 
             controllers.get( version ).handleException( map, req, e, response, this );
-        } catch ( org.deegree.protocol.ows.exception.OWSException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 
@@ -445,7 +441,8 @@ public class WMSController extends AbstractOWS {
                 break;
             default:
                 if ( controllers.get( version ) == null ) {
-                    throw new OWSException( get( "WMS.VERSION_UNSUPPORTED", version ), INVALID_PARAMETER_VALUE );
+                    throw new OWSException( get( "WMS.VERSION_UNSUPPORTED", version ),
+                                            OWSException.INVALID_PARAMETER_VALUE );
                 }
             }
 
@@ -513,7 +510,7 @@ public class WMSController extends AbstractOWS {
                                                                                     OGCFrontController.getContext().getCredentials() );
 
         if ( !supportedImageFormats.contains( glg.getFormat() ) ) {
-            throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", glg.getFormat() ), INVALID_FORMAT );
+            throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", glg.getFormat() ), OWSException.INVALID_FORMAT );
         }
         BufferedImage img = service.getLegend( glg );
         sendImage( img, response, glg.getFormat() );
@@ -743,14 +740,14 @@ public class WMSController extends AbstractOWS {
                             throws OWSException {
         if ( gfi.getInfoFormat() != null && !gfi.getInfoFormat().equals( "" )
              && !supportedFeatureInfoFormats.containsKey( gfi.getInfoFormat() ) ) {
-            throw new OWSException( get( "WMS.INVALID_INFO_FORMAT", gfi.getInfoFormat() ), INVALID_FORMAT );
+            throw new OWSException( get( "WMS.INVALID_INFO_FORMAT", gfi.getInfoFormat() ), OWSException.INVALID_FORMAT );
         }
     }
 
     private void checkGetMap( Version version, GetMap gm )
                             throws OWSException {
         if ( !supportedImageFormats.contains( gm.getFormat() ) ) {
-            throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", gm.getFormat() ), INVALID_FORMAT );
+            throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", gm.getFormat() ), OWSException.INVALID_FORMAT );
         }
         try {
             // check for existence/validity
@@ -837,7 +834,7 @@ public class WMSController extends AbstractOWS {
         }
         LOG.debug( "Sending in format " + format );
         if ( !write( img, format, response.getOutputStream() ) ) {
-            throw new OWSException( get( "WMS.CANNOT_ENCODE_IMAGE", format ), NO_APPLICABLE_CODE );
+            throw new OWSException( get( "WMS.CANNOT_ENCODE_IMAGE", format ), OWSException.NO_APPLICABLE_CODE );
         }
     }
 
