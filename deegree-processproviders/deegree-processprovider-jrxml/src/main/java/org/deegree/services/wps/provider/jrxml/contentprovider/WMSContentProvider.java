@@ -52,6 +52,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -78,9 +79,17 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.standard.DefaultEnvelope;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.protocol.wms.Utils;
+import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.remoteows.wms.WMSClient111;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
@@ -178,7 +187,8 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
     private boolean isMapParameter( String imgParameter ) {
         return imgParameter.startsWith( "wms" )
-               && ( imgParameter.endsWith( "_legend" ) || imgParameter.endsWith( "_map" ) );
+               && ( imgParameter.endsWith( "_legend" ) || imgParameter.endsWith( "_map" )
+                    || imgParameter.endsWith( "_scale" ) || imgParameter.endsWith( "_scalebar" ) );
     }
 
     @Override
@@ -206,7 +216,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
                         List<OrderedDatasource<?>> datasources = anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );
 
-                        // create map
+                        // MAP
                         String mapKey = "wms" + mapId + "_map";
                         if ( parameters.containsKey( mapKey ) ) {
                             OMElement mapImgRep = jrxmlAdapter.getElement( root,
@@ -223,17 +233,55 @@ public class WMSContentProvider implements JrxmlContentProvider {
                                                                                                      nsContext ) );
                             int height = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep, new XPath( "@height",
                                                                                                       nsContext ) );
-                            params.put( mapKey, prepareMap( map, datasources, parameters.get( mapKey ), width, height ) );
+
+                            String[] coords = map.getDetail().getBbox().split( "," );
+                            ICRS crs = CRSManager.getCRSRef( map.getDetail().getCrs() );
+                            Envelope bbox = new DefaultEnvelope(
+                                                                 null,
+                                                                 crs,
+                                                                 null,
+                                                                 new DefaultPoint(
+                                                                                   null,
+                                                                                   crs,
+                                                                                   null,
+                                                                                   new double[] {
+                                                                                                 Double.parseDouble( coords[0] ),
+                                                                                                 Double.parseDouble( coords[1] ) } ),
+                                                                 new DefaultPoint(
+                                                                                   null,
+                                                                                   crs,
+                                                                                   null,
+                                                                                   new double[] {
+                                                                                                 Double.parseDouble( coords[2] ),
+                                                                                                 Double.parseDouble( coords[3] ) } ) );
+
+                            params.put( mapKey,
+                                        prepareMap( datasources, parameters.get( mapKey ), width, height, bbox, crs ) );
+
+                            // SCALE
+                            String scaleKey = "wms" + mapId + "_scale";
+                            System.out.println(scaleKey);
+                            System.out.println( parameters.containsKey( scaleKey ));
+                            
+                            if ( parameters.containsKey( scaleKey ) ) {
+                                double scale = Utils.calcScaleWMS130( width, height, bbox, crs );
+                                System.out.println(scale);
+                                params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );
+                            }
+
                         }
 
+                        // LAYERLIST
                         prepareLayerlist( "wms" + mapId + "_layerList", jrxmlAdapter, map, datasources );
 
+                        // LEGEND
                         String legendKey = "wms" + mapId + "_legend";
                         if ( parameters.containsKey( legendKey ) ) {
                             params.put( legendKey,
                                         prepareLegend( legendKey, jrxmlAdapter, datasources, parameters.get( legendKey ) ) );
                         }
 
+                        // SCALEBAR
                         // get input stream
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         try {
@@ -268,6 +316,25 @@ public class WMSContentProvider implements JrxmlContentProvider {
         return jrxml;
     }
 
+    private Object convert( double scale, String parameterType ) {
+        if ( parameterType == null || "java.lang.String".equals( parameterType ) ) {
+            return Double.toString( scale );
+        } else if ( "java.lang.Integer".equals( parameterType ) ) {
+            return new Double( scale ).intValue();
+        } else if ( "java.lang.Float".equals( parameterType ) ) {
+            return new Double( scale ).floatValue();
+        } else if ( "java.lang.Long".equals( parameterType ) ) {
+            return new Double( scale ).longValue();
+        } else if ( "java.math.BigDecimal".equals( parameterType ) ) {
+            return new BigDecimal( scale );
+        } else if ( "java.lang.Short".equals( parameterType ) ) {
+            return new Double( scale ).shortValue();
+        } else if ( "java.lang.Byte".equals( parameterType ) ) {
+            return new Double( scale ).byteValue();
+        }
+        return scale;
+    }
+
     private Object prepareLegend( String legendKey, XMLAdapter jrxmlAdapter, List<OrderedDatasource<?>> datasources,
                                   String type )
                             throws ProcessletException {
@@ -277,7 +344,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
                                                                  + legendKey + "}']/jasper:reportElement", nsContext ) );
 
         if ( legendRE != null ) {
-            LOG.debug( "Found legend with key '" + legendKey + "' to create." );
+            LOG.debug( "Found legend with key '" + legendKey + "'." );
             int width = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@width", nsContext ) );
             int height = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@height", nsContext ) );
             // TODO: bgcolor?
@@ -376,16 +443,17 @@ public class WMSContentProvider implements JrxmlContentProvider {
         return newGrp;
     }
 
-    private Object prepareMap( org.deegree.services.wps.provider.jrxml.jaxb.map.Map map,
-                               List<OrderedDatasource<?>> datasources, String type, int width, int height )
+    private Object prepareMap( List<OrderedDatasource<?>> datasources, String type, int width, int height,
+                               Envelope bbox, ICRS crs )
                             throws ProcessletException {
         BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
         Graphics g = bi.getGraphics();
 
-        String bbox = map.getDetail().getBbox();
-        String srs = map.getDetail().getCrs();
         for ( OrderedDatasource<?> datasource : datasources ) {
-            g.drawImage( datasource.getImage( width, height, bbox, srs ), 0, 0, null );
+            BufferedImage image = datasource.getImage( width, height, bbox, crs );
+            if ( image != null ) {
+                g.drawImage( image, 0, 0, null );
+            }
         }
         g.dispose();
 
@@ -557,7 +625,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
             this.max = max;
         }
 
-        abstract BufferedImage getImage( int width, int height, String bbox, String srs )
+        abstract BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
                                 throws ProcessletException;
 
         abstract Map<String, List<String>> getLayerList();
@@ -565,7 +633,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
     class WMSOrderedDatasource extends OrderedDatasource<WMSDatasource> {
 
-        private List<Layer> layers;
+        List<Layer> layers;
 
         public WMSOrderedDatasource( WMSDatasource datasource, List<Layer> layers ) {
             super( datasource );
@@ -578,14 +646,32 @@ public class WMSContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        BufferedImage getImage( int width, int height, String bbox, String srs )
+        BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
                                 throws ProcessletException {
-            String request = getRequest( width, height, bbox, srs );
-            LOG.debug( "try to receive map: " + request );
             try {
-                return loadImage( request );
+                String user = datasource.getAuthentification() != null ? datasource.getAuthentification().getUser()
+                                                                      : null;
+                String passw = datasource.getAuthentification() != null ? datasource.getAuthentification().getPassword()
+                                                                       : null;
+                // TODO: version
+                String capUrl = datasource.getUrl() + "?request=GetCapabilities&service=WMS&version=1.1.1";
+                WMSClient111 wmsClient = new WMSClient111( new URL( capUrl ), 5, 60, user, passw );
+                List<String> layerNames = new ArrayList<String>();
+                for ( Layer l : layers ) {
+                    layerNames.add( l.getName() );
+                }
+
+                GetMap gm = new GetMap( layerNames, width, height, bbox, crs, "image/png", true );
+                Pair<BufferedImage, String> map = wmsClient.getMap( gm, null, 60, false );
+                if ( map.first == null )
+                    LOG.debug( map.second );
+                return map.first;
+            } catch ( MalformedURLException e ) {
+                String msg = "could not reslove wms url " + datasource.getUrl() + "!";
+                LOG.error( msg, e );
+                throw new ProcessletException( msg );
             } catch ( IOException e ) {
-                String msg = "could not load image from: " + request;
+                String msg = "could not get map!";
                 LOG.error( msg, e );
                 throw new ProcessletException( msg );
             }
@@ -628,37 +714,6 @@ public class WMSContentProvider implements JrxmlContentProvider {
                 IOUtils.closeQuietly( fss );
                 IOUtils.closeQuietly( is );
             }
-        }
-
-        String getRequest( int width, int height, String bbox, String srs ) {
-            String url = datasource.getUrl();
-            StringBuilder sb = new StringBuilder();
-            sb.append( url );
-            if ( !url.endsWith( "?" ) )
-                sb.append( '?' );
-            sb.append( "REQUEST=GetMap&" );
-            sb.append( "SERVICE=WMS&" );
-            sb.append( "VERSION=" ).append( datasource.getVersion() ).append( '&' );
-            sb.append( "WIDTH=" ).append( width ).append( '&' );
-            sb.append( "HEIGHT=" ).append( height ).append( '&' );
-
-            sb.append( "LAYERS=" );
-            boolean isFirst = true;
-            for ( Layer layer : layers ) {
-                if ( !isFirst )
-                    sb.append( ',' );
-                sb.append( layer.getName().trim() );
-                isFirst = false;
-            }
-            sb.append( '&' );
-
-            sb.append( "TRANSPARENT=" ).append( "TRUE" ).append( '&' );
-            sb.append( "FORMAT=" ).append( "image/png" ).append( '&' );
-
-            sb.append( "BBOX=" ).append( bbox.trim() ).append( '&' );
-            sb.append( "SRS=" ).append( srs.trim() );
-            // STYLES=
-            return sb.toString();
         }
 
         @Override
@@ -723,7 +778,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        BufferedImage getImage( int width, int height, String bbox, String srs )
+        BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
                                 throws ProcessletException {
             // TODO Auto-generated method stub
             return null;

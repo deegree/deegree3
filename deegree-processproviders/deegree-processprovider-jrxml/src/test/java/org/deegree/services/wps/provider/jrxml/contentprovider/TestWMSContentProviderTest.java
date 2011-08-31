@@ -82,6 +82,7 @@ import org.deegree.services.wps.input.EmbeddedComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.OrderedDatasource;
 import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.WMSOrderedDatasource;
+import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.junit.Test;
 
 /**
@@ -238,11 +239,22 @@ public class TestWMSContentProviderTest {
         assertEquals( expectedParts.size(), anaylizeRequestOrder.size() );
         for ( OrderedDatasource<?> ds : anaylizeRequestOrder ) {
             assertTrue( ds instanceof WMSOrderedDatasource );
-            String r = ( (WMSOrderedDatasource) ds ).getRequest( 250, 250, "48,8,50,10", "epsg:4326" );
-            System.out.println(r);
+            WMSOrderedDatasource wds = (WMSOrderedDatasource) ds;
+
             Pair<String, String> expected = expectedParts.get( index++ );
-            assertTrue( r.startsWith( expected.first ) );
-            assertTrue( r.contains( expected.second ) );
+
+            assertTrue( wds.datasource.getUrl().startsWith( expected.first ) );
+
+            String layersAsString = "";
+            boolean isFirst = true;
+            for ( Layer l : wds.layers ) {
+                if ( !isFirst ) {
+                    layersAsString += ",";
+                }
+                layersAsString += l.getName();
+                isFirst = false;
+            }
+            assertEquals( expected.second, layersAsString );
         }
 
         is.close();
@@ -263,9 +275,13 @@ public class TestWMSContentProviderTest {
         assertEquals( 1, anaylizeRequestOrder.size() );
         OrderedDatasource<?> ds = anaylizeRequestOrder.get( 0 );
         assertTrue( ds instanceof WMSOrderedDatasource );
-        String r = ( (WMSOrderedDatasource) ds ).getRequest( 250, 250, "48,8,50,10", "epsg:4326" );
-        assertTrue( r.startsWith( "http://demo.deegree.org:80/deegree-wms/services" ) );
-        assertTrue( r.contains( "StateOverview,Lake" ) );
+        WMSOrderedDatasource wds = (WMSOrderedDatasource) ds;
+        assertTrue( wds.datasource.getUrl().startsWith( "http://demo.deegree.org:80/deegree-wms/services" ) );
+
+        assertEquals( 2, wds.layers.size() );
+
+        assertEquals( wds.layers.get( 0 ).getName(), "StateOverview" );
+        assertEquals( wds.layers.get( 1 ).getName(), "Lake" );
 
         is.close();
     }
