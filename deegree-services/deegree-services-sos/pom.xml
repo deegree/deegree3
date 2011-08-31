@@ -28,20 +28,8 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.3</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <schemaFiles>sos/3.0.0/sos_configuration.xsd</schemaFiles>
-          <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
-        </configuration>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

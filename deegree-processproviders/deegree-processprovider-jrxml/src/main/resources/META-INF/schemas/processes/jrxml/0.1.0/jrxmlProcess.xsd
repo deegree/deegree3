@@ -1,11 +1,10 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://www.deegree.org/processes/jrxml"
-	targetNamespace="http://www.deegree.org/processes/jrxml"
-	elementFormDefault="qualified" attributeFormDefault="unqualified"
-	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  targetNamespace="http://www.deegree.org/processes/jrxml" elementFormDefault="qualified" attributeFormDefault="unqualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 	<annotation>
 		<appinfo>
 			<jaxb:schemaBindings>
-				<jaxb:package name="org.deegree.services.wps.provider.jrxml.jaxb" />
+				<jaxb:package name="org.deegree.services.wps.provider.jrxml.jaxb.process" />
 			</jaxb:schemaBindings>
 		</appinfo>
 	</annotation>

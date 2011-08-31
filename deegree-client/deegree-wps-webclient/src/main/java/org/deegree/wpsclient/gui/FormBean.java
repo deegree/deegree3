@@ -77,7 +77,7 @@ import org.deegree.client.core.component.HtmlInputFile;
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.client.input.type.BBoxInputType;
 import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;
@@ -177,7 +177,7 @@ public class FormBean {
                 HtmlPanelGrid outputPanel = setOutputParams( fc, process.getOutputTypes(), outputFormatIds );
                 addInputParams( fc, executeForm, process.getInputTypes(), outputFormatIds );
                 executeForm.getChildren().add( outputPanel );
-            } catch ( OWSException e ) {
+            } catch ( OWSExceptionReport e ) {
                 FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_WARN, "WARN.EXCEPTION", e.getMessage() );
                 fc.addMessage( "WPSBean.selectProcess.EXCEPTION", msg );
             } catch ( IOException e ) {

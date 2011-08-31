@@ -27,20 +27,8 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.3</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <schemaFiles>crs/stores/deegree/3.1.0/deegree.xsd,crs/stores/deegree2/3.1.0/deegree2.xsd,crs/stores/gml/3.1.0/gml.xsd,crs/stores/proj4/3.1.0/proj4.xsd</schemaFiles>
-          <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
-        </configuration>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

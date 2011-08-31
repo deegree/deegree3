@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:d="http://www.deegree.org/metadata/description"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" targetNamespace="http://www.deegree.org/metadata/description"
+  elementFormDefault="qualified" jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.commons.metadata.description.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="Title" type="d:LanguageStringType" />
+  <element name="Abstract" type="d:LanguageStringType" />
+  <element name="Keywords" type="d:KeywordsType" />
+
+  <group name="Description">
+    <sequence>
+      <element ref="d:Title" minOccurs="1" maxOccurs="unbounded" />
+      <element ref="d:Abstract" minOccurs="0" maxOccurs="unbounded" />
+      <element ref="d:Keywords" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </group>
+
+  <complexType name="LanguageStringType">
+    <simpleContent>
+      <extension base="string">
+        <attribute name="lang" type="string" use="optional" />
+      </extension>
+    </simpleContent>
+  </complexType>
+
+  <complexType name="CodeType">
+    <simpleContent>
+      <extension base="string">
+        <attribute name="codeSpace" type="anyURI" use="optional" />
+      </extension>
+    </simpleContent>
+  </complexType>
+
+  <complexType name="KeywordsType">
+    <sequence>
+      <element name="Keyword" type="d:LanguageStringType" maxOccurs="unbounded" />
+      <element name="Type" type="d:CodeType" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+</schema>
