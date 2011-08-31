@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<Themes configVersion="3.1.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd">
+
+  <LayerStoreId>single</LayerStoreId>
+  <LayerStoreId>optionssingle</LayerStoreId>
+  <LayerStoreId>multiple</LayerStoreId>
+  <LayerStoreId>optionsmultiple</LayerStoreId>
+  <LayerStoreId>multipleoptionsmultiplelayers</LayerStoreId>
+  <LayerStoreId>timeout</LayerStoreId>
+  <LayerStoreId>esri</LayerStoreId>
+  <LayerStoreId>mywms</LayerStoreId>
+  <LayerStoreId>deegree2</LayerStoreId>
+  <LayerStoreId>parameters</LayerStoreId>
+  <LayerStoreId>parametersext</LayerStoreId>
+  <LayerStoreId>transformedgif</LayerStoreId>
+
+  <Theme>
+    <Title>root</Title>
+    <CRS>EPSG:26912 EPSG:4326</CRS>
+    <Theme>
+      <Identifier>single</Identifier>
+      <Title>single</Title>
+      <Layer layerStore='single'>ZipCodes</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>optionssingle</Identifier>
+      <Title>optionssingle</Title>
+      <Layer layerStore='optionssingle'>ZipCodes</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>multiple</Identifier>
+      <Title>multiple</Title>
+      <Layer layerStore='multiple'>ZipCodes</Layer>
+      <Layer layerStore='multiple'>Roads</Layer>
+      <Layer layerStore='multiple'>Railroads</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>optionsmultiple</Identifier>
+      <Title>optionsmultiple</Title>
+      <Layer layerStore='optionsmultiple'>ZipCodes</Layer>
+      <Layer layerStore='optionsmultiple'>Roads</Layer>
+      <Layer layerStore='optionsmultiple'>Railroads</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>timeout</Identifier>
+      <Title>timeout</Title>
+      <Layer layerStore='timeout'>dem_saltlake</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>esri</Identifier>
+      <Title>esri</Title>
+      <Layer layerStore='esri'>REF:FLOODMAPINDEX</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>mywms</Identifier>
+      <Title>mywms</Title>
+      <Layer layerStore='mywms'>bplan_umringe_mrh</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>deegree2</Identifier>
+      <Title>deegree2</Title>
+      <Layer layerStore='deegree2'>ZipCodes</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>parameters</Identifier>
+      <Title>parameters</Title>
+      <Layer layerStore='parameters'>ZipCodes</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>parametersext</Identifier>
+      <Title>parametersext</Title>
+      <Layer layerStore='parametersext'>ZipCodes</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>transformedgif</Identifier>
+      <Title>transformedgif</Title>
+      <Layer layerStore='transformedgif'>ZipCodes</Layer>
+    </Theme>
+  </Theme>
+
+</Themes>

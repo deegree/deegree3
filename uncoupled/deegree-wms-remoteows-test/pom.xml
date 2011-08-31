@@ -80,6 +80,11 @@
       <artifactId>deegree-services-wms</artifactId>
       <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-remotewms</artifactId>
+      <version>3.1-pre13-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>
