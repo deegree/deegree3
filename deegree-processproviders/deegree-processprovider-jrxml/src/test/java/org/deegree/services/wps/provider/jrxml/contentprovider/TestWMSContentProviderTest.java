@@ -194,8 +194,7 @@ public class TestWMSContentProviderTest {
         parameters.put( "LEGEND", "java.lang.String" );
         jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
 
-        // must be 2 (legend is not yet supported)
-        assertEquals( 1, params.size() );
+        assertEquals( 2, params.size() );
         assertEquals( 1, processedIds.size() );
         XMLAdapter a = new XMLAdapter( jrxml );
         String[] elements = a.getNodesAsStrings( a.getRootElement(),

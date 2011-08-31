@@ -75,6 +75,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ComplexFormatType;
@@ -227,12 +228,11 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
                         prepareLayerlist( "wms" + mapId + "_layerList", jrxmlAdapter, map, datasources );
 
-                        // TODO
-                        // String legendKey = "wms" + mapId + "_legend";
-                        // if ( parameters.containsKey( legendKey ) ) {
-                        // params.put( "wms" + mapId + "_legend",
-                        // prepareLegend( legendKey, jrxmlAdapter, datasources, parameters.get( legendKey ) ) );
-                        // }
+                        String legendKey = "wms" + mapId + "_legend";
+                        if ( parameters.containsKey( legendKey ) ) {
+                            params.put( legendKey,
+                                        prepareLegend( legendKey, jrxmlAdapter, datasources, parameters.get( legendKey ) ) );
+                        }
 
                         // get input stream
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -273,12 +273,11 @@ public class WMSContentProvider implements JrxmlContentProvider {
                             throws ProcessletException {
 
         OMElement legendRE = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
-                                                      new XPath(
-                                                                 "/jasper:jasperReport/jasper:detail/jasper:band/jasper:image[jasper:imageExpression/text()='"
-                                                                                         + legendKey
-                                                                                         + "']/jasper:reportElement",
-                                                                 nsContext ) );
+                                                      new XPath( ".//jasper:image[jasper:imageExpression/text()='$P{"
+                                                                 + legendKey + "}']/jasper:reportElement", nsContext ) );
+
         if ( legendRE != null ) {
+            LOG.debug( "Found legend with key '" + legendKey + "' to create." );
             int width = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@width", nsContext ) );
             int height = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@height", nsContext ) );
             // TODO: bgcolor?
@@ -294,24 +293,26 @@ public class WMSContentProvider implements JrxmlContentProvider {
                 if ( k > bi.getHeight() ) {
                     LOG.warn( "The necessary legend size is larger than the available legend space." );
                 }
-                BufferedImage img = datasources.get( i ).getLegend();
-                if ( img != null ) {
-                    if ( img.getWidth( null ) < 50 ) {
-                        // it is assumed that no label is assigned
-                        g.drawImage( img, 0, k, null );
-                        g.drawString( datasources.get( i ).datasource.getName(), img.getWidth( null ) + 10,
-                                      k + img.getHeight( null ) / 2 );
+                List<Pair<String, BufferedImage>> legends = datasources.get( i ).getLegends();
+                for ( Pair<String, BufferedImage> legend : legends ) {
+                    BufferedImage img = legend.second;
+                    if ( img != null ) {
+                        if ( img.getWidth( null ) < 50 ) {
+                            // it is assumed that no label is assigned
+                            g.drawImage( img, 0, k, null );
+                            g.drawString( legend.first, img.getWidth( null ) + 10, k + img.getHeight( null ) / 2 );
+                        } else {
+                            g.drawImage( img, 0, k, null );
+                        }
+                        k = k + img.getHeight( null ) + 10;
                     } else {
-                        g.drawImage( img, 0, k, null );
+                        g.drawString( "- " + legend.first, 0, k + 10 );
+                        k = k + 20;
                     }
-                    k = k + img.getHeight( null ) + 10;
-                } else {
-                    g.drawString( "- " + datasources.get( i ).datasource.getName(), 0, k + 10 );
-                    k = k + 20;
                 }
             }
             g.dispose();
-            return bi;
+            return convertImageToReportFormat( type, bi );
         }
         return null;
     }
@@ -388,6 +389,11 @@ public class WMSContentProvider implements JrxmlContentProvider {
         }
         g.dispose();
 
+        return convertImageToReportFormat( type, bi );
+    }
+
+    private Object convertImageToReportFormat( String type, BufferedImage bi )
+                            throws ProcessletException {
         if ( type != null && type.equals( "java.io.File" ) ) {
             return writeImage( bi );
         } else if ( type != null && type.equals( "java.net.URL" ) ) {
@@ -542,7 +548,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
             this.datasource = datasource;
         }
 
-        public abstract BufferedImage getLegend()
+        public abstract List<Pair<String, BufferedImage>> getLegends()
                                 throws ProcessletException;
 
         public OrderedDatasource( T datasource, int min, int max ) {
@@ -593,6 +599,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
             try {
                 URLConnection conn = new URL( request ).openConnection();
                 is = conn.getInputStream();
+                System.out.println( conn.getContentType() );
 
                 if ( LOG.isDebugEnabled() ) {
                     File logFile = File.createTempFile( "loadedImg", "response" );
@@ -609,10 +616,14 @@ public class WMSContentProvider implements JrxmlContentProvider {
                     LOG.debug( "response can be found at " + logFile );
                 }
 
-                fss = new MemoryCacheSeekableStream( is );
-                RenderedOp ro = JAI.create( "stream", fss );
-                return ro.getAsBufferedImage();
-
+                try {
+                    fss = new MemoryCacheSeekableStream( is );
+                    RenderedOp ro = JAI.create( "stream", fss );
+                    return ro.getAsBufferedImage();
+                } catch ( Exception e ) {
+                    LOG.info( "could not load image!" );
+                    return null;
+                }
             } finally {
                 IOUtils.closeQuietly( fss );
                 IOUtils.closeQuietly( is );
@@ -662,21 +673,41 @@ public class WMSContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        public BufferedImage getLegend()
+        public List<Pair<String, BufferedImage>> getLegends()
                                 throws ProcessletException {
-            String legendUrl = getLegendUrl();
-            try {
-                return loadImage( legendUrl );
-            } catch ( IOException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            List<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
+            for ( Layer layer : layers ) {
+                String legendUrl = getLegendUrl( layer );
+                LOG.debug( "Try to load legend image: " + legendUrl );
+                String layerName = layer.getName();
+                BufferedImage bi = null;
+                try {
+                    bi = loadImage( legendUrl );
+                } catch ( IOException e ) {
+                    String msg = "Could not create legend for layer: " + layerName;
+                    LOG.error( msg );
+                    throw new ProcessletException( msg );
+                }
+                legends.add( new Pair<String, BufferedImage>( layerName, bi ) );
             }
-            return null;
+            return legends;
         }
 
-        String getLegendUrl() {
-            String legendUrl = "";
-            return legendUrl;
+        String getLegendUrl( Layer layer ) {
+            String url = datasource.getUrl();
+            StringBuilder sb = new StringBuilder();
+            sb.append( url );
+            if ( !url.endsWith( "?" ) )
+                sb.append( '?' );
+            sb.append( "REQUEST=GetLegendGraphic&" );
+            sb.append( "SERVICE=WMS&" );
+            sb.append( "VERSION=" ).append( datasource.getVersion() ).append( '&' );
+            sb.append( "LAYER=" ).append( layer.getName() ).append( '&' );
+            sb.append( "TRANSPARENT=" ).append( "TRUE" ).append( '&' );
+            sb.append( "FORMAT=" ).append( "image/png" );
+            // .append( '&' );
+            // STYLES=
+            return sb.toString();
         }
 
     }
@@ -706,7 +737,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        public BufferedImage getLegend() {
+        public List<Pair<String, BufferedImage>> getLegends() {
             // TODO Auto-generated method stub
             return null;
         }
