@@ -252,7 +252,8 @@ public class JAXBUtils {
                 result = sf.newSchema( new Source[] { origSchema, desc } );
             } catch ( Throwable e ) {
                 LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
-                                                   + e.getLocalizedMessage(), e );
+                           + e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
             }
         }
         return result;
