@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.process.execute;
 
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 
 /**
@@ -57,7 +57,7 @@ public class ExecutionStatus {
 
     private String creationTime;
 
-    private OWSException exceptionReport;
+    private OWSExceptionReport exceptionReport;
 
     /**
      * @param state
@@ -67,7 +67,7 @@ public class ExecutionStatus {
      * @param exceptionReport
      */
     public ExecutionStatus( ExecutionState state, String statusMsg, Integer percent, String creationTime,
-                            OWSException exceptionReport ) {
+                            OWSExceptionReport exceptionReport ) {
         this.state = state;
         this.statusMsg = statusMsg;
         this.percent = percent;
@@ -115,9 +115,9 @@ public class ExecutionStatus {
      * NOTE: An exception report is only available if state is {@link ExecutionState#FAILED}.
      * </p>
      * 
-     * @return an exception message in case the execution failed, <code>null</code> otherwise
+     * @return an exception report in case the execution failed, <code>null</code> otherwise
      */
-    public OWSException getExceptionReport() {
+    public OWSExceptionReport getExceptionReport() {
         return exceptionReport;
     }
 }

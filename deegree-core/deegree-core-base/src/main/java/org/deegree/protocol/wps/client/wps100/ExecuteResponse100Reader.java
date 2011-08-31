@@ -58,6 +58,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReader;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.protocol.wps.client.output.BBoxOutput;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
@@ -363,7 +364,7 @@ public class ExecuteResponse100Reader {
         String statusMsg = null;
         Integer percent = null;
         String creationTime = null;
-        OWSException exceptionReport = null;
+        OWSExceptionReport exceptionReport = null;
 
         String attribute = reader.getAttributeValue( null, "creationTime" );
         if ( attribute != null ) {

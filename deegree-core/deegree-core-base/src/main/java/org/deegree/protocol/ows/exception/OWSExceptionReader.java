@@ -35,7 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.exception;
 
-import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -46,12 +51,14 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 /**
  * Reads exception report documents provided by OGC web services.
  * <p>
- * Supported formats:
+ * This parser is designed to be as relaxed as possible about the format of the input (in order to be able to cope with
+ * broken/invalid responses as well). Respected/tested exception report formats:
  * <ul>
+ * <li><code>{null}ServiceExceptionReport</code>: e.g. used by WMS 1.1.1</li>
  * <li><code>{http://www.opengis.net/ogc}ServiceExceptionReport</code>: e.g. used by WFS 1.0.0</li>
  * <li><code>{http://www.opengis.net/ows}ExceptionReport</code>: OWS 1.0.0</li>
  * <li><code>{http://www.opengis.net/ows}ExceptionReport</code>: OWS 1.1.0</li>
- * <li><code>{http://www.opengis.net/ows}ExceptionReport</code>: OWS 2.0 (TODO)</li>
+ * <li><code>{http://www.opengis.net/ows}ExceptionReport</code>: OWS 2.0</li>
  * </ul>
  * </p>
  * 
@@ -64,44 +71,20 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 public class OWSExceptionReader {
 
     /**
-     * @param reader
-     * @return true if the current element in the reader is an <code>ows:ExceptionReport</code>, false otherwise
+     * Returns whether the given element name denotes an exception report.
+     * 
+     * @param elName
+     *            qualified name of the potential exception report element, must not be <code>null</code>
+     * @return <code>true</code> if the current element in the reader (seems to) denote an exception report,
+     *         <code>false</code> otherwise
      */
-    public static boolean isException( XMLStreamReader reader ) {
-        return ( new QName( OWS_11_NS, "ExceptionReport" ).equals( reader.getName() ) );
+    public static boolean isExceptionReport( QName elName ) {
+        // this check is very lax by intention
+        return elName.getLocalPart().toLowerCase().contains( "exceptionreport" );
     }
 
     /**
-     * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ows:ExceptionReport&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
-     * (&lt;/ows:ExceptionReport&gt;)</li>
-     * </ul>
-     * 
-     * @param reader
-     * 
-     * @return the parsed {@link OWSException}
-     */
-    public static OWSException parseExceptionReport( XMLStreamReader reader ) {
-        String code = null;
-        String locator = null;
-        String message = null;
-        try {
-            XMLStreamUtils.nextElement( reader ); // "ExceptionReport"
-            code = reader.getAttributeValue( null, "exceptionCode" );
-            locator = reader.getAttributeValue( null, "locator" );
-            XMLStreamUtils.nextElement( reader ); // "Exception"
-            message = reader.getElementText();
-        } catch ( XMLStreamException e ) {
-            throw new RuntimeException( "Error parsing OWSExceptionReport: " + e.getMessage() );
-        }
-        return new OWSException( message, code, locator );
-    }
-
-    /**
-     * Parses the <code>{http://www.opengis.net/ogc}ServiceExceptionReport</code> element that the given
-     * {@link XMLStreamReader} points at.
-     * 
+     * Parses the service exception report element that the given {@link XMLStreamReader} points at.
      * <ul>
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
@@ -109,22 +92,78 @@ public class OWSExceptionReader {
      * 
      * @param reader
      * 
-     * @return parsed {@link OWSException}
+     * @return the parsed {@link OWSException}, never <code>null</code>
+     * @throws XMLStreamException
+     * @throws NoSuchElementException
      */
-    public static OWSException parseOGCServiceExceptionReport( XMLStreamReader reader ) {
+    public static OWSExceptionReport parseExceptionReport( XMLStreamReader reader )
+                            throws NoSuchElementException, XMLStreamException {
 
-        String code = null;
-        String locator = null;
-        String message = null;
-        try {
-            XMLStreamUtils.nextElement( reader ); // "ExceptionReport"
-            code = reader.getAttributeValue( null, "code" );
-            locator = reader.getAttributeValue( null, "locator" );
-            XMLStreamUtils.nextElement( reader ); // "Exception"
-            message = reader.getElementText();
-        } catch ( XMLStreamException e ) {
-            throw new RuntimeException( "Error parsing OWSExceptionReport: " + e.getMessage() );
+        // <attribute name="version" use="required">
+        String version = reader.getAttributeValue( null, "version" );
+
+        // <attribute ref="xml:lang" use="optional">
+        String lang = reader.getAttributeValue( null, "lang" );
+
+        List<OWSException> exceptions = new ArrayList<OWSException>();
+
+        XMLStreamUtils.nextElement( reader );
+        while ( reader.isStartElement() ) {
+            // <element ref="ows:Exception" maxOccurs="unbounded">
+            exceptions.add( parseException( reader ) );
+            System.out.println( "F: " + XMLStreamUtils.getCurrentEventInfo( reader ) );
+            XMLStreamUtils.nextElement( reader );
+            System.out.println( "G: " + XMLStreamUtils.getCurrentEventInfo( reader ) );
         }
-        return new OWSException( message, code, locator );
+
+        return new OWSExceptionReport( exceptions, lang, version );
+    }
+
+    private static OWSException parseException( XMLStreamReader reader )
+                            throws XMLStreamException {
+
+        // <attribute name="exceptionCode" type="string" use="required">
+        String code = reader.getAttributeValue( null, "exceptionCode" );
+        if ( code == null ) {
+            code = reader.getAttributeValue( null, "code" );
+        }
+
+        // <attribute name="locator" type="string" use="optional">
+        String locator = reader.getAttributeValue( null, "locator" );
+
+        List<String> messages = new ArrayList<String>();
+
+        // inlined message text (pre-OWS 2.0 style)
+        StringBuilder sb = new StringBuilder();
+        sb.append( consumeText( reader ) );
+        if ( sb.length() != 0 ) {
+            messages.add( sb.toString() );
+        }
+
+        // every container element is assumed to be
+        // <element name="ExceptionText" type="string" minOccurs="0" maxOccurs="unbounded">
+        while ( reader.isStartElement() ) {
+            messages.add( consumeText( reader ) );
+            // nested elements -> skip 'em
+            while ( reader.isStartElement() ) {
+                skipElement( reader );
+                nextElement( reader );
+            }
+            nextElement( reader );
+        }
+        return new OWSException( messages, code, locator );
+    }
+
+    private static String consumeText( XMLStreamReader reader )
+                            throws XMLStreamException {
+        reader.next();
+        StringBuilder sb = new StringBuilder();
+        while ( !reader.isEndElement() && !reader.isStartElement() ) {
+            if ( reader.isCharacters() ) {
+                sb.append( reader.getText().trim() );
+            }
+            reader.next();
+        }
+        return sb.toString();
     }
 }

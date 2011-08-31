@@ -54,8 +54,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReader;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
 import org.deegree.protocol.wps.client.process.execute.OutputFormat;
@@ -111,21 +111,21 @@ public class RawProcessExecution extends AbstractProcessExecution {
      * @param schema
      *            schema of the format, in case it is an XML format
      * @return requested process output, never <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server replied with an exception
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
      * @throws XMLStreamException
      */
     public ComplexOutput executeComplexOutput( String id, String idCodeSpace, String mimeType, String encoding,
                                                String schema )
-                            throws OWSException, IOException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException {
         outputDefs.add( new OutputFormat( new CodeType( id ), null, false, mimeType, encoding, schema ) );
         return sendExecute();
     }
 
     private ComplexOutput sendExecute()
-                            throws OWSException, XMLStreamException, IOException {
+                            throws OWSExceptionReport, XMLStreamException, IOException {
 
         ResponseFormat responseFormat = new ResponseFormat( true, false, false, false, outputDefs );
 
@@ -187,7 +187,7 @@ public class RawProcessExecution extends AbstractProcessExecution {
         if ( outputContent.startsWith( "text/xml" ) || outputContent.startsWith( "application/xml" ) ) {
             XMLStreamReader reader = inFactory.createXMLStreamReader( responseStream );
             XMLStreamUtils.nextElement( reader );
-            if ( OWSExceptionReader.isException( reader ) ) {
+            if ( OWSExceptionReader.isExceptionReport( reader.getName() ) ) {
                 throw OWSExceptionReader.parseExceptionReport( reader );
             }
         }

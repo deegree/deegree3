@@ -1,0 +1,270 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<WFS_Capabilities xmlns="http://www.opengis.net/wfs" version="1.0.0" xmlns:ows="http://www.opengis.net/ows"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd">
+  <Service>
+    <Name>deegree 3 Utah Demo</Name>
+    <Title>deegree 3 Utah Demo</Title>
+    <Abstract>WMS and WFS demonstration with Utah data</Abstract>
+    <OnlineResource>http://www.deegree.org</OnlineResource>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <DCPType>
+          <HTTP>
+            <Get onlineResource="http://deegree3-testing.deegree.org/deegree-utah-demo/services?" />
+          </HTTP>
+        </DCPType>
+        <DCPType>
+          <HTTP>
+            <Post onlineResource="http://deegree3-testing.deegree.org/deegree-utah-demo/services" />
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <DescribeFeatureType>
+        <SchemaDescriptionLanguage>
+          <XMLSCHEMA />
+        </SchemaDescriptionLanguage>
+        <DCPType>
+          <HTTP>
+            <Get onlineResource="http://deegree3-testing.deegree.org/deegree-utah-demo/services?" />
+          </HTTP>
+        </DCPType>
+        <DCPType>
+          <HTTP>
+            <Post onlineResource="http://deegree3-testing.deegree.org/deegree-utah-demo/services" />
+          </HTTP>
+        </DCPType>
+      </DescribeFeatureType>
+      <GetFeature>
+        <ResultFormat>
+          <GML2 />
+        </ResultFormat>
+        <DCPType>
+          <HTTP>
+            <Get onlineResource="http://deegree3-testing.deegree.org/deegree-utah-demo/services?" />
+          </HTTP>
+        </DCPType>
+        <DCPType>
+          <HTTP>
+            <Post onlineResource="http://deegree3-testing.deegree.org/deegree-utah-demo/services" />
+          </HTTP>
+        </DCPType>
+      </GetFeature>
+    </Request>
+  </Capability>
+  <FeatureTypeList>
+    <Operations>
+      <Query />
+    </Operations>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID024_Municipalities2004_edited</Name>
+      <Title>app:SGID024_Municipalities2004_edited</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.104096" miny="36.975074" maxx="-109.207842" maxy="42.007785" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID024_Springs</Name>
+      <Title>app:SGID024_Springs</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.350342" miny="36.960539" maxx="-108.859218" maxy="42.132021" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID024_StateBoundary</Name>
+      <Title>app:SGID024_StateBoundary</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.598732" miny="36.606950" maxx="-108.593337" maxy="42.274495" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID100_Airports</Name>
+      <Title>app:SGID100_Airports</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.171217" miny="36.966742" maxx="-109.000844" maxy="41.848321" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID100_CountyBoundaries_edited</Name>
+      <Title>app:SGID100_CountyBoundaries_edited</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.276696" miny="36.960051" maxx="-108.898649" maxy="42.034352" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID100_LakesDLG100</Name>
+      <Title>app:SGID100_LakesDLG100</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-115.400279" miny="35.435405" maxx="-107.694625" maxy="43.060625" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID100_RailroadsDLG100</Name>
+      <Title>app:SGID100_RailroadsDLG100</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.248327" miny="37.203525" maxx="-108.968947" maxy="42.006878" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID100_RoadsDLG100</Name>
+      <Title>app:SGID100_RoadsDLG100</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.278967" miny="36.959887" maxx="-108.897921" maxy="42.031871" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID500_Contours1000Ft</Name>
+      <Title>app:SGID500_Contours1000Ft</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.276375" miny="36.959994" maxx="-108.899243" maxy="42.032617" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID500_Contours2500Ft</Name>
+      <Title>app:SGID500_Contours2500Ft</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.262971" miny="36.960314" maxx="-108.899243" maxy="42.032620" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID500_Contours500Ft</Name>
+      <Title>app:SGID500_Contours500Ft</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.276375" miny="36.959981" maxx="-108.899243" maxy="42.032617" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID500_DominantVegetation</Name>
+      <Title>app:SGID500_DominantVegetation</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.278911" miny="36.958371" maxx="-108.899180" maxy="42.032929" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID500_EnergyResourcesPoly</Name>
+      <Title>app:SGID500_EnergyResourcesPoly</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.156020" miny="36.972845" maxx="-108.898945" maxy="42.030346" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID500_ZipCodes</Name>
+      <Title>app:SGID500_ZipCodes</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-114.277014" miny="36.960025" maxx="-108.899282" maxy="42.034028" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID93_GEOSCIENCE_ShallowGroundWater</Name>
+      <Title>app:SGID93_GEOSCIENCE_ShallowGroundWater</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-112.105601" miny="39.871927" maxx="-111.553005" maxy="40.455291" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID93_LOCATION_UDOTMap_CityLocations</Name>
+      <Title>app:SGID93_LOCATION_UDOTMap_CityLocations</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-112.108489" miny="39.854053" maxx="-111.028628" maxy="40.460098" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:SGID93_WATER_UtahMajorRivers</Name>
+      <Title>app:SGID93_WATER_UtahMajorRivers</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-111.946160" miny="39.809037" maxx="-110.870280" maxy="40.557233" />
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:app="http://www.deegree.org/app">app:weathertime</Name>
+      <Title>app:weathertime</Title>
+      <SRS>EPSG:26912</SRS>
+      <Operations>
+        <Query />
+      </Operations>
+      <LatLongBoundingBox minx="-113.019348" miny="38.440287" maxx="-111.566295" maxy="41.025094" />
+    </FeatureType>
+  </FeatureTypeList>
+  <ogc:Filter_Capabilities>
+    <ogc:Spatial_Capabilities>
+      <ogc:Spatial_Operators>
+        <ogc:BBOX />
+        <ogc:Equals />
+        <ogc:Disjoint />
+        <ogc:Intersect />
+
+        <ogc:Touches />
+        <ogc:Crosses />
+        <ogc:Within />
+        <ogc:Contains />
+        <ogc:Overlaps />
+        <ogc:Beyond />
+        <ogc:DWithin />
+      </ogc:Spatial_Operators>
+    </ogc:Spatial_Capabilities>
+    <ogc:Scalar_Capabilities>
+      <ogc:Logical_Operators />
+      <ogc:Comparison_Operators>
+        <ogc:Simple_Comparisons />
+        <ogc:Like />
+        <ogc:Between />
+        <ogc:NullCheck />
+      </ogc:Comparison_Operators>
+      <ogc:Arithmetic_Operators>
+        <ogc:Simple_Arithmetic />
+        <ogc:Functions>
+          <ogc:Function_Names>
+            <ogc:Function_Name nArgs="1">Area</ogc:Function_Name>
+            <ogc:Function_Name nArgs="1">Centroid</ogc:Function_Name>
+            <ogc:Function_Name nArgs="1">ExtraProp</ogc:Function_Name>
+            <ogc:Function_Name nArgs="2">GeometryFromWKT</ogc:Function_Name>
+            <ogc:Function_Name nArgs="2">IDiv</ogc:Function_Name>
+            <ogc:Function_Name nArgs="2">IMod</ogc:Function_Name>
+            <ogc:Function_Name nArgs="1">InteriorPoint</ogc:Function_Name>
+            <ogc:Function_Name nArgs="1">IsCurve</ogc:Function_Name>
+            <ogc:Function_Name nArgs="1">IsPoint</ogc:Function_Name>
+            <ogc:Function_Name nArgs="1">IsSurface</ogc:Function_Name>
+            <ogc:Function_Name nArgs="1">Length</ogc:Function_Name>
+            <ogc:Function_Name nArgs="3">MoveGeometry</ogc:Function_Name>
+          </ogc:Function_Names>
+        </ogc:Functions>
+      </ogc:Arithmetic_Operators>
+    </ogc:Scalar_Capabilities>
+  </ogc:Filter_Capabilities>
+</WFS_Capabilities>

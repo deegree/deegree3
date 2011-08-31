@@ -55,6 +55,7 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.metadata.ContactInfo;
 import org.deegree.protocol.ows.metadata.Operation;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
@@ -102,7 +103,7 @@ public class WPSClientTest {
 
     @Test
     public void testMetadata()
-                            throws OWSException, IOException {
+                            throws OWSExceptionReport, IOException {
 
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
@@ -166,7 +167,7 @@ public class WPSClientTest {
 
     @Test
     public void testProcessDescription_1()
-                            throws OWSException, IOException {
+                            throws OWSExceptionReport, IOException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -196,7 +197,7 @@ public class WPSClientTest {
 
     @Test
     public void testProcessDescription_2()
-                            throws OWSException, IOException {
+                            throws OWSExceptionReport, IOException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -224,7 +225,7 @@ public class WPSClientTest {
 
     @Test
     public void testProcessDescription_3()
-                            throws OWSException, IOException {
+                            throws OWSExceptionReport, IOException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -311,7 +312,7 @@ public class WPSClientTest {
 
     @Test
     public void testGetProcess()
-                            throws OWSException, IOException {
+                            throws OWSExceptionReport, IOException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -381,7 +382,7 @@ public class WPSClientTest {
 
     @Test
     public void testExecute_3()
-                            throws OWSException, IOException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -410,7 +411,7 @@ public class WPSClientTest {
 
     @Test
     public void testExecute_4()
-                            throws OWSException, IOException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -439,7 +440,7 @@ public class WPSClientTest {
 
     @Test
     public void testExecuteRawOutput()
-                            throws OWSException, IOException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -467,7 +468,7 @@ public class WPSClientTest {
 
     @Test
     public void testExecuteInputsByRef()
-                            throws OWSException, IOException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -539,7 +540,7 @@ public class WPSClientTest {
 
     @Test
     public void testExecuteAsync()
-                            throws OWSException, IOException, XMLStreamException, InterruptedException {
+                            throws OWSExceptionReport, IOException, XMLStreamException, InterruptedException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
             return;
@@ -614,7 +615,7 @@ public class WPSClientTest {
     // response.getOutputs()[0].getDataType();
     // }
 
-    @Test(expected = OWSException.class)
+    @Test(expected = OWSExceptionReport.class)
     public void testFailedExecute()
                             throws Exception {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );

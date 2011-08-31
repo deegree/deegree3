@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceExceptionReport xmlns="http://www.opengis.net/ogc">
+  <ServiceException code="OperationNotSupported" locator="request">Request type 'Bla' is not supported.
+  </ServiceException>
+</ServiceExceptionReport>

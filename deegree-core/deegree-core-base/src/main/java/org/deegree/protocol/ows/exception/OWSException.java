@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.exception;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 
@@ -128,6 +132,8 @@ public class OWSException extends Exception {
 
     private final String locator;
 
+    private final List<String> messages;
+
     /**
      * Create a new OWSException.
      * 
@@ -140,6 +146,7 @@ public class OWSException extends Exception {
         super( message );
         this.exceptionCode = exceptionCode;
         this.locator = "";
+        messages = Collections.singletonList( message );
     }
 
     /**
@@ -156,6 +163,7 @@ public class OWSException extends Exception {
         super( message, cause );
         this.exceptionCode = exceptionCode;
         this.locator = "";
+        messages = Collections.singletonList( message );
     }
 
     /**
@@ -172,6 +180,14 @@ public class OWSException extends Exception {
         super( message );
         this.exceptionCode = exceptionCode;
         this.locator = locator;
+        messages = Collections.singletonList( message );
+    }
+
+    public OWSException( List<String> messages, String exceptionCode, String locator ) {
+        super( StringUtils.concat( messages, ";" ) );
+        this.messages = messages;
+        this.exceptionCode = exceptionCode;
+        this.locator = locator;
     }
 
     /**
@@ -184,6 +200,7 @@ public class OWSException extends Exception {
         super( cause.getMessage() );
         this.exceptionCode = INVALID_PARAMETER_VALUE;
         locator = cause.getName();
+        messages = Collections.singletonList( cause.getMessage() );
     }
 
     /**
@@ -196,6 +213,7 @@ public class OWSException extends Exception {
         super( cause.getMessage() );
         this.exceptionCode = MISSING_PARAMETER_VALUE;
         locator = cause.getName();
+        messages = Collections.singletonList( cause.getMessage() );
     }
 
     /**
@@ -207,5 +225,9 @@ public class OWSException extends Exception {
 
     public final String getExceptionCode() {
         return exceptionCode;
+    }
+
+    public final List<String> getMessages() {
+        return messages;
     }
 }

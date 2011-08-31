@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceExceptionReport>
+  <ServiceException code="MissingParameterValue">The parameter 'SRS' is missing from the request.</ServiceException>
+</ServiceExceptionReport>

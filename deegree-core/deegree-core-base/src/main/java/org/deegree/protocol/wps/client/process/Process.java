@@ -44,7 +44,7 @@ import java.util.List;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.input.type.InputType;
 import org.deegree.protocol.wps.client.output.type.OutputType;
@@ -77,7 +77,6 @@ public class Process implements Serializable {
     private final ProcessInfo processInfo;
 
     private ProcessDetails processDetails;
-
 
     /**
      * Creates a new {@link Process} instance.
@@ -132,13 +131,13 @@ public class Process implements Serializable {
      * Returns the descriptions for all input parameters of the process.
      * 
      * @return the descriptions for all input parameters, can be empty, but never <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server replied with an exception
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
      */
     public InputType[] getInputTypes()
-                            throws IOException, OWSException {
+                            throws OWSExceptionReport, IOException {
         List<InputType> inputs = getProcessDetails().getInputs();
         return inputs.toArray( new InputType[inputs.size()] );
     }
@@ -147,13 +146,13 @@ public class Process implements Serializable {
      * Returns the descriptions for all output parameters of the process.
      * 
      * @return the descriptions for all output parameters, can be empty, but never <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server replied with an exception
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
      */
     public OutputType[] getOutputTypes()
-                            throws IOException, OWSException {
+                            throws OWSExceptionReport, IOException {
         List<OutputType> outputs = getProcessDetails().getOutputs();
         return outputs.toArray( new OutputType[outputs.size()] );
     }
@@ -162,13 +161,13 @@ public class Process implements Serializable {
      * Returns whether the process supports storing of the response document (=asynchronous execution).
      * 
      * @return true, if the process supports storing the response document, false otherwise
+     * @throws OWSExceptionReport
+     *             if the server replied with an exception
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
      */
     public boolean getStoreSupported()
-                            throws OWSException, IOException {
+                            throws OWSExceptionReport, IOException {
         return getProcessDetails().getStoreSupported();
     }
 
@@ -176,13 +175,13 @@ public class Process implements Serializable {
      * Returns whether the process supports polling of status information during asynchronous execution.
      * 
      * @return true, if the process supports polling status information, false otherwise
+     * @throws OWSExceptionReport
+     *             if the server replied with an exception
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
      */
     public boolean getStatusSupported()
-                            throws OWSException, IOException {
+                            throws OWSExceptionReport, IOException {
         return getProcessDetails().getStatusSupported();
     }
 
@@ -224,13 +223,13 @@ public class Process implements Serializable {
      * Returns the (cached) {@link ProcessDetails} for this process.
      * 
      * @return process details, never <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server replied with an exception
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
      */
     private ProcessDetails getProcessDetails()
-                            throws IOException, OWSException {
+                            throws OWSExceptionReport, IOException {
 
         if ( processDetails == null ) {
             URL url = client.getDescribeProcessURL( false );

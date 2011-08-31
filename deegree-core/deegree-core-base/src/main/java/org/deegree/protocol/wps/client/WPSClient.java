@@ -47,6 +47,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.metadata.ServiceMetadata;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
@@ -284,12 +285,12 @@ public class WPSClient {
      * @param capabilitiesURL
      *            url of a WPS capabilities document, usually this is a GetCapabilities request to a WPS service, must
      *            not be <code>null</code>
-     * @throws IOException
-     *             if a communication/network problem occured
      * @throws OWSException
      *             if the server replied with an exception
+     * @throws IOException
+     *             if a communication/network problem occured
      */
-    public WPSClient( URL capabilitiesURL ) throws IOException, OWSException {
+    public WPSClient( URL capabilitiesURL ) throws OWSExceptionReport, IOException {
 
         WPS100CapabilitiesAdapter capabilitiesDoc = retrieveCapabilities( capabilitiesURL );
 

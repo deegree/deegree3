@@ -57,6 +57,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReader;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.protocol.wps.client.WPSClient;
@@ -149,10 +150,10 @@ public class ProcessExecution extends AbstractProcessExecution {
      * @throws XMLStreamException
      */
     public ExecutionOutputs execute()
-                            throws OWSException, IOException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException {
 
         lastResponse = sendExecute( false );
-        OWSException report = lastResponse.getStatus().getExceptionReport();
+        OWSExceptionReport report = lastResponse.getStatus().getExceptionReport();
         if ( report != null ) {
             throw report;
         }
@@ -172,7 +173,7 @@ public class ProcessExecution extends AbstractProcessExecution {
      * @throws XMLStreamException
      */
     public void executeAsync()
-                            throws IOException, OWSException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException {
 
         // needed, because ResponseDocument must be set in any case for async mode
         if ( outputDefs.isEmpty() ) {
@@ -189,15 +190,15 @@ public class ProcessExecution extends AbstractProcessExecution {
      * 
      * @return the outputs of the process execution, or <code>null</code> if the current state is not
      *         {@link ExecutionState#SUCCEEDED}
-     * @throws OWSException
+     * @throws OWSExceptionReport
      *             if the server replied with an exception
      */
     public ExecutionOutputs getOutputs()
-                            throws OWSException {
+                            throws OWSExceptionReport {
         if ( lastResponse == null ) {
             return null;
         }
-        OWSException report = lastResponse.getStatus().getExceptionReport();
+        OWSExceptionReport report = lastResponse.getStatus().getExceptionReport();
         if ( report != null ) {
             throw report;
         }
@@ -208,14 +209,14 @@ public class ProcessExecution extends AbstractProcessExecution {
      * Returns the current state of the execution.
      * 
      * @return state of the execution, or <code>null</code> if the execution has not been started yet
+     * @throws OWSExceptionReport
+     *             if the server replied with an exception
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
      * @throws XMLStreamException
      */
     public ExecutionState getState()
-                            throws OWSException, IOException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException {
         if ( lastResponse == null ) {
             return null;
         }
@@ -230,7 +231,7 @@ public class ProcessExecution extends AbstractProcessExecution {
             InputStream is = statusLocation.openStream();
             XMLStreamReader xmlReader = inFactory.createXMLStreamReader( is );
             XMLStreamUtils.nextElement( xmlReader );
-            if ( OWSExceptionReader.isException( xmlReader ) ) {
+            if ( OWSExceptionReader.isExceptionReport( xmlReader.getName() ) ) {
                 throw OWSExceptionReader.parseExceptionReport( xmlReader );
             }
             ExecuteResponse100Reader reader = new ExecuteResponse100Reader( xmlReader );
@@ -302,7 +303,7 @@ public class ProcessExecution extends AbstractProcessExecution {
      * 
      * @return an exception report in case the execution failed, <code>null</code> otherwise
      */
-    public OWSException getExceptionReport() {
+    public OWSExceptionReport getExceptionReport() {
         if ( lastResponse == null ) {
             return null;
         }
@@ -310,7 +311,7 @@ public class ProcessExecution extends AbstractProcessExecution {
     }
 
     private ExecutionResponse sendExecute( boolean async )
-                            throws OWSException, XMLStreamException, IOException {
+                            throws OWSExceptionReport, XMLStreamException, IOException {
 
         responseFormat = new ResponseFormat( false, async, false, async, outputDefs );
 
@@ -372,7 +373,7 @@ public class ProcessExecution extends AbstractProcessExecution {
         // TODO determine XML reader encoding based on mime type
         XMLStreamReader reader = inFactory.createXMLStreamReader( responseStream );
         XMLStreamUtils.nextElement( reader );
-        if ( OWSExceptionReader.isException( reader ) ) {
+        if ( OWSExceptionReader.isExceptionReport( reader.getName() ) ) {
             throw OWSExceptionReader.parseExceptionReport( reader );
         }
         if ( new QName( WPSConstants.WPS_100_NS, "ExecuteResponse" ).equals( reader.getName() ) ) {
