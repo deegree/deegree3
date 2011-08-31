@@ -124,6 +124,7 @@ public class MetadataUtils {
         }
         res.setFees( si.getFees() );
         res.setAccessConstraints( si.getAccessConstraints() );
+        res.setDescription( desc );
         return res;
     }
 
