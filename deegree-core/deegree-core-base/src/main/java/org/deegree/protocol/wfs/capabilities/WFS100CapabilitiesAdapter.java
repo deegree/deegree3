@@ -8,6 +8,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
@@ -18,6 +19,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 
 /**
@@ -30,6 +32,12 @@ import org.deegree.protocol.wfs.metadata.WFSFeatureType;
  * @version $Revision$, $Date$
  */
 public class WFS100CapabilitiesAdapter extends XMLAdapter implements WFSCapabilitiesAdapter {
+
+    private static final NamespaceBindings nsContext = new NamespaceBindings();
+
+    static {
+        nsContext.addNamespace( "wfs", WFSConstants.WFS_NS );
+    }
 
     @Override
     public ServiceIdentification parseServiceIdentification()

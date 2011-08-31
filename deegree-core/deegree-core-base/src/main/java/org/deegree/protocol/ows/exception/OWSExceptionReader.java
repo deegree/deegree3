@@ -37,6 +37,7 @@ package org.deegree.protocol.ows.exception;
 
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 
 /**
@@ -71,6 +73,51 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 public class OWSExceptionReader {
 
     /**
+     * Checks whether the given {@link XMLStreamReader} points to an exception report and causes an {@linK
+     * OWSExceptionReport} exception (with the content of the element) if this is the case.
+     * 
+     * @param xml
+     *            XML stream reader, must not be <code>null</code> and point at a <code>START_DOCUMENT</code> or
+     *            <code>START_ELEMENT</code> event, if the element is an exception report, it points at the
+     *            corresponding <code>END_ELEMENT</code> event afterwards
+     * @throws OWSExceptionReport
+     *             if the reader points at an exception report
+     * @throws XMLStreamException
+     */
+    public static void assertNoExceptionReport( XMLStreamReader xmlStream )
+                            throws OWSExceptionReport, XMLStreamException {
+        skipStartDocument( xmlStream );
+        if ( isExceptionReport( xmlStream.getName() ) ) {
+            throw parseExceptionReport( xmlStream );
+        }
+    }
+
+    /**
+     * Checks whether the given {@link OMElement} is an exception report element and causes an
+     * {@link OWSExceptionReport} exception (with the content of the element) if this is the case.
+     * 
+     * @param xml
+     *            XML stream reader, must not be <code>null</code> and point at a <code>START_DOCUMENT</code> or
+     *            <code>START_ELEMENT</code> event, if the element is an exception report, it points at the
+     *            corresponding <code>END_ELEMENT</code> event afterwards
+     * @throws OWSExceptionReport
+     *             if the reader points at an exception report
+     * @throws XMLStreamException
+     */
+    public static void assertNoExceptionReport( OMElement element )
+                            throws OWSExceptionReport, XMLStreamException {
+        if ( isExceptionReport( element.getQName() ) ) {
+            XMLStreamReader xmlStream = element.getXMLStreamReader();
+            try {
+                XMLStreamUtils.skipStartDocument( xmlStream );
+                throw parseExceptionReport( xmlStream );
+            } finally {
+                xmlStream.close();
+            }
+        }
+    }
+
+    /**
      * Returns whether the given element name denotes an exception report.
      * 
      * @param elName
@@ -91,7 +138,8 @@ public class OWSExceptionReader {
      * </ul>
      * 
      * @param reader
-     * 
+     *            XML stream reader, must not be <code>null</code> and point at a <code>START_ELEMENT</code> event,
+     *            points at the corresponding <code>END_ELEMENT</code> event afterwards
      * @return the parsed {@link OWSException}, never <code>null</code>
      * @throws XMLStreamException
      * @throws NoSuchElementException
@@ -111,9 +159,7 @@ public class OWSExceptionReader {
         while ( reader.isStartElement() ) {
             // <element ref="ows:Exception" maxOccurs="unbounded">
             exceptions.add( parseException( reader ) );
-            System.out.println( "F: " + XMLStreamUtils.getCurrentEventInfo( reader ) );
             XMLStreamUtils.nextElement( reader );
-            System.out.println( "G: " + XMLStreamUtils.getCurrentEventInfo( reader ) );
         }
 
         return new OWSExceptionReport( exceptions, lang, version );

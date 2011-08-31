@@ -35,23 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
-import static org.deegree.protocol.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLInputFactory;
@@ -59,8 +56,9 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.ows.metadata.ServiceMetadata;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.WFSVersion;
 import org.deegree.protocol.wfs.capabilities.WFS100CapabilitiesAdapter;
@@ -106,58 +104,51 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class WFSClient {
+public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
 
     private static final Logger LOG = LoggerFactory.getLogger( WFSClient.class );
-
-    private final URL capaUrl;
-
-    private final WFSCapabilitiesAdapter capaDoc;
 
     private WFSVersion version;
 
     private final List<WFSFeatureType> wfsFts;
-
-    private final Map<WFSRequestType, URL[]> requestTypeToURLs = new HashMap<WFSRequestType, URL[]>();
 
     private AppSchema schema;
 
     /**
      * Creates a new {@link WFSClient} instance with default behavior.
      * 
-     * @param capabilitiesURL
+     * @param capaUrl
      *            url of a WFS capabilities document, usually this is a GetCapabilities request to a WFS service, must
      *            not be <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server replied with a service exception report
+     * @throws XMLStreamException
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with a service exception report
      */
-    public WFSClient( URL capabilitiesURL ) throws IOException, OWSException {
-        this.capaUrl = capabilitiesURL;
-        capaDoc = retrieveCapabilities( capabilitiesURL );
-
+    public WFSClient( URL capaUrl ) throws OWSExceptionReport, XMLStreamException, IOException {
+        super( capaUrl );
         initOperationUrls();
-
         wfsFts = capaDoc.parseFeatureTypeList();
     }
 
     /**
      * Creates a new {@link WFSClient} instance with options.
      * 
-     * @param capabilitiesURL
+     * @param capaUrl
      *            url of a WFS capabilities document, usually this is a <code>GetCapabilities</code> request to a WFS
      *            service, must not be <code>null</code>
      * @param schema
      *            application schema that describes the feature types offered by the service, can be <code>null</code>
      *            (in this case, the client performs <code>DescribeFeatureType</code> requests to determine the schema)
+     * @throws OWSExceptionReport
+     *             if the server replied with a service exception report
+     * @throws XMLStreamException
      * @throws IOException
      *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with a service exception report
      */
-    public WFSClient( URL capabilitiesURL, AppSchema schema ) throws IOException, OWSException {
-        this( capabilitiesURL );
+    public WFSClient( URL capaUrl, AppSchema schema ) throws OWSExceptionReport, XMLStreamException, IOException {
+        this( capaUrl );
         this.schema = schema;
     }
 
@@ -168,84 +159,23 @@ public class WFSClient {
         }
     }
 
-    private WFSCapabilitiesAdapter retrieveCapabilities( URL capabilitiesURL )
-                            throws IOException, OWSException {
-
-        XMLAdapter responseDoc = null;
-        try {
-            LOG.trace( "Retrieving capabilities document from '{}'", capabilitiesURL );
-            responseDoc = new XMLAdapter( capabilitiesURL );
-        } catch ( Throwable e ) {
-            String msg = "Unable to retrieve/parse capabilities document from URL '" + capabilitiesURL + "': "
-                         + e.getMessage();
-            throw new IOException( msg );
-        }
-
-        OMElement root = responseDoc.getRootElement();
-        QName rootEl = root.getQName();
-        String versionAttr = root.getAttributeValue( new QName( "version" ) );
-        LOG.trace( "Response document root element/version attribute: " + rootEl + "/" + versionAttr );
-
-        // for all versions (1.0.0/1.1.0/2.0.0), root element is "WFS_Capabilities"
-        if ( "WFS_Capabilities".equalsIgnoreCase( rootEl.getLocalPart() ) ) {
-            version = WFS_100;
-            if ( versionAttr != null ) {
-                try {
-                    Version ogcVersion = Version.parseVersion( versionAttr );
-                    version = WFSVersion.valueOf( ogcVersion );
-                } catch ( Throwable t ) {
-                    String msg = "WFS capabilities document has unsupported version '" + versionAttr + "'.";
-                    throw new IllegalArgumentException( msg );
-                }
-            } else {
-                LOG.warn( "No version attribute in WFS capabilities document. Defaulting to 1.0.0." );
-            }
-        } else if ( "ExceptionReport".equalsIgnoreCase( rootEl.getLocalPart() ) ) {
-            // TODO
-            throw new OWSException( "Server responded with exception report", VERSION_NEGOTIATION_FAILED );
-        } else {
-            // TODO
-            String msg = "Unexpected GetCapabilities response element: '" + rootEl + "'.";
-            throw new OWSException( msg, VERSION_NEGOTIATION_FAILED );
-        }
-
-        switch ( version ) {
-        case WFS_100: {
-            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
-            capaDoc.setRootElement( responseDoc.getRootElement() );
-            return capaDoc;
-        }
-        case WFS_110: {
-            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
-            capaDoc.setRootElement( responseDoc.getRootElement() );
-            return capaDoc;
-        }
-        case WFS_200: {
-            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
-            capaDoc.setRootElement( responseDoc.getRootElement() );
-            return capaDoc;
-        }
-        }
-        throw new RuntimeException( "Internal error: unhandled WFS service version '" + version + "'." );
-    }
-
     private void addURLs( WFSRequestType request, WFSCapabilitiesAdapter capaDoc ) {
-//        URL[] urls = new URL[2];
-//        try {
-//            urls[0] = capaDoc.getOperationURL( request.name(), false );
-//            LOG.debug( "URL for operation: '" + request + "' (GET): " + urls[0] );
-//        } catch ( Throwable t ) {
-//            String msg = "Error retrieving URL for operation '" + request + "' (GET): " + t.getMessage();
-//            LOG.warn( msg );
-//        }
-//        try {
-//            urls[1] = capaDoc.getOperationURL( request.name(), true );
-//            LOG.debug( "URL for operation: '" + request + "' (POST): " + urls[1] );
-//        } catch ( Throwable t ) {
-//            String msg = "Error retrieving URL for operation '" + request + "' (POST): " + t.getMessage();
-//            LOG.warn( msg );
-//        }
-//        requestTypeToURLs.put( request, urls );
+        // URL[] urls = new URL[2];
+        // try {
+        // urls[0] = capaDoc.getOperationURL( request.name(), false );
+        // LOG.debug( "URL for operation: '" + request + "' (GET): " + urls[0] );
+        // } catch ( Throwable t ) {
+        // String msg = "Error retrieving URL for operation '" + request + "' (GET): " + t.getMessage();
+        // LOG.warn( msg );
+        // }
+        // try {
+        // urls[1] = capaDoc.getOperationURL( request.name(), true );
+        // LOG.debug( "URL for operation: '" + request + "' (POST): " + urls[1] );
+        // } catch ( Throwable t ) {
+        // String msg = "Error retrieving URL for operation '" + request + "' (POST): " + t.getMessage();
+        // LOG.warn( msg );
+        // }
+        // requestTypeToURLs.put( request, urls );
     }
 
     /**
@@ -255,16 +185,6 @@ public class WFSClient {
      */
     public WFSVersion getServiceVersion() {
         return version;
-    }
-
-    /**
-     * Returns the metadata (ServiceIdentification, ServiceProvider) of the service.
-     * 
-     * @return the metadata of the service, never <code>null</code>
-     */
-    public ServiceMetadata getMetadata() {
-        // TODO
-        return null;
     }
 
     /**
@@ -294,9 +214,9 @@ public class WFSClient {
     public AppSchema getAppSchema() {
         if ( schema == null ) {
             try {
-
-                URL url = getOperationURL( DescribeFeatureType, false );
+                URL url = getGetUrl( DescribeFeatureType.name() );
                 String requestUrl = url + "?version=1.0.0&service=WFS&request=DescribeFeatureType";
+                LOG.info( "Using URL '" + url + "': " + requestUrl );
                 AppSchemaXSDDecoder schemaDecoder = new AppSchemaXSDDecoder( null, null, requestUrl );
                 schema = schemaDecoder.extractFeatureTypeSchema();
             } catch ( Throwable t ) {
@@ -311,7 +231,7 @@ public class WFSClient {
 
         URL requestUrl = null;
         try {
-            URL url = getOperationURL( WFSRequestType.GetFeature, false );
+            URL url = getGetUrl( WFSRequestType.GetFeature.name() );
             requestUrl = new URL( url.toString() + "?version=1.0.0&service=WFS&request=GetFeature&typeName="
                                   + ftName.getLocalPart() );
         } catch ( MalformedURLException e ) {
@@ -335,20 +255,49 @@ public class WFSClient {
         return null;
     }
 
-    // TODO Transaction, LockFeature, GetFeatureWithLock, WFS 2.0 requests
+    @Override
+    protected WFSCapabilitiesAdapter getCapabilitiesAdapter( OMElement root, String versionAttr )
+                            throws IOException {
 
-    private URL getOperationURL( WFSRequestType request, boolean post ) {
-        URL[] urls = requestTypeToURLs.get( request );
-        URL url = post ? urls[1] : urls[0];
-        if ( url == null ) {
-            LOG.warn( "Capabilities don't contain endpoint URL for operation '" + request
-                      + "': Deriving from capabilities base URL." );
-            try {
-                url = new URL( capaUrl, "" );
-            } catch ( MalformedURLException e ) {
-                // should never happen
+        QName rootEl = root.getQName();
+
+        // for all versions (1.0.0/1.1.0/2.0.0), root element is "WFS_Capabilities"
+        if ( "WFS_Capabilities".equalsIgnoreCase( rootEl.getLocalPart() ) ) {
+            version = WFS_100;
+            if ( versionAttr != null ) {
+                try {
+                    Version ogcVersion = Version.parseVersion( versionAttr );
+                    version = WFSVersion.valueOf( ogcVersion );
+                } catch ( Throwable t ) {
+                    String msg = "WFS capabilities document has unsupported version '" + versionAttr + "'.";
+                    throw new IllegalArgumentException( msg );
+                }
+            } else {
+                LOG.warn( "No version attribute in WFS capabilities document. Defaulting to 1.0.0." );
             }
+        } else {
+            // TODO
+            String msg = "Unexpected GetCapabilities response element: '" + rootEl + "'.";
+            throw new IOException( msg );
         }
-        return url;
+
+        switch ( version ) {
+        case WFS_100: {
+            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
+            capaDoc.setRootElement( root );
+            return capaDoc;
+        }
+        case WFS_110: {
+            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
+            capaDoc.setRootElement( root );
+            return capaDoc;
+        }
+        case WFS_200: {
+            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
+            capaDoc.setRootElement( root );
+            return capaDoc;
+        }
+        }
+        throw new RuntimeException( "Internal error: unhandled WFS service version '" + version + "'." );
     }
 }

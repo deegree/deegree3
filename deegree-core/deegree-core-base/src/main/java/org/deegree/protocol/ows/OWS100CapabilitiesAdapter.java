@@ -128,40 +128,40 @@ public class OWS100CapabilitiesAdapter extends XMLAdapter implements OWSCapabili
             return null;
         }
 
-        OperationsMetadata opMetadata = new OperationsMetadata();
-
         XPath xpath = new XPath( "ows:Operation", nsContext );
         List<OMElement> opEls = getElements( opMetadataEl, xpath );
+        List<Operation> operations = new ArrayList<Operation>( opEls.size() );
         if ( opEls != null ) {
             for ( OMElement opEl : opEls ) {
                 Operation op = parseOperation( opEl );
-                opMetadata.getOperation().add( op );
+                operations.add( op );
             }
         }
 
         xpath = new XPath( "ows:Parameter", nsContext );
         List<OMElement> paramEls = getElements( opMetadataEl, xpath );
+        List<Domain> params = new ArrayList<Domain>( paramEls.size() );
         if ( paramEls != null ) {
             for ( OMElement paramEl : paramEls ) {
                 Domain parameter = parseDomain( paramEl );
-                opMetadata.getParameter().add( parameter );
+                params.add( parameter );
             }
         }
 
         xpath = new XPath( "ows:Constraint", nsContext );
         List<OMElement> constaintEls = getElements( opMetadataEl, xpath );
+        List<Domain> constraints = new ArrayList<Domain>( constaintEls.size() );
         if ( constaintEls != null ) {
             for ( OMElement constaintEl : constaintEls ) {
                 Domain constraint = parseDomain( constaintEl );
-                opMetadata.getConstraint().add( constraint );
+                constraints.add( constraint );
             }
         }
 
         xpath = new XPath( "ows:ExtendedCapabilities", nsContext );
-        Object extededCapab = getNode( opMetadataEl, xpath );
-        opMetadata.setExtendedCapabilies( extededCapab );
+        OMElement extededCapab = getElement( opMetadataEl, xpath );
 
-        return opMetadata;
+        return new OperationsMetadata( operations, params, constraints, extededCapab );
     }
 
     /**
@@ -170,41 +170,43 @@ public class OWS100CapabilitiesAdapter extends XMLAdapter implements OWSCapabili
      * @return an {@link Operation} instance, never <code>null</code>
      */
     private Operation parseOperation( OMElement opEl ) {
-        Operation operation = new Operation();
 
         XPath xpath = new XPath( "@name", nsContext );
         String name = getNodeAsString( opEl, xpath, null );
-        operation.setName( name );
 
         xpath = new XPath( "ows:DCP", nsContext );
         List<OMElement> dcpEls = getElements( opEl, xpath );
+        List<DCP> dcps = new ArrayList<DCP>( dcpEls.size() );
         if ( dcpEls != null ) {
             for ( OMElement dcpEl : dcpEls ) {
                 DCP dcp = parseDCP( dcpEl );
-                operation.getDCP().add( dcp );
+                dcps.add( dcp );
             }
         }
 
         xpath = new XPath( "ows:Parameter", nsContext );
         List<OMElement> paramEls = getElements( opEl, xpath );
+        List<Domain> params = new ArrayList<Domain>( paramEls.size() );
         if ( paramEls != null ) {
             for ( OMElement paramEl : paramEls ) {
                 Domain parameter = parseDomain( paramEl );
-                operation.getParameter().add( parameter );
+                params.add( parameter );
             }
         }
 
         xpath = new XPath( "ows:Constraint", nsContext );
         List<OMElement> constaintEls = getElements( opEl, xpath );
+        List<Domain> constraints = new ArrayList<Domain>( constaintEls.size() );
         if ( constaintEls != null ) {
             for ( OMElement constaintEl : constaintEls ) {
                 Domain constraint = parseDomain( constaintEl );
-                operation.getConstraint().add( constraint );
+                constraints.add( constraint );
             }
         }
 
         xpath = new XPath( "ows:Metadata", nsContext );
         List<OMElement> metadataEls = getElements( opEl, xpath );
+        List<Pair<URL, URL>> metadata = new ArrayList<Pair<URL, URL>>( metadataEls.size() );
         if ( metadataEls != null ) {
             for ( OMElement metadataEl : metadataEls ) {
                 xpath = new XPath( "@xlink:href", nsContext );
@@ -212,11 +214,10 @@ public class OWS100CapabilitiesAdapter extends XMLAdapter implements OWSCapabili
 
                 xpath = new XPath( "@about", nsContext );
                 URL about = getNodeAsURL( metadataEl, xpath, null );
-                operation.getMetadata().add( new Pair<URL, URL>( ref, about ) );
+                metadata.add( new Pair<URL, URL>( ref, about ) );
             }
         }
-
-        return operation;
+        return new Operation( name, dcps, params, constraints, metadata );
     }
 
     /**

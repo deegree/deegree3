@@ -149,19 +149,19 @@ public class WPSClientTest {
 
         OperationsMetadata opMetadata = client.getMetadata().getOperationsMetadata();
         Operation op = opMetadata.getOperation().get( 0 ); // GetCapabilities
-        Assert.assertEquals( op.getDCP().get( 0 ).getGetURLs().get( 0 ).first.toExternalForm(),
+        Assert.assertEquals( op.getGetUrls().get( 0 ).toExternalForm(),
                              "http://deegree3-testing.deegree.org/deegree-wps-demo/services?" );
-        Assert.assertEquals( op.getDCP().get( 0 ).getPostURLs().get( 0 ).first.toExternalForm(),
+        Assert.assertEquals( op.getPostUrls().get( 0 ).toExternalForm(),
                              "http://deegree3-testing.deegree.org/deegree-wps-demo/services" );
         op = opMetadata.getOperation().get( 1 ); // DescribeProcess
-        Assert.assertEquals( op.getDCP().get( 0 ).getGetURLs().get( 0 ).first.toExternalForm(),
+        Assert.assertEquals( op.getGetUrls().get( 0 ).toExternalForm(),
                              "http://deegree3-testing.deegree.org/deegree-wps-demo/services?" );
-        Assert.assertEquals( op.getDCP().get( 0 ).getPostURLs().get( 0 ).first.toExternalForm(),
+        Assert.assertEquals( op.getPostUrls().get( 0 ).toExternalForm(),
                              "http://deegree3-testing.deegree.org/deegree-wps-demo/services" );
         op = opMetadata.getOperation().get( 2 ); // Execute
-        Assert.assertEquals( op.getDCP().get( 0 ).getGetURLs().get( 0 ).first.toExternalForm(),
+        Assert.assertEquals( op.getGetUrls().get( 0 ).toExternalForm(),
                              "http://deegree3-testing.deegree.org/deegree-wps-demo/services?" );
-        Assert.assertEquals( op.getDCP().get( 0 ).getPostURLs().get( 0 ).first.toExternalForm(),
+        Assert.assertEquals( op.getPostUrls().get( 0 ).toExternalForm(),
                              "http://deegree3-testing.deegree.org/deegree-wps-demo/services" );
     }
 

@@ -35,12 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.axiom.om.OMElement;
 
 /**
- * The <code>OperationsMetadata</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * Encapsulates the metadata on operations of an OGC web service (as reported in the capabilities document).
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
@@ -48,49 +54,84 @@ import java.util.List;
  */
 public class OperationsMetadata {
 
-    private List<Operation> operation;
+    private final Map<String, Operation> operationNameToMD = new HashMap<String, Operation>();
 
-    private List<Domain> parameter;
+    private final List<Domain> parameters;
 
-    private List<Domain> constraint;
+    private final List<Domain> constraints;
 
-    private Object extendedCapabilities;
+    private OMElement extendedCapabilities;
+
+    public OperationsMetadata( List<Operation> operations, List<Domain> parameters, List<Domain> constraints,
+                               Object extendedCapabilities ) {
+        for ( Operation operation : operations ) {
+            operationNameToMD.put( operation.getName(), operation );
+        }
+        this.parameters = parameters;
+        this.constraints = constraints;
+    }
 
     /**
-     * @return operation, may be empty but never <code>null</code>.
+     * Returns the metadata for all operations.
+     * 
+     * @return operation metadata, may be empty, but never <code>null</code>
      */
     public List<Operation> getOperation() {
-        if ( operation == null ) {
-            operation = new ArrayList<Operation>();
-        }
-        return operation;
+        return new ArrayList<Operation>( operationNameToMD.values() );
     }
 
     /**
-     * @return parameter, may be empty but never <code>null</code>.
+     * Returns the metadata for the specified operation name.
+     * 
+     * @param operationName
+     *            name of the operation, can be <code>null</code>
+     * @return operation metadata or <code>null</code> if no metadata for operation available
      */
-    public List<Domain> getParameter() {
-        if ( parameter == null ) {
-            parameter = new ArrayList<Domain>();
-        }
-        return parameter;
+    public Operation getOperation( String operationName ) {
+        return operationNameToMD.get( operationName );
     }
 
     /**
-     * @return constraint, may be empty but never <code>null</code>.
+     * Returns the endpoint {@link URL}s for the specified operation (method HTTP-GET).
+     * 
+     * @return endpoint URLs, can be empty, but never <code>null</code>
      */
-    public List<Domain> getConstraint() {
-        if ( constraint == null ) {
-            constraint = new ArrayList<Domain>();
+    public List<URL> getGetUrls( String operationName ) {
+        Operation operation = getOperation( operationName );
+        if ( operation != null ) {
+            return operation.getGetUrls();
         }
-        return constraint;
+        return null;
     }
 
-    public void setExtendedCapabilies( Object extendedCapabilities ) {
-        this.extendedCapabilities = extendedCapabilities;
+    /**
+     * Returns the endpoint {@link URL}s for the specified operation (method HTTP-POST).
+     * 
+     * @return endpoint URLs, can be empty, but never <code>null</code>
+     */
+    public List<URL> getPostUrls( String operationName ) {
+        Operation operation = getOperation( operationName );
+        if ( operation != null ) {
+            return operation.getPostUrls();
+        }
+        return null;
     }
 
-    public Object getExtendedCapabilities() {
+    /**
+     * @return parameters, may be empty but never <code>null</code>
+     */
+    public List<Domain> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * @return constraints, may be empty but never <code>null</code>
+     */
+    public List<Domain> getConstraints() {
+        return constraints;
+    }
+
+    public OMElement getExtendedCapabilities() {
         return extendedCapabilities;
     }
 }

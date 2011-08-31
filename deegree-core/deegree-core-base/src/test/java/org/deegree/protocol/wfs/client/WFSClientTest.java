@@ -37,7 +37,11 @@ package org.deegree.protocol.wfs.client;
 
 import java.net.URL;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.utils.test.TestProperties;
+import org.deegree.feature.Feature;
+import org.deegree.gml.feature.StreamFeatureCollection;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,16 +76,17 @@ public class WFSClientTest {
 
         URL wfsCapaUrl = new URL( wfsUtahDemo100Url );
         WFSClient client = new WFSClient( wfsCapaUrl );
+        
         Assert.equals( 18, client.getAppSchema().getFeatureTypes().length );
-        // StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
-        // try {
-        // Feature feature = null;
-        // while ( ( feature = fc.read() ) != null ) {
-        // System.out.println( feature.getId() );
-        // }
-        // } finally {
-        // fc.close();
-        // }
+        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
+        try {
+            Feature feature = null;
+            while ( ( feature = fc.read() ) != null ) {
+                System.out.println( feature.getId() );
+            }
+        } finally {
+            fc.close();
+        }
     }
 
     @Test
@@ -97,14 +102,14 @@ public class WFSClientTest {
         URL wfsCapaUrl = new URL( wfsUtahDemo100Url );
         WFSClient client = new WFSClient( wfsCapaUrl );
         Assert.equals( 18, client.getAppSchema().getFeatureTypes().length );
-        // StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
-        // try {
-        // Feature feature = null;
-        // while ( ( feature = fc.read() ) != null ) {
-        // System.out.println( feature.getId() );
-        // }
-        // } finally {
-        // fc.close();
-        // }
+        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
+        try {
+            Feature feature = null;
+            while ( ( feature = fc.read() ) != null ) {
+                System.out.println( feature.getId() );
+            }
+        } finally {
+            fc.close();
+        }
     }
 }

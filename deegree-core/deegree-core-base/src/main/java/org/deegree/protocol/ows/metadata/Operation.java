@@ -42,8 +42,9 @@ import java.util.List;
 import org.deegree.commons.utils.Pair;
 
 /**
- * The <code>Operation</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * Encapsulates the metadata on a single operation of an OGC web service (as reported in the capabilities document).
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
@@ -51,23 +52,70 @@ import org.deegree.commons.utils.Pair;
  */
 public class Operation {
 
-    private List<DCP> dcp;
+    private final String name;
 
-    private List<Domain> parameter;
+    private final List<URL> getUrls = new ArrayList<URL>();
 
-    private List<Domain> constraint;
+    private final List<URL> postUrls = new ArrayList<URL>();
 
-    private List<Pair<URL, URL>> metadata;
+    private final List<DCP> dcp;
 
-    private String name;
+    private final List<Domain> parameter;
+
+    private final List<Domain> constraint;
+
+    private final List<Pair<URL, URL>> metadata;
+
+    public Operation( String name, List<DCP> dcps, List<Domain> params, List<Domain> constraints,
+                      List<Pair<URL, URL>> metadata ) {
+
+        this.name = name;
+        this.dcp = dcps;
+        this.parameter = params;
+        this.constraint = constraints;
+        this.metadata = metadata;
+
+        for ( DCP dcp : dcps ) {
+            for ( Pair<URL, List<Domain>> urls : dcp.getGetURLs() ) {
+                getUrls.add( urls.first );
+            }
+            for ( Pair<URL, List<Domain>> urls : dcp.getGetURLs() ) {
+                postUrls.add( urls.first );
+            }
+        }
+    }
+
+    /**
+     * Returns the operation name.
+     * 
+     * @return the operation name, never <code>null</code>
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the endpoint {@link URL}s for this operation (HTTP-GET).
+     * 
+     * @return endpoint URLs, can be empty, but never <code>null</code>
+     */
+    public List<URL> getGetUrls() {
+        return getUrls;
+    }
+
+    /**
+     * Returns the endpoint {@link URL}s for this operation (HTTP-POST).
+     * 
+     * @return endpoint URLs, can be empty, but never <code>null</code>
+     */
+    public List<URL> getPostUrls() {
+        return postUrls;
+    }
 
     /**
      * @return dcp, never <code>null</code>.
      */
-    public List<DCP> getDCP() {
-        if ( dcp == null ) {
-            dcp = new ArrayList<DCP>();
-        }
+    public List<DCP> getDCPs() {
         return dcp;
     }
 
@@ -75,9 +123,6 @@ public class Operation {
      * @return parameter, never <code>null</code>.
      */
     public List<Domain> getParameter() {
-        if ( parameter == null ) {
-            parameter = new ArrayList<Domain>();
-        }
         return parameter;
     }
 
@@ -85,9 +130,6 @@ public class Operation {
      * @return constraint, never <code>null</code>
      */
     public List<Domain> getConstraint() {
-        if ( constraint == null ) {
-            constraint = new ArrayList<Domain>();
-        }
         return constraint;
     }
 
@@ -95,16 +137,6 @@ public class Operation {
      * @return metadata, never <code>null</code>
      */
     public List<Pair<URL, URL>> getMetadata() {
-        if ( metadata == null ) {
-            metadata = new ArrayList<Pair<URL, URL>>();
-        }
         return metadata;
-    }
-
-    /**
-     * @param name
-     */
-    public void setName( String name ) {
-        this.name = name;
     }
 }
