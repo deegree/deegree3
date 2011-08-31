@@ -45,13 +45,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.slf4j.Logger;
-import org.xml.sax.SAXException;
 
 import com.sun.xml.bind.v2.ClassFactory;
 import com.sun.xml.bind.v2.runtime.Coordinator;
@@ -244,10 +246,13 @@ public class JAXBUtils {
         Schema result = null;
         if ( schemaFile != null ) {
             try {
-                result = sf.newSchema( schemaFile );
-            } catch ( SAXException e ) {
+                StreamSource origSchema = new StreamSource( new DURL( schemaFile.toExternalForm() ).openStream() );
+                URL descUrl = JAXBUtils.class.getResource( "/META-INF/schemas/description/3.1.0/description.xsd" );
+                StreamSource desc = new StreamSource( new DURL( descUrl.toExternalForm() ).openStream() );
+                result = sf.newSchema( new Source[] { origSchema, desc } );
+            } catch ( Throwable e ) {
                 LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
-                           + e.getLocalizedMessage(), e );
+                                                   + e.getLocalizedMessage(), e );
             }
         }
         return result;
