@@ -27,7 +27,15 @@
           <element name="CRS" type="string" minOccurs="0" />
         </sequence>
       </choice>
-      <element name="Layer" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Layer" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="layerStore" type="string" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
       <element name="Theme" type="t:ThemeType" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
   </complexType>

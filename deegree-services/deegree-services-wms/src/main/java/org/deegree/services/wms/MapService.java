@@ -199,6 +199,8 @@ public class MapService {
 
     private HashMap<String, org.deegree.layer.Layer> newLayers;
 
+    private HashMap<String, Theme> themeMap;
+
     /**
      * @param conf
      * @param adapter
@@ -240,6 +242,7 @@ public class MapService {
             ThemeManager mgr = workspace.getSubsystemManager( ThemeManager.class );
             themes = new ArrayList<Theme>();
             newLayers = new HashMap<String, org.deegree.layer.Layer>();
+            themeMap = new HashMap<String, Theme>();
             for ( String id : conf.getThemeId() ) {
                 Theme thm = mgr.get( id );
                 if ( thm == null ) {
@@ -249,6 +252,9 @@ public class MapService {
 
                     for ( org.deegree.layer.Layer l : Themes.getAllLayers( thm ) ) {
                         newLayers.put( l.getMetadata().getName(), l );
+                    }
+                    for ( Theme theme : Themes.getAllThemes( thm ) ) {
+                        themeMap.put( theme.getMetadata().getName(), theme );
                     }
                 }
             }
@@ -771,27 +777,29 @@ public class MapService {
         }
     }
 
-    public Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, List<String> layers )
+    public Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, List<String> themes )
                             throws MissingDimensionValue, InvalidDimensionValue {
         Pair<FeatureCollection, LinkedList<String>> p = null;
-        for ( String n : layers ) {
-            org.deegree.layer.Layer l = newLayers.get( n );
-            Pair<FeatureCollection, LinkedList<String>> p2 = l.getFeatures( info, null );
-            if ( p == null ) {
-                p = p2;
-            } else {
-                p.first.addAll( p2.first );
-                p.second.addAll( p2.second );
+        for ( String n : themes ) {
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
+                Pair<FeatureCollection, LinkedList<String>> p2 = l.getFeatures( info, null );
+                if ( p == null ) {
+                    p = p2;
+                } else {
+                    p.first.addAll( p2.first );
+                    p.second.addAll( p2.second );
+                }
             }
         }
         return p;
     }
 
-    public void getMapImage( RenderContext ctx, RenderingInfo info, List<String> layers )
+    public void getMapImage( RenderContext ctx, RenderingInfo info, List<String> themes )
                             throws MissingDimensionValue, InvalidDimensionValue {
-        for ( String n : layers ) {
-            org.deegree.layer.Layer l = newLayers.get( n );
-            l.paintMap( ctx, info, null );
+        for ( String n : themes ) {
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
+                l.paintMap( ctx, info, null );
+            }
         }
     }
 

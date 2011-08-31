@@ -486,7 +486,7 @@ public class WMSClient111 implements WMSClient {
     public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout )
                             throws IOException {
         Worker worker = new Worker( getMap.getLayers(), getMap.getWidth(), getMap.getHeight(), getMap.getBoundingBox(),
-                                    getMap.getCoordinateSystem(), getMap.getFormat(), getMap.getTransparent(), true,
+                                    getMap.getCoordinateSystem(), getMap.getFormat(), getMap.getTransparent(), false,
                                     false, null, hardParameters );
 
         Pair<BufferedImage, String> result;
@@ -817,7 +817,8 @@ public class WMSClient111 implements WMSClient {
                     res.first = img;
                 }
 
-                if ( res.first != null ) {
+                if ( res.first != null && !reqEnv.getCoordinateSystem().equals( bbox.getCoordinateSystem() ) ) {
+                    LOG.debug( "Performing raster transformation." );
                     RasterGeoReference env = RasterGeoReference.create( OUTER, reqEnv, reqWidth, reqHeight );
                     RasterData data = rasterDataFromImage( res.first );
                     SimpleRaster raster = new SimpleRaster( data, reqEnv, env );
@@ -829,7 +830,8 @@ public class WMSClient111 implements WMSClient {
 
                 LOG.debug( "Received response." );
             } catch ( Throwable e ) {
-                LOG.info( "Error performing GetMap request: " + e.getMessage(), e );
+                LOG.info( "Error performing GetMap request: " + e.getMessage() );
+                LOG.trace( "Stack trace:", e );
                 res.second = e.getMessage();
             }
 

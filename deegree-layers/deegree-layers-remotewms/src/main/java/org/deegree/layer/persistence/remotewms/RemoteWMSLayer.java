@@ -113,7 +113,12 @@ public class RemoteWMSLayer extends AbstractLayer {
             this.crs = CRSManager.getCRSRef( client.getCoordinateSystems( md.getName() ).getFirst() );
         }
         if ( this.format == null ) {
-            format = client.getFormats( GetMap ).getFirst();
+            LinkedList<String> fs = client.getFormats( GetMap );
+            if ( fs.contains( "image/png" ) ) {
+                format = "image/png";
+            } else {
+                format = fs.getFirst();
+            }
         }
     }
 

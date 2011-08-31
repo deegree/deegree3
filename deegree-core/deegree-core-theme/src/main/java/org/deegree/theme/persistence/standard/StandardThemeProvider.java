@@ -46,7 +46,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -82,18 +84,31 @@ public class StandardThemeProvider implements ThemeProvider {
         this.workspace = workspace;
     }
 
-    private Theme buildTheme( ThemeType current, List<String> layers, List<ThemeType> themes, List<LayerStore> stores )
+    private Theme buildTheme( ThemeType current, List<ThemeType.Layer> layers, List<ThemeType> themes,
+                              Map<String, LayerStore> stores )
                             throws ResourceInitException {
         List<Layer> lays = new ArrayList<Layer>( layers.size() );
 
         LayerMetadata md = new LayerMetadata();
 
-        for ( String l : layers ) {
+        for ( ThemeType.Layer l : layers ) {
             Layer lay = null;
-            for ( LayerStore s : stores ) {
-                lay = s.get( l );
-                if ( lay != null ) {
-                    break;
+            if ( l.getLayerStore() != null ) {
+                LayerStore s = stores.get( l.getLayerStore() );
+                if ( s != null ) {
+                    lay = s.get( l.getValue() );
+                }
+                if ( lay == null ) {
+                    LOG.warn( "Layer with identifier {} is not available from {}, trying all.", l.getValue(),
+                              l.getLayerStore() );
+                }
+            }
+            if ( lay == null ) {
+                for ( LayerStore s : stores.values() ) {
+                    lay = s.get( l.getValue() );
+                    if ( lay != null ) {
+                        break;
+                    }
                 }
             }
             if ( lay == null ) {
@@ -136,7 +151,7 @@ public class StandardThemeProvider implements ThemeProvider {
             cfg = (Themes) unmarshall( pkg, SCHEMA_URL, configUrl, workspace );
 
             List<String> storeIds = cfg.getLayerStoreId();
-            List<LayerStore> stores = new ArrayList<LayerStore>( storeIds.size() );
+            Map<String, LayerStore> stores = new LinkedHashMap<String, LayerStore>( storeIds.size() );
             LayerStoreManager mgr = workspace.getSubsystemManager( LayerStoreManager.class );
 
             for ( String id : storeIds ) {
@@ -145,7 +160,7 @@ public class StandardThemeProvider implements ThemeProvider {
                     LOG.warn( "Layer store with id {} is not available.", id );
                     continue;
                 }
-                stores.add( store );
+                stores.put( id, store );
             }
 
             ThemeType root = cfg.getTheme();
