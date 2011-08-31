@@ -1,19 +1,18 @@
 <?xml version="1.0"?>
 <Themes configVersion="3.1.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd">
-
+  xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd" xmlns:d="http://www.deegree.org/metadata/description">
 
   <LayerStoreId>layerstore</LayerStoreId>
   <LayerStoreId>layerstore2</LayerStoreId>
 
   <Theme>
     <Identifier>base</Identifier>
-    <Title>Root theme</Title>
+    <d:Title>Root theme</d:Title>
     <Layer>water</Layer>
     <Layer>water2</Layer>
     <Theme>
       <Identifier>water</Identifier>
-      <Title>water theme</Title>
+      <d:Title>water theme</d:Title>
       <Layer>water3</Layer>
       <Layer>water4</Layer>
     </Theme>

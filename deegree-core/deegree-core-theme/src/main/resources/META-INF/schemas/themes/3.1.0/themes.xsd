@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
 <schema xmlns:t="http://www.deegree.org/themes/standard" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/themes/standard" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-  jaxb:version="2.1">
+  jaxb:version="2.1" xmlns:d="http://www.deegree.org/metadata/description">
+
+  <import namespace="http://www.deegree.org/metadata/description"
+    schemaLocation="/home/stranger/workspace/deegree/deegree-core/deegree-core-commons/src/main/resources/META-INF/schemas/description/3.1.0/description.xsd" />
 
   <annotation>
     <appinfo>
@@ -20,10 +24,9 @@
           </complexType>
         </element>
         <sequence>
-          <!-- TODO maybe use a common format/beans for metadata instead? -->
           <!-- TODO also implement stuff like bounding box/abstract etc. -->
           <element name="Identifier" type="string" minOccurs="0" />
-          <element name="Title" type="string" />
+          <group ref="d:Description" />
           <element name="CRS" type="string" minOccurs="0" />
         </sequence>
       </choice>

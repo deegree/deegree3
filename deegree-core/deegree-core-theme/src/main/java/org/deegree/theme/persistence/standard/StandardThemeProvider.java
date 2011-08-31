@@ -40,7 +40,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence.standard;
 
-import static java.util.Collections.singletonList;
+import static org.deegree.commons.metadata.MetadataJAXBConverter.KW_MAPPER;
+import static org.deegree.commons.metadata.MetadataJAXBConverter.LANG_MAPPER;
+import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -53,7 +55,6 @@ import java.util.Map;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.layer.Layer;
@@ -126,7 +127,9 @@ public class StandardThemeProvider implements ThemeProvider {
         }
         md.setName( current.getIdentifier() );
         Description desc = new Description();
-        desc.setTitle( singletonList( new LanguageString( current.getTitle(), null ) ) );
+        desc.setTitle( map( current.getTitle(), LANG_MAPPER ) );
+        desc.setAbstract( map( current.getAbstract(), LANG_MAPPER ) );
+        desc.setKeywords( map( current.getKeywords(), KW_MAPPER ) );
         String crss = current.getCRS();
         if ( crss != null ) {
             List<ICRS> list = new ArrayList<ICRS>();
