@@ -260,12 +260,8 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
                             // SCALE
                             String scaleKey = "wms" + mapId + "_scale";
-                            System.out.println(scaleKey);
-                            System.out.println( parameters.containsKey( scaleKey ));
-                            
                             if ( parameters.containsKey( scaleKey ) ) {
                                 double scale = Utils.calcScaleWMS130( width, height, bbox, crs );
-                                System.out.println(scale);
                                 params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );
                             }
 
@@ -654,6 +650,10 @@ public class WMSContentProvider implements JrxmlContentProvider {
                 String passw = datasource.getAuthentification() != null ? datasource.getAuthentification().getPassword()
                                                                        : null;
                 // TODO: version
+                if ( !"1.1.1".equals( datasource.getVersion() ) ) {
+                    throw new ProcessletException( "WMS version " + datasource.getVersion()
+                                                   + " is not yet supported. Supported values are: 1.1.1" );
+                }
                 String capUrl = datasource.getUrl() + "?request=GetCapabilities&service=WMS&version=1.1.1";
                 WMSClient111 wmsClient = new WMSClient111( new URL( capUrl ), 5, 60, user, passw );
                 List<String> layerNames = new ArrayList<String>();
