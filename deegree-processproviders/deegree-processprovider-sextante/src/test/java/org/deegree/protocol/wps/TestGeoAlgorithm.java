@@ -49,23 +49,24 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.VectorExampleData.GeometryType;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
 import org.deegree.protocol.wps.client.output.ExecutionOutput;
-import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.Process;
+import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
 import org.deegree.services.wps.provider.sextante.ExampleData;
 import org.deegree.services.wps.provider.sextante.GMLSchema;
+import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
 import org.deegree.services.wps.provider.sextante.OutputFormat;
 import org.deegree.services.wps.provider.sextante.SextanteWPSProcess;
-import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
@@ -158,7 +159,7 @@ public class TestGeoAlgorithm {
     }
 
     private boolean testAlgorithm( boolean result )
-                            throws OWSException, IOException, XMLStreamException, XMLParsingException,
+                            throws OWSExceptionReport, IOException, XMLStreamException, XMLParsingException,
                             UnknownCRSException {
 
         Assert.assertNotNull( client );
@@ -325,7 +326,7 @@ public class TestGeoAlgorithm {
                     // if ( value instanceof PrimitiveValue ) {
                     // PrimitiveValue valuePrim = (PrimitiveValue) value;
                     // if ( valuePrim.getAsText().equals( "1" ) )
-                     resultCorrect = true;
+                    resultCorrect = true;
                     // }
                     // }
                 }
