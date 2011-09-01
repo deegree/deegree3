@@ -93,6 +93,11 @@
       <artifactId>deegree-remoteows-wms</artifactId>
       <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
+	<dependency>
+	  <groupId>org.deegree</groupId>
+	  <artifactId>deegree-core-rendering-2d</artifactId>
+	  <version>3.1-pre13-SNAPSHOT</version>
+	</dependency>
     <dependency>
       <groupId>net.sf.jasperreports</groupId>
       <artifactId>jasperreports</artifactId>

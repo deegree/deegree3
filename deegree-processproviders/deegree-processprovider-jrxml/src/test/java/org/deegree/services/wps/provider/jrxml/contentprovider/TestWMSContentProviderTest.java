@@ -42,8 +42,10 @@ import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
 import static org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.MIME_TYPE;
 import static org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.SCHEMA;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -213,6 +216,95 @@ public class TestWMSContentProviderTest {
         }
         assertTrue( containsOverview );
         assertTrue( containsLake );
+    }
+
+    /**
+     * Test method for
+     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
+     * .
+     * 
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws FactoryConfigurationError
+     * @throws XMLStreamException
+     * @throws ProcessletException
+     */
+    @Test
+    public void testPrepareJrxmlAndReadInputParametersWFS()
+                            throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
+                            ProcessletException {
+        WMSContentProvider wmsContentProvider = new WMSContentProvider();
+
+        List<CodeType> processedIds = new ArrayList<CodeType>();
+        InputStream jrxml = TestWMSContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" );
+        Map<String, Object> params = new HashMap<String, Object>();
+        List<ProcessletInput> inputs = new ArrayList<ProcessletInput>();
+        ProcessletInputs in = new ProcessletInputs( inputs );
+
+        ComplexInputDefinition definition = new ComplexInputDefinition();
+        definition.setTitle( getAsLanguageStringType( "MAP" ) );
+        definition.setIdentifier( getAsCodeType( "MAP" ) );
+        ComplexFormatType format = new ComplexFormatType();
+        // TODO
+        format.setEncoding( "UTF-8" );
+        format.setMimeType( MIME_TYPE );
+        format.setSchema( SCHEMA );
+        definition.setDefaultFormat( format );
+        definition.setMaxOccurs( BigInteger.valueOf( 1 ) );
+        definition.setMinOccurs( BigInteger.valueOf( 0 ) );
+
+        // URL resource = TestWMSContentProviderTest.class.getResource( "store" );
+        // File f = new File( resource.toExternalForm() );
+        File f = File.createTempFile( "tmpStore", "" );
+        StreamBufferStore store = new StreamBufferStore( 1024, f );
+
+        // LOG.debug( "Storing embedded ComplexInput as XML" );
+        InputStream complexInput = TestWMSContentProviderTest.class.getResourceAsStream( "complexInputWFS" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( complexInput );
+        XMLStreamWriter xmlWriter = null;
+        try {
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( store );
+            if ( xmlReader.getEventType() == START_DOCUMENT ) {
+                xmlReader.nextTag();
+            }
+            XMLAdapter.writeElement( xmlWriter, xmlReader );
+        } finally {
+            try {
+                xmlReader.close();
+            } catch ( XMLStreamException e ) {
+                // nothing to do
+            }
+            try {
+                xmlWriter.close();
+            } catch ( XMLStreamException e ) {
+                // nothing to do
+            }
+            IOUtils.closeQuietly( store );
+        }
+
+        ComplexInputImpl mapProcesslet = new EmbeddedComplexInput( definition, new LanguageString( "title", "ger" ),
+                                                                   new LanguageString( "summary", "ger" ), format,
+                                                                   store );
+
+        inputs.add( mapProcesslet );
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put( "wmsMAP_map", "java.lang.String" );
+        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "LEGEND", "java.lang.String" );
+        jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
+
+        assertEquals( 2, params.size() );
+        assertEquals( 1, processedIds.size() );
+
+        assertTrue( params.containsKey( "wmsMAP_map" ) );
+        Object value = params.get( "wmsMAP_map" );
+        assertTrue( value instanceof String );
+
+        BufferedImage img = ImageIO.read( new File( (String) value ) );
+        assertNotNull( img );
+        assertEquals( 438, img.getWidth() );
+        assertEquals( 479, img.getHeight() );
+
     }
 
     @Test

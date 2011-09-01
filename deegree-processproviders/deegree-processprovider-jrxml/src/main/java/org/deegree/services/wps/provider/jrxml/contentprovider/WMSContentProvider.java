@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.JASPERREPORTS_NS;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
@@ -42,6 +43,7 @@ import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,9 +61,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.xml.bind.JAXBContext;
@@ -69,7 +73,11 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.dom.DOMSource;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -77,19 +85,27 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.feature.Feature;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.protocol.wfs.client.WFSClient;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.remoteows.wms.WMSClient111;
+import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
@@ -97,8 +113,11 @@ import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.AbstractDatasourceType;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
+import org.deegree.services.wps.provider.jrxml.jaxb.map.Style;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WMSDatasource;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.styling.Styling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -483,6 +502,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
         List<OrderedDatasource<?>> orderedDatasources = new ArrayList<OrderedDatasource<?>>();
         for ( AbstractDatasourceType datasource : datasources ) {
+
             if ( datasource instanceof WMSDatasource ) {
                 WMSDatasource wmsDatasource = (WMSDatasource) datasource;
                 List<Layer> layers = wmsDatasource.getLayers().getLayer();
@@ -508,44 +528,7 @@ public class WMSContentProvider implements JrxmlContentProvider {
                         } else {
                             List<Layer> newLayerList = new ArrayList<Layer>();
                             newLayerList.add( layer );
-                            int indexToAdd = 0;
-                            boolean isBetween = false;
-                            for ( OrderedDatasource<?> orderedDatasource : orderedDatasources ) {
-                                if ( orderedDatasource.min > 0 && intPos > orderedDatasource.min
-                                     && intPos < orderedDatasource.max ) {
-                                    indexToAdd++;
-                                    isBetween = true;
-                                    break;
-                                } else if ( orderedDatasource.min > 0 && intPos > orderedDatasource.max ) {
-                                    indexToAdd++;
-                                } else {
-                                    break;
-                                }
-                            }
-                            if ( isBetween ) {
-                                OrderedDatasource<?> dsToSplit = orderedDatasources.get( indexToAdd - 1 );
-                                if ( dsToSplit instanceof WMSOrderedDatasource ) {
-                                    List<Layer> newLayerListFromSplit = new ArrayList<Layer>();
-                                    int newMinPos = 0;
-                                    int newMaxPos = 0;
-                                    for ( Layer l : ( (WMSOrderedDatasource) dsToSplit ).layers ) {
-                                        if ( l.getPosition() != null && l.getPosition().intValue() > intPos ) {
-                                            newLayerListFromSplit.add( l );
-                                            newMinPos = Math.min( l.getPosition().intValue(), newMinPos );
-                                            newMaxPos = Math.max( l.getPosition().intValue(), newMaxPos );
-                                        }
-                                    }
-                                    for ( Layer lToRemove : newLayerListFromSplit ) {
-                                        ( (WMSOrderedDatasource) dsToSplit ).layers.remove( lToRemove );
-                                    }
-                                    orderedDatasources.add( indexToAdd,
-                                                            new WMSOrderedDatasource(
-                                                                                      (WMSDatasource) dsToSplit.datasource,
-                                                                                      newLayerListFromSplit, intPos,
-                                                                                      intPos ) );
-
-                                }
-                            }
+                            int indexToAdd = getIndexToAdd( orderedDatasources, intPos );
                             orderedDatasources.add( indexToAdd, new WMSOrderedDatasource( wmsDatasource, newLayerList,
                                                                                           intPos, intPos ) );
                         }
@@ -561,9 +544,56 @@ public class WMSContentProvider implements JrxmlContentProvider {
                     }
                     index++;
                 }
+            } else if ( datasource instanceof WFSDatasource ) {
+                WFSDatasource wfsDatasource = (WFSDatasource) datasource;
+                WFSOrderedDatasource newDatasource = new WFSOrderedDatasource( wfsDatasource );
+                if ( wfsDatasource.getPosition() != null ) {
+                    int indexToAdd = getIndexToAdd( orderedDatasources, wfsDatasource.getPosition().intValue() );
+                    orderedDatasources.add( indexToAdd, newDatasource );
+                } else {
+                    orderedDatasources.add( newDatasource );
+                }
+
             }
         }
         return orderedDatasources;
+    }
+
+    private int getIndexToAdd( List<OrderedDatasource<?>> orderedDatasources, int intPos ) {
+        int indexToAdd = 0;
+        boolean isBetween = false;
+        for ( OrderedDatasource<?> orderedDatasource : orderedDatasources ) {
+            if ( orderedDatasource.min > 0 && intPos > orderedDatasource.min && intPos < orderedDatasource.max ) {
+                indexToAdd++;
+                isBetween = true;
+                break;
+            } else if ( orderedDatasource.min > 0 && intPos > orderedDatasource.max ) {
+                indexToAdd++;
+            } else {
+                break;
+            }
+        }
+        if ( isBetween ) {
+            OrderedDatasource<?> dsToSplit = orderedDatasources.get( indexToAdd - 1 );
+            if ( dsToSplit instanceof WMSOrderedDatasource ) {
+                List<Layer> newLayerListFromSplit = new ArrayList<Layer>();
+                int newMinPos = 0;
+                int newMaxPos = 0;
+                for ( Layer l : ( (WMSOrderedDatasource) dsToSplit ).layers ) {
+                    if ( l.getPosition() != null && l.getPosition().intValue() > intPos ) {
+                        newLayerListFromSplit.add( l );
+                        newMinPos = Math.min( l.getPosition().intValue(), newMinPos );
+                        newMaxPos = Math.max( l.getPosition().intValue(), newMaxPos );
+                    }
+                }
+                for ( Layer lToRemove : newLayerListFromSplit ) {
+                    ( (WMSOrderedDatasource) dsToSplit ).layers.remove( lToRemove );
+                }
+                orderedDatasources.add( indexToAdd, new WMSOrderedDatasource( (WMSDatasource) dsToSplit.datasource,
+                                                                              newLayerListFromSplit, intPos, intPos ) );
+            }
+        }
+        return indexToAdd;
     }
 
     private WMSOrderedDatasource contains( List<OrderedDatasource<?>> orderedDatasources, WMSDatasource datasource,
@@ -625,6 +655,28 @@ public class WMSContentProvider implements JrxmlContentProvider {
                                 throws ProcessletException;
 
         abstract Map<String, List<String>> getLayerList();
+
+        protected org.deegree.style.se.unevaluated.Style getStyle( Style dsStyle )
+                                throws MalformedURLException, FactoryConfigurationError, XMLStreamException,
+                                IOException {
+            XMLStreamReader reader = null;
+            if ( dsStyle == null || dsStyle.getNamedStyle() != null ) {
+                return null;
+            } else if ( dsStyle.getExternalStyle() != null ) {
+                URL ex = new URL( dsStyle.getExternalStyle() );
+                XMLInputFactory fac = XMLInputFactory.newInstance();
+                reader = fac.createXMLStreamReader( ex.openStream() );
+            } else if ( dsStyle.getEmbeddedStyle() != null ) {
+                XMLInputFactory fac = XMLInputFactory.newInstance();
+                reader = fac.createXMLStreamReader( new DOMSource( dsStyle.getEmbeddedStyle() ) );
+                nextElement( reader );
+                nextElement( reader );
+            }
+
+            SymbologyParser symbologyParser = SymbologyParser.INSTANCE;
+            return symbologyParser.parse( reader );
+        }
+
     }
 
     class WMSOrderedDatasource extends OrderedDatasource<WMSDatasource> {
@@ -685,7 +737,6 @@ public class WMSContentProvider implements JrxmlContentProvider {
             try {
                 URLConnection conn = new URL( request ).openConnection();
                 is = conn.getInputStream();
-                System.out.println( conn.getContentType() );
 
                 if ( LOG.isDebugEnabled() ) {
                     File logFile = File.createTempFile( "loadedImg", "response" );
@@ -732,6 +783,17 @@ public class WMSContentProvider implements JrxmlContentProvider {
                                 throws ProcessletException {
             List<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
             for ( Layer layer : layers ) {
+
+                try {
+                    org.deegree.style.se.unevaluated.Style style = getStyle( layer.getStyle() );
+                    if ( style != null ) {
+
+                    }
+                } catch ( Exception e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
                 String legendUrl = getLegendUrl( layer );
                 LOG.debug( "Try to load legend image: " + legendUrl );
                 String layerName = layer.getName();
@@ -780,8 +842,49 @@ public class WMSContentProvider implements JrxmlContentProvider {
         @Override
         BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
                                 throws ProcessletException {
-            // TODO Auto-generated method stub
-            return null;
+            try {
+                String capURL = datasource.getUrl() + "?service=WFS&request=GetCapabilities&version="
+                                + datasource.getVersion();
+                WFSClient wfsClient = new WFSClient( new URL( capURL ) );
+
+                StreamFeatureCollection features = wfsClient.getFeatures( new QName(
+                                                                                     datasource.getFeatureType().getValue(),
+                                                                                     datasource.getFeatureType().getValue() ) );
+
+                BufferedImage image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+                Graphics2D g = image.createGraphics();
+                Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox /* pixelSize */);
+
+                // TODO
+                // XMLInputFactory fac = XMLInputFactory.newInstance();
+                // XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( datasource.getFilter() ) );
+                // nextElement( reader );
+                // nextElement( reader );
+                // Filter filter = Filter110XMLDecoder.parse( reader );
+                // reader.close();
+
+                org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
+                if ( style != null && features != null ) {
+                    Feature feature = null;
+                    while ( ( feature = features.read() ) != null ) {
+                        LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate = style.evaluate( feature,
+                                                                                                             new FeatureXPathEvaluator(
+                                                                                                                                        GMLVersion.GML_32 ) );
+                        for ( Triple<Styling, LinkedList<Geometry>, String> triple : evaluate ) {
+                            for ( Geometry geom : triple.second ) {
+                                renderer.render( triple.first, geom );
+                            }
+                        }
+                    }
+                }
+                g.dispose();
+                return image;
+            } catch ( Exception e ) {
+                String msg = "could nor create image from wfs datasource " + datasource.getName() + ":  "
+                             + e.getMessage();
+                LOG.error( msg, e );
+                throw new ProcessletException( msg );
+            }
         }
 
         @Override
@@ -793,8 +896,19 @@ public class WMSContentProvider implements JrxmlContentProvider {
 
         @Override
         public List<Pair<String, BufferedImage>> getLegends() {
-            // TODO Auto-generated method stub
-            return null;
+            ArrayList<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
+
+            BufferedImage legend = null;
+            String name = datasource.getName() != null ? datasource.getName() : datasource.getUrl();
+            try {
+                org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
+                URL legendURL = style.getLegendURL();
+                legend = ImageIO.read( legendURL );
+            } catch ( Exception e ) {
+                LOG.debug( "Could not create legend for wfs datasource '{}': {}", name, e.getMessage() );
+            }
+            legends.add( new Pair<String, BufferedImage>( name, legend ) );
+            return legends;
         }
 
     }
