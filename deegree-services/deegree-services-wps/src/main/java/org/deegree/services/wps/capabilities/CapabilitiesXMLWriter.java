@@ -212,7 +212,7 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
         operations.add( new OWSOperation( "DescribeProcess", dcp, params, constraints ) );
         operations.add( new OWSOperation( "Execute", dcp, params, constraints ) );
 
-        exportOperationsMetadata110( writer, operations, null );
+        exportOperationsMetadata110( writer, operations, null, null );
     }
 
     private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType ident )
@@ -225,8 +225,8 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
             List<String> title = ident.getTitle();
             writeElement( writer, OWS_NS, "Title", title.isEmpty() ? "deegree 3 WPS" : title.get( 0 ) );
             List<String> _abstract = ident.getAbstract();
-            writeElement( writer, OWS_NS, "Abstract", _abstract.isEmpty() ? "deegree 3 WPS implementation"
-                                                                         : _abstract.get( 0 ) );
+            writeElement( writer, OWS_NS, "Abstract",
+                          _abstract.isEmpty() ? "deegree 3 WPS implementation" : _abstract.get( 0 ) );
         }
         writeElement( writer, OWS_NS, "ServiceType", "WPS" );
         writeElement( writer, OWS_NS, "ServiceTypeVersion", "1.0.0" );

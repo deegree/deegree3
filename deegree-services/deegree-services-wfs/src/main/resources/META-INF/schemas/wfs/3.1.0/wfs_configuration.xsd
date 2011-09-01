@@ -11,7 +11,6 @@
   <element name="deegreeWFS">
     <complexType>
       <sequence>
-        <element name="FeatureStoreId" type="string" minOccurs="0" maxOccurs="unbounded" />      
         <element name="SupportedVersions" minOccurs="0">
           <complexType>
             <sequence>
@@ -19,13 +18,32 @@
             </sequence>
           </complexType>
         </element>
+        <element name="FeatureStoreId" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
         <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
-        <element name="QueryCRS" type="string" minOccurs="0" maxOccurs="unbounded" default="EPSG:4326" />
+        <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
         <element ref="wfs:AbstractFormat" minOccurs="0" maxOccurs="unbounded" />
         <element ref="wfs:FeatureTypeMetadata" minOccurs="0" maxOccurs="unbounded" />
+        <element name="ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <any processContents="lax">
+                <annotation>
+                  <appinfo>
+                    <jaxb:dom />
+                  </appinfo>
+                </annotation>
+              </any>
+            </sequence>
+            <attribute name="wfsVersions">
+              <simpleType>
+                <list itemType="wfs:WFSVersionType" />
+              </simpleType>
+            </attribute>
+          </complexType>
+        </element>
       </sequence>
       <attribute name="configVersion" use="required">
         <simpleType>

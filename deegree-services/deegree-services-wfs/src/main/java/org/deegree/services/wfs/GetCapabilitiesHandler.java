@@ -94,9 +94,10 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 /**
- * Handles {@link GetCapabilities} requests for the {@link WebFeatureService}.
+ * Handles a single {@link GetCapabilities} requests for the {@link WebFeatureService}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -120,33 +121,35 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
     }
 
-    private Version version;
+    private final Version version;
 
-    private XMLStreamWriter writer;
+    private final XMLStreamWriter writer;
 
-    private ServiceIdentificationType serviceId;
+    private final ServiceIdentificationType serviceId;
 
-    private ServiceProviderType serviceProvider;
+    private final ServiceProviderType serviceProvider;
 
-    private Collection<FeatureType> servedFts;
+    private final Collection<FeatureType> servedFts;
 
-    private Map<QName, FeatureTypeMetadata> ftNameToFtMetadata;
+    private final Map<QName, FeatureTypeMetadata> ftNameToFtMetadata;
 
-    private Set<String> sections;
+    private final Set<String> sections;
 
-    private boolean enableTransactions;
+    private final boolean enableTransactions;
 
-    private List<ICRS> querySRS;
+    private final List<ICRS> querySRS;
 
-    private WFSFeatureStoreManager service;
+    private final WFSFeatureStoreManager service;
 
-    private WebFeatureService master;
+    private final WebFeatureService master;
+
+    private final Element extendedCapabilities;
 
     GetCapabilitiesHandler( WebFeatureService master, WFSFeatureStoreManager service, Version version,
                             XMLStreamWriter xmlWriter, ServiceIdentificationType serviceId,
                             ServiceProviderType serviceProvider, Collection<FeatureType> servedFts,
                             Map<QName, FeatureTypeMetadata> ftNameToFtMetadata, Set<String> sections,
-                            boolean enableTransactions, List<ICRS> querySRS ) {
+                            boolean enableTransactions, List<ICRS> querySRS, Element extendedCapabilities ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -158,6 +161,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.sections = sections;
         this.enableTransactions = enableTransactions;
         this.querySRS = querySRS;
+        this.extendedCapabilities = extendedCapabilities;
     }
 
     /**
@@ -553,7 +557,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
             // TODO
 
-            exportOperationsMetadata100( writer, operations );
+            exportOperationsMetadata100( writer, operations, extendedCapabilities );
         }
 
         // wfs:FeatureTypeList
@@ -760,23 +764,23 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             operations.add( new OWSOperation( WFSRequestType.GetFeature.name(), dcp, params, constraints ) );
 
             // TODO other operations
-            List<Pair<String,String>> profileConstraints = new ArrayList<Pair<String,String>>();
-            profileConstraints.add( new Pair<String,String> ("ImplementsBasicWFS", "TRUE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsTransactionalWFS", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsLockingWFS", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("KVPEncoding", "TRUE"));
-            profileConstraints.add( new Pair<String,String> ("XMLEncoding", "TRUE"));
-            profileConstraints.add( new Pair<String,String> ("SOAPEncoding", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsInheritance", "TRUE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsRemoteResolve", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsResultPaging", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsStandardJoins", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsSpatialJoins", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsTemporalJoins", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("ImplementsFeatureVersioning", "FALSE"));
-            profileConstraints.add( new Pair<String,String> ("ManageStoredQueries", "FALSE"));
+            List<Pair<String, String>> profileConstraints = new ArrayList<Pair<String, String>>();
+            profileConstraints.add( new Pair<String, String>( "ImplementsBasicWFS", "TRUE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsTransactionalWFS", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsLockingWFS", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "KVPEncoding", "TRUE" ) );
+            profileConstraints.add( new Pair<String, String>( "XMLEncoding", "TRUE" ) );
+            profileConstraints.add( new Pair<String, String>( "SOAPEncoding", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsInheritance", "TRUE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsRemoteResolve", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsResultPaging", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsStandardJoins", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsSpatialJoins", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsTemporalJoins", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "ImplementsFeatureVersioning", "FALSE" ) );
+            profileConstraints.add( new Pair<String, String>( "ManageStoredQueries", "FALSE" ) );
 
-            exportOperationsMetadata110( writer, operations, profileConstraints );
+            exportOperationsMetadata110( writer, operations, profileConstraints, extendedCapabilities );
         }
 
         // wfs:WSDL

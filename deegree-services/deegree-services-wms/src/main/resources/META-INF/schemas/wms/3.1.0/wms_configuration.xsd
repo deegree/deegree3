@@ -33,7 +33,6 @@
   <element name="deegreeWMS">
     <complexType>
       <sequence>
-        <element name="ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded" type="anyType" />
         <element name="SupportedVersions" minOccurs="0">
           <complexType>
             <sequence>
@@ -48,6 +47,19 @@
         <element name="MetadataServiceURL" minOccurs="0" type="string" />
         <element name="ServiceConfiguration" type="wms:ServiceConfigurationType" />
         <element name="FeatureInfoFormats" minOccurs="0" type="wms:FeatureInfoFormatsType" />
+        <element name="ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <any processContents="lax">
+                <annotation>
+                  <appinfo>
+                    <jaxb:dom />
+                  </appinfo>
+                </annotation>
+              </any>
+            </sequence>
+          </complexType>
+        </element>
       </sequence>
       <attribute name="configVersion" use="required" type="wms:ConfigVersionType" />
     </complexType>

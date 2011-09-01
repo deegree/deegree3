@@ -37,11 +37,16 @@ package org.deegree.services.controller.ows.capabilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.AddressType;
@@ -53,6 +58,7 @@ import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 /**
  * Provides methods for exporting
@@ -213,10 +219,14 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            writer to append the xml, must not be <code>null</code>
      * @param operations
      *            operations, e.g. "GetCapabilities", must not be <code>null</code>
+     * @param extendedCapabilities
+     *            extended capabilities, can be <code>null</code>
      * @throws XMLStreamException
      */
-    public static void exportOperationsMetadata100( XMLStreamWriter writer, List<OWSOperation> operations )
+    public static void exportOperationsMetadata100( XMLStreamWriter writer, List<OWSOperation> operations,
+                                                    Element extendedCapabilities )
                             throws XMLStreamException {
+
         writer.writeStartElement( OWS_NS, "OperationsMetadata" );
 
         for ( OWSOperation operation : operations ) {
@@ -247,6 +257,13 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
             writer.writeEndElement();
         }
 
+        if ( extendedCapabilities != null ) {
+            DOMSource domSource = new DOMSource( extendedCapabilities );
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
+            XMLStreamUtils.skipStartDocument( reader );
+            XMLAdapter.writeElement( writer, reader );
+        }
+
         writer.writeEndElement();
     }
 
@@ -257,10 +274,13 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            writer to append the xml, must not be <code>null</code>
      * @param operations
      *            operations, e.g. "GetCapabilities", must not be <code>null</code>
+     * @param extendedCapabilities
+     *            extended capabilities, can be <code>null</code>
      * @throws XMLStreamException
      */
     public static void exportOperationsMetadata110( XMLStreamWriter writer, List<OWSOperation> operations,
-                                                    List<Pair<String,String>> profileConstraints )
+                                                    List<Pair<String, String>> profileConstraints,
+                                                    Element extendedCapabilities )
                             throws XMLStreamException {
         writer.writeStartElement( OWS110_NS, "OperationsMetadata" );
 
@@ -299,15 +319,22 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         }
 
         if ( profileConstraints != null ) {
-            for ( Pair<String,String> constraint : profileConstraints ) {
+            for ( Pair<String, String> constraint : profileConstraints ) {
                 writer.writeStartElement( OWS110_NS, "Constraint" );
-                writer.writeAttribute( "name", constraint.first );                
+                writer.writeAttribute( "name", constraint.first );
                 writer.writeEmptyElement( OWS110_NS, "NoValues" );
                 writer.writeStartElement( OWS110_NS, "DefaultValue" );
                 writer.writeCharacters( constraint.second );
                 writer.writeEndElement();
                 writer.writeEndElement();
             }
+        }
+
+        if ( extendedCapabilities != null ) {
+            DOMSource domSource = new DOMSource( extendedCapabilities );
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
+            XMLStreamUtils.skipStartDocument( reader );
+            XMLAdapter.writeElement( writer, reader );
         }
 
         writer.writeEndElement();

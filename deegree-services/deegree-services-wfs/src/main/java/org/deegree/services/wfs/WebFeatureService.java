@@ -142,12 +142,14 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.AbstractFormatType;
 import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service</a> server
@@ -205,6 +207,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean checkAreaOfUse;
 
+    private final Map<Version, Element> wfsVersionToExtendedCaps = new HashMap<Version, Element>();
+
     public WebFeatureService( URL configURL, ImplementationMetadata serviceInfo ) {
         super( configURL, serviceInfo );
     }
@@ -230,6 +234,21 @@ public class WebFeatureService extends AbstractOWS {
         maxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
                                                               : jaxbConfig.getQueryMaxFeatures().intValue();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
+
+        List<ExtendedCapabilities> extendedCapConfigs = jaxbConfig.getExtendedCapabilities();
+        if ( extendedCapConfigs != null ) {
+            for ( ExtendedCapabilities extendedCapConfig : extendedCapConfigs ) {
+                Element extendedCaps = extendedCapConfig.getAny();
+                for ( String wfsVersion : extendedCapConfig.getWfsVersions() ) {
+                    Version version = Version.parseVersion( wfsVersion );
+                    if ( wfsVersionToExtendedCaps.containsKey( version ) ) {
+                        String msg = "Multiple ExtendedCapabilities sections for WFS version: " + version + ".";
+                        throw new ResourceInitException( msg );
+                    }
+                    wfsVersionToExtendedCaps.put( version, extendedCaps );
+                }
+            }
+        }
 
         // fill metadata map
         for ( FeatureTypeMetadata ftMd : jaxbConfig.getFeatureTypeMetadata() ) {
@@ -481,8 +500,7 @@ public class WebFeatureService extends AbstractOWS {
         } catch ( Throwable e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
-            sendServiceException110( new OWSException( e.getMessage(), NO_APPLICABLE_CODE ),
-                                     response );
+            sendServiceException110( new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }
     }
 
@@ -759,10 +777,11 @@ public class WebFeatureService extends AbstractOWS {
         }
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
+        Element extendedCapabilities = wfsVersionToExtendedCaps.get( negotiatedVersion );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      serviceId, serviceProvider, sortedFts,
                                                                      ftNameToFtMetadata, sectionsUC,
-                                                                     enableTransactions, queryCRS );
+                                                                     enableTransactions, queryCRS, extendedCapabilities );
         adapter.export();
         xmlWriter.flush();
     }

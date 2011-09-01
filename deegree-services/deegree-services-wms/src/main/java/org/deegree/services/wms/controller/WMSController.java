@@ -135,6 +135,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
+import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
@@ -149,6 +150,7 @@ import org.deegree.services.wms.controller.plugins.XSLTFeatureInfoSerializer;
 import org.deegree.services.wms.controller.security.WMSSecurityManager;
 import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;
+import org.w3c.dom.Element;
 
 /**
  * <code>WMSController</code> handles the protocol and map service globally.
@@ -189,7 +191,7 @@ public class WMSController extends AbstractOWS {
 
     private Version highestVersion;
 
-    private List<Object> extendedCaps;
+    private List<Element> extendedCaps;
 
     private String metadataURL;
 
@@ -288,7 +290,12 @@ public class WMSController extends AbstractOWS {
 
         DeegreeWMS conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
-        this.extendedCaps = conf.getExtendedCapabilities();
+        if ( conf.getExtendedCapabilities() != null ) {
+            this.extendedCaps = new ArrayList<Element>( conf.getExtendedCapabilities().size() );
+            for ( ExtendedCapabilities extendedCapsConf : conf.getExtendedCapabilities() ) {
+                extendedCaps.add( extendedCapsConf.getAny() );
+            }
+        }
 
         try {
             // put in the default formats
@@ -848,7 +855,7 @@ public class WMSController extends AbstractOWS {
         return new Pair<XMLExceptionSerializer<OWSException>, String>( controller.EXCEPTIONS, controller.EXCEPTION_MIME );
     }
 
-    public List<Object> getExtendedCapabilities() {
+    public List<Element> getExtendedCapabilities() {
         return extendedCaps;
     }
 

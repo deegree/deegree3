@@ -64,6 +64,7 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
@@ -162,15 +163,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
     }
 
     private void writeExtendedCapabilities( XMLStreamWriter writer ) {
-        List<Object> caps = controller.getExtendedCapabilities();
+        List<Element> caps = controller.getExtendedCapabilities();
         if ( caps != null ) {
             XMLInputFactory fac = XMLInputFactory.newInstance();
-            for ( Object c : caps ) {
+            for ( Element c : caps ) {
                 try {
-                    Element node = (Element) c;
-                    node = (Element) node.getChildNodes().item( 0 );
-                    XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( node ) );
-                    reader.next();
+                    XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( c ) );
+                    XMLStreamUtils.skipStartDocument( reader );
                     XMLAdapter.writeElement( writer, reader );
                 } catch ( Throwable e ) {
                     LOG.warn( "Could not export extended capabilities snippet" );
