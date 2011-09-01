@@ -138,10 +138,6 @@ public class MapContentProvider implements JrxmlContentProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( MapContentProvider.class );
 
-    enum DATASOURCE {
-        WMS, WFS
-    }
-
     final static String SCHEMA = "http://www.deegree.org/processprovider/map";
 
     final static String MIME_TYPE = "text/xml";
