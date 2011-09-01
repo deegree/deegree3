@@ -37,6 +37,7 @@ package org.deegree.protocol.wps.client;
 
 import static com.vividsolutions.jts.io.gml2.GMLConstants.GML_NAMESPACE;
 import static com.vividsolutions.jts.io.gml2.GMLConstants.GML_PREFIX;
+import static java.util.Collections.EMPTY_LIST;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.junit.Assert.assertEquals;
 
@@ -54,7 +55,6 @@ import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.metadata.ContactInfo;
 import org.deegree.protocol.ows.metadata.Operation;
@@ -615,12 +615,13 @@ public class WPSClientTest {
     // response.getOutputs()[0].getDataType();
     // }
 
+    @SuppressWarnings("unchecked")
     @Test(expected = OWSExceptionReport.class)
     public void testFailedExecute()
                             throws Exception {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         if ( demoWPSURL == null ) {
-            throw new OWSException( null, null );
+            throw new OWSExceptionReport( EMPTY_LIST, null, null );
         }
         WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         Process proc = wpsClient.getProcess( "Centroid", null );
