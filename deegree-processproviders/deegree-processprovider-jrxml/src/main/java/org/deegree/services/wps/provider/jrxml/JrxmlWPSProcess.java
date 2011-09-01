@@ -51,7 +51,7 @@ import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.jrxml.contentprovider.ImageContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvider;
-import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +79,7 @@ public class JrxmlWPSProcess implements WPSProcess {
      * @param file
      */
     public JrxmlWPSProcess( String processId, URL jrxml ) {
-        contentProviders.add( new WMSContentProvider() );
+        contentProviders.add( new MapContentProvider() );
         contentProviders.add( new ImageContentProvider() );
         contentProviders.add( new OtherContentProvider() );
         try {

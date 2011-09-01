@@ -39,8 +39,8 @@ import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.MIME_TYPE;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.SCHEMA;
+import static org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider.MIME_TYPE;
+import static org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider.SCHEMA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -83,8 +83,8 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInputImpl;
 import org.deegree.services.wps.input.EmbeddedComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
-import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.OrderedDatasource;
-import org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider.WMSOrderedDatasource;
+import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider.OrderedDatasource;
+import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider.WMSOrderedDatasource;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.junit.Test;
 
@@ -95,23 +95,23 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class TestWMSContentProviderTest {
+public class TestMapContentProviderTest {
 
     /**
      * Test method for
-     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider#inspectInputParametersFromJrxml(java.util.List, java.util.List, java.util.List)}
+     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider#inspectInputParametersFromJrxml(java.util.List, java.util.List, java.util.List)}
      * .
      */
     @Test
     public void testInspectInputParametersFromJrxml() {
-        WMSContentProvider wmsContentProvider = new WMSContentProvider();
+        MapContentProvider wmsContentProvider = new MapContentProvider();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put( "wmsMAP_map", "java.lang.String" );
         parameters.put( "wmsMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         List<JAXBElement<? extends ProcessletInputDefinition>> inputs = new ArrayList<JAXBElement<? extends ProcessletInputDefinition>>();
         XMLAdapter adapter = new XMLAdapter(
-                                             TestWMSContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" ) );
+                                             TestMapContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
         wmsContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
 
@@ -125,7 +125,7 @@ public class TestWMSContentProviderTest {
 
     /**
      * Test method for
-     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
+     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
      * .
      * 
      * @throws URISyntaxException
@@ -138,10 +138,10 @@ public class TestWMSContentProviderTest {
     public void testPrepareJrxmlAndReadInputParameters()
                             throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
                             ProcessletException {
-        WMSContentProvider wmsContentProvider = new WMSContentProvider();
+        MapContentProvider wmsContentProvider = new MapContentProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
-        InputStream jrxml = TestWMSContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" );
+        InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" );
         Map<String, Object> params = new HashMap<String, Object>();
         List<ProcessletInput> inputs = new ArrayList<ProcessletInput>();
         ProcessletInputs in = new ProcessletInputs( inputs );
@@ -164,7 +164,7 @@ public class TestWMSContentProviderTest {
         StreamBufferStore store = new StreamBufferStore( 1024, f );
 
         // LOG.debug( "Storing embedded ComplexInput as XML" );
-        InputStream complexInput = TestWMSContentProviderTest.class.getResourceAsStream( "complexInput" );
+        InputStream complexInput = TestMapContentProviderTest.class.getResourceAsStream( "complexInput" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( complexInput );
         XMLStreamWriter xmlWriter = null;
         try {
@@ -220,7 +220,7 @@ public class TestWMSContentProviderTest {
 
     /**
      * Test method for
-     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.WMSContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
+     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
      * .
      * 
      * @throws URISyntaxException
@@ -233,10 +233,10 @@ public class TestWMSContentProviderTest {
     public void testPrepareJrxmlAndReadInputParametersWFS()
                             throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
                             ProcessletException {
-        WMSContentProvider wmsContentProvider = new WMSContentProvider();
+        MapContentProvider wmsContentProvider = new MapContentProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
-        InputStream jrxml = TestWMSContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" );
+        InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" );
         Map<String, Object> params = new HashMap<String, Object>();
         List<ProcessletInput> inputs = new ArrayList<ProcessletInput>();
         ProcessletInputs in = new ProcessletInputs( inputs );
@@ -259,7 +259,7 @@ public class TestWMSContentProviderTest {
         StreamBufferStore store = new StreamBufferStore( 1024, f );
 
         // LOG.debug( "Storing embedded ComplexInput as XML" );
-        InputStream complexInput = TestWMSContentProviderTest.class.getResourceAsStream( "complexInputWFS" );
+        InputStream complexInput = TestMapContentProviderTest.class.getResourceAsStream( "complexInputWFS" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( complexInput );
         XMLStreamWriter xmlWriter = null;
         try {
@@ -310,11 +310,11 @@ public class TestWMSContentProviderTest {
     @Test
     public void testAnaylizeRequestOrder()
                             throws JAXBException, IOException {
-        WMSContentProvider wmsContentProvider = new WMSContentProvider();
+        MapContentProvider wmsContentProvider = new MapContentProvider();
 
         JAXBContext jc = JAXBContext.newInstance( org.deegree.services.wps.provider.jrxml.jaxb.map.Map.class );
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        InputStream is = TestWMSContentProviderTest.class.getResourceAsStream( "mapDescription.xml" );
+        InputStream is = TestMapContentProviderTest.class.getResourceAsStream( "mapDescription.xml" );
         org.deegree.services.wps.provider.jrxml.jaxb.map.Map map = (org.deegree.services.wps.provider.jrxml.jaxb.map.Map) unmarshaller.unmarshal( is );
 
         List<OrderedDatasource<?>> anaylizeRequestOrder = wmsContentProvider.anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );
@@ -355,11 +355,11 @@ public class TestWMSContentProviderTest {
     @Test
     public void testAnaylizeRequestOrderSimple()
                             throws JAXBException, IOException {
-        WMSContentProvider wmsContentProvider = new WMSContentProvider();
+        MapContentProvider wmsContentProvider = new MapContentProvider();
 
         JAXBContext jc = JAXBContext.newInstance( org.deegree.services.wps.provider.jrxml.jaxb.map.Map.class );
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        InputStream is = TestWMSContentProviderTest.class.getResourceAsStream( "mapDescription_simple.xml" );
+        InputStream is = TestMapContentProviderTest.class.getResourceAsStream( "mapDescription_simple.xml" );
         org.deegree.services.wps.provider.jrxml.jaxb.map.Map map = (org.deegree.services.wps.provider.jrxml.jaxb.map.Map) unmarshaller.unmarshal( is );
 
         List<OrderedDatasource<?>> anaylizeRequestOrder = wmsContentProvider.anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );

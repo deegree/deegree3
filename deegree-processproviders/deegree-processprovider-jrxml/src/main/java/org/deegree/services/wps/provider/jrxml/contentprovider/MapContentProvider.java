@@ -134,9 +134,9 @@ import com.sun.media.jai.codec.SeekableStream;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WMSContentProvider implements JrxmlContentProvider {
+public class MapContentProvider implements JrxmlContentProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WMSContentProvider.class );
+    private static final Logger LOG = LoggerFactory.getLogger( MapContentProvider.class );
 
     enum DATASOURCE {
         WMS, WFS
