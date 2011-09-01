@@ -72,6 +72,9 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.StoredQuery;
 
 /**
  * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
@@ -217,7 +220,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
 
-        return new GetFeature( VERSION_100, handle, resultType, outputFormat, maxFeatures, null, null, queryArray );
+        return new GetFeature( VERSION_100, handle, null, maxFeatures, outputFormat, resultType, null, null, null,
+                               queryArray );
     }
 
     /**
@@ -251,9 +255,9 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         String traverseXlinkExpiryStr = getNodeAsString( rootElement, new XPath( "@traverseXlinkExpiry", nsContext ),
                                                          null );
-        Integer traverseXlinkExpiry = null;
+        Integer resolveTimout = null;
         if ( traverseXlinkExpiryStr != null ) {
-            traverseXlinkExpiry = Integer.parseInt( traverseXlinkExpiryStr );
+            resolveTimout = Integer.parseInt( traverseXlinkExpiryStr ) * 60;
         }
 
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
@@ -383,8 +387,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
 
-        return new GetFeature( VERSION_110, handle, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
-                               traverseXlinkExpiry, queryArray );
+        return new GetFeature( VERSION_110, handle, null, maxFeatures, outputFormat, resultType, null,
+                               traverseXlinkDepth, resolveTimout, queryArray );
     }
 
     /**
@@ -447,7 +451,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             resolveTimeoutInt = resolveTimeout.intValue();
         }
 
-        return new GetFeature( VERSION_200, handle, resultType, outputFormat, countInt, resolveDepth,
+        return new GetFeature( VERSION_200, handle, null, countInt, outputFormat, resultType, null, resolveDepth,
                                resolveTimeoutInt, queryArray );
     }
 

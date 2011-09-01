@@ -274,11 +274,13 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            writer to append the xml, must not be <code>null</code>
      * @param operations
      *            operations, e.g. "GetCapabilities", must not be <code>null</code>
+     * @param globalParams
      * @param extendedCapabilities
      *            extended capabilities, can be <code>null</code>
      * @throws XMLStreamException
      */
     public static void exportOperationsMetadata110( XMLStreamWriter writer, List<OWSOperation> operations,
+                                                    List<Pair<String, List<String>>> globalParams,
                                                     List<Pair<String, String>> profileConstraints,
                                                     Element extendedCapabilities )
                             throws XMLStreamException {
@@ -316,6 +318,25 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
                 writer.writeEndElement();
             }
             writer.writeEndElement();
+        }
+
+        if ( globalParams != null ) {
+            for ( Pair<String, List<String>> param : globalParams ) {
+                writer.writeStartElement( OWS110_NS, "Parameter" );
+                writer.writeAttribute( "name", param.first );
+                if ( param.second.isEmpty() ) {
+                    writer.writeEmptyElement( OWS110_NS, "AnyValue" );
+                } else {
+                    writer.writeStartElement( OWS110_NS, "AllowedValues" );
+                    for ( String value : param.second ) {
+                        writer.writeStartElement( OWS110_NS, "Value" );
+                        writer.writeCharacters( value );
+                        writer.writeEndElement();
+                    }
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
+            }
         }
 
         if ( profileConstraints != null ) {

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,128 +32,158 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
+import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
+import org.deegree.protocol.wfs.query.Query;
 
 /**
  * Represents a <code>GetFeature</code> request to a WFS.
- *
+ * 
  * @see Query
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class GetFeature extends AbstractWFSRequest {
 
-    private ResultType resultType;
-
-    private String outputFormat;
+    // using Integer instead of int here, so it can be null (unspecified)
+    private final Integer startIndex;
 
     // using Integer instead of int here, so it can be null (unspecified)
-    private Integer maxFeatures;
+    private final Integer count;
+
+    private final String outputFormat;
+
+    private final ResultType resultType;
+
+    private final ResolveMode resolveMode;
 
     // positive Integer, "*" (unlimited) or null (unspecified)
-    private String traverseXlinkDepth;
+    private final String resolveDepth;
 
     // using Integer instead of int here, so it can be null (unspecified)
-    private Integer traverseXlinkExpiry;
+    private final Integer resolveTimeout;
 
-    private Query[] queries;
+    private final Query[] queries;
 
     /**
      * Creates a new {@link GetFeature} request.
-     *
+     * 
      * @param version
-     *            protocol version, may not be null
+     *            protocol version, must not be <code>null</code>
      * @param handle
-     *            client-generated identifier, may be null
-     * @param resultType
-     *            query mode (result or hits), may be null
+     *            client-generated identifier, may be <code>null</code>
+     * @param startIndex
+     *            index within the result set from which the server shall begin returning results, non-negative integer
+     *            or <code>null</code> (unspecified)
+     * @param count
+     *            limits the number of returned results, non-negative integer or <code>null</code> (unspecified)
      * @param outputFormat
-     *            requested output format, may be null
-     * @param maxFeatures
-     *            maximum number of features that should be generated (positive integer), may be null
-     * @param traverseXlinkDepth
-     *            the depth to which nested property XLink linking element locator attribute (href) XLinks are traversed
-     *            and resolved if possible, the range of valid values for this parameter consists of positive integers,
-     *            "*" (unlimited) and null (unspecified)
-     * @param traverseXlinkExpiry
-     *            indicates how long the WFS should wait to receive a response to a nested GetGmlObject request (in
-     *            minutes), this attribute is only relevant if a value is specified for the traverseXlinkDepth
-     *            attribute, may be null
+     *            requested output format, may be <code>null</code> (unspecified)
+     * @param resultType
+     *            query response mode (result or hits), may be <code>null</code> (unspecified)
+     * @param resolveMode
+     *            mode for resolving resource references in the output, may be <code>null</code> (unspecified)
+     * @param resolveDepth
+     *            depth to which nested resource references shall be resolved in the response document, range of valid
+     *            values for this parameter consists of positive integers, "*" (unlimited) and <code>null</code>
+     *            (unspecified)
+     * @param resolveTimeout
+     *            number of seconds to allow for resolving resource references, may be <code>null</code> (unspecified)
      * @param queries
-     *            the queries to be performed in the request, must not be null and must contain at least one entry
+     *            the queries to be performed in the request, must not be <code>null</code> and must contain at least
+     *            one entry
      */
-    public GetFeature( Version version, String handle, ResultType resultType, String outputFormat, Integer maxFeatures,
-                       String traverseXlinkDepth, Integer traverseXlinkExpiry, Query[] queries ) {
+    public GetFeature( Version version, String handle, Integer startIndex, Integer count, String outputFormat,
+                       ResultType resultType, ResolveMode resolveMode, String resolveDepth, Integer resolveTimeout,
+                       Query[] queries ) {
         super( version, handle );
-        this.resultType = resultType;
+        this.startIndex = startIndex;
+        this.count = count;
         this.outputFormat = outputFormat;
-        this.maxFeatures = maxFeatures;
-        this.traverseXlinkDepth = traverseXlinkDepth;
-        this.traverseXlinkExpiry = traverseXlinkExpiry;
+        this.resultType = resultType;
+        this.resolveMode = resolveMode;
+        this.resolveDepth = resolveDepth;
+        this.resolveTimeout = resolveTimeout;
         this.queries = queries;
     }
 
     /**
-     * Returns the requested query mode (result or hits).
-     *
-     * @return the requested query mode, or null if unspecified
+     * Returns the index within the result set from which the server shall begin returning results.
+     * 
+     * @return index within the result set from which the server shall begin returning results (non-negative integer),
+     *         can be <code>null</code> (unspecified)
      */
-    public ResultType getResultType() {
-        return resultType;
+    public Integer getStartIndex() {
+        return startIndex;
+    }
+
+    /**
+     * Returns the limit for the number of returned results.
+     * 
+     * @return limit for the number of returned results (non-negative integer), can be <code>null</code> (unspecified)
+     */
+    public Integer getCount() {
+        return count;
     }
 
     /**
      * Returns the requested output format.
-     *
-     * @return the requested output format, or null if unspecified
+     * 
+     * @return requested output format, or <code>null</code> if unspecified
      */
     public String getOutputFormat() {
         return outputFormat;
     }
 
     /**
-     * Returns the maximum number of features that should be generated.
-     *
-     * @return the maximum number of features (positive integer), or null if unspecified
+     * Returns the requested query mode (result or hits).
+     * 
+     * @return requested query mode, or <code>null</code> (unspecified)
      */
-    public Integer getMaxFeatures() {
-        return maxFeatures;
+    public ResultType getResultType() {
+        return resultType;
     }
 
     /**
-     * Returns the depth to which nested property XLink linking element locator attribute (href) XLinks are traversed
-     * and resolved if possible. The range of valid values for this parameter consists of positive integers, "*"
-     * (unlimited) and null (unspecified).
-     *
-     * @return the depth (positive integer), "*" (unlimited) or null (unspecified)
+     * Returns the mode for resolving resource references in the output.
+     * 
+     * @return resolve mode, can be <code>null</code> (unspecified)
      */
-    public String getTraverseXlinkDepth() {
-        return traverseXlinkDepth;
+    public ResolveMode getResolveMode() {
+        return resolveMode;
     }
 
     /**
-     * Return the number of minutes that the WFS should wait to receive a response to a nested <code>GetGmlObject</code> request.
-     * This is only relevant if a value is specified for the <code>traverseXlinkDepth</code> parameter.
-     *
-     * @return the number of minutes to wait for nested <code>GetGmlObject</code> responses (positive integer) or null (unspecified)
+     * Returns the depth to which nested resource references shall be resolved in the response document.
+     * 
+     * @return depth (positive integer), "*" (unlimited) or <code>null</code> (unspecified)
      */
-    public Integer getTraverseXlinkExpiry() {
-        return traverseXlinkExpiry;
+    public String getResolveDepth() {
+        return resolveDepth;
+    }
+
+    /**
+     * Return the number of number of seconds to allow for resolving resource references.
+     * 
+     * @return number of seconds to allow for reference resolving, positive integer or <code>null</code> (unspecified)
+     */
+    public Integer getResolveTimeout() {
+        return resolveTimeout;
     }
 
     /**
      * The queries to be performed in the request.
-     *
-     * @return the queries to be performed, never null and must contain at least one entry
+     * 
+     * @return the queries to be performed, never <code>null</code> and must contain at least one entry
      */
-    public Query [] getQueries () {
+    public Query[] getQueries() {
         return queries;
     }
 }

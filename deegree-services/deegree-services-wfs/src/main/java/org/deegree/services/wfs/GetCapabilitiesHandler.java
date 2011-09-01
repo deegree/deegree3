@@ -746,24 +746,38 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             params = new ArrayList<Pair<String, List<String>>>();
             params.add( new Pair<String, List<String>>( "AcceptVersions", master.getOfferedVersions() ) );
             params.add( new Pair<String, List<String>>( "AcceptFormats", Collections.singletonList( "text/xml" ) ) );
-            // List<String> sections = new ArrayList<String>();
-            // sections.add( "ServiceIdentification" );
-            // sections.add( "ServiceProvider" );
-            // sections.add( "OperationsMetadata" );
-            // sections.add( "FeatureTypeList" );
-            // sections.add( "Filter_Capabilities" );
-            // params.add( new Pair<String, List<String>>( "Sections", sections ) );
+            List<String> sections = new ArrayList<String>();
+            sections.add( "ServiceIdentification" );
+            sections.add( "ServiceProvider" );
+            sections.add( "OperationsMetadata" );
+            sections.add( "FeatureTypeList" );
+            sections.add( "Filter_Capabilities" );
+            params.add( new Pair<String, List<String>>( "Sections", sections ) );
             constraints = new ArrayList<Pair<String, List<String>>>();
             operations.add( new OWSOperation( WFSRequestType.GetCapabilities.name(), dcp, params, constraints ) );
 
             // GetFeature
             params = new ArrayList<Pair<String, List<String>>>();
-            params.add( new Pair<String, List<String>>( "resultType",
-                                                        Arrays.asList( new String[] { "results", "hits" } ) ) );
             params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+            List<String> resolve = new ArrayList<String>();
+            resolve.add( "none" );
+            resolve.add( "local" );
+            resolve.add( "remote" );
+            resolve.add( "all" );
+            params.add( new Pair<String, List<String>>( "resolve", resolve ) );
             operations.add( new OWSOperation( WFSRequestType.GetFeature.name(), dcp, params, constraints ) );
 
-            // TODO other operations
+            // GetPropertyValue
+            params = new ArrayList<Pair<String, List<String>>>();
+            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+            params.add( new Pair<String, List<String>>( "resolve", resolve ) );
+            operations.add( new OWSOperation( WFSRequestType.GetPropertyValue.name(), dcp, params, constraints ) );
+
+            // global parameter domains
+            List<Pair<String, List<String>>> globalParams = new ArrayList<Pair<String, List<String>>>();
+            // globalParams.add( new Pair<String, List<String>>( "version", master.getOfferedVersions() ) );
+
+            // Service constraints
             List<Pair<String, String>> profileConstraints = new ArrayList<Pair<String, String>>();
             profileConstraints.add( new Pair<String, String>( "ImplementsBasicWFS", "TRUE" ) );
             profileConstraints.add( new Pair<String, String>( "ImplementsTransactionalWFS", "FALSE" ) );
@@ -780,7 +794,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             profileConstraints.add( new Pair<String, String>( "ImplementsFeatureVersioning", "FALSE" ) );
             profileConstraints.add( new Pair<String, String>( "ManageStoredQueries", "FALSE" ) );
 
-            exportOperationsMetadata110( writer, operations, profileConstraints, extendedCapabilities );
+            exportOperationsMetadata110( writer, operations, globalParams, profileConstraints, extendedCapabilities );
         }
 
         // wfs:WSDL

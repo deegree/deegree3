@@ -62,11 +62,11 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
-import org.deegree.protocol.wfs.getfeature.Query;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
 
 /**
  * Adapter between XML <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
@@ -149,9 +149,9 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         String traverseXlinkExpiryStr = getNodeAsString( rootElement, new XPath( "@traverseXlinkExpiry", nsContext ),
                                                          null );
-        Integer traverseXlinkExpiry = null;
+        Integer resolveTimeout = null;
         if ( traverseXlinkExpiryStr != null ) {
-            traverseXlinkExpiry = Integer.parseInt( traverseXlinkExpiryStr );
+            resolveTimeout = Integer.parseInt( traverseXlinkExpiryStr ) * 60;
         }
 
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "wfs:Query", nsContext ) );
@@ -163,7 +163,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
-                                                              getNamespaceContext( propertyNameEl ) );
+                                                                  getNamespaceContext( propertyNameEl ) );
                 propNames.add( propertyName );
             }
 
@@ -172,7 +172,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                  new XPath( "wfs:XlinkPropertyName", nsContext ) );
             for ( OMElement xlinkPropertyEl : xlinkPropertyElements ) {
                 ValueReference xlinkProperty = new ValueReference( xlinkPropertyEl.getText(),
-                                                               getNamespaceContext( xlinkPropertyEl ) );
+                                                                   getNamespaceContext( xlinkPropertyEl ) );
                 String xlinkDepth = getRequiredNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkDepth",
                                                                                          nsContext ) );
                 String xlinkExpiry = getNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkExpiry", nsContext ),
@@ -229,7 +229,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 OMElement propName = getRequiredElement( sortPropertyEl, new XPath( "ogc:PropertyName", nsContext ) );
                 OMElement sortOrder = getElement( sortPropertyEl, new XPath( "SortOrder", nsContext ) );
                 SortProperty sortProp = new SortProperty( new ValueReference( propName.getText(),
-                                                                            getNamespaceContext( propName ) ),
+                                                                              getNamespaceContext( propName ) ),
                                                           sortOrder.getText().equals( "ASC" ) );
                 sortProps.add( sortProp );
             }
@@ -269,8 +269,8 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
 
-        return new GetFeatureWithLock( VERSION_110, handle, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
-                                       traverseXlinkExpiry, queryArray, expiry );
+        return new GetFeatureWithLock( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
+                                       traverseXlinkDepth, resolveTimeout, queryArray, expiry );
     }
 
     public GetFeatureWithLock parse100() {
@@ -295,7 +295,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
-                                                              getNamespaceContext( propertyNameEl ) );
+                                                                  getNamespaceContext( propertyNameEl ) );
                 propNames.add( propertyName );
             }
 
@@ -337,7 +337,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
 
-        return new GetFeatureWithLock( VERSION_100, handle, null, outputFormat, maxFeatures, null, null, queryArray,
-                                       expiry );
+        return new GetFeatureWithLock( VERSION_100, null, null, maxFeatures, outputFormat, null, null, null, null,
+                                       queryArray, expiry );
     }
 }

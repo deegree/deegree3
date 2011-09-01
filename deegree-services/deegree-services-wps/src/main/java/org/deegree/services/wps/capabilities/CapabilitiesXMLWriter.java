@@ -212,7 +212,7 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
         operations.add( new OWSOperation( "DescribeProcess", dcp, params, constraints ) );
         operations.add( new OWSOperation( "Execute", dcp, params, constraints ) );
 
-        exportOperationsMetadata110( writer, operations, null, null );
+        exportOperationsMetadata110( writer, operations, null, null, null );
     }
 
     private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType ident )

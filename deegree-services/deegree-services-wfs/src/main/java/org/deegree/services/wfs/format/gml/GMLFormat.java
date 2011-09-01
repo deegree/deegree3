@@ -101,9 +101,6 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
-import org.deegree.protocol.wfs.getfeature.BBoxQuery;
-import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
@@ -113,6 +110,9 @@ import org.deegree.protocol.wfs.lockfeature.BBoxLock;
 import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
 import org.deegree.protocol.wfs.lockfeature.FilterLock;
 import org.deegree.protocol.wfs.lockfeature.LockOperation;
+import org.deegree.protocol.wfs.query.BBoxQuery;
+import org.deegree.protocol.wfs.query.FeatureIdQuery;
+import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -337,27 +337,27 @@ public class GMLFormat implements Format {
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
         int traverseXLinkDepth = 0;
-        int traverseXLinkExpiry = -1;
+        int resolveTimeout = -1;
         String xLinkTemplate = getObjectXlinkTemplate( request.getVersion(), gmlVersion );
 
         if ( VERSION_110.equals( request.getVersion() ) || VERSION_200.equals( request.getVersion() ) ) {
-            if ( request.getTraverseXlinkDepth() != null ) {
-                if ( "*".equals( request.getTraverseXlinkDepth() ) ) {
+            if ( request.getResolveDepth() != null ) {
+                if ( "*".equals( request.getResolveDepth() ) ) {
                     traverseXLinkDepth = -1;
                 } else {
                     try {
-                        traverseXLinkDepth = Integer.parseInt( request.getTraverseXlinkDepth() );
+                        traverseXLinkDepth = Integer.parseInt( request.getResolveDepth() );
                     } catch ( NumberFormatException e ) {
-                        String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID", request.getTraverseXlinkDepth() );
+                        String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID", request.getResolveDepth() );
                         throw new OWSException( new InvalidParameterValueException( msg ) );
                     }
                 }
             }
-            if ( request.getTraverseXlinkExpiry() != null ) {
-                traverseXLinkExpiry = request.getTraverseXlinkExpiry();
+            if ( request.getResolveTimeout() != null ) {
+                resolveTimeout = request.getResolveTimeout();
                 // needed for CITE 1.1.0 compliance (wfs:GetFeature-traverseXlinkExpiry)
-                if ( traverseXLinkExpiry <= 0 ) {
-                    String msg = Messages.get( "WFS_TRAVERSEXLINKEXPIRY_ZERO", request.getTraverseXlinkDepth() );
+                if ( resolveTimeout <= 0 ) {
+                    String msg = Messages.get( "WFS_TRAVERSEXLINKEXPIRY_ZERO", resolveTimeout );
                     throw new OWSException( new InvalidParameterValueException( msg ) );
                 }
             }
@@ -402,14 +402,14 @@ public class GMLFormat implements Format {
         }
 
         int maxFeatures = featureLimit;
-        if ( request.getMaxFeatures() != null && ( maxFeatures == -1 || request.getMaxFeatures() < maxFeatures ) ) {
-            maxFeatures = request.getMaxFeatures();
+        if ( request.getCount() != null && ( maxFeatures == -1 || request.getCount() < maxFeatures ) ) {
+            maxFeatures = request.getCount();
         }
 
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
-        gmlStream.setXLinkExpiry( traverseXLinkExpiry );
+        gmlStream.setXLinkExpiry( resolveTimeout );
         gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
         gmlStream.setFeatureProperties( analyzer.getRequestedProps() );
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
@@ -422,10 +422,10 @@ public class GMLFormat implements Format {
 
         if ( disableStreaming ) {
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, xLinkTemplate,
-                                       traverseXLinkDepth, traverseXLinkExpiry, maxFeatures );
+                                       traverseXLinkDepth, maxFeatures );
         } else {
             writeFeatureMembersStream( request.getVersion(), gmlStream, analyzer, gmlVersion, xLinkTemplate,
-                                       traverseXLinkDepth, traverseXLinkExpiry, maxFeatures );
+                                       traverseXLinkDepth, maxFeatures );
         }
 
         if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
@@ -481,7 +481,7 @@ public class GMLFormat implements Format {
 
     private void writeFeatureMembersStream( Version wfsVersion, GMLStreamWriter gmlStream, GetFeatureAnalyzer analyzer,
                                             GMLVersion outputFormat, String xLinkTemplate, int traverseXLinkDepth,
-                                            int traverseXLinkExpiry, int maxFeatures )
+                                            int maxFeatures )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, IOException {
 
@@ -526,7 +526,7 @@ public class GMLFormat implements Format {
 
     private void writeFeatureMembersCached( Version wfsVersion, GMLStreamWriter gmlStream, GetFeatureAnalyzer analyzer,
                                             GMLVersion outputFormat, String xLinkTemplate, int traverseXLinkDepth,
-                                            int traverseXLinkExpiry, int maxFeatures )
+                                            int maxFeatures )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, IOException {
 
@@ -860,7 +860,7 @@ public class GMLFormat implements Format {
 
                 LockOperation[] lockOperations = new LockOperation[request.getQueries().length];
                 int i = 0;
-                for ( org.deegree.protocol.wfs.getfeature.Query wfsQuery : request.getQueries() ) {
+                for ( org.deegree.protocol.wfs.query.Query wfsQuery : request.getQueries() ) {
                     lockOperations[i++] = buildLockOperation( wfsQuery );
                 }
                 Lock lock = manager.acquireLock( lockOperations, mustLockAll, expiry );
@@ -872,7 +872,7 @@ public class GMLFormat implements Format {
         return lockId;
     }
 
-    private LockOperation buildLockOperation( org.deegree.protocol.wfs.getfeature.Query wfsQuery ) {
+    private LockOperation buildLockOperation( org.deegree.protocol.wfs.query.Query wfsQuery ) {
         LockOperation lockOperation = null;
         if ( wfsQuery instanceof BBoxQuery ) {
             BBoxQuery bboxQuery = (BBoxQuery) wfsQuery;

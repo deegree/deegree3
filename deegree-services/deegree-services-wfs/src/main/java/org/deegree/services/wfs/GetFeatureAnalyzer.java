@@ -73,13 +73,13 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.wfs.getfeature.AdHocQuery;
-import org.deegree.protocol.wfs.getfeature.BBoxQuery;
-import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
+import org.deegree.protocol.wfs.query.AdHocQuery;
+import org.deegree.protocol.wfs.query.BBoxQuery;
+import org.deegree.protocol.wfs.query.FeatureIdQuery;
+import org.deegree.protocol.wfs.query.FilterQuery;
 import org.jaxen.NamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +110,7 @@ public class GetFeatureAnalyzer {
 
     private final Set<FeatureType> requestedFts = new HashSet<FeatureType>();
 
-    private final Map<Query, org.deegree.protocol.wfs.getfeature.Query> queryToWFSQuery = new HashMap<Query, org.deegree.protocol.wfs.getfeature.Query>();
+    private final Map<Query, org.deegree.protocol.wfs.query.Query> queryToWFSQuery = new HashMap<Query, org.deegree.protocol.wfs.query.Query>();
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
 
@@ -148,7 +148,7 @@ public class GetFeatureAnalyzer {
         this.checkAreaOfUse = checkInputDomain;
 
         // generate validated feature store queries
-        org.deegree.protocol.wfs.getfeature.Query[] wfsQueries = request.getQueries();
+        org.deegree.protocol.wfs.query.Query[] wfsQueries = request.getQueries();
         Query[] queries = new Query[wfsQueries.length];
         if ( queries.length == 0 ) {
             // TODO perform the check here?
@@ -156,7 +156,7 @@ public class GetFeatureAnalyzer {
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
         }
         for ( int i = 0; i < wfsQueries.length; i++ ) {
-            org.deegree.protocol.wfs.getfeature.Query wfsQuery = wfsQueries[i];
+            org.deegree.protocol.wfs.query.Query wfsQuery = wfsQueries[i];
             Query query = validateQuery( wfsQuery );
             queries[i] = query;
             queryToWFSQuery.put( query, wfsQuery );
@@ -291,7 +291,7 @@ public class GetFeatureAnalyzer {
      * @throws OWSException
      *             if an unresolvable feature type / property name is used
      */
-    private Query validateQuery( org.deegree.protocol.wfs.getfeature.Query wfsQuery )
+    private Query validateQuery( org.deegree.protocol.wfs.query.Query wfsQuery )
                             throws OWSException {
 
         // requalify query typenames and keep track of them

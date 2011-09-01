@@ -118,7 +118,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
             exportServiceProvider110( writer, serviceProvider );
         }
         if ( all || sections.contains( "OperationsMetadata" ) ) {
-            exportOperationsMetadata110( writer, operations, null, null );
+            exportOperationsMetadata110( writer, operations, null, null, null );
         }
         if ( all || sections.contains( "Dataset" ) ) {
             exportDatasets( writer, serviceConfig.getDatasetDefinitions() );

@@ -55,6 +55,8 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
 import org.jaxen.NamespaceContext;
 
 /**
@@ -123,21 +125,22 @@ public class GetFeature110XMLEncoder {
             writer.writeAttribute( "outputFormat", outputFormat );
         }
 
-        Integer maxFeatures = getFeature.getMaxFeatures();
+        Integer maxFeatures = getFeature.getCount();
         if ( maxFeatures != null ) {
             writer.writeAttribute( "maxFeatures", maxFeatures.toString() );
         }
 
-        String traverseXlinkDepth = getFeature.getTraverseXlinkDepth();
+        String traverseXlinkDepth = getFeature.getResolveDepth();
         if ( ( traverseXlinkDepth != null ) && ( !traverseXlinkDepth.equals( "" ) ) ) {
             writer.writeAttribute( "traverseXlinkDepth", traverseXlinkDepth );
         } else { /* otherwise set this mandatory attribute to value '*' */
             writer.writeAttribute( "traverseXlinkDepth", "*" );
         }
 
-        Integer traverseXlinkExpiry = getFeature.getTraverseXlinkExpiry();
-        if ( traverseXlinkExpiry != null ) {
-            writer.writeAttribute( "traverseXlinkExpiry", traverseXlinkExpiry.toString() );
+        Integer resolveTimeout = getFeature.getResolveTimeout();
+        if ( resolveTimeout != null ) {
+            int traverseXlinkExpiry = resolveTimeout / 60;
+            writer.writeAttribute( "traverseXlinkExpiry", "" + traverseXlinkExpiry );
         }
 
         /* write <query> child elements */
@@ -335,8 +338,7 @@ public class GetFeature110XMLEncoder {
 
                 for ( String usedPrefix : usedPrefixes ) {
                     if ( namespaceBindings.translateNamespacePrefixToUri( usedPrefix ) != null ) {
-                        usedNamespaceBindings.addNamespace(
-                                                            usedPrefix,
+                        usedNamespaceBindings.addNamespace( usedPrefix,
                                                             namespaceBindings.translateNamespacePrefixToUri( usedPrefix ) );
                     } else {
                         throw new FilterEvaluationException( "found prefix '" + usedPrefix

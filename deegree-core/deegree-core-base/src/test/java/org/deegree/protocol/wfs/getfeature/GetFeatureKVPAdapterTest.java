@@ -50,6 +50,10 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.protocol.wfs.query.AdHocQuery;
+import org.deegree.protocol.wfs.query.FeatureIdQuery;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
 import org.junit.Test;
 
 /**
@@ -655,8 +659,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
-        assertEquals( "1", getFeature.getTraverseXlinkDepth() );
-        assertEquals( new Integer( 1 ), getFeature.getTraverseXlinkExpiry() );
+        assertEquals( "1", getFeature.getResolveDepth() );
+        assertEquals( new Integer( 60 ), getFeature.getResolveTimeout() );
     }
 
     /**
@@ -703,7 +707,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         assertEquals( "erewr/sdasd/dasda", sortby[3].getSortProperty().getAsText() );
 
         assertEquals( "ALL", filterQuery.getFeatureVersion() );
-        assertEquals( new Integer( 1000000 ), getFeature.getMaxFeatures() );
+        assertEquals( new Integer( 1000000 ), getFeature.getCount() );
         assertEquals( CRSManager.getCRSRef( "EPSG:4326" ), filterQuery.getSrsName() );
     }
 }

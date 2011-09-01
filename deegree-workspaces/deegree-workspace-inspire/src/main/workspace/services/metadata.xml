@@ -5,7 +5,7 @@
   -->
   <ServiceIdentification>
     <Title>deegree inspireNode</Title>
-    <Abstract>WFS and WMS for the deployment of INSPIRE Data Themes</Abstract>
+    <Abstract>INSPIRE View and Download Services for the deployment of INSPIRE Data Themes</Abstract>
   </ServiceIdentification>
   <ServiceProvider>
     <ProviderName>lat/lon GmbH</ProviderName>

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,48 +33,24 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.getfeature;
-
-import java.util.Map;
-
-import org.apache.axiom.om.OMElement;
-import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
+package org.deegree.commons.tom;
 
 /**
- * A {@link Query} that provides the id of a {@link StoredQueryDefinition} and parameters.
+ * Discriminates the different modes for resolving {@link Reference}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StoredQuery extends Query {
+public enum ResolveMode {
 
-    private final String id;
-
-    private final Map<String, OMElement> paramNameToValue;
-
-    /**
-     * Creates a new {@link StoredQuery} instance.
-     * 
-     * @param handle
-     *            client-generated query identifier, may be <code>null</code>
-     * @param id
-     *            identifier of the stored query to be invoked, must not be <code>null</code>
-     * @param paramNameToValue
-     *            parameters, must not be <code>null</code>
-     */
-    public StoredQuery( String handle, String id, Map<String, OMElement> paramNameToValue ) {
-        super( handle );
-        this.id = id;
-        this.paramNameToValue = paramNameToValue;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Map<String, OMElement> getParams() {
-        return paramNameToValue;
-    }
+    /** Neither local nor remote references are resolved */
+    NONE,
+    /** Only local references are resolved */
+    LOCAL,
+    /** Only remote references are resolved */
+    REMOTE,
+    /** Both local and remote references are resolved */
+    ALL
 }

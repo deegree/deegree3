@@ -33,11 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.getfeature;
+package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
  * A {@link AdHocQuery} that selects features using a list of ids.

@@ -65,14 +65,14 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
-import org.deegree.protocol.wfs.getfeature.BBoxQuery;
-import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.GetFeatureKVPAdapter;
-import org.deegree.protocol.wfs.getfeature.Query;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
+import org.deegree.protocol.wfs.query.BBoxQuery;
+import org.deegree.protocol.wfs.query.FeatureIdQuery;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
 
 /**
  * Adapter between KVP <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
@@ -211,10 +211,12 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: 'TRAVERSEXLINKEXPIRY'
         String traverseXlinkExpiryStr = kvpParams.get( "TRAVERSEXLINKEXPIRY" );
+        Integer resolveTimeout = null;
         Integer traverseXlinkExpiry = null;
         if ( traverseXlinkExpiryStr != null ) {
             try {
                 traverseXlinkExpiry = Integer.parseInt( traverseXlinkExpiryStr );
+                resolveTimeout = traverseXlinkExpiry * 60;
             } catch ( NumberFormatException e ) {
                 e.printStackTrace();
                 throw new InvalidParameterValueException( e.getMessage(), e );
@@ -237,8 +239,8 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
             queries = new Query[1];
             queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames,
                                              xlinkPropNames, sortBy );
-            return new GetFeatureWithLock( VERSION_110, null, resultType, outputFormat, maxFeatures,
-                                           traverseXlinkDepth, traverseXlinkExpiry, queries, expiry );
+            return new GetFeatureWithLock( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
+                                           traverseXlinkDepth, resolveTimeout, queries, expiry );
         }
 
         if ( bboxStr != null ) {
@@ -257,8 +259,8 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
             queries = new Query[1];
             queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, sortBy, bbox );
 
-            return new GetFeatureWithLock( VERSION_110, null, resultType, outputFormat, maxFeatures,
-                                           traverseXlinkDepth, traverseXlinkExpiry, queries, expiry );
+            return new GetFeatureWithLock( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
+                                           traverseXlinkDepth, resolveTimeout, queries, expiry );
         }
 
         if ( filterStr != null || typeNames != null ) {
@@ -310,8 +312,8 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     }
                 }
             }
-            return new GetFeatureWithLock( VERSION_110, null, resultType, outputFormat, maxFeatures,
-                                           traverseXlinkDepth, traverseXlinkExpiry, queries, expiry );
+            return new GetFeatureWithLock( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
+                                           traverseXlinkDepth, resolveTimeout, queries, expiry );
         }
         return null;
     }

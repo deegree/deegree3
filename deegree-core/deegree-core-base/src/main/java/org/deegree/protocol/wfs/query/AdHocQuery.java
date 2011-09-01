@@ -33,10 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.getfeature;
+package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
  * Represents a <code>Query</code> operation as a part of a {@link GetFeature} request.

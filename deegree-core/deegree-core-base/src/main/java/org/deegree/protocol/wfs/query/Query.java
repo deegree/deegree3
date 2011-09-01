@@ -33,12 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.getfeature;
+package org.deegree.protocol.wfs.query;
+
+import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 
 /**
  * Represents a <code>Query</code> operation as a part of a {@link GetFeature} request.
  * 
  * @see GetFeature
+ * @see GetFeatureWithLock
+ * @see GetPropertyValue
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $

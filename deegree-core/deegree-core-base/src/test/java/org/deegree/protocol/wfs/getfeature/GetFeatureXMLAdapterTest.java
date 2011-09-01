@@ -64,6 +64,8 @@ import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
 import org.junit.Test;
 
 /**
@@ -351,7 +353,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
         GetFeature getFeature = getFeatureAdapter.parse( null );
 
-        assertEquals( new Integer( 10000 ), getFeature.getMaxFeatures() );
+        assertEquals( new Integer( 10000 ), getFeature.getCount() );
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),

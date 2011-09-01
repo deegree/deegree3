@@ -69,6 +69,10 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
+import org.deegree.protocol.wfs.query.BBoxQuery;
+import org.deegree.protocol.wfs.query.FeatureIdQuery;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
 
 /**
  * Adapter between KVP <code>GetFeature</code> requests and {@link GetFeature} objects.
@@ -220,7 +224,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             queries = new Query[1];
             queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null,
                                              null );
-            return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
+            return new GetFeature( VERSION_100, null, null, maxFeatures, null, null, null, null, null, queries );
         }
 
         if ( bboxStr != null ) {
@@ -240,7 +244,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             queries = new Query[1];
             queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, null, bbox );
 
-            return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
+            return new GetFeature( VERSION_100, null, null, maxFeatures, null, null, null, null, null, queries );
         }
 
         if ( filterStr != null || typeNames != null ) {
@@ -282,7 +286,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                                                   null, null, null, filter );
                 }
             }
-            return new GetFeature( VERSION_100, null, null, outputFormat, maxFeatures, null, null, queries );
+            return new GetFeature( VERSION_100, null, null, maxFeatures, outputFormat, null, null, null, null, queries );
         }
         return null;
     }
@@ -373,10 +377,12 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: 'TRAVERSEXLINKEXPIRY'
         String traverseXlinkExpiryStr = kvpParams.get( "TRAVERSEXLINKEXPIRY" );
+        Integer resolveTimeout = null;
         Integer traverseXlinkExpiry = null;
         if ( traverseXlinkExpiryStr != null ) {
             try {
                 traverseXlinkExpiry = Integer.parseInt( traverseXlinkExpiryStr );
+                resolveTimeout = traverseXlinkExpiry * 60;
             } catch ( NumberFormatException e ) {
                 e.printStackTrace();
                 throw new InvalidParameterValueException( e.getMessage(), e );
@@ -399,8 +405,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             queries = new Query[1];
             queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames,
                                              xlinkPropNames, sortBy );
-            return new GetFeature( VERSION_110, null, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
-                                   traverseXlinkExpiry, queries );
+            return new GetFeature( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
+                                   traverseXlinkDepth, resolveTimeout, queries );
         }
 
         if ( bboxStr != null ) {
@@ -425,8 +431,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             queries = new Query[1];
             queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, sortBy, bbox );
 
-            return new GetFeature( VERSION_110, null, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
-                                   traverseXlinkExpiry, queries );
+            return new GetFeature( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
+                                   traverseXlinkDepth, resolveTimeout, queries );
         }
 
         if ( filterStr != null || typeNames != null ) {
@@ -478,8 +484,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     }
                 }
             }
-            return new GetFeature( VERSION_110, null, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
-                                   traverseXlinkExpiry, queries );
+            return new GetFeature( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
+                                   traverseXlinkDepth, resolveTimeout, queries );
         }
         return null;
     }

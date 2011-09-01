@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.getfeature;
+package org.deegree.protocol.wfs.query;
 
 import javax.xml.namespace.QName;
 
@@ -42,6 +42,8 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
  * A {@link AdHocQuery} that selects features using an optional {@link Filter}.
