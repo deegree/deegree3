@@ -485,6 +485,18 @@ public class WMSClient111 implements WMSClient {
     @Override
     public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout )
                             throws IOException {
+        return getMap( getMap, hardParameters, timeout, true );
+    }
+
+    /**
+     * @param hardParameters
+     *            parameters to override in the request, may be null
+     * @throws IOException
+     */
+    @Override
+    public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout,
+                                               boolean errorsInImage )
+                            throws IOException {
         Worker worker = new Worker( getMap.getLayers(), getMap.getWidth(), getMap.getHeight(), getMap.getBoundingBox(),
                                     getMap.getCoordinateSystem(), getMap.getFormat(), getMap.getTransparent(), false,
                                     false, null, hardParameters );

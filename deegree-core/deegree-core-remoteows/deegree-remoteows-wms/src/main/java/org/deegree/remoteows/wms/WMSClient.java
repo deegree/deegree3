@@ -84,6 +84,10 @@ public interface WMSClient {
     public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout )
                             throws IOException;
 
+    public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout,
+                                               boolean errorsInImage )
+                            throws IOException;
+    
     public FeatureCollection getFeatureInfo( GetFeatureInfo getFeatureInfo, Map<String, String> hardParameters )
                             throws IOException;
 
