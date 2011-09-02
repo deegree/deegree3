@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.1-pre13</version>
+    <version>3.1-rc1</version>
   </parent>
 
   <repositories>
@@ -37,12 +37,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-commons</artifactId>
-      <version>3.1-pre13</version>
+      <version>3.1-rc1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-commons</artifactId>
-      <version>3.1-pre13</version>
+      <version>3.1-rc1</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
