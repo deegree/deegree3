@@ -940,9 +940,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
                 String metadataUrl = getMetadataURL( ftMd );
                 if ( metadataUrl != null ) {
-                    writer.writeStartElement( WFS_200_NS, "MetadataURL" );
-                    writer.writeCharacters( metadataUrl );
-                    writer.writeEndElement();
+                    writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
+                    writer.writeAttribute( XLN_NS, "href", metadataUrl );
                 }
 
                 writer.writeEndElement();
