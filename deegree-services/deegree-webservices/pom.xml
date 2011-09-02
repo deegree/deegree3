@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-webservices</artifactId>
   <packaging>war</packaging>
@@ -8,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.1-pre13-SNAPSHOT</version>
+    <version>3.1-pre13</version>
   </parent>
 
   <repositories>
@@ -133,72 +132,72 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-console</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-config</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-csw</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-memory</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-sql</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-shape</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-simplesql</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-iso</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-themes-remotewms</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-layers-remotewms</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
+      <version>3.1-pre13</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
