@@ -53,7 +53,9 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
                 out = new IndentingXMLStreamWriter( out );
             }
             GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( gmlVersion, out );
-            writer.setNamespaceBindings( schema.getNamespaceBindings() );
+            if ( schema != null ) {
+                writer.setNamespaceBindings( schema.getNamespaceBindings() );
+            }
             writer.write( col );
             writer.close();
             bos.flush();
