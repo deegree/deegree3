@@ -39,6 +39,7 @@ import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ResolveMode;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -59,6 +59,7 @@ import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter200XMLDecoder;
+import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
@@ -66,14 +67,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ * Provides parsing methods for WFS <code>Query</code> elements and related constructs.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class QueryXMLAdapter extends XMLAdapter {
+public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( QueryXMLAdapter.class );
 
@@ -142,27 +143,36 @@ public class QueryXMLAdapter extends XMLAdapter {
     public Query parseAbstractQuery200( OMElement queryEl ) {
         QName elName = queryEl.getQName();
         if ( new QName( WFS_200_NS, "Query" ).equals( elName ) ) {
-            return parseQuery200( queryEl );
+            return parseAdHocQuery200( queryEl );
         } else if ( new QName( WFS_200_NS, "StoredQuery" ).equals( elName ) ) {
             return parseStoredQuery200( queryEl );
         }
-        String msg = "Unknown query element '" + elName + "'.";
+        String msg = "Unsupported query expression element '" + elName + "'.";
         throw new XMLParsingException( this, queryEl, msg );
     }
 
     // <xsd:element name="Query" type="wfs:QueryType" substitutionGroup="fes:AbstractAdhocQueryExpression"/>
-    private Query parseQuery200( OMElement queryEl ) {
+    private Query parseAdHocQuery200( OMElement queryEl ) {
 
         // <xsd:attribute name="handle" type="xsd:string"/>
         String handle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
 
         // <xsd:attribute name="typeNames" type="fes:TypeNamesListType" use="required"/>
+        // TODO handle "schema-element(...)"
         String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeNames", nsContext ) );
         TypeName[] typeNames = TypeName.valuesOf( queryEl, typeNameStr );
 
         // <xsd:attribute name="aliases" type="fes:TypeNamesListType" use="required"/>
+        List<String> aliases = null;
+
+        // <xsd:attribute name="srsName" type="xsd:anyURI"/>
+        String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
+
+        // <xsd:attribute name="featureVersion" type="xsd:string"/>
+        String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
         // <xsd:element ref="fes:AbstractProjectionClause" minOccurs="0" maxOccurs="unbounded"/>
+        List<ProjectionClause> projectionClauses = null;
 
         // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
         Filter filter = null;
@@ -183,8 +193,20 @@ public class QueryXMLAdapter extends XMLAdapter {
         }
 
         // <xsd:element ref="fes:AbstractSortingClause" minOccurs="0"/>
+        List<SortProperty> sortProps = new ArrayList<SortProperty>();
+        // <xsd:element name="SortBy" type="fes:SortByType" substitutionGroup="fes:AbstractSortingClause"/>
+        OMElement sortByEl = getElement( queryEl, new XPath( "fes:SortBy", nsContext ) );
+        if ( sortByEl != null ) {
+            List<OMElement> sortPropertyEls = getRequiredElements( sortByEl, new XPath( "fes:SortProperty", nsContext ) );
+            for ( OMElement sortPropertyEl : sortPropertyEls ) {
+                OMElement propNameEl = getRequiredElement( sortPropertyEl, new XPath( "fes:ValueReference", nsContext ) );
+                ValueReference valRef = new ValueReference( propNameEl.getText(), getNamespaceContext( propNameEl ) );
+                String sortOrder = getNodeAsString( sortPropertyEl, new XPath( "fes:SortOrder", nsContext ), "ASC" );
+                SortProperty sortProp = new SortProperty( valRef, sortOrder.equals( "ASC" ) );
+                sortProps.add( sortProp );
+            }
+        }
 
-        String featureVersion = null;
         ICRS crs = null;
         ValueReference[] propNamesArray = null;
         XLinkPropertyName[] xlinkPropNamesArray = null;

@@ -34,6 +34,9 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs;
 
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.commons.xml.CommonNamespaces.FES_PREFIX;
+
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 
@@ -60,5 +63,6 @@ public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
         nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( WFS_PREFIX, WFSConstants.WFS_NS );
         nsContext.addNamespace( WFS_200_PREFIX, WFSConstants.WFS_200_NS );
+        nsContext.addNamespace( FES_PREFIX, FES_20_NS );
     }
 }

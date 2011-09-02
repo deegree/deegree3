@@ -37,13 +37,10 @@ package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * Represents a <code>Query</code> operation as a part of a {@link GetFeature} request.
- * 
- * @see GetFeature
+ * A self-contained {@link Query}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -72,8 +69,7 @@ public abstract class AdHocQuery extends Query {
      * @param srsName
      *            WFS-supported SRS that should be used for returned feature geometries, may be null
      * @param sortBy
-     *            properties whose values should be used to order the set of feature instances that satisfy the query,
-     *            may be null
+     *            properties whose values should be used to order the result set may be null
      */
     public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         super( handle );
@@ -111,7 +107,7 @@ public abstract class AdHocQuery extends Query {
     }
 
     /**
-     * Returns the properties whose values should be used to order the set of feature instances that satisfy the query.
+     * Returns the properties whose values should be used to order the result set.
      * 
      * @return sort criteria, may be null
      */

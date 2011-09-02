@@ -54,6 +54,8 @@ public class GetPropertyValue {
 
     private final ValueReference resolvePath;
 
+    private final Query query;
+
     /**
      * Creates a new {@link GetPropertyValue} instance.
      * 
@@ -62,10 +64,13 @@ public class GetPropertyValue {
      * @param resolvePath
      *            path along which resource resolution shall be performed, may be <code>null</code> (global resource
      *            resolution mode)
+     * @param query
+     *            query to be executed, must not be <code>null</code>
      */
-    public GetPropertyValue( ValueReference valueReference, ValueReference resolvePath ) {
+    public GetPropertyValue( ValueReference valueReference, ValueReference resolvePath, Query query ) {
         this.valueReference = valueReference;
         this.resolvePath = resolvePath;
+        this.query = query;
     }
 
     /**
@@ -85,5 +90,14 @@ public class GetPropertyValue {
      */
     public ValueReference getValueReference() {
         return valueReference;
+    }
+
+    /**
+     * Returns the query to be executed (determines the feature instances for the property value extraction).
+     * 
+     * @return query to be executed, never <code>null</code>
+     */
+    public Query getQuery() {
+        return query;
     }
 }

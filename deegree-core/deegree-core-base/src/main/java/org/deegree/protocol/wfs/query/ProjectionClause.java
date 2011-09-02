@@ -1,10 +1,10 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/ogcwebservices/wfs/operation/DescribeFeatureType.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,43 +35,27 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.query;
 
-import org.deegree.protocol.wfs.getfeature.GetFeature;
-import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
-import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
+import javax.xml.namespace.QName;
+
+import org.deegree.filter.expression.ValueReference;
 
 /**
- * Represents a <code>Query</code> operation as a part of a {@link GetFeature}/{@link GetFeatureWithLock}/
- * {@link GetPropertyValue} request.
- * 
- * @see GetFeature
- * @see GetFeatureWithLock
- * @see GetPropertyValue
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public abstract class Query {
+public class ProjectionClause extends ValueReference {
 
-    private final String handle;
+    private final StandardResolveParams resolveParams;
 
-    /**
-     * Creates a new {@link Query} instance.
-     * 
-     * @param handle
-     *            client-generated query identifier, may be <code>null</code>
-     */
-    protected Query( String handle ) {
-        this.handle = handle;
-    }
+    private final ValueReference resolvePath;
 
-    /**
-     * Returns the client-generated identifier supplied with the query.
-     * 
-     * @return the client-generated identifier, may be <code>null</code>
-     */
-    public String getHandle() {
-        return handle;
+    public ProjectionClause( QName name, StandardResolveParams resolveParams, ValueReference resolvePath ) {
+        super( name );
+        this.resolveParams = resolveParams;
+        this.resolvePath = resolvePath;
     }
 }
