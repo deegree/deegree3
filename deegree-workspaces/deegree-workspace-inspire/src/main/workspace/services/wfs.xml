@@ -12,13 +12,7 @@
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
 
-  <!-- Metadata for FeatureTypeList section -->
-  <MetadataURLTemplate>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}</MetadataURLTemplate>
-  <FeatureTypeMetadata>
-    <Name>ad:Address</Name>
-    <MetadataSetId>550e8400-e29b-11d4-a716-446655440000</MetadataSetId>
-  </FeatureTypeMetadata>
-
+  <!-- Required for WFS 1.1.0/GML 3.2 output with gml:FeatureCollection root element (as mandated by ESDIN) -->
   <GMLFormat gmlVersion="GML_32">
     <MimeType>application/gml+xml; version=3.2</MimeType>
     <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
@@ -28,6 +22,14 @@
       <DisableDynamicSchema>true</DisableDynamicSchema>
     </GetFeatureResponse>
   </GMLFormat>
+
+  <!-- Uncomment/adapt the following line to customize generated MetadataURL elements -->
+  <!-- MetadataURLTemplate>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}</MetadataURLTemplate -->
+  <FeatureTypeMetadata xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">
+    <Name>ad:Address</Name>
+    <!-- Use the MetadatSetId element to specify the id of the corresponding metadata record (in the CSW) -->
+    <!-- MetadataSetId>550e8400-e29b-11d4-a716-446655440000</MetadataSetId -->
+  </FeatureTypeMetadata>
 
   <ExtendedCapabilities wfsVersions="1.1.0">
     <inspire_ds:ExtendedCapabilities xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0"

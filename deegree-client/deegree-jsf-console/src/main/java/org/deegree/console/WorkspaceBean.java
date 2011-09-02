@@ -102,7 +102,7 @@ public class WorkspaceBean implements Serializable {
     private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
 
     // only used when no module version information is available
-    private static final String DEFAULT_VERSION = "3.1-pre10-SNAPSHOT";
+    private static final String DEFAULT_VERSION = "3.1-pre13-SNAPSHOT";
 
     private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
 
@@ -309,7 +309,7 @@ public class WorkspaceBean implements Serializable {
         } finally {
             closeQuietly( in );
         }
-        return Collections.emptyList();
+        return new ArrayList<String>();
     }
 
     public List<String> getRemoteWorkspaces() {
@@ -328,16 +328,15 @@ public class WorkspaceBean implements Serializable {
     private String getVersion() {
         String version = null;
         Collection<ModuleInfo> modules = ModuleInfo.getModulesInfo();
-        if ( !modules.isEmpty() ) {
-            if ( !( "${project.version}" ).equals( modules.iterator().next().getVersion() ) ) {
-                version = modules.iterator().next().getVersion();
-            } else {
-                LOG.warn( "No valid version information for modules available. Defaulting to " + DEFAULT_VERSION );
+        for ( ModuleInfo module : modules ) {
+            if ( module.getArtifactId().equals( "deegree-core-commons" ) ) {
+                version = module.getVersion();
+                break;
             }
-        } else {
-            LOG.warn( "No valid version information for modules available. Defaulting to " + DEFAULT_VERSION );
         }
         if ( version == null ) {
+            LOG.warn( "No valid version information from Maven deegree modules available. Defaulting to "
+                      + DEFAULT_VERSION );
             version = DEFAULT_VERSION;
         }
         return version;
