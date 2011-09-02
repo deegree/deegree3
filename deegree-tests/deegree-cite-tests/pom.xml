@@ -123,73 +123,73 @@
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-cite1</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-CiteFunctions</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-citeXpathFunction</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-jaxen-full</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-jing</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-joda-time</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxon9</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxon9-dom</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxon9-s9api</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxon6</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxpath</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-transformers</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
