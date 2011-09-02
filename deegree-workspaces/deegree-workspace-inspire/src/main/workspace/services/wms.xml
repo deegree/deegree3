@@ -1,306 +1,97 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<WMS_Capabilities xmlns="http://www.opengis.net/wms" version="1.3.0" updateSequence="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sld="http://www.opengis.net/sld" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd">
-  <Service>
-    <Name>WMS</Name>
-    <Title>deegree inspireNode</Title>
-    <Abstract>WFS and WMS for the deployment of INSPIRE Data Themes</Abstract>
-    <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org"/>
-    <ContactInformation>
+<deegreeWMS xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0"
+  xmlns="http://www.deegree.org/services/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.1.0"
+  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/services/wms/3.1.0/wms_configuration.xsd">
 
-      <ContactPersonPrimary>
-        <ContactPerson>Markus Schneider</ContactPerson>
-        <ContactOrganization>lat/lon GmbH</ContactOrganization>
-      </ContactPersonPrimary>
-      <ContactPosition>deegree TMC</ContactPosition>
-      <ContactAddress>
-        <AddressType>postal</AddressType>
+  <ServiceConfiguration>
 
-        <Address>Aennchenstr. 19</Address>
-        <City>Bonn</City>
-        <StateOrProvince>NRW</StateOrProvince>
-        <PostCode>53177</PostCode>
-        <Country>Germany</Country>
-      </ContactAddress>
+    <UnrequestableLayer>
+      <Title>Root Layer</Title>
+      <CRS>EPSG:4258 EPSG:4326 EPSG:900913 EPSG:28992</CRS>
 
-      <ContactVoiceTelephone>0228/18496-0</ContactVoiceTelephone>
-      <ContactFacsimileTelephone>0228/18496-29</ContactFacsimileTelephone>
-      <ContactElectronicMailAddress>info@lat-lon.de
-      </ContactElectronicMailAddress>
-    </ContactInformation>
-  </Service>
-  <Capability>
-    <Request>
+      <!-- Layers from AdministrativeUnit (AU) data theme -->
+      <RequestableLayer>
+        <Name>AU.AdministrativeUnit</Name>
+        <Title>Administrative unit</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/AU_AdministrativeUnit_Default.xml</File>
+          <Name>AU.AdministrativeUnit.Default</Name>
+        </DirectStyle>
+      </RequestableLayer>
+      <RequestableLayer>
+        <Name>AU.AdministrativeBoundary</Name>
+        <Title>Administrative boundary</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/AU_AdministrativeBoundary_Default.xml</File>
+          <Name>AU.AdministrativeBoundary.Default</Name>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <GetCapabilities>
-        <Format>text/xml</Format>
-        <DCPType>
-          <HTTP>
-            <Get>
-              <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?"/>
-            </Get>
-          </HTTP>
+      <!-- Layers from Cadastral Parcel (CP) data theme -->
+      <RequestableLayer>
+        <Name>CP.CadastralParcel</Name>
+        <Title>Cadastral Parcels</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/CP_CadastralParcel_Default.xml</File>
+          <Name>CP.CadastralParcel.Default</Name>
+        </DirectStyle>
+        <DirectStyle>
+          <File>../styles/CP_CadastralParcel_BoundariesOnly.xml</File>
+          <Name>CP.CadastralParcel.BoundariesOnly</Name>
+        </DirectStyle>
+      </RequestableLayer>
+      <RequestableLayer>
+        <Name>CP.CadastralZoning</Name>
+        <Title>Cadastral Zoning Default Style</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/CP_CadastralZoning.xml</File>
+          <Name>CP.CadastralZoning</Name>
+        </DirectStyle>
+      </RequestableLayer>
+      <RequestableLayer>
+        <Name>CP.CadastralBoundary</Name>
+        <Title>Cadastral Boundary Default Style</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/CP_CadastralBoundary.xml</File>
+          <Name>CP.CadastralBoundary</Name>
+        </DirectStyle>
+      </RequestableLayer>
 
-        </DCPType>
-      </GetCapabilities>
-      <GetMap>
-        <Format>image/png</Format>
-        <Format>image/png; subtype=8bit</Format>
-        <Format>image/png; mode=8bit</Format>
-        <Format>image/gif</Format>
+      <!-- Layers from Address (AD) data theme -->
+      <RequestableLayer>
+        <Name>AD.Address</Name>
+        <Title>Addresses</Title>
+        <FeatureStoreId>inspire</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/AD_Address_Default.xml</File>
+          <Name>AD.Address.Default</Name>
+        </DirectStyle>
+      </RequestableLayer>
 
-        <Format>image/jpeg</Format>
-        <Format>image/tiff</Format>
-        <Format>image/x-ms-bmp</Format>
-        <DCPType>
-          <HTTP>
-            <Get>
-              <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?"/>
+    </UnrequestableLayer>
+  </ServiceConfiguration>
 
-            </Get>
-          </HTTP>
-        </DCPType>
-      </GetMap>
-      <GetFeatureInfo>
-        <Format>application/vnd.ogc.gml</Format>
-        <Format>text/xml</Format>
-        <Format>text/plain</Format>
-
-        <Format>text/html</Format>
-        <DCPType>
-          <HTTP>
-            <Get>
-              <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?"/>
-            </Get>
-          </HTTP>
-        </DCPType>
-
-      </GetFeatureInfo>
-      <sld:GetLegendGraphic>
-        <Format>image/png</Format>
-        <Format>image/png; subtype=8bit</Format>
-        <Format>image/png; mode=8bit</Format>
-        <Format>image/gif</Format>
-        <Format>image/jpeg</Format>
-
-        <Format>image/tiff</Format>
-        <Format>image/x-ms-bmp</Format>
-        <DCPType>
-          <HTTP>
-            <Get>
-              <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?"/>
-            </Get>
-          </HTTP>
-
-        </DCPType>
-      </sld:GetLegendGraphic>
-    </Request>
-    <Exception>
-      <Format>XML</Format>
-      <Format>INIMAGE</Format>
-      <Format>BLANK</Format>
-
-    </Exception>
-    <inspire_vs:ExtendedCapabilities xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns="http://www.deegree.org/services/wms" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd   http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd">
+  <ExtendedCapabilities>
+    <inspire_vs:ExtendedCapabilities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd
+  http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd">
       <inspire_common:MetadataUrl>
-        <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;id=fileIdentfierMetadataVoorServicesDocument&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</inspire_common:URL>
+        <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;id=fileIdentfierMetadataVoorServicesDocument&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full
+        </inspire_common:URL>
         <inspire_common:MediaType>application/vnd.iso.19139+xml</inspire_common:MediaType>
-
-      
       </inspire_common:MetadataUrl>
       <inspire_common:SupportedLanguages>
         <inspire_common:DefaultLanguage>
           <inspire_common:Language>dut</inspire_common:Language>
-        
         </inspire_common:DefaultLanguage>
-      
       </inspire_common:SupportedLanguages>
       <inspire_common:ResponseLanguage>
         <inspire_common:Language>dut</inspire_common:Language>
-
-      
       </inspire_common:ResponseLanguage>
-    
     </inspire_vs:ExtendedCapabilities>
-    <Layer queryable="1">
-      <Title>Root Layer</Title>
-      <CRS>EPSG:4258</CRS>
-      <CRS>EPSG:4326</CRS>
-      <CRS>EPSG:900913</CRS>
-
-      <CRS>EPSG:28992</CRS>
-      <Layer queryable="1">
-        <Name>AU.AdministrativeUnit</Name>
-        <Title>Administrative unit</Title>
-        <CRS>EPSG:4258</CRS>
-        <CRS>EPSG:4326</CRS>
-
-        <CRS>EPSG:900913</CRS>
-        <CRS>EPSG:28992</CRS>
-        <Style>
-          <Name>default</Name>
-          <Title>AU.AdministrativeUnit.Default</Title>
-          <LegendURL width="32" height="27">
-            <Format>image/png</Format>
-
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=AU.AdministrativeUnit&amp;style=AU.AdministrativeUnit.Default&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-        <Style>
-          <Name>AU.AdministrativeUnit.Default</Name>
-          <Title>AU.AdministrativeUnit.Default</Title>
-          <LegendURL width="32" height="27">
-            <Format>image/png</Format>
-
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=AU.AdministrativeUnit&amp;style=AU.AdministrativeUnit.Default&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-      </Layer>
-      <Layer queryable="1">
-        <Name>AU.AdministrativeBoundary</Name>
-        <Title>Administrative boundary</Title>
-        <CRS>EPSG:4258</CRS>
-
-        <CRS>EPSG:4326</CRS>
-        <CRS>EPSG:900913</CRS>
-        <CRS>EPSG:28992</CRS>
-        <Style>
-          <Name>default</Name>
-          <Title>AU.AdministrativeBoundary.Default</Title>
-
-          <LegendURL width="32" height="27">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=AU.AdministrativeBoundary&amp;style=AU.AdministrativeBoundary.Default&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-        <Style>
-          <Name>AU.AdministrativeBoundary.Default</Name>
-          <Title>AU.AdministrativeBoundary.Default</Title>
-
-          <LegendURL width="32" height="27">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=AU.AdministrativeBoundary&amp;style=AU.AdministrativeBoundary.Default&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-      </Layer>
-      <Layer queryable="1">
-        <Name>CP.CadastralParcel</Name>
-
-        <Title>Cadastral Parcels</Title>
-        <CRS>EPSG:4258</CRS>
-        <CRS>EPSG:4326</CRS>
-        <CRS>EPSG:900913</CRS>
-        <CRS>EPSG:28992</CRS>
-        <Style>
-
-          <Name>default</Name>
-          <Title>CP.CadastralParcel.Default</Title>
-          <LegendURL width="32" height="81">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=CP.CadastralParcel&amp;style=CP.CadastralParcel.Default&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-
-        <Style>
-          <Name>CP.CadastralParcel.BoundariesOnly</Name>
-          <Title>CP.CadastralParcel.BoundariesOnly</Title>
-          <LegendURL width="32" height="27">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=CP.CadastralParcel&amp;style=CP.CadastralParcel.BoundariesOnly&amp;format=image/png"/>
-          </LegendURL>
-
-        </Style>
-        <Style>
-          <Name>CP.CadastralParcel.Default</Name>
-          <Title>CP.CadastralParcel.Default</Title>
-          <LegendURL width="32" height="81">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=CP.CadastralParcel&amp;style=CP.CadastralParcel.Default&amp;format=image/png"/>
-
-          </LegendURL>
-        </Style>
-      </Layer>
-      <Layer queryable="1">
-        <Name>CP.CadastralZoning</Name>
-        <Title>Cadastral Zoning Default Style</Title>
-        <CRS>EPSG:4258</CRS>
-
-        <CRS>EPSG:4326</CRS>
-        <CRS>EPSG:900913</CRS>
-        <CRS>EPSG:28992</CRS>
-        <Style>
-          <Name>default</Name>
-          <Title>CP.CadastralZoning</Title>
-
-          <LegendURL width="32" height="54">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=CP.CadastralZoning&amp;style=CP.CadastralZoning&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-        <Style>
-          <Name>CP.CadastralZoning</Name>
-          <Title>CP.CadastralZoning</Title>
-
-          <LegendURL width="32" height="54">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=CP.CadastralZoning&amp;style=CP.CadastralZoning&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-      </Layer>
-      <Layer queryable="1">
-        <Name>CP.CadastralBoundary</Name>
-
-        <Title>Cadastral Boundary Default Style</Title>
-        <CRS>EPSG:4258</CRS>
-        <CRS>EPSG:4326</CRS>
-        <CRS>EPSG:900913</CRS>
-        <CRS>EPSG:28992</CRS>
-        <Style>
-
-          <Name>default</Name>
-          <Title>CP.CadastralBoundary</Title>
-          <LegendURL width="32" height="27">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=CP.CadastralBoundary&amp;style=CP.CadastralBoundary&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-
-        <Style>
-          <Name>CP.CadastralBoundary</Name>
-          <Title>CP.CadastralBoundary</Title>
-          <LegendURL width="32" height="27">
-            <Format>image/png</Format>
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=CP.CadastralBoundary&amp;style=CP.CadastralBoundary&amp;format=image/png"/>
-          </LegendURL>
-
-        </Style>
-      </Layer>
-      <Layer queryable="1">
-        <Name>AD.Address</Name>
-        <Title>Addresses</Title>
-        <CRS>EPSG:4258</CRS>
-        <CRS>EPSG:4326</CRS>
-
-        <CRS>EPSG:900913</CRS>
-        <CRS>EPSG:28992</CRS>
-        <Style>
-          <Name>default</Name>
-          <Title>AD.Address.Default</Title>
-          <LegendURL width="32" height="108">
-            <Format>image/png</Format>
-
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=AD.Address&amp;style=AD.Address.Default&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-        <Style>
-          <Name>AD.Address.Default</Name>
-          <Title>AD.Address.Default</Title>
-          <LegendURL width="32" height="108">
-            <Format>image/png</Format>
-
-            <OnlineResource xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wms?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=AD.Address&amp;style=AD.Address.Default&amp;format=image/png"/>
-          </LegendURL>
-        </Style>
-      </Layer>
-    </Layer>
-  </Capability>
-</WMS_Capabilities>
+  </ExtendedCapabilities>
+</deegreeWMS>

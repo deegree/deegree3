@@ -63,6 +63,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.components.Axis;
@@ -428,26 +429,28 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        mdlabel: if ( controller.getMetadataURL() != null ) {
+        mdlabel: if ( controller.getMetadataURLTemplate() != null ) {
             String id = layer.getDataMetadataSetId();
             if ( id == null ) {
                 break mdlabel;
             }
-            String mdurl = controller.getMetadataURL();
-            if ( mdurl.isEmpty() ) {
-                mdurl = getUrl;
+            String mdurlTemplate = controller.getMetadataURLTemplate();
+            if ( mdurlTemplate.isEmpty() ) {
+                mdurlTemplate = getUrl;
+                if ( !( mdurlTemplate.endsWith( "?" ) || mdurlTemplate.endsWith( "&" ) ) ) {
+                    mdurlTemplate += "?";
+                }
+                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
             }
-            if ( !( mdurl.endsWith( "?" ) || mdurl.endsWith( "&" ) ) ) {
-                mdurl += "?";
-            }
-            mdurl += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id="
-                     + id;
+
+            String mdUrl = StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id );
+
             writer.writeStartElement( WMSNS, "MetadataURL" );
             writer.writeAttribute( "type", "ISO19115:2003" );
             writeElement( writer, WMSNS, "Format", "application/xml" );
             writer.writeStartElement( WMSNS, "OnlineResource" );
             writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", mdurl );
+            writer.writeAttribute( XLNNS, "href", mdUrl );
             writer.writeEndElement();
             writer.writeEndElement();
         }

@@ -127,9 +127,11 @@ import org.deegree.protocol.wfs.storedquery.ListStoredQueriesXMLAdapter;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionKVPAdapter;
 import org.deegree.protocol.wfs.transaction.TransactionXMLAdapter;
+import org.deegree.services.OWS;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException100XMLAdapter;
@@ -195,6 +197,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private List<ICRS> queryCRS = new ArrayList<ICRS>();
 
+    private String metadataUrlTemplate;
+
     private final Map<String, Format> mimeTypeToFormat = new LinkedHashMap<String, Format>();
 
     private final Map<QName, FeatureTypeMetadata> ftNameToFtMetadata = new HashMap<QName, FeatureTypeMetadata>();
@@ -250,6 +254,7 @@ public class WebFeatureService extends AbstractOWS {
             }
         }
 
+        metadataUrlTemplate = jaxbConfig.getMetadataURLTemplate();
         // fill metadata map
         for ( FeatureTypeMetadata ftMd : jaxbConfig.getFeatureTypeMetadata() ) {
             ftNameToFtMetadata.put( ftMd.getName(), ftMd );
@@ -776,12 +781,34 @@ public class WebFeatureService extends AbstractOWS {
             }
         }
 
+        String metadataUrlTemplate = this.metadataUrlTemplate;
+        if ( this.metadataUrlTemplate == null ) {
+            // use local CSW (if running)
+            WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+            Map<String, List<OWS>> ctrls = mgr.getAll();
+            for ( List<OWS> lists : ctrls.values() ) {
+                for ( OWS o : lists ) {
+                    ImplementationMetadata<?> md = o.getImplementationMetadata();
+                    for ( String s : md.getImplementedServiceName() ) {
+                        if ( s.equalsIgnoreCase( "csw" ) ) {
+                            metadataUrlTemplate = OGCFrontController.getHttpGetURL();
+                            if ( !metadataUrlTemplate.endsWith( "?" ) ) {
+                                metadataUrlTemplate = metadataUrlTemplate + "?";
+                            }
+                            metadataUrlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+                        }
+                    }
+                }
+            }
+        }
+
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
         Element extendedCapabilities = wfsVersionToExtendedCaps.get( negotiatedVersion );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      serviceId, serviceProvider, sortedFts,
-                                                                     ftNameToFtMetadata, sectionsUC,
-                                                                     enableTransactions, queryCRS, extendedCapabilities );
+                                                                     metadataUrlTemplate, ftNameToFtMetadata,
+                                                                     sectionsUC, enableTransactions, queryCRS,
+                                                                     extendedCapabilities );
         adapter.export();
         xmlWriter.flush();
     }

@@ -193,7 +193,7 @@ public class WMSController extends AbstractOWS {
 
     private List<Element> extendedCaps;
 
-    private String metadataURL;
+    private String metadataURLTemplate;
 
     public WMSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         super( configURL, serviceInfo );
@@ -217,11 +217,11 @@ public class WMSController extends AbstractOWS {
         }
     }
 
-    private void handleMetadata( String url, String storeid ) {
+    private void handleMetadata( String metadataURLTemplate, String storeid ) {
         if ( service.isNewStyle() ) {
             return;
         }
-        this.metadataURL = url;
+        this.metadataURLTemplate = metadataURLTemplate;
         HashMap<String, String> dataMetadataIds = new HashMap<String, String>();
         traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
         if ( storeid != null ) {
@@ -368,7 +368,7 @@ public class WMSController extends AbstractOWS {
             service = new MapService( sc, controllerConf, workspace );
 
             // after the service knows what layers are available:
-            handleMetadata( conf.getMetadataServiceURL(), conf.getMetadataStoreId() );
+            handleMetadata( conf.getMetadataURLTemplate(), conf.getMetadataStoreId() );
 
             // if ( sc.getSecurityManager() == null ) {
             // // then do nothing and step over
@@ -861,9 +861,9 @@ public class WMSController extends AbstractOWS {
         return extendedCaps;
     }
 
-    public String getMetadataURL() {
+    public String getMetadataURLTemplate() {
         // TODO handle this properly in init(), needs service level dependency management
-        if ( metadataURL == null ) {
+        if ( metadataURLTemplate == null ) {
             WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
             Map<String, List<OWS>> ctrls = mgr.getAll();
             for ( List<OWS> lists : ctrls.values() ) {
@@ -872,13 +872,13 @@ public class WMSController extends AbstractOWS {
                     for ( String s : md.getImplementedServiceName() ) {
                         if ( s.equalsIgnoreCase( "csw" )
                              && md.getImplementedVersions().contains( new Version( 2, 0, 2 ) ) ) {
-                            this.metadataURL = ""; // special case to use requested address
+                            this.metadataURLTemplate = ""; // special case to use requested address
                         }
                     }
                 }
             }
         }
-        return metadataURL;
+        return metadataURLTemplate;
     }
 
     /**
