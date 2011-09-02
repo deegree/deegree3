@@ -611,7 +611,9 @@ public class WMSController extends AbstractOWS {
             Map<String, String> fismap = new HashMap<String, String>();
             fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
             GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
-            serializer.serialize( service.getSchema( fis ).get( 0 ).getSchema(), col, response.getOutputStream() );
+            List<FeatureType> schema = service.getSchema( fis );
+            serializer.serialize( schema.isEmpty() ? null : schema.get( 0 ).getSchema(), col,
+                                  response.getOutputStream() );
             response.flushBuffer();
             return;
         }

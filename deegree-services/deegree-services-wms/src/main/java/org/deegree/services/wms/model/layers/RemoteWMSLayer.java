@@ -46,6 +46,7 @@ import java.util.List;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
@@ -76,6 +77,8 @@ public class RemoteWMSLayer extends Layer {
     private boolean available = true;
 
     private RemoteWMSStore wmsStore;
+
+    private FeatureType featureType;
 
     /**
      * Construct one with RemoteWMSStoreId in jaxb bean.
@@ -152,12 +155,16 @@ public class RemoteWMSLayer extends Layer {
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style ) {
         FeatureCollection col = wmsStore.getFeatureInfo( fi.getEnvelope(), fi.getWidth(), fi.getHeight(), fi.getX(),
                                                          fi.getY(), fi.getFeatureCount(), fi.getParameterMap() );
+        AppSchema schema = col.getType().getSchema();
+        if ( schema != null && schema.getFeatureTypes().length > 0 ) {
+            this.featureType = schema.getFeatureTypes()[0];
+        }
         return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
     }
 
     @Override
     public FeatureType getFeatureType() {
-        return null;
+        return featureType;
     }
 
     @Override
