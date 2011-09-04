@@ -100,5 +100,6 @@ public interface Format {
      *            sink for writing the response, never <code>null</code>
      * @throws Exception
      */
-    public void doGetPropertyValue( GetPropertyValue getPropertyValue, HttpResponseBuffer response );
+    public void doGetPropertyValue( GetPropertyValue getPropertyValue, HttpResponseBuffer response )
+                            throws Exception;
 }

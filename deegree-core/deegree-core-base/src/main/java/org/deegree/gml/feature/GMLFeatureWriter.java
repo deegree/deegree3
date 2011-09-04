@@ -681,7 +681,7 @@ public class GMLFeatureWriter {
         }
     }
 
-    private void export( TypedObjectNode node, int currentLevel, int maxInlineLevels )
+    public void export( TypedObjectNode node, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( node instanceof GMLObject ) {
             if ( node instanceof Feature ) {

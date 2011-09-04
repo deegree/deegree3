@@ -101,11 +101,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class GetFeatureAnalyzer {
+public class QueryAnalyzer {
 
     private final GeometryFactory geomFac = new GeometryFactory();
 
-    private static final Logger LOG = LoggerFactory.getLogger( GetFeatureAnalyzer.class );
+    private static final Logger LOG = LoggerFactory.getLogger( QueryAnalyzer.class );
 
     private final WebFeatureService controller;
 
@@ -132,10 +132,10 @@ public class GetFeatureAnalyzer {
     private String requestedId;
 
     /**
-     * Creates a new {@link GetFeatureAnalyzer}.
+     * Creates a new {@link QueryAnalyzer}.
      * 
-     * @param request
-     *            get feature request to be performed, must not be <code>null</code>
+     * @param wfsQueries
+     *            queries be performed, must not be <code>null</code>
      * @param service
      *            {@link WFSFeatureStoreManager} to be used, must not be <code>null</code>
      * @param outputFormat
@@ -146,8 +146,9 @@ public class GetFeatureAnalyzer {
      * @throws OWSException
      *             if the request cannot be performed, e.g. because it queries feature types that are not served
      */
-    public GetFeatureAnalyzer( GetFeature request, WebFeatureService controller, WFSFeatureStoreManager service,
-                               GMLVersion outputFormat, boolean checkInputDomain ) throws OWSException {
+    public QueryAnalyzer( List<org.deegree.protocol.wfs.query.Query> wfsQueries, WebFeatureService controller,
+                               WFSFeatureStoreManager service, GMLVersion outputFormat, boolean checkInputDomain )
+                            throws OWSException {
 
         this.controller = controller;
         this.service = service;
@@ -155,17 +156,17 @@ public class GetFeatureAnalyzer {
         this.checkAreaOfUse = checkInputDomain;
 
         // generate validated feature store queries
-        if ( request.getQueries().isEmpty() ) {
+        if ( wfsQueries.isEmpty() ) {
             // TODO perform the check here?
             String msg = "Either the typeName parameter must be present or the query must provide feature ids.";
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
         }
 
-        List<AdHocQuery> wfsQueries = convertStoredQueries( request.getQueries() );
+        List<AdHocQuery> adHocQueries = convertStoredQueries( wfsQueries );
 
-        Query[] queries = new Query[wfsQueries.size()];
-        for ( int i = 0; i < wfsQueries.size(); i++ ) {
-            AdHocQuery wfsQuery = wfsQueries.get( i );
+        Query[] queries = new Query[adHocQueries.size()];
+        for ( int i = 0; i < adHocQueries.size(); i++ ) {
+            AdHocQuery wfsQuery = adHocQueries.get( i );
             Query query = validateQuery( wfsQuery );
             queries[i] = query;
             queryToWFSQuery.put( query, wfsQuery );
@@ -201,17 +202,17 @@ public class GetFeatureAnalyzer {
         }
 
         // TODO cope with more queries than one
-        if ( wfsQueries.size() == 1 ) {
-            if ( wfsQueries.get( 0 ) instanceof FilterQuery ) {
-                FilterQuery featureQuery = ( (FilterQuery) wfsQueries.get( 0 ) );
+        if ( adHocQueries.size() == 1 ) {
+            if ( adHocQueries.get( 0 ) instanceof FilterQuery ) {
+                FilterQuery featureQuery = ( (FilterQuery) adHocQueries.get( 0 ) );
                 if ( featureQuery.getPropertyNames() != null ) {
                     this.requestedProps = featureQuery.getPropertyNames();
                 }
                 if ( featureQuery.getXLinkPropertyNames() != null && featureQuery.getXLinkPropertyNames().length > 0 ) {
                     this.xlinkProps = featureQuery.getXLinkPropertyNames();
                 }
-            } else if ( wfsQueries.get( 0 ) instanceof BBoxQuery ) {
-                BBoxQuery bboxQuery = ( (BBoxQuery) wfsQueries.get( 0 ) );
+            } else if ( adHocQueries.get( 0 ) instanceof BBoxQuery ) {
+                BBoxQuery bboxQuery = ( (BBoxQuery) adHocQueries.get( 0 ) );
                 if ( bboxQuery.getPropertyNames() != null && bboxQuery.getPropertyNames().length > 0 ) {
                     // TODO cope with arrays with more than one entry
                     this.requestedProps = bboxQuery.getPropertyNames()[0];
@@ -220,8 +221,8 @@ public class GetFeatureAnalyzer {
                     // TODO cope with arrays with more than one entry
                     this.xlinkProps = bboxQuery.getXLinkPropertyNames()[0];
                 }
-            } else if ( wfsQueries.get( 0 ) instanceof FeatureIdQuery ) {
-                FeatureIdQuery idQuery = ( (FeatureIdQuery) wfsQueries.get( 0 ) );
+            } else if ( adHocQueries.get( 0 ) instanceof FeatureIdQuery ) {
+                FeatureIdQuery idQuery = ( (FeatureIdQuery) adHocQueries.get( 0 ) );
                 if ( idQuery.getPropertyNames() != null && idQuery.getPropertyNames().length > 0 ) {
                     // TODO cope with arrays with more than one entry
                     this.requestedProps = idQuery.getPropertyNames()[0];
