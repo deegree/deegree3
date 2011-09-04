@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml;
 
+import static java.math.BigInteger.ZERO;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
@@ -56,6 +57,7 @@ import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Date;
@@ -106,6 +108,7 @@ import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.protocol.wfs.lockfeature.BBoxLock;
 import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
 import org.deegree.protocol.wfs.lockfeature.FilterLock;
@@ -129,10 +132,11 @@ import org.slf4j.LoggerFactory;
  * response <code>FeatureCollection</code>s (which are not GML feature collections in a strict sense).
  * <p>
  * NOTE: For WFS 1.1.0, some schema communities decided to use a different feature collection element than
- * <code>wfs:FeatureCollection</code>. This practice is supported by this implementation for WFS 1.0.0 and WFS 1.1.0
- * output. However, for WFS 2.0, there's hope that people will refrain from doing so (as WFS 2.0
- * <code>FeatureCollection</code> is pretty much specializied for the requirements of a WFS response). Therefore, it is
- * currently not supported to use any different output container for WFS 2.0.
+ * <code>wfs:FeatureCollection</code>, mostly because <code>wfs:FeatureCollection</code> is bound to GML 3.1. This
+ * practice is supported by this {@link Format} implementation for WFS 1.0.0 and WFS 1.1.0 output. However, for WFS 2.0,
+ * there's hope that people will refrain from doing so (as WFS 2.0 <code>FeatureCollection</code> allows GML 3.2 output
+ * and is not bound to any specific GML version). Therefore, it is currently not supported to use any different output
+ * container for WFS 2.0.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -253,7 +257,7 @@ public class GMLFormat implements Format {
     @Override
     public void doGetFeature( GetFeature request, HttpResponseBuffer response )
                             throws Exception {
-        ResultType type = request.getResultType();
+        ResultType type = request.getPresentationParams().getResultType();
         if ( type == RESULTS || type == null ) {
             doResults( request, response );
         } else {
@@ -266,28 +270,32 @@ public class GMLFormat implements Format {
                             throws Exception {
 
         LOG.debug( "doGetGmlObject: " + request );
+        doSingleObjectResponse( request.getVersion(), request.getOutputFormat(), request.getTraverseXlinkDepth(),
+                                request.getRequestedId(), response );
+    }
 
-        GMLObject o = retrieveObject( request.getRequestedId() );
-
+    private void doSingleObjectResponse( Version version, String outputFormat, String traverseXLinkDepthStr, String id,
+                                         HttpResponseBuffer response )
+                            throws OWSException, XMLStreamException, IOException {
         int traverseXLinkDepth = 0;
-        if ( request.getTraverseXlinkDepth() != null ) {
-            if ( "*".equals( request.getTraverseXlinkDepth() ) ) {
+        if ( traverseXLinkDepthStr != null ) {
+            if ( "*".equals( traverseXLinkDepthStr ) ) {
                 traverseXLinkDepth = -1;
             } else {
                 try {
-                    traverseXLinkDepth = Integer.parseInt( request.getTraverseXlinkDepth() );
+                    traverseXLinkDepth = Integer.parseInt( traverseXLinkDepthStr );
                 } catch ( NumberFormatException e ) {
-                    String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID", request.getTraverseXlinkDepth() );
+                    String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID", traverseXLinkDepthStr );
                     throw new OWSException( new InvalidParameterValueException( msg ) );
                 }
-
             }
         }
 
+        GMLObject o = retrieveObject( id );
+
         String schemaLocation = null;
         if ( o instanceof Feature ) {
-            schemaLocation = WebFeatureService.getSchemaLocation( request.getVersion(), gmlVersion,
-                                                                  ( (Feature) o ).getName() );
+            schemaLocation = WebFeatureService.getSchemaLocation( version, gmlVersion, ( (Feature) o ).getName() );
         } else if ( o instanceof Geometry ) {
             switch ( gmlVersion ) {
             case GML_2:
@@ -308,11 +316,11 @@ public class GMLFormat implements Format {
             throw new OWSException( msg, OPERATION_NOT_SUPPORTED );
         }
 
-        String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
+        String contentType = getContentType( outputFormat, version );
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCRS( master.getDefaultQueryCrs() );
-        gmlStream.setRemoteXLinkTemplate( getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
+        gmlStream.setRemoteXLinkTemplate( getObjectXlinkTemplate( version, gmlVersion ) );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
@@ -327,6 +335,12 @@ public class GMLFormat implements Format {
         }
     }
 
+    @Override
+    public void doGetPropertyValue( GetPropertyValue request, HttpResponseBuffer response ) {
+        LOG.debug( "doGetPropertyValue: " + request );
+        throw new UnsupportedOperationException( "GetPropertyValue handling needs implementation." );
+    }
+
     private void doResults( GetFeature request, HttpResponseBuffer response )
                             throws Exception {
 
@@ -334,29 +348,38 @@ public class GMLFormat implements Format {
 
         GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, master, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
+
+        if ( analyzer.getRequestedFeatureId() != null ) {
+            doSingleObjectResponse( request.getVersion(), request.getPresentationParams().getOutputFormat(),
+                                    request.getResolveParams().getResolveDepth(), analyzer.getRequestedFeatureId(),
+                                    response );
+            return;
+        }
+
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
         int traverseXLinkDepth = 0;
-        int resolveTimeout = -1;
+        BigInteger resolveTimeout = null;
         String xLinkTemplate = getObjectXlinkTemplate( request.getVersion(), gmlVersion );
 
         if ( VERSION_110.equals( request.getVersion() ) || VERSION_200.equals( request.getVersion() ) ) {
-            if ( request.getResolveDepth() != null ) {
-                if ( "*".equals( request.getResolveDepth() ) ) {
+            if ( request.getResolveParams().getResolveDepth() != null ) {
+                if ( "*".equals( request.getResolveParams().getResolveDepth() ) ) {
                     traverseXLinkDepth = -1;
                 } else {
                     try {
-                        traverseXLinkDepth = Integer.parseInt( request.getResolveDepth() );
+                        traverseXLinkDepth = Integer.parseInt( request.getResolveParams().getResolveDepth() );
                     } catch ( NumberFormatException e ) {
-                        String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID", request.getResolveDepth() );
+                        String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID",
+                                                   request.getResolveParams().getResolveDepth() );
                         throw new OWSException( new InvalidParameterValueException( msg ) );
                     }
                 }
             }
-            if ( request.getResolveTimeout() != null ) {
-                resolveTimeout = request.getResolveTimeout();
+            if ( request.getResolveParams().getResolveTimeout() != null ) {
+                resolveTimeout = request.getResolveParams().getResolveTimeout();
                 // needed for CITE 1.1.0 compliance (wfs:GetFeature-traverseXlinkExpiry)
-                if ( resolveTimeout <= 0 ) {
+                if ( resolveTimeout == null || resolveTimeout.equals( ZERO ) ) {
                     String msg = Messages.get( "WFS_TRAVERSEXLINKEXPIRY_ZERO", resolveTimeout );
                     throw new OWSException( new InvalidParameterValueException( msg ) );
                 }
@@ -366,7 +389,7 @@ public class GMLFormat implements Format {
         // quick check if local references in the output can be ruled out
         boolean localReferencesPossible = localReferencesPossible( analyzer, traverseXLinkDepth );
 
-        String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
+        String contentType = getContentType( request.getPresentationParams().getOutputFormat(), request.getVersion() );
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         xmlStream = new BufferableXMLStreamWriter( xmlStream, xLinkTemplate );
 
@@ -402,14 +425,15 @@ public class GMLFormat implements Format {
         }
 
         int maxFeatures = featureLimit;
-        if ( request.getCount() != null && ( maxFeatures == -1 || request.getCount() < maxFeatures ) ) {
-            maxFeatures = request.getCount();
+        if ( request.getPresentationParams().getCount() != null
+             && ( maxFeatures == -1 || request.getPresentationParams().getCount().intValue() < maxFeatures ) ) {
+            maxFeatures = request.getPresentationParams().getCount().intValue();
         }
 
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
-        gmlStream.setXLinkExpiry( resolveTimeout );
+        gmlStream.setXLinkExpiry( resolveTimeout == null ? -1 : resolveTimeout.intValue() );
         gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
         gmlStream.setFeatureProperties( analyzer.getRequestedProps() );
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
@@ -703,7 +727,7 @@ public class GMLFormat implements Format {
         String lockId = acquireLock( request, analyzer );
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
-        String contentType = getContentType( request.getOutputFormat(), request.getVersion() );
+        String contentType = getContentType( request.getPresentationParams().getOutputFormat(), request.getVersion() );
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
 
         // open "wfs:FeatureCollection" element
@@ -858,7 +882,7 @@ public class GMLFormat implements Format {
                 // TODO strategy for multiple LockManagers / feature stores
                 manager = service.getStores()[0].getLockManager();
 
-                LockOperation[] lockOperations = new LockOperation[request.getQueries().length];
+                LockOperation[] lockOperations = new LockOperation[request.getQueries().size()];
                 int i = 0;
                 for ( org.deegree.protocol.wfs.query.Query wfsQuery : request.getQueries() ) {
                     lockOperations[i++] = buildLockOperation( wfsQuery );

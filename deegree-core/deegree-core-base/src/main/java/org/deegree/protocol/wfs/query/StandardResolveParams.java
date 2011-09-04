@@ -60,4 +60,16 @@ public class StandardResolveParams {
         this.resolveDepth = resolveDepth;
         this.resolveTimeout = resolveTimeout;
     }
+
+    public ResolveMode getResolve() {
+        return resolve;
+    }
+
+    public String getResolveDepth() {
+        return resolveDepth;
+    }
+
+    public BigInteger getResolveTimeout() {
+        return resolveTimeout;
+    }
 }

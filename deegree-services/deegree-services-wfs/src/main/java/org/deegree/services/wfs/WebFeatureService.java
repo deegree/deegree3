@@ -110,6 +110,9 @@ import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLockXMLAdapter;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObjectKVPAdapter;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObjectXMLAdapter;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValueKVPAdapter;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValueXMLAdapter;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.protocol.wfs.lockfeature.LockFeatureKVPAdapter;
 import org.deegree.protocol.wfs.lockfeature.LockFeatureXMLAdapter;
@@ -161,7 +164,7 @@ import org.w3c.dom.Element;
  * <ul>
  * <li>1.0.0</li>
  * <li>1.1.0</li>
- * <li>2.0.0 (in implementation)</li>
+ * <li>2.0.0</li>
  * </ul>
  * </p>
  * 
@@ -447,13 +450,15 @@ public class WebFeatureService extends AbstractOWS {
                 break;
             case GetFeature:
                 GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpParamsUC, nsMap );
-                format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
                 format.doGetFeature( getFeature, response );
                 break;
             case GetFeatureWithLock:
                 checkTransactionsEnabled( requestName );
                 GetFeatureWithLock getFeatureWithLock = GetFeatureWithLockKVPAdapter.parse( kvpParamsUC );
-                format = determineFormat( requestVersion, getFeatureWithLock.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
                 break;
             case GetGmlObject:
@@ -462,8 +467,11 @@ public class WebFeatureService extends AbstractOWS {
                 format.doGetGmlObject( getGmlObject, response );
                 break;
             case GetPropertyValue:
-                throw new OWSException( Messages.get( "WFS_OPERATION_NOT_IMPLEMENTED_YET", requestName ),
-                                        OWSException.OPERATION_NOT_SUPPORTED );
+                GetPropertyValue getPropertyValue = GetPropertyValueKVPAdapter.parse( kvpParamsUC );
+                format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
+                format.doGetPropertyValue( getPropertyValue, response );
+                break;
             case ListStoredQueries:
                 ListStoredQueries listStoredQueries = ListStoredQueriesKVPAdapter.parse( kvpParamsUC );
                 storedQueryHandler.doListStoredQueries( listStoredQueries, response );
@@ -587,7 +595,8 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
                 getFeatureAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeature getFeature = getFeatureAdapter.parse( requestVersion );
-                format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
                 format.doGetFeature( getFeature, response );
                 break;
             case GetFeatureWithLock:
@@ -595,7 +604,8 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
-                format = determineFormat( requestVersion, getFeatureWithLock.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
                 break;
             case GetGmlObject:
@@ -606,8 +616,13 @@ public class WebFeatureService extends AbstractOWS {
                 format.doGetGmlObject( getGmlObject, response );
                 break;
             case GetPropertyValue:
-                throw new OWSException( Messages.get( "WFS_OPERATION_NOT_IMPLEMENTED_YET", requestName ),
-                                        OWSException.OPERATION_NOT_SUPPORTED );
+                GetPropertyValueXMLAdapter getPropertyValueAdapter = new GetPropertyValueXMLAdapter();
+                getPropertyValueAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
+                GetPropertyValue getPropertyValue = getPropertyValueAdapter.parse();
+                format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
+                format.doGetPropertyValue( getPropertyValue, response );
+                break;
             case ListStoredQueries:
                 ListStoredQueriesXMLAdapter listStoredQueriesAdapter = new ListStoredQueriesXMLAdapter();
                 listStoredQueriesAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );

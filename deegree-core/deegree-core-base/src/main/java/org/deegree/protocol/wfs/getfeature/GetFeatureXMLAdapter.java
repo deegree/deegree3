@@ -41,7 +41,6 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +49,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -65,13 +63,12 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryXMLAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
+import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
@@ -89,9 +86,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
-
-    private static final Logger LOG = LoggerFactory.getLogger( GetFeatureXMLAdapter.class );
+public class GetFeatureXMLAdapter extends QueryXMLAdapter {
 
     /**
      * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object.
@@ -127,7 +122,6 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             String msg = "Version '" + version + "' is not supported. Supported versions are 1.0.0, 1.1.0 and 2.0.0.";
             throw new Exception( msg );
         }
-
         return result;
     }
 
@@ -136,28 +130,11 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * 
      * @return a GetFeature instance
      */
-    @SuppressWarnings("boxing")
     public GetFeature parse100() {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
 
-        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
-        ResultType resultType = null;
-        if ( resultTypeStr != null ) {
-            if ( resultTypeStr.equalsIgnoreCase( ResultType.RESULTS.toString() ) ) {
-                resultType = ResultType.RESULTS;
-            } else if ( resultTypeStr.equalsIgnoreCase( ResultType.HITS.toString() ) ) {
-                resultType = ResultType.HITS;
-            }
-        }
-
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-
-        String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
-        Integer maxFeatures = null;
-        if ( maxFeaturesStr != null ) {
-            maxFeatures = Integer.parseInt( maxFeaturesStr );
-        }
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters100( rootElement );
 
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
         // check if all child elements are 'wfs:Query' elements (required for CITE)
@@ -216,11 +193,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             queries.add( filterQuery );
         }
 
-        Query[] queryArray = new FilterQuery[queries.size()];
-        queries.toArray( queryArray );
-
-        return new GetFeature( VERSION_100, handle, null, maxFeatures, outputFormat, resultType, null, null, null,
-                               queryArray );
+        return new GetFeature( VERSION_100, handle, presentationParams, null, queries );
     }
 
     /**
@@ -232,32 +205,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
 
-        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
-        ResultType resultType = null;
-        if ( resultTypeStr != null ) {
-            if ( resultTypeStr.equalsIgnoreCase( ResultType.RESULTS.toString() ) ) {
-                resultType = ResultType.RESULTS;
-            } else if ( resultTypeStr.equalsIgnoreCase( ResultType.HITS.toString() ) ) {
-                resultType = ResultType.HITS;
-            }
-        }
-
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-
-        String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
-        Integer maxFeatures = null;
-        if ( maxFeaturesStr != null ) {
-            maxFeatures = Integer.parseInt( maxFeaturesStr );
-        }
-
-        String traverseXlinkDepth = getNodeAsString( rootElement, new XPath( "@traverseXlinkDepth", nsContext ), null );
-
-        String traverseXlinkExpiryStr = getNodeAsString( rootElement, new XPath( "@traverseXlinkExpiry", nsContext ),
-                                                         null );
-        Integer resolveTimout = null;
-        if ( traverseXlinkExpiryStr != null ) {
-            resolveTimout = Integer.parseInt( traverseXlinkExpiryStr ) * 60;
-        }
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters110( rootElement );
+        StandardResolveParams resolveParams = parseStandardResolveParameters110( rootElement );
 
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
         // check if all child elements are 'wfs:Query' elements (required for CITE)
@@ -386,8 +335,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
 
-        return new GetFeature( VERSION_110, handle, null, maxFeatures, outputFormat, resultType, null,
-                               traverseXlinkDepth, resolveTimout, queryArray );
+        return new GetFeature( VERSION_110, handle, presentationParams, resolveParams, queries );
     }
 
     /**
@@ -397,51 +345,14 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      */
     public GetFeature parse200() {
 
-        // <xsd:attributeGroup ref="wfs:StandardPresentationParameters"/>
-
         // <xsd:attribute name="handle" type="xsd:string"/>
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-        // <xsd:attribute name="startIndex" type="xsd:nonNegativeInteger" default="0"/>
-        BigInteger startIndex = getNodeAsBigInt( rootElement, new XPath( "@startIndex", nsContext ), null );
-        // <xsd:attribute name="count" type="xsd:nonNegativeInteger"/>
-        BigInteger count = getNodeAsBigInt( rootElement, new XPath( "@count", nsContext ), null );
-        // <xsd:attribute name="resultType" type="wfs:ResultTypeType" default="results"/>
-        ResultType resultType = null;
-        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
-        if ( resultTypeStr != null ) {
-            if ( resultTypeStr.equalsIgnoreCase( "results" ) ) {
-                resultType = ResultType.RESULTS;
-            } else if ( resultTypeStr.equalsIgnoreCase( "hits" ) ) {
-                resultType = ResultType.HITS;
-            } else {
-                LOG.warn( "Invalid value (='{}') for resultType attribute.", resultTypeStr );
-            }
-        }
+
+        // <xsd:attributeGroup ref="wfs:StandardPresentationParams"/>
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters200( rootElement );
 
         // <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
-
-        // <xsd:attribute name="outputFormat" type="xsd:string" default="application/gml+xml; version=3.2"/>
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-        // <xsd:attribute name="resolve" type="wfs:ResolveValueType" default="none"/>
-        ResolveMode resolve = null;
-        String resolveString = getNodeAsString( rootElement, new XPath( "@resolve", nsContext ), null );
-        if ( resolveString != null ) {
-            if ( resolveString.equalsIgnoreCase( "local" ) ) {
-                resolve = ResolveMode.LOCAL;
-            } else if ( resolveString.equalsIgnoreCase( "remote" ) ) {
-                resolve = ResolveMode.REMOTE;
-            } else if ( resolveString.equalsIgnoreCase( "none" ) ) {
-                resolve = ResolveMode.NONE;
-            } else if ( resolveString.equalsIgnoreCase( "all" ) ) {
-                resolve = ResolveMode.ALL;
-            } else {
-                LOG.warn( "Invalid value (='{}') for resolve attribute.", resolveString );
-            }
-        }
-        // <xsd:attribute name="resolveDepth" type="wfs:positiveIntegerWithStar" default="*"/>
-        String resolveDepth = getNodeAsString( rootElement, new XPath( "@resolveDepth", nsContext ), null );
-        // <xsd:attribute name="resolveTimeout" type="xsd:positiveInteger" default="300"/>
-        BigInteger resolveTimeout = getNodeAsBigInt( rootElement, new XPath( "@resolveTimeout", nsContext ), null );
+        StandardResolveParams resolveParams = parseStandardResolveParameters200( rootElement );
 
         // <xsd:element ref="fes:AbstractQueryExpression" maxOccurs="unbounded"/>
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
@@ -449,23 +360,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         for ( OMElement queryEl : queryElements ) {
             queries.add( new QueryXMLAdapter().parseAbstractQuery200( queryEl ) );
         }
-        Query[] queryArray = new Query[queries.size()];
-        queries.toArray( queryArray );
 
-        Integer startIndexInt = null;
-        if ( startIndex != null ) {
-            startIndexInt = startIndex.intValue();
-        }
-        Integer countInt = null;
-        if ( count != null ) {
-            countInt = count.intValue();
-        }
-        Integer resolveTimeoutInt = null;
-        if ( resolveTimeout != null ) {
-            resolveTimeoutInt = resolveTimeout.intValue();
-        }
-
-        return new GetFeature( VERSION_200, handle, startIndexInt, countInt, outputFormat, resultType, resolve,
-                               resolveDepth, resolveTimeoutInt, queryArray );
+        return new GetFeature( VERSION_200, handle, presentationParams, resolveParams, queries );
     }
 }

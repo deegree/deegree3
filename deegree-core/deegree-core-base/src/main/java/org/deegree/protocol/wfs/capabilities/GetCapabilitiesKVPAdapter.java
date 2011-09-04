@@ -47,7 +47,12 @@ import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
 /**
  * Adapter between KVP encoded <code>GetCapabilities</code> requests (WFS) and {@link GetCapabilities} objects.
  * <p>
- * TODO code for exporting
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -58,13 +63,6 @@ public class GetCapabilitiesKVPAdapter {
 
     /**
      * Parses a normalized KVP-map as a WFS {@link GetCapabilities} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * <li>WFS 2.0.0</li>
-     * </ul>
      * 
      * @param version
      * 

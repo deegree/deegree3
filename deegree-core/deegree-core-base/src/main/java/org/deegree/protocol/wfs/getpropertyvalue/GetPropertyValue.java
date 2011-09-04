@@ -35,8 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getpropertyvalue;
 
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.protocol.wfs.AbstractWFSRequest;
 import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
+import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Represents a <code>GetPropertyValue</code> request to a WFS.
@@ -48,7 +52,11 @@ import org.deegree.protocol.wfs.query.Query;
  * 
  * @version $Revision$, $Date$
  */
-public class GetPropertyValue {
+public class GetPropertyValue extends AbstractWFSRequest {
+
+    private final StandardPresentationParams presentationParams;
+
+    private final StandardResolveParams resolveParams;
 
     private final ValueReference valueReference;
 
@@ -59,6 +67,14 @@ public class GetPropertyValue {
     /**
      * Creates a new {@link GetPropertyValue} instance.
      * 
+     * @param version
+     *            protocol version, must not be <code>null</code>
+     * @param handle
+     *            client-generated identifier, may be <code>null</code>
+     * @param presentationParams
+     *            parameters for controlling the presentation of the result set, may be <code>null</code>
+     * @param resolveParams
+     *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
      * @param valueReference
      *            selects the nodes or child nodes of queried features to be returned, must not be <code>null</code>
      * @param resolvePath
@@ -67,10 +83,33 @@ public class GetPropertyValue {
      * @param query
      *            query to be executed, must not be <code>null</code>
      */
-    public GetPropertyValue( ValueReference valueReference, ValueReference resolvePath, Query query ) {
+    public GetPropertyValue( Version version, String handle, StandardPresentationParams presentationParams,
+                             StandardResolveParams resolveParams, ValueReference valueReference,
+                             ValueReference resolvePath, Query query ) {
+        super( version, handle );
+        this.presentationParams = presentationParams;
+        this.resolveParams = resolveParams;
         this.valueReference = valueReference;
         this.resolvePath = resolvePath;
         this.query = query;
+    }
+
+    /**
+     * Returns the parameters that control the presentation of the result set.
+     * 
+     * @return presentation control parameters, never <code>null</code>
+     */
+    public StandardPresentationParams getPresentationParams() {
+        return presentationParams;
+    }
+
+    /**
+     * Returns the parameters that control the resolution of references of the result set.
+     * 
+     * @return reference resolution control parameters, never <code>null</code>
+     */
+    public StandardResolveParams getResolveParams() {
+        return resolveParams;
     }
 
     /**

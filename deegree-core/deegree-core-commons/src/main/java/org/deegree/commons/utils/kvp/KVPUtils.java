@@ -41,6 +41,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -234,6 +235,34 @@ public class KVPUtils {
         if ( s != null ) {
             try {
                 result = Integer.parseInt( s );
+            } catch ( NumberFormatException e ) {
+                throw new InvalidParameterValueException( "The value of parameter '" + paramName
+                                                          + "' must be an integer, but was '" + s + "'." );
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the specified parameter from a KVP map as a {@link BigInteger} value.
+     * 
+     * @param kvpParams
+     *            KVP map
+     * @param paramName
+     *            name of the parameter
+     * @param defaultValue
+     *            returned when the specified parameter is not present in the map (=null)
+     * @return the specified parameter value as an integer value
+     * @throws InvalidParameterValueException
+     *             if the parameter value does not denote an integer
+     */
+    public static BigInteger getBigInt( Map<String, String> kvpParams, String paramName, BigInteger defaultValue )
+                            throws InvalidParameterValueException {
+        BigInteger result = defaultValue;
+        String s = kvpParams.get( paramName );
+        if ( s != null ) {
+            try {
+                result = new BigInteger( s );
             } catch ( NumberFormatException e ) {
                 throw new InvalidParameterValueException( "The value of parameter '" + paramName
                                                           + "' must be an integer, but was '" + s + "'." );

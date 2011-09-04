@@ -7,7 +7,7 @@
     <Version>2.0.0</Version>
   </SupportedVersions>
 
-  <EnableTransactions>false</EnableTransactions>
+  <EnableTransactions>true</EnableTransactions>
 
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>

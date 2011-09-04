@@ -38,11 +38,12 @@ package org.deegree.services.wfs.format;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
 
 /**
- * Implementations provide input / output formats for the {@link WebFeatureService}.
+ * Implementations provide input/output formats for the {@link WebFeatureService}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -62,7 +63,7 @@ public interface Format {
      * @param request
      *            request to be performed, never <code>null</code>
      * @param response
-     *            sink for writing the respone, never <code>null</code>
+     *            sink for writing the response, never <code>null</code>
      */
     public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
                             throws Exception;
@@ -73,7 +74,7 @@ public interface Format {
      * @param request
      *            request to be performed, never <code>null</code>
      * @param response
-     *            sink for writing the respone, never <code>null</code>
+     *            sink for writing the response, never <code>null</code>
      */
     public void doGetFeature( GetFeature request, HttpResponseBuffer response )
                             throws Exception;
@@ -84,9 +85,20 @@ public interface Format {
      * @param request
      *            request to be performed, never <code>null</code>
      * @param response
-     *            sink for writing the respone, never <code>null</code>
+     *            sink for writing the response, never <code>null</code>
      * @throws Exception
      */
     public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
                             throws Exception;
+
+    /**
+     * Invoked by the {@link WebFeatureService} to perform a <code>GetPropertyValue</code> request for this format.
+     * 
+     * @param request
+     *            request to be performed, never <code>null</code>
+     * @param response
+     *            sink for writing the response, never <code>null</code>
+     * @throws Exception
+     */
+    public void doGetPropertyValue( GetPropertyValue getPropertyValue, HttpResponseBuffer response );
 }

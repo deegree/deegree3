@@ -58,7 +58,12 @@ import org.deegree.protocol.wfs.WFSConstants;
 /**
  * Adapter between KVP <code>DescribeFeatureType</code> requests and {@link DescribeFeatureType} objects.
  * <p>
- * TODO code for exporting to KVP form
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -70,13 +75,6 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
 
     /**
      * Parses a normalized KVP-map as a WFS {@link DescribeFeatureType} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * <li>WFS 2.0.0</li>
-     * </ul>
      * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
@@ -99,9 +97,8 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
         } else if ( VERSION_200.equals( version ) ) {
             result = parse200( kvpParams );
         } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_100,
-                                                                                                  VERSION_110,
-                                                                                                  VERSION_200 ) );
+            String msg = Messages.get( "UNSUPPORTED_VERSION", version,
+                                       Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
             throw new InvalidParameterValueException( msg );
         }
         return result;
@@ -168,7 +165,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
                             throws InvalidParameterValueException {
 
         // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
+        Map<String, String> nsBindings = extractNamespaceBindings200( kvpParams );
 
         // optional: 'TYPENAME'
         QName[] typeNames = extractTypeNames( kvpParams, nsBindings );

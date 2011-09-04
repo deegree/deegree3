@@ -37,6 +37,9 @@ package org.deegree.services.wfs;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_ID;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +53,7 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.CRSUtils;
@@ -80,6 +84,7 @@ import org.deegree.protocol.wfs.query.AdHocQuery;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.StoredQuery;
 import org.jaxen.NamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,6 +129,8 @@ public class GetFeatureAnalyzer {
 
     private final boolean checkAreaOfUse;
 
+    private String requestedId;
+
     /**
      * Creates a new {@link GetFeatureAnalyzer}.
      * 
@@ -148,22 +155,24 @@ public class GetFeatureAnalyzer {
         this.checkAreaOfUse = checkInputDomain;
 
         // generate validated feature store queries
-        org.deegree.protocol.wfs.query.Query[] wfsQueries = request.getQueries();
-        Query[] queries = new Query[wfsQueries.length];
-        if ( queries.length == 0 ) {
+        if ( request.getQueries().isEmpty() ) {
             // TODO perform the check here?
             String msg = "Either the typeName parameter must be present or the query must provide feature ids.";
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
         }
-        for ( int i = 0; i < wfsQueries.length; i++ ) {
-            org.deegree.protocol.wfs.query.Query wfsQuery = wfsQueries[i];
+
+        List<AdHocQuery> wfsQueries = convertStoredQueries( request.getQueries() );
+
+        Query[] queries = new Query[wfsQueries.size()];
+        for ( int i = 0; i < wfsQueries.size(); i++ ) {
+            AdHocQuery wfsQuery = wfsQueries.get( i );
             Query query = validateQuery( wfsQuery );
             queries[i] = query;
             queryToWFSQuery.put( query, wfsQuery );
 
             // TODO what about queries with different SRS?
-            if ( ((AdHocQuery) wfsQuery).getSrsName() != null ) {
-                requestedCrs = ((AdHocQuery) wfsQuery).getSrsName();
+            if ( wfsQuery.getSrsName() != null ) {
+                requestedCrs = ( (AdHocQuery) wfsQuery ).getSrsName();
             } else {
                 requestedCrs = controller.getDefaultQueryCrs();
             }
@@ -192,17 +201,17 @@ public class GetFeatureAnalyzer {
         }
 
         // TODO cope with more queries than one
-        if ( wfsQueries.length == 1 ) {
-            if ( wfsQueries[0] instanceof FilterQuery ) {
-                FilterQuery featureQuery = ( (FilterQuery) wfsQueries[0] );
+        if ( wfsQueries.size() == 1 ) {
+            if ( wfsQueries.get( 0 ) instanceof FilterQuery ) {
+                FilterQuery featureQuery = ( (FilterQuery) wfsQueries.get( 0 ) );
                 if ( featureQuery.getPropertyNames() != null ) {
                     this.requestedProps = featureQuery.getPropertyNames();
                 }
                 if ( featureQuery.getXLinkPropertyNames() != null && featureQuery.getXLinkPropertyNames().length > 0 ) {
                     this.xlinkProps = featureQuery.getXLinkPropertyNames();
                 }
-            } else if ( wfsQueries[0] instanceof BBoxQuery ) {
-                BBoxQuery bboxQuery = ( (BBoxQuery) wfsQueries[0] );
+            } else if ( wfsQueries.get( 0 ) instanceof BBoxQuery ) {
+                BBoxQuery bboxQuery = ( (BBoxQuery) wfsQueries.get( 0 ) );
                 if ( bboxQuery.getPropertyNames() != null && bboxQuery.getPropertyNames().length > 0 ) {
                     // TODO cope with arrays with more than one entry
                     this.requestedProps = bboxQuery.getPropertyNames()[0];
@@ -211,8 +220,8 @@ public class GetFeatureAnalyzer {
                     // TODO cope with arrays with more than one entry
                     this.xlinkProps = bboxQuery.getXLinkPropertyNames()[0];
                 }
-            } else if ( wfsQueries[0] instanceof FeatureIdQuery ) {
-                FeatureIdQuery idQuery = ( (FeatureIdQuery) wfsQueries[0] );
+            } else if ( wfsQueries.get( 0 ) instanceof FeatureIdQuery ) {
+                FeatureIdQuery idQuery = ( (FeatureIdQuery) wfsQueries.get( 0 ) );
                 if ( idQuery.getPropertyNames() != null && idQuery.getPropertyNames().length > 0 ) {
                     // TODO cope with arrays with more than one entry
                     this.requestedProps = idQuery.getPropertyNames()[0];
@@ -223,6 +232,41 @@ public class GetFeatureAnalyzer {
                 }
             }
         }
+    }
+
+    private List<AdHocQuery> convertStoredQueries( List<org.deegree.protocol.wfs.query.Query> wfsQueries )
+                            throws OWSException {
+        List<AdHocQuery> adHocQueries = new ArrayList<AdHocQuery>();
+        for ( org.deegree.protocol.wfs.query.Query wfsQuery : wfsQueries ) {
+            if ( wfsQuery instanceof AdHocQuery ) {
+                adHocQueries.add( (AdHocQuery) wfsQuery );
+            } else {
+                StoredQuery storedQuery = (StoredQuery) wfsQuery;
+                if ( storedQuery.getId().equals( GET_FEATURE_BY_ID ) ) {
+                    OMElement literalEl = storedQuery.getParams().get( "ID" );
+                    if ( literalEl == null ) {
+                        String msg = "Stored query '" + storedQuery.getId() + "' requires parameter 'ID'.";
+                        throw new OWSException( msg, MISSING_PARAMETER_VALUE, "ID" );
+                    }
+                    LOG.debug( "GetFeatureById query" );
+                    requestedId = literalEl.getText();
+                } else {
+                    String msg = "Stored query with id '" + storedQuery.getId() + "' is not known.";
+                    throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "storedQueryId" );
+                }
+            }
+        }
+        return adHocQueries;
+    }
+
+    /**
+     * In case of a WFS 2.0 <code>GetFeatureById</code> request, this returns the requested id.
+     * 
+     * @return id of the requested feature or <code>null</code> if the request is not a <code>GetFeatureById</code>
+     *         request
+     */
+    public String getRequestedFeatureId() {
+        return requestedId;
     }
 
     /**
@@ -295,7 +339,7 @@ public class GetFeatureAnalyzer {
                             throws OWSException {
 
         // requalify query typenames and keep track of them
-        TypeName[] wfsTypeNames = ((AdHocQuery) wfsQuery).getTypeNames();
+        TypeName[] wfsTypeNames = ( (AdHocQuery) wfsQuery ).getTypeNames();
         TypeName[] typeNames = new TypeName[wfsTypeNames.length];
         FeatureStore commonFs = null;
         for ( int i = 0; i < wfsTypeNames.length; i++ ) {
@@ -304,7 +348,7 @@ public class GetFeatureAnalyzer {
             if ( ft == null ) {
                 String msg = "Feature type with name '" + wfsTypeNames[i].getFeatureTypeName()
                              + "' is not served by this WFS.";
-                throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
+                throw new OWSException( msg, INVALID_PARAMETER_VALUE, "typeName" );
             }
             FeatureStore fs = service.getStore( ft.getName() );
             if ( commonFs != null ) {
@@ -343,7 +387,7 @@ public class GetFeatureAnalyzer {
                 }
                 if ( checkAreaOfUse ) {
                     for ( Geometry geom : Filters.getGeometries( fQuery.getFilter() ) ) {
-                        validateGeometryConstraint( geom, ((AdHocQuery) wfsQuery).getSrsName() );
+                        validateGeometryConstraint( geom, ( (AdHocQuery) wfsQuery ).getSrsName() );
                     }
                 }
             }
@@ -367,7 +411,7 @@ public class GetFeatureAnalyzer {
                 }
             }
             if ( checkAreaOfUse ) {
-                validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), ((AdHocQuery) wfsQuery).getSrsName() );
+                validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), ( (AdHocQuery) wfsQuery ).getSrsName() );
             }
 
             Envelope bbox = bboxQuery.getBBox();
@@ -399,7 +443,7 @@ public class GetFeatureAnalyzer {
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
         }
 
-        SortProperty[] sortProps = ((AdHocQuery) wfsQuery).getSortBy();
+        SortProperty[] sortProps = ( (AdHocQuery) wfsQuery ).getSortBy();
         if ( sortProps != null ) {
             for ( SortProperty sortProperty : sortProps ) {
                 validatePropertyName( sortProperty.getSortProperty(), typeNames );
@@ -411,7 +455,8 @@ public class GetFeatureAnalyzer {
             Filters.setDefaultCRS( filter, controller.getDefaultQueryCrs() );
         }
 
-        return new Query( typeNames, filter, ((AdHocQuery) wfsQuery).getFeatureVersion(), ((AdHocQuery) wfsQuery).getSrsName(), sortProps );
+        return new Query( typeNames, filter, ( (AdHocQuery) wfsQuery ).getFeatureVersion(),
+                          ( (AdHocQuery) wfsQuery ).getSrsName(), sortProps );
     }
 
     private void validatePropertyName( ValueReference propName, TypeName[] typeNames )

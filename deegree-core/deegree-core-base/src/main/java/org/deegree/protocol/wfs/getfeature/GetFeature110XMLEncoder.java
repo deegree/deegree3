@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
+import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -115,36 +117,36 @@ public class GetFeature110XMLEncoder {
             writer.writeAttribute( "handle", handle );
         }
 
-        ResultType resultType = getFeature.getResultType();
+        ResultType resultType = getFeature.getPresentationParams().getResultType();
         if ( resultType != null ) {
             writer.writeAttribute( "resultType", resultType.toString().toLowerCase() );
         }
 
-        String outputFormat = getFeature.getOutputFormat();
+        String outputFormat = getFeature.getPresentationParams().getOutputFormat();
         if ( ( outputFormat != null ) && ( !outputFormat.equals( "" ) ) ) {
             writer.writeAttribute( "outputFormat", outputFormat );
         }
 
-        Integer maxFeatures = getFeature.getCount();
+        BigInteger maxFeatures = getFeature.getPresentationParams().getCount();
         if ( maxFeatures != null ) {
             writer.writeAttribute( "maxFeatures", maxFeatures.toString() );
         }
 
-        String traverseXlinkDepth = getFeature.getResolveDepth();
+        String traverseXlinkDepth = getFeature.getResolveParams().getResolveDepth();
         if ( ( traverseXlinkDepth != null ) && ( !traverseXlinkDepth.equals( "" ) ) ) {
             writer.writeAttribute( "traverseXlinkDepth", traverseXlinkDepth );
         } else { /* otherwise set this mandatory attribute to value '*' */
             writer.writeAttribute( "traverseXlinkDepth", "*" );
         }
 
-        Integer resolveTimeout = getFeature.getResolveTimeout();
+        BigInteger resolveTimeout = getFeature.getResolveParams().getResolveTimeout();
         if ( resolveTimeout != null ) {
-            int traverseXlinkExpiry = resolveTimeout / 60;
+            BigInteger traverseXlinkExpiry = resolveTimeout.divide( BigInteger.valueOf( 60 ) );
             writer.writeAttribute( "traverseXlinkExpiry", "" + traverseXlinkExpiry );
         }
 
         /* write <query> child elements */
-        Query[] queries = getFeature.getQueries();
+        List<Query> queries = getFeature.getQueries();
         if ( queries != null ) {
             for ( Query nextQuery : queries ) {
                 if ( nextQuery != null ) {

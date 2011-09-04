@@ -78,6 +78,35 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( QueryXMLAdapter.class );
 
+    public StandardPresentationParams parseStandardPresentationParameters100( OMElement requestEl ) {
+
+        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
+        ResultType resultType = null;
+        if ( resultTypeStr != null ) {
+            if ( resultTypeStr.equalsIgnoreCase( ResultType.RESULTS.toString() ) ) {
+                resultType = ResultType.RESULTS;
+            } else if ( resultTypeStr.equalsIgnoreCase( ResultType.HITS.toString() ) ) {
+                resultType = ResultType.HITS;
+            }
+        }
+
+        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
+
+        BigInteger maxFeatures = getNodeAsBigInt( rootElement, new XPath( "@maxFeatures", nsContext ), null );
+
+        return new StandardPresentationParams( null, maxFeatures, resultType, outputFormat );
+    }
+
+    public StandardPresentationParams parseStandardPresentationParameters110( OMElement requestEl ) {
+        return parseStandardPresentationParameters100( requestEl );
+    }
+
+    /**
+     * Parses the <code>wfs:StandardPresentationParameters</code> attribute group.
+     * 
+     * @param requestEl
+     * @return
+     */
     public StandardPresentationParams parseStandardPresentationParameters200( OMElement requestEl ) {
 
         // <xsd:attribute name="startIndex" type="xsd:nonNegativeInteger" default="0"/>
@@ -103,6 +132,20 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
 
         return new StandardPresentationParams( startIndex, count, resultType, outputFormat );
+    }
+
+    public StandardResolveParams parseStandardResolveParameters110( OMElement requestEl ) {
+
+        String traverseXlinkDepth = getNodeAsString( rootElement, new XPath( "@traverseXlinkDepth", nsContext ), null );
+
+        String traverseXlinkExpiryStr = getNodeAsString( rootElement, new XPath( "@traverseXlinkExpiry", nsContext ),
+                                                         null );
+        BigInteger resolveTimeout = null;
+        if ( traverseXlinkExpiryStr != null ) {
+            resolveTimeout = new BigInteger( traverseXlinkExpiryStr ).multiply( BigInteger.valueOf( 60 ) );
+        }
+
+        return new StandardResolveParams( null, traverseXlinkDepth, resolveTimeout );
     }
 
     public StandardResolveParams parseStandardResolveParameters200( OMElement requestEl ) {
@@ -134,7 +177,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
     }
 
     /**
-     * Parses a <code>fes:AbstractQueryExpression</code> (in the context of a WFS 2.0.0 XML request).
+     * Parses a <code>fes:AbstractQueryExpression</code> element (in the context of a WFS 2.0.0 XML request).
      * 
      * @param queryEl
      *            element substitutable for <code>fes:AbstractQueryExpression</code>, must not be <code>null</code>
