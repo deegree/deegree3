@@ -52,7 +52,7 @@ import org.junit.Test;
 /**
  * Tests for {@link DescribeFeatureTypeXMLAdapter}.
  * 
- * @author <a href="mailto:schneider@lat-lon.de</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$

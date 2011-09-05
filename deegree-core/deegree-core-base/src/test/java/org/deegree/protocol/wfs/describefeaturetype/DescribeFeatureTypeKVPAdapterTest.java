@@ -52,9 +52,9 @@ import org.deegree.protocol.wfs.WFSConstants;
 import org.junit.Test;
 
 /**
- * The <code>DescribeFeatureTypeKVPAdapterTest</code> class tests the parsing of the DescribeFeatureType request in the
- * case the content is in KVP format.
+ * Tests for {@link DescribeFeatureTypeKVPAdapter}.
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: ionita $
  * 
