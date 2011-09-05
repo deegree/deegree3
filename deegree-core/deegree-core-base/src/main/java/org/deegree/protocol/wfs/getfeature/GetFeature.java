@@ -45,6 +45,14 @@ import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
  * Represents a <code>GetFeature</code> request to a WFS.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
+ * </ul>
+ * </p>
  * 
  * @see Query
  * 

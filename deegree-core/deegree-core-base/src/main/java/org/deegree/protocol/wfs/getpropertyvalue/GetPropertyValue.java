@@ -44,6 +44,12 @@ import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
  * Represents a <code>GetPropertyValue</code> request to a WFS.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 2.0.0</li>
+ * </ul>
+ * </p>
  * 
  * @see Query
  * 
@@ -84,8 +90,8 @@ public class GetPropertyValue extends AbstractWFSRequest {
      *            query to be executed, must not be <code>null</code>
      */
     public GetPropertyValue( Version version, String handle, StandardPresentationParams presentationParams,
-                             ResolveParams resolveParams, ValueReference valueReference,
-                             ValueReference resolvePath, Query query ) {
+                             ResolveParams resolveParams, ValueReference valueReference, ValueReference resolvePath,
+                             Query query ) {
         super( version, handle );
         this.presentationParams = presentationParams;
         this.resolveParams = resolveParams;

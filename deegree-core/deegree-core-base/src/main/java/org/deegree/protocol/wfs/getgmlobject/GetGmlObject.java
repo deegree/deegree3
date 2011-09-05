@@ -41,9 +41,10 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
 /**
  * Represents a <code>GetGmlObject</code> request to a WFS.
  * <p>
- * From the WFS 1.1.0 spec.: The <code>GetGmlObject</code> operation allows retrieval of features and elements by ID
- * from a WFS. A <code>GetGmlObject</code> request is processed by a WFS and an XML document fragment containing the
- * result set is returned to the client.
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.1.0</li>
+ * </ul>
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

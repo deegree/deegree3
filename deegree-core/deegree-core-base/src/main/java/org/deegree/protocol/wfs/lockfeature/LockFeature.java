@@ -40,6 +40,13 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**
  * Represents a <code>LockFeature</code> request to a WFS.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
