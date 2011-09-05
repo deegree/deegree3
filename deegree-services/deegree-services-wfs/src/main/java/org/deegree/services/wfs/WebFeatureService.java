@@ -594,7 +594,7 @@ public class WebFeatureService extends AbstractOWS {
             case GetFeature:
                 GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
                 getFeatureAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
-                GetFeature getFeature = getFeatureAdapter.parse( requestVersion );
+                GetFeature getFeature = getFeatureAdapter.parse();
                 format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeature, response );

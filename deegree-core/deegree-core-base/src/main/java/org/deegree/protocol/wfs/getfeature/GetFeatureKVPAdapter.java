@@ -61,7 +61,6 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -70,6 +69,7 @@ import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryKVPAdapter;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
@@ -146,7 +146,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        ValueReference[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        ProjectionClause[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: FEATUREVERSION
         String featureVersion = kvpParams.get( "FEATUREVERSION" );
@@ -183,8 +183,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-            queries.add( new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null,
-                                             null ) );
+            queries.add( new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null ) );
         } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -198,7 +197,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             }
 
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
-            queries.add( new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, null, bbox ) );
+            queries.add( new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, bbox ) );
         } else if ( filterStr != null || typeNames != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -231,10 +230,10 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
                 }
                 if ( propertyNames != null ) {
                     queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
-                                                  propertyNames[i], null, null, null, filter ) );
+                                                  propertyNames[i], null, filter ) );
                 } else {
                     queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
-                                                  null, null, null, filter ) );
+                                                  null, filter ) );
                 }
             }
         }
@@ -282,7 +281,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        ValueReference[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        ProjectionClause[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: SORTBY
         String sortbyStr = kvpParams.get( "SORTBY" );
@@ -339,10 +338,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         StandardResolveParams resolveParams = new StandardResolveParams( null, propTravXlinkExpiry, resolveTimeout );
-
-        XLinkPropertyName[][] xlinkPropNames = getXLinkPropNames( propertyNames, ptxDepthAr, ptxExpAr,
-                                                                  traverseXlinkDepth, traverseXlinkExpiry );
-
+        propertyNames = getXLinkPropNames( propertyNames, ptxDepthAr, ptxExpAr, traverseXlinkDepth, traverseXlinkExpiry );
         List<Query> queries = new ArrayList<Query>();
 
         if ( ( featureIdStr != null && bboxStr != null ) || ( featureIdStr != null && filterStr != null )
@@ -352,8 +348,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-            queries.add( new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames,
-                                             xlinkPropNames, sortBy ) );
+            queries.add( new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, sortBy ) );
         } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -372,7 +367,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             }
 
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
-            queries.add( new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, sortBy, bbox ) );
+            queries.add( new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, sortBy, bbox ) );
         } else if ( filterStr != null || typeNames != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -404,21 +399,11 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
                     }
                 }
                 if ( propertyNames != null ) {
-                    if ( xlinkPropNames != null ) {
-                        queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
-                                                      propertyNames[i], xlinkPropNames[i], null, sortBy, filter ) );
-                    } else {
-                        queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
-                                                      propertyNames[i], null, null, sortBy, filter ) );
-                    }
+                    queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
+                                                  propertyNames[i], sortBy, filter ) );
                 } else {
-                    if ( xlinkPropNames != null ) {
-                        queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
-                                                      xlinkPropNames[i], null, sortBy, filter ) );
-                    } else {
-                        queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
-                                                      null, null, sortBy, filter ) );
-                    }
+                    queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
+                                                  sortBy, filter ) );
                 }
             }
         }

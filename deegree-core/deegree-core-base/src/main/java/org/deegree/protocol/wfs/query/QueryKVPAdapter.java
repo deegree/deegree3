@@ -61,7 +61,6 @@ import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
@@ -73,7 +72,6 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,7 +174,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: PROPERTYNAME
         String propertyStr = kvpUC.get( "PROPERTYNAME" );
-        ValueReference[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        ProjectionClause[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: FILTER
         String filterStr = kvpUC.get( "FILTER" );
@@ -198,7 +196,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 throw new Exception( "The FILTER parameter requires the TYPENAMES parameter to be present as well." );
             }
             Filter filter = parseFilter200( filterStr );
-            query = new FilterQuery( null, typeNames, null, srs, null, null, null, sortBy, filter );
+            query = new FilterQuery( null, typeNames, null, srs, null, sortBy, filter );
         }
 
         return Collections.singletonList( query );
@@ -275,32 +273,24 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return gf.createEnvelope( lowerCorner, upperCorner, srs );
     }
 
-    protected static XLinkPropertyName[][] getXLinkPropNames( ValueReference[][] propertyNames, String[][] ptxDepthAr,
-                                                              Integer[][] ptxExpAr, String traverseXlinkDepth,
-                                                              Integer traverseXlinkExpiry ) {
-        XLinkPropertyName[][] result = null;
+    protected static ProjectionClause[][] getXLinkPropNames( ProjectionClause[][] propertyNames, String[][] ptxDepthAr,
+                                                             Integer[][] ptxExpAr, String traverseXlinkDepth,
+                                                             Integer traverseXlinkExpiry ) {
+        ProjectionClause[][] result = null;
         if ( propertyNames != null ) {
-            result = new XLinkPropertyName[propertyNames.length][];
-
+            result = new ProjectionClause[propertyNames.length][];
             for ( int i = 0; i < propertyNames.length; i++ ) {
-                result[i] = new XLinkPropertyName[propertyNames[i].length];
+                result[i] = new ProjectionClause[propertyNames[i].length];
                 for ( int j = 0; j < propertyNames[i].length; j++ ) {
-
-                    if ( ptxDepthAr != null ) {
-                        if ( ptxExpAr != null ) {
-                            result[i][j] = new XLinkPropertyName( propertyNames[i][j], ptxDepthAr[i][j], ptxExpAr[i][j] );
-                        } else {
-                            result[i][j] = new XLinkPropertyName( propertyNames[i][j], ptxDepthAr[i][j],
-                                                                  traverseXlinkExpiry );
-                        }
+                    if ( ptxDepthAr != null || ptxExpAr != null ) {
+                        String resolveDepth = ptxDepthAr[i][j];
+                        BigInteger resolveTimeout = ptxExpAr[i][j] == null ? null
+                                                                          : BigInteger.valueOf( ptxExpAr[i][j] * 60 );
+                        StandardResolveParams resolveParams = new StandardResolveParams( null, resolveDepth,
+                                                                                         resolveTimeout );
+                        result[i][j] = new ProjectionClause( propertyNames[i][j].getPropertyName(), resolveParams );
                     } else {
-                        if ( ptxExpAr != null ) {
-                            result[i][j] = new XLinkPropertyName( propertyNames[i][j], traverseXlinkDepth,
-                                                                  ptxExpAr[i][j] );
-                        } else {
-                            result[i][j] = new XLinkPropertyName( propertyNames[i][j], traverseXlinkDepth,
-                                                                  traverseXlinkExpiry );
-                        }
+                        result[i][j] = propertyNames[i][j];
                     }
                 }
             }
@@ -391,17 +381,17 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return result;
     }
 
-    protected static ValueReference[][] getPropertyNames( String propertyStr, NamespaceBindings nsContext ) {
-        ValueReference[][] result = null;
+    protected static ProjectionClause[][] getPropertyNames( String propertyStr, NamespaceBindings nsContext ) {
+        ProjectionClause[][] result = null;
         if ( propertyStr != null ) {
             String[][] propComm = parseParamList( propertyStr );
 
-            result = new ValueReference[propComm.length][];
+            result = new ProjectionClause[propComm.length][];
             for ( int i = 0; i < propComm.length; i++ ) {
-                result[i] = new ValueReference[propComm[i].length];
+                result[i] = new ProjectionClause[propComm[i].length];
 
                 for ( int j = 0; j < propComm[i].length; j++ ) {
-                    result[i][j] = new ValueReference( propComm[i][j], nsContext );
+                    result[i][j] = new ProjectionClause( new ValueReference( propComm[i][j], nsContext ), null );
                 }
             }
         }

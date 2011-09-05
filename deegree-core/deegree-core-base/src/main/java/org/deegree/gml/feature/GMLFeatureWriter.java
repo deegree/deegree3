@@ -88,7 +88,6 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
@@ -97,7 +96,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,10 +130,7 @@ public class GMLFeatureWriter {
     private final String remoteXlinkTemplate;
 
     // TODO handle properties that are more complex XPath-expressions
-    private final Set<QName> propNames = new HashSet<QName>();
-
-    // TODO handle properties that are more complex XPath-expressions
-    private final Map<QName, XLinkPropertyName> xlinkPropNames = new HashMap<QName, XLinkPropertyName>();
+    private final Map<QName, ProjectionClause> projections = new HashMap<QName, ProjectionClause>();
 
     // export all levels by default
     private final int traverseXlinkDepth;
@@ -169,14 +165,12 @@ public class GMLFeatureWriter {
      * @param remoteXlinkTemplate
      *            URI template used to create references to subfeatures that will not be included in the document, e.g.
      *            <code>#{}</code>, substring <code>{}</code> is replaced by the object id
-     * @param requestedProps
-     *            properties to be exported, may be <code>null</code> (export all properties)
+     * @param projections
+     *            controls the properties to be exported, may be <code>null</code> (export all properties)
      * @param traverseXlinkDepth
      *            number of subfeature levels to export (0...) or -1 (unlimited)
      * @param traverseXlinkExpiry
      *            timeout for resolving remote feature references (currently unsupported)
-     * @param xlinkProps
-     *            properties with special xlink behaviour, can be <code>null</code>
      * @param exportSfGeometries
      *            if true, geometries are exported as SFS geometries (only applies to complex geometries)
      * @param outputGeometries
@@ -189,10 +183,10 @@ public class GMLFeatureWriter {
      *            if true, {@link ExtraProps} associated with features are exported as property elements
      */
     public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, ICRS outputCRS, CoordinateFormatter formatter,
-                             String remoteXlinkTemplate, ValueReference[] requestedProps, int traverseXlinkDepth,
-                             int traverseXlinkExpiry, XLinkPropertyName[] xlinkProps, boolean exportSfGeometries,
-                             boolean outputGeometries, Map<String, String> prefixToNs,
-                             GMLForwardReferenceHandler additionalObjectHandler, boolean exportExtraProps ) {
+                             String remoteXlinkTemplate, ProjectionClause[] projections, int traverseXlinkDepth,
+                             int traverseXlinkExpiry, boolean exportSfGeometries, boolean outputGeometries,
+                             Map<String, String> prefixToNs, GMLForwardReferenceHandler additionalObjectHandler,
+                             boolean exportExtraProps ) {
 
         this.version = version;
         this.writer = writer;
@@ -201,28 +195,18 @@ public class GMLFeatureWriter {
         } else {
             this.remoteXlinkTemplate = "#{}";
         }
-        if ( requestedProps != null ) {
-            for ( ValueReference propertyName : requestedProps ) {
-                QName qName = propertyName.getAsQName();
+        if ( projections != null ) {
+            for ( ProjectionClause projection : projections ) {
+                QName qName = projection.getPropertyName().getAsQName();
                 if ( qName != null ) {
-                    this.propNames.add( qName );
+                    this.projections.put( qName, projection );
                 } else {
-                    LOG.warn( "Currently, only simple qualified names are supported for restricting output properties." );
+                    LOG.warn( "Currently, only simple qualified names are supported for projection." );
                 }
             }
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
         // this.traverseXlinkExpiry = traverseXlinkExpiry;
-        if ( xlinkProps != null ) {
-            for ( XLinkPropertyName xlinkProp : xlinkProps ) {
-                QName qName = xlinkProp.getPropertyName().getAsQName();
-                if ( qName != null ) {
-                    this.xlinkPropNames.put( qName, xlinkProp );
-                } else {
-                    LOG.warn( "Currently, only simple qualified names are supported for setting special XLink property output behaviour." );
-                }
-            }
-        }
 
         gmlNs = version.getNamespace();
         if ( !version.equals( GMLVersion.GML_2 ) ) {
@@ -406,12 +390,13 @@ public class GMLFeatureWriter {
     }
 
     private int getInlineLevels( Property prop ) {
-        XLinkPropertyName xlinkPropName = xlinkPropNames.get( prop.getName() );
-        if ( xlinkPropName != null ) {
-            if ( xlinkPropName.getTraverseXlinkDepth().equals( "*" ) ) {
+        ProjectionClause projection = projections.get( prop.getName() );
+        if ( projection != null && projection.getResolveParams() != null
+             && projection.getResolveParams().getResolveDepth() != null ) {
+            if ( projection.getResolveParams().getResolveDepth().equals( "*" ) ) {
                 return -1;
             }
-            return Integer.parseInt( xlinkPropName.getTraverseXlinkDepth() );
+            return Integer.parseInt( projection.getResolveParams().getResolveDepth() );
         }
         return traverseXlinkDepth;
     }
@@ -779,7 +764,6 @@ public class GMLFeatureWriter {
     }
 
     private boolean isPropertyRequested( QName propName ) {
-        // TODO compare names properly (different types)
-        return ( propNames.isEmpty() || propNames.contains( propName ) ) || xlinkPropNames.containsKey( propName );
+        return projections.isEmpty() || projections.containsKey( propName );
     }
 }

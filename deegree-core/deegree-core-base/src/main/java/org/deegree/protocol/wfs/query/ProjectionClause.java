@@ -1,10 +1,10 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,29 +33,48 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.query;
 
-import javax.xml.namespace.QName;
+package org.deegree.protocol.wfs.query;
 
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * TODO add class documentation here
+ * Specifies a feature property for which the resolving behaviour for xlink-references should be altered selectively.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: schneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class ProjectionClause extends ValueReference {
+public class ProjectionClause {
+
+    private final ValueReference propertyName;
 
     private final StandardResolveParams resolveParams;
 
-    private final ValueReference resolvePath;
-
-    public ProjectionClause( QName name, StandardResolveParams resolveParams, ValueReference resolvePath ) {
-        super( name );
+    /**
+     * Creates a new {@link ProjectionClause} instance.
+     * 
+     * @param propertyName
+     *            name of the targeted property, must not be <code>null</code>
+     * @param resolveParams
+     *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
+     */
+    public ProjectionClause( ValueReference propertyName, StandardResolveParams resolveParams ) {
+        this.propertyName = propertyName;
         this.resolveParams = resolveParams;
-        this.resolvePath = resolvePath;
+    }
+
+    /**
+     * Returns the targeted property name.
+     * 
+     * @return the targeted property name, never <code>null</code>
+     */
+    public ValueReference getPropertyName() {
+        return propertyName;
+    }
+
+    public StandardResolveParams getResolveParams() {
+        return resolveParams;
     }
 }

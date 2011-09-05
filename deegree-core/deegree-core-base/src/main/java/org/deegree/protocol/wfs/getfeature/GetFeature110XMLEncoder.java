@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
+
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.List;
@@ -52,13 +57,14 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.StandardResolveParams;
 import org.jaxen.NamespaceContext;
 
 /**
@@ -219,56 +225,55 @@ public class GetFeature110XMLEncoder {
         }
 
         /* write child elements */
-        ValueReference[] propertyNames = query.getPropertyNames();
+        ProjectionClause[] propertyNames = query.getProjectionClauses();
         if ( propertyNames != null ) {
-            for ( ValueReference nextProperty : propertyNames ) {
+            for ( ProjectionClause nextProperty : propertyNames ) {
                 if ( nextProperty != null ) {
+                    StandardResolveParams resolveParams = nextProperty.getResolveParams();
+                    if ( resolveParams.getResolve() == null && resolveParams.getResolveDepth() == null
+                         && resolveParams.getResolveTimeout() == null ) {
+                        QName qname = nextProperty.getPropertyName().getAsQName();
+                        if ( qname != null ) {
+                            writer.writeStartElement( WFS_PREFIX, "PropertyName", WFS_NS );
+                            writePropertyNameCharacters( nextProperty.getPropertyName(), writer );
+                            writer.writeEndElement();
+                        }
+                    } else {
+                        writer.writeStartElement( WFSConstants.WFS_PREFIX, "XlinkPropertyName", WFSConstants.WFS_NS );
 
-                    QName qname = nextProperty.getAsQName();
-                    if ( qname != null ) {
-                        writer.writeStartElement( WFSConstants.WFS_PREFIX, "PropertyName", WFSConstants.WFS_NS );
-                        writePropertyNameCharacters( nextProperty, writer );
+                        String traverseXlinkDepth = resolveParams.getResolveDepth();
+                        BigInteger traverseXlinkExpiry = resolveParams.getResolveTimeout();
+                        if ( traverseXlinkExpiry != null ) {
+                            traverseXlinkExpiry = traverseXlinkExpiry.divide( BigInteger.valueOf( 60 ) );
+                        }
+
+                        /* attribute traverseXlinkDepth is mandatory, must not be null */
+                        if ( ( traverseXlinkDepth != null ) && ( !traverseXlinkDepth.equals( "" ) ) ) {
+                            writer.writeAttribute( "traverseXlinkDepth", traverseXlinkDepth );
+                        } else {
+                            writer.writeAttribute( "traverseXlinkDepth", "*" );
+                        }
+
+                        if ( traverseXlinkExpiry != null ) {
+                            writer.writeAttribute( "traverseXlinkExpiry", traverseXlinkExpiry.toString() );
+                        }
+
+                        writePropertyNameCharacters( nextProperty.getPropertyName(), writer );
+
                         writer.writeEndElement();
                     }
                 }
             }
         }
 
-        XLinkPropertyName[] xLinkPropertyNames = query.getXLinkPropertyNames();
-        if ( xLinkPropertyNames != null ) {
-            for ( XLinkPropertyName nextXlinkProperty : xLinkPropertyNames ) {
-                if ( ( nextXlinkProperty != null ) && ( nextXlinkProperty.getPropertyName() != null ) ) {
-                    writer.writeStartElement( WFSConstants.WFS_PREFIX, "XlinkPropertyName", WFSConstants.WFS_NS );
-
-                    String traverseXlinkDepth = nextXlinkProperty.getTraverseXlinkDepth();
-                    Integer traverseXlinkExpiry = nextXlinkProperty.getTraverseXlinkExpiry();
-
-                    /* attribute traverseXlinkDepth is mandatory, must not be null */
-                    if ( ( traverseXlinkDepth != null ) && ( !traverseXlinkDepth.equals( "" ) ) ) {
-                        writer.writeAttribute( "traverseXlinkDepth", traverseXlinkDepth );
-                    } else {
-                        writer.writeAttribute( "traverseXlinkDepth", "*" );
-                    }
-
-                    if ( traverseXlinkExpiry != null ) {
-                        writer.writeAttribute( "traverseXlinkExpiry", traverseXlinkExpiry.toString() );
-                    }
-
-                    writePropertyNameCharacters( nextXlinkProperty.getPropertyName(), writer );
-
-                    writer.writeEndElement();
-                }
-            }
-        }
-
-        Function[] functions = query.getFunctions();
-        if ( functions != null ) {
-            for ( Function nextFunction : functions ) {
-                if ( nextFunction != null ) {
-                    Filter110XMLEncoder.export( nextFunction, writer );
-                }
-            }
-        }
+        // Function[] functions = query.getFunctions();
+        // if ( functions != null ) {
+        // for ( Function nextFunction : functions ) {
+        // if ( nextFunction != null ) {
+        // Filter110XMLEncoder.export( nextFunction, writer );
+        // }
+        // }
+        // }
 
         if ( query.getFilter() != null ) {
             Filter110XMLEncoder.export( query.getFilter(), writer );
@@ -277,32 +282,26 @@ public class GetFeature110XMLEncoder {
         SortProperty[] sortProperties = query.getSortBy();
         if ( sortProperties != null ) {
 
-            writer.writeStartElement( CommonNamespaces.OGC_PREFIX, "SortBy", CommonNamespaces.OGCNS );
-            writer.writeNamespace( CommonNamespaces.OGC_PREFIX, CommonNamespaces.OGCNS );
+            writer.writeStartElement( OGC_PREFIX, "SortBy", OGCNS );
+            writer.writeNamespace( OGC_PREFIX, OGCNS );
 
             for ( SortProperty nextSortProperty : sortProperties ) {
                 if ( nextSortProperty.getSortProperty() != null ) {
-
                     writer.writeStartElement( CommonNamespaces.OGC_PREFIX, "SortProperty", CommonNamespaces.OGCNS );
-
                     Filter110XMLEncoder.export( nextSortProperty.getSortProperty(), writer );
-
                     writer.writeStartElement( CommonNamespaces.OGC_PREFIX, "SortOrder", CommonNamespaces.OGCNS );
                     writer.writeCharacters( ( nextSortProperty.getSortOrder() ? "ASC" : "DESC" ) );
                     writer.writeEndElement();
-
                     writer.writeEndElement();
                 }
             }
-
             writer.writeEndElement();
         }
-
     }
 
     /**
      * Writes property-names and declares corresponding namespaces inside a naming xml-element (e.g. <PropertyName>
-     * relating to {@link ValueReference} or <XlinkPropertyName> relating to {@link XLinkPropertyName})
+     * relating to {@link ValueReference} or <XlinkPropertyName> relating to {@link ProjectionClause})
      * 
      * @param propertyName
      *            name of the property which encapsulates the characters and namespace-prefix-mappings which are

@@ -36,11 +36,9 @@
 package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
  * A {@link AdHocQuery} that selects features using an {@link Envelope}.
@@ -56,51 +54,36 @@ public class BBoxQuery extends AdHocQuery {
 
     private final Envelope bbox;
 
-    private final ValueReference[][] propertyNames;
-
-    private final XLinkPropertyName[][] xLinkPropertyNames;
+    private final ProjectionClause[][] projectionClauses;
 
     /**
      * Creates a new {@link BBoxQuery} instance.
      * 
      * @param handle
-     *            client-generated query identifier, may be null
+     *            client-generated query identifier, may be <code>null</code>
      * @param typeNames
-     *            requested feature types (with optional aliases), must not be null and must always contain at least one
-     *            entry
+     *            requested feature types (with optional aliases), must not be <code>null</code> and must always contain
+     *            at least one entry
      * @param featureVersion
-     *            version of the feature instances to be retrieved, may be null
+     *            version of the feature instances to be retrieved, may be <code>null</code>
      * @param srsName
-     *            WFS-supported SRS that should be used for returned feature geometries, may be null
-     * @param propertyNames
-     *            properties of the features that should be retrieved, may be null
-     * @param xLinkPropertyNames
-     *            properties for which the the traversal of nested XLinks is selectively requested, may be null
+     *            WFS-supported SRS that should be used for returned feature geometries, may be <code>null</code>
+     * @param projectionClauses
+     *            limits the properties of the features that should be retrieved, may be <code>null</code>
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
-     *            may be null
+     *            may be <code>null</code>
      * @param bbox
-     *            envelope that constraints the query, must not be null
+     *            envelope that constraints the query, must not be <code>null</code>
      */
     public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                      ValueReference[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames,
-                      SortProperty[] sortBy, Envelope bbox ) {
+                      ProjectionClause[][] projectionClauses, SortProperty[] sortBy, Envelope bbox ) {
         super( handle, typeNames, featureVersion, srsName, sortBy );
         if ( bbox == null ) {
             throw new IllegalArgumentException();
         }
-        this.xLinkPropertyNames = xLinkPropertyNames;
-        this.propertyNames = propertyNames;
+        this.projectionClauses = projectionClauses;
         this.bbox = bbox;
-    }
-
-    /**
-     * Returns the bounding box constraint.
-     * 
-     * @return the bounding box constraint, never null
-     */
-    public Envelope getBBox() {
-        return bbox;
     }
 
     /**
@@ -114,21 +97,16 @@ public class BBoxQuery extends AdHocQuery {
      * 
      * @return the properties of the features that should be retrieved, may be null
      */
-    public ValueReference[][] getPropertyNames() {
-        return propertyNames;
+    public ProjectionClause[][] getProjectionClauses() {
+        return projectionClauses;
     }
 
     /**
-     * Returns the properties of the features for which a specific XLink behaviour is requested.
-     * <p>
-     * Contains the Depth and Expiry properties for XLinks traversal. More precisely, the nested depth to which an
-     * xlink:href should be traversed (or "*" for indefinite depth), respectively the number of minutes the WFS should
-     * wait for a response when traversing through xlinks is encountered.
-     * </p>
+     * Returns the bounding box constraint.
      * 
-     * @return the xLinkPropertyNames. See {@link XLinkPropertyName}
+     * @return the bounding box constraint, never null
      */
-    public XLinkPropertyName[][] getXLinkPropertyNames() {
-        return xLinkPropertyNames;
+    public Envelope getBBox() {
+        return bbox;
     }
 }

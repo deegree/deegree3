@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<GetFeature
+   version="2.0.0"
+   service="WFS"
+   handle="Example Query"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.opengis.net/gml
+                       http://schemas.opengis.net/gml/2.1.2/geometry.xsd">
+   <Query typeNames="myns:Roads" handle="Q01">
+      <fes:Filter>
+         <fes:Intersects>
+            <fes:ValueReference>myns:path</fes:ValueReference>
+            <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326">
+               <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                     <gml:coordinates>-19.06099128723145,-169.9416961669922 -19.05653190612793,-169.9346008300781 -19.0523681640625,-169.9278564453125 -19.04729080200195,-169.9230346679688 -19.03918266296387,-169.9215698242188 -19.04058837890625,-169.9138641357422 -19.04656600952148,-169.9136047363281 -19.05992698669434,-169.9196014404297 -19.06432342529297,-169.9275665283203 -19.06826400756836,-169.9364929199219 -19.06099128723145,-169.9416961669922</gml:coordinates>
+                  </gml:LinearRing>
+               </gml:outerBoundaryIs>
+            </gml:Polygon>
+         </fes:Intersects>
+      </fes:Filter>
+   </Query>
+</GetFeature>

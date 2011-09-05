@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<!--
+Select all instances of the feature type
+InWaterA_1M to a maximum of 10000 features.
+-->
+<GetFeature
+   version="2.0.0"
+   service="WFS"
+   count="10000"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+   <Query typeNames="myns:InWaterA_1M"/>
+</GetFeature>
+

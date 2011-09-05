@@ -79,11 +79,11 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 import org.deegree.protocol.wfs.query.AdHocQuery;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.StoredQuery;
 import org.jaxen.NamespaceContext;
 import org.slf4j.Logger;
@@ -119,9 +119,7 @@ public class QueryAnalyzer {
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
 
-    private ValueReference[] requestedProps = null;
-
-    private XLinkPropertyName[] xlinkProps = null;
+    private ProjectionClause[] projections = null;
 
     private ICRS requestedCrs;
 
@@ -147,7 +145,7 @@ public class QueryAnalyzer {
      *             if the request cannot be performed, e.g. because it queries feature types that are not served
      */
     public QueryAnalyzer( List<org.deegree.protocol.wfs.query.Query> wfsQueries, WebFeatureService controller,
-                               WFSFeatureStoreManager service, GMLVersion outputFormat, boolean checkInputDomain )
+                          WFSFeatureStoreManager service, GMLVersion outputFormat, boolean checkInputDomain )
                             throws OWSException {
 
         this.controller = controller;
@@ -205,31 +203,20 @@ public class QueryAnalyzer {
         if ( adHocQueries.size() == 1 ) {
             if ( adHocQueries.get( 0 ) instanceof FilterQuery ) {
                 FilterQuery featureQuery = ( (FilterQuery) adHocQueries.get( 0 ) );
-                if ( featureQuery.getPropertyNames() != null ) {
-                    this.requestedProps = featureQuery.getPropertyNames();
-                }
-                if ( featureQuery.getXLinkPropertyNames() != null && featureQuery.getXLinkPropertyNames().length > 0 ) {
-                    this.xlinkProps = featureQuery.getXLinkPropertyNames();
+                if ( featureQuery.getProjectionClauses() != null ) {
+                    this.projections = featureQuery.getProjectionClauses();
                 }
             } else if ( adHocQueries.get( 0 ) instanceof BBoxQuery ) {
                 BBoxQuery bboxQuery = ( (BBoxQuery) adHocQueries.get( 0 ) );
-                if ( bboxQuery.getPropertyNames() != null && bboxQuery.getPropertyNames().length > 0 ) {
+                if ( bboxQuery.getProjectionClauses() != null && bboxQuery.getProjectionClauses().length > 0 ) {
                     // TODO cope with arrays with more than one entry
-                    this.requestedProps = bboxQuery.getPropertyNames()[0];
-                }
-                if ( bboxQuery.getXLinkPropertyNames() != null && bboxQuery.getXLinkPropertyNames().length > 0 ) {
-                    // TODO cope with arrays with more than one entry
-                    this.xlinkProps = bboxQuery.getXLinkPropertyNames()[0];
+                    this.projections = bboxQuery.getProjectionClauses()[0];
                 }
             } else if ( adHocQueries.get( 0 ) instanceof FeatureIdQuery ) {
                 FeatureIdQuery idQuery = ( (FeatureIdQuery) adHocQueries.get( 0 ) );
-                if ( idQuery.getPropertyNames() != null && idQuery.getPropertyNames().length > 0 ) {
+                if ( idQuery.getProjectionClauses() != null && idQuery.getProjectionClauses().length > 0 ) {
                     // TODO cope with arrays with more than one entry
-                    this.requestedProps = idQuery.getPropertyNames()[0];
-                }
-                if ( idQuery.getXLinkPropertyNames() != null && idQuery.getXLinkPropertyNames().length > 0 ) {
-                    // TODO cope with arrays with more than one entry
-                    this.xlinkProps = idQuery.getXLinkPropertyNames()[0];
+                    this.projections = idQuery.getProjectionClauses()[0];
                 }
             }
         }
@@ -301,25 +288,14 @@ public class QueryAnalyzer {
     }
 
     /**
-     * Returns the features properties to be included in the output.
-     * 
-     * TODO what about multiple queries that specify different sets of properties
-     * 
-     * @return features properties to be include or <code>null</code> (include all properties)
-     */
-    public ValueReference[] getRequestedProps() {
-        return requestedProps;
-    }
-
-    /**
      * Returns the specific XLink-behaviour for features properties.
      * 
      * TODO what about multiple queries that specify different sets of properties
      * 
      * @return specific XLink-behaviour or <code>null</code> (no specific behaviour)
      */
-    public XLinkPropertyName[] getXLinkProps() {
-        return xlinkProps;
+    public ProjectionClause[] getProjection() {
+        return projections;
     }
 
     /**
@@ -372,14 +348,9 @@ public class QueryAnalyzer {
         Filter filter = null;
         if ( wfsQuery instanceof FilterQuery ) {
             FilterQuery fQuery = ( (FilterQuery) wfsQuery );
-            if ( fQuery.getPropertyNames() != null ) {
-                for ( ValueReference propName : fQuery.getPropertyNames() ) {
-                    validatePropertyName( propName, typeNames );
-                }
-            }
-            if ( fQuery.getXLinkPropertyNames() != null ) {
-                for ( XLinkPropertyName xlinkPropName : fQuery.getXLinkPropertyNames() ) {
-                    validatePropertyName( xlinkPropName.getPropertyName(), typeNames );
+            if ( fQuery.getProjectionClauses() != null ) {
+                for ( ProjectionClause projection : fQuery.getProjectionClauses() ) {
+                    validatePropertyName( projection.getPropertyName(), typeNames );
                 }
             }
             if ( fQuery.getFilter() != null ) {
@@ -395,18 +366,10 @@ public class QueryAnalyzer {
             filter = fQuery.getFilter();
         } else if ( wfsQuery instanceof BBoxQuery ) {
             BBoxQuery bboxQuery = (BBoxQuery) wfsQuery;
-            ValueReference[][] propNames = bboxQuery.getPropertyNames();
+            ProjectionClause[][] propNames = bboxQuery.getProjectionClauses();
             if ( propNames != null ) {
-                for ( ValueReference[] propertyNames : propNames ) {
-                    for ( ValueReference propertyName : propertyNames ) {
-                        validatePropertyName( propertyName, typeNames );
-                    }
-                }
-            }
-            XLinkPropertyName[][] xlinkPropNames = bboxQuery.getXLinkPropertyNames();
-            if ( xlinkPropNames != null ) {
-                for ( XLinkPropertyName[] propertyNames : xlinkPropNames ) {
-                    for ( XLinkPropertyName propertyName : propertyNames ) {
+                for ( ProjectionClause[] propertyNames : propNames ) {
+                    for ( ProjectionClause propertyName : propertyNames ) {
                         validatePropertyName( propertyName.getPropertyName(), typeNames );
                     }
                 }
@@ -420,18 +383,10 @@ public class QueryAnalyzer {
             filter = new OperatorFilter( bboxOperator );
         } else if ( wfsQuery instanceof FeatureIdQuery ) {
             FeatureIdQuery fidQuery = (FeatureIdQuery) wfsQuery;
-            ValueReference[][] propNames = fidQuery.getPropertyNames();
+            ProjectionClause[][] propNames = fidQuery.getProjectionClauses();
             if ( propNames != null ) {
-                for ( ValueReference[] propertyNames : propNames ) {
-                    for ( ValueReference propertyName : propertyNames ) {
-                        validatePropertyName( propertyName, typeNames );
-                    }
-                }
-            }
-            XLinkPropertyName[][] xlinkPropNames = fidQuery.getXLinkPropertyNames();
-            if ( xlinkPropNames != null ) {
-                for ( XLinkPropertyName[] propertyNames : xlinkPropNames ) {
-                    for ( XLinkPropertyName propertyName : propertyNames ) {
+                for ( ProjectionClause[] propertyNames : propNames ) {
+                    for ( ProjectionClause propertyName : propertyNames ) {
                         validatePropertyName( propertyName.getPropertyName(), typeNames );
                     }
                 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!--
+In this example, all the properties of feature type
+myns:InWaterA_1M are fetched for an enumerated list
+of feature instances. The fes:ResourceId element is
+used to identify each feature to be fetched. 
+-->
+<GetFeature
+   version="2.0.0"
+   service="WFS"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+   <Query typeNames="myns:InWaterA_1M">
+     <fes:Filter>
+        <fes:ResourceId rid="InWaterA_1M.1013"/>
+        <fes:ResourceId rid="InWaterA_1M.1014"/>
+        <fes:ResourceId rid="InWaterA_1M.1015"/>
+      </fes:Filter>
+   </Query>
+</GetFeature>

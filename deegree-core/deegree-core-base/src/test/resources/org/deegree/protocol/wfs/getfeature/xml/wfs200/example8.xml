@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<!--
+This example describes two queries that fetch
+instances of Roads and Rails that lie within
+a single region of interest.
+-->
+<GetFeature
+   version="2.0.0"
+   service="WFS"
+   handle="Example Query"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.opengis.net/gml/3.2
+                       http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+   <Query typeNames="myns:Roads" handle="Q01">
+      <PropertyName>myns:path</PropertyName>
+      <PropertyName>myns:nLanes</PropertyName>
+      <PropertyName>myns:surfaceType</PropertyName>
+      <fes:Filter>
+         <fes:Within>
+            <fes:ValueReference>myns:path</fes:ValueReference>
+            <fes:Literal>
+               <gml:Envelope srsName="urn:fes:def:crs:EPSG::4326">
+                  <gml:lowerCorner>50 40</gml:lowerCorner>
+                  <gml:upperCorner>100 60</gml:upperCorner>
+               </gml:Envelope>
+            </fes:Literal>
+         </fes:Within>
+      </fes:Filter>
+   </Query>
+   <Query typeNames="myns:Rails" handle="Q02">
+      <PropertyName>myns:track</PropertyName>
+      <PropertyName>myns:gauge</PropertyName>
+      <fes:Filter>
+         <fes:Within>
+            <fes:ValueReference>myns:track</fes:ValueReference>
+            <fes:Literal>
+               <gml:Envelope srsName="urn:fes:def:crs:EPSG::4326">
+                  <gml:lowerCorner>50 40</gml:lowerCorner>
+                  <gml:upperCorner>100 60</gml:upperCorner>
+               </gml:Envelope>
+            </fes:Literal>
+         </fes:Within>
+      </fes:Filter>
+   </Query>
+</GetFeature>

@@ -55,14 +55,12 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -251,13 +249,10 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         }
 
         ICRS crs = null;
-        ValueReference[] propNamesArray = null;
-        XLinkPropertyName[] xlinkPropNamesArray = null;
-        Function[] functionsArray = null;
+        ProjectionClause[] projection = null;
         SortProperty[] sortPropsArray = null;
 
-        return new FilterQuery( handle, typeNames, featureVersion, crs, propNamesArray, xlinkPropNamesArray,
-                                functionsArray, sortPropsArray, filter );
+        return new FilterQuery( handle, typeNames, featureVersion, crs, projection, sortPropsArray, filter );
     }
 
     // <xsd:element name="StoredQuery" type="wfs:StoredQueryType" substitutionGroup="fes:AbstractQueryExpression"/>

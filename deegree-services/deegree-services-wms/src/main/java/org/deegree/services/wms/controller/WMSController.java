@@ -44,6 +44,7 @@ import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
+import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
@@ -654,8 +655,8 @@ public class WMSController extends AbstractOWS {
                 // GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GMLVersion.GML_2,xmlWriter );
                 // gmlWriter.setOutputCRS(fi.getCoordinateSystem() );
                 // gmlWriter.set
-                new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, crs, null, "#{}", null, 0, -1, null, false,
-                                      geometries, null, null, false ).export( col, ns == null ? loc : null, bindings );
+                new GMLFeatureWriter( GML_2, xmlWriter, crs, null, "#{}", null, 0, -1, false, geometries, null, null,
+                                      false ).export( col, ns == null ? loc : null, bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );

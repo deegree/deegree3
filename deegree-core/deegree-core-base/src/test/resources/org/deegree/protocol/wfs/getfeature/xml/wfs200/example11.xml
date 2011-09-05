@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<wfs:GetFeature
+   service="WFS"
+   version="2.0.0"
+   resolveDepth="1"
+   resolveTimeout="1"
+   outputFormat="application/gml+xml; version=3.2"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.opengis.net/gml/3.2 
+                       http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+   <wfs:Query typeNames="Town">
+      <wfs:PropertyName>gml:name</wfs:PropertyName>
+      <wfs:PropertyName resolve="all">gml:directedNode</wfs:PropertyName>
+      <fes:Filter>
+         <fes:ResourceId rid="t1"/>
+      </fes:Filter>
+   </wfs:Query>
+</wfs:GetFeature>

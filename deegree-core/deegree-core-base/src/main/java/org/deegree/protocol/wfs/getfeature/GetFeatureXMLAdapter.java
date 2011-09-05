@@ -41,6 +41,7 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +66,7 @@ import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryXMLAdapter;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
@@ -79,6 +81,7 @@ import org.deegree.protocol.wfs.query.StandardResolveParams;
  * <li>1.1.0</li>
  * <li>2.0.0</li>
  * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -89,11 +92,16 @@ import org.deegree.protocol.wfs.query.StandardResolveParams;
 public class GetFeatureXMLAdapter extends QueryXMLAdapter {
 
     /**
-     * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object.
+     * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object. *
+     * <p>
+     * Supported WFS versions:
+     * <ul>
+     * <li>1.0.0</li>
+     * <li>1.1.0</li>
+     * <li>2.0.0</li>
+     * </ul>
+     * </p>
      * 
-     * @param version
-     *            version of the request, may be <code>null</code> (in that case, a version attribute must be present in
-     *            the root element)
      * @return parsed {@link GetFeature} request, never <code>null</code>
      * @throws Exception
      * @throws XMLParsingException
@@ -103,13 +111,10 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public GetFeature parse( Version version )
+    public GetFeature parse()
                             throws Exception {
 
-        if ( version == null ) {
-            version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
-        }
-
+        Version version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
         GetFeature result = null;
 
         if ( VERSION_100.equals( version ) ) {
@@ -148,13 +153,13 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
-            List<ValueReference> propNames = new ArrayList<ValueReference>();
+            List<ProjectionClause> propNames = new ArrayList<ProjectionClause>();
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "ogc:PropertyName", nsContext ) );
 
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                                   getNamespaceContext( propertyNameEl ) );
-                propNames.add( propertyName );
+                propNames.add( new ProjectionClause( propertyName, null ) );
             }
 
             Filter filter = null;
@@ -184,12 +189,12 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
             String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
             // convert some lists to arrays to conform the FilterQuery constructor signature
-            ValueReference[] propNamesArray = new ValueReference[propNames.size()];
+            ProjectionClause[] propNamesArray = new ProjectionClause[propNames.size()];
             propNames.toArray( propNamesArray );
 
             // build Query
             Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, null, propNamesArray, null,
-                                                 null, null, filter );
+                                                 filter );
             queries.add( filterQuery );
         }
 
@@ -220,15 +225,14 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
-            List<ValueReference> propNames = new ArrayList<ValueReference>();
+            List<ProjectionClause> propNames = new ArrayList<ProjectionClause>();
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                                   getNamespaceContext( propertyNameEl ) );
-                propNames.add( propertyName );
+                propNames.add( new ProjectionClause( propertyName, null ) );
             }
 
-            List<XLinkPropertyName> xlinkPropNames = new ArrayList<XLinkPropertyName>();
             List<OMElement> xlinkPropertyElements = getElements( queryEl,
                                                                  new XPath( "wfs:XlinkPropertyName", nsContext ) );
             for ( OMElement xlinkPropertyEl : xlinkPropertyElements ) {
@@ -238,16 +242,18 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
                                                                                          nsContext ) );
                 String xlinkExpiry = getNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkExpiry", nsContext ),
                                                       null );
-                Integer xlinkExpiryInt = null;
+                BigInteger resolveTimeout = null;
                 try {
                     if ( xlinkExpiry != null ) {
-                        xlinkExpiryInt = Integer.parseInt( xlinkExpiry );
+                        resolveTimeout = new BigInteger( xlinkExpiry ).multiply( BigInteger.valueOf( 60 ) );
                     }
                 } catch ( NumberFormatException e ) {
                     // TODO string provided as time in minutes is not an integer
                 }
-                XLinkPropertyName xlinkPropName = new XLinkPropertyName( xlinkProperty, xlinkDepth, xlinkExpiryInt );
-                xlinkPropNames.add( xlinkPropName );
+                ProjectionClause xlinkPropName = new ProjectionClause( xlinkProperty,
+                                                                       new StandardResolveParams( null, xlinkDepth,
+                                                                                                  resolveTimeout ) );
+                propNames.add( xlinkPropName );
             }
 
             List<Function> functions = new ArrayList<Function>();
@@ -313,22 +319,15 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
                 crs = CRSManager.getCRSRef( srsName );
             }
 
-            // convert some lists to arrays to conform the FilterQuery constructor signature
-            ValueReference[] propNamesArray = new ValueReference[propNames.size()];
+            ProjectionClause[] propNamesArray = new ProjectionClause[propNames.size()];
             propNames.toArray( propNamesArray );
-
-            XLinkPropertyName[] xlinkPropNamesArray = new XLinkPropertyName[xlinkPropNames.size()];
-            xlinkPropNames.toArray( xlinkPropNamesArray );
-
-            Function[] functionsArray = new Function[functions.size()];
-            functions.toArray( functionsArray );
 
             SortProperty[] sortPropsArray = new SortProperty[sortProps.size()];
             sortProps.toArray( sortPropsArray );
 
             // build Query
             Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, crs, propNamesArray,
-                                                 xlinkPropNamesArray, functionsArray, sortPropsArray, filter );
+                                                 sortPropsArray, filter );
             queries.add( filterQuery );
         }
 

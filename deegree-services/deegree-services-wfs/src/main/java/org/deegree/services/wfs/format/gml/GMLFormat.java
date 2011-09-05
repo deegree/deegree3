@@ -384,8 +384,7 @@ public class GMLFormat implements Format {
         gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setXLinkExpiry( resolveTimeout == null ? -1 : resolveTimeout.intValue() );
-        gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
-        gmlStream.setFeatureProperties( analyzer.getRequestedProps() );
+        gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
@@ -542,8 +541,7 @@ public class GMLFormat implements Format {
         gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setXLinkExpiry( resolveTimeout == null ? -1 : resolveTimeout.intValue() );
-        gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
-        gmlStream.setFeatureProperties( analyzer.getRequestedProps() );
+        gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
@@ -972,7 +970,7 @@ public class GMLFormat implements Format {
             GetFeatureWithLock gfLock = (GetFeatureWithLock) request;
 
             // CITE 1.1.0 compliance (wfs:GetFeatureWithLock-Xlink)
-            if ( analyzer.getXLinkProps() != null ) {
+            if ( analyzer.getProjection() != null ) {
                 throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
                                         OWSException.OPTION_NOT_SUPPORTED );
             }

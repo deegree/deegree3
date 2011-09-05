@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<!--
+Find all buildings within known flood zones.
+-->
+<wfs:GetFeature
+   service="WFS"
+   version="2.0.0"
+   outputFormat="application/gml+xml; version=3.2"
+   xmlns:sql="http://www.someserver.com/sql/1.0"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.someserver.com/sql/1.0 ./SqlQuery.xsd">
+   <sql:Query targetDb="SQLMM">
+      <sql:Text>
+         SELECT * FROM buildings AS b, rivers AS r
+         WHERE b.ground_plot.ST_Within(r.flood_zones) = 1
+      </sql:Text>
+   </sql:Query>
+</wfs:GetFeature>

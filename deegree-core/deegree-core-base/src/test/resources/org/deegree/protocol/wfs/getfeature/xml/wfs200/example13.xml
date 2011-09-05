@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<GetFeature
+   service="WFS"
+   version="2.0.0"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+   <Query typeNames="myns:Parks myns:Lakes">
+      <fes:Filter>
+         <fes:And>
+            <fes:PropertyIsEqualTo>
+               <fes:ValueReference>/myns:Parks</fes:ValueReference>
+               <fes:Literal>Algonquin Park</fes:Literal>
+            </fes:PropertyIsEqualTo>
+            <fes:Contains>
+               <fes:ValueReference>/myns:Parks/geometry</fes:ValueReference>
+               <fes:ValueReference>/myns:Lakes/geometry</fes:ValueReference>
+            </fes:Contains>
+         </fes:And>
+      </fes:Filter>
+   </Query>
+</GetFeature>
