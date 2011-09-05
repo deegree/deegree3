@@ -39,6 +39,7 @@ package org.deegree.protocol.wfs.getpropertyvalue;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -48,7 +49,6 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryXMLAdapter;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Adapter between XML <code>GetPropertyValue</code> requests and {@link GetPropertyValue} objects.
@@ -108,7 +108,7 @@ public class GetPropertyValueXMLAdapter extends QueryXMLAdapter {
         StandardPresentationParams presentationParams = parseStandardPresentationParameters200( rootElement );
 
         // <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
-        StandardResolveParams resolveParams = parseStandardResolveParameters200( rootElement );
+        ResolveParams resolveParams = parseStandardResolveParameters200( rootElement );
 
         // <xsd:attribute name="valueReference" type="xsd:string" use="required"/>
         String valueRefStr = getRequiredNodeAsString( rootElement, new XPath( "@valueReference", nsContext ) );

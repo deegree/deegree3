@@ -36,10 +36,11 @@
 
 package org.deegree.protocol.wfs.query;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * Specifies a feature property for which the resolving behaviour for xlink-references should be altered selectively.
+ * A {@link ValueReference} that is requested to be included in a {@link Query} response.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -50,7 +51,7 @@ public class ProjectionClause {
 
     private final ValueReference propertyName;
 
-    private final StandardResolveParams resolveParams;
+    private final ResolveParams resolveParams;
 
     /**
      * Creates a new {@link ProjectionClause} instance.
@@ -60,9 +61,13 @@ public class ProjectionClause {
      * @param resolveParams
      *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
      */
-    public ProjectionClause( ValueReference propertyName, StandardResolveParams resolveParams ) {
+    public ProjectionClause( ValueReference propertyName, ResolveParams resolveParams ) {
         this.propertyName = propertyName;
-        this.resolveParams = resolveParams;
+        if ( resolveParams != null ) {
+            this.resolveParams = resolveParams;
+        } else {
+            this.resolveParams = new ResolveParams( null, null, null );
+        }
     }
 
     /**
@@ -74,7 +79,12 @@ public class ProjectionClause {
         return propertyName;
     }
 
-    public StandardResolveParams getResolveParams() {
+    /**
+     * Returns the parameters that control the resolution of references in the response.
+     * 
+     * @return reference resolution control parameters, never <code>null</code>
+     */
+    public ResolveParams getResolveParams() {
         return resolveParams;
     }
 }

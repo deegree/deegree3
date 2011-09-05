@@ -51,6 +51,7 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -73,7 +74,6 @@ import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryKVPAdapter;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Adapter between KVP <code>GetFeature</code> requests and {@link GetFeature} objects.
@@ -183,7 +183,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-            queries.add( new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null ) );
+            queries.add( new FeatureIdQuery( null, typeNames, featureVersion, srs, propertyNames, null, featureIds ) );
         } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -337,7 +337,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             }
         }
 
-        StandardResolveParams resolveParams = new StandardResolveParams( null, propTravXlinkExpiry, resolveTimeout );
+        ResolveParams resolveParams = new ResolveParams( null, propTravXlinkExpiry, resolveTimeout );
         propertyNames = getXLinkPropNames( propertyNames, ptxDepthAr, ptxExpAr, traverseXlinkDepth, traverseXlinkExpiry );
         List<Query> queries = new ArrayList<Query>();
 
@@ -348,7 +348,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-            queries.add( new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, sortBy ) );
+            queries.add( new FeatureIdQuery( null, typeNames, featureVersion, srs, propertyNames, sortBy, featureIds ) );
         } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -413,7 +413,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
     private static GetFeature parse200( Map<String, String> kvpParams )
                             throws Exception {
         StandardPresentationParams presentationParams = parseStandardPresentationParameters200( kvpParams );
-        StandardResolveParams resolveParams = parseStandardResolveParameters200( kvpParams );
+        ResolveParams resolveParams = parseStandardResolveParameters200( kvpParams );
         List<Query> queries = parseQueries200( kvpParams );
         return new GetFeature( VERSION_200, null, presentationParams, resolveParams, queries );
     }

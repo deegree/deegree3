@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -50,7 +51,6 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryKVPAdapter;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Adapter between KVP <code>GetPropertyValue</code> requests and {@link GetPropertyValue} objects.
@@ -111,7 +111,7 @@ public class GetPropertyValueKVPAdapter extends QueryKVPAdapter {
 
         StandardPresentationParams presentationParams = parseStandardPresentationParameters200( kvpParams );
 
-        StandardResolveParams resolveParams = parseStandardResolveParameters200( kvpParams );
+        ResolveParams resolveParams = parseStandardResolveParameters200( kvpParams );
 
         // mandatory: VALUEREFERENCE
         ValueReference valueReference = new ValueReference( getRequired( kvpParams, "VALUEREFERENCE" ), nsContext );

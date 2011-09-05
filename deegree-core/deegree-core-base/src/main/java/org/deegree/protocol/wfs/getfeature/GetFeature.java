@@ -37,11 +37,11 @@ package org.deegree.protocol.wfs.getfeature;
 
 import java.util.List;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Represents a <code>GetFeature</code> request to a WFS.
@@ -57,7 +57,7 @@ public class GetFeature extends AbstractWFSRequest {
 
     private final StandardPresentationParams presentationParams;
 
-    private final StandardResolveParams resolveParams;
+    private final ResolveParams resolveParams;
 
     private final List<Query> queries;
 
@@ -77,7 +77,7 @@ public class GetFeature extends AbstractWFSRequest {
      *            one entry
      */
     public GetFeature( Version version, String handle, StandardPresentationParams presentationParams,
-                       StandardResolveParams resolveParams, List<Query> queries ) {
+                       ResolveParams resolveParams, List<Query> queries ) {
         super( version, handle );
         if ( presentationParams != null ) {
             this.presentationParams = presentationParams;
@@ -87,7 +87,7 @@ public class GetFeature extends AbstractWFSRequest {
         if ( resolveParams != null ) {
             this.resolveParams = resolveParams;
         } else {
-            this.resolveParams = new StandardResolveParams( null, null, null );
+            this.resolveParams = new ResolveParams( null, null, null );
         }
         this.queries = queries;
     }
@@ -102,11 +102,11 @@ public class GetFeature extends AbstractWFSRequest {
     }
 
     /**
-     * Returns the parameters that control the resolution of references of the result set.
+     * Returns the parameters that control the resolution of references in the response.
      * 
      * @return reference resolution control parameters, never <code>null</code>
      */
-    public StandardResolveParams getResolveParams() {
+    public ResolveParams getResolveParams() {
         return resolveParams;
     }
 

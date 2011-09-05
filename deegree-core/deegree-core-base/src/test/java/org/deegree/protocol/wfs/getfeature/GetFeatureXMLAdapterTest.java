@@ -751,8 +751,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         ProjectionClause[] propNames = filterQuery.getProjectionClauses();
         assertEquals( 2, propNames.length );
         assertEquals( "gml:name", propNames[0].getPropertyName().getAsText() );
-        assertEquals( "2", propNames[1].getResolveParams().getResolveDepth() );
-        assertEquals( BigInteger.valueOf( 120 ), propNames[1].getResolveParams().getResolveTimeout() );
+        assertEquals( "2", propNames[1].getResolveParams().getDepth() );
+        assertEquals( BigInteger.valueOf( 120 ), propNames[1].getResolveParams().getTimeout() );
         assertEquals( "gml:directedNode", propNames[1].getPropertyName().getAsText() );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
@@ -780,9 +780,9 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( "application/gml+xml; version=3.2", request.getPresentationParams().getOutputFormat() );
 
         // resolve params
-        assertNull( request.getResolveParams().getResolve() );
-        assertNull( request.getResolveParams().getResolveDepth() );
-        assertEquals( null, request.getResolveParams().getResolveTimeout() );
+        assertNull( request.getResolveParams().getMode() );
+        assertNull( request.getResolveParams().getDepth() );
+        assertEquals( null, request.getResolveParams().getTimeout() );
 
         // queries
         assertEquals( 1, request.getQueries().size() );

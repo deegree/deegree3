@@ -33,21 +33,19 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.query;
+package org.deegree.commons.tom;
 
 import java.math.BigInteger;
 
-import org.deegree.commons.tom.ResolveMode;
-
 /**
- * Encapsulates standard parameters for controlling the resolving of resource references in {@link Query} results.
+ * Comon set of parameters for controlling the resolving of resource {@link Reference}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StandardResolveParams {
+public class ResolveParams {
 
     private final ResolveMode resolve;
 
@@ -55,21 +53,21 @@ public class StandardResolveParams {
 
     private final BigInteger resolveTimeout;
 
-    public StandardResolveParams( ResolveMode resolve, String resolveDepth, BigInteger resolveTimeout ) {
+    public ResolveParams( ResolveMode resolve, String resolveDepth, BigInteger resolveTimeout ) {
         this.resolve = resolve;
         this.resolveDepth = resolveDepth;
         this.resolveTimeout = resolveTimeout;
     }
 
-    public ResolveMode getResolve() {
+    public ResolveMode getMode() {
         return resolve;
     }
 
-    public String getResolveDepth() {
+    public String getDepth() {
         return resolveDepth;
     }
 
-    public BigInteger getResolveTimeout() {
+    public BigInteger getTimeout() {
         return resolveTimeout;
     }
 }

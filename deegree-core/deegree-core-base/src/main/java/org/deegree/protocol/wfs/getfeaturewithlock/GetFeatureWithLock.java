@@ -38,11 +38,11 @@ package org.deegree.protocol.wfs.getfeaturewithlock;
 
 import java.util.List;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Represents a <code>GetFeatureWithLock</code> request to a WFS.
@@ -76,7 +76,7 @@ public class GetFeatureWithLock extends GetFeature {
      *            expiry time (in minutes) before the features are unlocked automatically, may be null (unspecified)
      */
     public GetFeatureWithLock( Version version, String handle, StandardPresentationParams presentationParams,
-                               StandardResolveParams resolveParams, List<Query> queries, Integer expiry ) {
+                               ResolveParams resolveParams, List<Query> queries, Integer expiry ) {
         super( version, handle, presentationParams, resolveParams, queries );
         this.expiry = expiry;
     }

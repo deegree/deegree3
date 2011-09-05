@@ -36,7 +36,6 @@
 package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
@@ -63,8 +62,6 @@ public class FeatureIdQuery extends AdHocQuery {
      *            client-generated query identifier, may be <code>null</code>
      * @param typeNames
      *            requested feature types (with optional aliases), must not be <code>null</code>, but can be empty
-     * @param featureIds
-     *            requested feature ids, must not be <code>null</code>
      * @param featureVersion
      *            version of the feature instances to be retrieved, may be <code>null</code>
      * @param srsName
@@ -74,9 +71,11 @@ public class FeatureIdQuery extends AdHocQuery {
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
      *            may be <code>null</code>
+     * @param featureIds
+     *            requested feature ids, must not be <code>null</code>
      */
-    public FeatureIdQuery( String handle, TypeName[] typeNames, String[] featureIds, String featureVersion,
-                           ICRS srsName, ProjectionClause[][] projectionClauses, SortProperty[] sortBy ) {
+    public FeatureIdQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
+                           ProjectionClause[][] projectionClauses, SortProperty[] sortBy, String[] featureIds ) {
         super( handle, typeNames, featureVersion, srsName, sortBy );
         if ( featureIds == null ) {
             throw new IllegalArgumentException();

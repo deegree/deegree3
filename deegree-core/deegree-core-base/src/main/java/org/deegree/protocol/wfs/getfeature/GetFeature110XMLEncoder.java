@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -64,7 +65,6 @@ import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 import org.jaxen.NamespaceContext;
 
 /**
@@ -138,14 +138,14 @@ public class GetFeature110XMLEncoder {
             writer.writeAttribute( "maxFeatures", maxFeatures.toString() );
         }
 
-        String traverseXlinkDepth = getFeature.getResolveParams().getResolveDepth();
+        String traverseXlinkDepth = getFeature.getResolveParams().getDepth();
         if ( ( traverseXlinkDepth != null ) && ( !traverseXlinkDepth.equals( "" ) ) ) {
             writer.writeAttribute( "traverseXlinkDepth", traverseXlinkDepth );
         } else { /* otherwise set this mandatory attribute to value '*' */
             writer.writeAttribute( "traverseXlinkDepth", "*" );
         }
 
-        BigInteger resolveTimeout = getFeature.getResolveParams().getResolveTimeout();
+        BigInteger resolveTimeout = getFeature.getResolveParams().getTimeout();
         if ( resolveTimeout != null ) {
             BigInteger traverseXlinkExpiry = resolveTimeout.divide( BigInteger.valueOf( 60 ) );
             writer.writeAttribute( "traverseXlinkExpiry", "" + traverseXlinkExpiry );
@@ -229,9 +229,9 @@ public class GetFeature110XMLEncoder {
         if ( propertyNames != null ) {
             for ( ProjectionClause nextProperty : propertyNames ) {
                 if ( nextProperty != null ) {
-                    StandardResolveParams resolveParams = nextProperty.getResolveParams();
-                    if ( resolveParams.getResolve() == null && resolveParams.getResolveDepth() == null
-                         && resolveParams.getResolveTimeout() == null ) {
+                    ResolveParams resolveParams = nextProperty.getResolveParams();
+                    if ( resolveParams.getMode() == null && resolveParams.getDepth() == null
+                         && resolveParams.getTimeout() == null ) {
                         QName qname = nextProperty.getPropertyName().getAsQName();
                         if ( qname != null ) {
                             writer.writeStartElement( WFS_PREFIX, "PropertyName", WFS_NS );
@@ -241,8 +241,8 @@ public class GetFeature110XMLEncoder {
                     } else {
                         writer.writeStartElement( WFSConstants.WFS_PREFIX, "XlinkPropertyName", WFSConstants.WFS_NS );
 
-                        String traverseXlinkDepth = resolveParams.getResolveDepth();
-                        BigInteger traverseXlinkExpiry = resolveParams.getResolveTimeout();
+                        String traverseXlinkDepth = resolveParams.getDepth();
+                        BigInteger traverseXlinkExpiry = resolveParams.getTimeout();
                         if ( traverseXlinkExpiry != null ) {
                             traverseXlinkExpiry = traverseXlinkExpiry.divide( BigInteger.valueOf( 60 ) );
                         }

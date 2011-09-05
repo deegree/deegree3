@@ -41,6 +41,7 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 
 import java.util.List;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -51,7 +52,6 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.GetFeatureXMLAdapter;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Adapter between XML <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
@@ -114,7 +114,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
         int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
 
         StandardPresentationParams presentationParams = gf.getPresentationParams();
-        StandardResolveParams resolveParams = gf.getResolveParams();
+        ResolveParams resolveParams = gf.getResolveParams();
         List<Query> queries = gf.getQueries();
         return new GetFeatureWithLock( VERSION_110, null, presentationParams, resolveParams, queries, expiry );
     }
@@ -128,7 +128,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
         int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
 
         StandardPresentationParams presentationParams = gf.getPresentationParams();
-        StandardResolveParams resolveParams = gf.getResolveParams();
+        ResolveParams resolveParams = gf.getResolveParams();
         List<Query> queries = gf.getQueries();
         return new GetFeatureWithLock( VERSION_100, null, presentationParams, resolveParams, queries, expiry );
     }

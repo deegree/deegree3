@@ -58,6 +58,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.deegree.commons.tom.ResolveMode;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -102,7 +103,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return new StandardPresentationParams( startIndex, count, resultType, outputFormat );
     }
 
-    protected static StandardResolveParams parseStandardResolveParameters200( Map<String, String> kvpUC ) {
+    protected static ResolveParams parseStandardResolveParameters200( Map<String, String> kvpUC ) {
 
         // optional: RESOLVE
         ResolveMode resolve = null;
@@ -127,7 +128,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         // optional: RESOLVETIMEOUT
         BigInteger resolveTimeout = getBigInt( kvpUC, "RESOLVETIMEOUT", null );
 
-        return new StandardResolveParams( resolve, resolveDepth, resolveTimeout );
+        return new ResolveParams( resolve, resolveDepth, resolveTimeout );
     }
 
     protected static List<Query> parseQueries200( Map<String, String> kvpUC )
@@ -286,7 +287,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                         String resolveDepth = ptxDepthAr[i][j];
                         BigInteger resolveTimeout = ptxExpAr[i][j] == null ? null
                                                                           : BigInteger.valueOf( ptxExpAr[i][j] * 60 );
-                        StandardResolveParams resolveParams = new StandardResolveParams( null, resolveDepth,
+                        ResolveParams resolveParams = new ResolveParams( null, resolveDepth,
                                                                                          resolveTimeout );
                         result[i][j] = new ProjectionClause( propertyNames[i][j].getPropertyName(), resolveParams );
                     } else {

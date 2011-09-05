@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -70,7 +71,6 @@ import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryXMLAdapter;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
@@ -211,7 +211,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
 
         StandardPresentationParams presentationParams = parseStandardPresentationParameters110( rootElement );
-        StandardResolveParams resolveParams = parseStandardResolveParameters110( rootElement );
+        ResolveParams resolveParams = parseStandardResolveParameters110( rootElement );
 
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
         // check if all child elements are 'wfs:Query' elements (required for CITE)
@@ -251,7 +251,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
                     // TODO string provided as time in minutes is not an integer
                 }
                 ProjectionClause xlinkPropName = new ProjectionClause( xlinkProperty,
-                                                                       new StandardResolveParams( null, xlinkDepth,
+                                                                       new ResolveParams( null, xlinkDepth,
                                                                                                   resolveTimeout ) );
                 propNames.add( xlinkPropName );
             }
@@ -351,7 +351,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
         StandardPresentationParams presentationParams = parseStandardPresentationParameters200( rootElement );
 
         // <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
-        StandardResolveParams resolveParams = parseStandardResolveParameters200( rootElement );
+        ResolveParams resolveParams = parseStandardResolveParameters200( rootElement );
 
         // <xsd:element ref="fes:AbstractQueryExpression" maxOccurs="unbounded"/>
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );

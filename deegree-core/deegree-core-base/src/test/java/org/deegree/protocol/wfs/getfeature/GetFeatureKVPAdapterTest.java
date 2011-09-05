@@ -663,8 +663,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
-        assertNull( getFeature.getResolveParams().getResolveDepth() );
-        assertEquals( BigInteger.valueOf( 60 ), getFeature.getResolveParams().getResolveTimeout() );
+        assertNull( getFeature.getResolveParams().getDepth() );
+        assertEquals( BigInteger.valueOf( 60 ), getFeature.getResolveParams().getTimeout() );
     }
 
     /**
@@ -680,12 +680,12 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries().get( 0 );
         ProjectionClause[][] xlinkProps = featureQuery.getProjectionClauses();
         assertEquals( "uk:Town/gml:name", xlinkProps[0][0].getPropertyName().getAsText() );
-        assertEquals( "0", xlinkProps[0][0].getResolveParams().getResolveDepth() );
-        assertEquals( BigInteger.valueOf( 0 ), xlinkProps[0][0].getResolveParams().getResolveTimeout() );
+        assertEquals( "0", xlinkProps[0][0].getResolveParams().getDepth() );
+        assertEquals( BigInteger.valueOf( 0 ), xlinkProps[0][0].getResolveParams().getTimeout() );
 
         assertEquals( "uk:Town/gml:directedNode", xlinkProps[0][1].getPropertyName().getAsText() );
-        assertEquals( "2", xlinkProps[0][1].getResolveParams().getResolveDepth() );
-        assertEquals( BigInteger.valueOf( 120 ), xlinkProps[0][1].getResolveParams().getResolveTimeout() );
+        assertEquals( "2", xlinkProps[0][1].getResolveParams().getDepth() );
+        assertEquals( BigInteger.valueOf( 120 ), xlinkProps[0][1].getResolveParams().getTimeout() );
     }
 
     /**

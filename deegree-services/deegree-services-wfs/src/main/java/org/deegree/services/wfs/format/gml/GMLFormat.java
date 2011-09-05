@@ -352,20 +352,20 @@ public class GMLFormat implements Format {
         int traverseXLinkDepth = 0;
         String xLinkTemplate = getObjectXlinkTemplate( request.getVersion(), gmlVersion );
 
-        if ( request.getResolveParams().getResolveDepth() != null ) {
-            if ( "*".equals( request.getResolveParams().getResolveDepth() ) ) {
+        if ( request.getResolveParams().getDepth() != null ) {
+            if ( "*".equals( request.getResolveParams().getDepth() ) ) {
                 traverseXLinkDepth = -1;
             } else {
                 try {
-                    traverseXLinkDepth = Integer.parseInt( request.getResolveParams().getResolveDepth() );
+                    traverseXLinkDepth = Integer.parseInt( request.getResolveParams().getDepth() );
                 } catch ( NumberFormatException e ) {
                     String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID",
-                                               request.getResolveParams().getResolveDepth() );
+                                               request.getResolveParams().getDepth() );
                     throw new OWSException( new InvalidParameterValueException( msg ) );
                 }
             }
         }
-        BigInteger resolveTimeout = request.getResolveParams().getResolveTimeout();
+        BigInteger resolveTimeout = request.getResolveParams().getTimeout();
 
         // quick check if local references in the output can be ruled out
         boolean localReferencesPossible = localReferencesPossible( analyzer, traverseXLinkDepth );
@@ -458,7 +458,7 @@ public class GMLFormat implements Format {
 
         if ( analyzer.getRequestedFeatureId() != null ) {
             doSingleObjectResponse( request.getVersion(), request.getPresentationParams().getOutputFormat(),
-                                    request.getResolveParams().getResolveDepth(), analyzer.getRequestedFeatureId(),
+                                    request.getResolveParams().getDepth(), analyzer.getRequestedFeatureId(),
                                     response );
             return;
         }
@@ -470,21 +470,21 @@ public class GMLFormat implements Format {
         String xLinkTemplate = getObjectXlinkTemplate( request.getVersion(), gmlVersion );
 
         if ( VERSION_110.equals( request.getVersion() ) || VERSION_200.equals( request.getVersion() ) ) {
-            if ( request.getResolveParams().getResolveDepth() != null ) {
-                if ( "*".equals( request.getResolveParams().getResolveDepth() ) ) {
+            if ( request.getResolveParams().getDepth() != null ) {
+                if ( "*".equals( request.getResolveParams().getDepth() ) ) {
                     traverseXLinkDepth = -1;
                 } else {
                     try {
-                        traverseXLinkDepth = Integer.parseInt( request.getResolveParams().getResolveDepth() );
+                        traverseXLinkDepth = Integer.parseInt( request.getResolveParams().getDepth() );
                     } catch ( NumberFormatException e ) {
                         String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID",
-                                                   request.getResolveParams().getResolveDepth() );
+                                                   request.getResolveParams().getDepth() );
                         throw new OWSException( new InvalidParameterValueException( msg ) );
                     }
                 }
             }
-            if ( request.getResolveParams().getResolveTimeout() != null ) {
-                resolveTimeout = request.getResolveParams().getResolveTimeout();
+            if ( request.getResolveParams().getTimeout() != null ) {
+                resolveTimeout = request.getResolveParams().getTimeout();
                 // needed for CITE 1.1.0 compliance (wfs:GetFeature-traverseXlinkExpiry)
                 if ( resolveTimeout == null || resolveTimeout.equals( ZERO ) ) {
                     String msg = Messages.get( "WFS_TRAVERSEXLINKEXPIRY_ZERO", resolveTimeout );

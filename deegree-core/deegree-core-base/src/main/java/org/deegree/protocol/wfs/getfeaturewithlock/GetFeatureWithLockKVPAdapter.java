@@ -41,6 +41,7 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -50,7 +51,6 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.GetFeatureKVPAdapter;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Adapter between KVP <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
@@ -115,7 +115,7 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
         }
 
         StandardPresentationParams presentationParams = gf.getPresentationParams();
-        StandardResolveParams resolveParams = gf.getResolveParams();
+        ResolveParams resolveParams = gf.getResolveParams();
         List<Query> queries = gf.getQueries();
         return new GetFeatureWithLock( VERSION_110, null, presentationParams, resolveParams, queries, expiry );
     }

@@ -392,11 +392,11 @@ public class GMLFeatureWriter {
     private int getInlineLevels( Property prop ) {
         ProjectionClause projection = projections.get( prop.getName() );
         if ( projection != null && projection.getResolveParams() != null
-             && projection.getResolveParams().getResolveDepth() != null ) {
-            if ( projection.getResolveParams().getResolveDepth().equals( "*" ) ) {
+             && projection.getResolveParams().getDepth() != null ) {
+            if ( projection.getResolveParams().getDepth().equals( "*" ) ) {
                 return -1;
             }
-            return Integer.parseInt( projection.getResolveParams().getResolveDepth() );
+            return Integer.parseInt( projection.getResolveParams().getDepth() );
         }
         return traverseXlinkDepth;
     }

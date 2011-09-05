@@ -67,7 +67,7 @@ public class BBoxQuery extends AdHocQuery {
      * @param featureVersion
      *            version of the feature instances to be retrieved, may be <code>null</code>
      * @param srsName
-     *            WFS-supported SRS that should be used for returned feature geometries, may be <code>null</code>
+     *            WFS-supported SRS that shall be used for returned feature geometries, may be <code>null</code>
      * @param projectionClauses
      *            limits the properties of the features that should be retrieved, may be <code>null</code>
      * @param sortBy

@@ -35,12 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getpropertyvalue;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StandardResolveParams;
 
 /**
  * Represents a <code>GetPropertyValue</code> request to a WFS.
@@ -56,7 +56,7 @@ public class GetPropertyValue extends AbstractWFSRequest {
 
     private final StandardPresentationParams presentationParams;
 
-    private final StandardResolveParams resolveParams;
+    private final ResolveParams resolveParams;
 
     private final ValueReference valueReference;
 
@@ -84,7 +84,7 @@ public class GetPropertyValue extends AbstractWFSRequest {
      *            query to be executed, must not be <code>null</code>
      */
     public GetPropertyValue( Version version, String handle, StandardPresentationParams presentationParams,
-                             StandardResolveParams resolveParams, ValueReference valueReference,
+                             ResolveParams resolveParams, ValueReference valueReference,
                              ValueReference resolvePath, Query query ) {
         super( version, handle );
         this.presentationParams = presentationParams;
@@ -108,7 +108,7 @@ public class GetPropertyValue extends AbstractWFSRequest {
      * 
      * @return reference resolution control parameters, never <code>null</code>
      */
-    public StandardResolveParams getResolveParams() {
+    public ResolveParams getResolveParams() {
         return resolveParams;
     }
 

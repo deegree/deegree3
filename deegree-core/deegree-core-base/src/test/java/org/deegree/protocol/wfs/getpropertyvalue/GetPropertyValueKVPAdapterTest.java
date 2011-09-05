@@ -82,8 +82,8 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
         Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "kvp/wfs200/example2.kvp" ) );
         GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
         assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( ResolveMode.LOCAL, request.getResolveParams().getResolve() );
-        assertEquals( "*", request.getResolveParams().getResolveDepth() );
+        assertEquals( ResolveMode.LOCAL, request.getResolveParams().getMode() );
+        assertEquals( "*", request.getResolveParams().getDepth() );
         assertEquals( "myns:location", request.getValueReference().getAsText() );
         FilterQuery query = (FilterQuery) request.getQuery();
         assertEquals( 1, query.getTypeNames().length );

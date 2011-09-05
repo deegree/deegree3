@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ResolveMode;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -132,7 +133,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return new StandardPresentationParams( startIndex, count, resultType, outputFormat );
     }
 
-    public StandardResolveParams parseStandardResolveParameters110( OMElement requestEl ) {
+    public ResolveParams parseStandardResolveParameters110( OMElement requestEl ) {
 
         String traverseXlinkDepth = getNodeAsString( rootElement, new XPath( "@traverseXlinkDepth", nsContext ), null );
 
@@ -143,10 +144,10 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
             resolveTimeout = new BigInteger( traverseXlinkExpiryStr ).multiply( BigInteger.valueOf( 60 ) );
         }
 
-        return new StandardResolveParams( null, traverseXlinkDepth, resolveTimeout );
+        return new ResolveParams( null, traverseXlinkDepth, resolveTimeout );
     }
 
-    public StandardResolveParams parseStandardResolveParameters200( OMElement requestEl ) {
+    public ResolveParams parseStandardResolveParameters200( OMElement requestEl ) {
 
         // <xsd:attribute name="resolve" type="wfs:ResolveValueType" default="none"/>
         ResolveMode resolve = null;
@@ -171,7 +172,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         // <xsd:attribute name="resolveTimeout" type="xsd:positiveInteger" default="300"/>
         BigInteger resolveTimeout = getNodeAsBigInt( rootElement, new XPath( "@resolveTimeout", nsContext ), null );
 
-        return new StandardResolveParams( resolve, resolveDepth, resolveTimeout );
+        return new ResolveParams( resolve, resolveDepth, resolveTimeout );
     }
 
     /**
