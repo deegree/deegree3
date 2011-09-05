@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.deegree.services.CiteWrapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
