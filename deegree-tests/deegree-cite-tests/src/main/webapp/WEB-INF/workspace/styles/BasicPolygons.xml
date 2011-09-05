@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:PolygonSymbolizer xmlns:sld="http://www.opengis.net/se">
+  <sld:Fill>
+    <sld:SvgParameter name="fill">#00b400</sld:SvgParameter>
+    <sld:SvgParameter name="fill-opacity">1.0</sld:SvgParameter>
+  </sld:Fill>
+  <sld:Stroke>
+    <sld:SvgParameter name="stroke">#007d00</sld:SvgParameter>
+    <sld:SvgParameter name="stroke-opacity">1.0</sld:SvgParameter>
+    <sld:SvgParameter name="stroke-width">1</sld:SvgParameter>
+    <sld:SvgParameter name="stroke-dasharray">1</sld:SvgParameter>
+  </sld:Stroke>
+</sld:PolygonSymbolizer>

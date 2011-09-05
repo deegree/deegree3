@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ctl:package
+ xmlns:recomendations="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/recomendations.xml"
+ xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml"
+ xmlns:ccf="http://www.opengis.net/cite/complex"
+ xmlns:cdf="http://www.opengis.net/cite/data"
+ xmlns:cgf="http://www.opengis.net/cite/geometry"
+ xmlns:citef="http://www.opengis.net/cite/functions"
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:parsers="http://www.occamlab.com/te/parsers"
+ xmlns:saxon="http://saxon.sf.net/"
+ xmlns:wms="http://www.opengis.net/wms"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+>
+
+   <ctl:test name="recomendations:main">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>If the "Check Recommendations" option was selected, the server supports fuctionality which is recommended in the spec, but not required.</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="recomendations:service-keywords"/>
+         <ctl:call-test name="recomendations:service-contact-info"/>
+         <ctl:call-test name="recomendations:png-getmap-format"/>
+         <ctl:call-test name="recomendations:layer-abstracts"/>
+         <ctl:call-test name="recomendations:layer-keywordlists"/>
+         <ctl:call-test name="recomendations:layer-crs"/>
+         <ctl:call-test name="recomendations:metadataurls"/>
+         <ctl:call-test name="recomendations:dims-no-whitespace"/>
+         <ctl:call-test name="recomendations:dims-defaults"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:service-keywords">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The capabilities document includes a list of keywords or keyword phrases describing the server.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.3">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.general_metadata</ctl:link>
+      <ctl:code>
+         <xsl:if test="not(boolean(wms:Service/wms:KeywordList/wms:Keyword))">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:service-contact-info">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The capabilities document includes contact information.</ctl:assertion>
+      <ctl:comment>Makes sure an address, phone number, or email address is provided.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.3">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.general_metadata</ctl:link>
+      <ctl:code>
+         <xsl:if test="not(boolean(wms:Service/wms:ContactInformation[wms:ContactAddress!='' or wms:ContactVoiceTelephone!='' or wms:ContactEmailAddress!='']))">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:png-getmap-format">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The server advertises the image/png format for the GetMap operation.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.4">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.capability_metadata</ctl:link>
+      <ctl:link title="WMS 1.3.0 section 6.6">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.output_formats</ctl:link>
+      <ctl:code>
+         <xsl:if test="not(wms:Capability/wms:Request/wms:GetMap/wms:Format[. = 'image/png'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:layer-abstracts">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Each Layer in the capabilities document contains an abstract.</ctl:assertion>
+      <ctl:comment>Only applied to layers with a name</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.4">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.abstract_and_keywordlist</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer[wms:Name]">
+            <xsl:if test="not(wms:Abstract)">
+               <ctl:message>Layer <xsl:value-of select="wms:Name"/> does not contain an Abstract</ctl:message>
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:layer-keywordlists">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Each Layer in the capabilities document contains a keyword list.</ctl:assertion>
+      <ctl:comment>Only applied to layers with a name</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.4">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.abstract_and_keywordlist</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer[wms:Name]">
+            <xsl:if test="not(wms:KeywordList)">
+               <ctl:message>Layer <xsl:value-of select="wms:Name"/> does not contain a KeywordList</ctl:message>
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:layer-crs">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>All layers in the capabilities document are available in the CRS:84 and/or EPSG:4326 CRS.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.7.3.1">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.cs.layer.intro</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer[wms:Name and not(ancestor-or-self::wms:Layer/wms:CRS = 'EPSG:4326' or ancestor-or-self::wms:Layer/wms:CRS = 'CRS:84')]">
+            <ctl:message>Layer <xsl:value-of select="wms:Name"/> does not support CRS:84 or EPSG:4326.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:metadataurls">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Every named Layer in the capabilities document contains a MetadataURL element.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.11">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.metadataurl</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer[wms:Name and not(wms:MetadataURL)]">
+            <ctl:message>Layer <xsl:value-of select="wms:Name"/> does not contain a MetadataURL.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:dims-no-whitespace">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>No dimension name values in the capabilities document contain whitespace.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0, Annex C, Section C.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.declaring</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:Dimension[translate(normalize-space(@name), ' ', 'X') != @name]">
+            <ctl:message>Error: Dimension &quot;<xsl:value-of select="@name"/>&quot; in the layer titled &quot;<xsl:value-of select="../wms:Title"/>&quot; contains whitespace.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="recomendations:dims-defaults">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Each dimension declaration in the capabilities document contains a default value.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0, Annex C, Section C.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.declaring</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:Dimension[not(@default)]">
+            <ctl:message>Error: Dimension &quot;<xsl:value-of select="@name"/>&quot; in the layer titled &quot;<xsl:value-of select="../wms:Title"/>&quot; does not have a default value.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+</ctl:package>

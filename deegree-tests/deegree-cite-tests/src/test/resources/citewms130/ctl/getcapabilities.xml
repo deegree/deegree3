@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ctl:package
+ xmlns:getcapabilities="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getcapabilities.xml"
+ xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml"
+ xmlns:ccf="http://www.opengis.net/cite/complex"
+ xmlns:cdf="http://www.opengis.net/cite/data"
+ xmlns:cgf="http://www.opengis.net/cite/geometry"
+ xmlns:citef="http://www.opengis.net/cite/functions"
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:parsers="http://www.occamlab.com/te/parsers"
+ xmlns:saxon="http://saxon.sf.net/"
+ xmlns:wms="http://www.opengis.net/wms"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+   <ctl:test name="getcapabilities:main">
+      <ctl:param name="high-updatesequence">An updateSequence value higher than the current updateSequence value advertised in the capabilities XML.</ctl:param>
+      <ctl:param name="low-updatesequence">An updateSequence value lower than the current updateSequence value advertised in the capabilities XML.</ctl:param>
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>GetCapabilities</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getcapabilities:requests">
+            <ctl:with-param name="high-updatesequence" select="$high-updatesequence"/>
+            <ctl:with-param name="low-updatesequence" select="$low-updatesequence"/>
+         </ctl:call-test>
+         <ctl:call-test name="getcapabilities:xml-validation"/>
+         <ctl:call-test name="getcapabilities:capability-metadata"/>
+         <ctl:call-test name="getcapabilities:layer-properties"/>
+         <ctl:call-test name="getcapabilities:dimensions"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:requests">
+      <ctl:param name="high-updatesequence">An updateSequence value higher than the current updateSequence value advertised in the capabilities XML.</ctl:param>
+      <ctl:param name="low-updatesequence">An updateSequence value lower than the current updateSequence value advertised in the capabilities XML.</ctl:param>
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Request Parameters</ctl:assertion>
+      <ctl:code>
+         <xsl:variable name="capabilities" select="."/>
+         <ctl:for-each select="wms:Capability/wms:Request/wms:GetCapabilities/wms:Format">
+            <ctl:call-test name="getcapabilities:each-format">
+               <ctl:with-param name="capabilities" select="$capabilities"/>
+               <ctl:with-param name="format" select="." label="each GetCapabilities format" label-expr="concat('format &quot;', ., '&quot;')"/>
+            </ctl:call-test>
+         </ctl:for-each>
+         <ctl:call-test name="getcapabilities:no-format"/>
+         <ctl:call-test name="getcapabilities:invalid-format"/>
+
+         <ctl:call-test name="getcapabilities:updatesequence-ignored"/>
+         <ctl:call-test name="getcapabilities:updatesequence-current"/>
+         <ctl:call-test name="getcapabilities:updatesequence-lower">
+            <ctl:with-param name="low-updatesequence" select="$low-updatesequence"/>
+         </ctl:call-test>
+         <ctl:call-test name="getcapabilities:updatesequence-higher">
+            <ctl:with-param name="high-updatesequence" select="$high-updatesequence"/>
+         </ctl:call-test>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:xml-validation">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>XML Validation</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getcapabilities:normative-schema"/>
+         <ctl:call-test name="getcapabilities:validate-using-schemaLocation"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:capability-metadata">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Capability Metadata</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getcapabilities:capability-onlineresource"/>
+         <ctl:call-test name="getcapabilities:capability-xml-getcapabilities-format"/>
+         <ctl:call-test name="getcapabilities:capability-xml-exception-format"/>
+      </ctl:code>
+   </ctl:test>
+
+
+   <ctl:test name="getcapabilities:layer-properties">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Layer Properties</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getcapabilities:logourls"/>
+         <ctl:call-test name="getcapabilities:bbox-crs-advertised"/>
+         <ctl:call-test name="getcapabilities:bbox-present"/>
+         <ctl:call-test name="getcapabilities:bbox-distinct-crs"/>
+         <ctl:call-test name="getcapabilities:crs-auto2-declarations"/>
+         <ctl:call-test name="getcapabilities:crs-present"/>
+         <ctl:call-test name="getcapabilities:crs-for-all-layers"/>
+         <ctl:call-test name="getcapabilities:dataurls"/>
+         <ctl:call-test name="getcapabilities:ex_geobbox-present"/>
+         <ctl:call-test name="getcapabilities:featurelisturls"/>
+         <ctl:call-test name="getcapabilities:authorityurl-unique"/>
+         <ctl:call-test name="getcapabilities:identifier-matches-authorityurl"/>
+         <ctl:call-test name="getcapabilities:metadataurls"/>
+         <ctl:call-test name="getcapabilities:style-unique"/>
+         <ctl:call-test name="getcapabilities:style-legendurls"/>
+         <ctl:call-test name="getcapabilities:style-stylesheeturls"/>
+         <ctl:call-test name="getcapabilities:style-styleurls"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:dimensions">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Dimension Declarations</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="getcapabilities:dims-time"/>
+         <ctl:call-test name="getcapabilities:dims-elevation-crs88"/>
+         <ctl:call-test name="getcapabilities:dims-no-redeclarations"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:each-format">
+      <ctl:param name="capabilities"/>
+      <ctl:param name="format"/>
+      <ctl:assertion>For {$format}, when the FORMAT parameter is set to that format, the MIME type of the response matches that format.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.3.1">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.format</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$capabilities/wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($format)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:no-format">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When no FORMAT parameter is supplied, the response is capabilities XML with MIME type text/xml.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.3.1">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.format</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+               <parsers:HTTPParser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], 'text/xml') = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:if test="not($response/response/content/wms:WMS_Capabilities)">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:invalid-format">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When an invalid FORMAT parameter is supplied, the response is capabilities XML with MIME type text/xml.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.3.1">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.format</ctl:link>
+      <ctl:code>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="FoRmAt">invalid</ctl:param>
+               <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="SeRvIcE">WMS</ctl:param>
+               <parsers:HTTPParser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], 'text/xml') = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:if test="not($response/response/content/wms:WMS_Capabilities)">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:updatesequence-ignored">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>If no updateSequence number is advertised in the Capabilities XML, The UPDATESEQUENCE parameter is ignored.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.3.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.updatesequence</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="@updateSequence">
+               <ctl:message>An updateSequence number is advertised in the Capabilities XML.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+                     <ctl:param name="SeRvIcE">WMS</ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="UpDaTeSeQuEnCe">ignored</ctl:param>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="not($response/wms:WMS_Capabilities)">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:updatesequence-current">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetCapabilities request is made with an UPDATESEQUENCE parameter set to the current update sequence value, then the server returns a valid exception (code=CurrentUpdateSequence).</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.3.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.updatesequence</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="@updateSequence">
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+                     <ctl:param name="SeRvIcE">WMS</ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="UpDaTeSeQuEnCe">
+                        <xsl:value-of select="@updateSequence"/>
+                     </ctl:param>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='CurrentUpdateSequence'])">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+               <ctl:message>No updateSequence number is advertised in the Capabilities XML.</ctl:message>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:updatesequence-lower">
+      <ctl:param name="low-updatesequence">An updateSequence value higher than the current updateSequence value advertised in the capabilities XML.</ctl:param>
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetCapabilities request is made with an UPDATESEQUENCE parameter set to a value lower than the current update sequence value, then the server returns capabilities XML.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.3.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.updatesequence</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="@updateSequence">
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+                     <ctl:param name="SeRvIcE">WMS</ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="UpDaTeSeQuEnCe">
+                        <xsl:value-of select="$low-updatesequence"/>
+                     </ctl:param>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="not($response/wms:WMS_Capabilities)">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+               <ctl:message>No updateSequence number is advertised in the Capabilities XML.</ctl:message>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:updatesequence-higher">
+      <ctl:param name="high-updatesequence">An updateSequence value higher than the current updateSequence value advertised in the capabilities XML.</ctl:param>
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a GetCapabilities request is made with an UPDATESEQUENCE parameter set to a value higher than the current update sequence value, then the server returns an exception (code=InvalidUpdateSequence).</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.3.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.updatesequence</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="@updateSequence">
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetCapabilities/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="ReQuEsT">GetCapabilities</ctl:param>
+                     <ctl:param name="SeRvIcE">WMS</ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="UpDaTeSeQuEnCe">
+                        <xsl:value-of select="$high-updatesequence"/>
+                     </ctl:param>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='InvalidUpdateSequence'])">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+               <ctl:message>No updateSequence number is advertised in the Capabilities XML.</ctl:message>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:normative-schema">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The normative content of the schema document referred to by the schemaLocation attribute in the capabilities document is identical to the normative content of the on-line schema referred to in Annex E.1.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(@xsi:schemaLocation)">
+               <ctl:message>A schemaLocation attribute is required on the root element.</ctl:message>
+               <ctl:fail/>
+            </xsl:when>
+            <xsl:when test="not(contains(@xsi:schemaLocation, 'http://www.opengis.net/wms'))">
+               <ctl:message>The schemaLocation attribute must provide a schema for the http://www.opengis.net/wms namespace.</ctl:message>
+               <ctl:fail/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="schema-url" select="substring-before(concat(substring-after(normalize-space(@xsi:schemaLocation), 'http://www.opengis.net/wms '), ' '), ' ')"/>
+               <xsl:variable name="normalized-schema">
+                  <xsl:call-template name="getcapabilities:normalize-schema">
+                     <xsl:with-param name="schema" select="document($schema-url)"/>
+                  </xsl:call-template>
+               </xsl:variable>
+               <xsl:variable name="normalized-normative-schema">
+                  <xsl:call-template name="getcapabilities:normalize-schema">
+                     <xsl:with-param name="schema" select="document('http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd')"/>
+                  </xsl:call-template>
+<!--                  <xsl:copy-of select="functions:get-resource('net/opengis/schemas/wms/1.3.0/normalized_capabilities_1_3_0.xsd')"/> -->
+               </xsl:variable>
+               <xsl:for-each select="$normalized-normative-schema/objects/*">
+                  <xsl:variable name="element" select="."/>
+                  <xsl:if test="count($normalized-schema/objects/*[saxon:deep-equal(., $element, none, 'w')]) = 0">
+                     <ctl:message>Error: The schema does not define <xsl:value-of select="concat(name($element), ' ', $element/@name)"/> correctly.</ctl:message>
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:for-each>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:validate-using-schemaLocation">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The response to a GetCapabilities request validates against the schema(s) provided with the schemaLocation attribute.</ctl:assertion>
+      <ctl:comment>Apache Xerces is used to validate the capabilities document.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section 7.2.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response</ctl:link>
+      <ctl:code>
+         <xsl:variable name="reparsed-capabilities">
+            <ctl:parse>
+               <ctl:content>
+                  <xsl:copy-of select="."/>
+               </ctl:content>
+               <parsers:XMLValidatingParser/>
+            </ctl:parse>
+         </xsl:variable>
+         <xsl:if test="not($reparsed-capabilities/*)">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:capability-onlineresource">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Each OnlineResource URL intended for HTTP Get requests in the capabilities document is a URL prefix</ctl:assertion>
+      <ctl:comment><![CDATA[Each OnlineResource URL must ends in a ? or both contain a ? and end in an &amp;.]]></ctl:comment>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.capability_metadata</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability/wms:Request/*">
+            <xsl:variable name="href" select="string(wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href)"/>
+            <xsl:if test="not(contains($href, '?') and (substring-after($href, '?') = '' or substring($href, string-length($href)) = '&amp;'))">
+               <ctl:message>The HTTP Get OnlineResource URL for the <xsl:value-of select="local-name()"/> request is not a prefix.</ctl:message>
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:capability-xml-getcapabilities-format">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The server advertises the text/xml format for the GetCapabilities operation.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.capability_metadata</ctl:link>
+      <ctl:link title="WMS 1.3.0 section 7.2.3.1">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.format</ctl:link>
+      <ctl:code>
+         <xsl:if test="not(wms:Capability/wms:Request/wms:GetCapabilities/wms:Format[. = 'text/xml'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:capability-xml-exception-format">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The server advertises the XML service exception format.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.capability_metadata</ctl:link>
+      <ctl:link title="WMS 1.3.0 section 7.3.3.11">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getmap.params.exceptions</ctl:link>
+      <ctl:code>
+         <xsl:if test="not(wms:Capability/wms:Exception/wms:Format[. = 'XML'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:resource-format">
+      <ctl:param name="resource">The URL of a resource</ctl:param>
+      <ctl:param name="advertised-format">The advertised format for the resource</ctl:param>
+      <ctl:param name="actual-format">The actual format of the resource</ctl:param>
+      <ctl:assertion>The MIME-type returned for {$resource} is {$advertised-format}.</ctl:assertion>
+      <ctl:code>
+         <xsl:if test="functions:mime-match($actual-format, $advertised-format) = 'false'">
+            <ctl:message>Error: The actual MIME-type for '<xsl:value-of select="$resource"/>' is '<xsl:value-of select="$actual-format"/>'</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:resource-size">
+      <ctl:param name="resource">The URL of a resource</ctl:param>
+      <ctl:param name="advertised-width">The advertised width for the resource</ctl:param>
+      <ctl:param name="advertised-height">The advertised height for the resource</ctl:param>
+      <ctl:param name="actual-width">The actual width of the resource</ctl:param>
+      <ctl:param name="actual-height">The actual height of the resource</ctl:param>
+      <ctl:assertion>The size of {$resource} is {$advertised-width}x{$advertised-height}.</ctl:assertion>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="string($actual-width) = '' or string($actual-height) = ''">
+               <ctl:message>Error: Could not determine size of '<xsl:value-of select="$resource"/>'.</ctl:message>
+               <ctl:fail/>
+            </xsl:when>
+            <xsl:when test="not($actual-width = $advertised-width and $actual-height = $advertised-height)">
+               <ctl:message>Error: The actual size of '<xsl:value-of select="$resource"/>' is <xsl:value-of select="$actual-width"/>x<xsl:value-of select="$actual-height"/></ctl:message>
+               <ctl:fail/>
+            </xsl:when>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:logourls">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The metadata for each of the LogoURL resources is correct.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.12">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.attribution</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(wms:Capability//wms:Layer/wms:Attribution/wms:LogoURL)">
+               <ctl:message>No LogoURL elements</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:for-each select="wms:Capability//wms:Layer/wms:Attribution/wms:LogoURL">
+                  <xsl:variable name="response">
+                     <ctl:request>
+                        <ctl:url>
+                           <xsl:value-of select="wms:OnlineResource/@xlink:href"/>
+                        </ctl:url>
+                        <ctl:method>get</ctl:method>
+                        <parsers:HTTPParser>
+                           <parsers:parse>
+                              <xsl:choose>
+                                 <xsl:when test="functions:image-format(wms:Format) and @width and @height">
+                                    <parsers:ImageParser>
+                                       <parsers:width/>
+                                       <parsers:height/>
+                                    </parsers:ImageParser>
+                                 </xsl:when>
+                                 <xsl:otherwise>
+                                    <parsers:NullParser/>
+                                 </xsl:otherwise>
+                              </xsl:choose>
+                           </parsers:parse>
+                        </parsers:HTTPParser>
+                     </ctl:request>
+                  </xsl:variable>
+                  <ctl:call-test name="getcapabilities:resource-format">
+                     <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the LogoURL resource" label-expr="concat('the LogoURL for Layer ', ../../wms:Name)"/>
+                     <ctl:with-param name="advertised-format" select="wms:Format" label="the advertised format" label-expr="wms:Format"/>
+                     <ctl:with-param name="actual-format" select="$response/response/headers/header[functions:to-lowercase(@name) = 'content-type']"/>
+                  </ctl:call-test>
+                  <xsl:if test="functions:image-format(wms:Format) and @width and @height">
+                     <ctl:call-test name="getcapabilities:resource-size">
+                        <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the LogoURL resource" label-expr="concat('the LogoURL for Layer ', ../../wms:Name)"/>
+                        <ctl:with-param name="advertised-width" select="@width" label="the advertised width" label-expr="@width"/>
+                        <ctl:with-param name="advertised-height" select="@height" label="the advertised height" label-expr="@height"/>
+                        <ctl:with-param name="actual-width" select="$response/response/content/parsers:ImageParser/parsers:width"/>
+                        <ctl:with-param name="actual-height" select="$response/response/content/parsers:ImageParser/parsers:height"/>
+                     </ctl:call-test>
+                  </xsl:if>
+               </xsl:for-each>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:bbox-crs-advertised">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>There are no BoundingBoxes provided for a CRS that is not advertised.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.8">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.bbox</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability/wms:Layer//wms:BoundingBox[@CRS and not(ancestor-or-self::wms:Layer/wms:CRS = @CRS)]">
+            <ctl:message>Layer <xsl:value-of select="../wms:Name"/> has a BoundingBox element for CRS <xsl:value-of select="@CRS"/>, but there is no corresponding CRS element.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:bbox-present">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Every named layer in the capabilities document has at least one BoundingBox element (direct or inherited).</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.8">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.bbox</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer[wms:Name and not(ancestor-or-self::wms:Layer/wms:BoundingBox)]">
+            <ctl:message>Layer <xsl:value-of select="wms:Name"/> does not contain a BoundingBox element.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:bbox-distinct-crs">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For each of the layer elements in the capabilities document, each BoundingBox on the layer states a different CRS.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.8">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.bbox</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:BoundingBox[@CRS = following-sibling::*/@CRS]">
+            <ctl:message>Layer <xsl:value-of select="../wms:Name"/> has multiple BoundingBox elements for CRS <xsl:value-of select="@CRS"/>.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:crs-auto2-declarations">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>None of the CRS declarations in the AUTO2 namespace contain factor, longitude, or latitude variables.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 6.7.3.4">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#basic_elements.cs.layer.auto2</ctl:link>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.7">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.crs</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:CRS[starts-with(., 'AUTO2:') and contains(., ',')]">
+            <ctl:message>Variables are supplied with CRS <xsl:value-of select="substring-before(., ',')"/> in Layer <xsl:value-of select="wms:Name"/>.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:crs-present">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Every named layer in the capabilities document has at least one CRS element that is either stated explicitly or inherited from a parent Layer.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.7">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.crs</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer[wms:Name and not(ancestor-or-self::wms:Layer/wms:CRS)]">
+            <ctl:message>No CRS declared for Layer <xsl:value-of select="wms:Name"/>.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:crs-for-all-layers">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The root layer lists all CRSs that are common to all subsidiary layers.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.7">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.crs</ctl:link>
+      <ctl:code>
+         <xsl:variable name="named-layer-count" select="count(wms:Capability//wms:Layer[wms:Name])"/>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:CRS">
+            <xsl:variable name="crs" select="string(.)"/>
+            <xsl:if test="count(wms:Capability//wms:Layer[wms:Name and ancestor-or-self::wms:Layer/wms:CRS=$crs]) = $named-layer-count and not(wms:Capability/wms:Layer[wms:CRS=$crs])">
+               <ctl:message>Error: CRS <xsl:value-of select="$crs"/> is not listed on the root layer, but is common to all of the subsidiary named layers.</ctl:message>
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:dataurls">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For each of the DataURL elements in the capabilities document, the MIME-type returned by the resource is the same as the Format element.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.15">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.dataurl</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(wms:Capability//wms:Layer/wms:DataURL)">
+               <ctl:message>No DataURL elements</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:for-each select="wms:Capability//wms:Layer/wms:DataURL">
+                  <xsl:variable name="response">
+                     <ctl:request>
+                        <ctl:url>
+                           <xsl:value-of select="wms:OnlineResource/@xlink:href"/>
+                        </ctl:url>
+                        <ctl:method>get</ctl:method>
+                        <parsers:HTTPParser>
+                           <parsers:parse>
+                              <parsers:NullParser/>
+                           </parsers:parse>
+                        </parsers:HTTPParser>
+                     </ctl:request>
+                  </xsl:variable>
+                  <ctl:call-test name="getcapabilities:resource-format">
+                     <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the DataURL resource" label-expr="concat('the DataURL for Layer ', ../wms:Name)"/>
+                     <ctl:with-param name="advertised-format" select="wms:Format" label="the advertised format" label-expr="wms:Format"/>
+                     <ctl:with-param name="actual-format" select="$response/response/headers/header[functions:to-lowercase(@name) = 'content-type']"/>
+                  </ctl:call-test>
+               </xsl:for-each>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:ex_geobbox-present">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Every named layer in the capabilities document has an EX_GeographicBoundingBox element that is either stated explicitly or inherited from a parent Layer.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.6">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.ex_geobbox</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer[wms:Name and not(ancestor-or-self::wms:Layer/wms:EX_GeographicBoundingBox)]">
+            <ctl:message>No EX_GeographicBoundingBox declared for Layer <xsl:value-of select="wms:Name"/>.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:featurelisturls">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For each of the FeatureListURL elements in the capabilities document, the MIME-type returned by the resource is the same as the Format element.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.14">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.featurelisturl</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(wms:Capability//wms:Layer/wms:FeatureListURL)">
+               <ctl:message>No FeatureListURL elements</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:for-each select="wms:Capability//wms:Layer/wms:FeatureListURL">
+                  <xsl:variable name="response">
+                     <ctl:request>
+                        <ctl:url>
+                           <xsl:value-of select="wms:OnlineResource/@xlink:href"/>
+                        </ctl:url>
+                        <ctl:method>get</ctl:method>
+                        <parsers:HTTPParser>
+                           <parsers:parse>
+                              <parsers:NullParser/>
+                           </parsers:parse>
+                        </parsers:HTTPParser>
+                     </ctl:request>
+                  </xsl:variable>
+                  <ctl:call-test name="getcapabilities:resource-format">
+                     <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the FeatureListURL resource" label-expr="concat('the FeatureListURL for Layer ', ../wms:Name)"/>
+                     <ctl:with-param name="advertised-format" select="wms:Format" label="the advertised format" label-expr="wms:Format"/>
+                     <ctl:with-param name="actual-format" select="$response/response/headers/header[functions:to-lowercase(@name) = 'content-type']"/>
+                  </ctl:call-test>
+               </xsl:for-each>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:authorityurl-unique">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>There are no child Layer elements in the capabilities document that define an AuthorityURL with the same name attribute as one inherited from a parent layer.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.13">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.identifier_and_authorityurl</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:AuthorityURL[@name = ../ancestor::wms:Layer/wms:AuthorityURL/@name]">
+            <ctl:message>The AuthorityURL <xsl:value-of select="@name"/> is redefined in Layer <xsl:value-of select="../wms:Name"/>.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:identifier-matches-authorityurl">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>There are no Layer elements in the capabilities document that declare an Identifier without also declaring or inheriting a corresponding AuthorityURL.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.13">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.identifier_and_authorityurl</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:Identifier[not(@authority = ../ancestor-or-self::wms:Layer/wms:AuthorityURL/@name)]">
+            <ctl:message>There is no corresponding AuthorityURL for Identifier <xsl:value-of select="."/> in Layer <xsl:value-of select="../wms:Name"/>.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:metadataurls">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For each of the MetadataURL elements in the capabilities document, the MIME-type returned by the resource is the same as the Format element.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.11">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.metadataurl</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(wms:Capability//wms:Layer/wms:MetadataURL)">
+               <ctl:message>No MetadataURL elements</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:for-each select="wms:Capability//wms:Layer/wms:MetadataURL">
+                  <xsl:variable name="response">
+                     <ctl:request>
+                        <ctl:url>
+                           <xsl:value-of select="wms:OnlineResource/@xlink:href"/>
+                        </ctl:url>
+                        <ctl:method>get</ctl:method>
+                        <parsers:HTTPParser>
+                           <parsers:parse>
+                              <parsers:NullParser/>
+                           </parsers:parse>
+                        </parsers:HTTPParser>
+                     </ctl:request>
+                  </xsl:variable>
+                  <ctl:call-test name="getcapabilities:resource-format">
+                     <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the MetadataURL resource" label-expr="concat('the MetadataURL for Layer ', ../wms:Name)"/>
+                     <ctl:with-param name="advertised-format" select="wms:Format" label="the advertised format" label-expr="wms:Format"/>
+                     <ctl:with-param name="actual-format" select="$response/response/headers/header[functions:to-lowercase(@name) = 'content-type']"/>
+                  </ctl:call-test>
+               </xsl:for-each>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:style-unique">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>There are no child layers in the capabilities document that redefine a Style with the same name as one inherited from one of its parents.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.style</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:Style[wms:Name = ../ancestor::wms:Layer/wms:Style/wms:Name]">
+            <ctl:message>The Style <xsl:value-of select="wms:Name"/> is redefined in Layer <xsl:value-of select="../wms:Name"/>.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:style-legendurls">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The metadata for each LegendURL resource in each Style element is correct.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.style</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(wms:Capability//wms:Layer/wms:Style/wms:LegendURL)">
+               <ctl:message>No LegendURL elements</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:for-each select="wms:Capability//wms:Layer/wms:Style/wms:LegendURL">
+                  <xsl:variable name="response">
+                     <ctl:request>
+                        <ctl:url>
+                           <xsl:value-of select="wms:OnlineResource/@xlink:href"/>
+                        </ctl:url>
+                        <ctl:method>get</ctl:method>
+                        <parsers:HTTPParser>
+                           <parsers:parse>
+                              <xsl:choose>
+                                 <xsl:when test="functions:image-format(wms:Format) and @width and @height">
+                                    <parsers:ImageParser>
+                                       <parsers:width/>
+                                       <parsers:height/>
+                                    </parsers:ImageParser>
+                                 </xsl:when>
+                                 <xsl:otherwise>
+                                    <parsers:NullParser/>
+                                 </xsl:otherwise>
+                              </xsl:choose>
+                           </parsers:parse>
+                        </parsers:HTTPParser>
+                     </ctl:request>
+                  </xsl:variable>
+                  <ctl:call-test name="getcapabilities:resource-format">
+                     <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the LegendURL resource" label-expr="concat('the LegendURL for Style ', ../wms:Name, ' in Layer ', ../../wms:Name)"/>
+                     <ctl:with-param name="advertised-format" select="wms:Format" label="the advertised format" label-expr="wms:Format"/>
+                     <ctl:with-param name="actual-format" select="$response/response/headers/header[functions:to-lowercase(@name) = 'content-type']"/>
+                  </ctl:call-test>
+                  <xsl:if test="functions:image-format(wms:Format) and @width and @height">
+                     <ctl:call-test name="getcapabilities:resource-size">
+                        <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the LegendURL resource" label-expr="concat('the LegendURL for Style ', ../wms:Name, ' in Layer ', ../../wms:Name)"/>
+                        <ctl:with-param name="advertised-width" select="@width" label="the advertised width" label-expr="@width"/>
+                        <ctl:with-param name="advertised-height" select="@height" label="the advertised height" label-expr="@height"/>
+                        <ctl:with-param name="actual-width" select="$response/response/content/parsers:ImageParser/parsers:width"/>
+                        <ctl:with-param name="actual-height" select="$response/response/content/parsers:ImageParser/parsers:height"/>
+                     </ctl:call-test>
+                  </xsl:if>
+               </xsl:for-each>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:style-stylesheeturls">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The metadata for the StyleSheetURL resource in each Style element is correct.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.style</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(wms:Capability//wms:Layer/wms:Style/wms:StyleSheetURL)">
+               <ctl:message>No StyleSheetURL elements</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:for-each select="wms:Capability//wms:Layer/wms:Style/wms:StyleSheetURL">
+                  <xsl:variable name="response">
+                     <ctl:request>
+                        <ctl:url>
+                           <xsl:value-of select="wms:OnlineResource/@xlink:href"/>
+                        </ctl:url>
+                        <ctl:method>get</ctl:method>
+                        <parsers:HTTPParser>
+                           <parsers:parse>
+                              <parsers:NullParser/>
+                           </parsers:parse>
+                        </parsers:HTTPParser>
+                     </ctl:request>
+                  </xsl:variable>
+                  <ctl:call-test name="getcapabilities:resource-format">
+                     <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the StyleSheetURL resource" label-expr="concat('the StyleSheetURL for Style ', ../wms:Name, ' in Layer ', ../../wms:Name)"/>
+                     <ctl:with-param name="advertised-format" select="wms:Format" label="the advertised format" label-expr="wms:Format"/>
+                     <ctl:with-param name="actual-format" select="$response/response/headers/header[functions:to-lowercase(@name) = 'content-type']"/>
+                  </ctl:call-test>
+               </xsl:for-each>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:style-styleurls">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>The metadata for the StyleURL resource in each Style element is correct.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section 7.2.4.6.5">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.response.layer_properties.style</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="not(wms:Capability//wms:Layer/wms:Style/wms:StyleURL)">
+               <ctl:message>No StyleURL elements</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:for-each select="wms:Capability//wms:Layer/wms:Style/wms:StyleURL">
+                  <xsl:variable name="response">
+                     <ctl:request>
+                        <ctl:url>
+                           <xsl:value-of select="wms:OnlineResource/@xlink:href"/>
+                        </ctl:url>
+                        <ctl:method>get</ctl:method>
+                        <parsers:HTTPParser>
+                           <parsers:parse>
+                              <parsers:NullParser/>
+                           </parsers:parse>
+                        </parsers:HTTPParser>
+                     </ctl:request>
+                  </xsl:variable>
+                  <ctl:call-test name="getcapabilities:resource-format">
+                     <ctl:with-param name="resource" select="wms:OnlineResource/@xlink:href" label="the StyleURL resource" label-expr="concat('the StyleURL for Style ', ../wms:Name, ' in Layer ', ../../wms:Name)"/>
+                     <ctl:with-param name="advertised-format" select="wms:Format" label="the advertised format" label-expr="wms:Format"/>
+                     <ctl:with-param name="actual-format" select="$response/response/headers/header[functions:to-lowercase(@name) = 'content-type']"/>
+                  </ctl:call-test>
+               </xsl:for-each>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:dims-time">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>All declarations for the time dimension use 'ISO8601' for units.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0, Annex C, Section C.2">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.declaring</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:Dimension[functions:to-lowercase(@name) = 'time' and not(@units = 'ISO8601')]">
+            <ctl:message>Error: The units attribute is not &quot;ISO8601&quot; for the time dimension in the layer titled &quot;<xsl:value-of select="../wms:Title"/>&quot;.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:dims-elevation-crs88">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>No declarations for the elevation dimension using the vertical datum CRS:88 use a unitSymbol other than 'm'.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0, Annex C, Section C.2">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.declaring</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:Dimension[functions:to-lowercase(@name) = 'elevation' and @units='CRS:88' and not(@unitSymbol='m')]">
+            <ctl:message>Error: The unitSymbol attribute is not &quot;m&quot; for the elevation dimension using the vertical datum CRS:88 in the layer titled &quot;<xsl:value-of select="../wms:Title"/>&quot;.</ctl:message>
+            <ctl:fail/>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="getcapabilities:dims-no-redeclarations">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>There are no Dimension elements in the capabilities document that are redeclared using conflicting unit or unitSymbol attributes.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link title="WMS 1.3.0, Annex C, Section C.2">http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.declaring</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability//wms:Layer/wms:Dimension">
+            <xsl:variable name="name" select="functions:to-lowercase(@name)"/>
+            <xsl:variable name="units" select="@units"/>
+            <xsl:variable name="unitSymbol" select="@unitSymbol"/>
+            <xsl:for-each select="../ancestor::wms:Layer/wms:Dimension[functions:to-lowercase(@name)=$name and not(@units=$units and @unitSymbol=$unitSymbol)]">
+               <ctl:message>The Dimension <xsl:value-of select="@name"/> is redeclared in the layer titled &quot;<xsl:value-of select="../wms:Title"/>&quot; using conflicting units and/or unitSymbol attributes.</ctl:message>
+               <ctl:fail/>
+            </xsl:for-each>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+    <xsl:template name="getcapabilities:normalize-schema">
+      <xsl:param name="schema"/>
+      <xsl:variable name="targetNamespace" select="$schema/xsd:schema/@targetNamespace"/>
+      <objects xmlns="">
+         <xsl:for-each select="$schema/xsd:schema/*">
+            <xsl:call-template name="getcapabilities:normalize-schema-element">
+               <xsl:with-param name="targetNamespace" select="$targetNamespace"/>
+            </xsl:call-template>
+         </xsl:for-each>
+      </objects>
+   </xsl:template>
+
+   <xsl:template name="getcapabilities:normalize-schema-element">
+      <xsl:param name="targetNamespace"/>
+      <xsl:choose>
+         <xsl:when test="self::xsd:import">
+            <xsl:variable name="namespace" select="@namespace"/>
+            <xsl:for-each select="document(@schemaLocation)/xsd:schema/*">
+               <xsl:call-template name="getcapabilities:normalize-schema-element">
+                  <xsl:with-param name="targetNamespace" select="$namespace"/>
+               </xsl:call-template>
+            </xsl:for-each>
+         </xsl:when>
+         <xsl:when test="self::xsd:include">
+            <xsl:for-each select="document(@schemaLocation)/xsd:schema/*">
+               <xsl:call-template name="getcapabilities:normalize-schema-element">
+                  <xsl:with-param name="targetNamespace" select="$targetNamespace"/>
+               </xsl:call-template>
+            </xsl:for-each>
+         </xsl:when>
+         <xsl:when test="self::xsd:annotation"/>
+         <xsl:otherwise>
+            <xsl:copy>
+               <xsl:attribute name="targetNamespace">
+                  <xsl:value-of select="$targetNamespace"/>
+               </xsl:attribute>
+               <xsl:for-each select="@*">
+                  <xsl:sort select="local-name()"/>
+                  <xsl:copy/>
+               </xsl:for-each>
+               <xsl:for-each select="*|text()">
+                  <xsl:call-template name="getcapabilities:normalize-schema-element">
+                     <xsl:with-param name="targetNamespace" select="$targetNamespace"/>
+                  </xsl:call-template>
+               </xsl:for-each>
+            </xsl:copy>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+</ctl:package>
