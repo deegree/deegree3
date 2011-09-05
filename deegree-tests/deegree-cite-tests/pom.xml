@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-cite-tests</artifactId>
-  <packaging>pom</packaging>
-  <name>deegree-cite-tests</name>
+  <artifactId>deegree-compliance-tests</artifactId>
+  <packaging>war</packaging>
+  <name>deegree-compliance-tests</name>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -29,6 +29,10 @@
       <testResource>
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources-static</directory>
+        <filtering>false</filtering>
       </testResource>
     </testResources>
 
@@ -83,7 +87,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.5</version>
+        <version>2.6</version>
         <configuration>
           <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
@@ -111,8 +115,24 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-config</artifactId>
+      <artifactId>deegree-services-wms</artifactId>
       <version>3.1-pre13-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>xalan</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-sos</artifactId>
+      <version>3.1-pre13-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.7.1.1</version>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
@@ -123,6 +143,12 @@
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-cite1</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-classes</artifactId>
       <version>1.0</version>
       <scope>test</scope>
     </dependency>
@@ -199,13 +225,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <modules>
-    <module>deegree-sos-cite100</module>
-    <module>deegree-wcs-cite100</module>
-    <module>deegree-wfs-cite100</module>
-    <module>deegree-wfs-cite110</module>
-    <module>deegree-wms-cite</module>
-  </modules>
 
 </project>
