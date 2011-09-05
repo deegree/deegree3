@@ -142,6 +142,25 @@ public class MapContentProvider implements JrxmlContentProvider {
 
     final static String MIME_TYPE = "text/xml";
 
+    private static final String PARAM_PREFIX = "map";
+
+    private enum SUFFIXES {
+
+        LEGEND_SUFFIX( "_legend" ), MAP_SUFFIX( "_img" ), SCALE_SUFFIX( "_scale" ), LAYERLIST_SUFFIX( "_layerlist" ), SCALEBAR_SUFFIX(
+                                                                                                                                      "_scalebar" );
+
+        private final String text;
+
+        private SUFFIXES( String text ) {
+            this.text = text;
+        }
+
+        private String getText() {
+            return text;
+        }
+
+    }
+
     @Override
     public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
@@ -156,9 +175,14 @@ public class MapContentProvider implements JrxmlContentProvider {
             if ( !handledParameters.contains( parameterName ) ) {
                 if ( jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
                                               new XPath( ".//jasper:image/jasper:imageExpression[text()='$P{"
-                                                         + parameterName + "}']", JrxmlUtils.nsContext ) ) != null ) {
+                                                         + parameterName + "}']", JrxmlUtils.nsContext ) ) != null
+                     || jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                 new XPath(
+                                                            ".//jasper:textField/jasper:textFieldExpression[text()='$P{"
+                                                                                    + parameterName + "}']",
+                                                            JrxmlUtils.nsContext ) ) != null ) {
                     if ( isMapParameter( parameterName ) ) {
-                        String mapId = getMapIdentifier( parameterName );
+                        String mapId = getIdentifierFromParameter( parameterName );
                         if ( !mapIds.contains( mapId ) ) {
                             mapIds.add( mapId );
                         }
@@ -188,22 +212,29 @@ public class MapContentProvider implements JrxmlContentProvider {
 
     }
 
-    private String getMapIdentifier( String imgParameter ) {
-        if ( isMapParameter( imgParameter ) ) {
-            imgParameter = imgParameter.substring( 3 );
-            if ( imgParameter.endsWith( "_legend" ) ) {
-                imgParameter = imgParameter.substring( 0, imgParameter.length() - 7 );
-            } else if ( imgParameter.endsWith( "_map" ) ) {
-                imgParameter = imgParameter.substring( 0, imgParameter.length() - 4 );
+    private String getIdentifierFromParameter( String parameter ) {
+        if ( isMapParameter( parameter ) ) {
+            for ( SUFFIXES suf : SUFFIXES.values() ) {
+                if ( parameter.endsWith( suf.getText() ) ) {
+                    parameter = parameter.substring( PARAM_PREFIX.length(), parameter.length() - suf.getText().length() );
+                }
             }
         }
-        return imgParameter;
+        return parameter;
+    }
+
+    private String getParameterFromIdentifier( String mapId, SUFFIXES suffix ) {
+        return PARAM_PREFIX + mapId + suffix.text;
     }
 
     private boolean isMapParameter( String imgParameter ) {
-        return imgParameter.startsWith( "wms" )
-               && ( imgParameter.endsWith( "_legend" ) || imgParameter.endsWith( "_map" )
-                    || imgParameter.endsWith( "_scale" ) || imgParameter.endsWith( "_scalebar" ) );
+        boolean hasSuffix = false;
+        for ( SUFFIXES suf : SUFFIXES.values() ) {
+            if ( imgParameter.endsWith( suf.getText() ) ) {
+                hasSuffix = true;
+            }
+        }
+        return hasSuffix && imgParameter.startsWith( PARAM_PREFIX );
     }
 
     @Override
@@ -232,7 +263,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                         List<OrderedDatasource<?>> datasources = anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );
 
                         // MAP
-                        String mapKey = "wms" + mapId + "_map";
+                        String mapKey = getParameterFromIdentifier( mapId, SUFFIXES.MAP_SUFFIX );
                         if ( parameters.containsKey( mapKey ) ) {
                             OMElement mapImgRep = jrxmlAdapter.getElement( root,
                                                                            new XPath(
@@ -274,7 +305,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                                         prepareMap( datasources, parameters.get( mapKey ), width, height, bbox, crs ) );
 
                             // SCALE
-                            String scaleKey = "wms" + mapId + "_scale";
+                            String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX);
                             if ( parameters.containsKey( scaleKey ) ) {
                                 double scale = Utils.calcScaleWMS130( width, height, bbox, crs );
                                 params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );
@@ -283,10 +314,11 @@ public class MapContentProvider implements JrxmlContentProvider {
                         }
 
                         // LAYERLIST
-                        prepareLayerlist( "wms" + mapId + "_layerList", jrxmlAdapter, map, datasources );
+                        prepareLayerlist( getParameterFromIdentifier( mapId, SUFFIXES.LAYERLIST_SUFFIX ), jrxmlAdapter,
+                                          map, datasources );
 
                         // LEGEND
-                        String legendKey = "wms" + mapId + "_legend";
+                        String legendKey = getParameterFromIdentifier( mapId, SUFFIXES.LEGEND_SUFFIX );
                         if ( parameters.containsKey( legendKey ) ) {
                             params.put( legendKey,
                                         prepareLegend( legendKey, jrxmlAdapter, datasources, parameters.get( legendKey ) ) );

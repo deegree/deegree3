@@ -106,8 +106,8 @@ public class TestMapContentProviderTest {
     public void testInspectInputParametersFromJrxml() {
         MapContentProvider wmsContentProvider = new MapContentProvider();
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put( "wmsMAP_map", "java.lang.String" );
-        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "mapMAP_img", "java.lang.String" );
+        parameters.put( "mapMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         List<JAXBElement<? extends ProcessletInputDefinition>> inputs = new ArrayList<JAXBElement<? extends ProcessletInputDefinition>>();
         XMLAdapter adapter = new XMLAdapter(
@@ -193,8 +193,8 @@ public class TestMapContentProviderTest {
 
         inputs.add( mapProcesslet );
         HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put( "wmsMAP_map", "java.lang.String" );
-        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "mapMAP_img", "java.lang.String" );
+        parameters.put( "mapMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
 
@@ -288,16 +288,16 @@ public class TestMapContentProviderTest {
 
         inputs.add( mapProcesslet );
         HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put( "wmsMAP_map", "java.lang.String" );
-        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "mapMAP_img", "java.lang.String" );
+        parameters.put( "mapMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
 
         assertEquals( 2, params.size() );
         assertEquals( 1, processedIds.size() );
 
-        assertTrue( params.containsKey( "wmsMAP_map" ) );
-        Object value = params.get( "wmsMAP_map" );
+        assertTrue( params.containsKey( "mapMAP_img" ) );
+        Object value = params.get( "mapMAP_img" );
         assertTrue( value instanceof String );
 
         BufferedImage img = ImageIO.read( new File( (String) value ) );
