@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<GetPropertyValue
+   service="WFS"
+   version="2.0.0"
+   valueReference="myns:phone[2]"
+   outputFormat="application/xml; subtype=gml/3.2"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:myns="http://www.myserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.someserver.com/myns ./myns.xsd">
+   <Query typeNames="myns:Person">
+      <fes:Filter>
+         <fes:And>
+            <fes:PropertyIsEqualTo>
+               <fes:ValueReference>myns:firstName</fes:ValueReference>
+               <fes:Literal>Fred</fes:Literal>
+            </fes:PropertyIsEqualTo>
+            <fes:PropertyIsEqualTo>
+               <fes:ValueReference>myns:lastName</fes:ValueReference>
+               <fes:Literal>Smith</fes:Literal>
+            </fes:PropertyIsEqualTo>
+         </fes:And>
+      </fes:Filter>
+   </Query>
+</GetPropertyValue>

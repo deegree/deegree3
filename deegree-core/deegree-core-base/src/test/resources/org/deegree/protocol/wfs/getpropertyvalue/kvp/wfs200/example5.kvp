@@ -1,0 +1,6 @@
+SERVICE=WFS
+VERSION=2.0.0
+REQUEST=GetPropertyValue
+VALUEREFERENCE=myns:age
+TYPENAMES=myns:Person
+FILTER=<fes:Filter><fes:And><fes:PropertyIsEqualTo><fes:ValueReference>myns:firstName</fes:ValueReference><fes:Literal>Fred</fes:Literal></fes:PropertyIsEqualTo><fes:PropertyIsEqualTo><fes:ValueReference>myns:lastName</fes:ValueReference><fes:Literal>Smith</fes:Literal></fes:PropertyIsEqualTo></fes:And></fes:Filter>

@@ -62,73 +62,71 @@ import org.junit.Test;
  * The <code>GetFeatureKVPAdapterTest</code> class tests the GetFeature KVP adapter.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class GetFeatureKVPAdapterTest extends TestCase {
 
     // ----------------------V 1.0.0 ---------------------------------
-    private final String V100_EXAMPLE_1 = "examples_kvp/v100/example1.kvp";
+    private final String V100_EXAMPLE_1 = "kvp/wfs100/example1.kvp";
 
-    private final String V100_EXAMPLE_2 = "examples_kvp/v100/example2.kvp";
+    private final String V100_EXAMPLE_2 = "kvp/wfs100/example2.kvp";
 
-    private final String V100_EXAMPLE_3 = "examples_kvp/v100/example3.kvp";
+    private final String V100_EXAMPLE_3 = "kvp/wfs100/example3.kvp";
 
-    private final String V100_EXAMPLE_4 = "examples_kvp/v100/example4.kvp";
+    private final String V100_EXAMPLE_4 = "kvp/wfs100/example4.kvp";
 
-    private final String V100_EXAMPLE_5 = "examples_kvp/v100/example5.kvp";
+    private final String V100_EXAMPLE_5 = "kvp/wfs100/example5.kvp";
 
-    private final String V100_EXAMPLE_6 = "examples_kvp/v100/example6.kvp";
+    private final String V100_EXAMPLE_6 = "kvp/wfs100/example6.kvp";
 
-    private final String V100_EXAMPLE_7 = "examples_kvp/v100/example7.kvp";
+    private final String V100_EXAMPLE_7 = "kvp/wfs100/example7.kvp";
 
-    private final String V100_EXAMPLE_9 = "examples_kvp/v100/example9.kvp";
+    private final String V100_EXAMPLE_9 = "kvp/wfs100/example9.kvp";
 
-    private final String V100_EXAMPLE_10 = "examples_kvp/v100/example10.kvp";
+    private final String V100_EXAMPLE_10 = "kvp/wfs100/example10.kvp";
 
-    private final String V100_EXAMPLE_11 = "examples_kvp/v100/example11.kvp";
+    private final String V100_EXAMPLE_11 = "kvp/wfs100/example11.kvp";
 
-    private final String V100_EXAMPLE_12 = "examples_kvp/v100/example12.kvp";
+    private final String V100_EXAMPLE_12 = "kvp/wfs100/example12.kvp";
 
     // ----------------------V 1.1.0 ---------------------------------
-    private final String V110_EXAMPLE_1 = "examples_kvp/v110/example1.kvp";
+    private final String V110_EXAMPLE_1 = "kvp/wfs110/example1.kvp";
 
-    private final String V110_EXAMPLE_2 = "examples_kvp/v110/example2.kvp";
+    private final String V110_EXAMPLE_2 = "kvp/wfs110/example2.kvp";
 
-    private final String V110_EXAMPLE_3 = "examples_kvp/v110/example3.kvp";
+    private final String V110_EXAMPLE_3 = "kvp/wfs110/example3.kvp";
 
-    private final String V110_EXAMPLE_4 = "examples_kvp/v110/example4.kvp";
+    private final String V110_EXAMPLE_4 = "kvp/wfs110/example4.kvp";
 
-    private final String V110_EXAMPLE_5 = "examples_kvp/v110/example5.kvp";
+    private final String V110_EXAMPLE_5 = "kvp/wfs110/example5.kvp";
 
-    private final String V110_EXAMPLE_6 = "examples_kvp/v110/example6.kvp";
+    private final String V110_EXAMPLE_6 = "kvp/wfs110/example6.kvp";
 
-    private final String V110_EXAMPLE_7 = "examples_kvp/v110/example7.kvp";
+    private final String V110_EXAMPLE_7 = "kvp/wfs110/example7.kvp";
 
-    private final String V110_EXAMPLE_8 = "examples_kvp/v110/example8.kvp";
+    private final String V110_EXAMPLE_8 = "kvp/wfs110/example8.kvp";
 
-    private final String V110_EXAMPLE_9 = "examples_kvp/v110/example9.kvp";
+    private final String V110_EXAMPLE_9 = "kvp/wfs110/example9.kvp";
 
-    private final String V110_EXAMPLE_10 = "examples_kvp/v110/example10.kvp";
+    private final String V110_EXAMPLE_10 = "kvp/wfs110/example10.kvp";
 
-    private final String V110_EXAMPLE_11 = "examples_kvp/v110/example11.kvp";
+    private final String V110_EXAMPLE_11 = "kvp/wfs110/example11.kvp";
 
-    private final String V110_EXAMPLE_12 = "examples_kvp/v110/example12.kvp";
+    private final String V110_EXAMPLE_12 = "kvp/wfs110/example12.kvp";
 
-    private final String V110_EXAMPLE_13 = "examples_kvp/v110/example13.kvp";
+    private final String V110_EXAMPLE_13 = "kvp/wfs110/example13.kvp";
 
-    private final String V110_EXAMPLE_14 = "examples_kvp/v110/example14.kvp";
+    private final String V110_EXAMPLE_14 = "kvp/wfs110/example14.kvp";
 
-    private final String V110_EXAMPLE_15 = "examples_kvp/v110/example15.kvp";
+    private final String V110_EXAMPLE_15 = "kvp/wfs110/example15.kvp";
 
-    private final String V110_EXAMPLE_16 = "examples_kvp/v110/example16.kvp";
+    private final String V110_EXAMPLE_16 = "kvp/wfs110/example16.kvp";
 
-    private final String V110_EXAMPLE_17 = "examples_kvp/v110/example17.kvp";
+    private final String V110_EXAMPLE_17 = "kvp/wfs110/example17.kvp";
 
-    private final String V110_EXAMPLE_sortby = "examples_kvp/v110/example_sortby.kvp";
+    private final String V110_EXAMPLE_sortby = "kvp/wfs110/example_sortby.kvp";
 
     /**
      * @throws Exception

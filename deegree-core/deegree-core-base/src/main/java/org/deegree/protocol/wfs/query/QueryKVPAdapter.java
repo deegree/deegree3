@@ -37,7 +37,10 @@ package org.deegree.protocol.wfs.query;
 
 import static org.deegree.commons.utils.kvp.KVPUtils.getBigInt;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
 
+import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +50,10 @@ import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
@@ -55,10 +61,13 @@ import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.filter.Filter;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
@@ -123,7 +132,8 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return new StandardResolveParams( resolve, resolveDepth, resolveTimeout );
     }
 
-    protected static List<Query> parseQueries200( Map<String, String> kvpUC ) {
+    protected static List<Query> parseQueries200( Map<String, String> kvpUC )
+                            throws Exception {
 
         List<Query> queries = null;
         if ( kvpUC.containsKey( "STOREDQUERY_ID" ) ) {
@@ -134,7 +144,8 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return queries;
     }
 
-    private static List<Query> parseAdhocQueries200( Map<String, String> kvpUC ) {
+    private static List<Query> parseAdhocQueries200( Map<String, String> kvpUC )
+                            throws Exception {
 
         // optional: 'NAMESPACE'
         Map<String, String> nsBindings = extractNamespaceBindings200( kvpUC );
@@ -180,7 +191,29 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         // optional: SORTBY
         String sortbyStr = kvpUC.get( "SORTBY" );
         SortProperty[] sortBy = getSortBy( sortbyStr, nsContext );
-        return null;
+
+        Query query = null;
+        if ( filterStr != null ) {
+            if ( typeStrList == null ) {
+                throw new Exception( "The FILTER parameter requires the TYPENAMES parameter to be present as well." );
+            }
+            Filter filter = parseFilter200( filterStr );
+            query = new FilterQuery( null, typeNames, null, srs, null, null, null, sortBy, filter );
+        }
+
+        return Collections.singletonList( query );
+    }
+
+    protected static Filter parseFilter200( String filter )
+                            throws XMLStreamException, FactoryConfigurationError {
+
+        String bindingPreamble = "<nsbindings xmlns=\"" + FES_20_NS + "\" xmlns:fes=\"" + FES_20_NS + "\">";
+        String bindingEpilog = "</nsbindings>";
+        StringReader sr = new StringReader( bindingPreamble + filter + bindingEpilog );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( sr );
+        skipStartDocument( xmlStream );
+        nextElement( xmlStream );
+        return Filter200XMLDecoder.parse( xmlStream );
     }
 
     private static List<Query> parseStoredQuery200( Map<String, String> kvpUC ) {
@@ -224,8 +257,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
     }
 
     @SuppressWarnings("boxing")
-    protected
-    static Envelope createEnvelope( String bboxStr, ICRS srs ) {
+    protected static Envelope createEnvelope( String bboxStr, ICRS srs ) {
         String[] coordList = bboxStr.split( "," );
 
         int n = coordList.length / 2;
@@ -244,8 +276,8 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
     }
 
     protected static XLinkPropertyName[][] getXLinkPropNames( ValueReference[][] propertyNames, String[][] ptxDepthAr,
-                                                            Integer[][] ptxExpAr, String traverseXlinkDepth,
-                                                            Integer traverseXlinkExpiry ) {
+                                                              Integer[][] ptxExpAr, String traverseXlinkDepth,
+                                                              Integer traverseXlinkExpiry ) {
         XLinkPropertyName[][] result = null;
         if ( propertyNames != null ) {
             result = new XLinkPropertyName[propertyNames.length][];
@@ -377,8 +409,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
     }
 
     @SuppressWarnings("boxing")
-    protected
-    static Integer[][] parseParamListAsInts( String paramList ) {
+    protected static Integer[][] parseParamListAsInts( String paramList ) {
         String[][] strings = parseParamList( paramList );
 
         Integer[][] result = new Integer[strings.length][];

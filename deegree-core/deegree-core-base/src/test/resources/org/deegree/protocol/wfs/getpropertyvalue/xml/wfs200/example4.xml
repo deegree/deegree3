@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<!--
+Q. Find the number of lanes of the road that the house that
+   Mary Smith lives in fronts on? (Using GetPropertyValue request)
+-->
+<GetPropertyValue
+   service="WFS"
+   version="2.0.0"
+   valueReference="valueOf(myns:livesIn)/valueOf(myns:frontsOn)/abc:numLanes"
+   outputFormat="application/xml; subtype=gml/3.2"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:myns="http://www.myserver.com/myns"
+   xmlns:abc="http://www.myserver.com/abc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.someserver.com/myns ./myns.xsd
+                       http://www.someserver.com/abc ./abc.xsd">
+   <Query typeNames="myns:Person">
+      <fes:Filter>
+         <fes:And>
+            <fes:PropertyIsEqualTo>
+               <fes:ValueReference>myns:firstName</fes:ValueReference>
+               <fes:Literal>Fred</fes:Literal>
+            </fes:PropertyIsEqualTo>
+            <fes:PropertyIsEqualTo>
+               <fes:ValueReference>myns:lastName</fes:ValueReference>
+               <fes:Literal>Smith</fes:Literal>
+            </fes:PropertyIsEqualTo>
+         </fes:And>
+      </fes:Filter>
+   </Query>
+</GetPropertyValue>

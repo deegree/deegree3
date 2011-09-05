@@ -81,44 +81,44 @@ import org.junit.Test;
 public class GetFeatureXMLAdapterTest extends TestCase {
 
     // ---------------------version 1.0.0------------------------------
-    private final String V100_EXAMPLE1 = "examples_xml/v100/example1.xml";
+    private final String V100_EXAMPLE1 = "xml/wfs100/example1.xml";
 
-    private final String V100_EXAMPLE2 = "examples_xml/v100/example2.xml";
+    private final String V100_EXAMPLE2 = "xml/wfs100/example2.xml";
 
-    private final String V100_EXAMPLE3 = "examples_xml/v100/example3.xml";
+    private final String V100_EXAMPLE3 = "xml/wfs100/example3.xml";
 
-    private final String V100_EXAMPLE4 = "examples_xml/v100/example4.xml";
+    private final String V100_EXAMPLE4 = "xml/wfs100/example4.xml";
 
-    private final String V100_EXAMPLE5 = "examples_xml/v100/example5.xml";
+    private final String V100_EXAMPLE5 = "xml/wfs100/example5.xml";
 
-    private final String V100_EXAMPLE6 = "examples_xml/v100/example6.xml";
+    private final String V100_EXAMPLE6 = "xml/wfs100/example6.xml";
 
-    private final String V100_EXAMPLE7 = "examples_xml/v100/example7.xml";
+    private final String V100_EXAMPLE7 = "xml/wfs100/example7.xml";
 
-    private final String V100_EXAMPLE8 = "examples_xml/v100/example8.xml";
+    private final String V100_EXAMPLE8 = "xml/wfs100/example8.xml";
 
-    private final String V100_EXAMPLE9 = "examples_xml/v100/example9.xml";
+    private final String V100_EXAMPLE9 = "xml/wfs100/example9.xml";
 
     // ---------------------version 1.1.0------------------------------
-    private final String V110_EXAMPLE01 = "examples_xml/v110/example01.xml";
+    private final String V110_EXAMPLE01 = "xml/wfs110/example01.xml";
 
-    private final String V110_EXAMPLE02 = "examples_xml/v110/example02.xml";
+    private final String V110_EXAMPLE02 = "xml/wfs110/example02.xml";
 
-    private final String V110_EXAMPLE03 = "examples_xml/v110/example03.xml";
+    private final String V110_EXAMPLE03 = "xml/wfs110/example03.xml";
 
-    private final String V110_EXAMPLE04 = "examples_xml/v110/example04.xml";
+    private final String V110_EXAMPLE04 = "xml/wfs110/example04.xml";
 
-    // private final String V110_EXAMPLE05 = "examples_xml/v110/example05.xml";
+    // private final String V110_EXAMPLE05 = "xml/wfs110/example05.xml";
 
-    // private final String V110_EXAMPLE06 = "examples_xml/v110/example06.xml";
+    // private final String V110_EXAMPLE06 = "xml/wfs110/example06.xml";
 
-    private final String V110_EXAMPLE09 = "examples_xml/v110/example09.xml";
+    private final String V110_EXAMPLE09 = "xml/wfs110/example09.xml";
 
-    private final String V110_EXAMPLE10 = "examples_xml/v110/example10.xml";
+    private final String V110_EXAMPLE10 = "xml/wfs110/example10.xml";
 
-    private final String V110_EXAMPLE11 = "examples_xml/v110/example11.xml";
+    private final String V110_EXAMPLE11 = "xml/wfs110/example11.xml";
 
-    private final String V110_EXAMPLE12 = "examples_xml/v110/example12.xml";
+    private final String V110_EXAMPLE12 = "xml/wfs110/example12.xml";
 
     /**
      * @throws Exception
