@@ -155,21 +155,20 @@ public abstract class AbstractWFSRequestKVPAdapter {
      * <li><code>NAMESPACE=xmlns(http://www.someserver.com)</code></li>
      * </ul>
      * 
-     * @param kvpUC
+     * @param param
      *            the parameters of the request, normalized
      * @return mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
      *         the binding of the default namespace, or <code>null</code> if no <code>NAMESPACE</code> parameter present
      * @throws InvalidParameterValueException
      *             if the value of the NAMESPACE attribute contains a syntactical error
      */
-    protected static Map<String, String> extractNamespaceBindings200( Map<String, String> kvpUC )
+    protected static Map<String, String> extractNamespaceBindings200( String param )
                             throws InvalidParameterValueException {
 
         Map<String, String> nsContext = null;
-        String nsString = kvpUC.get( "NAMESPACE" );
-        if ( nsString != null ) {
+        if ( param != null ) {
             nsContext = new HashMap<String, String>();
-            String nsDecls[] = nsString.split( ",xmlns" );
+            String nsDecls[] = param.split( ",xmlns" );
             for ( int i = 0; i < nsDecls.length; i++ ) {
                 String nsDecl = nsDecls[i];
                 if ( i != 0 ) {
@@ -189,7 +188,7 @@ public abstract class AbstractWFSRequestKVPAdapter {
                     }
                     nsContext.put( prefix, nsURIString );
                 } else {
-                    String msg = Messages.getMessage( "WFS_NAMESPACE_PARAM200_INVALID", nsString );
+                    String msg = Messages.getMessage( "WFS_NAMESPACE_PARAM200_INVALID", param );
                     throw new InvalidParameterValueException( msg );
                 }
             }

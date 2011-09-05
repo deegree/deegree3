@@ -173,7 +173,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
                             throws InvalidParameterValueException {
 
         // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings200( kvpParams );
+        Map<String, String> nsBindings = extractNamespaceBindings200( kvpParams.get( "NAMESPACE" ) );
 
         // optional: 'TYPENAME'
         QName[] typeNames = extractTypeNames( kvpParams, nsBindings );

@@ -97,7 +97,7 @@ public class GetPropertyValueKVPAdapter extends QueryKVPAdapter {
                             throws Exception {
 
         // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings200( kvpParams );
+        Map<String, String> nsBindings = extractNamespaceBindings200( kvpParams.get( "NAMESPACE" ) );
         if ( nsBindings == null ) {
             nsBindings = Collections.emptyMap();
         }

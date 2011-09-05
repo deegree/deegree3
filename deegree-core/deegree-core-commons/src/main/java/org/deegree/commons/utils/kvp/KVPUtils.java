@@ -46,6 +46,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -145,6 +146,45 @@ public class KVPUtils {
             }
         }
         return result;
+    }
+
+    /**
+     * Splits a parameter list thats encoded according to ISO 19143, 5.5
+     * 
+     * @param s
+     * @return
+     */
+    public static List<String> splitLists( String s ) {
+        List<String> values = null;
+        if ( s.startsWith( "(" ) ) {
+            if ( !s.endsWith( ")" ) ) {
+                String msg = "KVP parameter list is not well-formed: '" + s + "'.";
+                throw new IllegalArgumentException( msg );
+            }
+            values = new ArrayList<String>();
+            int pos = 1;
+            StringBuilder sb = new StringBuilder();
+            while ( pos < s.length() ) {
+                char c = s.charAt( pos );
+                if ( c == ')' ) {
+                    values.add( sb.toString() );
+                    sb = new StringBuilder();
+                    pos++;
+                    if ( pos < s.length() ) {
+                        if ( s.charAt( pos ) != '(' ) {
+                            String msg = "KVP parameter list is not well-formed: '" + s + "'.";
+                            throw new IllegalArgumentException( msg );
+                        }
+                    }
+                } else {
+                    sb.append( c );
+                }
+                pos++;
+            }
+        } else {
+            values = Collections.singletonList( s );
+        }
+        return values;
     }
 
     /**
