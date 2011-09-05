@@ -1,0 +1,5 @@
+SERVICE=WFS
+VERSION=2.0.0
+NAMESPACE=xmlns(myns,http://www.myserver.com/myns)
+REQUEST=DescribeFeatureType
+TYPENAME=myns:TreesA_1M

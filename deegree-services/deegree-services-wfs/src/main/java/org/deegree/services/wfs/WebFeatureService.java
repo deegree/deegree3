@@ -569,7 +569,7 @@ public class WebFeatureService extends AbstractOWS {
             case DescribeFeatureType:
                 DescribeFeatureTypeXMLAdapter describeFtAdapter = new DescribeFeatureTypeXMLAdapter();
                 describeFtAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
-                DescribeFeatureType describeFt = describeFtAdapter.parse( requestVersion );
+                DescribeFeatureType describeFt = describeFtAdapter.parse();
                 Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
                 format.doDescribeFeatureType( describeFt, response );
                 break;
