@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.query;
 
+import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import java.math.BigInteger;
@@ -51,14 +53,18 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
+import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter200XMLDecoder;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
@@ -90,7 +96,6 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         }
 
         String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-
         BigInteger maxFeatures = getNodeAsBigInt( rootElement, new XPath( "@maxFeatures", nsContext ), null );
 
         return new StandardPresentationParams( null, maxFeatures, resultType, outputFormat );
@@ -181,8 +186,10 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * @param queryEl
      *            element substitutable for <code>fes:AbstractQueryExpression</code>, must not be <code>null</code>
      * @return parsed {@link Query}, never <code>null</code>
+     * @throws OWSException
      */
-    public Query parseAbstractQuery200( OMElement queryEl ) {
+    public Query parseAbstractQuery200( OMElement queryEl )
+                            throws OWSException {
         QName elName = queryEl.getQName();
         if ( new QName( WFS_200_NS, "Query" ).equals( elName ) ) {
             return parseAdHocQuery200( queryEl );
@@ -194,27 +201,61 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
     }
 
     // <xsd:element name="Query" type="wfs:QueryType" substitutionGroup="fes:AbstractAdhocQueryExpression"/>
-    private Query parseAdHocQuery200( OMElement queryEl ) {
+    private Query parseAdHocQuery200( OMElement queryEl )
+                            throws OWSException {
 
         // <xsd:attribute name="handle" type="xsd:string"/>
         String handle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
 
-        // <xsd:attribute name="typeNames" type="fes:TypeNamesListType" use="required"/>
-        // TODO handle "schema-element(...)"
-        String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeNames", nsContext ) );
-        TypeName[] typeNames = TypeName.valuesOf( queryEl, typeNameStr );
+        // <xsd:attribute name="aliases" type="fes:AliasesType"/>
+        String[] aliases = null;
+        String aliasesStr = getNodeAsString( queryEl, new XPath( "@aliases", nsContext ), null );
+        if ( aliasesStr != null ) {
+            aliases = StringUtils.split( aliasesStr, " " );
+        }
 
-        // <xsd:attribute name="aliases" type="fes:TypeNamesListType" use="required"/>
-        List<String> aliases = null;
+        // <xsd:attribute name="typeNames" type="fes:TypeNamesListType" use="required"/>
+        String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeNames", nsContext ) );
+        String[] tokens = StringUtils.split( typeNameStr, " " );
+        if ( aliases != null && aliases.length != tokens.length ) {
+            String msg = "Number of entries in 'aliases' and 'typeNames' attributes does not match.";
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, "aliases" );
+        }
+        TypeName[] typeNames = new TypeName[tokens.length];
+        for ( int i = 0; i < tokens.length; i++ ) {
+            String alias = aliases != null ? aliases[i] : null;
+            String token = tokens[i];
+            if ( token.startsWith( "schema-element(" ) && token.endsWith( ")" ) ) {
+                String prefixedName = token.substring( 15, token.length() - 1 );
+                QName qName = resolveQName( queryEl, prefixedName );
+                typeNames[i] = new TypeName( qName, alias, true );
+            } else {
+                QName qName = resolveQName( queryEl, token );
+                typeNames[i] = new TypeName( qName, alias, false );
+            }
+        }
 
         // <xsd:attribute name="srsName" type="xsd:anyURI"/>
         String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
+        ICRS crs = CRSManager.getCRSRef( srsName );
 
         // <xsd:attribute name="featureVersion" type="xsd:string"/>
         String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
         // <xsd:element ref="fes:AbstractProjectionClause" minOccurs="0" maxOccurs="unbounded"/>
-        List<ProjectionClause> projectionClauses = null;
+        List<OMElement> propertyNameEls = getElements( queryEl, new XPath( "wfs200:PropertyName", nsContext ) );
+        List<ProjectionClause> projectionClauses = new ArrayList<ProjectionClause>( propertyNameEls.size() );
+        for ( OMElement propertyNameEl : propertyNameEls ) {
+            ResolveParams resolveParams = parseStandardResolveParameters200( propertyNameEl );
+            ValueReference resolvePath = null;
+            String resolvePathStr = propertyNameEl.getAttributeValue( new QName( "resolvePath" ) );
+            NamespaceBindings propNameNsContext = getNamespaceContext( propertyNameEl );
+            if ( resolvePathStr == null ) {
+                resolvePath = new ValueReference( resolvePathStr, propNameNsContext );
+            }
+            ValueReference propName = new ValueReference( propertyNameEl.getText(), propNameNsContext );
+            projectionClauses.add( new ProjectionClause( propName, resolveParams, resolvePath ) );
+        }
 
         // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
         Filter filter = null;
@@ -249,9 +290,8 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
             }
         }
 
-        ICRS crs = null;
-        ProjectionClause[] projection = null;
-        SortProperty[] sortPropsArray = null;
+        ProjectionClause[] projection = projectionClauses.toArray( new ProjectionClause[projectionClauses.size()] );
+        SortProperty[] sortPropsArray = sortProps.toArray( new SortProperty[sortProps.size()] );
 
         return new FilterQuery( handle, typeNames, featureVersion, crs, projection, sortPropsArray, filter );
     }
@@ -273,5 +313,22 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
             paramToValue.put( paramName, paramEl );
         }
         return new StoredQuery( handle, id, paramToValue );
+    }
+
+    private static QName resolveQName( OMElement context, String name ) {
+        QName qName = null;
+        int colonIdx = name.indexOf( ":" );
+        if ( colonIdx != -1 ) {
+            qName = context.resolveQName( name );
+            if ( qName == null ) {
+                // AXIOM appears to return null for context.resolveQName( name ) for unbound prefices!?
+                String prefix = name.substring( 0, colonIdx );
+                String localPart = name.substring( colonIdx + 1 );
+                qName = new QName( NULL_NS_URI, localPart, prefix );
+            }
+        } else {
+            qName = new QName( name );
+        }
+        return qName;
     }
 }

@@ -287,9 +287,8 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                         String resolveDepth = ptxDepthAr[i][j];
                         BigInteger resolveTimeout = ptxExpAr[i][j] == null ? null
                                                                           : BigInteger.valueOf( ptxExpAr[i][j] * 60 );
-                        ResolveParams resolveParams = new ResolveParams( null, resolveDepth,
-                                                                                         resolveTimeout );
-                        result[i][j] = new ProjectionClause( propertyNames[i][j].getPropertyName(), resolveParams );
+                        ResolveParams resolveParams = new ResolveParams( null, resolveDepth, resolveTimeout );
+                        result[i][j] = new ProjectionClause( propertyNames[i][j].getPropertyName(), resolveParams, null );
                     } else {
                         result[i][j] = propertyNames[i][j];
                     }
@@ -392,7 +391,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 result[i] = new ProjectionClause[propComm[i].length];
 
                 for ( int j = 0; j < propComm[i].length; j++ ) {
-                    result[i][j] = new ProjectionClause( new ValueReference( propComm[i][j], nsContext ), null );
+                    result[i][j] = new ProjectionClause( new ValueReference( propComm[i][j], nsContext ), null, null );
                 }
             }
         }

@@ -36,16 +36,15 @@
 
 package org.deegree.protocol.wfs.getpropertyvalue;
 
+import static org.deegree.protocol.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryXMLAdapter;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
@@ -69,16 +68,10 @@ public class GetPropertyValueXMLAdapter extends QueryXMLAdapter {
      * Parses a <code>GetPropertyValue</code> element into a {@link GetPropertyValue} object.
      * 
      * @return parsed {@link GetPropertyValue} request, never <code>null</code>
-     * @throws Exception
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
+     * @throws OWSException
      */
     public GetPropertyValue parse()
-                            throws Exception {
+                            throws OWSException {
 
         Version version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
 
@@ -89,7 +82,7 @@ public class GetPropertyValueXMLAdapter extends QueryXMLAdapter {
         } else {
             String msg = "Version '" + version
                          + "' is not supported for GetPropertyValue requests. The only supported version is 2.0.0.";
-            throw new Exception( msg );
+            throw new OWSException( msg, VERSION_NEGOTIATION_FAILED, null );
         }
         return result;
     }
@@ -98,8 +91,10 @@ public class GetPropertyValueXMLAdapter extends QueryXMLAdapter {
      * Parses a WFS 2.0.0 <code>GetPropertyValue</code> document into a {@link GetPropertyValue} object.
      * 
      * @return corresponding GetPropertyValue instance, never <code>null</code>
+     * @throws OWSException
      */
-    public GetPropertyValue parse200() {
+    public GetPropertyValue parse200()
+                            throws OWSException {
 
         // <xsd:attribute name="handle" type="xsd:string"/>
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );

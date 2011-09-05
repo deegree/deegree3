@@ -65,6 +65,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.ProjectionClause;
@@ -159,7 +160,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                                   getNamespaceContext( propertyNameEl ) );
-                propNames.add( new ProjectionClause( propertyName, null ) );
+                propNames.add( new ProjectionClause( propertyName, null, null ) );
             }
 
             Filter filter = null;
@@ -230,7 +231,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                                   getNamespaceContext( propertyNameEl ) );
-                propNames.add( new ProjectionClause( propertyName, null ) );
+                propNames.add( new ProjectionClause( propertyName, null, null ) );
             }
 
             List<OMElement> xlinkPropertyElements = getElements( queryEl,
@@ -252,7 +253,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
                 }
                 ProjectionClause xlinkPropName = new ProjectionClause( xlinkProperty,
                                                                        new ResolveParams( null, xlinkDepth,
-                                                                                                  resolveTimeout ) );
+                                                                                          resolveTimeout ), null );
                 propNames.add( xlinkPropName );
             }
 
@@ -341,8 +342,10 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
      * Parses a WFS 2.0.0 <code>GetFeature</code> document into a {@link GetFeature} object.
      * 
      * @return corresponding GetFeature instance, never <code>null</code>
+     * @throws OWSException
      */
-    public GetFeature parse200() {
+    public GetFeature parse200()
+                            throws OWSException {
 
         // <xsd:attribute name="handle" type="xsd:string"/>
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
@@ -357,7 +360,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
         List<Query> queries = new ArrayList<Query>( queryElements.size() );
         for ( OMElement queryEl : queryElements ) {
-            queries.add( new QueryXMLAdapter().parseAbstractQuery200( queryEl ) );
+            queries.add( parseAbstractQuery200( queryEl ) );
         }
 
         return new GetFeature( VERSION_200, handle, presentationParams, resolveParams, queries );

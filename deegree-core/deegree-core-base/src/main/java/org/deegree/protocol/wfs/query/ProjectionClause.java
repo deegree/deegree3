@@ -53,6 +53,8 @@ public class ProjectionClause {
 
     private final ResolveParams resolveParams;
 
+    private final ValueReference resolvePath;
+
     /**
      * Creates a new {@link ProjectionClause} instance.
      * 
@@ -60,14 +62,17 @@ public class ProjectionClause {
      *            name of the targeted property, must not be <code>null</code>
      * @param resolveParams
      *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
+     * @param resolvePath
+     *            ....may be <code>null</code>
      */
-    public ProjectionClause( ValueReference propertyName, ResolveParams resolveParams ) {
+    public ProjectionClause( ValueReference propertyName, ResolveParams resolveParams, ValueReference resolvePath ) {
         this.propertyName = propertyName;
         if ( resolveParams != null ) {
             this.resolveParams = resolveParams;
         } else {
             this.resolveParams = new ResolveParams( null, null, null );
         }
+        this.resolvePath = resolvePath;
     }
 
     /**
@@ -86,5 +91,9 @@ public class ProjectionClause {
      */
     public ResolveParams getResolveParams() {
         return resolveParams;
+    }
+
+    public ValueReference getResolvePath() {
+        return resolvePath;
     }
 }
