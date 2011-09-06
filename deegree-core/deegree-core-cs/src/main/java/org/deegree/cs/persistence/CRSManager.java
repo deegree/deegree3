@@ -202,7 +202,8 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             CRSStore crss = create( crsConfigFile.toURI().toURL() );
             registerAndInit( crss, crsId, prefer );
         } catch ( Exception e ) {
-            LOG.error( "Error creating crs store: " + e.getMessage(), e );
+            LOG.error( "Error creating crs store: " + e.getMessage() );
+            LOG.trace( "Stack trace:", e );
         }
     }
 
