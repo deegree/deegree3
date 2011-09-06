@@ -939,4 +939,35 @@ public class WebFeatureService extends AbstractOWS {
     public ICRS getDefaultQueryCrs() {
         return defaultQueryCRS;
     }
+
+    /**
+     * Checks if a request version can be handled by this controller (i.e. if is supported by the implementation *and*
+     * offered by the current configuration).
+     * <p>
+     * NOTE: This method does use exception code {@link OWSException#INVALID_PARAMETER_VALUE}, not
+     * {@link OWSException#VERSION_NEGOTIATION_FAILED} -- the latter should only be used for failed GetCapabilities
+     * requests.
+     * </p>
+     * 
+     * @param requestedVersion
+     *            version to be checked, may be null (causes exception)
+     * @return <code>requestedVersion</code> (if it is not null), or highest version supported
+     * @throws OWSException
+     *             if the requested version is not available
+     */
+    protected Version checkVersion( Version requestedVersion )
+                            throws OWSException {
+
+        Version version = requestedVersion;
+        if ( requestedVersion == null ) {
+            LOG.debug( "Assuming version 1.1.0 (the only one that has an optional version attribute)." );
+            version = VERSION_110;
+        }
+        if ( !offeredVersions.contains( version ) ) {
+            throw new OWSException(
+                                    Messages.get( "CONTROLLER_UNSUPPORTED_VERSION", version, getOfferedVersionsString() ),
+                                    OWSException.INVALID_PARAMETER_VALUE );
+        }
+        return version;
+    }
 }

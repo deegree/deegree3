@@ -115,9 +115,9 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
     public GetFeature parse()
                             throws Exception {
 
-        Version version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
-        GetFeature result = null;
+        Version version = determineVersion110Safe();
 
+        GetFeature result = null;
         if ( VERSION_100.equals( version ) ) {
             result = parse100();
         } else if ( VERSION_110.equals( version ) ) {

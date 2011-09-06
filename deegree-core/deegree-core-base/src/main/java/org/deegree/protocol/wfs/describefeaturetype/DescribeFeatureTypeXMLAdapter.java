@@ -90,7 +90,7 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
      */
     public DescribeFeatureType parse() {
 
-        Version version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
+        Version version = determineVersion110Safe();
 
         DescribeFeatureType result = null;
         if ( VERSION_100.equals( version ) ) {

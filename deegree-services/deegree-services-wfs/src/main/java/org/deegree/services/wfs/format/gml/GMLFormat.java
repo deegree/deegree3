@@ -75,6 +75,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
@@ -120,6 +121,7 @@ import org.deegree.protocol.wfs.lockfeature.LockOperation;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -359,8 +361,7 @@ public class GMLFormat implements Format {
                 try {
                     traverseXLinkDepth = Integer.parseInt( request.getResolveParams().getDepth() );
                 } catch ( NumberFormatException e ) {
-                    String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID",
-                                               request.getResolveParams().getDepth() );
+                    String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID", request.getResolveParams().getDepth() );
                     throw new OWSException( new InvalidParameterValueException( msg ) );
                 }
             }
@@ -458,8 +459,7 @@ public class GMLFormat implements Format {
 
         if ( analyzer.getRequestedFeatureId() != null ) {
             doSingleObjectResponse( request.getVersion(), request.getPresentationParams().getOutputFormat(),
-                                    request.getResolveParams().getDepth(), analyzer.getRequestedFeatureId(),
-                                    response );
+                                    request.getResolveParams().getDepth(), analyzer.getRequestedFeatureId(), response );
             return;
         }
 
@@ -971,8 +971,13 @@ public class GMLFormat implements Format {
 
             // CITE 1.1.0 compliance (wfs:GetFeatureWithLock-Xlink)
             if ( analyzer.getProjection() != null ) {
-                throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
-                                        OWSException.OPTION_NOT_SUPPORTED );
+                for ( ProjectionClause clause : analyzer.getProjection() ) {
+                    ResolveParams resolveParams = clause.getResolveParams();
+                    if (resolveParams.getDepth() != null || resolveParams.getMode() != null || resolveParams.getTimeout() != null) {
+                        throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
+                                                OWSException.OPTION_NOT_SUPPORTED );                        
+                    }
+                }
             }
 
             boolean mustLockAll = true;
