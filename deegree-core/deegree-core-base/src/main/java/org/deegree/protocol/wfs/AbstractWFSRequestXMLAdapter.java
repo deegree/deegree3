@@ -78,7 +78,11 @@ public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
      */
     protected Version determineVersion110Safe() {
         if ( WFS_NS.equals( rootElement.getQName().getNamespaceURI() ) ) {
-            return Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), "1.1.0" ) );
+            String s = getNodeAsString( rootElement, new XPath( "@version", nsContext ), "1.1.0" );
+            if ( s.isEmpty() ) {
+                s = "1.1.0";
+            }
+            return Version.parseVersion( s );
         }
         return Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
     }
