@@ -39,11 +39,8 @@ package org.deegree.protocol.wfs.getfeature;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
-import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.StringReader;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -135,14 +132,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             }
         }
 
-        // optional: MAXFEATURES
-        BigInteger maxFeatures = KVPUtils.getBigInt( kvpParams, "MAXFEATURES", null );
-
-        // ??? not in 1.0.0 spec, but CITE 1.0.0 test (wfs:test1.0.0-basic-getfeature-get-3) suggests this parameter
-        String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
-
-        StandardPresentationParams presentationParams = new StandardPresentationParams( null, maxFeatures, null,
-                                                                                        outputFormat );
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters100( kvpParams );
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
@@ -244,6 +234,9 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
     private static GetFeature parse110( Map<String, String> kvpParams )
                             throws Exception {
 
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters110( kvpParams );
+        ResolveParams resolveParams = parseStandardResolveParameters110( kvpParams );
+
         // optional: 'NAMESPACE'
         Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
         if ( nsBindings == null ) {
@@ -257,27 +250,12 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             }
         }
 
-        // optional: 'OUTPUTFORMAT'
-        String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
-
-        // optional: 'RESULTTYPE'
-        ResultType resultType = RESULTS;
-        if ( kvpParams.get( "RESULTTYPE" ) != null && kvpParams.get( "RESULTTYPE" ).equalsIgnoreCase( "hits" ) ) {
-            resultType = HITS;
-        }
-
         // optional: SRSNAME
         String srsName = kvpParams.get( "SRSNAME" );
         ICRS srs = null;
         if ( srsName != null ) {
             srs = CRSManager.getCRSRef( srsName );
         }
-
-        // optional: MAXFEATURES
-        BigInteger maxFeatures = KVPUtils.getBigInt( kvpParams, "MAXFEATURES", null );
-
-        StandardPresentationParams presentationParams = new StandardPresentationParams( null, maxFeatures, resultType,
-                                                                                        outputFormat );
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
@@ -320,25 +298,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             ptxExpAr = parseParamListAsInts( propTravXlinkDepth );
         }
 
-        // optional: 'TRAVERSEXLINKDEPTH'
-        String traverseXlinkDepth = kvpParams.get( "TRAVERSEXLINKDEPTH" );
-
-        // optional: 'TRAVERSEXLINKEXPIRY'
-        String traverseXlinkExpiryStr = kvpParams.get( "TRAVERSEXLINKEXPIRY" );
-        BigInteger resolveTimeout = null;
-        Integer traverseXlinkExpiry = null;
-        if ( traverseXlinkExpiryStr != null ) {
-            try {
-                traverseXlinkExpiry = Integer.parseInt( traverseXlinkExpiryStr );
-                resolveTimeout = BigInteger.valueOf( traverseXlinkExpiry * 60 );
-            } catch ( NumberFormatException e ) {
-                e.printStackTrace();
-                throw new InvalidParameterValueException( e.getMessage(), e );
-            }
-        }
-
-        ResolveParams resolveParams = new ResolveParams( null, propTravXlinkExpiry, resolveTimeout );
-        propertyNames = getXLinkPropNames( propertyNames, ptxDepthAr, ptxExpAr, traverseXlinkDepth, traverseXlinkExpiry );
+        propertyNames = getXLinkPropNames( propertyNames, ptxDepthAr, ptxExpAr );
         List<Query> queries = new ArrayList<Query>();
 
         if ( ( featureIdStr != null && bboxStr != null ) || ( featureIdStr != null && filterStr != null )

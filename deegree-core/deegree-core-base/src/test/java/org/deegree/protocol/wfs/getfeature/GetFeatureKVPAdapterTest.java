@@ -663,7 +663,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
-        assertNull( getFeature.getResolveParams().getDepth() );
+        assertEquals( "1", getFeature.getResolveParams().getDepth() );
         assertEquals( BigInteger.valueOf( 60 ), getFeature.getResolveParams().getTimeout() );
     }
 

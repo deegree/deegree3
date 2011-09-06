@@ -41,6 +41,8 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
+import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.StringReader;
 import java.math.BigInteger;
@@ -84,6 +86,41 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( QueryKVPAdapter.class );
 
+    protected static StandardPresentationParams parseStandardPresentationParameters100( Map<String, String> kvpUC ) {
+
+        // optional: MAXFEATURES
+        BigInteger maxFeatures = KVPUtils.getBigInt( kvpUC, "MAXFEATURES", null );
+
+        // ??? not in 1.0.0 spec, but CITE 1.0.0 test (wfs:test1.0.0-basic-getfeature-get-3) suggests this parameter
+        String outputFormat = kvpUC.get( "OUTPUTFORMAT" );
+
+        return new StandardPresentationParams( null, maxFeatures, null, outputFormat );
+    }
+
+    protected static StandardPresentationParams parseStandardPresentationParameters110( Map<String, String> kvpUC ) {
+
+        // optional: 'OUTPUTFORMAT'
+        String outputFormat = kvpUC.get( "OUTPUTFORMAT" );
+
+        // optional: 'RESULTTYPE'
+        ResultType resultType = RESULTS;
+        if ( kvpUC.get( "RESULTTYPE" ) != null && kvpUC.get( "RESULTTYPE" ).equalsIgnoreCase( "hits" ) ) {
+            resultType = HITS;
+        }
+
+        // optional: SRSNAME
+        String srsName = kvpUC.get( "SRSNAME" );
+        ICRS srs = null;
+        if ( srsName != null ) {
+            srs = CRSManager.getCRSRef( srsName );
+        }
+
+        // optional: MAXFEATURES
+        BigInteger maxFeatures = KVPUtils.getBigInt( kvpUC, "MAXFEATURES", null );
+
+        return new StandardPresentationParams( null, maxFeatures, resultType, outputFormat );
+    }
+
     protected static StandardPresentationParams parseStandardPresentationParameters200( Map<String, String> kvpUC ) {
 
         // optional: STARTINDEX
@@ -105,6 +142,21 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         }
 
         return new StandardPresentationParams( startIndex, count, resultType, outputFormat );
+    }
+
+    protected static ResolveParams parseStandardResolveParameters110( Map<String, String> kvpUC ) {
+
+        // optional: 'TRAVERSEXLINKDEPTH'
+        String traverseXlinkDepth = kvpUC.get( "TRAVERSEXLINKDEPTH" );
+
+        // optional: 'TRAVERSEXLINKEXPIRY'
+        BigInteger resolveTimeout = null;
+        BigInteger traverseXlinkExpiry = getBigInt( kvpUC, "TRAVERSEXLINKEXPIRY", null );
+        if ( traverseXlinkExpiry != null ) {
+            resolveTimeout = BigInteger.valueOf( 60 ).multiply( traverseXlinkExpiry );
+        }
+
+        return new ResolveParams( null, traverseXlinkDepth, resolveTimeout );
     }
 
     protected static ResolveParams parseStandardResolveParameters200( Map<String, String> kvpUC ) {
@@ -419,8 +471,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
     }
 
     protected static ProjectionClause[][] getXLinkPropNames( ProjectionClause[][] propertyNames, String[][] ptxDepthAr,
-                                                             Integer[][] ptxExpAr, String traverseXlinkDepth,
-                                                             Integer traverseXlinkExpiry ) {
+                                                             Integer[][] ptxExpAr ) {
         ProjectionClause[][] result = null;
         if ( propertyNames != null ) {
             result = new ProjectionClause[propertyNames.length][];
@@ -431,8 +482,9 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                         String resolveDepth = ptxDepthAr[i][j];
                         BigInteger resolveTimeout = ptxExpAr[i][j] == null ? null
                                                                           : BigInteger.valueOf( ptxExpAr[i][j] * 60 );
-                        ResolveParams resolveParams = new ResolveParams( null, resolveDepth, resolveTimeout );
-                        result[i][j] = new ProjectionClause( propertyNames[i][j].getPropertyName(), resolveParams, null );
+                        ResolveParams propResolveParams = new ResolveParams( null, resolveDepth, resolveTimeout );
+                        result[i][j] = new ProjectionClause( propertyNames[i][j].getPropertyName(), propResolveParams,
+                                                             null );
                     } else {
                         result[i][j] = propertyNames[i][j];
                     }
