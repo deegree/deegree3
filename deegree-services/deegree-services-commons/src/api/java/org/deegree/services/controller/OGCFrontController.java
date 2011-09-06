@@ -293,7 +293,7 @@ public class OGCFrontController extends HttpServlet {
                 if ( queryString == null ) {
                     OWSException ex = new OWSException( "The request did not contain any parameters.",
                                                         "MissingParameterValue" );
-                    sendException( null, ex, response, null );
+                    sendException( determineOWSByPathQuirk( request, response ), ex, response, null );
                     return;
                 }
 
@@ -493,6 +493,34 @@ public class OGCFrontController extends HttpServlet {
         if ( pathInfo != null ) {
             // remove start "/"
             String serviceId = pathInfo.substring( 1 );
+            ows = serviceConfiguration.get( serviceId );
+            if ( ows == null ) {
+                String msg = "No service with identifier '" + serviceId + "' available.";
+                OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
+                sendException( null, e, response, null );
+            }
+        }
+        return ows;
+    }
+
+    private OWS determineOWSByPathQuirk( HttpServletRequest request, HttpServletResponse response )
+                            throws ServletException {
+        OWS ows = null;
+        String pathInfo = request.getPathInfo();
+        if ( pathInfo != null ) {
+            // remove start "/"
+            String serviceId;
+            // nice hack to work around the most stupid WFS 1.1.0 CITE tests
+            // I'm sure there are a bazillion clients around that send out broken URLs, then validate the exception
+            // responses, see the error of their ways and then send a proper request...
+            if ( pathInfo.indexOf( "#" ) != -1 ) {
+                serviceId = pathInfo.substring( 1, pathInfo.indexOf( "#" ) );
+            } else if ( pathInfo.indexOf( "=" ) != -1 ) {
+                serviceId = pathInfo.substring( 1, pathInfo.indexOf( "=" ) );
+            } else {
+                serviceId = pathInfo.substring( 1 );
+            }
+
             ows = serviceConfiguration.get( serviceId );
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
