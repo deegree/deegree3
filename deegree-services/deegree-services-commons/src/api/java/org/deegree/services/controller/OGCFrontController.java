@@ -293,7 +293,7 @@ public class OGCFrontController extends HttpServlet {
                 if ( queryString == null ) {
                     OWSException ex = new OWSException( "The request did not contain any parameters.",
                                                         "MissingParameterValue" );
-                    sendException( ex, response, null );
+                    sendException( null, ex, response, null );
                     return;
                 }
 
@@ -329,7 +329,7 @@ public class OGCFrontController extends HttpServlet {
                 // the message might be more meaningful
                 OWSException ex = new OWSException( "The request did not contain KVP parameters and no parseable XML.",
                                                     "MissingParameterValue", "request" );
-                sendException( ex, response, null );
+                sendException( null, ex, response, null );
                 return;
             } catch ( Throwable e ) {
                 e.printStackTrace();
@@ -337,7 +337,7 @@ public class OGCFrontController extends HttpServlet {
                            + " ms before sending exception." );
                 LOG.debug( e.getMessage(), e );
                 OWSException ex = new OWSException( e.getLocalizedMessage(), e, "InvalidRequest" );
-                sendException( ex, response, null );
+                sendException( null, ex, response, null );
                 return;
             }
             LOG.debug( "Handling HTTP-GET request with status 'success' took: "
@@ -477,7 +477,7 @@ public class OGCFrontController extends HttpServlet {
                            + " ms before sending exception." );
                 LOG.debug( e.getMessage(), e );
                 OWSException ex = new OWSException( e.getLocalizedMessage(), "InvalidRequest" );
-                sendException( ex, response, null );
+                sendException( null, ex, response, null );
             }
             LOG.debug( "Handling HTTP-POST request with status 'success' took: "
                        + ( System.currentTimeMillis() - entryTime ) + " ms." );
@@ -497,7 +497,7 @@ public class OGCFrontController extends HttpServlet {
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
                 OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
-                sendException( e, response, null );
+                sendException( null, e, response, null );
             }
         }
         return ows;
@@ -653,7 +653,7 @@ public class OGCFrontController extends HttpServlet {
             if ( service != null && serviceConfiguration.getByServiceType( service ) == null ) {
                 OWSException ex = new OWSException( "No service for service type '" + service
                                                     + "' is configured / active.", "InvalidParameterValue", "service" );
-                sendException( ex, response, null );
+                sendException( ows, ex, response, null );
                 return;
             }
 
@@ -661,7 +661,7 @@ public class OGCFrontController extends HttpServlet {
                  && serviceConfiguration.getByRequestName( request ) == null ) {
                 OWSException ex = new OWSException( "No service for request type '" + request
                                                     + "' is configured / active.", "InvalidParameterValue", "request" );
-                sendException( ex, response, null );
+                sendException( ows, ex, response, null );
                 return;
             }
 
@@ -669,7 +669,7 @@ public class OGCFrontController extends HttpServlet {
                 OWSException ex = new OWSException( "No service for service type '" + service + "' and request type '"
                                                     + request + "' is configured / active.", "MissingParameterValue",
                                                     "service" );
-                sendException( ex, response, null );
+                sendException( null, ex, response, null );
                 return;
             }
 
@@ -681,14 +681,14 @@ public class OGCFrontController extends HttpServlet {
                  && !( ows.getImplementationMetadata().getImplementedServiceName()[0].equalsIgnoreCase( "WMS" ) ) ) {
                 OWSException ex = new OWSException( "The 'SERVICE' parameter is missing.", "MissingParameterValue",
                                                     "service" );
-                sendException( ex, response, null );
+                sendException( ows, ex, response, null );
                 return;
             }
 
             if ( request == null ) {
                 OWSException ex = new OWSException( "The 'REQUEST' parameter is absent.", "MissingParameterValue",
                                                     "request" );
-                sendException( ex, response, null );
+                sendException( ows, ex, response, null );
                 return;
             }
 
@@ -714,7 +714,7 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
+                sendException( ows, new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
             }
         }
     }
@@ -798,8 +798,8 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), OWSException.NO_APPLICABLE_CODE ), response,
-                               null );
+                sendException( ows, new OWSException( e.getLocalizedMessage(), OWSException.NO_APPLICABLE_CODE ),
+                               response, null );
             }
         }
     }
@@ -913,7 +913,7 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
+                sendException( ows, new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
             }
         }
     }
@@ -1186,25 +1186,32 @@ public class OGCFrontController extends HttpServlet {
      * the request is so broken that it cannot be dispatched.
      * </p>
      * 
+     * @param ows
+     *            if not null, it will be used to determine the responsible controller for exception serializing
      * @param e
      *            exception to be serialized
      * @param res
      *            response object
      * @throws ServletException
      */
-    private void sendException( OWSException e, HttpServletResponse res, Version requestVersion )
+    private void sendException( OWS ows, OWSException e, HttpServletResponse res, Version requestVersion )
                             throws ServletException {
-        Collection<List<OWS>> values = serviceConfiguration.getAll().values();
-        if ( values.size() > 0 && !values.iterator().next().isEmpty() ) {
+        if ( ows == null ) {
+            Collection<List<OWS>> values = serviceConfiguration.getAll().values();
+            if ( values.size() > 0 && !values.iterator().next().isEmpty() ) {
+                ows = values.iterator().next().get( 0 );
+            }
+        }
+        if ( ows != null ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be
             // correct)
-            OWS first = values.iterator().next().get( 0 );
-            Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = first.getExceptionSerializer( requestVersion );
-            ( (AbstractOWS) first ).sendException( serializerAndMime.second, "UTF-8", null, 200,
-                                                   serializerAndMime.first, e, res );
+            Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = ows.getExceptionSerializer( requestVersion );
+            ( (AbstractOWS) ows ).sendException( serializerAndMime.second, "UTF-8", null, 200, serializerAndMime.first,
+                                                 e, res );
         } else {
             // use the most common serializer (OWS 1.1.0)
             AbstractOWS.sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), null, e, res );
         }
     }
+
 }
