@@ -175,6 +175,11 @@ public class QueryAnalyzer {
             } else {
                 requestedCrs = controller.getDefaultQueryCrs();
             }
+
+            // TODO cope with more queries than one
+            if ( wfsQuery.getProjectionClauses() != null ) {
+                this.projections = wfsQuery.getProjectionClauses();
+            }
         }
 
         // associate queries with feature stores
@@ -196,27 +201,6 @@ public class QueryAnalyzer {
                     fsToQueries.put( fs, fsQueries );
                 }
                 fsQueries.add( query );
-            }
-        }
-
-        // TODO cope with more queries than one
-        if ( adHocQueries.size() == 1 ) {
-            if ( adHocQueries.get( 0 ) instanceof FilterQuery ) {
-                FilterQuery featureQuery = ( (FilterQuery) adHocQueries.get( 0 ) );
-                if ( featureQuery.getProjectionClauses() != null ) {
-                    this.projections = featureQuery.getProjectionClauses();
-                }
-            } else if ( adHocQueries.get( 0 ) instanceof BBoxQuery ) {
-                BBoxQuery bboxQuery = ( (BBoxQuery) adHocQueries.get( 0 ) );
-                if ( bboxQuery.getProjectionClauses() != null && bboxQuery.getProjectionClauses().length > 0 ) {
-                    this.projections = bboxQuery.getProjectionClauses();
-                }
-            } else if ( adHocQueries.get( 0 ) instanceof FeatureIdQuery ) {
-                FeatureIdQuery idQuery = ( (FeatureIdQuery) adHocQueries.get( 0 ) );
-                if ( idQuery.getProjectionClauses() != null && idQuery.getProjectionClauses().length > 0 ) {
-                    // TODO cope with arrays with more than one entry
-                    this.projections = idQuery.getProjectionClauses()[0];
-                }
             }
         }
     }
@@ -380,15 +364,13 @@ public class QueryAnalyzer {
             filter = new OperatorFilter( bboxOperator );
         } else if ( wfsQuery instanceof FeatureIdQuery ) {
             FeatureIdQuery fidQuery = (FeatureIdQuery) wfsQuery;
-            ProjectionClause[][] propNames = fidQuery.getProjectionClauses();
+            ProjectionClause[] propNames = fidQuery.getProjectionClauses();
             if ( propNames != null ) {
-                for ( ProjectionClause[] propertyNames : propNames ) {
-                    for ( ProjectionClause propertyName : propertyNames ) {
-                        validatePropertyName( propertyName.getPropertyName(), typeNames );
-                    }
+                for ( ProjectionClause propertyName : propNames ) {
+                    validatePropertyName( propertyName.getPropertyName(), typeNames );
                 }
             }
-            filter = new IdFilter( fidQuery.getFeatureIds() );
+            filter = new IdFilter( fidQuery.getFeatureId() );
         }
 
         if ( wfsTypeNames.length == 0 && ( filter == null || !( filter instanceof IdFilter ) ) ) {

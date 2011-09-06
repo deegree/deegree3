@@ -55,8 +55,6 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  */
 public class FilterQuery extends AdHocQuery {
 
-    private final ProjectionClause[] projectionClauses;
-
     private final Filter filter;
 
     /**
@@ -82,11 +80,10 @@ public class FilterQuery extends AdHocQuery {
      */
     public FilterQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
                         ProjectionClause[] projectionClauses, SortProperty[] sortBy, Filter filter ) {
-        super( handle, typeNames, featureVersion, srsName, sortBy );
+        super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
         if ( typeNames == null || typeNames.length == 0 ) {
             throw new IllegalArgumentException();
         }
-        this.projectionClauses = projectionClauses;
         this.filter = filter;
     }
 
@@ -105,23 +102,6 @@ public class FilterQuery extends AdHocQuery {
      */
     public FilterQuery( QName typeName, ICRS srsName, SortProperty[] sortBy, Filter filter ) {
         this( null, new TypeName[] { new TypeName( typeName, null ) }, null, srsName, null, sortBy, filter );
-    }
-
-    /**
-     * Returns the properties of the features that should be retrieved.
-     * <p>
-     * From WFS 1.1.0 schema (wfs.xsd): <i>While a Web Feature Service should endeavour to satisfy the exact request
-     * specified, in some instance this may not be possible. Specifically, a Web Feature Service must generate a valid
-     * GML3 response to a Query operation. The schema used to generate the output may include properties that are
-     * mandatory. In order that the output validates, these mandatory properties must be specified in the request. If
-     * they are not, a Web Feature Service may add them automatically to the Query before processing it. Thus a client
-     * application should, in general, be prepared to receive more properties than it requested.</i>
-     * </p>
-     * 
-     * @return the properties of the features that should be retrieved, may be null
-     */
-    public ProjectionClause[] getProjectionClauses() {
-        return projectionClauses;
     }
 
     /**

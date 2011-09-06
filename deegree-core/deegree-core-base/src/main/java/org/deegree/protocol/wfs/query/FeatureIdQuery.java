@@ -40,7 +40,7 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * An {@link AdHocQuery} that selects features using a list of ids.
+ * An {@link AdHocQuery} that selects a feature by id.
  * <p>
  * NOTE: Only KVP-based queries can be of this type. For XML-requests its only possible to use a filter constraint.
  * 
@@ -51,9 +51,7 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  */
 public class FeatureIdQuery extends AdHocQuery {
 
-    private final String[] featureIds;
-
-    private final ProjectionClause[][] projectionClauses;
+    private final String featureId;
 
     /**
      * Creates a new {@link FeatureIdQuery} instance.
@@ -71,40 +69,24 @@ public class FeatureIdQuery extends AdHocQuery {
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
      *            may be <code>null</code>
-     * @param featureIds
-     *            requested feature ids, must not be <code>null</code>
+     * @param featureId
+     *            requested feature id, must not be <code>null</code>
      */
     public FeatureIdQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                           ProjectionClause[][] projectionClauses, SortProperty[] sortBy, String[] featureIds ) {
-        super( handle, typeNames, featureVersion, srsName, sortBy );
-        if ( featureIds == null ) {
+                           ProjectionClause[] projectionClauses, SortProperty[] sortBy, String featureId ) {
+        super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
+        if ( featureId == null ) {
             throw new IllegalArgumentException();
         }
-        this.projectionClauses = projectionClauses;
-        this.featureIds = featureIds;
+        this.featureId = featureId;
     }
 
     /**
-     * Returns the properties of the features that should be retrieved.
-     * <p>
-     * From WFS Speification V1.1, clause 14.7.3.1: <i>A list of properties may be specified for each feature type that
-     * is being queried. A "*" character can be used to indicate that all properties should be retrieved. There is a 1:1
-     * mapping between each element in a FEATUREID or TYPENAME list and the PROPERTYNAME list. The absense of a value
-     * also indicates that all properties should be fetched.</i>
-     * </p>
+     * Returns the requested feature id.
      * 
-     * @return the properties of the features that should be retrieved, may be null
+     * @return the requested feature id, never <code>null</code>
      */
-    public ProjectionClause[][] getProjectionClauses() {
-        return projectionClauses;
-    }
-
-    /**
-     * Returns the requested feature ids.
-     * 
-     * @return the requested feature ids, never null
-     */
-    public String[] getFeatureIds() {
-        return featureIds;
+    public String getFeatureId() {
+        return featureId;
     }
 }

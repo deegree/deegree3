@@ -173,7 +173,22 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-            queries.add( new FeatureIdQuery( null, typeNames, featureVersion, srs, propertyNames, null, featureIds ) );
+            for ( int i = 0; i < featureIds.length; i++ ) {
+                String fid = featureIds[i];
+                TypeName[] typeName = new TypeName[0];
+                if ( typeStrList != null ) {
+                    typeName = new TypeName[] { typeNames[i] };
+                }
+                ProjectionClause[] projectionClauses = null;
+                if ( propertyNames != null ) {
+                    if ( propertyNames.length > 1 ) {
+                        projectionClauses = propertyNames[i];
+                    } else {
+                        projectionClauses = propertyNames[0];
+                    }
+                }
+                queries.add( new FeatureIdQuery( null, typeName, featureVersion, srs, projectionClauses, null, fid ) );
+            }
         } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -316,7 +331,18 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-            queries.add( new FeatureIdQuery( null, typeNames, featureVersion, srs, propertyNames, sortBy, featureIds ) );
+            for ( int i = 0; i < featureIds.length; i++ ) {
+                String fid = featureIds[i];
+                TypeName[] typeName = new TypeName[0];
+                if ( typeStrList != null ) {
+                    typeName = new TypeName[] { typeNames[i] };
+                }
+                ProjectionClause[] projectionClauses = null;
+                if ( propertyNames != null ) {
+                    projectionClauses = propertyNames[i];
+                }
+                queries.add( new FeatureIdQuery( null, typeName, featureVersion, srs, projectionClauses, sortBy, fid ) );
+            }
         } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -343,7 +369,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
                 }
                 queries.add( new BBoxQuery( null, new TypeName[] { typeName }, featureVersion, srs, projectionClauses,
                                             sortBy, bbox ) );
-            }            
+            }
         } else if ( filterStr != null || typeNames != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception

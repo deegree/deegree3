@@ -54,8 +54,6 @@ public class BBoxQuery extends AdHocQuery {
 
     private final Envelope bbox;
 
-    private final ProjectionClause[] projectionClauses;
-
     /**
      * Creates a new {@link BBoxQuery} instance.
      * 
@@ -78,21 +76,11 @@ public class BBoxQuery extends AdHocQuery {
      */
     public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
                       ProjectionClause[] projectionClauses, SortProperty[] sortBy, Envelope bbox ) {
-        super( handle, typeNames, featureVersion, srsName, sortBy );
+        super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
         if ( bbox == null ) {
             throw new IllegalArgumentException();
         }
-        this.projectionClauses = projectionClauses;
         this.bbox = bbox;
-    }
-
-    /**
-     * Returns the properties of the features that should be retrieved.
-     * 
-     * @return the properties of the features that should be retrieved, may be null
-     */
-    public ProjectionClause[] getProjectionClauses() {
-        return projectionClauses;
     }
 
     /**

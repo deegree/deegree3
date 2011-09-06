@@ -55,6 +55,8 @@ public abstract class AdHocQuery extends Query {
 
     private final ICRS srsName;
 
+    private final ProjectionClause[] projectionClauses;
+
     private final SortProperty[] sortBy;
 
     /**
@@ -68,14 +70,18 @@ public abstract class AdHocQuery extends Query {
      *            version of the feature instances to be retrieved, may be null
      * @param srsName
      *            WFS-supported SRS that should be used for returned feature geometries, may be null
+     * @param projectionClauses
+     *            limits the properties of the features that should be retrieved, may be <code>null</code>
      * @param sortBy
      *            properties whose values should be used to order the result set may be null
      */
-    public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
+    public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
+                       ProjectionClause[] projectionClauses, SortProperty[] sortBy ) {
         super( handle );
         this.typeNames = typeNames;
         this.featureVersion = featureVersion;
         this.srsName = srsName;
+        this.projectionClauses = projectionClauses;
         this.sortBy = sortBy;
     }
 
@@ -104,6 +110,15 @@ public abstract class AdHocQuery extends Query {
      */
     public ICRS getSrsName() {
         return srsName;
+    }
+
+    /**
+     * Returns the properties of the features that should be retrieved.
+     * 
+     * @return the properties of the features that should be retrieved, may be null
+     */
+    public ProjectionClause[] getProjectionClauses() {
+        return projectionClauses;
     }
 
     /**

@@ -973,9 +973,10 @@ public class GMLFormat implements Format {
             if ( analyzer.getProjection() != null ) {
                 for ( ProjectionClause clause : analyzer.getProjection() ) {
                     ResolveParams resolveParams = clause.getResolveParams();
-                    if (resolveParams.getDepth() != null || resolveParams.getMode() != null || resolveParams.getTimeout() != null) {
+                    if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
+                         || resolveParams.getTimeout() != null ) {
                         throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
-                                                OWSException.OPTION_NOT_SUPPORTED );                        
+                                                OWSException.OPTION_NOT_SUPPORTED );
                     }
                 }
             }
@@ -1014,7 +1015,8 @@ public class GMLFormat implements Format {
             lockOperation = new BBoxLock( bboxQuery.getBBox(), bboxQuery.getTypeNames() );
         } else if ( wfsQuery instanceof FeatureIdQuery ) {
             FeatureIdQuery fidQuery = (FeatureIdQuery) wfsQuery;
-            lockOperation = new FeatureIdLock( fidQuery.getFeatureIds(), fidQuery.getTypeNames() );
+            String[] fids = new String[] { fidQuery.getFeatureId() };
+            lockOperation = new FeatureIdLock( fids, fidQuery.getTypeNames() );
         } else if ( wfsQuery instanceof FilterQuery ) {
             FilterQuery filterQuery = (FilterQuery) wfsQuery;
             // TODO multiple type names
