@@ -54,7 +54,7 @@ public class BBoxQuery extends AdHocQuery {
 
     private final Envelope bbox;
 
-    private final ProjectionClause[][] projectionClauses;
+    private final ProjectionClause[] projectionClauses;
 
     /**
      * Creates a new {@link BBoxQuery} instance.
@@ -77,7 +77,7 @@ public class BBoxQuery extends AdHocQuery {
      *            envelope that constraints the query, must not be <code>null</code>
      */
     public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                      ProjectionClause[][] projectionClauses, SortProperty[] sortBy, Envelope bbox ) {
+                      ProjectionClause[] projectionClauses, SortProperty[] sortBy, Envelope bbox ) {
         super( handle, typeNames, featureVersion, srsName, sortBy );
         if ( bbox == null ) {
             throw new IllegalArgumentException();
@@ -88,16 +88,10 @@ public class BBoxQuery extends AdHocQuery {
 
     /**
      * Returns the properties of the features that should be retrieved.
-     * <p>
-     * From WFS Speification V1.1, clause 14.7.3.1: <i>A list of properties may be specified for each feature type that
-     * is being queried. A "*" character can be used to indicate that all properties should be retrieved. There is a 1:1
-     * mapping between each element in a FEATUREID or TYPENAME list and the PROPERTYNAME list. The absense of a value
-     * also indicates that all properties should be fetched.</i>
-     * </p>
      * 
      * @return the properties of the features that should be retrieved, may be null
      */
-    public ProjectionClause[][] getProjectionClauses() {
+    public ProjectionClause[] getProjectionClauses() {
         return projectionClauses;
     }
 

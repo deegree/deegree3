@@ -365,7 +365,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     TypeName[] typeNames = typeNamesList.get( i );
                     ICRS srsName = srsNames.isEmpty() ? null : srsNames.get( i );
                     // TODO
-                    ProjectionClause[][] projectionClauses = null;
+                    ProjectionClause[] projectionClauses = null;
                     SortProperty[] sortBy = sortByList.isEmpty() ? null : sortByList.get( i );
                     queries.add( new BBoxQuery( null, typeNames, null, srsName, projectionClauses, sortBy, bbox ) );
                 }
@@ -581,7 +581,6 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         ProjectionClause[][] result = null;
         if ( propertyStr != null ) {
             String[][] propComm = parseParamList( propertyStr );
-
             result = new ProjectionClause[propComm.length][];
             for ( int i = 0; i < propComm.length; i++ ) {
                 result[i] = new ProjectionClause[propComm[i].length];

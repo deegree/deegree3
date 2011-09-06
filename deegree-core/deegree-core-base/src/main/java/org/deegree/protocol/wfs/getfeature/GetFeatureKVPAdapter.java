@@ -187,7 +187,15 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             }
 
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
-            queries.add( new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, bbox ) );
+            for ( int i = 0; i < typeNames.length; i++ ) {
+                TypeName typeName = typeNames[i];
+                ProjectionClause[] projectionClauses = null;
+                if ( propertyNames != null ) {
+                    projectionClauses = propertyNames[i];
+                }
+                queries.add( new BBoxQuery( null, new TypeName[] { typeName }, featureVersion, srs, projectionClauses,
+                                            null, bbox ) );
+            }
         } else if ( filterStr != null || typeNames != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
@@ -327,7 +335,15 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             }
 
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
-            queries.add( new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, sortBy, bbox ) );
+            for ( int i = 0; i < typeNames.length; i++ ) {
+                TypeName typeName = typeNames[i];
+                ProjectionClause[] projectionClauses = null;
+                if ( propertyNames != null ) {
+                    projectionClauses = propertyNames[i];
+                }
+                queries.add( new BBoxQuery( null, new TypeName[] { typeName }, featureVersion, srs, projectionClauses,
+                                            sortBy, bbox ) );
+            }            
         } else if ( filterStr != null || typeNames != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception

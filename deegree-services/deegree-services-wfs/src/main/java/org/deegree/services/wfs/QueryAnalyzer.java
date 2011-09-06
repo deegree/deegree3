@@ -209,8 +209,7 @@ public class QueryAnalyzer {
             } else if ( adHocQueries.get( 0 ) instanceof BBoxQuery ) {
                 BBoxQuery bboxQuery = ( (BBoxQuery) adHocQueries.get( 0 ) );
                 if ( bboxQuery.getProjectionClauses() != null && bboxQuery.getProjectionClauses().length > 0 ) {
-                    // TODO cope with arrays with more than one entry
-                    this.projections = bboxQuery.getProjectionClauses()[0];
+                    this.projections = bboxQuery.getProjectionClauses();
                 }
             } else if ( adHocQueries.get( 0 ) instanceof FeatureIdQuery ) {
                 FeatureIdQuery idQuery = ( (FeatureIdQuery) adHocQueries.get( 0 ) );
@@ -366,12 +365,10 @@ public class QueryAnalyzer {
             filter = fQuery.getFilter();
         } else if ( wfsQuery instanceof BBoxQuery ) {
             BBoxQuery bboxQuery = (BBoxQuery) wfsQuery;
-            ProjectionClause[][] propNames = bboxQuery.getProjectionClauses();
+            ProjectionClause[] propNames = bboxQuery.getProjectionClauses();
             if ( propNames != null ) {
-                for ( ProjectionClause[] propertyNames : propNames ) {
-                    for ( ProjectionClause propertyName : propertyNames ) {
-                        validatePropertyName( propertyName.getPropertyName(), typeNames );
-                    }
+                for ( ProjectionClause propertyName : propNames ) {
+                    validatePropertyName( propertyName.getPropertyName(), typeNames );
                 }
             }
             if ( checkAreaOfUse ) {

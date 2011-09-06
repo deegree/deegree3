@@ -55,14 +55,12 @@ import org.deegree.protocol.wfs.query.StandardPresentationParams;
 /**
  * Adapter between KVP <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
  * <p>
- * <p>
  * Supported versions:
  * <ul>
  * <li>WFS 1.0.0</li>
  * <li>WFS 1.1.0</li>
  * </ul>
- * See specification in WFS v1.1 implementation document, clause 14.7.3.1. Differs from {@link GetFeatureKVPAdapter}
- * only with the the EXPIRY keyword.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schneider@lat-lon.de">Andrei Ionita</a>
@@ -74,7 +72,6 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
     /**
      * Parses a normalized KVP-map as a WFS {@link GetFeatureWithLock} request.
-     * 
      * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
