@@ -246,9 +246,9 @@ public class JAXBUtils {
         Schema result = null;
         if ( schemaFile != null ) {
             try {
-                StreamSource origSchema = new StreamSource( new DURL( schemaFile.toExternalForm() ).openStream() );
+                StreamSource origSchema = new StreamSource( new DURL( schemaFile.toExternalForm() ).openStream(), schemaFile.toExternalForm() );
                 URL descUrl = JAXBUtils.class.getResource( "/META-INF/schemas/description/3.1.0/description.xsd" );
-                StreamSource desc = new StreamSource( new DURL( descUrl.toExternalForm() ).openStream() );
+                StreamSource desc = new StreamSource( new DURL( descUrl.toExternalForm() ).openStream(), descUrl.toExternalForm() );
                 result = sf.newSchema( new Source[] { origSchema, desc } );
             } catch ( Throwable e ) {
                 LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
