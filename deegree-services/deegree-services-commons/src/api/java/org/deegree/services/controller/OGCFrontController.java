@@ -667,7 +667,7 @@ public class OGCFrontController extends HttpServlet {
 
             if ( ows == null ) {
                 OWSException ex = new OWSException( "No service for service type '" + service + "' and request type '"
-                                                    + request + "' is configured / active.", "NoApplicableCode",
+                                                    + request + "' is configured / active.", "MissingParameterValue",
                                                     "service" );
                 sendException( ex, response, null );
                 return;
