@@ -130,6 +130,11 @@
       <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wcs</artifactId>
+      <version>3.1-pre13-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.7.1.1</version>
