@@ -269,7 +269,6 @@ public class OGCFrontController extends HttpServlet {
      * ensures that no <code>=</code> char (parameter/value delimiters) occur in the string.
      * </p>
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
@@ -285,7 +284,7 @@ public class OGCFrontController extends HttpServlet {
                 }
             }
 
-            response = handleCompression( request, response );
+            response = handleCompression( response );
 
             String queryString = request.getQueryString();
             try {
@@ -365,7 +364,6 @@ public class OGCFrontController extends HttpServlet {
      * <li><b>Multipart</b>: TODO</li>
      * </ul>
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
@@ -379,7 +377,7 @@ public class OGCFrontController extends HttpServlet {
                 }
             }
 
-            response = handleCompression( request, response );
+            response = handleCompression( response );
 
             LOG.debug( "doPost(), contentType: '" + request.getContentType() + "'" );
 
@@ -505,7 +503,7 @@ public class OGCFrontController extends HttpServlet {
         return ows;
     }
 
-    private HttpServletResponse handleCompression( HttpServletRequest request, HttpServletResponse response ) {
+    private static HttpServletResponse handleCompression( HttpServletResponse response ) {
         // TODO check if we should enable this in any case (XML, images, ...)
         // String encoding = request.getHeader( "Accept-Encoding" );
         // boolean supportsGzip = encoding != null && encoding.toLowerCase().contains( "gzip" );
@@ -516,7 +514,7 @@ public class OGCFrontController extends HttpServlet {
         return response;
     }
 
-    private String readPostBodyAsString( InputStream is )
+    private static String readPostBodyAsString( InputStream is )
                             throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         BufferedInputStream bis = new BufferedInputStream( is );
@@ -538,7 +536,6 @@ public class OGCFrontController extends HttpServlet {
      * @throws FileUploadException
      *             if there are problems reading/parsing the request or storing files.
      */
-    @SuppressWarnings("unchecked")
     private List<FileItem> checkAndRetrieveMultiparts( HttpServletRequest request )
                             throws FileUploadException {
         List<FileItem> result = null;
@@ -602,6 +599,9 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
 
+            String service = normalizedKVPParams.get( "SERVICE" );
+            String request = normalizedKVPParams.get( "REQUEST" );
+
             if ( serviceConfiguration.getRequestLogger() != null ) {
                 Boolean conf = mainConfig.getRequestLogging().isOnlySuccessful();
                 boolean onlySuccessful = conf != null && conf;
@@ -613,8 +613,6 @@ public class OGCFrontController extends HttpServlet {
             if ( ows == null ) {
                 // first try service parameter, SERVICE-parameter is mandatory for each service and request (except WMS
                 // 1.0.0)
-                String service = normalizedKVPParams.get( "SERVICE" );
-                String request = normalizedKVPParams.get( "REQUEST" );
 
                 if ( request != null && request.equalsIgnoreCase( "getlogo" ) ) {
                     response.setContentType( "text/plain" );
@@ -650,39 +648,64 @@ public class OGCFrontController extends HttpServlet {
                         }
                     }
                 }
-
-                if ( ows == null ) {
-                    String msg = null;
-                    String code;
-                    if ( service == null || request == null ) {
-                        msg = "The 'SERVICE' or 'REQUEST' parameter is absent. Cannot determine responsible service for handling the request.";
-                        code = "MissingParameterValue";
-                    } else {
-                        code = "InvalidParameterValue";
-                        msg = "No service for request type '" + request + "' and service type '" + service
-                              + "' is configured / active.";
-                    }
-                    OWSException ex = new OWSException( msg, code, "service" );
-                    sendException( ex, response, null );
-                }
             }
 
-            if ( ows != null ) {
-                LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
-                HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
-                long dispatchTime = FrontControllerStats.requestDispatched();
-                try {
-                    ows.doKVP( normalizedKVPParams, requestWrapper, responseWrapper, multiParts );
-                } finally {
-                    FrontControllerStats.requestFinished( dispatchTime );
-                }
-                if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
-                    validateResponse( responseWrapper );
-                }
-                responseWrapper.flushBuffer();
-                if ( logging != null ) {
-                    logging.finalizeLogging();
-                }
+            if ( service != null && serviceConfiguration.getByServiceType( service ) == null ) {
+                OWSException ex = new OWSException( "No service for service type '" + service
+                                                    + "' is configured / active.", "InvalidParameterValue", "service" );
+                sendException( ex, response, null );
+                return;
+            }
+
+            if ( request != null && !request.equalsIgnoreCase( "GetCapabilities" )
+                 && serviceConfiguration.getByRequestName( request ) == null ) {
+                OWSException ex = new OWSException( "No service for request type '" + request
+                                                    + "' is configured / active.", "InvalidParameterValue", "request" );
+                sendException( ex, response, null );
+                return;
+            }
+
+            if ( ows == null ) {
+                OWSException ex = new OWSException( "No service for service type '" + service + "' and request type '"
+                                                    + request + "' is configured / active.", "NoApplicableCode",
+                                                    "service" );
+                sendException( ex, response, null );
+                return;
+            }
+
+            // Seems not all services test their incoming requests completely, so the check is done here.
+            // Since for WMS the service parameter is not always mandatory, here's the exception.
+            // Once all services properly check their requests (WFS and SOS have this problem), this workaround can be
+            // removed.
+            if ( service == null
+                 && !( ows.getImplementationMetadata().getImplementedServiceName()[0].equalsIgnoreCase( "WMS" ) ) ) {
+                OWSException ex = new OWSException( "The 'SERVICE' parameter is missing.", "MissingParameterValue",
+                                                    "service" );
+                sendException( ex, response, null );
+                return;
+            }
+
+            if ( request == null ) {
+                OWSException ex = new OWSException( "The 'REQUEST' parameter is absent.", "MissingParameterValue",
+                                                    "request" );
+                sendException( ex, response, null );
+                return;
+            }
+
+            LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
+            HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
+            long dispatchTime = FrontControllerStats.requestDispatched();
+            try {
+                ows.doKVP( normalizedKVPParams, requestWrapper, responseWrapper, multiParts );
+            } finally {
+                FrontControllerStats.requestFinished( dispatchTime );
+            }
+            if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
+                validateResponse( responseWrapper );
+            }
+            responseWrapper.flushBuffer();
+            if ( logging != null ) {
+                logging.finalizeLogging();
             }
         } catch ( SecurityException e ) {
             if ( credentialsProvider != null ) {
@@ -696,7 +719,7 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private void validateResponse( HttpResponseBuffer responseWrapper ) {
+    private static void validateResponse( HttpResponseBuffer responseWrapper ) {
         responseWrapper.validate();
     }
 
@@ -890,13 +913,12 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response,
-                               null );
+                sendException( new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
             }
         }
     }
 
-    private boolean isSOAPRequest( XMLStreamReader xmlStream ) {
+    private static boolean isSOAPRequest( XMLStreamReader xmlStream ) {
         String ns = xmlStream.getNamespaceURI();
         String localName = xmlStream.getLocalName();
         return ( "http://schemas.xmlsoap.org/soap/envelope/".equals( ns ) || "http://www.w3.org/2003/05/soap-envelope".equals( ns ) )
