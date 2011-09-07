@@ -567,7 +567,7 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
                 }
             }
         }
-        return Arrays.copyOf( validDomain, 4 );
+        return validDomain != null ? Arrays.copyOf( validDomain, 4 ) : null;
     }
 
     /**
