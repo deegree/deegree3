@@ -153,6 +153,7 @@ public class WorkspaceMojo extends AbstractMojo {
         }
     }
 
+    @Override
     public void execute()
                             throws MojoExecutionException, MojoFailureException {
         Log log = getLog();
@@ -196,14 +197,17 @@ public class WorkspaceMojo extends AbstractMojo {
             }
             for ( Object o : jarDeps ) {
                 Artifact a = (Artifact) o;
-                log.info( "Adding " + a + " to workspace modules directory." );
-                ZipEntry entry = new ZipEntry( "modules/" + a.getFile().getName() );
-                visitedFiles.add( "modules/" + a.getFile().getName() );
-                out.putNextEntry( entry );
-                FileInputStream in = new FileInputStream( a.getFile() );
-                IOUtils.copy( in, out );
-                out.closeEntry();
-                in.close();
+                if ( a.getScope() != null
+                     && ( a.getScope().equalsIgnoreCase( "runtime" ) || a.getScope().equalsIgnoreCase( "compile" ) ) ) {
+                    log.info( "Adding " + a + " to workspace modules directory." );
+                    ZipEntry entry = new ZipEntry( "modules/" + a.getFile().getName() );
+                    visitedFiles.add( "modules/" + a.getFile().getName() );
+                    out.putNextEntry( entry );
+                    FileInputStream in = new FileInputStream( a.getFile() );
+                    IOUtils.copy( in, out );
+                    out.closeEntry();
+                    in.close();
+                }
             }
 
             for ( Artifact a : workspaces ) {
