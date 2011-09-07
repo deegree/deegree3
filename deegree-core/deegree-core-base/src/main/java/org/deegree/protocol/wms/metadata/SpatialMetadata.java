@@ -1,7 +1,7 @@
 //$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,50 +33,63 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.theme;
+package org.deegree.protocol.wms.metadata;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.layer.Layer;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.Envelope;
 
 /**
- * Utility methods for using themes.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
  * 
  * @version $Revision: $, $Date: $
  */
-public class Themes {
+public class SpatialMetadata {
+
+    private Envelope envelope;
+
+    private List<ICRS> coordinateSystems;
 
     /**
-     * @param t
-     * @return all layers contained in this theme and subthemes
+     * @param envelope
+     * @param coordinateSystems
      */
-    public static List<Layer> getAllLayers( Theme t ) {
-        List<Layer> list = new ArrayList<Layer>();
-        list.addAll( t.getLayers() );
-        for ( Theme c : t.getThemes() ) {
-            list.addAll( getAllLayers( c ) );
-        }
-        return list;
+    public SpatialMetadata( Envelope envelope, List<ICRS> coordinateSystems ) {
+        this.envelope = envelope;
+        this.coordinateSystems = coordinateSystems;
     }
 
     /**
-     * @param t
-     * @return all themes contained in this theme and subthemes
+     * @return the envelope
      */
-    public static List<Theme> getAllThemes( Theme t ) {
-        List<Theme> list = new ArrayList<Theme>();
-        list.addAll( t.getThemes() );
-        for ( Theme c : t.getThemes() ) {
-            list.addAll( getAllThemes( c ) );
-        }
-        return list;
+    public Envelope getEnvelope() {
+        return envelope;
     }
 
-    public static void aggregateSpatialMetadata(Theme theme){
+    /**
+     * @param envelope
+     *            the envelope to set
+     */
+    public void setEnvelope( Envelope envelope ) {
+        this.envelope = envelope;
     }
-    
+
+    /**
+     * @return the coordinateSystems, never null
+     */
+    public List<ICRS> getCoordinateSystems() {
+        return coordinateSystems;
+    }
+
+    /**
+     * @param coordinateSystems
+     *            the coordinateSystems to set, may not be null
+     */
+    public void setCoordinateSystems( List<ICRS> coordinateSystems ) {
+        this.coordinateSystems = coordinateSystems;
+    }
+
 }

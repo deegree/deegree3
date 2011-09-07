@@ -26,7 +26,6 @@
           <!-- TODO also implement stuff like bounding box/abstract etc. -->
           <element name="Identifier" type="string" minOccurs="0" />
           <group ref="d:Description" />
-          <element name="CRS" type="string" minOccurs="0" />
         </sequence>
       </choice>
       <element name="Layer" minOccurs="0" maxOccurs="unbounded">

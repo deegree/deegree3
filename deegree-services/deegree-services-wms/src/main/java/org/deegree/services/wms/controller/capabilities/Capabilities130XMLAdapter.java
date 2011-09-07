@@ -78,6 +78,7 @@ import org.deegree.protocol.ows.metadata.ServiceContact;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.wms.metadata.SpatialMetadata;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
@@ -231,7 +232,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        writeSrsAndEnvelope( writer, md.getCoordinateSystems(), md.getEnvelope() );
+        SpatialMetadata smd = md.getSpatialMetadata();
+        writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
 
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
