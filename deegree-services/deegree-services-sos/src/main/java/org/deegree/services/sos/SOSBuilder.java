@@ -40,11 +40,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.commons.xml.XPath;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
@@ -78,56 +74,21 @@ public class SOSBuilder {
     }
 
     /**
-     * Create a SOS configuration from a config file.
-     * 
-     * @param config
-     * @return a new SOSConfiguration
-     * @throws SOSConfigurationException
-     */
-    public static SOService createService( URL config )
-                            throws SOSConfigurationException {
-        SOService result = null;
-        try {
-            XMLAdapter adapter = new XMLAdapter( config );
-            NamespaceBindings ctxt = new NamespaceBindings();
-            ctxt.addNamespace( "sos", "http://www.deegree.org/services/sos" );
-
-            OMElement serviceConf = adapter.getElement( adapter.getRootElement(),
-                                                        new XPath( "/sos:ServiceConfiguration", ctxt ) );
-            if ( serviceConf == null ) { // maybe its a web service configuration
-                serviceConf = adapter.getElement( adapter.getRootElement(),
-                                                  new XPath( "/sos:deegreeSOS/sos:ServiceConfiguration", ctxt ) );
-            }
-
-            ServiceConfigurationXMLAdapter serviceAdapter = new ServiceConfigurationXMLAdapter();
-            serviceAdapter.setRootElement( serviceConf );
-            serviceAdapter.setSystemId( adapter.getSystemId() );
-
-            result = createService( serviceAdapter );
-        } catch ( XMLProcessingException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    /**
      * Create a SOS configuration from a XMLStreamReader.
      * 
      * @param config
      * @return a new SOSConfiguration
-     * @throws SOSConfigurationException
      */
-    public static SOService createService( ServiceConfigurationXMLAdapter config )
-                            throws SOSConfigurationException {
-        SOSBuilder builder = new SOSBuilder( config );
-        return builder.buildService();
+    public static SOService createService( DeegreeWorkspace workspace, URL configUrl ) {
+        ServiceConfigurationXMLAdapter ad = new ServiceConfigurationXMLAdapter();
+        ad.setSystemId( configUrl.toExternalForm() );
+        SOSBuilder builder = new SOSBuilder( ad );
+        return builder.buildService( workspace, configUrl );
     }
 
-    private SOService buildService()
-                            throws SOSConfigurationException {
+    private SOService buildService( DeegreeWorkspace workspace, URL configUrl ) {
         SOService result = new SOService();
-        ServiceConfiguration serviceConf = adapter.parse();
+        ServiceConfiguration serviceConf = ServiceConfigurationXMLAdapter.parse( workspace, configUrl );
         for ( Offering conf : serviceConf.getOffering() ) {
             result.addOffering( createOffering( conf ) );
         }
