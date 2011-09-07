@@ -36,6 +36,7 @@
 
 package org.deegree.commons.utils;
 
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -52,7 +53,6 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
 
 /**
@@ -75,7 +75,7 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.proxy.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/proxy/3.0.0/proxy.xsd";
+    private static final URL CONFIG_SCHEMA = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
 
     private static final String PROXY_HOST = "proxyHost";
 
@@ -114,6 +114,7 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
      * 
      * @throws IllegalArgumentException
      */
+    @Override
     public void startup( DeegreeWorkspace workspace )
                             throws IllegalArgumentException {
         File proxyConfigFile = new File( workspace.getLocation(), "proxy.xml" );
@@ -125,10 +126,9 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
         LOG.info( "Proxy configuration." );
         LOG.info( "--------------------------------------------------------------------------------" );
         try {
-            ProxyConfiguration proxyConfig = (ProxyConfiguration) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                        CONFIG_SCHEMA,
-                                                                                        proxyConfigFile.toURI().toURL(),
-                                                                                        workspace );
+            ProxyConfiguration proxyConfig = (ProxyConfiguration) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+                                                                              proxyConfigFile.toURI().toURL(),
+                                                                              workspace );
             if ( proxyConfig != null ) {
                 setupProxyParameters( proxyConfig );
             }

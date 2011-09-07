@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.remotewfs;
 
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+
 import java.net.URL;
 
 import javax.xml.bind.JAXBException;
@@ -43,7 +45,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.remotewfs.jaxb.RemoteWFSFeatureStoreConfig;
@@ -66,7 +67,7 @@ public class RemoteWFSFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.remotewfs.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/remotewfs/3.1.0/remotewfs.xsd";
+    private static final URL CONFIG_SCHEMA = RemoteWFSFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/remotewfs/3.1.0/remotewfs.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -77,7 +78,7 @@ public class RemoteWFSFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return RemoteWFSFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
@@ -86,10 +87,9 @@ public class RemoteWFSFeatureStoreProvider implements FeatureStoreProvider {
 
         RemoteWFSFeatureStore fs = null;
         try {
-            RemoteWFSFeatureStoreConfig config = (RemoteWFSFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                                     CONFIG_SCHEMA,
-                                                                                                     configURL,
-                                                                                                     workspace );
+            RemoteWFSFeatureStoreConfig config = (RemoteWFSFeatureStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                           CONFIG_SCHEMA, configURL,
+                                                                                           workspace );
 
             // TODO
             fs = new RemoteWFSFeatureStore( null );

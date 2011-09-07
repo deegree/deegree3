@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.persistence.gml;
 
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
@@ -49,7 +50,6 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.persistence.CRSStore;
@@ -75,7 +75,7 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.gml.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/crs/stores/gml/3.1.0/gml.xsd";
+    private static final URL CONFIG_SCHEMA = GMLCRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/gml/3.1.0/gml.xsd" );
 
     @Override
     public String getConfigNamespace() {
@@ -84,15 +84,15 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return GMLCRSStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
     public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
                             throws CRSStoreException {
         try {
-            GMLCRSStoreConfig config = (GMLCRSStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                                 configURL );
+            GMLCRSStoreConfig config = (GMLCRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
+                                                                       workspace );
 
             GMLCRSStore crsStore = new GMLCRSStore( DSTransform.fromSchema( config ) );
             GMLResource resource = null;

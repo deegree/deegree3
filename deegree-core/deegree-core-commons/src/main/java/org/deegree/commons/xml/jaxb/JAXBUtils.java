@@ -97,51 +97,6 @@ public class JAXBUtils {
         }
     }
 
-    /**
-     * Use #unmarshall(String, URL, URL, DeegreeWorkspace) instead.
-     * 
-     * @param jaxbPackage
-     * @param schemaLocation
-     * @param url
-     * @throws JAXBException
-     */
-    @Deprecated
-    public static Object unmarshall( String jaxbPackage, String schemaLocation, URL url )
-                            throws JAXBException {
-        return unmarshall( jaxbPackage, schemaLocation, url, null );
-    }
-
-    /**
-     * Use #unmarshall(String, URL, URL, DeegreeWorkspace) instead.
-     * 
-     * @param jaxbPackage
-     * @param schemaLocation
-     * @param url
-     * @param workspace
-     * @throws JAXBException
-     */
-    @Deprecated
-    public static Object unmarshall( String jaxbPackage, String schemaLocation, URL url, DeegreeWorkspace workspace )
-                            throws JAXBException {
-        Object o = null;
-        URL schemaURL = JAXBUtils.class.getResource( schemaLocation );
-        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaURL, workspace );
-        try {
-            o = u.unmarshal( url );
-        } catch ( JAXBException e ) {
-            LOG.error( "Error in configuration file: '{}'", url );
-            // whyever they use the linked exception here...
-            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
-            LOG.error( "Error: " + e.getLinkedException().getMessage() );
-            LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
-            throw e;
-        } catch ( Throwable e ) {
-            LOG.error( "Error in configuration file '{}': {}", url, e.getLocalizedMessage() );
-            LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
-        }
-        return o;
-    }
-
     public static Object unmarshall( String jaxbPackage, URL schemaLocation, URL url, DeegreeWorkspace workspace )
                             throws JAXBException {
         Object o = null;
@@ -160,16 +115,6 @@ public class JAXBUtils {
             LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
         }
         return o;
-    }
-
-    /**
-     * Use #unmarshall(String, URL, URL, DeegreeWorkspace) instead.
-     * 
-     */
-    @Deprecated
-    public static Object unmarshall( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter )
-                            throws JAXBException {
-        return unmarshall( jaxbPackage, schemaLocation, xmlAdapter, null );
     }
 
     /**
@@ -255,9 +200,12 @@ public class JAXBUtils {
                 StreamSource origSchema = new StreamSource( new DURL( schemaFile.toExternalForm() ).openStream(),
                                                             schemaFile.toExternalForm() );
                 URL descUrl = JAXBUtils.class.getResource( "/META-INF/schemas/description/3.1.0/description.xsd" );
+                URL spatUrl = JAXBUtils.class.getResource( "/META-INF/schemas/spatialmetadata/3.1.0/spatialmetadata.xsd" );
                 StreamSource desc = new StreamSource( new DURL( descUrl.toExternalForm() ).openStream(),
                                                       descUrl.toExternalForm() );
-                result = sf.newSchema( new Source[] { origSchema, desc } );
+                StreamSource spat = new StreamSource( new DURL( spatUrl.toExternalForm() ).openStream(),
+                                                      spatUrl.toExternalForm() );
+                result = sf.newSchema( new Source[] { origSchema, desc, spat } );
             } catch ( Throwable e ) {
                 LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
                            + e.getLocalizedMessage() );
