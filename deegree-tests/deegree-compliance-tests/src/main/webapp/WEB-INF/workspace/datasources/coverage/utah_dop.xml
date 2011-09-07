@@ -4,9 +4,9 @@
   xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd">
   <StorageCRS>EPSG:26912</StorageCRS>
   <Resolution res="16.0">
-    <RasterDirectory recursive="true">../../../data/utah/raster/dop/16.0</RasterDirectory>
+    <RasterDirectory recursive="true">../../data/utah/raster/dop/16.0</RasterDirectory>
   </Resolution>
   <Resolution res="32.0">
-    <RasterDirectory recursive="true">../../../data/utah/raster/dop/32.0</RasterDirectory>
+    <RasterDirectory recursive="true">../../data/utah/raster/dop/32.0</RasterDirectory>
   </Resolution>
 </MultiResolutionRaster>

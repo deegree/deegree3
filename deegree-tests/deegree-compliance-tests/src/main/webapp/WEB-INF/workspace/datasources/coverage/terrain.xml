@@ -3,5 +3,5 @@
         originLocation="outer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd">
   <StorageCRS>EPSG:4326</StorageCRS>
-  <RasterFile>../../../data/cite/terrain.tif</RasterFile>
+  <RasterFile>../../data/cite/terrain.tif</RasterFile>
 </Raster>
