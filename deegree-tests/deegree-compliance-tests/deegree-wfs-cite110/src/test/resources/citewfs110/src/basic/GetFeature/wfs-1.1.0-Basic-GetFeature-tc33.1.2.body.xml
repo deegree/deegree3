@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.1.0" service="WFS">
-	<wfs:Query xmlns:sf="http://cite.opengeospatial.org/gmlsf" typeName="sf:PrimitiveGeoFeature" srsName="urn:ogc:def:crs:EPSG::4326">
-		<ogc:Filter>
-			<ogc:GmlObjectId gml:id="{$gml.id}"/>
-		</ogc:Filter>
-	</wfs:Query>
-</wfs:GetFeature>

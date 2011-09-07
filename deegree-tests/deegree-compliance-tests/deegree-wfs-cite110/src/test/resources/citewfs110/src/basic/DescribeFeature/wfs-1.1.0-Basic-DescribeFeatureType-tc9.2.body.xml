@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<wfs:DescribeFeatureType xmlns:sf="http://cite.opengeospatial.org/gmlsf" xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0">
-	<wfs:TypeName>sf:ComplexGeoFeature</wfs:TypeName>
-</wfs:DescribeFeatureType>

@@ -1,8 +1,0 @@
-SOS 1.0.0 Test Suite Release Notes
-
-
-Changes included in latest revision:
-
-2009-07-23 (kstegemoller):
-- tag r0 - SOS 1.0.0
-
