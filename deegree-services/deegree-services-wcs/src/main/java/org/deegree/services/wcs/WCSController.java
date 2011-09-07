@@ -132,6 +132,8 @@ public class WCSController extends AbstractOWS {
 
     private ServiceProviderType provider;
 
+    private URL configUrl;
+
     private static final String CONFIG_PRE = "dwcs";
 
     private static final String CONFIG_NS = "http://www.deegree.org/services/wcs";
@@ -140,6 +142,7 @@ public class WCSController extends AbstractOWS {
 
     public WCSController( URL configURL, ImplementationMetadata serviceInfo ) {
         super( configURL, serviceInfo );
+        this.configUrl = configURL;
     }
 
     @Override
@@ -156,9 +159,7 @@ public class WCSController extends AbstractOWS {
         nsContext.addNamespace( WCSConstants.WCS_110_PRE, WCSConstants.WCS_110_NS );
         nsContext.addNamespace( CONFIG_PRE, CONFIG_NS );
 
-        ServiceConfigurationXMLAdapter serviceConfigAdapter = parseServiceConfiguration( controllerConf, nsContext );
-
-        this.wcsService = new WCServiceBuilder( serviceConfigAdapter ).buildService();
+        this.wcsService = new WCServiceBuilder( workspace, configUrl ).buildService();
 
         PublishedInformation publishedInformation = parsePublishedInformation( controllerConf, nsContext );
         syncWithMainController( publishedInformation );
@@ -180,17 +181,6 @@ public class WCSController extends AbstractOWS {
     @Override
     public void destroy() {
         // *Kaaboooom!*
-    }
-
-    private ServiceConfigurationXMLAdapter parseServiceConfiguration( XMLAdapter controllerConf,
-                                                                      NamespaceBindings nsContext ) {
-        OMElement confElem = controllerConf.getRequiredElement( controllerConf.getRootElement(),
-                                                                new XPath( CONFIG_PRE + ":ServiceConfiguration",
-                                                                           nsContext ) );
-        ServiceConfigurationXMLAdapter serviceConfigAdapter = new ServiceConfigurationXMLAdapter();
-        serviceConfigAdapter.setRootElement( confElem );
-        serviceConfigAdapter.setSystemId( controllerConf.getSystemId() );
-        return serviceConfigAdapter;
     }
 
     private PublishedInformation parsePublishedInformation( XMLAdapter controllerConf, NamespaceBindings nsContext )
@@ -281,8 +271,8 @@ public class WCSController extends AbstractOWS {
         } catch ( OWSException ex ) {
             sendServiceException( ex, response );
         } catch ( XMLStreamException e ) {
-            sendServiceException( new OWSException( "An error occured while processing a request",
-                                                    NO_APPLICABLE_CODE ), response );
+            sendServiceException( new OWSException( "An error occured while processing a request", NO_APPLICABLE_CODE ),
+                                  response );
             LOG.error( "an error occured while processing a request", e );
         }
     }
@@ -327,7 +317,7 @@ public class WCSController extends AbstractOWS {
      *            requested.
      * @throws OWSException
      */
-    private void testIntersectingBBox( WCSCoverage coverage, GetCoverage coverageReq )
+    private static void testIntersectingBBox( WCSCoverage coverage, GetCoverage coverageReq )
                             throws OWSException {
         Envelope rEnv = coverageReq.getRequestEnvelope();
         if ( rEnv != null ) {
@@ -361,7 +351,7 @@ public class WCSController extends AbstractOWS {
 
     }
 
-    private void checkRangeSet( RangeSet configuredRangeSet, RangeSet requestedRangeSet )
+    private static void checkRangeSet( RangeSet configuredRangeSet, RangeSet requestedRangeSet )
                             throws OWSException {
         List<AxisSubset> reqAxis = requestedRangeSet.getAxisDescriptions();
         for ( AxisSubset ras : reqAxis ) {
@@ -395,7 +385,7 @@ public class WCSController extends AbstractOWS {
         }
     }
 
-    private void checkOutputOptions( GetCoverage request, CoverageOptions options )
+    private static void checkOutputOptions( GetCoverage request, CoverageOptions options )
                             throws OWSException {
         boolean supported;
         String outputFormat = request.getOutputFormat();
