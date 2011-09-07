@@ -173,6 +173,8 @@ public class OGCFrontController extends HttpServlet {
 
     private transient DeegreeWorkspace workspace;
 
+    private transient String ctxPath;
+
     /**
      * Returns the only instance of this class.
      * 
@@ -961,6 +963,7 @@ public class OGCFrontController extends HttpServlet {
 
         try {
             super.init( config );
+            ctxPath = config.getServletContext().getContextPath();
             LOG.info( "--------------------------------------------------------------------------------" );
             DeegreeAALogoUtils.logInfo( LOG );
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -968,32 +971,21 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
             for ( ModuleInfo moduleInfo : getModulesInfo() ) {
-                LOG.info( " - " + moduleInfo.toString() );
+                LOG.info( "- " + moduleInfo.toString() );
             }
             LOG.info( "" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "System info" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
-            LOG.info( "- java version      : " + System.getProperty( "java.version" ) + " ("
+            LOG.info( "- java version       " + System.getProperty( "java.version" ) + " ("
                       + System.getProperty( "java.vendor" ) + ")" );
-            LOG.info( "- operating system  : " + System.getProperty( "os.name" ) + " ("
+            LOG.info( "- operating system   " + System.getProperty( "os.name" ) + " ("
                       + System.getProperty( "os.version" ) + ", " + System.getProperty( "os.arch" ) + ")" );
-            LOG.info( "- default encoding  : " + DEFAULT_ENCODING );
-            LOG.info( "- system encoding   : " + Charset.defaultCharset().displayName() );
-            LOG.info( "- temp directory    : " + defaultTMPDir );
+            LOG.info( "- default encoding   " + DEFAULT_ENCODING );
+            LOG.info( "- system encoding    " + Charset.defaultCharset().displayName() );
+            LOG.info( "- temp directory     " + defaultTMPDir );
             LOG.info( "" );
-
-            LOG.info( "deegree workspace root is located at " + DeegreeWorkspace.getWorkspaceRoot() );
-            File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
-            if ( !wsRoot.isDirectory() && !wsRoot.mkdirs() ) {
-                LOG.warn( "The workspace root is not a directory and could not be created." );
-                LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
-            }
-            if ( wsRoot.isDirectory() && !wsRoot.canWrite() ) {
-                LOG.warn( "The workspace root is not writable." );
-                LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
-            }
 
             initWorkspace( null );
 
@@ -1016,6 +1008,18 @@ public class OGCFrontController extends HttpServlet {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Initializing workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "" );
+        LOG.info( "- deegree workspace root  " + DeegreeWorkspace.getWorkspaceRoot() );
+        File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
+        if ( !wsRoot.isDirectory() && !wsRoot.mkdirs() ) {
+            LOG.warn( "*** The workspace root is not a directory and could not be created. ***" );
+            LOG.warn( "*** This will lead to problems when you'll try to download workspaces. ***" );
+        }
+        if ( wsRoot.isDirectory() && !wsRoot.canWrite() ) {
+            LOG.warn( "*** The workspace root is not writable. ***" );
+            LOG.warn( "*** This will lead to problems when you'll try to download workspaces. ***" );
+        }
+        // LOG.info( "- servlet context path    " + ctxPath );
         workspace = getWorkspace( name );
         workspace.initAll();
         serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
