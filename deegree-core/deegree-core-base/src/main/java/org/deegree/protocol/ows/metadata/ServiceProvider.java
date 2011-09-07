@@ -35,10 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata;
 
-import java.net.URL;
-
 /**
- * The <code>ServiceProvider</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * Encapsulates service provider metadata provided by an OGC web service (as reported in the capabilities document).
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
@@ -47,17 +45,16 @@ import java.net.URL;
  */
 public class ServiceProvider {
 
-    private String providerName;
+    private final String providerName;
 
-    private URL providerSite;
+    private final String providerSite;
 
-    private ServiceContact serviceContact;
+    private final ServiceContact serviceContact;
 
-    /**
-     * @param providerName
-     */
-    public void setProviderName( String providerName ) {
+    public ServiceProvider( String providerName, String providerSite, ServiceContact serviceContact ) {
         this.providerName = providerName;
+        this.providerSite = providerSite;
+        this.serviceContact = serviceContact;
     }
 
     /**
@@ -68,24 +65,10 @@ public class ServiceProvider {
     }
 
     /**
-     * @param providerSite
-     */
-    public void setProviderSite( URL providerSite ) {
-        this.providerSite = providerSite;
-    }
-
-    /**
      * @return providerSite, may be <code>null</code>.
      */
-    public URL getProviderSite() {
+    public String getProviderSite() {
         return providerSite;
-    }
-
-    /**
-     * @param serviceContact
-     */
-    public void setServiceContact( ServiceContact serviceContact ) {
-        this.serviceContact = serviceContact;
     }
 
     /**

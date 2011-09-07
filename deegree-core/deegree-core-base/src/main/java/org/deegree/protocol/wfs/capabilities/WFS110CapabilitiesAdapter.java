@@ -2,7 +2,7 @@ package org.deegree.protocol.wfs.capabilities;
 
 import java.util.List;
 
-import org.deegree.protocol.ows.OWS100CapabilitiesAdapter;
+import org.deegree.protocol.ows.capabilities.OWSCommon100CapabilitiesAdapter;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 
 /**
@@ -14,7 +14,7 @@ import org.deegree.protocol.wfs.metadata.WFSFeatureType;
  * 
  * @version $Revision$, $Date$
  */
-public class WFS110CapabilitiesAdapter extends OWS100CapabilitiesAdapter implements WFSCapabilitiesAdapter {
+public class WFS110CapabilitiesAdapter extends OWSCommon100CapabilitiesAdapter implements WFSCapabilitiesAdapter {
 
     @Override
     public List<WFSFeatureType> parseFeatureTypeList() {

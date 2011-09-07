@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata;
 
-import java.util.ArrayList;
+import static java.util.Collections.emptyList;
+
 import java.util.List;
 
 import org.deegree.commons.tom.ows.CodeType;
@@ -43,63 +44,85 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
 
 /**
- * The <code>Description</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * Encapsulates descriptive metadata provided by an OGC web service (as reported in the capabilities document).
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class Description {
 
-    private List<LanguageString> title;
+    private final String name;
 
-    private List<LanguageString> serviceAbstract;
+    private List<LanguageString> titles;
+
+    private List<LanguageString> abstracts;
 
     private List<Pair<List<LanguageString>, CodeType>> keywords;
 
-    public void setTitle( List<LanguageString> title ) {
-        this.title = title;
+    public Description( String name, List<LanguageString> titles, List<LanguageString> abstracts,
+                        List<Pair<List<LanguageString>, CodeType>> keywords ) {
+        this.name = name;
+        if ( titles != null ) {
+            this.titles = titles;
+        } else {
+            this.titles = emptyList();
+        }
+        if ( abstracts != null ) {
+            this.abstracts = abstracts;
+        } else {
+            this.abstracts = emptyList();
+        }
+        if ( keywords != null ) {
+            this.keywords = keywords;
+        } else {
+            this.keywords = emptyList();
+        }
     }
 
-    public void setAbstract( List<LanguageString> abstract_ ) {
-        this.serviceAbstract = abstract_;
-    }
-
-    public void setKeywords( List<Pair<List<LanguageString>, CodeType>> keywords ) {
-        this.keywords = keywords;
+    /**
+     * Returns the name of the service.
+     * 
+     * @deprecated This information is only provided by some older OWS specifications (e.g. WFS 1.0.0). Newer service
+     *             specifications don't define it.
+     * @return name of the service, can be <code>null</code>
+     */
+    public String getName() {
+        return name;
     }
 
     /**
      * @return title, never <code>null</code>
      */
-    public List<LanguageString> getTitle() {
-        if ( title == null ) {
-            title = new ArrayList<LanguageString>();
-        }
-        return title;
+    public List<LanguageString> getTitles() {
+        return titles;
+    }
+
+    public void setTitles( List<LanguageString> titles ) {
+        this.titles = titles;
     }
 
     /**
      * @return serviceAbstract, never <code>null</code>
      */
-    public List<LanguageString> getAbstract() {
-        if ( serviceAbstract == null ) {
-            serviceAbstract = new ArrayList<LanguageString>();
-        }
-        return serviceAbstract;
+    public List<LanguageString> getAbstracts() {
+        return abstracts;
+    }
+
+    public void setAbstracts( List<LanguageString> abstracts ) {
+        this.abstracts = abstracts;
     }
 
     /**
      * @return keywords, never <code>null</code>
      */
     public List<Pair<List<LanguageString>, CodeType>> getKeywords() {
-        if ( keywords == null ) {
-            keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        }
         return keywords;
     }
 
+    public void setKeywords( List<Pair<List<LanguageString>, CodeType>> keywords ) {
+        this.keywords = keywords;
+    }
 }

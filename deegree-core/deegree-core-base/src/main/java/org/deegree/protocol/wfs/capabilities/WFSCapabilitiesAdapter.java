@@ -37,13 +37,13 @@ package org.deegree.protocol.wfs.capabilities;
 
 import java.util.List;
 
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.protocol.ows.OWSCapabilitiesAdapter;
+import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 
 /**
- * Base interface for {@link XMLAdapter} implementations that extract metadata from WFS capabilities documents.
+ * Base interface for {@link OWSCapabilitiesAdapter} implementations that extract metadata from WFS capabilities
+ * documents.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

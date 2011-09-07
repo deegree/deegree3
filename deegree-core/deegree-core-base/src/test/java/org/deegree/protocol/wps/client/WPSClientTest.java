@@ -114,10 +114,10 @@ public class WPSClientTest {
         Assert.assertNotNull( client );
         ServiceIdentification serviceId = client.getMetadata().getServiceIdentification();
         Assert.assertNotNull( serviceId );
-        Assert.assertEquals( serviceId.getDescription().getTitle().size(), 1 );
-        Assert.assertEquals( serviceId.getDescription().getTitle().get( 0 ).getString(), "deegree 3 WPS" );
-        Assert.assertEquals( serviceId.getDescription().getAbstract().size(), 1 );
-        Assert.assertEquals( serviceId.getDescription().getAbstract().get( 0 ).getString(),
+        Assert.assertEquals( serviceId.getDescription().getTitles().size(), 1 );
+        Assert.assertEquals( serviceId.getDescription().getTitles().get( 0 ).getString(), "deegree 3 WPS" );
+        Assert.assertEquals( serviceId.getDescription().getAbstracts().size(), 1 );
+        Assert.assertEquals( serviceId.getDescription().getAbstracts().get( 0 ).getString(),
                              "deegree 3 WPS implementation" );
 
         Assert.assertEquals( serviceId.getServiceType().getCode(), "WPS" );
@@ -125,7 +125,7 @@ public class WPSClientTest {
 
         ServiceProvider serviceProvider = client.getMetadata().getServiceProvider();
         Assert.assertEquals( serviceProvider.getProviderName(), "lat/lon GmbH" );
-        Assert.assertEquals( serviceProvider.getProviderSite().toExternalForm(), "http://www.lat-lon.de" );
+        Assert.assertEquals( serviceProvider.getProviderSite(), "http://www.lat-lon.de" );
 
         ServiceContact serviceContact = serviceProvider.getServiceContact();
         Assert.assertEquals( serviceContact.getIndividualName(), "Johannes Wilden" );

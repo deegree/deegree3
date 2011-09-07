@@ -48,6 +48,18 @@ import java.util.List;
  */
 public class Address {
 
+    private List<String> deliveryPoint;
+
+    private String city;
+
+    private String administrativeArea;
+
+    private String postalCode;
+
+    private String country;
+
+    private List<String> electronicMailAddress;
+
     /**
      * @param deliveryPoint
      *            the deliveryPoint to set
@@ -63,18 +75,6 @@ public class Address {
     public void setElectronicMailAddress( List<String> electronicMailAddress ) {
         this.electronicMailAddress = electronicMailAddress;
     }
-
-    private List<String> deliveryPoint;
-
-    private String city;
-
-    private String administrativeArea;
-
-    private String postalCode;
-
-    private String country;
-
-    private List<String> electronicMailAddress;
 
     /**
      * @return deliveryPoint, never <code>null</code>

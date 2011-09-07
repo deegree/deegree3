@@ -46,8 +46,8 @@ import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
- * Generic representation of an OWS/OGC GetCapabilities request. Used for <code>GetCapabilities</code> requests to all
- * kinds of OGC web services.
+ * Generic representation of an OWS/OGC GetCapabilities <code>GetCapabilities</code>. Used for
+ * <code>GetCapabilities</code> requests to all kinds of OGC web services.
  * <p>
  * Compliance has been checked with the following specifications:
  * <ul>

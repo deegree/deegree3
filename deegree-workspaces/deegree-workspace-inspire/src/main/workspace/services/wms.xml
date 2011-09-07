@@ -1,9 +1,6 @@
-<deegreeWMS xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0"
-  xmlns="http://www.deegree.org/services/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.1.0"
-  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/services/wms/3.1.0/wms_configuration.xsd">
+<deegreeWMS xmlns="http://www.deegree.org/services/wms" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.1.0" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/services/wms/3.1.0/wms_configuration.xsd">
 
-  <!-- Uncomment/adapt the following line to customize generated MetadataURL elements -->
-  <!-- MetadataURLTemplate>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}</MetadataURLTemplate -->
+  <MetadataURLTemplate>http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</MetadataURLTemplate>
 
   <ServiceConfiguration>
 
@@ -15,7 +12,7 @@
         <Name>AU.AdministrativeUnit</Name>
         <Title>Administrative unit</Title>
         <!-- Use the MetadatSetId element to specify the id of the corresponding metadata record (in the CSW) -->
-        <!-- MetadataSetId>550e8400-e29c-11d4-a716-446655440000</MetadataSetId-->
+        <MetadataSetId>550e8400-e29c-11d4-a716-446655440000</MetadataSetId>
         <FeatureStoreId>inspire</FeatureStoreId>
         <DirectStyle>
           <File>../styles/AU_AdministrativeUnit_Default.xml</File>
@@ -80,9 +77,7 @@
   </ServiceConfiguration>
 
   <ExtendedCapabilities>
-    <inspire_vs:ExtendedCapabilities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd
-  http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd">
+    <inspire_vs:ExtendedCapabilities xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd   http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd">
       <inspire_common:MetadataUrl>
         <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;id=fileIdentfierMetadataVoorServicesDocument&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full
         </inspire_common:URL>

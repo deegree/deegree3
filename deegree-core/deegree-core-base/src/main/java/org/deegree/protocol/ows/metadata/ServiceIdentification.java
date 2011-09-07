@@ -42,8 +42,9 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
 
 /**
- * The <code>ServiceIdentification</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * Encapsulates service instance metadata provided by an OGC web service (as reported in the capabilities document).
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
@@ -62,6 +63,10 @@ public class ServiceIdentification {
     private String fees;
 
     private List<String> accessConstraints;
+
+    public ServiceIdentification() {
+
+    }
 
     /**
      * @return the fees
@@ -158,5 +163,4 @@ public class ServiceIdentification {
         }
         return accessConstraints;
     }
-
 }

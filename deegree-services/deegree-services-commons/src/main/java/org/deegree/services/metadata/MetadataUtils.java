@@ -106,16 +106,10 @@ public class MetadataUtils {
             return null;
         }
         ServiceIdentification res = new ServiceIdentification();
-        Description desc = new Description();
-        if ( si.getTitle() != null ) {
-            desc.setTitle( map( si.getTitle(), LANG_MAPPER ) );
-        }
-        if ( si.getAbstract() != null ) {
-            desc.setAbstract( map( si.getAbstract(), LANG_MAPPER ) );
-        }
-        if ( si.getKeywords() != null ) {
-            desc.setKeywords( map( si.getKeywords(), KW_MAPPER ) );
-        }
+
+        // TODO Keywords
+        Description desc = new Description( null, map( si.getTitle(), LANG_MAPPER ), map( si.getTitle(), LANG_MAPPER ),
+                                            null );
         res.setFees( si.getFees() );
         res.setAccessConstraints( si.getAccessConstraints() );
         res.setDescription( desc );
@@ -170,15 +164,8 @@ public class MetadataUtils {
         if ( sp == null ) {
             return null;
         }
-        ServiceProvider res = new ServiceProvider();
-        res.setProviderName( sp.getProviderName() );
-        try {
-            res.setProviderSite( new URL( sp.getProviderSite() ) );
-        } catch ( MalformedURLException e ) {
-            // ignore this, schemas should be fixed so it already is an URL
-        }
-        res.setServiceContact( convertFromJAXB( sp.getServiceContact() ) );
-        return res;
+        return new ServiceProvider( sp.getProviderName(), sp.getProviderSite(),
+                                    convertFromJAXB( sp.getServiceContact() ) );
     }
 
     public static Pair<ServiceIdentification, ServiceProvider> convertFromJAXB( DeegreeServicesMetadataType md ) {

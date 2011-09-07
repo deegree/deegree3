@@ -33,11 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows;
+package org.deegree.protocol.ows.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
 import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,27 +46,14 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.metadata.Address;
-import org.deegree.protocol.ows.metadata.ContactInfo;
 import org.deegree.protocol.ows.metadata.DCP;
-import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.Domain;
 import org.deegree.protocol.ows.metadata.Operation;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.PossibleValues;
 import org.deegree.protocol.ows.metadata.Range;
-import org.deegree.protocol.ows.metadata.ServiceContact;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceMetadata;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
-import org.deegree.protocol.ows.metadata.Telephone;
 import org.deegree.protocol.ows.metadata.ValuesUnit;
 
 /**
@@ -79,45 +65,13 @@ import org.deegree.protocol.ows.metadata.ValuesUnit;
  * 
  * @version $Revision$, $Date$
  */
-public class OWS100CapabilitiesAdapter extends XMLAdapter implements OWSCapabilitiesAdapter {
-
-    private static final String XML1998NS = "http://www.w3.org/XML/1998/namespace";
-
-    private final NamespaceBindings nsContext = new NamespaceBindings();
+public class OWSCommon100CapabilitiesAdapter extends AbstractOWSCommonCapabilitiesAdapter {
 
     /**
-     * Creates a new {@link OWS100CapabilitiesAdapter} instance.
+     * Creates a new {@link OWSCommon100CapabilitiesAdapter} instance.
      */
-    public OWS100CapabilitiesAdapter() {
-        nsContext.addNamespace( "ows", OWS_NS );
-        nsContext.addNamespace( "xlink", XLNNS );
-    }
-
-    /**
-     * @return a {@link ServiceMetadata} instance, never <code>null</code>
-     */
-    public ServiceMetadata parseMetadata() {
-
-        ServiceMetadata metadata = new ServiceMetadata();
-
-        OMElement rootEl = getRootElement();
-
-        ServiceIdentification serviceId = parseServiceIdentification();
-        metadata.setServiceIdentification( serviceId );
-
-        ServiceProvider serviceProvider = parseServiceProvider();
-        metadata.setServiceProvider( serviceProvider );
-
-        OperationsMetadata opMetadata = parseOperationsMetadata();
-        metadata.setOperationsMetadata( opMetadata );
-
-        Version version = getNodeAsVersion( rootEl, new XPath( "@version", nsContext ), null );
-        metadata.setVersion( version );
-
-        String sequence = getNodeAsString( rootEl, new XPath( "@updateSequence", nsContext ), null );
-        metadata.setUpdateSequence( sequence );
-
-        return metadata;
+    public OWSCommon100CapabilitiesAdapter() {
+        super( OWS_NS );
     }
 
     @Override
@@ -434,241 +388,5 @@ public class OWS100CapabilitiesAdapter extends XMLAdapter implements OWSCapabili
             url = new URL( href );
         }
         return url;
-    }
-
-    @Override
-    public ServiceIdentification parseServiceIdentification() {
-
-        OMElement serviceIdEl = getElement( getRootElement(), new XPath( "ows:ServiceIdentification", nsContext ) );
-        if ( serviceIdEl != null ) {
-            return null;
-        }
-
-        ServiceIdentification serviceId = new ServiceIdentification();
-
-        Description description = parseDescription( serviceIdEl );
-        serviceId.setDescription( description );
-
-        OMElement serviceTypeEl = getElement( serviceIdEl, new XPath( "ows:ServiceType", nsContext ) );
-        CodeType serviceType = parseCodeSpace( serviceTypeEl );
-        serviceId.setServiceType( serviceType );
-
-        XPath xpath = new XPath( "ows:ServiceTypeVersion", nsContext );
-        List<OMElement> serviceTypeVersionEls = getElements( serviceIdEl, xpath );
-        if ( serviceTypeVersionEls != null ) {
-            for ( OMElement serviceTypeVersionEl : serviceTypeVersionEls ) {
-                Version version = getNodeAsVersion( serviceTypeVersionEl, new XPath( ".", nsContext ), null );
-                serviceId.getServiceTypeVersion().add( version );
-            }
-        }
-
-        String[] profiles = getNodesAsStrings( serviceIdEl, new XPath( "ows:Profiles", nsContext ) );
-        for ( int i = 0; i < profiles.length; i++ ) {
-            serviceId.getProfiles().add( profiles[i] );
-        }
-
-        String fees = getNodeAsString( serviceIdEl, new XPath( "ows:Fees", nsContext ), null );
-        serviceId.setFees( fees );
-
-        String[] constraints = getNodesAsStrings( serviceIdEl, new XPath( "ows:AccessConstraints", nsContext ) );
-        for ( String constraint : constraints ) {
-            serviceId.getAccessConstraints().add( constraint );
-        }
-
-        return serviceId;
-    }
-
-    /**
-     * @param serviceIdEl
-     *            context {@link OMElement}
-     * @return an {@link Description} instance, never <code>null</code>
-     */
-    private Description parseDescription( OMElement serviceIdEl ) {
-        Description description = new Description();
-
-        List<OMElement> titleEls = getElements( serviceIdEl, new XPath( "ows:Title", nsContext ) );
-        for ( OMElement titleEl : titleEls ) {
-            String lang = titleEl.getAttributeValue( new QName( XML1998NS, "lang" ) );
-            description.getTitle().add( new LanguageString( titleEl.getText(), lang ) );
-        }
-
-        List<OMElement> abstractEls = getElements( serviceIdEl, new XPath( "ows:Abstract", nsContext ) );
-        for ( OMElement abstractEl : abstractEls ) {
-            String lang = abstractEl.getAttributeValue( new QName( XML1998NS, "lang" ) );
-            description.getAbstract().add( new LanguageString( abstractEl.getText(), lang ) );
-        }
-
-        List<OMElement> keywordsEls = getElements( serviceIdEl, new XPath( "ows:Keywords", nsContext ) );
-        for ( OMElement keywordsEl : keywordsEls ) {
-            List<OMElement> keywordSeq = getElements( keywordsEl, new XPath( "ows:Keyword", nsContext ) );
-            List<LanguageString> keywordLS = new ArrayList<LanguageString>();
-            if ( keywordSeq != null ) {
-                for ( OMElement keywordEl : keywordSeq ) {
-                    String lang = keywordEl.getAttributeValue( new QName( XML1998NS, "lang" ) );
-                    keywordLS.add( new LanguageString( keywordEl.getText(), lang ) );
-                }
-            }
-            OMElement typeEl = getElement( keywordsEl, new XPath( "ows:Type", nsContext ) );
-            CodeType type = null;
-            if ( typeEl != null ) {
-                type = parseCodeSpace( typeEl );
-            }
-
-            description.getKeywords().add( new Pair( keywordLS, type ) );
-        }
-
-        return description;
-    }
-
-    /**
-     * @param omelement
-     *            context {@link OMElement}
-     * @return an {@link CodeType} instance, never <code>null</code>
-     */
-    private CodeType parseCodeSpace( OMElement omelement ) {
-        String codeSpace = getNodeAsString( omelement, new XPath( "codeSpace", nsContext ), null );
-        if ( codeSpace != null ) {
-            return new CodeType( omelement.getText(), codeSpace );
-        }
-        return new CodeType( omelement.getText() );
-    }
-
-    @Override
-    public ServiceProvider parseServiceProvider() {
-
-        OMElement serviceProviderEl = getElement( getRootElement(), new XPath( "ows:ServiceProvider", nsContext ) );
-        if ( serviceProviderEl != null ) {
-            return null;
-        }
-
-        ServiceProvider serviceProvider = new ServiceProvider();
-
-        XPath xpath = new XPath( "ows:ProviderName", nsContext );
-        serviceProvider.setProviderName( getNodeAsString( serviceProviderEl, xpath, null ) );
-
-        xpath = new XPath( "ows:ProviderSite/@xlink:href", nsContext );
-        serviceProvider.setProviderSite( getNodeAsURL( serviceProviderEl, xpath, null ) );
-
-        xpath = new XPath( "ows:ServiceContact", nsContext );
-        OMElement serviceContactEl = getElement( serviceProviderEl, xpath );
-        ServiceContact serviceContact = null;
-        if ( serviceContactEl != null ) {
-            serviceContact = parseServiceContact( serviceContactEl );
-        }
-        serviceProvider.setServiceContact( serviceContact );
-
-        return serviceProvider;
-    }
-
-    /**
-     * @param serviceContactEl
-     *            context {@link OMElement}
-     * @return an {@link ServiceContact} instance, never <code>null</code>
-     */
-    private ServiceContact parseServiceContact( OMElement serviceContactEl ) {
-        ServiceContact serviceContact = new ServiceContact();
-
-        XPath xpath = new XPath( "ows:IndividualName", nsContext );
-        serviceContact.setIndividualName( getNodeAsString( serviceContactEl, xpath, null ) );
-
-        xpath = new XPath( "ows:PositionName", nsContext );
-        serviceContact.setPositionName( getNodeAsString( serviceContactEl, xpath, null ) );
-
-        xpath = new XPath( "ows:ContactInfo", nsContext );
-        ContactInfo contactInfo = parseContactInfo( getElement( serviceContactEl, xpath ) );
-        serviceContact.setContactInfo( contactInfo );
-
-        xpath = new XPath( "ows:Role", nsContext );
-        OMElement roleEl = getElement( serviceContactEl, xpath );
-        if ( roleEl != null ) {
-            serviceContact.setRole( parseCodeSpace( roleEl ) );
-        }
-        return serviceContact;
-    }
-
-    /**
-     * @param contactInfoEl
-     *            context {@link OMElement}
-     * @return an {@link ContactInfo} instance, never <code>null</code>
-     */
-    private ContactInfo parseContactInfo( OMElement contactInfoEl ) {
-        ContactInfo contactInfo = new ContactInfo();
-
-        XPath xpath = new XPath( "ows:Phone", nsContext );
-        Telephone phone = parsePhone( getElement( contactInfoEl, xpath ) );
-        contactInfo.setPhone( phone );
-
-        xpath = new XPath( "ows:Address", nsContext );
-        OMElement addressEl = getElement( contactInfoEl, xpath );
-        contactInfo.setAddress( parseAddress( addressEl ) );
-
-        xpath = new XPath( "ows:OnlineResource/@xlink:href", nsContext );
-        contactInfo.setOnlineResource( getNodeAsURL( contactInfoEl, xpath, null ) );
-
-        xpath = new XPath( "ows:HoursOfService", nsContext );
-        contactInfo.setHoursOfService( getNodeAsString( contactInfoEl, xpath, null ) );
-
-        xpath = new XPath( "ows:ContactInstructions", nsContext );
-        contactInfo.setContactInstructions( getNodeAsString( contactInfoEl, xpath, null ) );
-
-        return contactInfo;
-    }
-
-    /**
-     * @param phoneEl
-     *            context {@link OMElement}
-     * @return an {@link Telephone} instance, never <code>null</code>
-     */
-    private Telephone parsePhone( OMElement phoneEl ) {
-        Telephone phone = new Telephone();
-
-        XPath xpath = new XPath( "ows:Voice", nsContext );
-        String[] voices = getNodesAsStrings( phoneEl, xpath );
-        for ( int i = 0; i < voices.length; i++ ) {
-            phone.getVoice().add( voices[i] );
-        }
-
-        xpath = new XPath( "ows:Facsimile", nsContext );
-        String[] faxes = getNodesAsStrings( phoneEl, xpath );
-        for ( int i = 0; i < faxes.length; i++ ) {
-            phone.getFacsimile().add( faxes[i] );
-        }
-
-        return phone;
-    }
-
-    /**
-     * @param addressEl
-     *            context {@link OMElement}
-     * @return an {@link Address} instance, never <code>null</code>
-     */
-    private Address parseAddress( OMElement addressEl ) {
-        Address address = new Address();
-
-        XPath xpath = new XPath( "ows:DeliveryPoint", nsContext );
-        String[] deliveryPoints = getNodesAsStrings( addressEl, xpath );
-        for ( String deliveryPoint : deliveryPoints ) {
-            address.getDeliveryPoint().add( deliveryPoint );
-        }
-
-        xpath = new XPath( "ows:City", nsContext );
-        address.setCity( getNodeAsString( addressEl, xpath, null ) );
-
-        xpath = new XPath( "ows:AdministrativeArea", nsContext );
-        address.setAdministrativeArea( getNodeAsString( addressEl, xpath, null ) );
-
-        xpath = new XPath( "ows:PostalCode", nsContext );
-        address.setPostalCode( getNodeAsString( addressEl, xpath, null ) );
-
-        xpath = new XPath( "ows:Country", nsContext );
-        address.setCountry( getNodeAsString( addressEl, xpath, null ) );
-
-        xpath = new XPath( "ows:ElectronicMailAddress", nsContext );
-        String[] eMails = getNodesAsStrings( addressEl, xpath );
-        for ( int i = 0; i < eMails.length; i++ ) {
-            address.getElectronicMailAddress().add( eMails[i] );
-        }
-
-        return address;
     }
 }

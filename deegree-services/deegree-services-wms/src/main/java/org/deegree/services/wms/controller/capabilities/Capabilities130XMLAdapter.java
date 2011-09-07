@@ -218,8 +218,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         if ( md.getName() != null ) {
             writeElement( writer, WMSNS, "Name", md.getName() );
         }
-        writeElement( writer, WMSNS, "Title", md.getDescription().getTitle().get( 0 ).getString() );
-        List<LanguageString> abs = md.getDescription().getAbstract();
+        writeElement( writer, WMSNS, "Title", md.getDescription().getTitles().get( 0 ).getString() );
+        List<LanguageString> abs = md.getDescription().getAbstracts();
         if ( abs != null && !abs.isEmpty() ) {
             writeElement( writer, WMSNS, "Abstract", abs.get( 0 ).getString() );
         }
@@ -595,11 +595,11 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         Description desc = identification == null ? null : identification.getDescription();
 
-        List<LanguageString> titles = desc == null ? null : desc.getTitle();
+        List<LanguageString> titles = desc == null ? null : desc.getTitles();
         String title = ( titles != null && !titles.isEmpty() ) ? titles.get( 0 ).getString() : "deegree 3 WMS";
         writeElement( writer, WMSNS, "Title", title );
 
-        List<LanguageString> abstracts = desc == null ? null : desc.getAbstract();
+        List<LanguageString> abstracts = desc == null ? null : desc.getAbstracts();
         if ( abstracts != null && !abstracts.isEmpty() ) {
             writeElement( writer, WMSNS, "Abstract", abstracts.get( 0 ).getString() );
         }

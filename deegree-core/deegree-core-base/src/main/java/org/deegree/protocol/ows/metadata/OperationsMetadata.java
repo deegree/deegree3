@@ -44,7 +44,7 @@ import java.util.Map;
 import org.apache.axiom.om.OMElement;
 
 /**
- * Encapsulates the metadata on operations of an OGC web service (as reported in the capabilities document).
+ * Encapsulates metadata on operations provided by an OGC web service (as reported in the capabilities document).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -92,7 +92,7 @@ public class OperationsMetadata {
     }
 
     /**
-     * Returns the endpoint {@link URL}s for the specified operation (method HTTP-GET).
+     * Returns the endpoint {@link URL}s for the specified operation and method HTTP-GET.
      * 
      * @return endpoint URLs, can be empty, but never <code>null</code>
      */
@@ -105,7 +105,7 @@ public class OperationsMetadata {
     }
 
     /**
-     * Returns the endpoint {@link URL}s for the specified operation (method HTTP-POST).
+     * Returns the endpoint {@link URL}s for the specified operation and method HTTP-POST.
      * 
      * @return endpoint URLs, can be empty, but never <code>null</code>
      */

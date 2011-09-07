@@ -55,12 +55,12 @@ public class DescriptionConverter {
 
     public static Description fromJaxb( List<LanguageStringType> titles, List<LanguageStringType> abstracts,
                                         List<KeywordsType> keywords ) {
-        Description desc = new Description();
+        Description desc = new Description( null, null, null, null );
         if ( titles != null ) {
-            desc.setTitle( map( titles, LANG_LANG_MAPPER ) );
+            desc.setTitles( map( titles, LANG_LANG_MAPPER ) );
         }
         if ( abstracts != null ) {
-            desc.setAbstract( map( abstracts, LANG_LANG_MAPPER ) );
+            desc.setAbstracts( map( abstracts, LANG_LANG_MAPPER ) );
         }
         if ( keywords != null ) {
             desc.setKeywords( map( keywords, KW_MAPPER ) );

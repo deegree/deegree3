@@ -1,6 +1,4 @@
-<deegreeWFS xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  configVersion="3.1.0"
-  xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/services/wfs/3.1.0/wfs_configuration.xsd">
+<deegreeWFS xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.1.0" xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/services/wfs/3.1.0/wfs_configuration.xsd">
 
   <SupportedVersions>
     <Version>1.1.0</Version>
@@ -32,9 +30,7 @@
   </FeatureTypeMetadata>
 
   <ExtendedCapabilities wfsVersions="1.1.0">
-    <inspire_ds:ExtendedCapabilities xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0"
-      xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0"
-      xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd http://inspire.ec.europa.eu/schemas/inspire_ds/1.0 http://inspire.ec.europa.eu/schemas/inspire_ds/1.0/inspire_ds.xsd">
+    <inspire_ds:ExtendedCapabilities xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd http://inspire.ec.europa.eu/schemas/inspire_ds/1.0 http://inspire.ec.europa.eu/schemas/inspire_ds/1.0/inspire_ds.xsd">
       <inspire_common:MetadataUrl>
         <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;id=fileIdentfierMetadataVoorServicesDocument&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full
         </inspire_common:URL>
@@ -55,9 +51,7 @@
     <ows:ExtendedCapabilities xmlns:ows="http://www.opengis.net/ows/1.1">
       <!-- This special treatment (container element) for WFS 2.0.0 is required to provide schema-valid GetCapabilities responses. 
         Can be removed once correct inspire_ds schemas for OWS commons 1.1.0/WFS 2.0.0 are available. -->
-      <inspire_ds:ExtendedCapabilities xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0"
-        xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0"
-        xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd http://inspire.ec.europa.eu/schemas/inspire_ds/1.0 http://inspire.ec.europa.eu/schemas/inspire_ds/1.0/inspire_ds.xsd">
+      <inspire_ds:ExtendedCapabilities xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd http://inspire.ec.europa.eu/schemas/inspire_ds/1.0 http://inspire.ec.europa.eu/schemas/inspire_ds/1.0/inspire_ds.xsd">
         <inspire_common:MetadataUrl>
           <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;id=fileIdentfierMetadataVoorServicesDocument&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full
           </inspire_common:URL>

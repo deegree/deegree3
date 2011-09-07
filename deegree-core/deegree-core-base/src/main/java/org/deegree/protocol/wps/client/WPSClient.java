@@ -46,9 +46,9 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.protocol.ows.capabilities.OWSCapabilities;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
-import org.deegree.protocol.ows.metadata.ServiceMetadata;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.ProcessInfo;
@@ -265,7 +265,7 @@ public class WPSClient {
 
     private static Logger LOG = LoggerFactory.getLogger( WPSClient.class );
 
-    private final ServiceMetadata metadata;
+    private final OWSCapabilities metadata;
 
     // [0]: GET, [1]: POST
     private final URL[] describeProcessURLs = new URL[2];
@@ -355,7 +355,7 @@ public class WPSClient {
      * 
      * @return the metadata of the service, never <code>null</code>
      */
-    public ServiceMetadata getMetadata() {
+    public OWSCapabilities getMetadata() {
         return metadata;
     }
 

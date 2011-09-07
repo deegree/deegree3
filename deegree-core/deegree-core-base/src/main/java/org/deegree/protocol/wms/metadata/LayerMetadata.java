@@ -162,11 +162,11 @@ public class LayerMetadata {
             description = md.getDescription();
         } else {
             if ( md.getDescription() != null ) {
-                if ( description.getTitle() == null || description.getTitle().isEmpty() ) {
-                    description.setTitle( md.getDescription().getTitle() );
+                if ( description.getTitles() == null || description.getTitles().isEmpty() ) {
+                    description.setTitles( md.getDescription().getTitles() );
                 }
-                if ( description.getAbstract() == null || description.getAbstract().isEmpty() ) {
-                    description.setAbstract( md.getDescription().getAbstract() );
+                if ( description.getAbstracts() == null || description.getAbstracts().isEmpty() ) {
+                    description.setAbstracts( md.getDescription().getAbstracts() );
                 }
                 if ( description.getKeywords() == null || description.getKeywords().isEmpty() ) {
                     description.setKeywords( md.getDescription().getKeywords() );

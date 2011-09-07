@@ -972,10 +972,10 @@ public class WMSClient111 implements WMSClient {
             }
         }
 
-        Description desc = new Description();
-        desc.setTitle( singletonList( new LanguageString( title, null ) ) );
+        Description desc = new Description( null, null, null, null );
+        desc.setTitles( singletonList( new LanguageString( title, null ) ) );
         if ( abstract_ != null ) {
-            desc.setAbstract( singletonList( new LanguageString( abstract_, null ) ) );
+            desc.setAbstracts( singletonList( new LanguageString( abstract_, null ) ) );
         }
         desc.setKeywords( keywords );
 
