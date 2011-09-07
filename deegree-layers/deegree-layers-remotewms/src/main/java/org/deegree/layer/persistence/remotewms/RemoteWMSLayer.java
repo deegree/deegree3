@@ -55,8 +55,11 @@ public class RemoteWMSLayer extends AbstractLayer {
 
     private HashMap<String, String> hardParametersGetFeatureInfo = new HashMap<String, String>();
 
-    protected RemoteWMSLayer( LayerMetadata md, WMSClient client, RequestOptionsType opts ) {
+    private final String originalName;
+
+    protected RemoteWMSLayer( String originalName, LayerMetadata md, WMSClient client, RequestOptionsType opts ) {
         super( md );
+        this.originalName = originalName;
         md.setCascaded( md.getCascaded() + 1 );
         this.client = client;
         if ( opts != null ) {
@@ -110,7 +113,7 @@ public class RemoteWMSLayer extends AbstractLayer {
         }
         // set default values if not configured
         if ( this.crs == null ) {
-            this.crs = CRSManager.getCRSRef( client.getCoordinateSystems( md.getName() ).getFirst() );
+            this.crs = CRSManager.getCRSRef( client.getCoordinateSystems( originalName ).getFirst() );
         }
         if ( this.format == null ) {
             LinkedList<String> fs = client.getFormats( GetMap );
@@ -151,12 +154,12 @@ public class RemoteWMSLayer extends AbstractLayer {
             ICRS crs = this.crs;
             if ( !alwaysUseDefaultCrs ) {
                 ICRS envCrs = info.getEnvelope().getCoordinateSystem();
-                if ( client.getCoordinateSystems( getMetadata().getName() ).contains( envCrs.getAlias() ) ) {
+                if ( client.getCoordinateSystems( originalName ).contains( envCrs.getAlias() ) ) {
                     crs = envCrs;
                 }
             }
 
-            GetMap gm = new GetMap( singletonList( getMetadata().getName() ), info.getWidth(), info.getHeight(),
+            GetMap gm = new GetMap( singletonList( originalName ), info.getWidth(), info.getHeight(),
                                     info.getEnvelope(), crs, format, transparent );
             Pair<BufferedImage, String> map = client.getMap( gm, extraParams, 60 );
             if ( map.first != null ) {
@@ -176,7 +179,7 @@ public class RemoteWMSLayer extends AbstractLayer {
         handleParameters( extraParams, info.getParameterMap(), defaultParametersGetFeatureInfo,
                           hardParametersGetFeatureInfo );
 
-        GetFeatureInfo gfi = new GetFeatureInfo( Collections.singletonList( getMetadata().getName() ), info.getWidth(),
+        GetFeatureInfo gfi = new GetFeatureInfo( Collections.singletonList( originalName ), info.getWidth(),
                                                  info.getHeight(), info.getX(), info.getY(), info.getEnvelope(),
                                                  info.getEnvelope().getCoordinateSystem(), info.getFeatureCount() );
         try {

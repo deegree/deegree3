@@ -152,4 +152,39 @@ public class LayerMetadata {
         this.spatialMetadata = spatialMetadata;
     }
 
+    /**
+     * Copies any fields from md which are currently not set (applies to description and spatial metadata only).
+     * 
+     * @param md
+     */
+    public void merge( LayerMetadata md ) {
+        if ( description == null ) {
+            description = md.getDescription();
+        } else {
+            if ( md.getDescription() != null ) {
+                if ( description.getTitle() == null || description.getTitle().isEmpty() ) {
+                    description.setTitle( md.getDescription().getTitle() );
+                }
+                if ( description.getAbstract() == null || description.getAbstract().isEmpty() ) {
+                    description.setAbstract( md.getDescription().getAbstract() );
+                }
+                if ( description.getKeywords() == null || description.getKeywords().isEmpty() ) {
+                    description.setKeywords( md.getDescription().getKeywords() );
+                }
+            }
+        }
+        if ( spatialMetadata == null ) {
+            spatialMetadata = md.getSpatialMetadata();
+        } else {
+            if ( md.getSpatialMetadata() != null ) {
+                if ( spatialMetadata.getCoordinateSystems() == null || spatialMetadata.getCoordinateSystems().isEmpty() ) {
+                    spatialMetadata.setCoordinateSystems( md.getSpatialMetadata().getCoordinateSystems() );
+                }
+                if ( spatialMetadata.getEnvelope() == null ) {
+                    spatialMetadata.setEnvelope( md.getSpatialMetadata().getEnvelope() );
+                }
+            }
+        }
+    }
+
 }

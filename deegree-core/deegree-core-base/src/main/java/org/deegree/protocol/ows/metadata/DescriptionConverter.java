@@ -33,18 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.metadata;
+package org.deegree.protocol.ows.metadata;
 
+import static org.deegree.commons.metadata.MetadataJAXBConverter.KW_MAPPER;
+import static org.deegree.commons.metadata.MetadataJAXBConverter.LANG_LANG_MAPPER;
 import static org.deegree.commons.utils.CollectionUtils.map;
 
 import java.util.List;
 
 import org.deegree.commons.metadata.description.jaxb.KeywordsType;
 import org.deegree.commons.metadata.description.jaxb.LanguageStringType;
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
-import org.deegree.commons.utils.Pair;
 
 /**
  * 
@@ -53,38 +51,21 @@ import org.deegree.commons.utils.Pair;
  * 
  * @version $Revision: $, $Date: $
  */
-public class MetadataJAXBConverter {
+public class DescriptionConverter {
 
-    public static final Mapper<LanguageString, LanguageStringType> LANG_LANG_MAPPER = new Mapper<LanguageString, LanguageStringType>() {
-        @Override
-        public LanguageString apply( LanguageStringType u ) {
-            return new LanguageString( u.getValue(), u.getLang() );
+    public static Description fromJaxb( List<LanguageStringType> titles, List<LanguageStringType> abstracts,
+                                        List<KeywordsType> keywords ) {
+        Description desc = new Description();
+        if ( titles != null ) {
+            desc.setTitle( map( titles, LANG_LANG_MAPPER ) );
         }
-    };
-
-    /**
-     * Maps a string to language string.
-     */
-    public static final Mapper<LanguageString, String> LANG_MAPPER = new Mapper<LanguageString, String>() {
-        @Override
-        public LanguageString apply( String u ) {
-            return new LanguageString( u, null );
+        if ( abstracts != null ) {
+            desc.setAbstract( map( abstracts, LANG_LANG_MAPPER ) );
         }
-    };
-
-    public static final Mapper<CodeType, org.deegree.commons.metadata.description.jaxb.CodeType> CODETYPE_MAPPER = new Mapper<CodeType, org.deegree.commons.metadata.description.jaxb.CodeType>() {
-        @Override
-        public CodeType apply( org.deegree.commons.metadata.description.jaxb.CodeType u ) {
-            return new CodeType( u.getValue(), u.getCodeSpace() );
+        if ( keywords != null ) {
+            desc.setKeywords( map( keywords, KW_MAPPER ) );
         }
-    };
-
-    public static final Mapper<Pair<List<LanguageString>, CodeType>, KeywordsType> KW_MAPPER = new Mapper<Pair<List<LanguageString>, CodeType>, KeywordsType>() {
-        @Override
-        public Pair<List<LanguageString>, CodeType> apply( KeywordsType u ) {
-            return new Pair<List<LanguageString>, CodeType>( map( u.getKeyword(), LANG_LANG_MAPPER ),
-                                                             CODETYPE_MAPPER.apply( u.getType() ) );
-        }
-    };
+        return desc;
+    }
 
 }

@@ -60,6 +60,7 @@ import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreManager;
 import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.protocol.ows.metadata.DescriptionConverter;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
@@ -121,10 +122,8 @@ public class StandardThemeProvider implements ThemeProvider {
         }
         // spatial md will be filled later
         SpatialMetadata smd = new SpatialMetadata( null, null );
-        Description desc = new Description();
-        desc.setTitle( map( current.getTitle(), LANG_MAPPER ) );
-        desc.setAbstract( map( current.getAbstract(), LANG_MAPPER ) );
-        desc.setKeywords( map( current.getKeywords(), KW_MAPPER ) );
+        Description desc = DescriptionConverter.fromJaxb( current.getTitle(), current.getAbstract(),
+                                                          current.getKeywords() );
         LayerMetadata md = new LayerMetadata( current.getIdentifier(), desc, smd );
         return new StandardTheme( md, thms, lays );
     }

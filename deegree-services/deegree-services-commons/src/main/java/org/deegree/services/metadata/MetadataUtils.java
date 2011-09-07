@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata;
 
+import static org.deegree.commons.metadata.MetadataJAXBConverter.LANG_MAPPER;
 import static org.deegree.commons.utils.CollectionUtils.map;
 
 import java.net.MalformedURLException;
@@ -71,13 +72,6 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
  * @version $Revision: $, $Date: $
  */
 public class MetadataUtils {
-
-    static final Mapper<LanguageString, String> LANG_MAPPER = new Mapper<LanguageString, String>() {
-        @Override
-        public LanguageString apply( String u ) {
-            return new LanguageString( u, null );
-        }
-    };
 
     static final Mapper<LanguageString, LanguageStringType> LANG_LANG_MAPPER = new Mapper<LanguageString, LanguageStringType>() {
         @Override

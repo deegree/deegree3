@@ -3,6 +3,7 @@ package org.deegree.layer.persistence.remotewms;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +11,17 @@ import java.util.Map;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.geometry.metadata.SpatialMetadataConverter;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
+import org.deegree.layer.persistence.remotewms.jaxb.LayerType;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
+import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.protocol.ows.metadata.DescriptionConverter;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
@@ -52,10 +58,38 @@ public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
             Map<String, Layer> map = new LinkedHashMap<String, Layer>();
 
             WMSClient client = ( (RemoteWMS) store ).getClient();
+
+            Map<String, LayerMetadata> configured = new HashMap<String, LayerMetadata>();
+            if ( cfg.getLayer() != null ) {
+                for ( LayerType l : cfg.getLayer() ) {
+                    String name = l.getName();
+                    SpatialMetadata smd = SpatialMetadataConverter.fromJaxb( l.getEnvelope(), l.getCRS() );
+                    Description desc = null;
+                    if ( l.getDescription() != null ) {
+                        desc = DescriptionConverter.fromJaxb( l.getDescription().getTitle(),
+                                                              l.getDescription().getAbstract(),
+                                                              l.getDescription().getKeywords() );
+                    }
+                    LayerMetadata md = new LayerMetadata( name, desc, smd );
+                    configured.put( l.getOriginalName(), md );
+                }
+            }
+
             List<LayerMetadata> layers = client.getLayerTree().flattenDepthFirst();
-            for ( LayerMetadata md : layers ) {
-                if ( md.getName() != null ) {
-                    map.put( md.getName(), new RemoteWMSLayer( md, client, opts ) );
+            if ( configured.isEmpty() ) {
+                for ( LayerMetadata md : layers ) {
+                    if ( md.getName() != null ) {
+                        map.put( md.getName(), new RemoteWMSLayer( md.getName(), md, client, opts ) );
+                    }
+                }
+            } else {
+                for ( LayerMetadata md : layers ) {
+                    String name = md.getName();
+                    LayerMetadata confMd = configured.get( name );
+                    if ( confMd != null ) {
+                        confMd.merge( md );
+                        map.put( confMd.getName(), new RemoteWMSLayer( name, confMd, client, opts ) );
+                    }
                 }
             }
             return new MultipleLayerStore( map );
