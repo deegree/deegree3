@@ -39,6 +39,7 @@ import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 
 import org.deegree.commons.utils.DoublePair;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.protocol.ows.metadata.Description;
 
 /**

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wms.metadata;
+package org.deegree.geometry.metadata;
 
 import java.util.List;
 
