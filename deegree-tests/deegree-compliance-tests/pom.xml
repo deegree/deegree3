@@ -116,7 +116,6 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
       <version>3.1-pre13-SNAPSHOT</version>
-      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>xalan</groupId>
