@@ -36,11 +36,12 @@
 package org.deegree.commons.tom.datetime;
 
 import java.text.ParseException;
+import java.util.Date;
 
 import org.deegree.commons.utils.time.DateUtils;
 
 /**
- * Represents an ISO 8601 time instance.
+ * Represents an <code>xs:time</code> instance.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -51,13 +52,14 @@ public class Time implements Comparable<Time> {
 
     private final String isoDate;
 
-    private final java.util.Date date;
+    private final Date date;
 
     /**
      * @param isoDate
      * @throws ParseException
      */
     public Time( String isoDate ) throws ParseException {
+    	isoDate = "1970-01-01T" + isoDate;
         this.isoDate = isoDate;
         date = DateUtils.parseISO8601Date( isoDate );
     }
@@ -84,4 +86,12 @@ public class Time implements Comparable<Time> {
     public String toString() {
         return isoDate;
     }
+
+    /**
+     * @return the actual Date value
+     */
+    public Date getDate() {
+        return date;
+    }
+    
 }

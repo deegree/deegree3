@@ -182,6 +182,21 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         return new PrimitiveValue( value, pt );
     }
 
+    protected PrimitiveValue toTimeParticle( Object sqlValue ) {
+        Time value = null;
+        if ( sqlValue instanceof java.util.Date ) {
+            try {
+                value = new Time( DateUtils.formatISO8601Time( (java.util.Date) sqlValue ) );
+            } catch ( ParseException e ) {
+                throw new IllegalArgumentException( e.getMessage(), e );
+            }
+        } else {
+            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
+                                                + "' to Time object." );
+        }
+        return new PrimitiveValue( value, pt );
+    }
+
     protected PrimitiveValue toDecimalParticle( Object sqlValue )
                             throws NumberFormatException {
         BigDecimal value = null;
@@ -217,23 +232,6 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
 
     protected PrimitiveValue toStringParticle( Object sqlValue ) {
         return new PrimitiveValue( "" + sqlValue, pt );
-    }
-
-    protected PrimitiveValue toTimeParticle( Object sqlValue ) {
-        Time value = null;
-        if ( sqlValue instanceof Time ) {
-            value = (Time) sqlValue;
-        } else if ( sqlValue instanceof Date ) {
-            try {
-                value = new Time( DateUtils.formatISO8601Time( (java.util.Date) sqlValue ) );
-            } catch ( ParseException e ) {
-                throw new IllegalArgumentException( e.getMessage(), e );
-            }
-        } else {
-            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
-                                                + "' to Time object." );
-        }
-        return new PrimitiveValue( value, pt );
     }
 
     @Override
