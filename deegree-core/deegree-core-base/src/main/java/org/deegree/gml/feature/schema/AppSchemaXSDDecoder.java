@@ -309,8 +309,8 @@ public class AppSchemaXSDDecoder {
                         switch ( particle2.getTerm().getType() ) {
                         case XSConstants.ELEMENT_DECLARATION: {
                             XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
-                            int minOccurs = particle.getMinOccurs();
-                            int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
+                            int minOccurs = particle2.getMinOccurs();
+                            int maxOccurs = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                             PropertyType pt = buildPropertyType( elementDecl2, minOccurs, maxOccurs );
                             if ( pt != null ) {
                                 pts.add( pt );
