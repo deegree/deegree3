@@ -167,9 +167,9 @@ public class DeegreeWorkspace {
                                 LOG.info( " - " + moduleInfo );
                                 wsModules.add( moduleInfo );
                             } else {
-                                LOG.info( " -" + fs[i] + " (non-deegree)" );
+                                LOG.info( " - " + fs[i] + " (non-deegree)" );
                             }
-                        } catch ( Exception e ) {
+                        } catch ( Throwable e ) {
                             LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
                         }
                     }

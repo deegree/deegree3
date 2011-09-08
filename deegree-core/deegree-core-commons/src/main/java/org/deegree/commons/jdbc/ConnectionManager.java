@@ -319,6 +319,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         return idToPools.keySet();
     }
 
+    @Override
     public void shutdown() {
         for ( String id : idToPools.keySet() ) {
             try {
@@ -341,6 +342,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         }
     }
 
+    @Override
     public void startup( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
         try {
@@ -355,20 +357,24 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         init( dir, workspace );
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
     }
 
     class ConnectionManagerMetadata implements ResourceManagerMetadata {
+        @Override
         public String getName() {
             return "jdbc";
         }
 
+        @Override
         public String getPath() {
             return "jdbc";
         }
 
+        @Override
         public List<ResourceProvider> getResourceProviders() {
             return Collections.singletonList( (ResourceProvider) ConnectionManager.this );
         }
@@ -378,10 +384,12 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         return new ConnectionManagerMetadata();
     }
 
+    @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/jdbc";
     }
 
+    @Override
     public URL getConfigSchema() {
         return CONFIG_SCHEMA;
     }
