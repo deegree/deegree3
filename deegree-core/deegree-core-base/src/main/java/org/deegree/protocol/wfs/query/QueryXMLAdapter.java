@@ -236,8 +236,11 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         }
 
         // <xsd:attribute name="srsName" type="xsd:anyURI"/>
+        ICRS crs = null;
         String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
-        ICRS crs = CRSManager.getCRSRef( srsName );
+        if ( srsName != null ) {
+            crs = CRSManager.getCRSRef( srsName );
+        }
 
         // <xsd:attribute name="featureVersion" type="xsd:string"/>
         String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );

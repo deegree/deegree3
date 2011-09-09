@@ -1615,6 +1615,8 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private Envelope getTransformedEnvelope( Envelope env )
                             throws TransformationException, UnknownCRSException {
         ICRS inputCRS = env.getCoordinateSystem();
+        System.out.println ("A: " + inputCRS);
+        System.out.println ("B: " + outputCRS);
         if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
             if ( transformer == null ) {
                 throw new UnknownCRSException( outputCRS.getAlias() );
