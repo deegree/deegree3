@@ -7,9 +7,9 @@ http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" outputFormat="text/xml; subtype=gm
     <ogc:Filter>
       <ogc:BBOX>
         <ogc:PropertyName>ad:position/ad:GeographicPosition/ad:geometry/*</ogc:PropertyName>
-        <gml:Envelope srsName="EPSG:4258">
-          <gml:lowerCorner>5.244 52.691</gml:lowerCorner>
-          <gml:upperCorner>5.245 52.711</gml:upperCorner>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4258">
+          <gml:lowerCorner>52.691 5.244</gml:lowerCorner>
+          <gml:upperCorner>52.711 5.245</gml:upperCorner>
         </gml:Envelope>
       </ogc:BBOX>
     </ogc:Filter>
