@@ -619,7 +619,9 @@ public class GMLFormat implements Format {
 
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "unknown" );
-            // TODO this is not allowed
+            // TODO this is currently not valid, but will be, once CR 144
+            // (https://portal.opengeospatial.org/files?artifact_id=43925)
+            // becomes accepted
             xmlStream.writeAttribute( "numberReturned", "unknown" );
         }
 
