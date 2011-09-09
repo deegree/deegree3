@@ -305,7 +305,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                                         prepareMap( datasources, parameters.get( mapKey ), width, height, bbox, crs ) );
 
                             // SCALE
-                            String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX);
+                            String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX );
                             if ( parameters.containsKey( scaleKey ) ) {
                                 double scale = Utils.calcScaleWMS130( width, height, bbox, crs );
                                 params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );
@@ -328,6 +328,9 @@ public class MapContentProvider implements JrxmlContentProvider {
                         // get input stream
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         try {
+                            if ( LOG.isDebugEnabled() ) {
+                                LOG.debug( "Adjusted jrxml: " + jrxmlAdapter.getRootElement() );
+                            }
                             jrxmlAdapter.getRootElement().serialize( bos );
                             jrxml = new ByteArrayInputStream( bos.toByteArray() );
                         } catch ( XMLStreamException e ) {
@@ -433,43 +436,47 @@ public class MapContentProvider implements JrxmlContentProvider {
 
         OMElement layerListFrame = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
                                                             new XPath(
-                                                                       "/jasper:jasperReport/jasper:detail/jasper:band/jasper:frame[jasper:reportElement/@key='"
+                                                                       ".//jasper:band/jasper:frame[jasper:reportElement/@key='"
                                                                                                + layerListKey + "']",
                                                                        nsContext ) );
         if ( layerListFrame != null ) {
-            LOG.debug( "Found layer list with key '" + layerListKey + "' to adjust." );
+            LOG.debug( "Found layer list with key '{}' to adjust.", layerListKey );
             List<OMElement> elements = jrxmlAdapter.getElements( layerListFrame, new XPath( "jasper:staticText",
                                                                                             nsContext ) );
-            OMElement grpTemplate = elements.get( 0 );
-            OMElement fieldTemplate = elements.get( 1 );
-            for ( OMElement element : elements ) {
-                element.detach();
-            }
-            XMLAdapter grpAdapter = new XMLAdapter( grpTemplate );
-            int grpHeight = grpAdapter.getNodeAsInt( grpTemplate,
-                                                     new XPath( "jasper:reportElement/@height", nsContext ), 15 );
-            int grpY = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@y", nsContext ), 0 );
+            if ( elements.size() > 1 ) {
+                OMElement grpTemplate = elements.get( 0 );
+                OMElement fieldTemplate = elements.get( 1 );
+                for ( OMElement element : elements ) {
+                    element.detach();
+                }
+                XMLAdapter grpAdapter = new XMLAdapter( grpTemplate );
+                int grpHeight = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@height",
+                                                                                 nsContext ), 15 );
+                int grpY = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@y", nsContext ), 0 );
 
-            XMLAdapter fieldAdapter = new XMLAdapter( fieldTemplate );
-            int fieldHeight = fieldAdapter.getNodeAsInt( fieldTemplate, new XPath( "jasper:reportElement/@height",
-                                                                                   nsContext ), 15 );
-            OMFactory factory = OMAbstractFactory.getOMFactory();
-            // y + height * index
-            int y = grpY;
-            for ( OrderedDatasource<?> datasource : datasources ) {
-                for ( String datasourceKey : datasource.getLayerList().keySet() ) {
-                    OMElement newGrp = createLayerEntry( grpTemplate, y, factory, datasourceKey );
-                    layerListFrame.addChild( newGrp );
-                    y += grpHeight;
-                    for ( String layerName : datasource.getLayerList().get( datasourceKey ) ) {
-                        OMElement newField = createLayerEntry( fieldTemplate, y, factory, layerName );
-                        layerListFrame.addChild( newField );
-                        y += fieldHeight;
+                XMLAdapter fieldAdapter = new XMLAdapter( fieldTemplate );
+                int fieldHeight = fieldAdapter.getNodeAsInt( fieldTemplate, new XPath( "jasper:reportElement/@height",
+                                                                                       nsContext ), 15 );
+                OMFactory factory = OMAbstractFactory.getOMFactory();
+                // y + height * index
+                int y = grpY;
+                for ( OrderedDatasource<?> datasource : datasources ) {
+                    for ( String datasourceKey : datasource.getLayerList().keySet() ) {
+                        OMElement newGrp = createLayerEntry( grpTemplate, y, factory, datasourceKey );
+                        layerListFrame.addChild( newGrp );
+                        y += grpHeight;
+                        for ( String layerName : datasource.getLayerList().get( datasourceKey ) ) {
+                            OMElement newField = createLayerEntry( fieldTemplate, y, factory, layerName );
+                            layerListFrame.addChild( newField );
+                            y += fieldHeight;
+                        }
                     }
                 }
+            } else {
+                LOG.info( "layerlist frame with key '{}' must have at least two child elements", layerListKey );
             }
         } else {
-            LOG.debug( "no layer list with key '" + layerListKey + "' found." );
+            LOG.debug( "no layer list with key '{}' found.", layerListKey );
         }
     }
 
@@ -741,6 +748,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                     layerNames.add( l.getName() );
                 }
 
+                // TODO: styles!
                 GetMap gm = new GetMap( layerNames, width, height, bbox, crs, "image/png", true );
                 Pair<BufferedImage, String> map = wmsClient.getMap( gm, null, 60, false );
                 if ( map.first == null )
