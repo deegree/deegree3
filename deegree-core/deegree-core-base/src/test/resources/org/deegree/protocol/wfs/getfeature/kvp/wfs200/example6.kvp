@@ -1,4 +1,6 @@
 SERVICE=WFS
 VERSION=2.0.0
 REQUEST=GetFeature
-TYPENAME=InWaterA_1M
+PROPERTYNAME=InWaterA_1M/wkbGeom,InWaterA_1M/tileId
+TYPENAMES=InWaterA_1M
+FILTER=<fes:Filter><fes:And><fes:PropertyIsBetween><fes:ValueReference>InwaterA_1M/tileId</fes:ValueReference><fes:LowerBoundary><fes:Literal>100</fes:Literal></fes:LowerBoundary><fes:UpperBoundary><fes:Literal>200</fes:Literal></fes:UpperBoundary></fes:PropertyIsBetween><fes:Intersects><fes:ValueReference>Geometry</fes:ValueReference><gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326"><gml:lowerCorner>13.0983 31.5899</gml:lowerCorner><gml:upperCorner>35.5472 42.8143</gml:upperCorner></gml:Envelope></fes:Intersects></fes:And></fes:Filter>

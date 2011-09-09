@@ -1,4 +1,6 @@
 SERVICE=WFS
 VERSION=2.0.0
 REQUEST=GetFeature
-TYPENAME=InWaterA_1M
+PROPERTYNAME=uk:Town/gml:name,uk:Town/gml:directedNode
+TYPENAMES=uk:Town
+RESOURCEID=t1

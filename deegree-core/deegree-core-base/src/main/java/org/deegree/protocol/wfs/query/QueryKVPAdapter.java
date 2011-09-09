@@ -37,6 +37,7 @@ package org.deegree.protocol.wfs.query;
 
 import static org.deegree.commons.utils.kvp.KVPUtils.getBigInt;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
@@ -238,8 +239,12 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // mandatory (optional if RESOURCEID is present): TYPENAMES (can be a list of lists)
         List<TypeName[]> typeNamesList = new ArrayList<TypeName[]>();
-        if ( kvpUC.get( "TYPENAMES" ) != null ) {
-            List<String> params = KVPUtils.splitLists( kvpUC.get( "TYPENAMES" ) );
+        if ( kvpUC.get( "TYPENAMES" ) != null || kvpUC.get( "TYPENAME" ) != null ) {
+            String param = kvpUC.get( "TYPENAMES" );
+            if ( param == null ) {
+                param = kvpUC.get( "TYPENAME" );
+            }
+            List<String> params = KVPUtils.splitLists( param );
             if ( numQueries != -1 && params.size() != numQueries ) {
                 String msg = "Invalid Ad hoc multi-query KVP request. List sizes of all specified query params must match.";
                 throw new OWSException( msg, MISSING_PARAMETER_VALUE );
@@ -264,10 +269,10 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     if ( token.startsWith( "schema-element(" ) && token.endsWith( ")" ) ) {
                         String prefixedName = token.substring( 15, token.length() - 1 );
                         QName qName = resolveQName( prefixedName, nsContext );
-                        typeName[i] = new TypeName( qName, a, true );
+                        typeName[j] = new TypeName( qName, a, true );
                     } else {
                         QName qName = resolveQName( token, nsContext );
-                        typeName[i] = new TypeName( qName, a, false );
+                        typeName[j] = new TypeName( qName, a, false );
                     }
                 }
                 typeNamesList.add( typeName );
@@ -364,6 +369,10 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
         }
 
+        if ( typeNamesList.isEmpty() && resourceIdList.isEmpty() ) {
+            String msg = "At least one of the parameters TYPENAMES and RESOURCEID must be present in KVP-encoded Ad hoc queries.";
+            throw new OWSException( msg, MISSING_PARAMETER_VALUE );
+        }
         if ( !resourceIdList.isEmpty() && bbox != null ) {
             String msg = "Parameters RESOURCEID and BBOX are mututally exclusive.";
             throw new OWSException( msg, INVALID_PARAMETER_VALUE );
@@ -445,9 +454,6 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     queries.add( new FilterQuery( null, typeNames, null, srsName, projectionClauses, sortBy, filter ) );
                 }
             }
-        } else {
-            String msg = "One of the parameters TYPENAMES and RESOURCEID must be present in KVP-encoded Ad hoc queries.";
-            throw new OWSException( msg, MISSING_PARAMETER_VALUE );
         }
         return queries;
     }
@@ -467,7 +473,8 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
     protected static Filter parseFilter200( String filter )
                             throws XMLStreamException, FactoryConfigurationError {
 
-        String bindingPreamble = "<nsbindings xmlns=\"" + FES_20_NS + "\" xmlns:fes=\"" + FES_20_NS + "\">";
+        String bindingPreamble = "<nsbindings xmlns=\"" + FES_20_NS + "\" xmlns:fes=\"" + FES_20_NS + "\" xmlns:gml=\""
+                                 + GML3_2_NS + "\">";
         String bindingEpilog = "</nsbindings>";
         StringReader sr = new StringReader( bindingPreamble + filter + bindingEpilog );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( sr );

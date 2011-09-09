@@ -710,4 +710,113 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         assertEquals( BigInteger.valueOf( 1000000 ), getFeature.getPresentationParams().getCount() );
         assertEquals( CRSManager.getCRSRef( "EPSG:4326" ), filterQuery.getSrsName() );
     }
+
+    @Test
+    public void test200Example1()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example1.kvp" );
+    }
+
+    @Test
+    public void test200Example2()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example2.kvp" );
+    }
+
+    @Test
+    public void test200Example3()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example3.kvp" );
+    }
+
+    @Test
+    public void test200Example4()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example4.kvp" );
+    }
+
+    @Test
+    public void test200Example5()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example5.kvp" );
+    }
+
+    @Test
+    public void test200Example6()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example6.kvp" );
+    }
+
+    @Test
+    public void test200Example7()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example7.kvp" );
+    }
+
+    @Test
+    public void test200Example8()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example8.kvp" );
+    }
+
+    @Test
+    public void test200Example9()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example9.kvp" );
+    }
+
+    @Test
+    public void test200Example10()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example10.kvp" );
+    }
+
+    @Test
+    public void test200Example11()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example11.kvp" );
+    }
+
+    @Test
+    public void test200Example12()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example12.kvp" );
+    }
+
+    @Test
+    public void test200Example13()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example13.kvp" );
+    }
+
+    @Test
+    public void test200Example14()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example14.kvp" );
+    }
+
+    @Test
+    public void test200Example15()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example15.kvp" );
+    }
+
+    @Test
+    public void test200Example16()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example16.kvp" );
+    }
+
+    @Test
+    public void test200Example17()
+                            throws Exception {
+        GetFeature request = parse( "kvp/wfs200/example17.kvp" );
+    }
+
+    private GetFeature parse( String resource )
+                            throws Exception {
+        URL exampleURL = GetFeatureKVPAdapterTest.class.getResource( resource );
+        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
+        return GetFeatureKVPAdapter.parse( kvpMap, null );
+    }
 }

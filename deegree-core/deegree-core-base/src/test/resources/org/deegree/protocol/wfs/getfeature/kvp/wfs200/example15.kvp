@@ -1,4 +1,6 @@
 SERVICE=WFS
 VERSION=2.0.0
+NAMESPACES=xmlns(myns,http://www.someserver.com/myns)
 REQUEST=GetFeature
-TYPENAME=InWaterA_1M
+TYPENAMES=(myns:Parks)(myns:Lakes)
+FILTER=(<fes:Filter><fes:BBOX><fes:ValueReference>/RS1/geometry</fes:ValueReference><gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326"><gml:lowerCorner>49.1874 -123.2778</gml:lowerCorner><gml:upperCorner>49.3504 -122.8892</gml:upperCorner></gml:Envelope></fes:BBOX></fes:Filter>)(<fes:Filter><fes:BBOX><fes:ValueReference>/RS1/geometry</fes:ValueReference><gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326"><gml:lowerCorner>44.6113 -63.7058</gml:lowerCorner><gml:upperCorner>44.7256 -63.4641</gml:upperCorner></gml:Envelope></fes:BBOX></fes:Filter>)

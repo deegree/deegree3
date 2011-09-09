@@ -1,4 +1,5 @@
 SERVICE=WFS
 VERSION=2.0.0
 REQUEST=GetFeature
-TYPENAME=InWaterA_1M
+PROPERTY=(InWaterA_1M/wkbGeom,InWaterA_1M/tileId)(BuiltUpA_1M/*)
+TYPENAMES=(InWaterA_1M)(BuiltUpA_1M)

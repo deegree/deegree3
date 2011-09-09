@@ -1,4 +1,6 @@
 SERVICE=WFS
 VERSION=2.0.0
+NAMESPACES=xmlns(myns,http://www.someserver.com/myns)
 REQUEST=GetFeature
-TYPENAME=InWaterA_1M
+TYPENAMES=myns:Parks,myns:Lakes
+FILTER=<fes:Filter><fes:And><fes:PropertyIsEqualTo><fes:ValueReference>/myns:Parks</fes:ValueReference><fes:Literal>Algonquin+Park</fes:Literal></fes:PropertyIsEqualTo><fes:Contains><fes:ValueReference>/myns:Parks/geometry</fes:ValueReference><Point xmlns="http://www.opengis.net/gml/3.2" srsName="EPSG:4326"><pos>7.12 50.72</pos></Point></fes:Contains></fes:And></fes:Filter>

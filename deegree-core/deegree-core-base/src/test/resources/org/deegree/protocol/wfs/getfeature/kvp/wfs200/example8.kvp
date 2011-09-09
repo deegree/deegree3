@@ -1,4 +1,5 @@
 SERVICE=WFS
 VERSION=2.0.0
 REQUEST=GetFeature
-TYPENAME=InWaterA_1M
+NAMESPACES=xmlns(myns,http://www.someserver.com),xmlns(yourns,http://www.someotherserver.com)
+TYPENAMES=(myns:InWaterA_1M)(yourns:BuiltUpA_1M)
