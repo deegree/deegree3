@@ -63,22 +63,26 @@ public abstract class AdHocQuery extends Query {
      * Creates a new {@link AdHocQuery} instance.
      * 
      * @param handle
-     *            client-generated query identifier, may be null
+     *            client-generated query identifier, may be <code>null</code>
      * @param typeNames
-     *            requested feature types (with optional aliases), can be null
+     *            requested feature types (with optional aliases), may be <code>null</code>
      * @param featureVersion
-     *            version of the feature instances to be retrieved, may be null
+     *            version of the feature instances to be retrieved, may be <code>null</code>
      * @param srsName
-     *            WFS-supported SRS that should be used for returned feature geometries, may be null
+     *            WFS-supported SRS that should be used for returned feature geometries, may be <code>null</code>
      * @param projectionClauses
      *            limits the properties of the features that should be retrieved, may be <code>null</code>
      * @param sortBy
-     *            properties whose values should be used to order the result set may be null
+     *            properties whose values should be used to order the result set may be <code>null</code>
      */
     public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
                        ProjectionClause[] projectionClauses, SortProperty[] sortBy ) {
         super( handle );
-        this.typeNames = typeNames;
+        if ( typeNames == null ) {
+            this.typeNames = new TypeName[0];
+        } else {
+            this.typeNames = typeNames;
+        }
         this.featureVersion = featureVersion;
         this.srsName = srsName;
         this.projectionClauses = projectionClauses;

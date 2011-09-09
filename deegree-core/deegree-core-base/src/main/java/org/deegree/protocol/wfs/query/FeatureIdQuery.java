@@ -59,7 +59,7 @@ public class FeatureIdQuery extends AdHocQuery {
      * @param handle
      *            client-generated query identifier, may be <code>null</code>
      * @param typeNames
-     *            requested feature types (with optional aliases), must not be <code>null</code>, but can be empty
+     *            requested feature types (with optional aliases), may be <code>null</code>
      * @param featureVersion
      *            version of the feature instances to be retrieved, may be <code>null</code>
      * @param srsName

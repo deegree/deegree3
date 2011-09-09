@@ -429,13 +429,34 @@ public abstract class AbstractOWS implements OWS {
 
         Version agreedVersion = null;
 
-        if ( request.getVersion() != null ) {
+        if ( request.getAcceptVersions().size() > 0 ) {
+            LOG.debug( "Performing new-style version negotiation" );
+            for ( String acceptableVersionString : request.getAcceptVersions() ) {
+                Version acceptableVersion = null;
+                try {
+                    acceptableVersion = Version.parseVersion( acceptableVersionString );
+                } catch ( InvalidParameterValueException e ) {
+                    throw new OWSException( "Version negotiation failed. Specified accept version: '"
+                                            + acceptableVersionString + "' is not a valid version identifier.",
+                                            OWSException.VERSION_NEGOTIATION_FAILED );
+                }
+                if ( offeredVersions.contains( acceptableVersion ) ) {
+                    agreedVersion = acceptableVersion;
+                    break;
+                }
+            }
+            if ( agreedVersion == null ) {
+                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray( new Version[request.getAcceptVersions().size()] ) );
+                throw new OWSException( "Version negotiation failed. No support for version(s): " + versionsString,
+                                        OWSException.VERSION_NEGOTIATION_FAILED );
+            }
+        } else if ( request.getVersion() != null ) {
             Version requestedVersion = null;
             try {
                 requestedVersion = request.getVersionAsVersion();
             } catch ( InvalidParameterValueException e ) {
                 throw new OWSException( "Version negotiation failed. Requested version: '" + requestedVersion
-                                        + "' is not a valid version identifier.",
+                                        + "' is not a valid OGC version identifier.",
                                         OWSException.VERSION_NEGOTIATION_FAILED );
             }
             LOG.debug( "Performing old-style version negotiation" );
@@ -459,27 +480,6 @@ public abstract class AbstractOWS implements OWS {
                         agreedVersion = offeredVersion;
                     }
                 }
-            }
-        } else if ( request.getAcceptVersions().size() > 0 ) {
-            LOG.debug( "Performing new-style version negotiation" );
-            for ( String acceptableVersionString : request.getAcceptVersions() ) {
-                Version acceptableVersion = null;
-                try {
-                    acceptableVersion = Version.parseVersion( acceptableVersionString );
-                } catch ( InvalidParameterValueException e ) {
-                    throw new OWSException( "Version negotiation failed. Specified accept version: '"
-                                            + acceptableVersionString + "' is not a valid version identifier.",
-                                            OWSException.VERSION_NEGOTIATION_FAILED );
-                }
-                if ( offeredVersions.contains( acceptableVersion ) ) {
-                    agreedVersion = acceptableVersion;
-                    break;
-                }
-            }
-            if ( agreedVersion == null ) {
-                String versionsString = Version.getVersionsString( request.getAcceptVersionsAsVersions().toArray( new Version[request.getAcceptVersions().size()] ) );
-                throw new OWSException( "Version negotiation failed. No support for version(s): " + versionsString,
-                                        OWSException.VERSION_NEGOTIATION_FAILED );
             }
         } else {
             LOG.debug( "No client version preference (may be old-style or new-style request)" );
@@ -524,11 +524,10 @@ public abstract class AbstractOWS implements OWS {
      *             if the exception could not be sent.
      */
     public static <E extends OWSException> void sendException( String contentType, String encoding,
-                                                                      Map<String, String> additionalHeaders,
-                                                                      int httpStatusCode,
-                                                                      ExceptionSerializer<E> serializer,
-                                                                      ImplementationMetadata<?> md, E exception,
-                                                                      HttpServletResponse response )
+                                                               Map<String, String> additionalHeaders,
+                                                               int httpStatusCode, ExceptionSerializer<E> serializer,
+                                                               ImplementationMetadata<?> md, E exception,
+                                                               HttpServletResponse response )
                             throws ServletException {
         for ( SerializerProvider p : exceptionSerializers ) {
             if ( p.matches( md ) ) {
