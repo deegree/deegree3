@@ -48,10 +48,11 @@ import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPSProcess;
+import org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.ImageContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
-import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +80,7 @@ public class JrxmlWPSProcess implements WPSProcess {
      * @param file
      */
     public JrxmlWPSProcess( String processId, URL jrxml ) {
+        contentProviders.add( new DataTableContentProvider() );
         contentProviders.add( new MapContentProvider() );
         contentProviders.add( new ImageContentProvider() );
         contentProviders.add( new OtherContentProvider() );
@@ -91,7 +93,7 @@ public class JrxmlWPSProcess implements WPSProcess {
                 name = name.substring( name.lastIndexOf( '/' ) + 1, name.length() );
 
             Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( processId, name, a,
-                                                                                                  contentProviders );
+                                                                                           contentProviders );
             this.description = parsed.first;
             this.processlet = new JrxmlProcesslet( jrxml, contentProviders, parsed.second );
         } catch ( XMLProcessingException e ) {

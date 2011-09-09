@@ -50,6 +50,7 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.wps.Processlet;
@@ -103,11 +104,18 @@ public class JrxmlProcesslet implements Processlet {
             Map<String, Object> params = new HashMap<String, Object>();
             List<CodeType> processedIds = new ArrayList<CodeType>();
             for ( JrxmlContentProvider contentProvider : contentProviders ) {
+                LOG.debug( "ContentProvider: " + contentProvider.getClass().getName() );
                 is = contentProvider.prepareJrxmlAndReadInputParameters( is, params, in, processedIds, parameters );
             }
 
-            JasperPrint fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is ), params,
-                                                                   new JREmptyDataSource() );
+            // TODO: how to handle with datasources!?
+            JasperPrint fillReport;
+            if ( params.get( JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT ) != null ) {
+                fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is ), params );
+            } else {
+                fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is ), params,
+                                                           new JREmptyDataSource() );
+            }
             ProcessletOutput output = out.getParameter( "report" );
             processOutput( output, fillReport );
 
