@@ -766,9 +766,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     public void test200Example1()
                             throws Exception {
 
-        GetFeatureXMLAdapter parser = new GetFeatureXMLAdapter();
-        parser.load( GetFeatureXMLAdapter.class.getResource( "xml/wfs200/example1.xml" ) );
-        GetFeature request = parser.parse();
+        GetFeature request = parseExample( "xml/wfs200/example1.xml" );
 
         // global request params
         assertEquals( VERSION_200, request.getVersion() );
@@ -796,5 +794,102 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         IdFilter filter = (IdFilter) query.getFilter();
         assertEquals( 1, filter.getSelectedIds().size() );
         assertEquals( "InWaterA_1M.1234", filter.getSelectedIds().get( 0 ).getRid() );
+    }
+
+    public void test200Example2()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example2.xml" );
+    }
+
+    public void test200Example3()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example3.xml" );
+    }
+
+    public void test200Example4()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example4.xml" );
+    }
+
+    public void test200Example5()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example5.xml" );
+    }
+
+    public void test200Example6()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example6.xml" );
+    }
+
+    public void test200Example7()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example7.xml" );
+    }
+
+    public void test200Example8()
+                            throws Exception {
+//        GetFeature request = parseExample( "xml/wfs200/example8.xml" );
+    }
+
+    public void test200Example9()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example9.xml" );
+    }
+
+    public void test200Example10()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example10.xml" );
+    }
+
+    public void test200Example11()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example11.xml" );
+    }
+
+    public void test200Example12()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example12.xml" );
+    }
+
+    public void test200Example13()
+                            throws Exception {
+//        GetFeature request = parseExample( "xml/wfs200/example13.xml" );
+    }
+
+    public void test200Example14()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example14.xml" );
+    }
+
+    public void test200Example15()
+                            throws Exception {
+//        GetFeature request = parseExample( "xml/wfs200/example15.xml" );
+    }
+
+    public void test200Example16()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example16.xml" );
+    }
+
+    public void test200Example17()
+                            throws Exception {
+//        GetFeature request = parseExample( "xml/wfs200/example17.xml" );
+    }
+
+    public void test200Example18()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example18.xml" );
+    }
+
+    public void test200Example19()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example19.xml" );
+    }
+
+    private GetFeature parseExample( String resourceName )
+                            throws Exception {
+        GetFeatureXMLAdapter parser = new GetFeatureXMLAdapter();
+        parser.load( GetFeatureXMLAdapter.class.getResource( resourceName ) );
+        return parser.parse();
     }
 }

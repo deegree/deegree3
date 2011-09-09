@@ -85,8 +85,16 @@ public abstract class AdHocQuery extends Query {
         }
         this.featureVersion = featureVersion;
         this.srsName = srsName;
-        this.projectionClauses = projectionClauses;
-        this.sortBy = sortBy;
+        if ( projectionClauses != null ) {
+            this.projectionClauses = projectionClauses;
+        } else {
+            this.projectionClauses = new ProjectionClause[0];
+        }
+        if ( sortBy != null ) {
+            this.sortBy = sortBy;
+        } else {
+            this.sortBy = new SortProperty[0];
+        }
     }
 
     /**
@@ -119,7 +127,7 @@ public abstract class AdHocQuery extends Query {
     /**
      * Returns the properties of the features that should be retrieved.
      * 
-     * @return the properties of the features that should be retrieved, may be null
+     * @return the properties of the features that should be retrieved, may be empty, but never <code>null</code>
      */
     public ProjectionClause[] getProjectionClauses() {
         return projectionClauses;
@@ -128,7 +136,7 @@ public abstract class AdHocQuery extends Query {
     /**
      * Returns the properties whose values should be used to order the result set.
      * 
-     * @return sort criteria, may be null
+     * @return sort criteria, may be empty, but never <code>null</code>
      */
     public SortProperty[] getSortBy() {
         return sortBy;

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   targetNamespace="http://www.someserver.com/sql/1.0"
+   xmlns:sql="http://www.someserver.com/sql/1.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+   elementFormDefault="qualified" version="2.0.0">
+   <xsd:import namespace="http://www.opengis.net/fes/2.0"
+               schemaLocation="http://schemas.opengis.net/filter/2.0/filterAll.xsd"/>
+   <xsd:element name="Query" type="sql:QueryType"
+                substitutionGroup="fes:AbstractQueryExpression"/>
+   <xsd:complexType name="QueryType">
+      <xsd:complexContent>
+         <xsd:extension base="fes:AbstractQueryExpressionType">
+            <xsd:sequence>
+               <xsd:element name="Text" type="xsd:string"/>
+            </xsd:sequence>
+
+            <xsd:attribute name="targetDb" type="xsd:string" use="optional"/>
+            <xsd:attribute name="targetDbVer" type="xsd:string" use="optional"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+</xsd:schema>

@@ -352,8 +352,7 @@ public class FeatureXPathTest {
         assertEquals( 7, result.length );
         assertEquals( "PLACE_2", ( (PrimitiveValue) result[0] ).getAsText() );
     }
-    
-    
+        
     @Test
     public void testXPath22()
                             throws FilterEvaluationException {
@@ -363,4 +362,15 @@ public class FeatureXPathTest {
         assertEquals( 6, result.length );
         assertEquals( "COUNTRY_2", ( (PrimitiveValue) result[0] ).getAsText() );
     }
+    
+    // @Test
+    // public void testXPath23()
+    // throws FilterEvaluationException {
+    // String xpath = "valueOf(gml:featureMember)/valueOf(app:placeOfBirth)/valueOf(app:country)/@gml:id";
+    // TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new ValueReference( xpath, nsContext )
+    // );
+    // assertNotNull( result );
+    // assertEquals( 6, result.length );
+    // assertEquals( "COUNTRY_2", ( (PrimitiveValue) result[0] ).getAsText() );
+    // }
 }

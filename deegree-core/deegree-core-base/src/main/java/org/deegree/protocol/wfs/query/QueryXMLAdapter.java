@@ -253,7 +253,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
             ValueReference resolvePath = null;
             String resolvePathStr = propertyNameEl.getAttributeValue( new QName( "resolvePath" ) );
             NamespaceBindings propNameNsContext = getNamespaceContext( propertyNameEl );
-            if ( resolvePathStr == null ) {
+            if ( resolvePathStr != null ) {
                 resolvePath = new ValueReference( resolvePathStr, propNameNsContext );
             }
             ValueReference propName = new ValueReference( propertyNameEl.getText(), propNameNsContext );

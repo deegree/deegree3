@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.List;
@@ -45,6 +47,7 @@ import junit.framework.TestCase;
 
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
@@ -52,6 +55,7 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.wfs.query.AdHocQuery;
+import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.ProjectionClause;
@@ -715,36 +719,174 @@ public class GetFeatureKVPAdapterTest extends TestCase {
     public void test200Example1()
                             throws Exception {
         GetFeature request = parse( "kvp/wfs200/example1.kvp" );
+        assertEquals( VERSION_200, request.getVersion() );
+        assertNull( request.getPresentationParams().getOutputFormat() );
+        assertNull( request.getPresentationParams().getCount() );
+        assertNull( request.getPresentationParams().getResultType() );
+        assertNull( request.getPresentationParams().getStartIndex());
+        assertNull( request.getResolveParams().getDepth() );
+        assertNull( request.getResolveParams().getMode() );
+        assertNull( request.getResolveParams().getTimeout() );
+        assertEquals( 1, request.getQueries().size() );
+        FilterQuery query = (FilterQuery) request.getQueries().get( 0 );
+        assertNull( query.getFeatureVersion() );
+        assertNull( query.getHandle() );
+        assertNull( query.getFilter() );
+        assertEquals( 0, query.getProjectionClauses().length );
+        assertEquals( 0, query.getSortBy().length );
+        assertNull( query.getSrsName() );
+        assertEquals( 1, query.getTypeNames().length );
+        assertEquals( QName.valueOf( "InWaterA_1M" ), query.getTypeNames()[0].getFeatureTypeName() );
+        assertNull( query.getTypeNames()[0].getAlias() );
     }
 
     @Test
     public void test200Example2()
                             throws Exception {
         GetFeature request = parse( "kvp/wfs200/example2.kvp" );
+        assertEquals( VERSION_200, request.getVersion() );
+        assertNull( request.getPresentationParams().getOutputFormat() );
+        assertNull( request.getPresentationParams().getCount() );
+        assertNull( request.getPresentationParams().getResultType() );
+        assertNull( request.getPresentationParams().getStartIndex());
+        assertNull( request.getResolveParams().getDepth() );
+        assertNull( request.getResolveParams().getMode() );
+        assertNull( request.getResolveParams().getTimeout() );        
+        assertEquals( 1, request.getQueries().size() );
+        FilterQuery query = (FilterQuery) request.getQueries().get( 0 );
+        assertNull( query.getFeatureVersion() );
+        assertNull( query.getHandle() );
+        assertNull( query.getFilter() );
+        assertEquals( 2, query.getProjectionClauses().length );
+        assertEquals( "InWaterA_1M/wkbGeom", query.getProjectionClauses()[0].getPropertyName().getAsText() );
+        assertNull( query.getProjectionClauses()[0].getResolveParams().getDepth() );
+        assertNull( query.getProjectionClauses()[0].getResolveParams().getMode() );
+        assertNull( query.getProjectionClauses()[0].getResolveParams().getTimeout() );
+        assertNull( query.getProjectionClauses()[0].getResolvePath() );
+        assertEquals( "InWaterA_1M/tileId", query.getProjectionClauses()[1].getPropertyName().getAsText() );
+        assertNull( query.getProjectionClauses()[1].getResolveParams().getDepth() );
+        assertNull( query.getProjectionClauses()[1].getResolveParams().getMode() );
+        assertNull( query.getProjectionClauses()[1].getResolveParams().getTimeout() );
+        assertNull( query.getProjectionClauses()[1].getResolvePath() );        
+        assertEquals( 0, query.getSortBy().length );
+        assertNull( query.getSrsName() );
+        assertEquals( 1, query.getTypeNames().length );
+        assertEquals( QName.valueOf( "InWaterA_1M" ), query.getTypeNames()[0].getFeatureTypeName() );
+        assertNull( query.getTypeNames()[0].getAlias() );
     }
 
     @Test
     public void test200Example3()
                             throws Exception {
         GetFeature request = parse( "kvp/wfs200/example3.kvp" );
+        assertEquals( VERSION_200, request.getVersion() );
+        assertNull( request.getPresentationParams().getOutputFormat() );
+        assertNull( request.getPresentationParams().getCount() );
+        assertNull( request.getPresentationParams().getResultType() );
+        assertNull( request.getPresentationParams().getStartIndex());
+        assertNull( request.getResolveParams().getDepth() );
+        assertNull( request.getResolveParams().getMode() );
+        assertNull( request.getResolveParams().getTimeout() );
+        assertEquals( 1, request.getQueries().size() );
+        FeatureIdQuery query = (FeatureIdQuery) request.getQueries().get( 0 );
+        assertNull( query.getFeatureVersion() );
+        assertNull( query.getHandle() );
+        assertEquals( 0, query.getProjectionClauses().length );
+        assertEquals( 0, query.getSortBy().length );
+        assertNull( query.getSrsName() );
+        assertEquals( 0, query.getTypeNames().length );
+        assertEquals( 1, query.getFeatureIds().length );
+        assertEquals( "InWaterA_1M.1013", query.getFeatureIds()[0] );       
     }
 
     @Test
     public void test200Example4()
                             throws Exception {
         GetFeature request = parse( "kvp/wfs200/example4.kvp" );
+        assertEquals( VERSION_200, request.getVersion() );
+        assertNull( request.getPresentationParams().getOutputFormat() );
+        assertNull( request.getPresentationParams().getCount() );
+        assertNull( request.getPresentationParams().getResultType() );
+        assertNull( request.getPresentationParams().getStartIndex());
+        assertNull( request.getResolveParams().getDepth() );
+        assertNull( request.getResolveParams().getMode() );
+        assertNull( request.getResolveParams().getTimeout() );
+        assertEquals( 1, request.getQueries().size() );
+        FeatureIdQuery query = (FeatureIdQuery) request.getQueries().get( 0 );
+        assertNull( query.getFeatureVersion() );
+        assertNull( query.getHandle() );
+        assertEquals( 0, query.getProjectionClauses().length );
+        assertEquals( 0, query.getSortBy().length );
+        assertNull( query.getSrsName() );
+        assertEquals( 0, query.getTypeNames().length );
+        assertEquals( 3, query.getFeatureIds().length );
+        assertEquals( "InWaterA_1M.1013", query.getFeatureIds()[0] );
+        assertEquals( "InWaterA_1M.1014", query.getFeatureIds()[1] );
+        assertEquals( "InWaterA_1M.1015", query.getFeatureIds()[2] );
     }
 
     @Test
     public void test200Example5()
                             throws Exception {
         GetFeature request = parse( "kvp/wfs200/example5.kvp" );
+        assertEquals( VERSION_200, request.getVersion() );
+        assertNull( request.getPresentationParams().getOutputFormat() );
+        assertNull( request.getPresentationParams().getCount() );
+        assertNull( request.getPresentationParams().getResultType() );
+        assertNull( request.getPresentationParams().getStartIndex());
+        assertNull( request.getResolveParams().getDepth() );
+        assertNull( request.getResolveParams().getMode() );
+        assertNull( request.getResolveParams().getTimeout() );
+        assertEquals( 1, request.getQueries().size() );
+        BBoxQuery query = (BBoxQuery) request.getQueries().get( 0 );
+        assertNull( query.getFeatureVersion() );
+        assertNull( query.getHandle() );
+        assertEquals( 0, query.getProjectionClauses().length );
+        assertEquals( 0, query.getSortBy().length );
+        assertNull( query.getSrsName() );
+        assertEquals( 1, query.getTypeNames().length );
+        assertEquals( QName.valueOf( "InWaterA_1M" ), query.getTypeNames()[0].getFeatureTypeName() );
+        assertNull( query.getTypeNames()[0].getAlias() );        
+        assertEquals( null, query.getBBox().getCoordinateSystem() );
+        assertEquals( 18.54, query.getBBox().getMin().get0(), 0.0000001 );
+        assertEquals( -72.3544, query.getBBox().getMin().get1(), 0.0000001 );
+        assertEquals( 18.62, query.getBBox().getMax().get0(), 0.0000001 );
+        assertEquals( -72.2564, query.getBBox().getMax().get1(), 0.0000001 );
     }
 
     @Test
     public void test200Example6()
                             throws Exception {
         GetFeature request = parse( "kvp/wfs200/example6.kvp" );
+        assertEquals( VERSION_200, request.getVersion() );
+        assertNull( request.getPresentationParams().getOutputFormat() );
+        assertNull( request.getPresentationParams().getCount() );
+        assertNull( request.getPresentationParams().getResultType() );
+        assertNull( request.getPresentationParams().getStartIndex());
+        assertNull( request.getResolveParams().getDepth() );
+        assertNull( request.getResolveParams().getMode() );
+        assertNull( request.getResolveParams().getTimeout() );        
+        assertEquals( 1, request.getQueries().size() );
+        FilterQuery query = (FilterQuery) request.getQueries().get( 0 );
+        assertNull( query.getFeatureVersion() );
+        assertNull( query.getHandle() );
+        assertEquals( 2, query.getProjectionClauses().length );
+        assertEquals( "InWaterA_1M/wkbGeom", query.getProjectionClauses()[0].getPropertyName().getAsText() );
+        assertNull( query.getProjectionClauses()[0].getResolveParams().getDepth() );
+        assertNull( query.getProjectionClauses()[0].getResolveParams().getMode() );
+        assertNull( query.getProjectionClauses()[0].getResolveParams().getTimeout() );
+        assertNull( query.getProjectionClauses()[0].getResolvePath() );
+        assertEquals( "InWaterA_1M/tileId", query.getProjectionClauses()[1].getPropertyName().getAsText() );
+        assertNull( query.getProjectionClauses()[1].getResolveParams().getDepth() );
+        assertNull( query.getProjectionClauses()[1].getResolveParams().getMode() );
+        assertNull( query.getProjectionClauses()[1].getResolveParams().getTimeout() );
+        assertNull( query.getProjectionClauses()[1].getResolvePath() );        
+        assertEquals( 0, query.getSortBy().length );
+        assertNull( query.getSrsName() );
+        assertEquals( 1, query.getTypeNames().length );
+        assertEquals( QName.valueOf( "InWaterA_1M" ), query.getTypeNames()[0].getFeatureTypeName() );
+        assertNull( query.getTypeNames()[0].getAlias() );
+        Filter filter = query.getFilter();
     }
 
     @Test
