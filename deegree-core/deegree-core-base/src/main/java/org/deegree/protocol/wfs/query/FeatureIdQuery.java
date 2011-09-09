@@ -40,7 +40,7 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * An {@link AdHocQuery} that selects a feature by id.
+ * An {@link AdHocQuery} that selects features by id.
  * <p>
  * NOTE: Only KVP-based queries can be of this type. For XML-requests its only possible to use a filter constraint.
  * 
@@ -51,7 +51,7 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  */
 public class FeatureIdQuery extends AdHocQuery {
 
-    private final String featureId;
+    private final String[] featureIds;
 
     /**
      * Creates a new {@link FeatureIdQuery} instance.
@@ -69,24 +69,24 @@ public class FeatureIdQuery extends AdHocQuery {
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
      *            may be <code>null</code>
-     * @param featureId
+     * @param featureIds
      *            requested feature id, must not be <code>null</code>
      */
     public FeatureIdQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                           ProjectionClause[] projectionClauses, SortProperty[] sortBy, String featureId ) {
+                           ProjectionClause[] projectionClauses, SortProperty[] sortBy, String[] featureIds ) {
         super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
-        if ( featureId == null ) {
+        if ( featureIds == null ) {
             throw new IllegalArgumentException();
         }
-        this.featureId = featureId;
+        this.featureIds = featureIds;
     }
 
     /**
-     * Returns the requested feature id.
+     * Returns the requested feature ids.
      * 
-     * @return the requested feature id, never <code>null</code>
+     * @return the requested feature ids, never <code>null</code>
      */
-    public String getFeatureId() {
-        return featureId;
+    public String[] getFeatureIds() {
+        return featureIds;
     }
 }

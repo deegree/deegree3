@@ -173,21 +173,25 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-            for ( int i = 0; i < featureIds.length; i++ ) {
-                String fid = featureIds[i];
-                TypeName[] typeName = new TypeName[0];
-                if ( typeStrList != null ) {
-                    typeName = new TypeName[] { typeNames[i] };
-                }
-                ProjectionClause[] projectionClauses = null;
-                if ( propertyNames != null ) {
-                    if ( propertyNames.length > 1 ) {
-                        projectionClauses = propertyNames[i];
-                    } else {
-                        projectionClauses = propertyNames[0];
+            if ( typeStrList == null && propertyNames == null ) {
+                queries.add( new FeatureIdQuery( null, null, featureVersion, srs, null, null, featureIds ) );
+            } else {
+                for ( int i = 0; i < featureIds.length; i++ ) {
+                    String[] fids = new String[] { featureIds[i] };
+                    TypeName[] typeName = new TypeName[0];
+                    if ( typeStrList != null ) {
+                        typeName = new TypeName[] { typeNames[i] };
                     }
+                    ProjectionClause[] projectionClauses = null;
+                    if ( propertyNames != null ) {
+                        if ( propertyNames.length > 1 ) {
+                            projectionClauses = propertyNames[i];
+                        } else {
+                            projectionClauses = propertyNames[0];
+                        }
+                    }
+                    queries.add( new FeatureIdQuery( null, typeName, featureVersion, srs, projectionClauses, null, fids ) );
                 }
-                queries.add( new FeatureIdQuery( null, typeName, featureVersion, srs, projectionClauses, null, fid ) );
             }
         } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
@@ -331,17 +335,22 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-            for ( int i = 0; i < featureIds.length; i++ ) {
-                String fid = featureIds[i];
-                TypeName[] typeName = new TypeName[0];
-                if ( typeStrList != null ) {
-                    typeName = new TypeName[] { typeNames[i] };
+            if ( typeStrList == null && propertyNames == null ) {
+                queries.add( new FeatureIdQuery( null, null, featureVersion, srs, null, sortBy, featureIds ) );
+            } else {
+                for ( int i = 0; i < featureIds.length; i++ ) {
+                    String[] fid = new String[] { featureIds[i] };
+                    TypeName[] typeName = new TypeName[0];
+                    if ( typeStrList != null ) {
+                        typeName = new TypeName[] { typeNames[i] };
+                    }
+                    ProjectionClause[] projectionClauses = null;
+                    if ( propertyNames != null ) {
+                        projectionClauses = propertyNames[i];
+                    }
+                    queries.add( new FeatureIdQuery( null, typeName, featureVersion, srs, projectionClauses, sortBy,
+                                                     fid ) );
                 }
-                ProjectionClause[] projectionClauses = null;
-                if ( propertyNames != null ) {
-                    projectionClauses = propertyNames[i];
-                }
-                queries.add( new FeatureIdQuery( null, typeName, featureVersion, srs, projectionClauses, sortBy, fid ) );
             }
         } else if ( bboxStr != null ) {
             if ( typeNames == null ) {

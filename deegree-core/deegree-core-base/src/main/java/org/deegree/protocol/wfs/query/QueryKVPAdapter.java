@@ -47,7 +47,6 @@ import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +74,7 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.ows.OWSCommonKVPAdapter;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.ResultType;
@@ -202,33 +202,29 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
     private static List<Query> parseAdhocQueries200( Map<String, String> kvpUC )
                             throws Exception {
 
-        int numQueries = 0;
-
         // optional: 'NAMESPACE'
-        List<NamespaceBindings> namespacesList = new ArrayList<NamespaceBindings>();
-        if ( kvpUC.get( "NAMESPACE" ) != null ) {
-            List<String> params = KVPUtils.splitLists( kvpUC.get( "NAMESPACE" ) );
-            numQueries = params.size();
-            for ( String param : params ) {
-                Map<String, String> nsBindings2 = extractNamespaceBindings200( param );
-                if ( nsBindings2 == null ) {
-                    nsBindings2 = Collections.emptyMap();
-                }
-                NamespaceBindings nsContext = new NamespaceBindings();
-                if ( nsBindings2 != null ) {
-                    for ( String key : nsBindings2.keySet() ) {
-                        nsContext.addNamespace( key, nsBindings2.get( key ) );
-                    }
-                }
-                namespacesList.add( nsContext );
+        Map<String, String> nsBindings = extractNamespaceBindings200( kvpUC.get( "NAMESPACE" ) );
+        NamespaceBindings nsContext = new NamespaceBindings();
+        if ( nsBindings != null ) {
+            for ( String key : nsBindings.keySet() ) {
+                nsContext.addNamespace( key, nsBindings.get( key ) );
             }
         }
 
-        // optional: ALIASES
+        // optional: 'BBOX'
+        Envelope bbox = null;
+        String bboxStr = kvpUC.get( "BBOX" );
+        if ( bboxStr != null ) {
+            bbox = OWSCommonKVPAdapter.parseBBox( bboxStr, null );
+        }
+
+        int numQueries = -1;
+
+        // optional: ALIASES (can be a list of lists)
         List<String[]> aliasesList = new ArrayList<String[]>();
         if ( kvpUC.get( "ALIASES" ) != null ) {
             List<String> params = KVPUtils.splitLists( kvpUC.get( "ALIASES" ) );
-            if ( numQueries != 0 && params.size() != numQueries ) {
+            if ( numQueries != -1 && params.size() != numQueries ) {
                 String msg = "Invalid Ad hoc multi-query KVP request. List sizes of all specified query params must match.";
                 throw new OWSException( msg, MISSING_PARAMETER_VALUE );
             } else {
@@ -240,21 +236,17 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
         }
 
-        // mandatory: TYPENAMES (optional if RESOURCEID is present)
+        // mandatory (optional if RESOURCEID is present): TYPENAMES (can be a list of lists)
         List<TypeName[]> typeNamesList = new ArrayList<TypeName[]>();
         if ( kvpUC.get( "TYPENAMES" ) != null ) {
             List<String> params = KVPUtils.splitLists( kvpUC.get( "TYPENAMES" ) );
-            if ( numQueries != 0 && params.size() != numQueries ) {
+            if ( numQueries != -1 && params.size() != numQueries ) {
                 String msg = "Invalid Ad hoc multi-query KVP request. List sizes of all specified query params must match.";
                 throw new OWSException( msg, MISSING_PARAMETER_VALUE );
             } else {
                 numQueries = params.size();
             }
             for ( int i = 0; i < numQueries; i++ ) {
-                NamespaceBindings nsBindings = null;
-                if ( !namespacesList.isEmpty() ) {
-                    nsBindings = namespacesList.get( i );
-                }
                 String[] alias = null;
                 if ( !aliasesList.isEmpty() ) {
                     alias = aliasesList.get( i );
@@ -271,10 +263,10 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     String token = tokens[j];
                     if ( token.startsWith( "schema-element(" ) && token.endsWith( ")" ) ) {
                         String prefixedName = token.substring( 15, token.length() - 1 );
-                        QName qName = resolveQName( prefixedName, nsBindings );
+                        QName qName = resolveQName( prefixedName, nsContext );
                         typeName[i] = new TypeName( qName, a, true );
                     } else {
-                        QName qName = resolveQName( token, nsBindings );
+                        QName qName = resolveQName( token, nsContext );
                         typeName[i] = new TypeName( qName, a, false );
                     }
                 }
@@ -282,11 +274,11 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
         }
 
-        // optional: SRSNAME
+        // optional: SRSNAME (can be a list of values)
         List<ICRS> srsNames = new ArrayList<ICRS>();
         if ( kvpUC.get( "SRSNAME" ) != null ) {
             List<String> params = KVPUtils.splitLists( kvpUC.get( "SRSNAME" ) );
-            if ( numQueries != 0 && params.size() != numQueries ) {
+            if ( numQueries != -1 && params.size() != numQueries ) {
                 String msg = "Invalid Ad hoc multi-query KVP request. List sizes of all specified query params must match.";
                 throw new OWSException( msg, MISSING_PARAMETER_VALUE );
             } else {
@@ -297,15 +289,33 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
         }
 
-        // optional: PROPERTYNAME
+        // optional: PROPERTYNAME (can be a list of lists)
         List<ProjectionClause[]> projectionClausesList = new ArrayList<ProjectionClause[]>();
-        // TODO
+        if ( kvpUC.get( "PROPERTYNAME" ) != null ) {
+            List<String> params = KVPUtils.splitLists( kvpUC.get( "PROPERTYNAME" ) );
+            if ( numQueries != -1 && params.size() != numQueries ) {
+                String msg = "Invalid Ad hoc multi-query KVP request. List sizes of all specified query params must match.";
+                throw new OWSException( msg, MISSING_PARAMETER_VALUE );
+            } else {
+                numQueries = params.size();
+            }
+            for ( String param : params ) {
+                String[] subParams = KVPUtils.splitList( param );
+                ProjectionClause[] projectionClauses = new ProjectionClause[subParams.length];
+                for ( int i = 0; i < subParams.length; i++ ) {
+                    String subParam = subParams[i];
+                    ValueReference propName = new ValueReference( subParam, nsContext );
+                    projectionClauses[i] = new ProjectionClause( propName, null, null );
+                }
+                projectionClausesList.add( projectionClauses );
+            }
+        }
 
-        // optional: FILTER
+        // optional: FILTER (can be a list of values)
         List<Filter> filterList = new ArrayList<Filter>();
         if ( kvpUC.get( "FILTER" ) != null ) {
             List<String> params = KVPUtils.splitLists( kvpUC.get( "FILTER" ) );
-            if ( numQueries != 0 && params.size() != numQueries ) {
+            if ( numQueries != -1 && params.size() != numQueries ) {
                 String msg = "Invalid Ad hoc multi-query KVP request. List sizes of all specified query params must match.";
                 throw new OWSException( msg, MISSING_PARAMETER_VALUE );
             } else {
@@ -316,23 +326,33 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
         }
 
-        // optional: FILTER_LANGUAGE
-        List<String> filterLanguageList = new ArrayList<String>();
-        // TODO
+        // optional: FILTER_LANGUAGE (can be a list of values)
+        // List<String> filterLanguageList = new ArrayList<String>();
+        if ( kvpUC.get( "FILTER_LANGUAGE" ) != null ) {
+            LOG.warn( "Handling of FILTER_LANGUAGE parameter not implemented yet." );
+        }
 
-        // optional: RESOURCEID
+        // optional: RESOURCEID (can be a list of lists)
         List<String[]> resourceIdList = new ArrayList<String[]>();
-        // TODO
+        if ( kvpUC.get( "RESOURCEID" ) != null ) {
+            List<String> params = KVPUtils.splitLists( kvpUC.get( "RESOURCEID" ) );
+            if ( numQueries != -1 && params.size() != numQueries ) {
+                String msg = "Invalid Ad hoc multi-query KVP request. List sizes of all specified query params must match.";
+                throw new OWSException( msg, MISSING_PARAMETER_VALUE );
+            } else {
+                numQueries = params.size();
+            }
+            for ( String param : params ) {
+                String[] subParams = KVPUtils.splitList( param );
+                resourceIdList.add( subParams );
+            }
+        }
 
-        // optional: BBOX (yes, this is not a list, see 7.9.2.3)
-        Envelope bbox = null;
-        // TODO
-
-        // optional: SORTBY
+        // optional: SORTBY (can be a list of lists)
         List<SortProperty[]> sortByList = new ArrayList<SortProperty[]>();
         if ( kvpUC.get( "SORTBY" ) != null ) {
             List<String> params = KVPUtils.splitLists( kvpUC.get( "SORTBY" ) );
-            if ( numQueries != 0 && params.size() != numQueries ) {
+            if ( numQueries != -1 && params.size() != numQueries ) {
                 String msg = "Invalid Ad hoc multi-query KVP request. List sizes of all specified query params must match.";
                 throw new OWSException( msg, MISSING_PARAMETER_VALUE );
             } else {
@@ -340,48 +360,93 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
             for ( int i = 0; i < sortByList.size(); i++ ) {
                 String param = params.get( i );
-                // TODO
-                NamespaceBindings nsContext = null;
-                if ( !namespacesList.isEmpty() ) {
-                    nsContext = namespacesList.get( i );
-                }
                 sortByList.add( getSortBy( param, nsContext ) );
             }
         }
 
+        if ( !resourceIdList.isEmpty() && bbox != null ) {
+            String msg = "Parameters RESOURCEID and BBOX are mututally exclusive.";
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE );
+        }
+        if ( !filterList.isEmpty() && !resourceIdList.isEmpty() ) {
+            String msg = "Parameters FILTER and RESOURCEID are mututally exclusive.";
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE );
+        }
+        if ( !filterList.isEmpty() && bbox != null ) {
+            String msg = "Parameters FILTER and BBOX are mututally exclusive.";
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE );
+        }
+
         List<Query> queries = new ArrayList<Query>( numQueries );
         if ( !resourceIdList.isEmpty() ) {
-            if ( bbox != null ) {
-                String msg = "Parameters RESOURCEID and BBOX are mututally exclusive.";
-                throw new OWSException( msg, INVALID_PARAMETER_VALUE );
-            }
-            if ( !filterList.isEmpty() ) {
-                String msg = "Parameters RESOURCEID and FILTER are mututally exclusive.";
-                throw new OWSException( msg, INVALID_PARAMETER_VALUE );
+            for ( int i = 0; i < numQueries; i++ ) {
+                String[] resourceIds = resourceIdList.get( i );
+                TypeName[] typeNames = new TypeName[0];
+                if ( !typeNamesList.isEmpty() ) {
+                    typeNames = typeNamesList.get( i );
+                }
+                ICRS srsName = null;
+                if ( !srsNames.isEmpty() ) {
+                    srsName = srsNames.get( i );
+                }
+                ProjectionClause[] projectionClauses = null;
+                if ( !projectionClausesList.isEmpty() ) {
+                    projectionClauses = projectionClausesList.get( i );
+                }
+                SortProperty[] sortBy = null;
+                if ( !sortByList.isEmpty() ) {
+                    sortBy = sortByList.get( i );
+                }
+                queries.add( new FeatureIdQuery( null, typeNames, null, srsName, projectionClauses, sortBy, resourceIds ) );
             }
         } else if ( !typeNamesList.isEmpty() ) {
             if ( bbox != null ) {
                 for ( int i = 0; i < numQueries; i++ ) {
-                    TypeName[] typeNames = typeNamesList.get( i );
-                    ICRS srsName = srsNames.isEmpty() ? null : srsNames.get( i );
-                    // TODO
+                    TypeName[] typeNames = new TypeName[0];
+                    if ( !typeNamesList.isEmpty() ) {
+                        typeNames = typeNamesList.get( i );
+                    }
+                    ICRS srsName = null;
+                    if ( !srsNames.isEmpty() ) {
+                        srsName = srsNames.get( i );
+                    }
                     ProjectionClause[] projectionClauses = null;
-                    SortProperty[] sortBy = sortByList.isEmpty() ? null : sortByList.get( i );
+                    if ( !projectionClausesList.isEmpty() ) {
+                        projectionClauses = projectionClausesList.get( i );
+                    }
+                    SortProperty[] sortBy = null;
+                    if ( !sortByList.isEmpty() ) {
+                        sortBy = sortByList.get( i );
+                    }
                     queries.add( new BBoxQuery( null, typeNames, null, srsName, projectionClauses, sortBy, bbox ) );
                 }
             } else {
                 for ( int i = 0; i < numQueries; i++ ) {
-                    TypeName[] typeNames = typeNamesList.get( i );
-                    ICRS srsName = srsNames.isEmpty() ? null : srsNames.get( i );
-                    ProjectionClause[] projectionClauses = projectionClausesList.isEmpty() ? null
-                                                                                          : projectionClausesList.get( i );
-                    SortProperty[] sortBy = sortByList.isEmpty() ? null : sortByList.get( i );
-                    Filter filter = filterList.isEmpty() ? null : filterList.get( i );
+                    Filter filter = null;
+                    if ( !filterList.isEmpty() ) {
+                        filter = filterList.get( i );
+                    }
+                    TypeName[] typeNames = new TypeName[0];
+                    if ( !typeNamesList.isEmpty() ) {
+                        typeNames = typeNamesList.get( i );
+                    }
+                    ICRS srsName = null;
+                    if ( !srsNames.isEmpty() ) {
+                        srsName = srsNames.get( i );
+                    }
+                    ProjectionClause[] projectionClauses = null;
+                    if ( !projectionClausesList.isEmpty() ) {
+                        projectionClauses = projectionClausesList.get( i );
+                    }
+                    SortProperty[] sortBy = null;
+                    if ( !sortByList.isEmpty() ) {
+                        sortBy = sortByList.get( i );
+                    }
                     queries.add( new FilterQuery( null, typeNames, null, srsName, projectionClauses, sortBy, filter ) );
                 }
             }
         } else {
-            String msg = "One of the parameters TYPENAMES and RESOURCEID must be present in a KVP-encoded Ad hoc query.";
+            String msg = "One of the parameters TYPENAMES and RESOURCEID must be present in KVP-encoded Ad hoc queries.";
             throw new OWSException( msg, MISSING_PARAMETER_VALUE );
         }
         return queries;
@@ -558,7 +623,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
     protected static SortProperty[] getSortBy( String sortbyStr, NamespaceBindings nsContext ) {
         SortProperty[] result = null;
         if ( sortbyStr != null ) {
-            String[] sortbyComm = sortbyStr.split( "," );
+            String[] sortbyComm = KVPUtils.splitList( sortbyStr );
             result = new SortProperty[sortbyComm.length];
             for ( int i = 0; i < sortbyComm.length; i++ ) {
                 if ( sortbyComm[i].endsWith( " D" ) || sortbyComm[i].endsWith( " DESC" ) ) {
@@ -633,5 +698,21 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         }
 
         return paramComm;
+    }
+
+    protected static Envelope parseBBox200( String bboxStr ) {
+
+        String[] coordList = bboxStr.split( "," );
+
+        // NOTE: Contradiction between spec and CITE tests (for omitted crsUri)
+        // - WFS 1.1.0 spec, 14.3.3: coordinates should be in WGS84
+        // - CITE tests, wfs:wfs-1.1.0-Basic-GetFeature-tc8.1: If no CRS reference is provided, a service-defined
+        // default value must be assumed.
+        ICRS bboxCrs = null;
+        if ( coordList.length % 2 == 1 ) {
+            bboxCrs = CRSManager.getCRSRef( coordList[coordList.length - 1] );
+        }
+
+        return createEnvelope( bboxStr, bboxCrs );
     }
 }

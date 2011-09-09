@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.deegree.commons.utils.StringUtils;
 import org.slf4j.Logger;
 
 /**
@@ -185,6 +186,10 @@ public class KVPUtils {
             values = Collections.singletonList( s );
         }
         return values;
+    }
+
+    public static String[] splitList( String param ) {
+        return StringUtils.split( param, "," );
     }
 
     /**

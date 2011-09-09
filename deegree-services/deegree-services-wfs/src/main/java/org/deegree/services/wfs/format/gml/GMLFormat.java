@@ -1015,7 +1015,7 @@ public class GMLFormat implements Format {
             lockOperation = new BBoxLock( bboxQuery.getBBox(), bboxQuery.getTypeNames() );
         } else if ( wfsQuery instanceof FeatureIdQuery ) {
             FeatureIdQuery fidQuery = (FeatureIdQuery) wfsQuery;
-            String[] fids = new String[] { fidQuery.getFeatureId() };
+            String[] fids = fidQuery.getFeatureIds();
             lockOperation = new FeatureIdLock( fids, fidQuery.getTypeNames() );
         } else if ( wfsQuery instanceof FilterQuery ) {
             FilterQuery filterQuery = (FilterQuery) wfsQuery;

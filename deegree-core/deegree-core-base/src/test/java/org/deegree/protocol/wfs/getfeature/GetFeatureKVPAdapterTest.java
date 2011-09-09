@@ -206,7 +206,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries().get( 0 );
-        assertEquals( "INWATERA_1M.1013", featureQuery.getFeatureId() );
+        assertEquals( "INWATERA_1M.1013", featureQuery.getFeatureIds()[0] );
     }
 
     /**
@@ -222,7 +222,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
         List<Query> queries = getFeature.getQueries();
         FeatureIdQuery featureId = (FeatureIdQuery) queries.get( 0 );
-        assertEquals( featureId.getFeatureId(), "InWaterA_1M.1013" );
+        assertEquals( "InWaterA_1M.1013", featureId.getFeatureIds()[0] );
     }
 
     /**
@@ -238,7 +238,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
         List<Query> queries = getFeature.getQueries();
         FeatureIdQuery featureId = (FeatureIdQuery) queries.get( 0 );
-        assertEquals( "INWATERA_1M", featureId.getFeatureId() );
+        assertEquals( "INWATERA_1M", featureId.getFeatureIds()[0] );
 
         assertEquals( "INWATERA_1M/WKB_GEOM", featureId.getProjectionClauses()[0].getPropertyName().getAsText() );
         assertEquals( "INWATERA_1M/TILE_ID", featureId.getProjectionClauses()[1].getPropertyName().getAsText() );
@@ -259,7 +259,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         assertEquals( ( (FeatureIdQuery) getFeature.getQueries().get( 0 ) ).getProjectionClauses()[1].getPropertyName().getAsText(),
                       "InWaterA_1M/tileId" );
         FeatureIdQuery featureId = (FeatureIdQuery) getFeature.getQueries().get( 0 );
-        assertEquals( featureId.getFeatureId(), "InWaterA_1M.1013" );
+        assertEquals( "InWaterA_1M.1013", featureId.getFeatureIds()[0] );
     }
 
     /**
@@ -274,12 +274,10 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         List<Query> queries = getFeature.getQueries();
-        FeatureIdQuery query0 = (FeatureIdQuery) queries.get( 0 );
-        FeatureIdQuery query1 = (FeatureIdQuery) queries.get( 1 );
-        FeatureIdQuery query2 = (FeatureIdQuery) queries.get( 2 );
-        assertEquals( "INWATERA_1M.1013", query0.getFeatureId() );
-        assertEquals( "INWATERA_1M.1014", query1.getFeatureId() );
-        assertEquals( "INWATERA_1M.1015", query2.getFeatureId() );
+        FeatureIdQuery query = (FeatureIdQuery) queries.get( 0 );
+        assertEquals( "INWATERA_1M.1013", query.getFeatureIds()[0] );
+        assertEquals( "INWATERA_1M.1014", query.getFeatureIds()[1] );
+        assertEquals( "INWATERA_1M.1015", query.getFeatureIds()[2] );
     }
 
     /**
@@ -294,12 +292,10 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         List<Query> queries = getFeature.getQueries();
-        FeatureIdQuery query0 = (FeatureIdQuery) queries.get( 0 );
-        FeatureIdQuery query1 = (FeatureIdQuery) queries.get( 1 );
-        FeatureIdQuery query2 = (FeatureIdQuery) queries.get( 2 );
-        assertEquals( "InWaterA_1M.1013", query0.getFeatureId() );
-        assertEquals( "InWaterA_1M.1014", query1.getFeatureId() );
-        assertEquals( "InWaterA_1M.1015", query2.getFeatureId() );
+        FeatureIdQuery query = (FeatureIdQuery) queries.get( 0 );
+        assertEquals( "InWaterA_1M.1013", query.getFeatureIds()[0] );
+        assertEquals( "InWaterA_1M.1014", query.getFeatureIds()[1] );
+        assertEquals( "InWaterA_1M.1015", query.getFeatureIds()[2] );
     }
 
     /**
@@ -317,9 +313,9 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         FeatureIdQuery query0 = (FeatureIdQuery) queries.get( 0 );
         FeatureIdQuery query1 = (FeatureIdQuery) queries.get( 1 );
         FeatureIdQuery query2 = (FeatureIdQuery) queries.get( 2 );
-        assertEquals( "INWATERA_1M.1013", query0.getFeatureId() );
-        assertEquals( "INWATERA_1M.1014", query1.getFeatureId() );
-        assertEquals( "INWATERA_1M.1015", query2.getFeatureId() );
+        assertEquals( "INWATERA_1M.1013", query0.getFeatureIds()[0] );
+        assertEquals( "INWATERA_1M.1014", query1.getFeatureIds()[0] );
+        assertEquals( "INWATERA_1M.1015", query2.getFeatureIds()[0] );
         assertEquals( "INWATERA_1M/WKB_GEOM", query0.getProjectionClauses()[0].getPropertyName().getAsText() );
         assertEquals( "INWATERA_1M/TILE_ID", query0.getProjectionClauses()[1].getPropertyName().getAsText() );
         assertEquals( "INWATERA_1M/WKB_GEOM", query1.getProjectionClauses()[0].getPropertyName().getAsText() );
@@ -341,9 +337,9 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         FeatureIdQuery query0 = (FeatureIdQuery) getFeature.getQueries().get( 0 );
         FeatureIdQuery query1 = (FeatureIdQuery) getFeature.getQueries().get( 1 );
         FeatureIdQuery query2 = (FeatureIdQuery) getFeature.getQueries().get( 2 );
-        assertEquals( "InWaterA_1M.1013", query0.getFeatureId() );
-        assertEquals( "InWaterA_1M.1014", query1.getFeatureId() );
-        assertEquals( "InWaterA_1M.1015", query2.getFeatureId() );
+        assertEquals( "InWaterA_1M.1013", query0.getFeatureIds()[0] );
+        assertEquals( "InWaterA_1M.1014", query1.getFeatureIds()[0] );
+        assertEquals( "InWaterA_1M.1015", query2.getFeatureIds()[0] );
         assertEquals( "InWaterA_1M/wkbGeom", query0.getProjectionClauses()[0].getPropertyName().getAsText() );
         assertEquals( "InWaterA_1M/tileId", query0.getProjectionClauses()[1].getPropertyName().getAsText() );
         assertEquals( "InWaterA_1M/wkbGeom", query1.getProjectionClauses()[0].getPropertyName().getAsText() );
@@ -510,10 +506,9 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
-        FeatureIdQuery query0 = (FeatureIdQuery) getFeature.getQueries().get( 0 );
-        FeatureIdQuery query1 = (FeatureIdQuery) getFeature.getQueries().get( 1 );
-        assertEquals( "INWATERA_1M.1013", query0.getFeatureId() );
-        assertEquals( "BUILTUP_1M.3456", query1.getFeatureId() );
+        FeatureIdQuery query = (FeatureIdQuery) getFeature.getQueries().get( 0 );
+        assertEquals( "INWATERA_1M.1013", query.getFeatureIds()[0] );
+        assertEquals( "BUILTUP_1M.3456", query.getFeatureIds()[1] );
     }
 
     /**
@@ -526,10 +521,9 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
-        FeatureIdQuery query0 = (FeatureIdQuery) getFeature.getQueries().get( 0 );
-        FeatureIdQuery query1 = (FeatureIdQuery) getFeature.getQueries().get( 1 );
-        assertEquals( "InWaterA_1M.1013", query0.getFeatureId() );
-        assertEquals( "BUILTUP_1M.3456", query1.getFeatureId() );
+        FeatureIdQuery query = (FeatureIdQuery) getFeature.getQueries().get( 0 );
+        assertEquals( "InWaterA_1M.1013", query.getFeatureIds()[0] );
+        assertEquals( "BUILTUP_1M.3456", query.getFeatureIds()[1] );
     }
 
     /**
@@ -544,10 +538,11 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery query0 = (FeatureIdQuery) getFeature.getQueries().get( 0 );
         FeatureIdQuery query1 = (FeatureIdQuery) getFeature.getQueries().get( 1 );
-        assertEquals( "INWATERA_1M.1013", query0.getFeatureId() );
-        assertEquals( "BUILTUPA_1M.3456", query1.getFeatureId() );
+        assertEquals( "INWATERA_1M.1013", query0.getFeatureIds()[0] );
+        assertEquals( "BUILTUPA_1M.3456", query1.getFeatureIds()[0] );
         assertEquals( "INWATERA_1M/WKB_GEOM", query0.getProjectionClauses()[0].getPropertyName().getAsText() );
         assertEquals( "INWATERA_1M/TILE_ID", query0.getProjectionClauses()[1].getPropertyName().getAsText() );
+        // TODO example query appears to be invalid
         assertEquals( "BUILTUPA_1M/WKB_GEOM", query0.getProjectionClauses()[2].getPropertyName().getAsText() );
     }
 
@@ -562,8 +557,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery query0 = (FeatureIdQuery) getFeature.getQueries().get( 0 );
         FeatureIdQuery query1 = (FeatureIdQuery) getFeature.getQueries().get( 1 );
-        assertEquals( "InWaterA_1M.1013", query0.getFeatureId() );
-        assertEquals( "BuiltUpA_1M.3456", query1.getFeatureId() );
+        assertEquals( "InWaterA_1M.1013", query0.getFeatureIds()[0] );
+        assertEquals( "BuiltUpA_1M.3456", query1.getFeatureIds()[0] );
         assertEquals( "InWaterA_1M/wkbGeom", query0.getProjectionClauses()[0].getPropertyName().getAsText() );
         assertEquals( "InWaterA_1M/tileId", query0.getProjectionClauses()[1].getPropertyName().getAsText() );
         assertEquals( "BuiltUpA_1M/wkbGeom", query1.getProjectionClauses()[0].getPropertyName().getAsText() );
@@ -648,8 +643,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         ProjectionClause[] propNames = featureQuery.getProjectionClauses();
         assertEquals( "uk:Town/gml:name", propNames[0].getPropertyName().getAsText() );
         assertEquals( "uk:Town/gml:directedNode", propNames[1].getPropertyName().getAsText() );
-        String featureId = featureQuery.getFeatureId();
-        assertEquals( "t1", featureId );
+        String[] featureId = featureQuery.getFeatureIds();
+        assertEquals( "t1", featureId[0] );
         TypeName[] typeName = featureQuery.getTypeNames();
         assertEquals( new QName( "http://www.theuknamespace.uk", "Town" ), typeName[0].getFeatureTypeName() );
     }

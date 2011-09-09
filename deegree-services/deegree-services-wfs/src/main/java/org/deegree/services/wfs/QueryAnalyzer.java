@@ -370,7 +370,7 @@ public class QueryAnalyzer {
                     validatePropertyName( propertyName.getPropertyName(), typeNames );
                 }
             }
-            filter = new IdFilter( fidQuery.getFeatureId() );
+            filter = new IdFilter( fidQuery.getFeatureIds() );
         }
 
         if ( wfsTypeNames.length == 0 && ( filter == null || !( filter instanceof IdFilter ) ) ) {

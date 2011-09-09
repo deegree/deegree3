@@ -100,7 +100,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
         nsContext.addNamespace( OWS110_PREFIX, OWS110_NS );
         nsContext.addNamespace( XML_PREFIX, XML_NS );
     }
-
+    
     /**
      * Parses the given element of type <code>ows:BoundingBoxType</code>.
      * 
@@ -282,5 +282,5 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
             writer.writeCharacters( "" + coord );
             needsDelim = true;
         }
-    }
+    }    
 }
