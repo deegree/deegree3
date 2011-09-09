@@ -95,7 +95,6 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
@@ -138,6 +137,7 @@ import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException100XMLAdapter;
+import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
@@ -267,7 +267,7 @@ public class WebFeatureService extends AbstractOWS {
         try {
             service.init( jaxbConfig, controllerConf.getSystemId(), workspace );
         } catch ( Exception e ) {
-            throw new ResourceInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
+            throw new ResourceInitException( "Error initializing WFS/FeatureStores: " + e.getMessage(), e );
         }
 
         lockFeatureHandler = new LockFeatureHandler( this );
@@ -384,7 +384,7 @@ public class WebFeatureService extends AbstractOWS {
      * 
      * @return the underlying {@link WFSFeatureStoreManager}
      */
-    public WFSFeatureStoreManager getService() {
+    public WFSFeatureStoreManager getStoreManager() {
         return service;
     }
 
@@ -864,10 +864,12 @@ public class WebFeatureService extends AbstractOWS {
     public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
         String mime = "application/vnd.ogc.se_xml";
         XMLExceptionSerializer<OWSException> serializer = new OWSException100XMLAdapter();
-        if ( WFSConstants.VERSION_100.equals( requestVersion ) ) {
+        if ( VERSION_100.equals( requestVersion ) ) {
             serializer = new OGCExceptionXMLAdapter();
-        } else if ( WFSConstants.VERSION_110.equals( requestVersion ) ) {
+        } else if ( VERSION_110.equals( requestVersion ) ) {
             serializer = new OWSException100XMLAdapter();
+        } else if ( VERSION_200.equals( requestVersion ) ) {
+            serializer = new OWSException110XMLAdapter();
         }
         return new Pair<XMLExceptionSerializer<OWSException>, String>( serializer, mime );
     }

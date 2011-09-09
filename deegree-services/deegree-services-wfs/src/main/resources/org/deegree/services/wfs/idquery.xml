@@ -1,13 +1,13 @@
 <wfs:StoredQueryDefinition id="urn:ogc:def:query:OGC-WFS::GetFeatureById" xmlns:wfs="http://www.opengis.net/wfs/2.0"
   xmlns:fes="http://www.opengis.net/fes/2.0">
   <wfs:Title>GetFeatureById</wfs:Title>
-  <wfs:Abstract>Returns the single feature whose value is equal to the specified value of the id argument</wfs:Abstract>
-  <wfs:Parameter name="id" type="xsd:string" />
+  <wfs:Abstract>Returns the single feature whose value is equal to the specified value of the ID argument</wfs:Abstract>
+  <wfs:Parameter name="ID" type="xsd:string" />
   <wfs:QueryExpressionText returnFeatureTypes="${deegreewfs:ServedFeatureTypes}"
     language="urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression" isPrivate="true">
-    <wfs:Query typeNames="anyNs:AnyFeature">
+    <wfs:Query xmlns:gml="http://www.opengis.net/gml/3.2" typeNames="schema-element(gml:AbstractFeature)">
       <fes:Filter>
-        <fes:ResourceId rid="${id}" />
+        <fes:ResourceId rid="${ID}" />
       </fes:Filter>
     </wfs:Query>
   </wfs:QueryExpressionText>

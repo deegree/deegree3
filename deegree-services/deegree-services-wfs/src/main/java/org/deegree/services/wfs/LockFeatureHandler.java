@@ -107,7 +107,7 @@ class LockFeatureHandler {
         LockManager manager = null;
         try {
             // TODO strategy for multiple LockManagers / feature stores
-            manager = master.getService().getStores()[0].getLockManager();
+            manager = master.getStoreManager().getStores()[0].getLockManager();
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Cannot acquire lock manager: " + e.getMessage(), NO_APPLICABLE_CODE );
         }

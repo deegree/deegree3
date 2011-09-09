@@ -182,7 +182,7 @@ public class GMLFormat implements Format {
 
     public GMLFormat( WebFeatureService master, GMLVersion gmlVersion ) {
         this.master = master;
-        this.service = master.getService();
+        this.service = master.getStoreManager();
         this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema, null );
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
@@ -192,7 +192,7 @@ public class GMLFormat implements Format {
     public GMLFormat( WebFeatureService master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
                             throws ResourceInitException {
         this.master = master;
-        this.service = master.getService();
+        this.service = master.getStoreManager();
 
         GetFeatureResponse responseConfig = formatDef.getGetFeatureResponse();
         if ( responseConfig != null ) {
