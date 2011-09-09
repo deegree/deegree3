@@ -93,10 +93,10 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.WFSRequestType;
-import org.deegree.protocol.wfs.capabilities.GetCapabilitiesKVPAdapter;
 import org.deegree.protocol.wfs.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapter;
@@ -445,7 +445,7 @@ public class WebFeatureService extends AbstractOWS {
                 storedQueryHandler.doDropStoredQuery( dropStoredQuery, response );
                 break;
             case GetCapabilities:
-                GetCapabilities getCapabilities = GetCapabilitiesKVPAdapter.parse( requestVersion, kvpParamsUC );
+                GetCapabilities getCapabilities = GetCapabilitiesKVPParser.parse( kvpParamsUC );
                 doGetCapabilities( getCapabilities, response );
                 break;
             case GetFeature:

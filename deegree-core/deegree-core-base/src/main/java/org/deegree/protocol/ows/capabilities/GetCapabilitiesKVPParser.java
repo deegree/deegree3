@@ -42,10 +42,11 @@ import java.util.Map;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
- * Parser for OWS/OGC GetCapabilities requests (KVP).
+ * Generic KVP parser for OWS/OGC GetCapabilities requests.
  * <p>
  * Handles GetCapabilities requests that are compliant to the following specifications:
  * <ul>
+ * <li>WFS 1.0.0</li>
  * <li>OWS Common 1.0.0</li>
  * <li>OWS Common 1.1.0</li>
  * </ul>
@@ -76,6 +77,9 @@ public class GetCapabilitiesKVPParser {
      */
     public static GetCapabilities parse( Map<String, String> kvpParams )
                             throws InvalidParameterValueException {
+
+        // VERSION (optional)
+        String version = kvpParams.get( "VERSION" );
 
         // ACCEPTVERSIONS (optional)
         List<String> acceptVersions = null;
@@ -108,6 +112,6 @@ public class GetCapabilitiesKVPParser {
             languages = Arrays.asList( languagesString.split( "," ) );
         }
 
-        return new GetCapabilities( acceptVersions, sections, acceptFormats, updateSequence, languages );
+        return new GetCapabilities( version, acceptVersions, sections, acceptFormats, updateSequence, languages );
     }
 }

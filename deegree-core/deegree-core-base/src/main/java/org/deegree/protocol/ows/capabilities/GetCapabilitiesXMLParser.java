@@ -56,8 +56,8 @@ import org.deegree.protocol.ows.OWSCommonXMLAdapter;
  * </ul>
  * </p>
  * <p>
- * Additionally evaluates the <code>language</code> attribute for requests to multilingual services according to OWS Common change
- * request OGC 08-016r2. This is used by the WPS Specification 1.0.0.
+ * Additionally evaluates the <code>language</code> attribute for requests to multilingual services according to OWS
+ * Common change request OGC 08-016r2. This is used by the WPS Specification 1.0.0.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -119,7 +119,7 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
             languages = Arrays.asList( languageString.split( "," ) );
         }
 
-        return new GetCapabilities( Arrays.asList( versions ), sections, formats, updateSequence, languages );
+        return new GetCapabilities( null, Arrays.asList( versions ), sections, formats, updateSequence, languages );
     }
 
     /**
@@ -157,7 +157,7 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
             languages = Arrays.asList( languageString.split( "," ) );
         }
 
-        return new GetCapabilities( Arrays.asList( versions ), sections, formats, updateSequence, languages );
+        return new GetCapabilities( null, Arrays.asList( versions ), sections, formats, updateSequence, languages );
     }
 
     /**

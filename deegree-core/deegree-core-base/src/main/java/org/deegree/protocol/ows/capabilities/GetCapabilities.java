@@ -84,6 +84,8 @@ public class GetCapabilities {
     /**
      * Constructs a new <code>GetCapabilities</code> request.
      * 
+     * @param version
+     *            version hint, may be <code>null</code>
      * @param acceptVersions
      *            acceptable protocol versions in order of client preference, may be empty or <code>null</code>
      * @param sections
@@ -96,8 +98,9 @@ public class GetCapabilities {
      *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or
      *            <code>null</code>
      */
-    public GetCapabilities( Collection<String> acceptVersions, Collection<String> sections,
+    public GetCapabilities( String version, Collection<String> acceptVersions, Collection<String> sections,
                             Collection<String> acceptFormats, String updateSequence, Collection<String> languages ) {
+        this.version = version;
         if ( acceptVersions != null ) {
             this.acceptVersions.addAll( acceptVersions );
         }

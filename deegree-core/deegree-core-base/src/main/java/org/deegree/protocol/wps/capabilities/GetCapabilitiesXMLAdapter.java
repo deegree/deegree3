@@ -99,6 +99,6 @@ public class GetCapabilitiesXMLAdapter extends XMLAdapter {
             languages = new ArrayList<String>();
             languages.add( languageString );
         }
-        return new GetCapabilities( Arrays.asList( versions ), null, null, null, languages );
+        return new GetCapabilities( "1.0.0", Arrays.asList( versions ), null, null, null, languages );
     }
 }
