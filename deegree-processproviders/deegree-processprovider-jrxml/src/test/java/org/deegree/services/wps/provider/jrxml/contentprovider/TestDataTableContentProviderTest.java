@@ -35,32 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider.DETAIL_SUFFIX;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider.HEADER_SUFFIX;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider.MIME_TYPE;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider.SCHEMA;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider.TABLE_PREFIX;
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.services.wps.ProcessletException;
-import org.deegree.services.wps.ProcessletInputs;
 import org.junit.Test;
 
 /**
