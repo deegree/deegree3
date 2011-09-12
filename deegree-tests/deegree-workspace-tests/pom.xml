@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.1-rc1</version>
+    <version>3.1-pre13-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -112,58 +112,58 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-config</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-wps</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-wps</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-utah</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-csw</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-aixm</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-geosciml</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-wcts</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-wcts</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-xplan40</artifactId>
-      <version>3.1-rc1</version>
+      <version>3.1-pre13-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
   </dependencies>
