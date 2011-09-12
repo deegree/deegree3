@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.JASPERREPORTS_NS;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
@@ -65,7 +69,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.xml.bind.JAXBContext;
@@ -106,6 +109,7 @@ import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.remoteows.wms.WMSClient111;
 import org.deegree.rendering.r2d.Java2DRenderer;
+import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
@@ -305,12 +309,18 @@ public class MapContentProvider implements JrxmlContentProvider {
                                         prepareMap( datasources, parameters.get( mapKey ), width, height, bbox, crs ) );
 
                             // SCALE
+                            double scale = Utils.calcScaleWMS130( width, height, bbox, crs );
                             String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX );
                             if ( parameters.containsKey( scaleKey ) ) {
-                                double scale = Utils.calcScaleWMS130( width, height, bbox, crs );
                                 params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );
                             }
 
+                            // SCALEBAR
+                            String scalebarKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALEBAR_SUFFIX );
+                            if ( parameters.containsKey( scalebarKey ) ) {
+                                prepareScaleBar( scalebarKey, jrxmlAdapter, datasources, parameters.get( scalebarKey ),
+                                                 scale );
+                            }
                         }
 
                         // LAYERLIST
@@ -324,8 +334,6 @@ public class MapContentProvider implements JrxmlContentProvider {
                                         prepareLegend( legendKey, jrxmlAdapter, datasources, parameters.get( legendKey ) ) );
                         }
 
-                        // SCALEBAR
-                        // get input stream
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         try {
                             if ( LOG.isDebugEnabled() ) {
@@ -360,6 +368,22 @@ public class MapContentProvider implements JrxmlContentProvider {
             }
         }
         return jrxml;
+    }
+
+    private void prepareScaleBar( String scalebarKey, XMLAdapter jrxmlAdapter, List<OrderedDatasource<?>> datasources,
+                                  String string, double scale ) {
+
+        OMElement sbRep = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                   new XPath( ".//jasper:image[jasper:imageExpression/text()='$P{"
+                                                              + scalebarKey + "}']/jasper:reportElement", nsContext ) );
+
+        if ( sbRep != null ) {
+            // int w = jrxmlAdapter.getRequiredNodeAsInteger( sbRep, new XPath( "@width", nsContext ) );
+            // int h = jrxmlAdapter.getRequiredNodeAsInteger( sbRep, new XPath( "@height", nsContext ) );
+            // BufferedImage img = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB );
+            // Graphics2D g = img.createGraphics();
+            // g.dispose();
+        }
     }
 
     private Object convert( double scale, String parameterType ) {
@@ -406,7 +430,8 @@ public class MapContentProvider implements JrxmlContentProvider {
                 if ( k > bi.getHeight() ) {
                     LOG.warn( "The necessary legend size is larger than the available legend space." );
                 }
-                List<Pair<String, BufferedImage>> legends = datasources.get( i ).getLegends();
+                // TODO: height must be
+                List<Pair<String, BufferedImage>> legends = datasources.get( i ).getLegends( width );
                 for ( Pair<String, BufferedImage> legend : legends ) {
                     BufferedImage img = legend.second;
                     if ( img != null ) {
@@ -677,7 +702,7 @@ public class MapContentProvider implements JrxmlContentProvider {
             this.datasource = datasource;
         }
 
-        public abstract List<Pair<String, BufferedImage>> getLegends()
+        public abstract List<Pair<String, BufferedImage>> getLegends( int width )
                                 throws ProcessletException;
 
         public OrderedDatasource( T datasource, int min, int max ) {
@@ -712,6 +737,19 @@ public class MapContentProvider implements JrxmlContentProvider {
             return symbologyParser.parse( reader );
         }
 
+        protected BufferedImage getLegendImg( org.deegree.style.se.unevaluated.Style style, int width ) {
+            Legends legends = new Legends();
+            Pair<Integer, Integer> legendSize = legends.getLegendSize( style );
+            if ( legendSize.first < width )
+                width = legendSize.first;
+            BufferedImage img = new BufferedImage( width, legendSize.second, BufferedImage.TYPE_INT_ARGB );
+            Graphics2D g = img.createGraphics();
+            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
+            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
+            legends.paintLegend( style, width, legendSize.second, g );
+            g.dispose();
+            return img;
+        }
     }
 
     class WMSOrderedDatasource extends OrderedDatasource<WMSDatasource> {
@@ -815,33 +853,33 @@ public class MapContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        public List<Pair<String, BufferedImage>> getLegends()
+        public List<Pair<String, BufferedImage>> getLegends( int width )
                                 throws ProcessletException {
             List<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
             for ( Layer layer : layers ) {
-
+                String layerName = layer.getName();
                 try {
+                    BufferedImage bi = null;
                     org.deegree.style.se.unevaluated.Style style = getStyle( layer.getStyle() );
                     if ( style != null ) {
-
+                        bi = getLegendImg( style, width );
+                    } else {
+                        String legendUrl = getLegendUrl( layer );
+                        LOG.debug( "Try to load legend image from WMS {}: ", legendUrl );
+                        try {
+                            bi = loadImage( legendUrl );
+                        } catch ( IOException e ) {
+                            String msg = "Could not create legend for layer: " + layerName;
+                            LOG.error( msg );
+                            throw new ProcessletException( msg );
+                        }
                     }
+                    legends.add( new Pair<String, BufferedImage>( layerName, bi ) );
                 } catch ( Exception e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    String dsName = datasource.getName() != null ? datasource.getName() : datasource.getUrl();
+                    LOG.info( "Could not create legend image for datasource '" + dsName + "', layer " + layerName + ".",
+                              e );
                 }
-
-                String legendUrl = getLegendUrl( layer );
-                LOG.debug( "Try to load legend image: " + legendUrl );
-                String layerName = layer.getName();
-                BufferedImage bi = null;
-                try {
-                    bi = loadImage( legendUrl );
-                } catch ( IOException e ) {
-                    String msg = "Could not create legend for layer: " + layerName;
-                    LOG.error( msg );
-                    throw new ProcessletException( msg );
-                }
-                legends.add( new Pair<String, BufferedImage>( layerName, bi ) );
             }
             return legends;
         }
@@ -862,7 +900,6 @@ public class MapContentProvider implements JrxmlContentProvider {
             // STYLES=
             return sb.toString();
         }
-
     }
 
     class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
@@ -931,15 +968,16 @@ public class MapContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        public List<Pair<String, BufferedImage>> getLegends() {
+        public List<Pair<String, BufferedImage>> getLegends( int width ) {
             ArrayList<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
 
             BufferedImage legend = null;
             String name = datasource.getName() != null ? datasource.getName() : datasource.getUrl();
             try {
                 org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
-                URL legendURL = style.getLegendURL();
-                legend = ImageIO.read( legendURL );
+                if ( style != null ) {
+                    legend = getLegendImg( style, width );
+                }
             } catch ( Exception e ) {
                 LOG.debug( "Could not create legend for wfs datasource '{}': {}", name, e.getMessage() );
             }
