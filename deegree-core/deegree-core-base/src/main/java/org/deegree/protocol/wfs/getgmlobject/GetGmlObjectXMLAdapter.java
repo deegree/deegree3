@@ -77,7 +77,8 @@ public class GetGmlObjectXMLAdapter extends AbstractWFSRequestXMLAdapter {
      *             if a parameter contains a syntax error
      */
     public GetGmlObject parse() {
-        Version version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
+
+        Version version = determineVersion110Safe();
 
         GetGmlObject result = null;
         if ( VERSION_110.equals( version ) ) {
@@ -119,6 +120,7 @@ public class GetGmlObjectXMLAdapter extends AbstractWFSRequestXMLAdapter {
         // required: 'ogc:GmlObjectId/@gml:id'
         String requestedId = getRequiredNodeAsString( rootElement, new XPath( "ogc:GmlObjectId/@gml:id", nsContext ) );
 
-        return new GetGmlObject( VERSION_110, handle, requestedId, outputFormat, traverseXlinkDepth, traverseXlinkExpiry );
+        return new GetGmlObject( VERSION_110, handle, requestedId, outputFormat, traverseXlinkDepth,
+                                 traverseXlinkExpiry );
     }
 }

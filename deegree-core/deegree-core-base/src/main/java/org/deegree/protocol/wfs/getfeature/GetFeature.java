@@ -35,13 +35,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
-import org.deegree.commons.tom.ResolveMode;
+import java.util.List;
+
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
 import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
  * Represents a <code>GetFeature</code> request to a WFS.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
+ * </ul>
+ * </p>
  * 
  * @see Query
  * 
@@ -52,25 +63,11 @@ import org.deegree.protocol.wfs.query.Query;
  */
 public class GetFeature extends AbstractWFSRequest {
 
-    // using Integer instead of int here, so it can be null (unspecified)
-    private final Integer startIndex;
+    private final StandardPresentationParams presentationParams;
 
-    // using Integer instead of int here, so it can be null (unspecified)
-    private final Integer count;
+    private final ResolveParams resolveParams;
 
-    private final String outputFormat;
-
-    private final ResultType resultType;
-
-    private final ResolveMode resolveMode;
-
-    // positive Integer, "*" (unlimited) or null (unspecified)
-    private final String resolveDepth;
-
-    // using Integer instead of int here, so it can be null (unspecified)
-    private final Integer resolveTimeout;
-
-    private final Query[] queries;
+    private final List<Query> queries;
 
     /**
      * Creates a new {@link GetFeature} request.
@@ -79,103 +76,46 @@ public class GetFeature extends AbstractWFSRequest {
      *            protocol version, must not be <code>null</code>
      * @param handle
      *            client-generated identifier, may be <code>null</code>
-     * @param startIndex
-     *            index within the result set from which the server shall begin returning results, non-negative integer
-     *            or <code>null</code> (unspecified)
-     * @param count
-     *            limits the number of returned results, non-negative integer or <code>null</code> (unspecified)
-     * @param outputFormat
-     *            requested output format, may be <code>null</code> (unspecified)
-     * @param resultType
-     *            query response mode (result or hits), may be <code>null</code> (unspecified)
-     * @param resolveMode
-     *            mode for resolving resource references in the output, may be <code>null</code> (unspecified)
-     * @param resolveDepth
-     *            depth to which nested resource references shall be resolved in the response document, range of valid
-     *            values for this parameter consists of positive integers, "*" (unlimited) and <code>null</code>
-     *            (unspecified)
-     * @param resolveTimeout
-     *            number of seconds to allow for resolving resource references, may be <code>null</code> (unspecified)
+     * @param presentationParams
+     *            parameters for controlling the presentation of the result set, may be <code>null</code>
+     * @param resolveParams
+     *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
      * @param queries
      *            the queries to be performed in the request, must not be <code>null</code> and must contain at least
      *            one entry
      */
-    public GetFeature( Version version, String handle, Integer startIndex, Integer count, String outputFormat,
-                       ResultType resultType, ResolveMode resolveMode, String resolveDepth, Integer resolveTimeout,
-                       Query[] queries ) {
+    public GetFeature( Version version, String handle, StandardPresentationParams presentationParams,
+                       ResolveParams resolveParams, List<Query> queries ) {
         super( version, handle );
-        this.startIndex = startIndex;
-        this.count = count;
-        this.outputFormat = outputFormat;
-        this.resultType = resultType;
-        this.resolveMode = resolveMode;
-        this.resolveDepth = resolveDepth;
-        this.resolveTimeout = resolveTimeout;
+        if ( presentationParams != null ) {
+            this.presentationParams = presentationParams;
+        } else {
+            this.presentationParams = new StandardPresentationParams( null, null, null, null );
+        }
+        if ( resolveParams != null ) {
+            this.resolveParams = resolveParams;
+        } else {
+            this.resolveParams = new ResolveParams( null, null, null );
+        }
         this.queries = queries;
     }
 
     /**
-     * Returns the index within the result set from which the server shall begin returning results.
+     * Returns the parameters that control the presentation of the result set.
      * 
-     * @return index within the result set from which the server shall begin returning results (non-negative integer),
-     *         can be <code>null</code> (unspecified)
+     * @return presentation control parameters, never <code>null</code>
      */
-    public Integer getStartIndex() {
-        return startIndex;
+    public StandardPresentationParams getPresentationParams() {
+        return presentationParams;
     }
 
     /**
-     * Returns the limit for the number of returned results.
+     * Returns the parameters that control the resolution of references in the response.
      * 
-     * @return limit for the number of returned results (non-negative integer), can be <code>null</code> (unspecified)
+     * @return reference resolution control parameters, never <code>null</code>
      */
-    public Integer getCount() {
-        return count;
-    }
-
-    /**
-     * Returns the requested output format.
-     * 
-     * @return requested output format, or <code>null</code> if unspecified
-     */
-    public String getOutputFormat() {
-        return outputFormat;
-    }
-
-    /**
-     * Returns the requested query mode (result or hits).
-     * 
-     * @return requested query mode, or <code>null</code> (unspecified)
-     */
-    public ResultType getResultType() {
-        return resultType;
-    }
-
-    /**
-     * Returns the mode for resolving resource references in the output.
-     * 
-     * @return resolve mode, can be <code>null</code> (unspecified)
-     */
-    public ResolveMode getResolveMode() {
-        return resolveMode;
-    }
-
-    /**
-     * Returns the depth to which nested resource references shall be resolved in the response document.
-     * 
-     * @return depth (positive integer), "*" (unlimited) or <code>null</code> (unspecified)
-     */
-    public String getResolveDepth() {
-        return resolveDepth;
-    }
-
-    /**
-     * Return the number of number of seconds to allow for resolving resource references.
-     * 
-     * @return number of seconds to allow for reference resolving, positive integer or <code>null</code> (unspecified)
-     */
-    public Integer getResolveTimeout() {
-        return resolveTimeout;
+    public ResolveParams getResolveParams() {
+        return resolveParams;
     }
 
     /**
@@ -183,7 +123,7 @@ public class GetFeature extends AbstractWFSRequest {
      * 
      * @return the queries to be performed, never <code>null</code> and must contain at least one entry
      */
-    public Query[] getQueries() {
+    public List<Query> getQueries() {
         return queries;
     }
 }

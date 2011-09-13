@@ -55,9 +55,9 @@ public abstract class AbstractWFSRequest {
      * Creates a new {@link AbstractWFSRequest} request.
      * 
      * @param version
-     *            protocol version, may not be null
+     *            protocol version, may not be <code>null</code>
      * @param handle
-     *            client-generated identifier, may be null
+     *            client-generated identifier, may be <code>null</code>
      */
     public AbstractWFSRequest( Version version, String handle ) {
         this.version = version;
@@ -67,7 +67,7 @@ public abstract class AbstractWFSRequest {
     /**
      * Returns the protocol version of the request.
      * 
-     * @return the protocol version of the request, never null
+     * @return the protocol version of the request, never <code>null</code>
      */
     public Version getVersion() {
         return this.version;
@@ -76,7 +76,7 @@ public abstract class AbstractWFSRequest {
     /**
      * Returns the client-generated identifier supplied with the request.
      * 
-     * @return the client-generated identifier, may be null
+     * @return the client-generated identifier, may be <code>null</code>
      */
     public String getHandle() {
         return this.handle;

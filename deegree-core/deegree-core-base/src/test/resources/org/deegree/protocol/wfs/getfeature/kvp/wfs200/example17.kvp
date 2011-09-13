@@ -1,0 +1,5 @@
+SERVICE=WFS
+VERSION=2.0.0
+REQUEST=GetFeature
+STOREDQUERY_ID=urn:ogc:def:query:OGC-WFS::GetFeatureById
+ID=p4467

@@ -36,6 +36,7 @@
 package org.deegree.cs.persistence.deegree.d3;
 
 import static java.util.Collections.singletonMap;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.MalformedURLException;
@@ -46,7 +47,6 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.persistence.CRSStoreProvider;
@@ -70,28 +70,31 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.deegree.d3.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/crs/stores/deegree/3.1.0/deegree.xsd";
+    private static final URL CONFIG_SCHEMA = DeegreeCRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/deegree/3.1.0/deegree.xsd" );
 
     private static final String CONFIG_TEMPLATE = "/META-INF/schemas/crs/stores/deegree/3.1.0/example.xml";
 
+    @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
     }
 
+    @Override
     public URL getConfigSchema() {
-        return DeegreeCRSStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
-    public Map<String, URL> getConfigTemplates() {
+    public static Map<String, URL> getConfigTemplates() {
         return singletonMap( "example", DeegreeCRSStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
     }
 
+    @Override
     public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
                             throws CRSStoreException {
         DeegreeCRSStore crsStore = null;
         try {
-            DeegreeCRSStoreConfig config = (DeegreeCRSStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                         CONFIG_SCHEMA, configURL );
+            DeegreeCRSStoreConfig config = (DeegreeCRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+                                                                               configURL, workspace );
             XMLAdapter adapter = new XMLAdapter();
             adapter.setSystemId( configURL.toString() );
 
@@ -109,6 +112,10 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
         } catch ( MalformedURLException e ) {
             String msg = "Error in file declaration in the crs store configuration file '" + configURL + "': "
                          + e.getMessage();
+            LOG.error( msg );
+            throw new CRSStoreException( msg, e );
+        } catch ( Throwable e ) {
+            String msg = "Error when loading crs store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
             throw new CRSStoreException( msg, e );
         }

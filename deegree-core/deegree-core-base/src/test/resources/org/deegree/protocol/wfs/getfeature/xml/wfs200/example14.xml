@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!--
+In this example the myns:RoadSegments feature is joined
+to the myns:Bridges feature using a non-spatial join to
+find all bridges along a named road. The example assumes
+that both feature types include a RoadCode property. In
+the myns:RoadSegments feature the RoadCode is used to
+indicate segments that are all part of the same named road.
+In the myns:Bridges feature, the RoadCode attribute indicates
+the named road along which the bridge exists.
+-->
+<GetFeature
+   service="WFS"
+   version="2.0.0"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+   <Query typeNames="myns:RoadSegments myns:Bridges">
+      <fes:Filter>
+         <fes:And>
+            <fes:PropertyIsEqualTo>
+               <fes:ValueReference>/myns:RoadSegments/RoadName</fes:ValueReference>
+               <fes:Literal>Main St.</fes:Literal>
+            </fes:PropertyIsEqualTo>
+            <fes:PropertyIsEqualTo>
+               <fes:ValueReference>/myns:RoadSegments/RoadCode</fes:ValueReference>
+               <fes:ValueReference>/myns:Bridges/RoadCode</fes:ValueReference>
+            </fes:PropertyIsEqualTo>
+         </fes:And>
+      </fes:Filter>
+   </Query>
+</GetFeature>

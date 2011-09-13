@@ -38,11 +38,10 @@ package org.deegree.protocol.wfs.transaction;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValue;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
@@ -61,26 +60,36 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
+import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 
 /**
  * Adapter between XML encoded <code>Transaction</code> requests and {@link Transaction} objects.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class TransactionXMLAdapter {
+public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
     /**
      * Parses a WFS <code>Transaction</code> document into a {@link Transaction} request.
      * <p>
      * Supported versions:
      * <ul>
+     * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
      * </ul>
+     * </p>
      * 
      * @return parsed {@link Transaction} request
      * @throws XMLStreamException
@@ -92,7 +101,16 @@ public class TransactionXMLAdapter {
     public static Transaction parse( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        Version version = parseVersion( getRequiredAttributeValue( xmlStream, "version" ) );
+        Version version = null;
+        if ( WFS_NS.equals( xmlStream.getNamespaceURI() ) ) {
+            String s = getAttributeValue( xmlStream, "version" );
+            if ( s == null ) {
+                s = "1.1.0";
+            }
+            version = Version.parseVersion( s );
+        } else {
+            version = Version.parseVersion( getRequiredAttributeValue( xmlStream, "version" ) );
+        }
 
         Transaction result = null;
         if ( VERSION_100.equals( version ) ) {

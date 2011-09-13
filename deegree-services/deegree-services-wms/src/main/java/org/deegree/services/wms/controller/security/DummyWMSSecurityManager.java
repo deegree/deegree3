@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.services.authentication.InvalidCredentialsException;
 import org.deegree.services.authentication.SecurityException;

@@ -24,6 +24,15 @@
     </repository>
   </repositories>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
@@ -55,6 +64,6 @@
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>9.0-801.jdbc4</version>
-    </dependency>    
+    </dependency>
   </dependencies>
 </project>

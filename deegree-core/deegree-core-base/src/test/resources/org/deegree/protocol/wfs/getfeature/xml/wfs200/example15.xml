@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+The following example shows a GetFeature request that
+uses a self-join with aliases to find all road segments
+that cross within some specified area of interest.
+-->
+<GetFeature
+   service="WFS"
+   version="2.0.0"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.opengis.net/gml/3.2 
+                       http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+   <Query typeNames="myns:RoadSegments myns:RoadSegments"
+          aliases="RS1 RS2">
+      <fes:Filter>
+         <fes:And>
+            <fes:BBOX>
+               <fes:ValueReference>/RS1/geometry</fes:ValueReference>
+               <gml:Envelope srsName="urn:ogc:def:crs:EPSG::1234">
+                  <gml:lowerCorner>10 10</gml:lowerCorner>
+                  <gml:upperCorner>20 20</gml:upperCorner>
+               </gml:Envelope>
+            </fes:BBOX>
+            <fes:BBOX>
+               <fes:ValueReference>/RS2/geometry</fes:ValueReference>
+               <gml:Envelope srsName="urn:ogc:def:crs:EPSG::1234">
+                  <gml:lowerCorner>10 10</gml:lowerCorner>
+                  <gml:upperCorner>20 20</gml:upperCorner>
+               </gml:Envelope>
+            </fes:BBOX>
+            <fes:Crosses>
+               <fes:ValueReference>/RS1/geometry</fes:ValueReference>
+               <fes:ValueReference>/RS2/geometry</fes:ValueReference>
+            </fes:Crosses>
+         </fes:And>
+      </fes:Filter>
+   </Query>
+</GetFeature> 

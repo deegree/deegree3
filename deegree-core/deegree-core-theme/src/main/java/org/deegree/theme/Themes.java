@@ -35,9 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme;
 
+import static org.deegree.commons.utils.CollectionUtils.addAllUncontained;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
 
 /**
@@ -74,6 +79,39 @@ public class Themes {
             list.addAll( getAllThemes( c ) );
         }
         return list;
+    }
+
+    public static void aggregateSpatialMetadata( Theme theme ) {
+        Envelope env = null;
+        List<ICRS> crs = new ArrayList<ICRS>();
+        for ( Theme t : theme.getThemes() ) {
+            aggregateSpatialMetadata( t );
+            SpatialMetadata smd = t.getMetadata().getSpatialMetadata();
+            if ( smd.getEnvelope() != null ) {
+                if ( env == null ) {
+                    env = smd.getEnvelope();
+                } else {
+                    env = env.merge( smd.getEnvelope() );
+                }
+            }
+            if ( smd.getCoordinateSystems() != null ) {
+                addAllUncontained( crs, smd.getCoordinateSystems() );
+            }
+        }
+        for ( Layer l : theme.getLayers() ) {
+            SpatialMetadata smd = l.getMetadata().getSpatialMetadata();
+            if ( smd.getEnvelope() != null ) {
+                if ( env == null ) {
+                    env = smd.getEnvelope();
+                } else {
+                    env = env.merge( smd.getEnvelope() );
+                }
+            }
+            if ( smd.getCoordinateSystems() != null ) {
+                addAllUncontained( crs, smd.getCoordinateSystems() );
+            }
+        }
+        theme.getMetadata().setSpatialMetadata( new SpatialMetadata( env, crs ) );
     }
 
 }

@@ -36,13 +36,11 @@
 package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
- * A {@link AdHocQuery} that selects features using a list of ids.
+ * An {@link AdHocQuery} that selects features by id.
  * <p>
  * NOTE: Only KVP-based queries can be of this type. For XML-requests its only possible to use a filter constraint.
  * 
@@ -55,70 +53,38 @@ public class FeatureIdQuery extends AdHocQuery {
 
     private final String[] featureIds;
 
-    private final ValueReference[][] propertyNames;
-
-    private final XLinkPropertyName[][] xLinkPropertyNames;
-
     /**
      * Creates a new {@link FeatureIdQuery} instance.
      * 
      * @param handle
-     *            client-generated query identifier, may be null
+     *            client-generated query identifier, may be <code>null</code>
      * @param typeNames
-     *            requested feature types (with optional aliases), must not be <code>null</code>, but can be empty
+     *            requested feature types (with optional aliases), may be <code>null</code>
      * @param featureVersion
-     *            version of the feature instances to be retrieved, may be null
+     *            version of the feature instances to be retrieved, may be <code>null</code>
      * @param srsName
-     *            WFS-supported SRS that should be used for returned feature geometries, may be null
-     * @param propertyNames
-     *            properties of the features that should be retrieved, may be null
-     * @param xLinkPropertyNames
-     *            properties for which the the traversal of nested XLinks is selectively requested, may be null
+     *            WFS-supported SRS that should be used for returned feature geometries, may be <code>null</code>
+     * @param projectionClauses
+     *            limits the properties of the features that should be retrieved, may be <code>null</code>
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
-     *            may be null
+     *            may be <code>null</code>
      * @param featureIds
-     *            requested feature ids, must not be null
+     *            requested feature id, must not be <code>null</code>
      */
-    public FeatureIdQuery( String handle, TypeName[] typeNames, String[] featureIds, String featureVersion,
-                           ICRS srsName, ValueReference[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames,
-                           SortProperty[] sortBy ) {
-        super( handle, typeNames, featureVersion, srsName, sortBy );
+    public FeatureIdQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
+                           ProjectionClause[] projectionClauses, SortProperty[] sortBy, String[] featureIds ) {
+        super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
         if ( featureIds == null ) {
             throw new IllegalArgumentException();
         }
-        this.xLinkPropertyNames = xLinkPropertyNames;
-        this.propertyNames = propertyNames;
         this.featureIds = featureIds;
-    }
-
-    /**
-     * <p>
-     * From WFS Speification V1.1, clause 14.7.3.1: <i>A list of properties may be specified for each feature type that
-     * is being queried. A "*" character can be used to indicate that all properties should be retrieved. There is a 1:1
-     * mapping between each element in a FEATUREID or TYPENAME list and the PROPERTYNAME list. The absense of a value
-     * also indicates that all properties should be fetched.</i>
-     * </p>
-     * 
-     * @return the properties of the features that should be retrieved, may be null
-     */
-    public ValueReference[][] getPropertyNames() {
-        return propertyNames;
-    }
-
-    /**
-     * Returns the properties for which the the traversal of nested XLinks is selectively requested.
-     * 
-     * @return the properties for which the the traversal of nested XLinks is selectively requested, may be null
-     */
-    public XLinkPropertyName[][] getXLinkPropertyNames() {
-        return xLinkPropertyNames;
     }
 
     /**
      * Returns the requested feature ids.
      * 
-     * @return the requested feature ids, never null
+     * @return the requested feature ids, never <code>null</code>
      */
     public String[] getFeatureIds() {
         return featureIds;

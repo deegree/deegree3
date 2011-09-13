@@ -1,0 +1,5 @@
+SERVICE=WFS
+VERSION=2.0.0
+NAMESPACE=xmlns(ns1,http://www.someserver.com/ns1),xmlns(ns2,http://someserver.com/ns2)
+REQUEST=DescribeFeatureType
+TYPENAME=ns1:TreesA_1M,ns2:BuiltUpA_1M

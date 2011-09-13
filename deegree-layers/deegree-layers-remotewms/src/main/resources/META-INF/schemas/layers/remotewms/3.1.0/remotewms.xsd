@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/layers/remotewms" xmlns:l="http://www.deegree.org/layers/remotewms"
-  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  targetNamespace="http://www.deegree.org/layers/remotewms" xmlns:l="http://www.deegree.org/layers/remotewms" xmlns:d="http://www.deegree.org/metadata/description"
+  xmlns:s="http://www.deegree.org/metadata/spatial" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
 
   <annotation>
     <appinfo>
@@ -11,15 +12,37 @@
     </appinfo>
   </annotation>
 
+  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="http://schemas.deegree.org/commons/description/3.1.0/description.xsd" />
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
+
   <element name="RemoteWMSLayers">
     <complexType>
       <sequence>
         <element name="RemoteWMSId" type="string" />
         <element name="RequestOptions" type="l:RequestOptionsType" minOccurs="0" />
+        <!-- if no layers are specified, all layers are copied from source -->
+        <element name="Layer" type="l:LayerType" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="configVersion" type="l:ConfigVersionType" use="required" />
     </complexType>
   </element>
+
+  <complexType name="LayerType">
+    <sequence>
+      <element name="OriginalName" type="string" />
+      <element name="Name" type="string" />
+      <!-- if not set, will be copied from source -->
+      <element name="Description" minOccurs="0">
+        <complexType>
+          <sequence>
+            <group ref="d:Description" />
+          </sequence>
+        </complexType>
+      </element>
+      <!-- if not set, will be copied from source -->
+      <group ref="s:SpatialMetadata" />
+    </sequence>
+  </complexType>
 
   <simpleType name="ConfigVersionType">
     <restriction base="string">

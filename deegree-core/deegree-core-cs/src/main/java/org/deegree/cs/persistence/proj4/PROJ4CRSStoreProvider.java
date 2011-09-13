@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.persistence.proj4;
 
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -45,11 +46,9 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.persistence.CRSStoreProvider;
-import org.deegree.cs.persistence.gml.GMLCRSStoreProvider;
 import org.deegree.cs.persistence.proj4.jaxb.PROJ4CRSStoreConfig;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.slf4j.Logger;
@@ -70,7 +69,7 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.proj4.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/crs/stores/proj4/3.1.0/proj4.xsd";
+    private static final URL CONFIG_SCHEMA = PROJ4CRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/proj4/3.1.0/proj4.xsd" );
 
     @Override
     public String getConfigNamespace() {
@@ -79,15 +78,15 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return GMLCRSStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
     public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
                             throws CRSStoreException {
         try {
-            PROJ4CRSStoreConfig config = (PROJ4CRSStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                     CONFIG_SCHEMA, configURL );
+            PROJ4CRSStoreConfig config = (PROJ4CRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+                                                                           configURL, workspace );
 
             PROJ4CRSStore crsStore = new PROJ4CRSStore( DSTransform.fromSchema( config ) );
             ProjFileResource resource = null;

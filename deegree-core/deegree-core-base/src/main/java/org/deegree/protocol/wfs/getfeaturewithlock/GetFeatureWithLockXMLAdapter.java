@@ -36,42 +36,31 @@
 
 package org.deegree.protocol.wfs.getfeaturewithlock;
 
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.filter.Filter;
-import org.deegree.filter.expression.Function;
-import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
-import org.deegree.protocol.wfs.getfeature.ResultType;
-import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
-import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.protocol.wfs.getfeature.GetFeatureXMLAdapter;
 import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
  * Adapter between XML <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
  * <p>
- * TODO code for exporting to XML
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -83,12 +72,6 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
     /**
      * Parses a WFS <code>GetFeatureWithLock</code> document into a {@link GetFeatureWithLock} object.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * </ul>
      * 
      * @return parsed {@link GetFeatureWithLock} request
      * @throws Exception
@@ -101,10 +84,10 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
      */
     public GetFeatureWithLock parse()
                             throws Exception {
-        Version version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
+
+        Version version = determineVersion110Safe();
 
         GetFeatureWithLock result = null;
-
         if ( VERSION_100.equals( version ) ) {
             result = parse100();
         } else if ( VERSION_110.equals( version ) )
@@ -124,220 +107,29 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
      */
     public GetFeatureWithLock parse110() {
 
-        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+        GetFeatureXMLAdapter getFeatureXMLAdapter = new GetFeatureXMLAdapter();
+        getFeatureXMLAdapter.setRootElement( rootElement );
+        GetFeature gf = getFeatureXMLAdapter.parse110();
+
         int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
 
-        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
-        ResultType resultType = null;
-        if ( resultTypeStr != null ) {
-            if ( resultTypeStr.equalsIgnoreCase( ResultType.RESULTS.toString() ) ) {
-                resultType = ResultType.RESULTS;
-            } else if ( resultTypeStr.equalsIgnoreCase( ResultType.HITS.toString() ) ) {
-                resultType = ResultType.HITS;
-            }
-        }
-
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-
-        String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
-        Integer maxFeatures = null;
-        if ( maxFeaturesStr != null ) {
-            maxFeatures = Integer.parseInt( maxFeaturesStr );
-        }
-
-        String traverseXlinkDepth = getNodeAsString( rootElement, new XPath( "@traverseXlinkDepth", nsContext ), null );
-
-        String traverseXlinkExpiryStr = getNodeAsString( rootElement, new XPath( "@traverseXlinkExpiry", nsContext ),
-                                                         null );
-        Integer resolveTimeout = null;
-        if ( traverseXlinkExpiryStr != null ) {
-            resolveTimeout = Integer.parseInt( traverseXlinkExpiryStr ) * 60;
-        }
-
-        List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "wfs:Query", nsContext ) );
-
-        List<Query> queries = new ArrayList<Query>();
-
-        for ( OMElement queryEl : queryElements ) {
-            List<ValueReference> propNames = new ArrayList<ValueReference>();
-            List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
-            for ( OMElement propertyNameEl : propertyNameElements ) {
-                ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
-                                                                  getNamespaceContext( propertyNameEl ) );
-                propNames.add( propertyName );
-            }
-
-            List<XLinkPropertyName> xlinkPropNames = new ArrayList<XLinkPropertyName>();
-            List<OMElement> xlinkPropertyElements = getElements( queryEl,
-                                                                 new XPath( "wfs:XlinkPropertyName", nsContext ) );
-            for ( OMElement xlinkPropertyEl : xlinkPropertyElements ) {
-                ValueReference xlinkProperty = new ValueReference( xlinkPropertyEl.getText(),
-                                                                   getNamespaceContext( xlinkPropertyEl ) );
-                String xlinkDepth = getRequiredNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkDepth",
-                                                                                         nsContext ) );
-                String xlinkExpiry = getNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkExpiry", nsContext ),
-                                                      null );
-                Integer xlinkExpiryInt = null;
-                try {
-                    if ( xlinkExpiry != null )
-                        xlinkExpiryInt = Integer.parseInt( xlinkExpiry );
-                } catch ( NumberFormatException e ) {
-                    // TODO string provided as time in minutes is not an integer
-                }
-                XLinkPropertyName xlinkPropName = new XLinkPropertyName( xlinkProperty, xlinkDepth, xlinkExpiryInt );
-                xlinkPropNames.add( xlinkPropName );
-            }
-
-            List<Function> functions = new ArrayList<Function>();
-            List<OMElement> functionElements = getElements( queryEl, new XPath( "ogc:Function", nsContext ) );
-            for ( OMElement functionEl : functionElements ) {
-                try {
-                    XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper(
-                                                                                   functionEl.getXMLStreamReaderWithoutCaching(),
-                                                                                   getSystemId() );
-                    // skip START_DOCUMENT
-                    xmlStream.nextTag();
-                    Function function = Filter110XMLDecoder.parseFunction( xmlStream );
-                    functions.add( function );
-                } catch ( XMLStreamException e ) {
-                    throw new XMLParsingException( this, functionEl, e.getMessage() );
-                }
-            }
-
-            Filter filter = null;
-            OMElement filterEl = queryEl.getFirstChildWithName( new QName( OGCNS, "Filter" ) );
-            if ( filterEl != null ) {
-                try {
-                    // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
-                    // XMLStreamReader)
-                    XMLStreamReader xmlStream = new XMLStreamReaderWrapper(
-                                                                            filterEl.getXMLStreamReaderWithoutCaching(),
-                                                                            null );
-                    // skip START_DOCUMENT
-                    xmlStream.nextTag();
-                    filter = Filter110XMLDecoder.parse( xmlStream );
-                } catch ( XMLStreamException e ) {
-                    e.printStackTrace();
-                    throw new XMLParsingException( this, filterEl, e.getMessage() );
-                }
-            }
-
-            List<SortProperty> sortProps = new ArrayList<SortProperty>();
-            OMElement sortByEl = getElement( queryEl, new XPath( "ogc:SortBy", nsContext ) );
-            List<OMElement> sortPropertyElements = getElements( sortByEl, new XPath( "SortProperty", nsContext ) );
-            for ( OMElement sortPropertyEl : sortPropertyElements ) {
-                OMElement propName = getRequiredElement( sortPropertyEl, new XPath( "ogc:PropertyName", nsContext ) );
-                OMElement sortOrder = getElement( sortPropertyEl, new XPath( "SortOrder", nsContext ) );
-                SortProperty sortProp = new SortProperty( new ValueReference( propName.getText(),
-                                                                              getNamespaceContext( propName ) ),
-                                                          sortOrder.getText().equals( "ASC" ) );
-                sortProps.add( sortProp );
-            }
-
-            String queryHandle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
-
-            String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeName", nsContext ) );
-            TypeName[] typeNames = TypeName.valuesOf( queryEl, typeNameStr );
-
-            String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
-
-            ICRS crs = null;
-            String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
-            if ( srsName != null ) {
-                crs = CRSManager.getCRSRef( srsName );
-            }
-
-            // convert some lists to arrays to conform the FilterQuery constructor signature
-            ValueReference[] propNamesArray = new ValueReference[propNames.size()];
-            propNames.toArray( propNamesArray );
-
-            XLinkPropertyName[] xlinkPropNamesArray = new XLinkPropertyName[xlinkPropNames.size()];
-            xlinkPropNames.toArray( xlinkPropNamesArray );
-
-            Function[] functionsArray = new Function[functions.size()];
-            functions.toArray( functionsArray );
-
-            SortProperty[] sortPropsArray = new SortProperty[sortProps.size()];
-            sortProps.toArray( sortPropsArray );
-
-            // build Query
-            Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, crs, propNamesArray,
-                                                 xlinkPropNamesArray, functionsArray, sortPropsArray, filter );
-            queries.add( filterQuery );
-        }
-
-        Query[] queryArray = new FilterQuery[queries.size()];
-        queries.toArray( queryArray );
-
-        return new GetFeatureWithLock( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
-                                       traverseXlinkDepth, resolveTimeout, queryArray, expiry );
+        StandardPresentationParams presentationParams = gf.getPresentationParams();
+        ResolveParams resolveParams = gf.getResolveParams();
+        List<Query> queries = gf.getQueries();
+        return new GetFeatureWithLock( VERSION_110, null, presentationParams, resolveParams, queries, expiry );
     }
 
     public GetFeatureWithLock parse100() {
 
-        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+        GetFeatureXMLAdapter getFeatureXMLAdapter = new GetFeatureXMLAdapter();
+        getFeatureXMLAdapter.setRootElement( rootElement );
+        GetFeature gf = getFeatureXMLAdapter.parse100();
+
         int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
 
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), "GML2" );
-
-        String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
-        Integer maxFeatures = null;
-        if ( maxFeaturesStr != null ) {
-            maxFeatures = Integer.parseInt( maxFeaturesStr );
-        }
-
-        List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "wfs:Query", nsContext ) );
-
-        List<Query> queries = new ArrayList<Query>();
-
-        for ( OMElement queryEl : queryElements ) {
-            List<ValueReference> propNames = new ArrayList<ValueReference>();
-            List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
-            for ( OMElement propertyNameEl : propertyNameElements ) {
-                ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
-                                                                  getNamespaceContext( propertyNameEl ) );
-                propNames.add( propertyName );
-            }
-
-            Filter filter = null;
-            OMElement filterEl = queryEl.getFirstChildWithName( new QName( OGCNS, "Filter" ) );
-            if ( filterEl != null ) {
-                try {
-                    // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
-                    // XMLStreamReader)
-                    XMLStreamReader xmlStream = new XMLStreamReaderWrapper(
-                                                                            filterEl.getXMLStreamReaderWithoutCaching(),
-                                                                            null );
-                    // skip START_DOCUMENT
-                    xmlStream.nextTag();
-                    filter = Filter110XMLDecoder.parse( xmlStream );
-                } catch ( XMLStreamException e ) {
-                    e.printStackTrace();
-                    throw new XMLParsingException( this, filterEl, e.getMessage() );
-                }
-            }
-
-            String queryHandle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
-
-            String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeName", nsContext ) );
-            TypeName[] typeNames = TypeName.valuesOf( queryEl, typeNameStr );
-
-            String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
-
-            // convert some lists to arrays to conform the FilterQuery constructor signature
-            ValueReference[] propNamesArray = new ValueReference[propNames.size()];
-            propNames.toArray( propNamesArray );
-
-            // build Query
-            Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, null, propNamesArray, null,
-                                                 null, null, filter );
-            queries.add( filterQuery );
-        }
-
-        Query[] queryArray = new FilterQuery[queries.size()];
-        queries.toArray( queryArray );
-
-        return new GetFeatureWithLock( VERSION_100, null, null, maxFeatures, outputFormat, null, null, null, null,
-                                       queryArray, expiry );
+        StandardPresentationParams presentationParams = gf.getPresentationParams();
+        ResolveParams resolveParams = gf.getResolveParams();
+        List<Query> queries = gf.getQueries();
+        return new GetFeatureWithLock( VERSION_100, null, presentationParams, resolveParams, queries, expiry );
     }
 }

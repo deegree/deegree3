@@ -41,7 +41,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 
 /**
- * A {@link Query} that provides the id of a {@link StoredQueryDefinition} and parameters.
+ * A {@link Query} that provides the id of a {@link StoredQueryDefinition} template and parameter values.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -70,10 +70,20 @@ public class StoredQuery extends Query {
         this.paramNameToValue = paramNameToValue;
     }
 
+    /**
+     * Returns the identifier of the stored query definition.
+     * 
+     * @return identifier of the stored query definition, never <code>null</code>
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Returns the parameter name to value mapping.
+     * 
+     * @return parameter name to value mapping, never <code>null</code>
+     */
     public Map<String, OMElement> getParams() {
         return paramNameToValue;
     }

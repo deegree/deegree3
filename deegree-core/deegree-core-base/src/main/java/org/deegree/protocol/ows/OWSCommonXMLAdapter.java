@@ -59,7 +59,6 @@ import org.deegree.geometry.primitive.Point;
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author: rbezema $
  * @version $Revision: $, $Date: $
- * 
  */
 public class OWSCommonXMLAdapter extends XMLAdapter {
 
@@ -101,7 +100,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
         nsContext.addNamespace( OWS110_PREFIX, OWS110_NS );
         nsContext.addNamespace( XML_PREFIX, XML_NS );
     }
-
+    
     /**
      * Parses the given element of type <code>ows:BoundingBoxType</code>.
      * 
@@ -283,5 +282,5 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
             writer.writeCharacters( "" + coord );
             needsDelim = true;
         }
-    }
+    }    
 }

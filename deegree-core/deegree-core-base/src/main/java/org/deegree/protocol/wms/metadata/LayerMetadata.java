@@ -38,12 +38,8 @@ package org.deegree.protocol.wms.metadata;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.deegree.commons.utils.DoublePair;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.geometry.Envelope;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.protocol.ows.metadata.Description;
 
 /**
@@ -57,17 +53,21 @@ public class LayerMetadata {
 
     private String name;
 
-    private List<ICRS> crs = new ArrayList<ICRS>();
+    private Description description;
 
-    private Envelope envelope;
+    private SpatialMetadata spatialMetadata;
 
     private DoublePair scaleDenominators = new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY );
-
-    private Description description;
 
     private boolean queryable = true;
 
     private int cascaded;
+
+    public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
+        this.name = name;
+        this.description = description;
+        this.spatialMetadata = spatialMetadata;
+    }
 
     public void setDescription( Description description ) {
         this.description = description;
@@ -75,21 +75,6 @@ public class LayerMetadata {
 
     public Description getDescription() {
         return description;
-    }
-
-    /**
-     * @param crs
-     *            the crs to set
-     */
-    public void setCoordinateSystems( List<ICRS> crs ) {
-        this.crs = crs;
-    }
-
-    /**
-     * @return the crs
-     */
-    public List<ICRS> getCoordinateSystems() {
-        return crs;
     }
 
     /**
@@ -105,21 +90,6 @@ public class LayerMetadata {
      */
     public DoublePair getScaleDenominators() {
         return scaleDenominators;
-    }
-
-    /**
-     * @return the envelope
-     */
-    public Envelope getEnvelope() {
-        return envelope;
-    }
-
-    /**
-     * @param envelope
-     *            the envelope to set
-     */
-    public void setEnvelope( Envelope envelope ) {
-        this.envelope = envelope;
     }
 
     /**
@@ -165,6 +135,56 @@ public class LayerMetadata {
      */
     public void setQueryable( boolean queryable ) {
         this.queryable = queryable;
+    }
+
+    /**
+     * @return the spatialMetadata
+     */
+    public SpatialMetadata getSpatialMetadata() {
+        return spatialMetadata;
+    }
+
+    /**
+     * @param spatialMetadata
+     *            the spatialMetadata to set
+     */
+    public void setSpatialMetadata( SpatialMetadata spatialMetadata ) {
+        this.spatialMetadata = spatialMetadata;
+    }
+
+    /**
+     * Copies any fields from md which are currently not set (applies to description and spatial metadata only).
+     * 
+     * @param md
+     */
+    public void merge( LayerMetadata md ) {
+        if ( description == null ) {
+            description = md.getDescription();
+        } else {
+            if ( md.getDescription() != null ) {
+                if ( description.getTitles() == null || description.getTitles().isEmpty() ) {
+                    description.setTitles( md.getDescription().getTitles() );
+                }
+                if ( description.getAbstracts() == null || description.getAbstracts().isEmpty() ) {
+                    description.setAbstracts( md.getDescription().getAbstracts() );
+                }
+                if ( description.getKeywords() == null || description.getKeywords().isEmpty() ) {
+                    description.setKeywords( md.getDescription().getKeywords() );
+                }
+            }
+        }
+        if ( spatialMetadata == null ) {
+            spatialMetadata = md.getSpatialMetadata();
+        } else {
+            if ( md.getSpatialMetadata() != null ) {
+                if ( spatialMetadata.getCoordinateSystems() == null || spatialMetadata.getCoordinateSystems().isEmpty() ) {
+                    spatialMetadata.setCoordinateSystems( md.getSpatialMetadata().getCoordinateSystems() );
+                }
+                if ( spatialMetadata.getEnvelope() == null ) {
+                    spatialMetadata.setEnvelope( md.getSpatialMetadata().getEnvelope() );
+                }
+            }
+        }
     }
 
 }

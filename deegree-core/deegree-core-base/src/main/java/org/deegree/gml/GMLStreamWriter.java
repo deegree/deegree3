@@ -57,7 +57,6 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.dictionary.Definition;
@@ -67,7 +66,7 @@ import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 
 /**
  * Stream-based writer for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
@@ -103,9 +102,7 @@ public class GMLStreamWriter {
 
     private GMLDictionaryWriter dictionaryWriter;
 
-    private ValueReference[] featureProps;
-
-    private XLinkPropertyName[] xlinkProps;
+    private ProjectionClause[] projection;
 
     private int traverseXLinkExpiry;
 
@@ -200,22 +197,11 @@ public class GMLStreamWriter {
     /**
      * Sets the feature properties to be included for exported {@link Feature} instances.
      * 
-     * @param featureProps
+     * @param projection
      *            feature properties to be included, or <code>null</code> (include all feature props)
      */
-    public void setFeatureProperties( ValueReference[] featureProps ) {
-        this.featureProps = featureProps;
-    }
-
-    /**
-     * Sets a specific XLink-expansion behaviour for object properties (e.g. {@link Feature} or {@link Geometry}
-     * properties).
-     * 
-     * @param xlinkProps
-     *            XLink-behaviour information, or <code>null</code> (no property-specific xlink behaviour)
-     */
-    public void setXLinkFeatureProperties( XLinkPropertyName[] xlinkProps ) {
-        this.xlinkProps = xlinkProps;
+    public void setProjection( ProjectionClause[] projection ) {
+        this.projection = projection;
     }
 
     /**
@@ -337,9 +323,9 @@ public class GMLStreamWriter {
 
     public GMLFeatureWriter getFeatureWriter() {
         if ( featureWriter == null ) {
-            featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, remoteXLinkTemplate,
-                                                  featureProps, inlineXLinklevels, traverseXLinkExpiry, xlinkProps,
-                                                  false, true, prefixToNs, additionalObjectHandler, exportExtraProps );
+            featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, remoteXLinkTemplate, projection,
+                                                  inlineXLinklevels, traverseXLinkExpiry, false, true, prefixToNs,
+                                                  additionalObjectHandler, exportExtraProps );
         }
         return featureWriter;
     }

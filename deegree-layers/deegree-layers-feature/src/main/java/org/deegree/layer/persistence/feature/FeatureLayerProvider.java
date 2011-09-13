@@ -62,6 +62,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.SingleLayerStore;
@@ -108,7 +109,9 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                                                  + " is not available." );
             }
 
-            LayerMetadata md = new LayerMetadata();
+            SpatialMetadata smd = new SpatialMetadata( null, null );
+            // TODO name/description/smd
+            LayerMetadata md = new LayerMetadata( null, null, smd );
             List<ICRS> crs = new ArrayList<ICRS>();
             if ( lay.getCRS() != null ) {
                 String[] ss = lay.getCRS().split( "\\s" );
@@ -116,7 +119,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                     crs.add( CRSManager.lookup( s ) );
                 }
             }
-            md.setCoordinateSystems( crs );
+            smd.setCoordinateSystems( crs );
             ScaleDenominatorsType denoms = lay.getScaleDenominators();
             if ( denoms != null ) {
                 md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );

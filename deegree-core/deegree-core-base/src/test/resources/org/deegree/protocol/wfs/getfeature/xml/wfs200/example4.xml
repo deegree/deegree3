@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<!--
+This example is similar to the previous example except
+in this case only some of the properties of an enumerated
+set of features are fetched. The wfs:PropertyName element
+is used to list the properties to be retrieved. 
+-->
+<GetFeature
+   version="2.0.0"
+   service="WFS"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+   <Query typeNames="myns:InWaterA_1M">
+      <PropertyName>myns:wkbGeom</PropertyName>
+      <PropertyName>myns:tileId</PropertyName>
+      <fes:Filter>
+         <fes:ResourceId rid="InWaterA_1M.1013"/>
+         <fes:ResourceId rid="InWaterA_1M.1014"/>
+         <fes:ResourceId rid="InWaterA_1M.1015"/>
+      </fes:Filter>
+   </Query>
+</GetFeature>

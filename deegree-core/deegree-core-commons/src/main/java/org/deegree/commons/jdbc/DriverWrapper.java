@@ -57,29 +57,35 @@ public class DriverWrapper implements Driver {
         this.d = d;
     }
 
+    @Override
     public boolean acceptsURL( String url )
                             throws SQLException {
         return d.acceptsURL( url );
     }
 
+    @Override
     public Connection connect( String url, Properties info )
                             throws SQLException {
         return d.connect( url, info );
     }
 
+    @Override
     public int getMajorVersion() {
         return d.getMajorVersion();
     }
 
+    @Override
     public int getMinorVersion() {
         return d.getMinorVersion();
     }
 
+    @Override
     public DriverPropertyInfo[] getPropertyInfo( String url, Properties info )
                             throws SQLException {
         return d.getPropertyInfo( url, info );
     }
 
+    @Override
     public boolean jdbcCompliant() {
         return d.jdbcCompliant();
     }

@@ -37,13 +37,10 @@ package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * Represents a <code>Query</code> operation as a part of a {@link GetFeature} request.
- * 
- * @see GetFeature
+ * A self-contained {@link Query}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -58,29 +55,46 @@ public abstract class AdHocQuery extends Query {
 
     private final ICRS srsName;
 
+    private final ProjectionClause[] projectionClauses;
+
     private final SortProperty[] sortBy;
 
     /**
      * Creates a new {@link AdHocQuery} instance.
      * 
      * @param handle
-     *            client-generated query identifier, may be null
+     *            client-generated query identifier, may be <code>null</code>
      * @param typeNames
-     *            requested feature types (with optional aliases), can be null
+     *            requested feature types (with optional aliases), may be <code>null</code>
      * @param featureVersion
-     *            version of the feature instances to be retrieved, may be null
+     *            version of the feature instances to be retrieved, may be <code>null</code>
      * @param srsName
-     *            WFS-supported SRS that should be used for returned feature geometries, may be null
+     *            WFS-supported SRS that should be used for returned feature geometries, may be <code>null</code>
+     * @param projectionClauses
+     *            limits the properties of the features that should be retrieved, may be <code>null</code>
      * @param sortBy
-     *            properties whose values should be used to order the set of feature instances that satisfy the query,
-     *            may be null
+     *            properties whose values should be used to order the result set may be <code>null</code>
      */
-    public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
+    public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
+                       ProjectionClause[] projectionClauses, SortProperty[] sortBy ) {
         super( handle );
-        this.typeNames = typeNames;
+        if ( typeNames == null ) {
+            this.typeNames = new TypeName[0];
+        } else {
+            this.typeNames = typeNames;
+        }
         this.featureVersion = featureVersion;
         this.srsName = srsName;
-        this.sortBy = sortBy;
+        if ( projectionClauses != null ) {
+            this.projectionClauses = projectionClauses;
+        } else {
+            this.projectionClauses = new ProjectionClause[0];
+        }
+        if ( sortBy != null ) {
+            this.sortBy = sortBy;
+        } else {
+            this.sortBy = new SortProperty[0];
+        }
     }
 
     /**
@@ -111,9 +125,18 @@ public abstract class AdHocQuery extends Query {
     }
 
     /**
-     * Returns the properties whose values should be used to order the set of feature instances that satisfy the query.
+     * Returns the properties of the features that should be retrieved.
      * 
-     * @return sort criteria, may be null
+     * @return the properties of the features that should be retrieved, may be empty, but never <code>null</code>
+     */
+    public ProjectionClause[] getProjectionClauses() {
+        return projectionClauses;
+    }
+
+    /**
+     * Returns the properties whose values should be used to order the result set.
+     * 
+     * @return sort criteria, may be empty, but never <code>null</code>
      */
     public SortProperty[] getSortBy() {
         return sortBy;

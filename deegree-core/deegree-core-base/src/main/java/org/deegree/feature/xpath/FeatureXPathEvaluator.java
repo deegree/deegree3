@@ -147,6 +147,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
                 }
             }
         } catch ( JaxenException e ) {
+            e.printStackTrace();
             throw new FilterEvaluationException( e.getMessage() );
         }
         return resultValues;

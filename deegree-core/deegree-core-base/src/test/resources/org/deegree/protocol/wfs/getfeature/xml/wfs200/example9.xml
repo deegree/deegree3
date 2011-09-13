@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<!--
+The mailAddress property is a complex property. 
+The following example fetches the last name of
+all the people who live on the 10000 block of
+"Main St." in the town of "SomeTown" who are
+female and make over $35,000 in salary. Note
+the use of XPath expressions in the predicate
+to reference complex properties. 
+-->
+<GetFeature
+   version="2.0.0"
+   service="WFS"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.someserver.com/myns ./GetFeature_09.xsd">
+   <Query typeNames="Person">
+      <PropertyName>myns:lastName</PropertyName>
+      <fes:Filter>
+         <fes:And>
+            <fes:And>
+               <fes:PropertyIsGreaterThanOrEqualTo>
+                  <fes:ValueReference>myns:Person/myns:mailAddress/myns:Address/myns:streetNumber</fes:ValueReference>
+                  <fes:Literal>10000</fes:Literal>
+               </fes:PropertyIsGreaterThanOrEqualTo>
+               <fes:PropertyIsLessThanOrEqualTo>
+                  <fes:ValueReference>myns:Person/myns:mailAddress/myns:Address/myns:streetNumber</fes:ValueReference>
+                  <fes:Literal>10999</fes:Literal>
+               </fes:PropertyIsLessThanOrEqualTo>
+            </fes:And>
+            <fes:And>
+               <fes:PropertyIsEqualTo>
+                  <fes:ValueReference>myns:Person/myns:mailAddress/myns:Address/myns:streetName</fes:ValueReference>
+                  <fes:Literal>Main St.</fes:Literal>
+               </fes:PropertyIsEqualTo>
+               <fes:PropertyIsEqualTo>
+                  <fes:ValueReference>myns:Person/myns:mailAddress/myns:Address/myns:city</fes:ValueReference>
+                  <fes:Literal>SomeTown</fes:Literal>
+               </fes:PropertyIsEqualTo>
+               <fes:PropertyIsEqualTo>
+                  <fes:ValueReference>myns:Person/myns:sex</fes:ValueReference>
+                  <fes:Literal>Female</fes:Literal>
+               </fes:PropertyIsEqualTo>
+               <fes:PropertyIsGreaterThan>
+                  <fes:ValueReference>myns:Person/myns:salary</fes:ValueReference>
+                  <fes:Literal>35000</fes:Literal>
+               </fes:PropertyIsGreaterThan>
+            </fes:And>
+         </fes:And>
+      </fes:Filter>
+   </Query>
+</GetFeature>

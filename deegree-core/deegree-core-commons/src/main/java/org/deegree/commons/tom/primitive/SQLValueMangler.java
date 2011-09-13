@@ -40,6 +40,7 @@ import java.sql.Timestamp;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,9 @@ public class SQLValueMangler {
             case DATE_TIME:
                 sqlValue = new Timestamp( ( (DateTime) value ).getValue().getTime() );
                 break;
+            case TIME:
+            	sqlValue = new java.sql.Time( ( (Time) value ).getDate().getTime() );
+                break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
                 break;
@@ -92,7 +96,7 @@ public class SQLValueMangler {
             case STRING:
                 sqlValue = value;
                 break;
-            case TIME:
+            default:
                 throw new IllegalArgumentException( "SQL type conversion for '" + pt + "' is not implemented yet." );
             }
         }
@@ -120,6 +124,9 @@ public class SQLValueMangler {
             case DATE_TIME:
                 sqlValue = new Timestamp( ( (DateTime) value ).getValue().getTime() );
                 break;
+            case TIME:
+            	sqlValue = new java.sql.Time( ( (Time) value ).getDate().getTime() );
+                break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
                 break;
@@ -132,7 +139,7 @@ public class SQLValueMangler {
             case STRING:
                 sqlValue = value;
                 break;
-            case TIME:
+            default:
                 throw new IllegalArgumentException( "SQL type conversion for '" + pt + "' is not implemented yet." );
             }
         }

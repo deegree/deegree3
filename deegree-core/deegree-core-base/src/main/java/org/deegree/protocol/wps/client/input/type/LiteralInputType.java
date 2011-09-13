@@ -39,7 +39,7 @@ import java.net.URL;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.protocol.ows.metadata.Range;
+import org.deegree.protocol.ows.metadata.domain.Range;
 import org.deegree.protocol.wps.client.param.ValueWithRef;
 
 /**

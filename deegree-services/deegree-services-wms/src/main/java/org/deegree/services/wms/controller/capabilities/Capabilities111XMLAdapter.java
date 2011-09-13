@@ -64,11 +64,11 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.ows.metadata.Address;
-import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.protocol.ows.metadata.ServiceContact;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.ows.metadata.party.Address;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
@@ -180,8 +180,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( md.getName() != null ) {
             writeElement( writer, "Name", md.getName() );
         }
-        writeElement( writer, "Title", md.getDescription().getTitle().get( 0 ).getString() );
-        List<LanguageString> abs = md.getDescription().getAbstract();
+        writeElement( writer, "Title", md.getDescription().getTitles().get( 0 ).getString() );
+        List<LanguageString> abs = md.getDescription().getAbstracts();
         if ( abs != null && !abs.isEmpty() ) {
             writeElement( writer, "Abstract", abs.get( 0 ).getString() );
         }
@@ -194,7 +194,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        writeSrsAndEnvelope( writer, md.getCoordinateSystems(), md.getEnvelope() );
+        SpatialMetadata smd = md.getSpatialMetadata();
+        writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
 
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
@@ -470,18 +471,17 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
         writeElement( writer, "Name", "OGC:WMS" );
 
-        Description desc = identification == null ? null : identification.getDescription();
-
-        List<LanguageString> titles = desc == null ? null : desc.getTitle();
+        List<LanguageString> titles = identification == null ? null : identification.getTitles();
         String title = ( titles != null && !titles.isEmpty() ) ? titles.get( 0 ).getString() : "deegree 3 WMS";
         writeElement( writer, "Title", title );
 
-        List<LanguageString> abstracts = desc == null ? null : desc.getAbstract();
+        List<LanguageString> abstracts = identification == null ? null : identification.getAbstracts();
         if ( abstracts != null && !abstracts.isEmpty() ) {
             writeElement( writer, "Abstract", abstracts.get( 0 ).getString() );
         }
 
-        List<Pair<List<LanguageString>, CodeType>> keywords = desc == null ? null : desc.getKeywords();
+        List<Pair<List<LanguageString>, CodeType>> keywords = identification == null ? null
+                                                                                    : identification.getKeywords();
         if ( keywords != null && !keywords.isEmpty() ) {
             writer.writeStartElement( "KeywordList" );
 
@@ -507,7 +507,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writer.writeEndElement();
 
         if ( provider != null ) {
-            ServiceContact contact = provider.getServiceContact();
+            ResponsibleParty contact = provider.getServiceContact();
             if ( contact != null ) {
                 writer.writeStartElement( "ContactInformation" );
 

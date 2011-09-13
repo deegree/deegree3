@@ -106,8 +106,8 @@ public class TestMapContentProviderTest {
     public void testInspectInputParametersFromJrxml() {
         MapContentProvider wmsContentProvider = new MapContentProvider();
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put( "wmsMAP_map", "java.lang.String" );
-        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "mapMAP_img", "java.lang.String" );
+        parameters.put( "mapMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         List<JAXBElement<? extends ProcessletInputDefinition>> inputs = new ArrayList<JAXBElement<? extends ProcessletInputDefinition>>();
         XMLAdapter adapter = new XMLAdapter(
@@ -143,58 +143,11 @@ public class TestMapContentProviderTest {
         List<CodeType> processedIds = new ArrayList<CodeType>();
         InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" );
         Map<String, Object> params = new HashMap<String, Object>();
-        List<ProcessletInput> inputs = new ArrayList<ProcessletInput>();
-        ProcessletInputs in = new ProcessletInputs( inputs );
-
-        ComplexInputDefinition definition = new ComplexInputDefinition();
-        definition.setTitle( getAsLanguageStringType( "MAP" ) );
-        definition.setIdentifier( getAsCodeType( "MAP" ) );
-        ComplexFormatType format = new ComplexFormatType();
-        // TODO
-        format.setEncoding( "UTF-8" );
-        format.setMimeType( MIME_TYPE );
-        format.setSchema( SCHEMA );
-        definition.setDefaultFormat( format );
-        definition.setMaxOccurs( BigInteger.valueOf( 1 ) );
-        definition.setMinOccurs( BigInteger.valueOf( 0 ) );
-
-        // URL resource = TestWMSContentProviderTest.class.getResource( "store" );
-        // File f = new File( resource.toExternalForm() );
-        File f = File.createTempFile( "tmpStore", "" );
-        StreamBufferStore store = new StreamBufferStore( 1024, f );
-
-        // LOG.debug( "Storing embedded ComplexInput as XML" );
-        InputStream complexInput = TestMapContentProviderTest.class.getResourceAsStream( "complexInput" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( complexInput );
-        XMLStreamWriter xmlWriter = null;
-        try {
-            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( store );
-            if ( xmlReader.getEventType() == START_DOCUMENT ) {
-                xmlReader.nextTag();
-            }
-            XMLAdapter.writeElement( xmlWriter, xmlReader );
-        } finally {
-            try {
-                xmlReader.close();
-            } catch ( XMLStreamException e ) {
-                // nothing to do
-            }
-            try {
-                xmlWriter.close();
-            } catch ( XMLStreamException e ) {
-                // nothing to do
-            }
-            IOUtils.closeQuietly( store );
-        }
-
-        ComplexInputImpl mapProcesslet = new EmbeddedComplexInput( definition, new LanguageString( "title", "ger" ),
-                                                                   new LanguageString( "summary", "ger" ), format,
-                                                                   store );
-
-        inputs.add( mapProcesslet );
+        ProcessletInputs in = Utils.getInputs( "MAP", MIME_TYPE, SCHEMA,
+                                               TestMapContentProviderTest.class.getResourceAsStream( "complexInput" ) );
         HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put( "wmsMAP_map", "java.lang.String" );
-        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "mapMAP_img", "java.lang.String" );
+        parameters.put( "mapMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
 
@@ -288,16 +241,16 @@ public class TestMapContentProviderTest {
 
         inputs.add( mapProcesslet );
         HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put( "wmsMAP_map", "java.lang.String" );
-        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "mapMAP_img", "java.lang.String" );
+        parameters.put( "mapMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
 
         assertEquals( 2, params.size() );
         assertEquals( 1, processedIds.size() );
 
-        assertTrue( params.containsKey( "wmsMAP_map" ) );
-        Object value = params.get( "wmsMAP_map" );
+        assertTrue( params.containsKey( "mapMAP_img" ) );
+        Object value = params.get( "mapMAP_img" );
         assertTrue( value instanceof String );
 
         BufferedImage img = ImageIO.read( new File( (String) value ) );

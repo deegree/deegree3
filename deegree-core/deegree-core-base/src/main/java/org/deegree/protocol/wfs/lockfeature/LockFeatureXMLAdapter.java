@@ -91,10 +91,10 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      */
     public LockFeature parse()
                             throws Exception {
-        Version version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
+
+        Version version = determineVersion110Safe();
 
         LockFeature result = null;
-
         if ( VERSION_100.equals( version ) )
             result = parse100();
         else if ( VERSION_110.equals( version ) )

@@ -41,7 +41,7 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.wcs.WCSRequest100XMLAdapter;
 
 /**

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+
 import java.net.URL;
 
 import javax.xml.bind.JAXBException;
@@ -42,7 +44,6 @@ import javax.xml.bind.JAXBException;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
 
     private static final String JAXB_CONFIG_PACKAGE = "org.deegree.process.jaxb.java";
 
-    private static final String JAXB_CONFIG_SCHEMA = "/META-INF/schemas/processes/java/3.0.0/java.xsd";
+    private static final URL JAXB_CONFIG_SCHEMA = JavaProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/java/3.0.0/java.xsd" );
 
     private static final String CONFIG_NS = "http://www.deegree.org/processes/java";
 
@@ -80,9 +81,8 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
         LOG.info( "Loading process definition from file '" + configURL + "'." );
         //
         try {
-            ProcessDefinition processDef = (ProcessDefinition) JAXBUtils.unmarshall( JAXB_CONFIG_PACKAGE,
-                                                                                     JAXB_CONFIG_SCHEMA, configURL,
-                                                                                     workspace );
+            ProcessDefinition processDef = (ProcessDefinition) unmarshall( JAXB_CONFIG_PACKAGE, JAXB_CONFIG_SCHEMA,
+                                                                           configURL, workspace );
             // checkConfigVersion( definitionFile, processDef.getConfigVersion() );
 
             // processDefinitions.add( processDef );
@@ -115,6 +115,6 @@ public class JavaProcessProviderProvider implements ProcessProviderProvider {
 
     @Override
     public URL getConfigSchema() {
-        return JavaProcessProviderProvider.class.getResource( JAXB_CONFIG_SCHEMA );
+        return JAXB_CONFIG_SCHEMA;
     }
 }

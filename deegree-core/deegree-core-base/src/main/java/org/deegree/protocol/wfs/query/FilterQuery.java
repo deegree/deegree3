@@ -39,11 +39,8 @@ import javax.xml.namespace.QName;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.Function;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
  * A {@link AdHocQuery} that selects features using an optional {@link Filter}.
@@ -60,48 +57,33 @@ public class FilterQuery extends AdHocQuery {
 
     private final Filter filter;
 
-    // TODO has to be PropertyName[][] for KVP filter queries that use multiple typenames
-    private final ValueReference[] propertyNames;
-
-    private final Function[] functions;
-
-    private final XLinkPropertyName[] xLinkPropertyNames;
-
     /**
      * Creates a new {@link FilterQuery} instance.
      * 
      * @param handle
-     *            client-generated query identifier, may be null
+     *            client-generated query identifier, may be <code>null</code>
      * @param typeNames
-     *            requested feature types (with optional aliases), must not be null and must always contain at least one
-     *            entry
+     *            requested feature types (with optional aliases), must not be <code>null</code> and must contain at
+     *            least one entry
      * @param featureVersion
-     *            version of the feature instances to be retrieved, may be null
+     *            version of the feature instances to be retrieved, may be <code>null</code>
      * @param srsName
-     *            WFS-supported SRS that should be used for returned feature geometries, may be null
-     * @param propertyNames
-     *            properties of the features that should be retrieved, may be null
-     * @param xLinkPropertyNames
-     *            properties for which the the traversal of nested XLinks is selectively requested, may be null
-     * @param functions
-     *            properties for which a function value should be used instead of the original property value, may be
-     *            null
+     *            WFS-supported SRS that should be used for returned feature geometries, may be <code>null</code>
+     * @param projectionClauses
+     *            limits the properties of the features that shall be returned, may be <code>null</code> (return all
+     *            properties)
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
-     *            may be null
+     *            may be <code>null</code>
      * @param filter
-     *            filter constraint, may be null
+     *            filter constraint, may be <code>null</code>
      */
     public FilterQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                        ValueReference[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
-                        SortProperty[] sortBy, Filter filter ) {
-        super( handle, typeNames, featureVersion, srsName, sortBy );
+                        ProjectionClause[] projectionClauses, SortProperty[] sortBy, Filter filter ) {
+        super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
         if ( typeNames == null || typeNames.length == 0 ) {
             throw new IllegalArgumentException();
         }
-        this.xLinkPropertyNames = xLinkPropertyNames;
-        this.propertyNames = propertyNames;
-        this.functions = functions;
         this.filter = filter;
     }
 
@@ -119,7 +101,7 @@ public class FilterQuery extends AdHocQuery {
      *            filter constraint, may be null
      */
     public FilterQuery( QName typeName, ICRS srsName, SortProperty[] sortBy, Filter filter ) {
-        this( null, new TypeName[] { new TypeName( typeName, null ) }, null, srsName, null, null, null, sortBy, filter );
+        this( null, new TypeName[] { new TypeName( typeName, null ) }, null, srsName, null, sortBy, filter );
     }
 
     /**
@@ -129,45 +111,5 @@ public class FilterQuery extends AdHocQuery {
      */
     public Filter getFilter() {
         return filter;
-    }
-
-    /**
-     * Returns the properties of the features that should be retrieved.
-     * <p>
-     * From WFS 1.1.0 schema (wfs.xsd): <i>While a Web Feature Service should endeavour to satisfy the exact request
-     * specified, in some instance this may not be possible. Specifically, a Web Feature Service must generate a valid
-     * GML3 response to a Query operation. The schema used to generate the output may include properties that are
-     * mandatory. In order that the output validates, these mandatory properties must be specified in the request. If
-     * they are not, a Web Feature Service may add them automatically to the Query before processing it. Thus a client
-     * application should, in general, be prepared to receive more properties than it requested.</i>
-     * </p>
-     * 
-     * @return the properties of the features that should be retrieved, may be null
-     */
-    public ValueReference[] getPropertyNames() {
-        return propertyNames;
-    }
-
-    /**
-     * Returns the properties of the features for which a specific XLink behaviour is requested.
-     * <p>
-     * Sets the depth and expiry properties for XLinks traversal. More precisely, the nested depth to which an
-     * xlink:href should be traversed (or "*" for indefinite depth), respectively the number of minutes the WFS should
-     * wait for a response when traversing through xlinks is encountered.
-     * </p>
-     * 
-     * @return the properties of the features with specific XLink behaviour, may be null
-     */
-    public XLinkPropertyName[] getXLinkPropertyNames() {
-        return xLinkPropertyNames;
-    }
-
-    /**
-     * Returns the functions that should be fetched instead of the original property values.
-     * 
-     * @return the functions that should be fetched instead of the original property values, may be null
-     */
-    public Function[] getFunctions() {
-        return functions;
     }
 }

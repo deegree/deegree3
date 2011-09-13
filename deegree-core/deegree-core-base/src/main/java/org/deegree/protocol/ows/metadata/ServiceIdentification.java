@@ -39,19 +39,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 
 /**
- * The <code>ServiceIdentification</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * A {@link Description} that encapsulates general server-specific metadata reported by an OGC web service.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * From OWS Common 2.0: <cite>General metadata for this specific server. This XML Schema of this section shall be the
+ * same for all OWS.</cite>
+ * </p>
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ServiceIdentification {
-
-    private Description description;
+public class ServiceIdentification extends Description {
 
     private CodeType serviceType;
 
@@ -64,10 +76,65 @@ public class ServiceIdentification {
     private List<String> accessConstraints;
 
     /**
-     * @return the fees
+     * Creates a new {@link ServiceIdentification} instance.
+     * 
+     * @param name
+     * @param titles
+     * @param abstracts
+     * @param keywords
+     * @param serviceType
+     * @param serviceTypeVersion
+     * @param profiles
+     * @param fees
+     * @param accessConstraints
      */
-    public String getFees() {
-        return fees;
+    public ServiceIdentification( String name, List<LanguageString> titles, List<LanguageString> abstracts,
+                                  List<Pair<List<LanguageString>, CodeType>> keywords, CodeType serviceType,
+                                  List<Version> serviceTypeVersion, List<String> profiles, String fees,
+                                  List<String> accessConstraints ) {
+        super( name, titles, abstracts, keywords );
+        this.serviceType = serviceType;
+        this.serviceTypeVersion = serviceTypeVersion;
+        this.profiles = profiles;
+        this.fees = fees;
+        this.accessConstraints = accessConstraints;
+    }
+
+    /**
+     * Returns the reported service type.
+     * <p>
+     * From OWS Common 2.0: <cite>A service type name from a registry of services. For example, the values of the
+     * codeSpace URI and name and code string may be "OGC" and "catalogue." This type name is normally used for
+     * machine-to-machine communication.</cite>
+     * </p>
+     * 
+     * @return reported service type, may be <code>null</code>
+     */
+    public CodeType getServiceType() {
+        return serviceType;
+    }
+
+    /**
+     * @param serviceType
+     */
+    public void setServiceType( CodeType serviceType ) {
+        this.serviceType = serviceType;
+    }
+
+    /**
+     * Returns the reported service type versions.
+     * <p>
+     * From OWS Common 2.0: <cite>Unordered list of one or more versions of this service type implemented by this
+     * server. This information is not adequate for version negotiation, and shall not be used for that purpose.</cite>
+     * </p>
+     * 
+     * @return reported service type versions, may be empty, but never <code>null</code>
+     */
+    public List<Version> getServiceTypeVersion() {
+        if ( serviceTypeVersion == null ) {
+            serviceTypeVersion = new ArrayList<Version>();
+        }
+        return serviceTypeVersion;
     }
 
     /**
@@ -79,6 +146,24 @@ public class ServiceIdentification {
     }
 
     /**
+     * Returns the identifiers of implemented application profiles.
+     * <p>
+     * From OWS Common 2.0: <cite>Unordered list of identifiers of Application Profiles that are implemented by this
+     * server. This element should be included for each specified application profile implemented by this server. The
+     * identifier value should be specified by each Application Profile. If this element is omitted, no meaning is
+     * implied.</cite>
+     * </p>
+     * 
+     * @return identifiers of implemented application profiles, may be empty but never <code>null</code>.
+     */
+    public List<String> getProfiles() {
+        if ( profiles == null ) {
+            profiles = new ArrayList<String>();
+        }
+        return profiles;
+    }
+
+    /**
      * @param profiles
      *            the profiles to set
      */
@@ -87,59 +172,10 @@ public class ServiceIdentification {
     }
 
     /**
-     * @param accessConstraints
-     *            the accessConstraints to set
+     * @return the fees
      */
-    public void setAccessConstraints( List<String> accessConstraints ) {
-        this.accessConstraints = accessConstraints;
-    }
-
-    /**
-     * @param description
-     */
-    public void setDescription( Description description ) {
-        this.description = description;
-    }
-
-    /**
-     * @return description, may be <code>null</code>.
-     */
-    public Description getDescription() {
-        return description;
-    }
-
-    /**
-     * @param serviceType
-     */
-    public void setServiceType( CodeType serviceType ) {
-        this.serviceType = serviceType;
-    }
-
-    /**
-     * @return serviceType, may be <code>null</code>.
-     */
-    public CodeType getServiceType() {
-        return serviceType;
-    }
-
-    /**
-     * @return serviceTypeVersion, may be empty but never <code>null</code>.
-     */
-    public List<Version> getServiceTypeVersion() {
-        if ( serviceTypeVersion == null ) {
-            serviceTypeVersion = new ArrayList<Version>();
-        }
-        return serviceTypeVersion;
-    }
-
-    /**
-     * @return profiles, may be empty but never <code>null</code>.
-     */
-    public List<String> getProfiles() {
-        if ( profiles == null ) {
-            profiles = new ArrayList<String>();
-        }
-        return profiles;
+    public String getFees() {
+        return fees;
     }
 
     /**
@@ -159,4 +195,11 @@ public class ServiceIdentification {
         return accessConstraints;
     }
 
+    /**
+     * @param accessConstraints
+     *            the accessConstraints to set
+     */
+    public void setAccessConstraints( List<String> accessConstraints ) {
+        this.accessConstraints = accessConstraints;
+    }
 }

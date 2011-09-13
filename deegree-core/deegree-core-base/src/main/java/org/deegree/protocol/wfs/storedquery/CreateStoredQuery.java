@@ -44,6 +44,12 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**
  * Represents a <code>CreateStoredQuery</code> request to a WFS.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 2.0.0</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

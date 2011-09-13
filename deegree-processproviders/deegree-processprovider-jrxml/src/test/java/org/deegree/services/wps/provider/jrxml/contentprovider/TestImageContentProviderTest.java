@@ -63,20 +63,20 @@ public class TestImageContentProviderTest {
 
     @Test
     public void testInspectInputParametersFromJrxml() {
-        ImageContentProvider wmsContentProvider = new ImageContentProvider();
+        ImageContentProvider imgContentProvider = new ImageContentProvider();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put( "DATE", "java.util.Date" );
         parameters.put( "DESCRIPTION", "java.lang.String" );
         parameters.put( "MAPSCALE", "java.lang.Integer" );
         parameters.put( "printOptTxt", "java.lang.Boolean" );
-        parameters.put( "wmsMAP_map", "java.lang.String" );
-        parameters.put( "wmsMAP_legend", "java.lang.String" );
+        parameters.put( "mapMAP_img", "java.lang.String" );
+        parameters.put( "mapMAP_legend", "java.lang.String" );
         List<JAXBElement<? extends ProcessletInputDefinition>> inputs = new ArrayList<JAXBElement<? extends ProcessletInputDefinition>>();
 
         XMLAdapter adapter = new XMLAdapter(
                                              TestOtherContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        wmsContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
+        imgContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
 
         assertEquals( 6, parameters.size() );
 
@@ -88,9 +88,9 @@ public class TestImageContentProviderTest {
         JAXBElement<? extends ProcessletInputDefinition> imgBin = null;
 
         for ( JAXBElement<? extends ProcessletInputDefinition> in : inputs ) {
-            if ( "wmsMAP_map".equals( in.getValue().getIdentifier().getValue() ) ) {
+            if ( "mapMAP_img".equals( in.getValue().getIdentifier().getValue() ) ) {
                 imgUrl = in;
-            } else if ( "wmsMAP_legend".equals( in.getValue().getIdentifier().getValue() ) ) {
+            } else if ( "mapMAP_legend".equals( in.getValue().getIdentifier().getValue() ) ) {
                 imgBin = in;
             }
         }

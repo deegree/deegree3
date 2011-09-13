@@ -59,13 +59,15 @@ public class TypeName {
 
     private final String alias;
 
+    private final boolean isSchemaElement;
+
     /**
      * Creates a new {@link TypeName} with optional alias.
      * 
      * @param ftName
-     *            name of the feature, must not be null
+     *            name of the feature, must not be <code>null</code>
      * @param alias
-     *            alias for the feature type, may be null
+     *            alias for the feature type, may be <code>null</code>
      */
     public TypeName( QName ftName, String alias ) {
         if ( ftName == null ) {
@@ -73,6 +75,24 @@ public class TypeName {
         }
         this.ftName = ftName;
         this.alias = alias;
+        this.isSchemaElement = false;
+    }
+
+    /**
+     * Creates a new {@link TypeName} with optional alias.
+     * 
+     * @param ftName
+     *            name of the feature, must not be <code>null</code>
+     * @param alias
+     *            alias for the feature type, may be <code>null</code>
+     */
+    public TypeName( QName ftName, String alias, boolean isSchemaElement ) {
+        if ( ftName == null ) {
+            throw new InvalidParameterValueException( "Type name cannot be null", "typeName" );
+        }
+        this.ftName = ftName;
+        this.alias = alias;
+        this.isSchemaElement = isSchemaElement;
     }
 
     /**
@@ -109,14 +129,14 @@ public class TypeName {
 
     private static QName resolveQName( OMElement context, String name ) {
         QName qName = null;
-        int colonIdx = name.indexOf( ":" ); 
+        int colonIdx = name.indexOf( ":" );
         if ( colonIdx != -1 ) {
             qName = context.resolveQName( name );
             if ( qName == null ) {
                 // AXIOM appears to return null for context.resolveQName( name ) for unbound prefices!?
-                String prefix = name.substring( 0,  colonIdx);
-                String localPart = name.substring( colonIdx + 1);
-                qName = new QName (XMLConstants.NULL_NS_URI, localPart, prefix);
+                String prefix = name.substring( 0, colonIdx );
+                String localPart = name.substring( colonIdx + 1 );
+                qName = new QName( XMLConstants.NULL_NS_URI, localPart, prefix );
             }
         } else {
             qName = new QName( name );
@@ -127,7 +147,7 @@ public class TypeName {
     /**
      * Returns the feature type name.
      * 
-     * @return the feature type name, never null
+     * @return the feature type name, never <code>null</code>
      */
     public QName getFeatureTypeName() {
         return ftName;
@@ -136,9 +156,13 @@ public class TypeName {
     /**
      * Returns the alias for the feature type.
      * 
-     * @return the alias for the feature type, or null if it has none
+     * @return the alias for the feature type, or <code>null</code> if it has none
      */
     public String getAlias() {
         return alias;
+    }
+
+    public boolean isSchemaElement() {
+        return isSchemaElement;
     }
 }

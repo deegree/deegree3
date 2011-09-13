@@ -41,10 +41,12 @@ import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_DATE;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
 import static org.deegree.services.sos.SOSProvider.IMPLEMENTATION_METADATA;
+import static org.deegree.services.sos.ServiceConfigurationXMLAdapter.SCHEMA;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -62,9 +64,7 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -92,10 +92,10 @@ import org.deegree.observation.model.Observation;
 import org.deegree.observation.model.Offering;
 import org.deegree.observation.model.Procedure;
 import org.deegree.observation.persistence.ObservationDatastoreException;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
-import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 import org.deegree.protocol.sos.SOSConstants.SOSRequestType;
 import org.deegree.protocol.sos.describesensor.DescribeSensor;
 import org.deegree.protocol.sos.describesensor.DescribeSensor100KVPAdapter;
@@ -118,7 +118,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.sos.DeegreeSOS;
 import org.deegree.services.jaxb.sos.PublishedInformation;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter.Sections;
@@ -156,10 +156,11 @@ public class SOSController extends AbstractOWS {
 
     private ServiceIdentificationType identification;
 
-    private ServiceProviderType provider;
+    private URL configUrl;
 
     public SOSController( URL configURL, ImplementationMetadata serviceInfo ) {
         super( configURL, serviceInfo );
+        this.configUrl = configURL;
     }
 
     @Override
@@ -178,25 +179,18 @@ public class SOSController extends AbstractOWS {
         serviceConfigAdapter.setRootElement( confElem );
         serviceConfigAdapter.setSystemId( controllerConf.getSystemId() );
 
-        try {
-            this.sosService = SOSBuilder.createService( serviceConfigAdapter );
-        } catch ( SOSConfigurationException e ) {
-            throw new ResourceInitException( "error while initializing SOS", e );
-        }
+        this.sosService = SOSBuilder.createService( workspace, configUrl );
 
         PublishedInformation pubInfo = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.sos" );
-            Unmarshaller u = jc.createUnmarshaller();
-            OMElement infElem = controllerConf.getRequiredElement( controllerConf.getRootElement(),
-                                                                   new XPath( "sos:PublishedInformation", nsContext ) );
-            pubInfo = (PublishedInformation) u.unmarshal( infElem.getXMLStreamReaderWithoutCaching() );
+            DeegreeSOS sos = (DeegreeSOS) unmarshall( "org.deegree.services.jaxb.sos", SCHEMA, configUrl, workspace );
+            pubInfo = sos.getPublishedInformation();
         } catch ( XMLParsingException e ) {
             throw new ResourceInitException( "TODO", e );
         } catch ( JAXBException e ) {
             throw new ResourceInitException( "TODO", e );
         }
-        syncWithMainController( pubInfo );
+        syncWithMainController();
 
         setConfiguredHTTPCodeForExceptions( pubInfo );
         validateAndSetOfferedVersions( pubInfo.getSupportedVersions().getVersion() );
@@ -213,7 +207,7 @@ public class SOSController extends AbstractOWS {
         }
     }
 
-    private boolean checkProcURNinFile( String procURN, URL sensorFile ) {
+    private static boolean checkProcURNinFile( String procURN, URL sensorFile ) {
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "sml", "http://www.opengis.net/sensorML/1.0.1" );
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
@@ -436,7 +430,7 @@ public class SOSController extends AbstractOWS {
         xmlWriter.flush();
     }
 
-    private Observation getObservationResult( Offering offering, GetObservation observationReq )
+    private static Observation getObservationResult( Offering offering, GetObservation observationReq )
                             throws OWSException {
         FilterCollection filter = createFilterFromRequest( observationReq );
         try {
@@ -446,7 +440,7 @@ public class SOSController extends AbstractOWS {
         }
     }
 
-    private FilterCollection createFilterFromRequest( GetObservation observationReq ) {
+    private static FilterCollection createFilterFromRequest( GetObservation observationReq ) {
         FilterCollection filter = new FilterCollection();
         filter.add( observationReq.getEventTime() );
         filter.add( observationReq.getObservedProperties() );
@@ -458,7 +452,7 @@ public class SOSController extends AbstractOWS {
         return filter;
     }
 
-    private void writeObservationResult( XMLStreamWriter xmlWriter, Observation observation, GetObservation req )
+    private static void writeObservationResult( XMLStreamWriter xmlWriter, Observation observation, GetObservation req )
                             throws XMLStreamException, OWSException {
         String model = req.getResultModel();
         if ( model.equals( "" ) || model.endsWith( "Observation" ) ) {
@@ -518,7 +512,7 @@ public class SOSController extends AbstractOWS {
         }
     }
 
-    private void validateParameterValue( String locator, String value, String... validValues )
+    private static void validateParameterValue( String locator, String value, String... validValues )
                             throws OWSException {
         if ( value == null ) {
             throw new OWSException( "the " + locator + " parameter is missing", OWSException.MISSING_PARAMETER_VALUE,
@@ -537,7 +531,7 @@ public class SOSController extends AbstractOWS {
         }
     }
 
-    private void validateDescribeSensor( DescribeSensor req )
+    private static void validateDescribeSensor( DescribeSensor req )
                             throws OWSException {
         validateParameterValue( "outputFormat", req.getOutputFormat(), "text/xml;subtype=\"sensorML/1.0.1\"" );
         if ( req.getProcedure() == null ) {
@@ -663,12 +657,9 @@ public class SOSController extends AbstractOWS {
     /**
      * sets the identification to the main controller or it will be synchronized with the maincontroller. sets the
      * provider to the provider of the configured main controller or it will be synchronized with it's values.
-     * 
-     * @param publishedInformation
      */
-    private void syncWithMainController( PublishedInformation publishedInformation ) {
+    private void syncWithMainController() {
         identification = mainMetadataConf.getServiceIdentification();
-        provider = mainMetadataConf.getServiceProvider();
     }
 
     @Override

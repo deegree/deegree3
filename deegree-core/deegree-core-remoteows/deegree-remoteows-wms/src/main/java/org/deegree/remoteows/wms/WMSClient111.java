@@ -114,6 +114,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.wms.Utils;
@@ -971,32 +972,31 @@ public class WMSClient111 implements WMSClient {
             }
         }
 
-        LayerMetadata md = new LayerMetadata();
-        Description desc = new Description();
-        md.setName( name );
-        md.setDescription( desc );
-        desc.setTitle( singletonList( new LanguageString( title, null ) ) );
+        Description desc = new Description( null, null, null, null );
+        desc.setTitles( singletonList( new LanguageString( title, null ) ) );
         if ( abstract_ != null ) {
-            desc.setAbstract( singletonList( new LanguageString( abstract_, null ) ) );
+            desc.setAbstracts( singletonList( new LanguageString( abstract_, null ) ) );
         }
         desc.setKeywords( keywords );
 
         // use first envelope that we can find
+        Envelope envelope = null;
+        List<ICRS> crsList = new ArrayList<ICRS>();
         if ( name != null ) {
-            Envelope envelope = getLatLonBoundingBox( name );
+            envelope = getLatLonBoundingBox( name );
             for ( String crs : getCoordinateSystems( name ) ) {
                 if ( envelope != null ) {
                     break;
                 }
                 envelope = getBoundingBox( crs, name );
             }
-            md.setEnvelope( envelope );
-            List<ICRS> crsList = new ArrayList<ICRS>();
             for ( String crs : getCoordinateSystems( name ) ) {
                 crsList.add( CRSManager.getCRSRef( crs, true ) );
             }
-            md.setCoordinateSystems( crsList );
         }
+
+        SpatialMetadata smd = new SpatialMetadata( envelope, crsList );
+        LayerMetadata md = new LayerMetadata( name, desc, smd );
 
         String casc = lay.getAttributeValue( new QName( "cascaded" ) );
         if ( casc != null ) {

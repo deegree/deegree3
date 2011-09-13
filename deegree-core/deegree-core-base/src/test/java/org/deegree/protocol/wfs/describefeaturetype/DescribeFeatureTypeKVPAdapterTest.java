@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,9 +32,14 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wfs.describefeaturetype;
+
+import static javax.xml.namespace.QName.valueOf;
+import static org.deegree.commons.utils.kvp.KVPUtils.readFileIntoMap;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapter.parse;
 
 import java.io.IOException;
 import java.util.Map;
@@ -43,29 +48,25 @@ import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.junit.Test;
 
 /**
- * The <code>DescribeFeatureTypeKVPAdapterTest</code> class tests the parsing of the DescribeFeatureType request in the
- * case the content is in KVP format.
- *
+ * Tests for {@link DescribeFeatureTypeKVPAdapter}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class DescribeFeatureTypeKVPAdapterTest extends TestCase {
 
-    private final String EXAMPLE_1 = "examples_kvp/v110/example1.kvp";
-
-    private final String EXAMPLE_2 = "examples_kvp/v110/example2.kvp";
-
     @Test
-    public void testEXAMPLE_1() throws IOException {
-        Map<String,String> kvpParams = KVPUtils.readFileIntoMap( this.getClass().getResource( EXAMPLE_1 ) );
-        DescribeFeatureType dft = DescribeFeatureTypeKVPAdapter.parse110( kvpParams );
+    public void test110Example1()
+                            throws IOException {
+        Map<String, String> kvpParams = readFileIntoMap( this.getClass().getResource( "kvp/wfs110/example1.kvp" ) );
+        DescribeFeatureType dft = parse( kvpParams );
         assertEquals( dft.getHandle(), null );
         assertEquals( dft.getOutputFormat(), null );
         assertEquals( dft.getTypeNames().length, 1 );
@@ -74,14 +75,40 @@ public class DescribeFeatureTypeKVPAdapterTest extends TestCase {
     }
 
     @Test
-    public void testEXAMPLE_2() throws IOException {
-        Map<String,String> kvpParams = KVPUtils.readFileIntoMap( this.getClass().getResource( EXAMPLE_2 ) );
-        DescribeFeatureType dft = DescribeFeatureTypeKVPAdapter.parse110( kvpParams );
+    public void test110Example2()
+                            throws IOException {
+        Map<String, String> kvpParams = readFileIntoMap( this.getClass().getResource( "kvp/wfs110/example2.kvp" ) );
+        DescribeFeatureType dft = parse( kvpParams );
         assertEquals( dft.getHandle(), null );
         assertEquals( dft.getOutputFormat(), null );
         assertEquals( dft.getTypeNames().length, 2 );
         assertEquals( dft.getTypeNames()[0], new QName( "TreesA_1M" ) );
         assertEquals( dft.getTypeNames()[1], new QName( "BuiltUpA_1M" ) );
         assertEquals( dft.getVersion(), WFSConstants.VERSION_110 );
+    }
+
+    @Test
+    public void test200Example1()
+                            throws IOException {
+        Map<String, String> kvpParams = readFileIntoMap( this.getClass().getResource( "kvp/wfs200/example1.kvp" ) );
+        DescribeFeatureType dft = parse( kvpParams );
+        assertEquals( VERSION_200, dft.getVersion() );
+        assertEquals( null, dft.getHandle() );
+        assertEquals( null, dft.getOutputFormat() );
+        assertEquals( 1, dft.getTypeNames().length );
+        assertEquals( valueOf( "{http://www.myserver.com/myns}TreesA_1M" ), dft.getTypeNames()[0] );
+    }
+
+    @Test
+    public void test200Example2()
+                            throws IOException {
+        Map<String, String> kvpParams = readFileIntoMap( this.getClass().getResource( "kvp/wfs200/example2.kvp" ) );
+        DescribeFeatureType dft = parse( kvpParams );
+        assertEquals( VERSION_200, dft.getVersion() );
+        assertEquals( null, dft.getHandle() );
+        assertEquals( null, dft.getOutputFormat() );
+        assertEquals( 2, dft.getTypeNames().length );
+        assertEquals( valueOf( "{http://www.someserver.com/ns1}TreesA_1M" ), dft.getTypeNames()[0] );
+        assertEquals( valueOf( "{http://someserver.com/ns2}BuiltUpA_1M" ), dft.getTypeNames()[1] );
     }
 }

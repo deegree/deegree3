@@ -109,6 +109,7 @@ public class WorkspaceInplaceMojo extends AbstractMojo {
      */
     private boolean overwrite;
 
+    @Override
     public void execute()
                             throws MojoExecutionException, MojoFailureException {
         Log log = getLog();
@@ -134,8 +135,11 @@ public class WorkspaceInplaceMojo extends AbstractMojo {
             }
             for ( Object o : jarDeps ) {
                 Artifact a = (Artifact) o;
-                log.info( "Copying " + a + " to workspace modules directory." );
-                copyFileToDirectory( a.getFile(), modules );
+                if ( a.getScope() != null
+                     && ( a.getScope().equalsIgnoreCase( "runtime" ) || a.getScope().equalsIgnoreCase( "compile" ) ) ) {
+                    log.info( "Copying " + a + " to workspace modules directory." );
+                    copyFileToDirectory( a.getFile(), modules );
+                }
             }
 
             for ( Object o : workspaces ) {

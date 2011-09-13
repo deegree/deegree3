@@ -40,7 +40,7 @@ import java.util.Map;
 
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 
 /**
  * This is a KVP adapter for WCS 1.0.0 GetCapabilities requests.

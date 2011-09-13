@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<!--
+This example fetches a specific instance of the feature type
+InWaterA_1M identified by the feature identifier "InWaterA_1M.1234".
+-->
+<wfs:GetFeature
+   service="WFS"
+   version="2.0.0"
+   outputFormat="application/gml+xml; version=3.2"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+   <wfs:Query typeNames="myns:InWaterA_1M">
+      <fes:Filter>
+         <fes:ResourceId rid="InWaterA_1M.1234"/>
+      </fes:Filter>
+   </wfs:Query>
+</wfs:GetFeature>

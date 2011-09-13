@@ -25,6 +25,7 @@
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
         <element ref="wfs:AbstractFormat" minOccurs="0" maxOccurs="unbounded" />
+        <element name="MetadataURLTemplate" minOccurs="0" type="string" />
         <element ref="wfs:FeatureTypeMetadata" minOccurs="0" maxOccurs="unbounded" />
         <element name="ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded">
           <complexType>
@@ -139,6 +140,7 @@
         <element name="Name" type="QName" />
         <element name="Title" type="string" minOccurs="0" />
         <element name="Abstract" type="string" minOccurs="0" />
+        <element name="MetadataSetId" type="string" minOccurs="0" />
       </sequence>
     </complexType>
   </element>

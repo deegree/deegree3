@@ -332,4 +332,45 @@ public class FeatureXPathTest {
         assertEquals( 1, result.length );
         assertEquals( "Philosopher", ( (PrimitiveValue) result[0] ).getAsText() );
     }
+    
+    @Test
+    public void testXPath20()
+                            throws FilterEvaluationException {
+        String xpath = "valueOf(gml:featureMember)/@gml:id";
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new ValueReference( xpath, nsContext ) );
+        assertNotNull( result );
+        assertEquals( 7, result.length );
+        assertEquals( "PHILOSOPHER_1", ( (PrimitiveValue) result[0] ).getAsText() );
+    }
+    
+    @Test
+    public void testXPath21()
+                            throws FilterEvaluationException {
+        String xpath = "valueOf(valueOf(gml:featureMember)/app:placeOfBirth)/@gml:id";
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new ValueReference( xpath, nsContext ) );
+        assertNotNull( result );
+        assertEquals( 7, result.length );
+        assertEquals( "PLACE_2", ( (PrimitiveValue) result[0] ).getAsText() );
+    }
+        
+    @Test
+    public void testXPath22()
+                            throws FilterEvaluationException {
+        String xpath = "valueOf(valueOf(valueOf(gml:featureMember)/app:placeOfBirth)/app:country)/@gml:id";
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new ValueReference( xpath, nsContext ) );
+        assertNotNull( result );
+        assertEquals( 6, result.length );
+        assertEquals( "COUNTRY_2", ( (PrimitiveValue) result[0] ).getAsText() );
+    }
+    
+    // @Test
+    // public void testXPath23()
+    // throws FilterEvaluationException {
+    // String xpath = "valueOf(gml:featureMember)/valueOf(app:placeOfBirth)/valueOf(app:country)/@gml:id";
+    // TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new ValueReference( xpath, nsContext )
+    // );
+    // assertNotNull( result );
+    // assertEquals( 6, result.length );
+    // assertEquals( "COUNTRY_2", ( (PrimitiveValue) result[0] ).getAsText() );
+    // }
 }

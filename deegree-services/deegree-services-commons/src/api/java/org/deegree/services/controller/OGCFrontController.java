@@ -173,6 +173,8 @@ public class OGCFrontController extends HttpServlet {
 
     private transient DeegreeWorkspace workspace;
 
+    private transient String ctxPath;
+
     /**
      * Returns the only instance of this class.
      * 
@@ -269,7 +271,6 @@ public class OGCFrontController extends HttpServlet {
      * ensures that no <code>=</code> char (parameter/value delimiters) occur in the string.
      * </p>
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
@@ -285,7 +286,7 @@ public class OGCFrontController extends HttpServlet {
                 }
             }
 
-            response = handleCompression( request, response );
+            response = handleCompression( response );
 
             String queryString = request.getQueryString();
             try {
@@ -294,7 +295,7 @@ public class OGCFrontController extends HttpServlet {
                 if ( queryString == null ) {
                     OWSException ex = new OWSException( "The request did not contain any parameters.",
                                                         "MissingParameterValue" );
-                    sendException( ex, response, null );
+                    sendException( determineOWSByPathQuirk( request, response ), ex, response, null );
                     return;
                 }
 
@@ -330,7 +331,7 @@ public class OGCFrontController extends HttpServlet {
                 // the message might be more meaningful
                 OWSException ex = new OWSException( "The request did not contain KVP parameters and no parseable XML.",
                                                     "MissingParameterValue", "request" );
-                sendException( ex, response, null );
+                sendException( null, ex, response, null );
                 return;
             } catch ( Throwable e ) {
                 e.printStackTrace();
@@ -338,7 +339,7 @@ public class OGCFrontController extends HttpServlet {
                            + " ms before sending exception." );
                 LOG.debug( e.getMessage(), e );
                 OWSException ex = new OWSException( e.getLocalizedMessage(), e, "InvalidRequest" );
-                sendException( ex, response, null );
+                sendException( null, ex, response, null );
                 return;
             }
             LOG.debug( "Handling HTTP-GET request with status 'success' took: "
@@ -365,7 +366,6 @@ public class OGCFrontController extends HttpServlet {
      * <li><b>Multipart</b>: TODO</li>
      * </ul>
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
@@ -379,7 +379,7 @@ public class OGCFrontController extends HttpServlet {
                 }
             }
 
-            response = handleCompression( request, response );
+            response = handleCompression( response );
 
             LOG.debug( "doPost(), contentType: '" + request.getContentType() + "'" );
 
@@ -479,7 +479,7 @@ public class OGCFrontController extends HttpServlet {
                            + " ms before sending exception." );
                 LOG.debug( e.getMessage(), e );
                 OWSException ex = new OWSException( e.getLocalizedMessage(), "InvalidRequest" );
-                sendException( ex, response, null );
+                sendException( null, ex, response, null );
             }
             LOG.debug( "Handling HTTP-POST request with status 'success' took: "
                        + ( System.currentTimeMillis() - entryTime ) + " ms." );
@@ -499,13 +499,41 @@ public class OGCFrontController extends HttpServlet {
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
                 OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
-                sendException( e, response, null );
+                sendException( null, e, response, null );
             }
         }
         return ows;
     }
 
-    private HttpServletResponse handleCompression( HttpServletRequest request, HttpServletResponse response ) {
+    private OWS determineOWSByPathQuirk( HttpServletRequest request, HttpServletResponse response )
+                            throws ServletException {
+        OWS ows = null;
+        String pathInfo = request.getPathInfo();
+        if ( pathInfo != null ) {
+            // remove start "/"
+            String serviceId;
+            // nice hack to work around the most stupid WFS 1.1.0 CITE tests
+            // I'm sure there are a bazillion clients around that send out broken URLs, then validate the exception
+            // responses, see the error of their ways and then send a proper request...
+            if ( pathInfo.indexOf( "#" ) != -1 ) {
+                serviceId = pathInfo.substring( 1, pathInfo.indexOf( "#" ) );
+            } else if ( pathInfo.indexOf( "=" ) != -1 ) {
+                serviceId = pathInfo.substring( 1, pathInfo.indexOf( "=" ) );
+            } else {
+                serviceId = pathInfo.substring( 1 );
+            }
+
+            ows = serviceConfiguration.get( serviceId );
+            if ( ows == null ) {
+                String msg = "No service with identifier '" + serviceId + "' available.";
+                OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
+                sendException( null, e, response, null );
+            }
+        }
+        return ows;
+    }
+
+    private static HttpServletResponse handleCompression( HttpServletResponse response ) {
         // TODO check if we should enable this in any case (XML, images, ...)
         // String encoding = request.getHeader( "Accept-Encoding" );
         // boolean supportsGzip = encoding != null && encoding.toLowerCase().contains( "gzip" );
@@ -516,7 +544,7 @@ public class OGCFrontController extends HttpServlet {
         return response;
     }
 
-    private String readPostBodyAsString( InputStream is )
+    private static String readPostBodyAsString( InputStream is )
                             throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         BufferedInputStream bis = new BufferedInputStream( is );
@@ -538,7 +566,6 @@ public class OGCFrontController extends HttpServlet {
      * @throws FileUploadException
      *             if there are problems reading/parsing the request or storing files.
      */
-    @SuppressWarnings("unchecked")
     private List<FileItem> checkAndRetrieveMultiparts( HttpServletRequest request )
                             throws FileUploadException {
         List<FileItem> result = null;
@@ -602,6 +629,9 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
 
+            String service = normalizedKVPParams.get( "SERVICE" );
+            String request = normalizedKVPParams.get( "REQUEST" );
+
             if ( serviceConfiguration.getRequestLogger() != null ) {
                 Boolean conf = mainConfig.getRequestLogging().isOnlySuccessful();
                 boolean onlySuccessful = conf != null && conf;
@@ -613,8 +643,6 @@ public class OGCFrontController extends HttpServlet {
             if ( ows == null ) {
                 // first try service parameter, SERVICE-parameter is mandatory for each service and request (except WMS
                 // 1.0.0)
-                String service = normalizedKVPParams.get( "SERVICE" );
-                String request = normalizedKVPParams.get( "REQUEST" );
 
                 if ( request != null && request.equalsIgnoreCase( "getlogo" ) ) {
                     response.setContentType( "text/plain" );
@@ -650,39 +678,64 @@ public class OGCFrontController extends HttpServlet {
                         }
                     }
                 }
-
-                if ( ows == null ) {
-                    String msg = null;
-                    String code;
-                    if ( service == null || request == null ) {
-                        msg = "The 'SERVICE' or 'REQUEST' parameter is absent. Cannot determine responsible service for handling the request.";
-                        code = "MissingParameterValue";
-                    } else {
-                        code = "InvalidParameterValue";
-                        msg = "No service for request type '" + request + "' and service type '" + service
-                              + "' is configured / active.";
-                    }
-                    OWSException ex = new OWSException( msg, code, "service" );
-                    sendException( ex, response, null );
-                }
             }
 
-            if ( ows != null ) {
-                LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
-                HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
-                long dispatchTime = FrontControllerStats.requestDispatched();
-                try {
-                    ows.doKVP( normalizedKVPParams, requestWrapper, responseWrapper, multiParts );
-                } finally {
-                    FrontControllerStats.requestFinished( dispatchTime );
-                }
-                if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
-                    validateResponse( responseWrapper );
-                }
-                responseWrapper.flushBuffer();
-                if ( logging != null ) {
-                    logging.finalizeLogging();
-                }
+            if ( service != null && serviceConfiguration.getByServiceType( service ) == null ) {
+                OWSException ex = new OWSException( "No service for service type '" + service
+                                                    + "' is configured / active.", "InvalidParameterValue", "service" );
+                sendException( ows, ex, response, null );
+                return;
+            }
+
+            if ( request != null && !request.equalsIgnoreCase( "GetCapabilities" )
+                 && serviceConfiguration.getByRequestName( request ) == null ) {
+                OWSException ex = new OWSException( "No service for request type '" + request
+                                                    + "' is configured / active.", "InvalidParameterValue", "request" );
+                sendException( ows, ex, response, null );
+                return;
+            }
+
+            if ( ows == null ) {
+                OWSException ex = new OWSException( "No service for service type '" + service + "' and request type '"
+                                                    + request + "' is configured / active.", "MissingParameterValue",
+                                                    "service" );
+                sendException( null, ex, response, null );
+                return;
+            }
+
+            // Seems not all services test their incoming requests completely, so the check is done here.
+            // Since for WMS the service parameter is not always mandatory, here's the exception.
+            // Once all services properly check their requests (WFS and SOS have this problem), this workaround can be
+            // removed.
+            if ( service == null
+                 && !( ows.getImplementationMetadata().getImplementedServiceName()[0].equalsIgnoreCase( "WMS" ) ) ) {
+                OWSException ex = new OWSException( "The 'SERVICE' parameter is missing.", "MissingParameterValue",
+                                                    "service" );
+                sendException( ows, ex, response, null );
+                return;
+            }
+
+            if ( request == null ) {
+                OWSException ex = new OWSException( "The 'REQUEST' parameter is absent.", "MissingParameterValue",
+                                                    "request" );
+                sendException( ows, ex, response, null );
+                return;
+            }
+
+            LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
+            HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
+            long dispatchTime = FrontControllerStats.requestDispatched();
+            try {
+                ows.doKVP( normalizedKVPParams, requestWrapper, responseWrapper, multiParts );
+            } finally {
+                FrontControllerStats.requestFinished( dispatchTime );
+            }
+            if ( mainConfig.isValidateResponses() != null && mainConfig.isValidateResponses() ) {
+                validateResponse( responseWrapper );
+            }
+            responseWrapper.flushBuffer();
+            if ( logging != null ) {
+                logging.finalizeLogging();
             }
         } catch ( SecurityException e ) {
             if ( credentialsProvider != null ) {
@@ -691,12 +744,12 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
+                sendException( ows, new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
             }
         }
     }
 
-    private void validateResponse( HttpResponseBuffer responseWrapper ) {
+    private static void validateResponse( HttpResponseBuffer responseWrapper ) {
         responseWrapper.validate();
     }
 
@@ -775,8 +828,8 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), OWSException.NO_APPLICABLE_CODE ), response,
-                               null );
+                sendException( ows, new OWSException( e.getLocalizedMessage(), OWSException.NO_APPLICABLE_CODE ),
+                               response, null );
             }
         }
     }
@@ -890,13 +943,12 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response,
-                               null );
+                sendException( ows, new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ), response, null );
             }
         }
     }
 
-    private boolean isSOAPRequest( XMLStreamReader xmlStream ) {
+    private static boolean isSOAPRequest( XMLStreamReader xmlStream ) {
         String ns = xmlStream.getNamespaceURI();
         String localName = xmlStream.getLocalName();
         return ( "http://schemas.xmlsoap.org/soap/envelope/".equals( ns ) || "http://www.w3.org/2003/05/soap-envelope".equals( ns ) )
@@ -911,6 +963,7 @@ public class OGCFrontController extends HttpServlet {
 
         try {
             super.init( config );
+            ctxPath = config.getServletContext().getContextPath();
             LOG.info( "--------------------------------------------------------------------------------" );
             DeegreeAALogoUtils.logInfo( LOG );
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -918,32 +971,21 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
             for ( ModuleInfo moduleInfo : getModulesInfo() ) {
-                LOG.info( " - " + moduleInfo.toString() );
+                LOG.info( "- " + moduleInfo.toString() );
             }
             LOG.info( "" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "System info" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
-            LOG.info( "- java version      : " + System.getProperty( "java.version" ) + " ("
+            LOG.info( "- java version       " + System.getProperty( "java.version" ) + " ("
                       + System.getProperty( "java.vendor" ) + ")" );
-            LOG.info( "- operating system  : " + System.getProperty( "os.name" ) + " ("
+            LOG.info( "- operating system   " + System.getProperty( "os.name" ) + " ("
                       + System.getProperty( "os.version" ) + ", " + System.getProperty( "os.arch" ) + ")" );
-            LOG.info( "- default encoding  : " + DEFAULT_ENCODING );
-            LOG.info( "- system encoding   : " + Charset.defaultCharset().displayName() );
-            LOG.info( "- temp directory    : " + defaultTMPDir );
+            LOG.info( "- default encoding   " + DEFAULT_ENCODING );
+            LOG.info( "- system encoding    " + Charset.defaultCharset().displayName() );
+            LOG.info( "- temp directory     " + defaultTMPDir );
             LOG.info( "" );
-
-            LOG.info( "deegree workspace root is located at " + DeegreeWorkspace.getWorkspaceRoot() );
-            File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
-            if ( !wsRoot.isDirectory() && !wsRoot.mkdirs() ) {
-                LOG.warn( "The workspace root is not a directory and could not be created." );
-                LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
-            }
-            if ( wsRoot.isDirectory() && !wsRoot.canWrite() ) {
-                LOG.warn( "The workspace root is not writable." );
-                LOG.warn( "This will lead to problems when you'll try to download workspaces!" );
-            }
 
             initWorkspace( null );
 
@@ -966,6 +1008,18 @@ public class OGCFrontController extends HttpServlet {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Initializing workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "" );
+        LOG.info( "- deegree workspace root  " + DeegreeWorkspace.getWorkspaceRoot() );
+        File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
+        if ( !wsRoot.isDirectory() && !wsRoot.mkdirs() ) {
+            LOG.warn( "*** The workspace root is not a directory and could not be created. ***" );
+            LOG.warn( "*** This will lead to problems when you'll try to download workspaces. ***" );
+        }
+        if ( wsRoot.isDirectory() && !wsRoot.canWrite() ) {
+            LOG.warn( "*** The workspace root is not writable. ***" );
+            LOG.warn( "*** This will lead to problems when you'll try to download workspaces. ***" );
+        }
+        // LOG.info( "- servlet context path    " + ctxPath );
         workspace = getWorkspace( name );
         workspace.initAll();
         serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
@@ -1164,25 +1218,32 @@ public class OGCFrontController extends HttpServlet {
      * the request is so broken that it cannot be dispatched.
      * </p>
      * 
+     * @param ows
+     *            if not null, it will be used to determine the responsible controller for exception serializing
      * @param e
      *            exception to be serialized
      * @param res
      *            response object
      * @throws ServletException
      */
-    private void sendException( OWSException e, HttpServletResponse res, Version requestVersion )
+    private void sendException( OWS ows, OWSException e, HttpServletResponse res, Version requestVersion )
                             throws ServletException {
-        Collection<List<OWS>> values = serviceConfiguration.getAll().values();
-        if ( values.size() > 0 && !values.iterator().next().isEmpty() ) {
+        if ( ows == null ) {
+            Collection<List<OWS>> values = serviceConfiguration.getAll().values();
+            if ( values.size() > 0 && !values.iterator().next().isEmpty() ) {
+                ows = values.iterator().next().get( 0 );
+            }
+        }
+        if ( ows != null ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be
             // correct)
-            OWS first = values.iterator().next().get( 0 );
-            Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = first.getExceptionSerializer( requestVersion );
-            ( (AbstractOWS) first ).sendException( serializerAndMime.second, "UTF-8", null, 200,
-                                                   serializerAndMime.first, e, res );
+            Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = ows.getExceptionSerializer( requestVersion );
+            ( (AbstractOWS) ows ).sendException( serializerAndMime.second, "UTF-8", null, 200, serializerAndMime.first,
+                                                 e, res );
         } else {
             // use the most common serializer (OWS 1.1.0)
             AbstractOWS.sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), null, e, res );
         }
     }
+
 }

@@ -41,16 +41,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.deegree.commons.utils.StringUtils;
 import org.slf4j.Logger;
 
 /**
@@ -147,6 +150,49 @@ public class KVPUtils {
     }
 
     /**
+     * Splits a parameter list thats encoded according to ISO 19143, 5.5
+     * 
+     * @param s
+     * @return
+     */
+    public static List<String> splitLists( String s ) {
+        List<String> values = null;
+        if ( s.startsWith( "(" ) ) {
+            if ( !s.endsWith( ")" ) ) {
+                String msg = "KVP parameter list is not well-formed: '" + s + "'.";
+                throw new IllegalArgumentException( msg );
+            }
+            values = new ArrayList<String>();
+            int pos = 1;
+            StringBuilder sb = new StringBuilder();
+            while ( pos < s.length() ) {
+                char c = s.charAt( pos );
+                if ( c == ')' ) {
+                    values.add( sb.toString() );
+                    sb = new StringBuilder();
+                    pos++;
+                    if ( pos < s.length() ) {
+                        if ( s.charAt( pos ) != '(' ) {
+                            String msg = "KVP parameter list is not well-formed: '" + s + "'.";
+                            throw new IllegalArgumentException( msg );
+                        }
+                    }
+                } else {
+                    sb.append( c );
+                }
+                pos++;
+            }
+        } else {
+            values = Collections.singletonList( s );
+        }
+        return values;
+    }
+
+    public static String[] splitList( String param ) {
+        return StringUtils.split( param, "," );
+    }
+
+    /**
      * Returns the value of the key or the default value if the kvp map doesn't contain the key.
      * 
      * @param param
@@ -234,6 +280,34 @@ public class KVPUtils {
         if ( s != null ) {
             try {
                 result = Integer.parseInt( s );
+            } catch ( NumberFormatException e ) {
+                throw new InvalidParameterValueException( "The value of parameter '" + paramName
+                                                          + "' must be an integer, but was '" + s + "'." );
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the specified parameter from a KVP map as a {@link BigInteger} value.
+     * 
+     * @param kvpParams
+     *            KVP map
+     * @param paramName
+     *            name of the parameter
+     * @param defaultValue
+     *            returned when the specified parameter is not present in the map (=null)
+     * @return the specified parameter value as an integer value
+     * @throws InvalidParameterValueException
+     *             if the parameter value does not denote an integer
+     */
+    public static BigInteger getBigInt( Map<String, String> kvpParams, String paramName, BigInteger defaultValue )
+                            throws InvalidParameterValueException {
+        BigInteger result = defaultValue;
+        String s = kvpParams.get( paramName );
+        if ( s != null ) {
+            try {
+                result = new BigInteger( s );
             } catch ( NumberFormatException e ) {
                 throw new InvalidParameterValueException( "The value of parameter '" + paramName
                                                           + "' must be an integer, but was '" + s + "'." );

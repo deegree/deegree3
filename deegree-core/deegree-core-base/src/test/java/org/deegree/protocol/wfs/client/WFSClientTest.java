@@ -35,18 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
+import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
+import static org.deegree.protocol.wfs.WFSVersion.WFS_110;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.net.URL;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.utils.test.TestProperties;
-import org.deegree.feature.Feature;
-import org.deegree.gml.feature.StreamFeatureCollection;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.party.Address;
+import org.deegree.protocol.ows.metadata.party.ContactInfo;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.util.Assert;
 
 /**
  * Tests the {@link WFSClient} against various WFS server instances.
@@ -65,7 +68,7 @@ public class WFSClientTest {
     private static final String WFS_UTAH_DEMO_110_URL = "wfs.utahdemo110.url";
 
     @Test
-    public void testGetCapabilities100Utah()
+    public void testCapabilitiesExtraction100()
                             throws Exception {
 
         String wfsUtahDemo100Url = TestProperties.getProperty( WFS_UTAH_DEMO_100_URL );
@@ -76,40 +79,74 @@ public class WFSClientTest {
 
         URL wfsCapaUrl = new URL( wfsUtahDemo100Url );
         WFSClient client = new WFSClient( wfsCapaUrl );
-        
-        Assert.equals( 18, client.getAppSchema().getFeatureTypes().length );
-        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
-        try {
-            Feature feature = null;
-            while ( ( feature = fc.read() ) != null ) {
-                System.out.println( feature.getId() );
-            }
-        } finally {
-            fc.close();
-        }
+        assertEquals( WFS_100, client.getServiceVersion() );
+
+        // ServiceIdentification
+        ServiceIdentification si = client.getIdentification();
+        assertEquals( "deegree 3 Utah Demo", si.getName() );
+        assertEquals( 1, si.getTitles().size() );
+        assertEquals( "deegree 3 Utah Demo", si.getTitles().get( 0 ).getString() );
+        assertEquals( null, si.getTitles().get( 0 ).getLanguage() );
+        assertEquals( 1, si.getAbstracts().size() );
+        assertEquals( "WMS and WFS demonstration with Utah data", si.getAbstracts().get( 0 ).getString() );
+        assertEquals( null, si.getAbstracts().get( 0 ).getLanguage() );
+        assertEquals( 0, si.getKeywords().size() );
+        assertNull( si.getFees() );
+
+        // ServiceProvider
+        assertEquals( "http://www.deegree.org", client.getProvider().getProviderSite() );
+
+        // OperationMetadata (TODO)
     }
 
     @Test
-    public void testGetCapabilities110Utah()
+    public void testCapabilitiesExtraction110()
                             throws Exception {
 
-        String wfsUtahDemo100Url = TestProperties.getProperty( WFS_UTAH_DEMO_110_URL );
-        if ( wfsUtahDemo100Url == null ) {
+        String wfsUtahDemo110Url = TestProperties.getProperty( WFS_UTAH_DEMO_110_URL );
+        if ( wfsUtahDemo110Url == null ) {
             LOG.warn( "Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties" );
             return;
         }
 
-        URL wfsCapaUrl = new URL( wfsUtahDemo100Url );
+        URL wfsCapaUrl = new URL( wfsUtahDemo110Url );
         WFSClient client = new WFSClient( wfsCapaUrl );
-        Assert.equals( 18, client.getAppSchema().getFeatureTypes().length );
-        StreamFeatureCollection fc = client.getFeatures( new QName( "SGID93_LOCATION_UDOTMap_CityLocations" ) );
-        try {
-            Feature feature = null;
-            while ( ( feature = fc.read() ) != null ) {
-                System.out.println( feature.getId() );
-            }
-        } finally {
-            fc.close();
-        }
+        assertEquals( WFS_110, client.getServiceVersion() );
+
+        // ServiceIdentification
+        ServiceIdentification si = client.getIdentification();
+        assertNull( si.getName() );
+        assertEquals( 1, si.getTitles().size() );
+        assertEquals( "deegree 3 Utah Demo", si.getTitles().get( 0 ).getString() );
+        assertEquals( null, si.getTitles().get( 0 ).getLanguage() );
+        assertEquals( 1, si.getAbstracts().size() );
+        assertEquals( "WMS and WFS demonstration with Utah data",
+                      si.getAbstracts().get( 0 ).getString() );
+        assertEquals( null, si.getAbstracts().get( 0 ).getLanguage() );
+        assertEquals( 0, si.getKeywords().size() );
+        assertNull( si.getFees() );
+
+        // ServiceProvider
+        assertEquals( "lat/lon GmbH", client.getProvider().getProviderName() );
+        assertEquals( "http://www.lat-lon.de", client.getProvider().getProviderSite() );
+        ResponsibleParty sc = client.getProvider().getServiceContact();
+        assertEquals( "Andreas Schmitz", sc.getIndividualName() );
+        assertEquals( "Software developer", sc.getPositionName() );
+        assertEquals( "PointOfContact", sc.getRole().getCode() );
+        ContactInfo ci = sc.getContactInfo();
+        assertEquals( "http://www.deegree.org", ci.getOnlineResource().toString() );
+        assertEquals( "24x7", ci.getHoursOfService() );
+        assertEquals( "Do not hesitate to contact us", ci.getContactInstruction() );
+        Address add = ci.getAddress();
+        assertEquals( "NRW", add.getAdministrativeArea() );
+        assertEquals( "Bonn", add.getCity() );
+        assertEquals( "Germany", add.getCountry() );
+        assertEquals( 1, add.getDeliveryPoint().size() );
+        assertEquals( "Aennchenstr. 19", add.getDeliveryPoint().get( 0 ) );
+        assertEquals( 1, add.getElectronicMailAddress().size() );
+        assertEquals( "info@lat-lon.de", add.getElectronicMailAddress().get( 0 ) );
+        assertEquals( "53177", add.getPostalCode() );
+
+        // OperationMetadata (TODO)
     }
 }

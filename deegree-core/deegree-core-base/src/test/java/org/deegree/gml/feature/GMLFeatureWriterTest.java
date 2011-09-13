@@ -105,7 +105,7 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
         GMLFeatureWriter exporter = new GMLFeatureWriter( GML_2, new IndentingXMLStreamWriter( writer ), null, null,
-                                                          null, null, 0, -1, null, false, true, null, null, false );
+                                                          null, null, 0, -1, false, true, null, null, false );
         exporter.export( feature );
         writer.flush();
         writer.close();
@@ -139,8 +139,8 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_31, writer, null, null, null, null, 0, -1, null, false,
-                                                          true, null, null, false );
+        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_31, writer, null, null, null, null, 0, -1, false, true,
+                                                          null, null, false );
         exporter.export( feature );
         writer.flush();
         writer.close();

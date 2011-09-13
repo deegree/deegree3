@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!--
+The following unconstrained request fetches all
+the instances of an enumerated set of feature
+types. Notice that the feature types are not
+all in the same namespace
+-->
+<GetFeature
+   version="2.0.0"
+   service="WFS"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:yourns="http://demo.cubewerx.com/yourns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+   <Query typeNames="myns:InWaterA_1M"/>
+   <Query typeNames="myns:BuiltUpA_1M"/>
+   <Query typeNames="yourns:RoadL_1M"/>
+</GetFeature>

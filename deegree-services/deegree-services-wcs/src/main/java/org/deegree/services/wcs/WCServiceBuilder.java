@@ -35,19 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
@@ -95,36 +92,21 @@ public class WCServiceBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( WCServiceBuilder.class );
 
-    private final ServiceConfigurationXMLAdapter adapter;
-
     private WCService wcsService;
 
     private SupportOptions defaultOptions;
 
-    /**
-     * @param adapter
-     */
-    public WCServiceBuilder( ServiceConfigurationXMLAdapter adapter ) {
-        this.adapter = adapter;
-    }
+    private final DeegreeWorkspace workspace;
+
+    private final URL configUrl;
 
     /**
-     * @param conf
-     * @return nothing
-     * @throws FileNotFoundException
-     * @throws XMLProcessingException
+     * @param adapter
+     * @param workspace
      */
-    public static WCService createService( File conf )
-                            throws XMLProcessingException, FileNotFoundException {
-        ServiceConfigurationXMLAdapter adapt = new ServiceConfigurationXMLAdapter();
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream( conf );
-            adapt.load( fis );
-        } finally {
-            closeQuietly( fis );
-        }
-        return new WCServiceBuilder( adapt ).buildService();
+    public WCServiceBuilder( DeegreeWorkspace workspace, URL configUrl ) {
+        this.workspace = workspace;
+        this.configUrl = configUrl;
     }
 
     /**
@@ -132,7 +114,7 @@ public class WCServiceBuilder {
      */
     public WCService buildService() {
         wcsService = new WCService();
-        ServiceConfiguration wcsConf = adapter.parse();
+        ServiceConfiguration wcsConf = ServiceConfigurationXMLAdapter.parse( workspace, configUrl );
 
         RasterDataContainerFactory.setDefaultLoadingPolicy( LoadingPolicy.CACHED );
 

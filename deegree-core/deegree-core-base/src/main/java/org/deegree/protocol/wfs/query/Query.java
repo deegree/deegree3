@@ -40,7 +40,8 @@ import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 
 /**
- * Represents a <code>Query</code> operation as a part of a {@link GetFeature} request.
+ * Represents a <code>Query</code> operation as a part of a {@link GetFeature}/{@link GetFeatureWithLock}/
+ * {@link GetPropertyValue} request.
  * 
  * @see GetFeature
  * @see GetFeatureWithLock
@@ -59,16 +60,7 @@ public abstract class Query {
      * Creates a new {@link Query} instance.
      * 
      * @param handle
-     *            client-generated query identifier, may be null
-     * @param typeNames
-     *            requested feature types (with optional aliases), can be null
-     * @param featureVersion
-     *            version of the feature instances to be retrieved, may be null
-     * @param srsName
-     *            WFS-supported SRS that should be used for returned feature geometries, may be null
-     * @param sortBy
-     *            properties whose values should be used to order the set of feature instances that satisfy the query,
-     *            may be null
+     *            client-generated query identifier, may be <code>null</code>
      */
     protected Query( String handle ) {
         this.handle = handle;
@@ -77,7 +69,7 @@ public abstract class Query {
     /**
      * Returns the client-generated identifier supplied with the query.
      * 
-     * @return the client-generated identifier, may be null
+     * @return the client-generated identifier, may be <code>null</code>
      */
     public String getHandle() {
         return handle;

@@ -70,6 +70,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -83,7 +84,7 @@ import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
@@ -145,11 +146,14 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final Element extendedCapabilities;
 
+    private final String metadataUrlTemplate;
+
     GetCapabilitiesHandler( WebFeatureService master, WFSFeatureStoreManager service, Version version,
                             XMLStreamWriter xmlWriter, ServiceIdentificationType serviceId,
                             ServiceProviderType serviceProvider, Collection<FeatureType> servedFts,
-                            Map<QName, FeatureTypeMetadata> ftNameToFtMetadata, Set<String> sections,
-                            boolean enableTransactions, List<ICRS> querySRS, Element extendedCapabilities ) {
+                            String metadataUrlTemplate, Map<QName, FeatureTypeMetadata> ftNameToFtMetadata,
+                            Set<String> sections, boolean enableTransactions, List<ICRS> querySRS,
+                            Element extendedCapabilities ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -157,6 +161,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.serviceId = serviceId;
         this.serviceProvider = serviceProvider;
         this.servedFts = servedFts;
+        this.metadataUrlTemplate = metadataUrlTemplate;
         this.ftNameToFtMetadata = ftNameToFtMetadata;
         this.sections = sections;
         this.enableTransactions = enableTransactions;
@@ -299,6 +304,17 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     LOG.error( "Cannot generate WGS84 envelope for feature type '" + ftName + "'.", e );
                 }
             }
+
+            // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
+            String metadataUrl = getMetadataURL( ftMd );
+            if ( metadataUrl != null ) {
+                writer.writeStartElement( WFS_NS, "MetadataURL" );
+                writer.writeAttribute( "type", "TC211" );
+                writer.writeAttribute( "format", "XML" );
+                writer.writeCharacters( metadataUrl );
+                writer.writeEndElement();
+            }
+
             writer.writeEndElement();
         }
         writer.writeEndElement();
@@ -308,6 +324,13 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeEndElement();
         writer.writeEndDocument();
+    }
+
+    private String getMetadataURL( FeatureTypeMetadata ftMd ) {
+        if ( metadataUrlTemplate == null || ftMd == null || ftMd.getMetadataSetId() == null ) {
+            return null;
+        }
+        return StringUtils.replaceAll( metadataUrlTemplate, "${metadataSetId}", ftMd.getMetadataSetId() );
     }
 
     private void exportCapability100()
@@ -664,6 +687,16 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // TODO Operations
 
+                // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
+                String metadataUrl = getMetadataURL( ftMd );
+                if ( metadataUrl != null ) {
+                    writer.writeStartElement( WFS_NS, "MetadataURL" );
+                    writer.writeAttribute( "type", "19139" );
+                    writer.writeAttribute( "format", "text/xml" );
+                    writer.writeCharacters( metadataUrl );
+                    writer.writeEndElement();
+                }
+
                 writer.writeEndElement();
             }
             writer.writeEndElement();
@@ -904,7 +937,12 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeEndElement();
                 writer.writeEndElement();
 
-                // TODO Operations
+                // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
+                String metadataUrl = getMetadataURL( ftMd );
+                if ( metadataUrl != null ) {
+                    writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
+                    writer.writeAttribute( XLN_NS, "href", metadataUrl );
+                }
 
                 writer.writeEndElement();
             }

@@ -39,8 +39,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
 
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 import org.junit.Test;
 
 /**

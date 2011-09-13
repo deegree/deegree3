@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -44,11 +46,10 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
@@ -86,7 +87,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.memory.jaxb";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/feature/memory/3.0.0/memory.xsd";
+    private static final URL CONFIG_SCHEMA = MemoryFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/memory/3.0.0/memory.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -97,7 +98,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return MemoryFeatureStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
@@ -107,9 +108,9 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
         MemoryFeatureStore fs = null;
         ICRS storageSRS = null;
         try {
-            MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                               CONFIG_SCHEMA,
-                                                                                               configURL, workspace );
+            MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                     CONFIG_SCHEMA, configURL,
+                                                                                     workspace );
 
             AppSchema schema = null;
             XMLAdapter resolver = new XMLAdapter();
@@ -128,10 +129,10 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                 if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
                     File file = new File( new URL( schemaURLs[0] ).toURI() );
                     decoder = new AppSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
-                                                               getHintMap( config.getNamespaceHint() ), file );
+                                                       getHintMap( config.getNamespaceHint() ), file );
                 } else {
                     decoder = new AppSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
-                                                               getHintMap( config.getNamespaceHint() ), schemaURLs );
+                                                       getHintMap( config.getNamespaceHint() ), schemaURLs );
                 }
                 schema = decoder.extractFeatureTypeSchema();
                 if ( config.getStorageCRS() != null ) {

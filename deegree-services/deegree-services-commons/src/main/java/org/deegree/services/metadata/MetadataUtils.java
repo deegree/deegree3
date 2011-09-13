@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata;
 
+import static org.deegree.commons.metadata.MetadataJAXBConverter.LANG_MAPPER;
 import static org.deegree.commons.utils.CollectionUtils.map;
 
 import java.net.MalformedURLException;
@@ -46,13 +47,12 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
-import org.deegree.protocol.ows.metadata.Address;
-import org.deegree.protocol.ows.metadata.ContactInfo;
-import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.protocol.ows.metadata.ServiceContact;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
-import org.deegree.protocol.ows.metadata.Telephone;
+import org.deegree.protocol.ows.metadata.party.Address;
+import org.deegree.protocol.ows.metadata.party.ContactInfo;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
+import org.deegree.protocol.ows.metadata.party.Telephone;
 import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.KeywordsType;
@@ -71,13 +71,6 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
  * @version $Revision: $, $Date: $
  */
 public class MetadataUtils {
-
-    static final Mapper<LanguageString, String> LANG_MAPPER = new Mapper<LanguageString, String>() {
-        @Override
-        public LanguageString apply( String u ) {
-            return new LanguageString( u, null );
-        }
-    };
 
     static final Mapper<LanguageString, LanguageStringType> LANG_LANG_MAPPER = new Mapper<LanguageString, LanguageStringType>() {
         @Override
@@ -111,21 +104,12 @@ public class MetadataUtils {
         if ( si == null ) {
             return null;
         }
-        ServiceIdentification res = new ServiceIdentification();
-        Description desc = new Description();
-        if ( si.getTitle() != null ) {
-            desc.setTitle( map( si.getTitle(), LANG_MAPPER ) );
-        }
-        if ( si.getAbstract() != null ) {
-            desc.setAbstract( map( si.getAbstract(), LANG_MAPPER ) );
-        }
-        if ( si.getKeywords() != null ) {
-            desc.setKeywords( map( si.getKeywords(), KW_MAPPER ) );
-        }
-        res.setFees( si.getFees() );
-        res.setAccessConstraints( si.getAccessConstraints() );
-        res.setDescription( desc );
-        return res;
+        // TODO Keywords
+        List<LanguageString> titles = map( si.getTitle(), LANG_MAPPER );
+        List<LanguageString> abstracts = map( si.getAbstract(), LANG_MAPPER );
+        String fees = si.getFees();
+        List<String> accessConstraints = si.getAccessConstraints();
+        return new ServiceIdentification( null, titles, abstracts, null, null, null, null, fees, accessConstraints );
     }
 
     public static Address convertFromJAXB( AddressType ad ) {
@@ -141,11 +125,11 @@ public class MetadataUtils {
         return address;
     }
 
-    public static ServiceContact convertFromJAXB( ServiceContactType sc ) {
+    public static ResponsibleParty convertFromJAXB( ServiceContactType sc ) {
         if ( sc == null ) {
             return null;
         }
-        ServiceContact res = new ServiceContact();
+        ResponsibleParty res = new ResponsibleParty();
         res.setIndividualName( sc.getIndividualName() );
         res.setPositionName( sc.getPositionName() );
         res.setRole( new CodeType( sc.getRole() ) );
@@ -176,15 +160,8 @@ public class MetadataUtils {
         if ( sp == null ) {
             return null;
         }
-        ServiceProvider res = new ServiceProvider();
-        res.setProviderName( sp.getProviderName() );
-        try {
-            res.setProviderSite( new URL( sp.getProviderSite() ) );
-        } catch ( MalformedURLException e ) {
-            // ignore this, schemas should be fixed so it already is an URL
-        }
-        res.setServiceContact( convertFromJAXB( sp.getServiceContact() ) );
-        return res;
+        return new ServiceProvider( sp.getProviderName(), sp.getProviderSite(),
+                                    convertFromJAXB( sp.getServiceContact() ) );
     }
 
     public static Pair<ServiceIdentification, ServiceProvider> convertFromJAXB( DeegreeServicesMetadataType md ) {

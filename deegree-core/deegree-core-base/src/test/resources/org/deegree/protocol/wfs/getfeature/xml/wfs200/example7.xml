@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<GetFeature 
+   version="2.0.0"
+   service="WFS"
+   handle="Query01"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:myns="http://www.someserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.opengis.net/gml/3.2
+                       http://schemas.opengis.net/gml/3.2.1/gml.xsd
+                       http://www.someserver.com/myns ./GetFeature_07.xsd">
+
+   <Query typeNames="myns:Hydrography">
+      <PropertyName>myns:geoTemp</PropertyName>
+      <PropertyName>myns:depth</PropertyName>
+      <PropertyName>myns:temperature</PropertyName>
+      <fes:Filter>
+         <fes:Not>
+            <fes:Disjoint>
+               <fes:ValueReference>myns:geoTemp</fes:ValueReference>
+               <gml:Envelope srsName="urn:ogc;def:crs:EPSG::4326">
+                  <gml:lowerCorner>46.2023 -57.9118 </gml:lowerCorner>
+                  <gml:upperCorner>51.8145 -46.6873</gml:upperCorner>
+               </gml:Envelope>
+            </fes:Disjoint>
+         </fes:Not>
+      </fes:Filter>
+      <fes:SortBy>
+         <fes:SortProperty>
+            <fes:ValueReference>myns:depth</fes:ValueReference>
+         </fes:SortProperty>
+         <fes:SortProperty>
+            <fes:ValueReference>myns:temperature</fes:ValueReference>
+            <fes:SortOrder>DESC</fes:SortOrder>
+         </fes:SortProperty>
+      </fes:SortBy>
+   </Query>
+</GetFeature>

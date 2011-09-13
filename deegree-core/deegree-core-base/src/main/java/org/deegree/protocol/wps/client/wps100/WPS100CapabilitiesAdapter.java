@@ -50,7 +50,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.OWS110CapabilitiesAdapter;
+import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.process.ProcessInfo;
 
@@ -65,7 +65,7 @@ import org.deegree.protocol.wps.client.process.ProcessInfo;
  * 
  * @version $Revision$, $Date$
  */
-public class WPS100CapabilitiesAdapter extends OWS110CapabilitiesAdapter {
+public class WPS100CapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
     private final NamespaceBindings nsContext = new NamespaceBindings();
 

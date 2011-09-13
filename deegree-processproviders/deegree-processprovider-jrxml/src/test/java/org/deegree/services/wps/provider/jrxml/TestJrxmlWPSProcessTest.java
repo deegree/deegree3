@@ -72,8 +72,11 @@ public class TestJrxmlWPSProcessTest {
         assertNotNull( inputParameters );
 
         List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParameters.getProcessInput();
+        for ( JAXBElement<? extends ProcessletInputDefinition> jaxbElement : processInput ) {
+            System.out.println(jaxbElement.getName());
+        }
         assertNotNull( processInput );
-        assertEquals( 9, processInput.size() );
+        assertEquals( 6, processInput.size() );
     }
 
 }

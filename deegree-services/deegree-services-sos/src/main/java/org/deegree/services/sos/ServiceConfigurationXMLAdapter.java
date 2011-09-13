@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,41 +32,44 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.services.sos;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
+import java.net.URL;
+
+import javax.xml.bind.JAXBException;
+
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.services.jaxb.sos.DeegreeSOS;
 import org.deegree.services.jaxb.sos.ServiceConfiguration;
 
 /**
  * This is an xml adapter for the deegree SOS ServiceConfiguration.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class ServiceConfigurationXMLAdapter extends XMLAdapter {
+
+    protected static final URL SCHEMA = ServiceConfigurationXMLAdapter.class.getResource( "/META-INF/schemas/sos/3.0.0/sos_configuration.xsd" );
 
     /**
      * @return the parsed ServiceConfiguration
      * @throws XMLProcessingException
      */
-    public ServiceConfiguration parse()
+    public static ServiceConfiguration parse( DeegreeWorkspace workspace, URL configUrl )
                             throws XMLProcessingException {
-        ServiceConfiguration sosConf = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.sos" );
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            sosConf = (ServiceConfiguration) unmarshaller.unmarshal( rootElement.getXMLStreamReaderWithoutCaching() );
+            DeegreeSOS sosConf = (DeegreeSOS) unmarshall( "org.deegree.services.jaxb.sos", SCHEMA, configUrl, workspace );
+            return sosConf.getServiceConfiguration();
         } catch ( JAXBException e ) {
-            throw new XMLProcessingException (e.getMessage(), e);
+            throw new XMLProcessingException( e.getMessage(), e );
         }
-        return sosConf;
     }
 }

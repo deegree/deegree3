@@ -44,6 +44,7 @@ import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
+import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
@@ -114,8 +115,8 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
@@ -193,7 +194,7 @@ public class WMSController extends AbstractOWS {
 
     private List<Element> extendedCaps;
 
-    private String metadataURL;
+    private String metadataURLTemplate;
 
     public WMSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         super( configURL, serviceInfo );
@@ -217,11 +218,11 @@ public class WMSController extends AbstractOWS {
         }
     }
 
-    private void handleMetadata( String url, String storeid ) {
+    private void handleMetadata( String metadataURLTemplate, String storeid ) {
         if ( service.isNewStyle() ) {
             return;
         }
-        this.metadataURL = url;
+        this.metadataURLTemplate = metadataURLTemplate;
         HashMap<String, String> dataMetadataIds = new HashMap<String, String>();
         traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
         if ( storeid != null ) {
@@ -368,7 +369,7 @@ public class WMSController extends AbstractOWS {
             service = new MapService( sc, controllerConf, workspace );
 
             // after the service knows what layers are available:
-            handleMetadata( conf.getMetadataServiceURL(), conf.getMetadataStoreId() );
+            handleMetadata( conf.getMetadataURLTemplate(), conf.getMetadataStoreId() );
 
             // if ( sc.getSecurityManager() == null ) {
             // // then do nothing and step over
@@ -654,8 +655,8 @@ public class WMSController extends AbstractOWS {
                 // GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GMLVersion.GML_2,xmlWriter );
                 // gmlWriter.setOutputCRS(fi.getCoordinateSystem() );
                 // gmlWriter.set
-                new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, crs, null, "#{}", null, 0, -1, null, false,
-                                      geometries, null, null, false ).export( col, ns == null ? loc : null, bindings );
+                new GMLFeatureWriter( GML_2, xmlWriter, crs, null, "#{}", null, 0, -1, false, geometries, null, null,
+                                      false ).export( col, ns == null ? loc : null, bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
@@ -861,9 +862,9 @@ public class WMSController extends AbstractOWS {
         return extendedCaps;
     }
 
-    public String getMetadataURL() {
+    public String getMetadataURLTemplate() {
         // TODO handle this properly in init(), needs service level dependency management
-        if ( metadataURL == null ) {
+        if ( metadataURLTemplate == null ) {
             WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
             Map<String, List<OWS>> ctrls = mgr.getAll();
             for ( List<OWS> lists : ctrls.values() ) {
@@ -872,13 +873,13 @@ public class WMSController extends AbstractOWS {
                     for ( String s : md.getImplementedServiceName() ) {
                         if ( s.equalsIgnoreCase( "csw" )
                              && md.getImplementedVersions().contains( new Version( 2, 0, 2 ) ) ) {
-                            this.metadataURL = ""; // special case to use requested address
+                            this.metadataURLTemplate = ""; // special case to use requested address
                         }
                     }
                 }
             }
         }
-        return metadataURL;
+        return metadataURLTemplate;
     }
 
     /**

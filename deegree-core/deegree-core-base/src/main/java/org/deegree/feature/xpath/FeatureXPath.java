@@ -35,11 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.gml.GMLVersion;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
+import org.jaxen.SimpleFunctionContext;
+import org.jaxen.SimpleNamespaceContext;
+import org.jaxen.XPathFunctionContext;
 
 /**
  * <a href="http://jaxen.codehaus.org/">Jaxen</a> XPath implementation for {@link Feature} objects.
@@ -82,5 +87,15 @@ public class FeatureXPath extends BaseXPath {
      */
     public FeatureXPath( String xpathExpr, Feature rootFeature, GMLVersion version ) throws JaxenException {
         super( xpathExpr, new FeatureNavigator( rootFeature, version ) );
+
+        SimpleFunctionContext fc = new XPathFunctionContext();
+        fc.registerFunction( WFS_200_NS, "valueOf", new ValueOf() );
+        fc.registerFunction( null, "valueOf", new ValueOf() );
+
+        SimpleNamespaceContext nc = new SimpleNamespaceContext();
+        nc.addNamespace( "wfs", WFS_200_NS );
+
+        setFunctionContext( fc );
+        setNamespaceContext( nc );
     }
 }

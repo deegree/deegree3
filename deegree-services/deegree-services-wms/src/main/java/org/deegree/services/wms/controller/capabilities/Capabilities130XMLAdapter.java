@@ -63,19 +63,20 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.protocol.ows.metadata.Address;
-import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.protocol.ows.metadata.ServiceContact;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.ows.metadata.party.Address;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
@@ -216,8 +217,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         if ( md.getName() != null ) {
             writeElement( writer, WMSNS, "Name", md.getName() );
         }
-        writeElement( writer, WMSNS, "Title", md.getDescription().getTitle().get( 0 ).getString() );
-        List<LanguageString> abs = md.getDescription().getAbstract();
+        writeElement( writer, WMSNS, "Title", md.getDescription().getTitles().get( 0 ).getString() );
+        List<LanguageString> abs = md.getDescription().getAbstracts();
         if ( abs != null && !abs.isEmpty() ) {
             writeElement( writer, WMSNS, "Abstract", abs.get( 0 ).getString() );
         }
@@ -230,7 +231,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        writeSrsAndEnvelope( writer, md.getCoordinateSystems(), md.getEnvelope() );
+        SpatialMetadata smd = md.getSpatialMetadata();
+        writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
 
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
@@ -428,26 +430,28 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        mdlabel: if ( controller.getMetadataURL() != null ) {
+        mdlabel: if ( controller.getMetadataURLTemplate() != null ) {
             String id = layer.getDataMetadataSetId();
             if ( id == null ) {
                 break mdlabel;
             }
-            String mdurl = controller.getMetadataURL();
-            if ( mdurl.isEmpty() ) {
-                mdurl = getUrl;
+            String mdurlTemplate = controller.getMetadataURLTemplate();
+            if ( mdurlTemplate.isEmpty() ) {
+                mdurlTemplate = getUrl;
+                if ( !( mdurlTemplate.endsWith( "?" ) || mdurlTemplate.endsWith( "&" ) ) ) {
+                    mdurlTemplate += "?";
+                }
+                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
             }
-            if ( !( mdurl.endsWith( "?" ) || mdurl.endsWith( "&" ) ) ) {
-                mdurl += "?";
-            }
-            mdurl += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id="
-                     + id;
+
+            String mdUrl = StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id );
+
             writer.writeStartElement( WMSNS, "MetadataURL" );
             writer.writeAttribute( "type", "ISO19115:2003" );
             writeElement( writer, WMSNS, "Format", "application/xml" );
             writer.writeStartElement( WMSNS, "OnlineResource" );
             writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", mdurl );
+            writer.writeAttribute( XLNNS, "href", mdUrl );
             writer.writeEndElement();
             writer.writeEndElement();
         }
@@ -588,18 +592,17 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         writeElement( writer, WMSNS, "Name", "WMS" );
 
-        Description desc = identification == null ? null : identification.getDescription();
-
-        List<LanguageString> titles = desc == null ? null : desc.getTitle();
+        List<LanguageString> titles = identification == null ? null : identification.getTitles();
         String title = ( titles != null && !titles.isEmpty() ) ? titles.get( 0 ).getString() : "deegree 3 WMS";
         writeElement( writer, WMSNS, "Title", title );
 
-        List<LanguageString> abstracts = desc == null ? null : desc.getAbstract();
+        List<LanguageString> abstracts = identification == null ? null : identification.getAbstracts();
         if ( abstracts != null && !abstracts.isEmpty() ) {
             writeElement( writer, WMSNS, "Abstract", abstracts.get( 0 ).getString() );
         }
 
-        List<Pair<List<LanguageString>, CodeType>> keywords = desc == null ? null : desc.getKeywords();
+        List<Pair<List<LanguageString>, CodeType>> keywords = identification == null ? null
+                                                                                    : identification.getKeywords();
         if ( keywords != null && !keywords.isEmpty() ) {
             writer.writeStartElement( WMSNS, "KeywordList" );
 
@@ -630,7 +633,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeEndElement();
 
         if ( provider != null ) {
-            ServiceContact contact = provider.getServiceContact();
+            ResponsibleParty contact = provider.getServiceContact();
             if ( contact != null ) {
                 writer.writeStartElement( WMSNS, "ContactInformation" );
 

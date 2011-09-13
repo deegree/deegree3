@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -44,6 +44,14 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**
  * Represents a <code>DescribeFeatureType</code> request to a WFS.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -52,9 +60,9 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  */
 public class DescribeFeatureType extends AbstractWFSRequest {
 
-    private String outputFormat;
+    private final String outputFormat;
 
-    private QName[] typeNames;
+    private final QName[] typeNames;
 
     private Map<String, String> nsBindings;
 
@@ -71,8 +79,7 @@ public class DescribeFeatureType extends AbstractWFSRequest {
      *            requested type names, may be null
      * @param nsBindings
      *            mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
-     *            the binding of the default namespace, null is returned if no <code>NAMESPACE</code> parameter is
-     *            present, may be null
+     *            the binding of the default namespace, may be <code>null</code>
      */
     public DescribeFeatureType( Version version, String handle, String outputFormat, QName[] typeNames,
                                 Map<String, String> nsBindings ) {
@@ -131,7 +138,7 @@ public class DescribeFeatureType extends AbstractWFSRequest {
             s += "{";
             int i = 0;
             for ( String ns : nsBindings.keySet() ) {
-                s +=  ns + "=" + nsBindings.get( ns );
+                s += ns + "=" + nsBindings.get( ns );
                 if ( i != nsBindings.size() - 1 ) {
                     s += ",";
                 }
@@ -139,7 +146,7 @@ public class DescribeFeatureType extends AbstractWFSRequest {
             s += "}";
         } else {
             s += "null";
-        }        
+        }
         s += "}";
         return s;
     }

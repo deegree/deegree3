@@ -4,17 +4,16 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**
- * Represents a <code>Transaction</code> request to a web feature service.
+ * Represents a <code>Transaction</code> request to a WFS.
  * <p>
- * A <code>Transaction</code> consists of a sequence of {@link Insert}, {@link Update}, {@link Delete} and
- * {@link Native} operations.
- * <p>
- * From the WFS Specification 1.1.0 OGC 04-094 (#12, Pg.63):
- * <p>
- * <i> A <code>Transaction</code> request is used to describe data transformation operations that are to be applied to
- * web accessible feature instances. When the transaction has been completed, a web feature service will generate an XML
- * response document indicating the completion status of the transaction. </i>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * </ul>
  * </p>
+ * 
+ * @see TransactionOperation
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
@@ -23,11 +22,11 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  */
 public class Transaction extends AbstractWFSRequest {
 
-    private Iterable<TransactionOperation> operations;
+    private final Iterable<TransactionOperation> operations;
 
-    private String lockId;
+    private final String lockId;
 
-    private ReleaseAction releaseAction;
+    private final ReleaseAction releaseAction;
 
     /** Controls how locked features are treated when a transaction request is completed. */
     public static enum ReleaseAction {

@@ -55,7 +55,12 @@ import org.deegree.protocol.wfs.WFSConstants;
 /**
  * Adapter between XML <code>DescribeFeatureType</code> requests and {@link DescribeFeatureType} objects.
  * <p>
- * TODO code for exporting to XML
+ * Supported versions:
+ * <ul>
+ * <li>WFS 1.0.0</li>
+ * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -72,12 +77,9 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
      * <ul>
      * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
-     * <li>WFS 2.0.0 (tentative)</li>
+     * <li>WFS 2.0.0</li>
      * </ul>
      * 
-     * @param version
-     *            version of the request, may be <code>null</code> (in that case, a version attribute must be present in
-     *            the root element)
      * @return parsed {@link DescribeFeatureType} request
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
@@ -86,11 +88,9 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public DescribeFeatureType parse( Version version ) {
+    public DescribeFeatureType parse() {
 
-        if ( version == null ) {
-            version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
-        }
+        Version version = determineVersion110Safe();
 
         DescribeFeatureType result = null;
         if ( VERSION_100.equals( version ) ) {
@@ -100,9 +100,8 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
         } else if ( VERSION_200.equals( version ) ) {
             result = parse200();
         } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_100,
-                                                                                                  VERSION_110,
-                                                                                                  VERSION_200 ) );
+            String msg = Messages.get( "UNSUPPORTED_VERSION", version,
+                                       Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
             throw new InvalidParameterValueException( msg );
         }
         return result;
@@ -128,8 +127,8 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
         String[] typeNames2 = getNodesAsStrings( rootElement, new XPath( "wfs:TypeName", nsContext ) );
         // TODO remove null namespace hack
         for ( int i = 0; i < typeNames.length; i++ ) {
-            if ( typeNames[i] == null ) {                
-                typeNames[i] = mangleTypeName ( typeNames2[i] );
+            if ( typeNames[i] == null ) {
+                typeNames[i] = mangleTypeName( typeNames2[i] );
             } else if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
                 typeNames[i] = new QName( typeNames[i].getLocalPart() );
             }
@@ -144,12 +143,12 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
         String namespace = XMLConstants.NULL_NS_URI;
 
         int colonIdx = s.indexOf( ':' );
-        if (colonIdx >= 0 ){
+        if ( colonIdx >= 0 ) {
             prefix = s.substring( 0, colonIdx );
-            localPart = s.substring( colonIdx + 1);
+            localPart = s.substring( colonIdx + 1 );
         }
 
-        return new QName (namespace, localPart, prefix);
+        return new QName( namespace, localPart, prefix );
     }
 
     /**
@@ -176,7 +175,7 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
         // TODO remove null namespace hack
         for ( int i = 0; i < typeNames.length; i++ ) {
             if ( typeNames[i] == null ) {
-                typeNames[i] = mangleTypeName ( typeNames2[i] );
+                typeNames[i] = mangleTypeName( typeNames2[i] );
             } else if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
                 typeNames[i] = new QName( typeNames[i].getLocalPart() );
             }

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.io.file;
 
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -47,7 +49,6 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.rendering.r3d.jaxb.renderable.RenderableFileStoreConfig;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
@@ -71,7 +72,7 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = RenderableFileStoreConfig.class.getPackage().getName();
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/3d/renderable/3.0.0/file.xsd";
+    private static final URL CONFIG_SCHEMA = RenderableFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/3.0.0/file.xsd" );
 
     @Override
     public String getConfigNamespace() {
@@ -82,9 +83,9 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
     public RenderableStore build( URL configURL, DeegreeWorkspace workspace ) {
         RenderableStore rs = null;
         try {
-            RenderableFileStoreConfig config = (RenderableFileStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                                 CONFIG_SCHEMA,
-                                                                                                 configURL, workspace );
+            RenderableFileStoreConfig config = (RenderableFileStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                       CONFIG_SCHEMA, configURL,
+                                                                                       workspace );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
@@ -137,7 +138,7 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
         return new File( resolve );
     }
 
-    private URI resolveURI( String fileName, XMLAdapter resolver ) {
+    private static URI resolveURI( String fileName, XMLAdapter resolver ) {
         URI resolve = null;
         try {
             URL url = resolver.resolve( fileName );
@@ -152,6 +153,6 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return RenderableFileStoreProvider.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 }

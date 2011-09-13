@@ -38,11 +38,15 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
+import static java.math.BigInteger.valueOf;
 import static org.deegree.filter.Operator.Type.COMPARISON;
 import static org.deegree.filter.Operator.Type.LOGICAL;
 import static org.deegree.filter.logical.LogicalOperator.SubType.AND;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
+import java.math.BigInteger;
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -65,6 +69,7 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
 import org.junit.Test;
 
@@ -79,44 +84,44 @@ import org.junit.Test;
 public class GetFeatureXMLAdapterTest extends TestCase {
 
     // ---------------------version 1.0.0------------------------------
-    private final String V100_EXAMPLE1 = "examples_xml/v100/example1.xml";
+    private final String V100_EXAMPLE1 = "xml/wfs100/example1.xml";
 
-    private final String V100_EXAMPLE2 = "examples_xml/v100/example2.xml";
+    private final String V100_EXAMPLE2 = "xml/wfs100/example2.xml";
 
-    private final String V100_EXAMPLE3 = "examples_xml/v100/example3.xml";
+    private final String V100_EXAMPLE3 = "xml/wfs100/example3.xml";
 
-    private final String V100_EXAMPLE4 = "examples_xml/v100/example4.xml";
+    private final String V100_EXAMPLE4 = "xml/wfs100/example4.xml";
 
-    private final String V100_EXAMPLE5 = "examples_xml/v100/example5.xml";
+    private final String V100_EXAMPLE5 = "xml/wfs100/example5.xml";
 
-    private final String V100_EXAMPLE6 = "examples_xml/v100/example6.xml";
+    private final String V100_EXAMPLE6 = "xml/wfs100/example6.xml";
 
-    private final String V100_EXAMPLE7 = "examples_xml/v100/example7.xml";
+    private final String V100_EXAMPLE7 = "xml/wfs100/example7.xml";
 
-    private final String V100_EXAMPLE8 = "examples_xml/v100/example8.xml";
+    private final String V100_EXAMPLE8 = "xml/wfs100/example8.xml";
 
-    private final String V100_EXAMPLE9 = "examples_xml/v100/example9.xml";
+    private final String V100_EXAMPLE9 = "xml/wfs100/example9.xml";
 
     // ---------------------version 1.1.0------------------------------
-    private final String V110_EXAMPLE01 = "examples_xml/v110/example01.xml";
+    private final String V110_EXAMPLE01 = "xml/wfs110/example01.xml";
 
-    private final String V110_EXAMPLE02 = "examples_xml/v110/example02.xml";
+    private final String V110_EXAMPLE02 = "xml/wfs110/example02.xml";
 
-    private final String V110_EXAMPLE03 = "examples_xml/v110/example03.xml";
+    private final String V110_EXAMPLE03 = "xml/wfs110/example03.xml";
 
-    private final String V110_EXAMPLE04 = "examples_xml/v110/example04.xml";
+    private final String V110_EXAMPLE04 = "xml/wfs110/example04.xml";
 
-    // private final String V110_EXAMPLE05 = "examples_xml/v110/example05.xml";
+    // private final String V110_EXAMPLE05 = "xml/wfs110/example05.xml";
 
-    // private final String V110_EXAMPLE06 = "examples_xml/v110/example06.xml";
+    // private final String V110_EXAMPLE06 = "xml/wfs110/example06.xml";
 
-    private final String V110_EXAMPLE09 = "examples_xml/v110/example09.xml";
+    private final String V110_EXAMPLE09 = "xml/wfs110/example09.xml";
 
-    private final String V110_EXAMPLE10 = "examples_xml/v110/example10.xml";
+    private final String V110_EXAMPLE10 = "xml/wfs110/example10.xml";
 
-    private final String V110_EXAMPLE11 = "examples_xml/v110/example11.xml";
+    private final String V110_EXAMPLE11 = "xml/wfs110/example11.xml";
 
-    private final String V110_EXAMPLE12 = "examples_xml/v110/example12.xml";
+    private final String V110_EXAMPLE12 = "xml/wfs110/example12.xml";
 
     /**
      * @throws Exception
@@ -128,10 +133,10 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
         IdFilter idFilter = (IdFilter) filterQuery.getFilter();
@@ -154,10 +159,10 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
         TypeName[] typeNames = filterQuery.getTypeNames();
 
@@ -182,14 +187,14 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
-        ValueReference[] propertyNames = filterQuery.getPropertyNames();
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
+        ProjectionClause[] projections = filterQuery.getProjectionClauses();
 
-        assertEquals( "myns:WKB_GEOM", propertyNames[0].getAsText() );
-        assertEquals( "myns:TILE_ID", propertyNames[1].getAsText() );
-        assertEquals( "myns:FAC_ID", propertyNames[2].getAsText() );
+        assertEquals( "myns:WKB_GEOM", projections[0].getPropertyName().getAsText() );
+        assertEquals( "myns:TILE_ID", projections[1].getPropertyName().getAsText() );
+        assertEquals( "myns:FAC_ID", projections[2].getPropertyName().getAsText() );
 
         IdFilter idFilter = (IdFilter) filterQuery.getFilter();
         Set<String> matchingIds = idFilter.getMatchingIds();
@@ -210,17 +215,17 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ValueReference[] propNames = filterQuery.getPropertyNames();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 3 );
-        assertEquals( propNames[0].getAsText(), "myns:wkbGeom" );
-        assertEquals( propNames[1].getAsText(), "myns:tileId" );
-        assertEquals( propNames[2].getAsText(), "myns:facId" );
+        assertEquals( propNames[0].getPropertyName().getAsText(), "myns:wkbGeom" );
+        assertEquals( propNames[1].getPropertyName().getAsText(), "myns:tileId" );
+        assertEquals( propNames[2].getPropertyName().getAsText(), "myns:facId" );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -240,9 +245,9 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
         IdFilter idFilter = (IdFilter) filterQuery.getFilter();
@@ -265,10 +270,10 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -290,14 +295,14 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        assertEquals( "myns:WKB_GEOM", filterQuery.getPropertyNames()[0].getAsText() );
-        assertEquals( "myns:TILE_ID", filterQuery.getPropertyNames()[1].getAsText() );
+        assertEquals( "myns:WKB_GEOM", filterQuery.getProjectionClauses()[0].getPropertyName().getAsText() );
+        assertEquals( "myns:TILE_ID", filterQuery.getProjectionClauses()[1].getPropertyName().getAsText() );
         IdFilter idFilter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = idFilter.getMatchingIds();
 
@@ -320,16 +325,16 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ValueReference[] propNames = filterQuery.getPropertyNames();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
-        assertEquals( propNames[0].getAsText(), "myns:wkbGeom" );
-        assertEquals( propNames[1].getAsText(), "myns:tileId" );
+        assertEquals( propNames[0].getPropertyName().getAsText(), "myns:wkbGeom" );
+        assertEquals( propNames[1].getPropertyName().getAsText(), "myns:tileId" );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -351,11 +356,11 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        assertEquals( new Integer( 10000 ), getFeature.getCount() );
+        assertEquals( valueOf( 10000 ), getFeature.getPresentationParams().getCount() );
 
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
     }
@@ -371,17 +376,17 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        filterQuery = (FilterQuery) getFeature.getQueries()[1];
+        filterQuery = (FilterQuery) getFeature.getQueries().get( 1 );
         assertEquals( new QName( "http://www.someserver.com/myns", "BUILTUPA_1M" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        filterQuery = (FilterQuery) getFeature.getQueries()[2];
+        filterQuery = (FilterQuery) getFeature.getQueries().get( 2 );
         assertEquals( new QName( "http://demo.cubewerx.com/yourns", "ROADL_1M" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
     }
@@ -397,14 +402,14 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
         assertEquals( new QName( "http://www.someserver.com/myns", "HYDROGRAPHY" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        assertEquals( "myns:GEOTEMP", filterQuery.getPropertyNames()[0].getAsText() );
-        assertEquals( "myns:DEPTH", filterQuery.getPropertyNames()[1].getAsText() );
+        assertEquals( "myns:GEOTEMP", filterQuery.getProjectionClauses()[0].getPropertyName().getAsText() );
+        assertEquals( "myns:DEPTH", filterQuery.getProjectionClauses()[1].getPropertyName().getAsText() );
     }
 
     /**
@@ -419,15 +424,15 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
         assertEquals( new QName( "http://www.someserver.com/myns", "ROADS" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        assertEquals( "myns:PATH", filterQuery.getPropertyNames()[0].getAsText() );
-        assertEquals( "myns:LANES", filterQuery.getPropertyNames()[1].getAsText() );
-        assertEquals( "myns:SURFACETYPE", filterQuery.getPropertyNames()[2].getAsText() );
+        assertEquals( "myns:PATH", filterQuery.getProjectionClauses()[0].getPropertyName().getAsText() );
+        assertEquals( "myns:LANES", filterQuery.getProjectionClauses()[1].getPropertyName().getAsText() );
+        assertEquals( "myns:SURFACETYPE", filterQuery.getProjectionClauses()[2].getPropertyName().getAsText() );
 
         OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
         Within within = (Within) opFilter.getOperator();
@@ -455,8 +460,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
     // GetFeature getFeature = getFeatureAdapter.parse();
     //
-    // Query[] queries = getFeature.getQueries();
-    // FilterQuery filterQuery = (FilterQuery) queries[0];
+    // List<Query> queries = getFeature.getQueries();
+    // FilterQuery filterQuery = (FilterQuery) queries.get(0);
     //
     // TypeName[] typeNames = filterQuery.getTypeNames();
     //
@@ -478,22 +483,22 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
     // GetFeature getFeature = getFeatureAdapter.parse();
     //
-    // Query[] queries = getFeature.getQueries();
-    //        
+    // List<Query> queries = getFeature.getQueries();
+    //
     // assertEquals( queries.length, 3 );
-    //        
-    // FilterQuery filterQuery = (FilterQuery) queries[0];
+    //
+    // FilterQuery filterQuery = (FilterQuery) queries.get(0);
     // TypeName[] typeNames = filterQuery.getTypeNames();
     // assertEquals( typeNames.length, 1 );
     // assertEquals( typeNames[0].getFeatureTypeName(),
     // new QName( "http://www.someserver.com/myns", "InWaterA_1M" ) );
-    //        
+    //
     // filterQuery = (FilterQuery) queries[1];
     // typeNames = filterQuery.getTypeNames();
     // assertEquals( typeNames.length, 1 );
     // assertEquals( typeNames[0].getFeatureTypeName(),
     // new QName( "http://www.someserver.com/myns", "BuiltUpA_1M" ) );
-    //        
+    //
     // filterQuery = (FilterQuery) queries[2];
     // typeNames = filterQuery.getTypeNames();
     // assertEquals( typeNames.length, 1 );
@@ -512,12 +517,12 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
         assertEquals( new QName( "Person" ), filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        assertEquals( "myns:Person/myns:LastName", filterQuery.getPropertyNames()[0].getAsText() );
+        assertEquals( "myns:Person/myns:LastName", filterQuery.getProjectionClauses()[0].getPropertyName().getAsText() );
 
         OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
         assertTrue( opFilter.getOperator() instanceof And );
@@ -528,7 +533,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         assertTrue( op0.getParameter( 0 ) instanceof PropertyIsGreaterThanOrEqualTo );
         PropertyIsGreaterThanOrEqualTo op00 = (PropertyIsGreaterThanOrEqualTo) op0.getParameter( 0 );
-        assertEquals( "myns:Person/myns:Address/myns:StreetNumber", ( (ValueReference) op00.getParameter1() ).getAsText() );
+        assertEquals( "myns:Person/myns:Address/myns:StreetNumber",
+                      ( (ValueReference) op00.getParameter1() ).getAsText() );
         assertEquals( "10000", ( (Literal<?>) op00.getParameter2() ).getValue().toString() );
 
         assertTrue( rootOp.getParameter( 1 ) instanceof And );
@@ -567,10 +573,10 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
         TypeName[] typeNames = filterQuery.getTypeNames();
 
         assertEquals( typeNames.length, 1 );
@@ -674,16 +680,16 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ValueReference[] propNames = filterQuery.getPropertyNames();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
-        assertEquals( propNames[0].getAsText(), "gml:name" );
-        assertEquals( propNames[1].getAsText(), "gml:directedNode" );
+        assertEquals( propNames[0].getPropertyName().getAsText(), "gml:name" );
+        assertEquals( propNames[1].getPropertyName().getAsText(), "gml:directedNode" );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -706,16 +712,16 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ValueReference[] propNames = filterQuery.getPropertyNames();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
-        assertEquals( propNames[0].getAsText(), "gml:name" );
-        assertEquals( propNames[1].getAsText(), "gml:directedNode" );
+        assertEquals( propNames[0].getPropertyName().getAsText(), "gml:name" );
+        assertEquals( propNames[1].getPropertyName().getAsText(), "gml:directedNode" );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -737,24 +743,153 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
+        GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
+        List<Query> queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ValueReference[] propNames = filterQuery.getPropertyNames();
-
-        assertEquals( propNames.length, 1 );
-        assertEquals( propNames[0].getAsText(), "gml:name" );
-        assertEquals( filterQuery.getXLinkPropertyNames().length, 1 );
-        assertEquals( filterQuery.getXLinkPropertyNames()[0].getTraverseXlinkDepth(), "2" );
-        assertEquals( filterQuery.getXLinkPropertyNames()[0].getTraverseXlinkExpiry(), new Integer( 2 ) );
-        assertEquals( filterQuery.getXLinkPropertyNames()[0].getPropertyName().getAsText(), "gml:directedNode" );
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
+        assertEquals( 2, propNames.length );
+        assertEquals( "gml:name", propNames[0].getPropertyName().getAsText() );
+        assertEquals( "2", propNames[1].getResolveParams().getDepth() );
+        assertEquals( BigInteger.valueOf( 120 ), propNames[1].getResolveParams().getTimeout() );
+        assertEquals( "gml:directedNode", propNames[1].getPropertyName().getAsText() );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
 
         assertEquals( ids.size(), 1 );
         assertTrue( ids.contains( "t1" ) );
+    }
+
+    @Test
+    public void test200Example1()
+                            throws Exception {
+
+        GetFeature request = parseExample( "xml/wfs200/example1.xml" );
+
+        // global request params
+        assertEquals( VERSION_200, request.getVersion() );
+        assertNull( request.getHandle() );
+
+        // presentation params
+        assertNull( request.getPresentationParams().getStartIndex() );
+        assertNull( request.getPresentationParams().getCount() );
+        assertEquals( "application/gml+xml; version=3.2", request.getPresentationParams().getOutputFormat() );
+
+        // resolve params
+        assertNull( request.getResolveParams().getMode() );
+        assertNull( request.getResolveParams().getDepth() );
+        assertEquals( null, request.getResolveParams().getTimeout() );
+
+        // queries
+        assertEquals( 1, request.getQueries().size() );
+        FilterQuery query = (FilterQuery) request.getQueries().get( 0 );
+        assertNull( query.getHandle() );
+        assertEquals( 1, query.getTypeNames().length );
+        assertEquals( QName.valueOf( "{http://www.someserver.com/myns}InWaterA_1M" ),
+                      query.getTypeNames()[0].getFeatureTypeName() );
+
+        // filter
+        IdFilter filter = (IdFilter) query.getFilter();
+        assertEquals( 1, filter.getSelectedIds().size() );
+        assertEquals( "InWaterA_1M.1234", filter.getSelectedIds().get( 0 ).getRid() );
+    }
+
+    public void test200Example2()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example2.xml" );
+    }
+
+    public void test200Example3()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example3.xml" );
+    }
+
+    public void test200Example4()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example4.xml" );
+    }
+
+    public void test200Example5()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example5.xml" );
+    }
+
+    public void test200Example6()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example6.xml" );
+    }
+
+    public void test200Example7()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example7.xml" );
+    }
+
+    public void test200Example8()
+                            throws Exception {
+//        GetFeature request = parseExample( "xml/wfs200/example8.xml" );
+    }
+
+    public void test200Example9()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example9.xml" );
+    }
+
+    public void test200Example10()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example10.xml" );
+    }
+
+    public void test200Example11()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example11.xml" );
+    }
+
+    public void test200Example12()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example12.xml" );
+    }
+
+    public void test200Example13()
+                            throws Exception {
+//        GetFeature request = parseExample( "xml/wfs200/example13.xml" );
+    }
+
+    public void test200Example14()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example14.xml" );
+    }
+
+    public void test200Example15()
+                            throws Exception {
+//        GetFeature request = parseExample( "xml/wfs200/example15.xml" );
+    }
+
+    public void test200Example16()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example16.xml" );
+    }
+
+    public void test200Example17()
+                            throws Exception {
+//        GetFeature request = parseExample( "xml/wfs200/example17.xml" );
+    }
+
+    public void test200Example18()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example18.xml" );
+    }
+
+    public void test200Example19()
+                            throws Exception {
+        GetFeature request = parseExample( "xml/wfs200/example19.xml" );
+    }
+
+    private GetFeature parseExample( String resourceName )
+                            throws Exception {
+        GetFeatureXMLAdapter parser = new GetFeatureXMLAdapter();
+        parser.load( GetFeatureXMLAdapter.class.getResource( resourceName ) );
+        return parser.parse();
     }
 }

@@ -35,11 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getpropertyvalue;
 
+import org.deegree.commons.tom.ResolveParams;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.protocol.wfs.AbstractWFSRequest;
 import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
  * Represents a <code>GetPropertyValue</code> request to a WFS.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>WFS 2.0.0</li>
+ * </ul>
+ * </p>
  * 
  * @see Query
  * 
@@ -48,24 +58,64 @@ import org.deegree.protocol.wfs.query.Query;
  * 
  * @version $Revision$, $Date$
  */
-public class GetPropertyValue {
+public class GetPropertyValue extends AbstractWFSRequest {
+
+    private final StandardPresentationParams presentationParams;
+
+    private final ResolveParams resolveParams;
 
     private final ValueReference valueReference;
 
     private final ValueReference resolvePath;
 
+    private final Query query;
+
     /**
      * Creates a new {@link GetPropertyValue} instance.
      * 
+     * @param version
+     *            protocol version, must not be <code>null</code>
+     * @param handle
+     *            client-generated identifier, may be <code>null</code>
+     * @param presentationParams
+     *            parameters for controlling the presentation of the result set, may be <code>null</code>
+     * @param resolveParams
+     *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
      * @param valueReference
      *            selects the nodes or child nodes of queried features to be returned, must not be <code>null</code>
      * @param resolvePath
      *            path along which resource resolution shall be performed, may be <code>null</code> (global resource
      *            resolution mode)
+     * @param query
+     *            query to be executed, must not be <code>null</code>
      */
-    public GetPropertyValue( ValueReference valueReference, ValueReference resolvePath ) {
+    public GetPropertyValue( Version version, String handle, StandardPresentationParams presentationParams,
+                             ResolveParams resolveParams, ValueReference valueReference, ValueReference resolvePath,
+                             Query query ) {
+        super( version, handle );
+        this.presentationParams = presentationParams;
+        this.resolveParams = resolveParams;
         this.valueReference = valueReference;
         this.resolvePath = resolvePath;
+        this.query = query;
+    }
+
+    /**
+     * Returns the parameters that control the presentation of the result set.
+     * 
+     * @return presentation control parameters, never <code>null</code>
+     */
+    public StandardPresentationParams getPresentationParams() {
+        return presentationParams;
+    }
+
+    /**
+     * Returns the parameters that control the resolution of references of the result set.
+     * 
+     * @return reference resolution control parameters, never <code>null</code>
+     */
+    public ResolveParams getResolveParams() {
+        return resolveParams;
     }
 
     /**
@@ -85,5 +135,14 @@ public class GetPropertyValue {
      */
     public ValueReference getValueReference() {
         return valueReference;
+    }
+
+    /**
+     * Returns the query to be executed (determines the feature instances for the property value extraction).
+     * 
+     * @return query to be executed, never <code>null</code>
+     */
+    public Query getQuery() {
+        return query;
     }
 }

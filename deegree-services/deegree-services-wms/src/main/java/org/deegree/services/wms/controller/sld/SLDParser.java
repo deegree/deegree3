@@ -172,6 +172,9 @@ public class SLDParser {
                     }
                     layers.add( layer );
                     styles.add( style );
+
+                    in.nextTag(); // out of name
+                    in.nextTag(); // out of named style
                 }
 
                 if ( in.getLocalName().equals( "UserStyle" ) ) {

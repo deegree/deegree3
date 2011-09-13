@@ -1,0 +1,5 @@
+SERVICE=WFS
+VERSION=2.0.0
+REQUEST=GetFeature
+TYPENAMES=(InWaterA_1M)(BuiltUpA_1M)
+FILTER=(<Filter><Within><ValueReference>InWaterA_1M/wkbGeom</ValueReference><gml:Envelope><gml:lowerCorner>43.5707 -79.5797</gml:lowerCorner><gml:upperCorner>43.8219 -79.2693</gml:upperCorner></gml:Envelope></Within></Filter>)(<Filter><Within><ValueReference>BuiltUpA_1M/wkbGeom</ValueReference><gml:Envelope><gml:lowerCorner>43.5705 -79.5797</gml:lowerCorner><gml:upperCorner>43.8219 -79.2693</gml:upperCorner></gml:Envelope></Within></Filter>)

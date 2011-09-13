@@ -38,8 +38,7 @@ package org.deegree.protocol.wfs.getfeature;
 
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
-import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -47,10 +46,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -61,18 +59,18 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.i18n.Messages;
-import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.QueryKVPAdapter;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
  * Adapter between KVP <code>GetFeature</code> requests and {@link GetFeature} objects.
@@ -81,17 +79,9 @@ import org.deegree.protocol.wfs.query.Query;
  * <ul>
  * <li>1.0.0</li>
  * <li>1.1.0</li>
+ * <li>2.0.0</li>
  * </ul>
  * </p>
- * <p>
- * There can be three types of queries in KVP:
- * <ul>
- * <li>{@link FeatureIdQuery}</li>
- * <li>{@link FilterQuery}</li>
- * <li>{@link BBoxQuery}</li>
- * </ul>
- * Some keys are specific for a query type, some are required, etc. For a comprehensive table of keywords and values
- * please look at the WFS 1.1.0 implementation specification.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -99,18 +89,15 @@ import org.deegree.protocol.wfs.query.Query;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
+public class GetFeatureKVPAdapter extends QueryKVPAdapter {
 
     /**
      * Parses a normalized KVP-map as a WFS {@link GetFeature} request.
      * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @param prefixToNamespace
+     * @param nsMap
      *            only for 1.0.0 version; the prefix-namespace map given in the NamespaceHints in the configuration
-     * @param configFeatures
-     *            only for 1.0.0 version; in case the typeNames in queries are not bound to a namespace, have this array
-     *            of feature name to search for a potential match
      * @return parsed {@link GetFeature} request
      * @throws Exception
      */
@@ -124,37 +111,11 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             result = parse100( kvpParams, nsMap );
         } else if ( VERSION_110.equals( version ) ) {
             result = parse110( kvpParams );
-            // } else if ( VERSION_200.equals( version ) ) {
-            // result = parse200( kvpParams );
+        } else if ( VERSION_200.equals( version ) ) {
+            result = parse200( kvpParams );
         } else {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version,
-                                       Version.getVersionsString( VERSION_100, VERSION_110 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-        return result;
-    }
-
-    /**
-     * @param kvpParams
-     * @param prefixToNamespace
-     *            only for 1.0.0 version; the prefix-namespace map given in the NamespaceHints in the configuration
-     * @return
-     * @throws Exception
-     */
-    public GetFeature parseParams( Map<String, String> kvpParams, Map<String, String> nsMap )
-                            throws Exception {
-
-        Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
-
-        GetFeature result = null;
-        if ( VERSION_100.equals( version ) ) {
-            result = parse100( kvpParams, nsMap );
-        } else if ( VERSION_110.equals( version ) ) {
-            result = parse110( kvpParams );
-            // } else if ( VERSION_200.equals( version ) ) {
-            // result = parse200( kvpParams );
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
+                                       Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
             throw new InvalidParameterValueException( msg );
         }
         return result;
@@ -171,26 +132,18 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
         }
 
-        // optional: MAXFEATURES
-        Integer maxFeatures = null;
-        String maxFeatureStr = kvpParams.get( "MAXFEATURES" );
-        if ( maxFeatureStr != null ) {
-            maxFeatures = Integer.parseInt( maxFeatureStr );
-        }
-
-        // ??? not in 1.0.0 spec, but CITE 1.0.0 test (wfs:test1.0.0-basic-getfeature-get-3) suggests this parameter
-        String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters100( kvpParams );
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        ValueReference[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        ProjectionClause[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: FEATUREVERSION
         String featureVersion = kvpParams.get( "FEATUREVERSION" );
 
         // mandatory: TYPENAME, but optional if FEATUREID is specified
         String typeStrList = kvpParams.get( "TYPENAME" );
-        TypeName[] typeNames = getTypeNamesV100( typeStrList );
+        TypeName[] typeNames = getTypeNames100( typeStrList );
 
         // optional: FEATUREID
         String featureIdStr = kvpParams.get( "FEATUREID" );
@@ -211,7 +164,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             srs = CRSManager.getCRSRef( srsName );
         }
 
-        Query[] queries = null;
+        List<Query> queries = new ArrayList<Query>();
 
         if ( ( featureIdStr != null && bboxStr != null ) || ( featureIdStr != null && filterStr != null )
              || ( bboxStr != null && filterStr != null ) ) {
@@ -220,14 +173,27 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-
-            queries = new Query[1];
-            queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null,
-                                             null );
-            return new GetFeature( VERSION_100, null, null, maxFeatures, null, null, null, null, null, queries );
-        }
-
-        if ( bboxStr != null ) {
+            if ( typeStrList == null && propertyNames == null ) {
+                queries.add( new FeatureIdQuery( null, null, featureVersion, srs, null, null, featureIds ) );
+            } else {
+                for ( int i = 0; i < featureIds.length; i++ ) {
+                    String[] fids = new String[] { featureIds[i] };
+                    TypeName[] typeName = new TypeName[0];
+                    if ( typeStrList != null ) {
+                        typeName = new TypeName[] { typeNames[i] };
+                    }
+                    ProjectionClause[] projectionClauses = null;
+                    if ( propertyNames != null ) {
+                        if ( propertyNames.length > 1 ) {
+                            projectionClauses = propertyNames[i];
+                        } else {
+                            projectionClauses = propertyNames[0];
+                        }
+                    }
+                    queries.add( new FeatureIdQuery( null, typeName, featureVersion, srs, projectionClauses, null, fids ) );
+                }
+            }
+        } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
                 throw new Exception( "The TYPENAME keyword is mandatory if BBOX is present!" );
@@ -240,14 +206,16 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
-
-            queries = new Query[1];
-            queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, null, bbox );
-
-            return new GetFeature( VERSION_100, null, null, maxFeatures, null, null, null, null, null, queries );
-        }
-
-        if ( filterStr != null || typeNames != null ) {
+            for ( int i = 0; i < typeNames.length; i++ ) {
+                TypeName typeName = typeNames[i];
+                ProjectionClause[] projectionClauses = null;
+                if ( propertyNames != null ) {
+                    projectionClauses = propertyNames[i];
+                }
+                queries.add( new BBoxQuery( null, new TypeName[] { typeName }, featureVersion, srs, projectionClauses,
+                                            null, bbox ) );
+            }
+        } else if ( filterStr != null || typeNames != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
                 throw new Exception( "The FILTER element requires the TYPENAME element" );
@@ -257,7 +225,6 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
             String[] filters = getFilters( filterStr );
 
-            queries = new Query[length];
             for ( int i = 0; i < length; i++ ) {
                 Filter filter = null;
                 if ( filters != null ) {
@@ -279,21 +246,23 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     }
                 }
                 if ( propertyNames != null ) {
-                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
-                                                  propertyNames[i], null, null, null, filter );
+                    queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
+                                                  propertyNames[i], null, filter ) );
                 } else {
-                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
-                                                  null, null, null, filter );
+                    queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
+                                                  null, filter ) );
                 }
             }
-            return new GetFeature( VERSION_100, null, null, maxFeatures, outputFormat, null, null, null, null, queries );
         }
-        return null;
+        return new GetFeature( VERSION_100, null, presentationParams, null, queries );
     }
 
     @SuppressWarnings("boxing")
     private static GetFeature parse110( Map<String, String> kvpParams )
                             throws Exception {
+
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters110( kvpParams );
+        ResolveParams resolveParams = parseStandardResolveParameters110( kvpParams );
 
         // optional: 'NAMESPACE'
         Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
@@ -308,15 +277,6 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
         }
 
-        // optional: 'OUTPUTFORMAT'
-        String outputFormat = KVPUtils.getDefault( kvpParams, "OUTPUTFORMAT", "text/xml; subtype=gml/3.1.1" );
-
-        // optional: 'RESULTTYPE'
-        ResultType resultType = RESULTS;
-        if ( kvpParams.get( "RESULTTYPE" ) != null && kvpParams.get( "RESULTTYPE" ).equalsIgnoreCase( "hits" ) ) {
-            resultType = HITS;
-        }
-
         // optional: SRSNAME
         String srsName = kvpParams.get( "SRSNAME" );
         ICRS srs = null;
@@ -324,16 +284,9 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             srs = CRSManager.getCRSRef( srsName );
         }
 
-        // optional: MAXFEATURES
-        Integer maxFeatures = null;
-        String maxFeatureStr = kvpParams.get( "MAXFEATURES" );
-        if ( maxFeatureStr != null ) {
-            maxFeatures = Integer.parseInt( maxFeatureStr );
-        }
-
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        ValueReference[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        ProjectionClause[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: SORTBY
         String sortbyStr = kvpParams.get( "SORTBY" );
@@ -372,27 +325,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             ptxExpAr = parseParamListAsInts( propTravXlinkDepth );
         }
 
-        // optional: 'TRAVERSEXLINKDEPTH'
-        String traverseXlinkDepth = kvpParams.get( "TRAVERSEXLINKDEPTH" );
-
-        // optional: 'TRAVERSEXLINKEXPIRY'
-        String traverseXlinkExpiryStr = kvpParams.get( "TRAVERSEXLINKEXPIRY" );
-        Integer resolveTimeout = null;
-        Integer traverseXlinkExpiry = null;
-        if ( traverseXlinkExpiryStr != null ) {
-            try {
-                traverseXlinkExpiry = Integer.parseInt( traverseXlinkExpiryStr );
-                resolveTimeout = traverseXlinkExpiry * 60;
-            } catch ( NumberFormatException e ) {
-                e.printStackTrace();
-                throw new InvalidParameterValueException( e.getMessage(), e );
-            }
-        }
-
-        XLinkPropertyName[][] xlinkPropNames = getXLinkPropNames( propertyNames, ptxDepthAr, ptxExpAr,
-                                                                  traverseXlinkDepth, traverseXlinkExpiry );
-
-        Query[] queries = null;
+        propertyNames = getXLinkPropNames( propertyNames, ptxDepthAr, ptxExpAr );
+        List<Query> queries = new ArrayList<Query>();
 
         if ( ( featureIdStr != null && bboxStr != null ) || ( featureIdStr != null && filterStr != null )
              || ( bboxStr != null && filterStr != null ) ) {
@@ -401,15 +335,24 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-
-            queries = new Query[1];
-            queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames,
-                                             xlinkPropNames, sortBy );
-            return new GetFeature( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
-                                   traverseXlinkDepth, resolveTimeout, queries );
-        }
-
-        if ( bboxStr != null ) {
+            if ( typeStrList == null && propertyNames == null ) {
+                queries.add( new FeatureIdQuery( null, null, featureVersion, srs, null, sortBy, featureIds ) );
+            } else {
+                for ( int i = 0; i < featureIds.length; i++ ) {
+                    String[] fid = new String[] { featureIds[i] };
+                    TypeName[] typeName = new TypeName[0];
+                    if ( typeStrList != null ) {
+                        typeName = new TypeName[] { typeNames[i] };
+                    }
+                    ProjectionClause[] projectionClauses = null;
+                    if ( propertyNames != null ) {
+                        projectionClauses = propertyNames[i];
+                    }
+                    queries.add( new FeatureIdQuery( null, typeName, featureVersion, srs, projectionClauses, sortBy,
+                                                     fid ) );
+                }
+            }
+        } else if ( bboxStr != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
                 throw new Exception( "The TYPENAME keyword is mandatory if BBOX is present!" );
@@ -427,15 +370,16 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
-
-            queries = new Query[1];
-            queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, sortBy, bbox );
-
-            return new GetFeature( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
-                                   traverseXlinkDepth, resolveTimeout, queries );
-        }
-
-        if ( filterStr != null || typeNames != null ) {
+            for ( int i = 0; i < typeNames.length; i++ ) {
+                TypeName typeName = typeNames[i];
+                ProjectionClause[] projectionClauses = null;
+                if ( propertyNames != null ) {
+                    projectionClauses = propertyNames[i];
+                }
+                queries.add( new BBoxQuery( null, new TypeName[] { typeName }, featureVersion, srs, projectionClauses,
+                                            sortBy, bbox ) );
+            }
+        } else if ( filterStr != null || typeNames != null ) {
             if ( typeNames == null ) {
                 // TODO make new exception
                 throw new Exception( "The FILTER element requires the TYPENAME element" );
@@ -445,7 +389,6 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
             String[] filters = getFilters( filterStr );
 
-            queries = new Query[length];
             for ( int i = 0; i < length; i++ ) {
                 Filter filter = null;
                 if ( filters != null ) {
@@ -467,240 +410,22 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     }
                 }
                 if ( propertyNames != null ) {
-                    if ( xlinkPropNames != null ) {
-                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
-                                                      propertyNames[i], xlinkPropNames[i], null, sortBy, filter );
-                    } else {
-                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
-                                                      propertyNames[i], null, null, sortBy, filter );
-                    }
+                    queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
+                                                  propertyNames[i], sortBy, filter ) );
                 } else {
-                    if ( xlinkPropNames != null ) {
-                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
-                                                      xlinkPropNames[i], null, sortBy, filter );
-                    } else {
-                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
-                                                      null, null, sortBy, filter );
-                    }
-                }
-            }
-            return new GetFeature( VERSION_110, null, null, maxFeatures, outputFormat, resultType, null,
-                                   traverseXlinkDepth, resolveTimeout, queries );
-        }
-        return null;
-    }
-
-    private static String[] getFilters( String filterStr ) {
-        String[] filters = null;
-        if ( filterStr != null ) {
-            filters = filterStr.split( "[)][(]" );
-            if ( filters[0].startsWith( "(" ) ) {
-                filters[0] = filters[0].substring( 1 );
-            }
-
-            String last = filters[filters.length - 1];
-            if ( last.endsWith( ")" ) ) {
-                filters[filters.length - 1] = last.substring( 0, last.length() - 1 );
-            }
-        }
-        return filters;
-    }
-
-    @SuppressWarnings("boxing")
-    private static Envelope createEnvelope( String bboxStr, ICRS srs ) {
-        String[] coordList = bboxStr.split( "," );
-
-        int n = coordList.length / 2;
-        List<Double> lowerCorner = new ArrayList<Double>();
-        for ( int i = 0; i < n; i++ ) {
-            lowerCorner.add( Double.parseDouble( coordList[i] ) );
-        }
-        List<Double> upperCorner = new ArrayList<Double>();
-        for ( int i = n; i < 2 * n; i++ ) {
-            upperCorner.add( Double.parseDouble( coordList[i] ) );
-        }
-
-        GeometryFactory gf = new GeometryFactory();
-
-        return gf.createEnvelope( lowerCorner, upperCorner, srs );
-    }
-
-    private static XLinkPropertyName[][] getXLinkPropNames( ValueReference[][] propertyNames, String[][] ptxDepthAr,
-                                                            Integer[][] ptxExpAr, String traverseXlinkDepth,
-                                                            Integer traverseXlinkExpiry ) {
-        XLinkPropertyName[][] result = null;
-        if ( propertyNames != null ) {
-            result = new XLinkPropertyName[propertyNames.length][];
-
-            for ( int i = 0; i < propertyNames.length; i++ ) {
-                result[i] = new XLinkPropertyName[propertyNames[i].length];
-                for ( int j = 0; j < propertyNames[i].length; j++ ) {
-
-                    if ( ptxDepthAr != null ) {
-                        if ( ptxExpAr != null ) {
-                            result[i][j] = new XLinkPropertyName( propertyNames[i][j], ptxDepthAr[i][j], ptxExpAr[i][j] );
-                        } else {
-                            result[i][j] = new XLinkPropertyName( propertyNames[i][j], ptxDepthAr[i][j],
-                                                                  traverseXlinkExpiry );
-                        }
-                    } else {
-                        if ( ptxExpAr != null ) {
-                            result[i][j] = new XLinkPropertyName( propertyNames[i][j], traverseXlinkDepth,
-                                                                  ptxExpAr[i][j] );
-                        } else {
-                            result[i][j] = new XLinkPropertyName( propertyNames[i][j], traverseXlinkDepth,
-                                                                  traverseXlinkExpiry );
-                        }
-                    }
+                    queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
+                                                  sortBy, filter ) );
                 }
             }
         }
-        return result;
+        return new GetFeature( VERSION_110, null, presentationParams, resolveParams, queries );
     }
 
-    private static TypeName[] getTypeNames( String typeStrList, Map<String, String> nsBindings ) {
-        TypeName[] result = null;
-        if ( typeStrList != null ) {
-
-            String[] typeList = typeStrList.split( "," );
-            result = new TypeName[typeList.length];
-
-            for ( int i = 0; i < typeList.length; i++ ) {
-                String[] typeParts = typeList[i].split( ":" );
-                if ( typeParts.length == 2 ) {
-
-                    // check if it has an alias
-                    int equalSign;
-                    if ( ( equalSign = typeParts[1].indexOf( "=" ) ) != -1 ) {
-                        result[i] = new TypeName(
-                                                  new QName( nsBindings.get( typeParts[0] ), typeParts[1], typeParts[0] ),
-                                                  typeParts[1].substring( equalSign + 1 ) );
-                    } else {
-                        result[i] = new TypeName(
-                                                  new QName( nsBindings.get( typeParts[0] ), typeParts[1], typeParts[0] ),
-                                                  null );
-                    }
-                } else {
-                    result[i] = new TypeName( new QName( typeParts[0] ), null );
-                }
-            }
-        } else {
-            result = new TypeName[0];
-        }
-        return result;
-    }
-
-    private static TypeName[] getTypeNamesV100( String typeStrList ) {
-        TypeName[] result = null;
-        if ( typeStrList != null ) {
-
-            String[] typeList = typeStrList.split( "," );
-            result = new TypeName[typeList.length];
-
-            for ( int i = 0; i < typeList.length; i++ ) {
-                String alias = null;
-                String theRest = typeList[i];
-                if ( typeList[i].contains( "=" ) ) {
-                    alias = typeList[i].split( "=" )[0];
-                    theRest = typeList[i].split( "=" )[1];
-                }
-
-                String prefix = null;
-                String local = theRest;
-                if ( theRest.contains( ":" ) ) {
-                    prefix = theRest.split( ":" )[0];
-                    local = theRest.split( ":" )[1];
-                }
-
-                QName qName = prefix == null ? new QName( local ) : new QName( XMLConstants.NULL_NS_URI, local, prefix );
-                result[i] = new TypeName( qName, alias );
-            }
-        }
-        return result;
-    }
-
-    private static SortProperty[] getSortBy( String sortbyStr, NamespaceBindings nsContext ) {
-        SortProperty[] result = null;
-        if ( sortbyStr != null ) {
-            String[] sortbyComm = sortbyStr.split( "," );
-
-            result = new SortProperty[sortbyComm.length];
-            for ( int i = 0; i < sortbyComm.length; i++ ) {
-                if ( sortbyComm[i].endsWith( " D" ) ) {
-                    String sortbyProp = sortbyComm[i].substring( 0, sortbyComm[i].indexOf( " " ) );
-                    result[i] = new SortProperty( new ValueReference( sortbyProp, nsContext ), false );
-
-                } else {
-
-                    if ( sortbyComm[i].endsWith( " A" ) ) {
-                        String sortbyProp = sortbyComm[i].substring( 0, sortbyComm[i].indexOf( " " ) );
-                        result[i] = new SortProperty( new ValueReference( sortbyProp, nsContext ), true );
-
-                    } else {
-                        result[i] = new SortProperty( new ValueReference( sortbyComm[i], nsContext ), true );
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private static ValueReference[][] getPropertyNames( String propertyStr, NamespaceBindings nsContext ) {
-        ValueReference[][] result = null;
-        if ( propertyStr != null ) {
-            String[][] propComm = parseParamList( propertyStr );
-
-            result = new ValueReference[propComm.length][];
-            for ( int i = 0; i < propComm.length; i++ ) {
-                result[i] = new ValueReference[propComm[i].length];
-
-                for ( int j = 0; j < propComm[i].length; j++ ) {
-                    result[i][j] = new ValueReference( propComm[i][j], nsContext );
-                }
-            }
-        }
-        return result;
-    }
-
-    @SuppressWarnings("boxing")
-    private static Integer[][] parseParamListAsInts( String paramList ) {
-        String[][] strings = parseParamList( paramList );
-
-        Integer[][] result = new Integer[strings.length][];
-        for ( int i = 0; i < strings.length; i++ ) {
-            result[i] = new Integer[strings[i].length];
-
-            for ( int j = 0; j < strings[i].length; j++ ) {
-                try {
-                    result[i][j] = Integer.parseInt( strings[i][j] );
-
-                } catch ( NumberFormatException e ) {
-                    e.printStackTrace();
-                    throw new InvalidParameterValueException( e.getMessage(), e );
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static String[][] parseParamList( String paramList ) {
-        String[] paramPar = paramList.split( "[)][(]" );
-
-        if ( paramPar[0].startsWith( "(" ) ) {
-            paramPar[0] = paramPar[0].substring( 1 );
-        }
-        String last = paramPar[paramPar.length - 1];
-        if ( last.endsWith( ")" ) ) {
-            paramPar[paramPar.length - 1] = last.substring( 0, last.length() - 1 );
-        }
-
-        // split on commas
-        String[][] paramComm = new String[paramPar.length][];
-        for ( int i = 0; i < paramPar.length; i++ ) {
-            paramComm[i] = paramPar[i].split( "," );
-        }
-
-        return paramComm;
+    private static GetFeature parse200( Map<String, String> kvpParams )
+                            throws Exception {
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters200( kvpParams );
+        ResolveParams resolveParams = parseStandardResolveParameters200( kvpParams );
+        List<Query> queries = parseQueries200( kvpParams );
+        return new GetFeature( VERSION_200, null, presentationParams, resolveParams, queries );
     }
 }

@@ -35,12 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
+import java.net.URL;
+
+import javax.xml.bind.JAXBException;
+
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.services.jaxb.wcs.DeegreeWCS;
 import org.deegree.services.jaxb.wcs.ServiceConfiguration;
 
 /**
@@ -53,20 +57,20 @@ import org.deegree.services.jaxb.wcs.ServiceConfiguration;
  */
 public class ServiceConfigurationXMLAdapter extends XMLAdapter {
 
+    private static final URL SCHEMA_URL = ServiceConfigurationXMLAdapter.class.getResource( "/META-INF/schemas/wcs/3.0.0/wcs_configuration.xsd" );
+
     /**
      * @return the parsed ServiceConfiguration
      * @throws XMLProcessingException
      */
-    public ServiceConfiguration parse()
+    public static ServiceConfiguration parse( DeegreeWorkspace workspace, URL configUrl )
                             throws XMLProcessingException {
-        ServiceConfiguration wcsConf = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wcs" );
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            wcsConf = (ServiceConfiguration) unmarshaller.unmarshal( rootElement.getXMLStreamReaderWithoutCaching() );
+            DeegreeWCS wcsConf = (DeegreeWCS) unmarshall( "org.deegree.services.jaxb.wcs", SCHEMA_URL, configUrl,
+                                                          workspace );
+            return wcsConf.getServiceConfiguration();
         } catch ( JAXBException e ) {
             throw new XMLProcessingException( e.getMessage(), e );
         }
-        return wcsConf;
     }
 }

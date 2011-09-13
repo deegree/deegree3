@@ -153,7 +153,7 @@ public abstract class Layer {
         name = layer.getName();
         title = layer.getTitle();
         abstract_ = layer.getAbstract();
-        dataMetadataSetId = layer.getDataMetadataSetId();
+        dataMetadataSetId = layer.getMetadataSetId();
         KeywordsType kwType = layer.getKeywords();
         keywords = new LinkedList<Pair<CodeType, LanguageStringType>>();
         if ( kwType != null ) {

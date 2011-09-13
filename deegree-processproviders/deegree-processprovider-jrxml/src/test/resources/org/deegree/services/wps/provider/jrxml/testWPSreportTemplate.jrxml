@@ -4,20 +4,19 @@
 	<property name="ireport.encoding" value="UTF-8"/>
 	<property name="ireport.zoom" value="1.0000000000000004"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="16"/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
 	<subDataset name="dataset1"/>
-	<parameter name="wmsMAP_map" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="LEGEND" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="mapMAP_img" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="DESCRIPTION" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="TITLE" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="DATE" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="AUTHOR" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="wmsMAP_scale" class="java.lang.Integer"/>
-	<parameter name="wmsMAP_scalebar" class="java.awt.Image"/>
-	<parameter name="wmsMAP_legend" class="java.lang.String"/>
+	<parameter name="mapMAP_scale" class="java.lang.Integer"/>
+	<parameter name="mapMAP_scalebar" class="java.awt.Image"/>
+	<parameter name="mapMAP_legend" class="java.lang.String"/>
 	<parameter name="printOptTxt" class="java.lang.Boolean"/>
 	<detail>
 		<band height="549">
@@ -35,7 +34,7 @@
 				<graphicElement fill="Solid">
 					<pen lineWidth="0.0" lineStyle="Solid"/>
 				</graphicElement>
-				<imageExpression class="java.lang.String"><![CDATA[$P{wmsMAP_map}]]></imageExpression>
+				<imageExpression class="java.lang.String"><![CDATA[$P{mapMAP_img}]]></imageExpression>
 			</image>
 			<textField pattern="" isBlankWhenNull="false">
 				<reportElement key="textField-1" mode="Transparent" x="11" y="11" width="628" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
@@ -61,7 +60,7 @@
 				<graphicElement fill="Solid">
 					<pen lineWidth="0.0" lineStyle="Solid"/>
 				</graphicElement>
-				<imageExpression class="java.lang.String"><![CDATA[$P{wmsMAP_legend}]]></imageExpression>
+				<imageExpression class="java.lang.String"><![CDATA[$P{mapMAP_legend}]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement key="staticText-1" mode="Transparent" x="661" y="11" width="31" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
@@ -166,11 +165,11 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{wmsMAP_scale}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{mapMAP_scale}]]></textFieldExpression>
 			</textField>
 			<image>
 				<reportElement key="scaleBar" x="331" y="508" width="122" height="40"/>
-				<imageExpression class="java.awt.Image"><![CDATA[$P{wmsMAP_scalebar}]]></imageExpression>
+				<imageExpression class="java.awt.Image"><![CDATA[$P{mapMAP_scalebar}]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="661" y="91" width="110" height="15"/>
@@ -180,7 +179,7 @@
 				<text><![CDATA[Themen]]></text>
 			</staticText>
 			<frame>
-				<reportElement key="wmsMAP_layerList" x="661" y="106" width="110" height="234"/>
+				<reportElement key="mapMAP_layerlist" x="661" y="106" width="110" height="234"/>
 				<staticText>
 					<reportElement x="0" y="1" width="110" height="13"/>
 					<textElement verticalAlignment="Middle">

@@ -62,6 +62,8 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.WFSVersion;
 import org.deegree.protocol.wfs.capabilities.WFS100CapabilitiesAdapter;
+import org.deegree.protocol.wfs.capabilities.WFS110CapabilitiesAdapter;
+import org.deegree.protocol.wfs.capabilities.WFS200CapabilitiesAdapter;
 import org.deegree.protocol.wfs.capabilities.WFSCapabilitiesAdapter;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
@@ -121,7 +123,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      *            url of a WFS capabilities document, usually this is a GetCapabilities request to a WFS service, must
      *            not be <code>null</code>
      * @throws OWSExceptionReport
-     *             if the server replied with a service exception report
+     *             if the server replied with an exception report
      * @throws XMLStreamException
      * @throws IOException
      *             if a communication/network problem occured
@@ -288,12 +290,12 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
             return capaDoc;
         }
         case WFS_110: {
-            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
+            WFS110CapabilitiesAdapter capaDoc = new WFS110CapabilitiesAdapter();
             capaDoc.setRootElement( root );
             return capaDoc;
         }
         case WFS_200: {
-            WFS100CapabilitiesAdapter capaDoc = new WFS100CapabilitiesAdapter();
+            WFS200CapabilitiesAdapter capaDoc = new WFS200CapabilitiesAdapter();
             capaDoc.setRootElement( root );
             return capaDoc;
         }

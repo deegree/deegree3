@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<GetFeature
+   service="WFS"
+   version="2.0.0"
+   outputFormat="application/xml; subtype=gml/3.2"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:abc="http://www.myserver.com/abc"
+   xmlns:myns="http://www.myserver.com/myns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.someserver.com/myns ./myns.xsd
+                       http://www.someserver.com/abc ./abc.xsd">
+   <Query typeNames="myns:Person myns:House abc:Road">
+     <PropertyName resolve="local">abc:numberOfLanes</PropertyName>
+     <fes:Filter>
+        <fes:And>
+           <fes:PropertyIsEqualTo> 
+              <fes:ValueReference>myns:firstName</fes:ValueReference>
+              <fes:Literal>Mary</fes:Literal>
+           </fes:PropertyIsEqualTo>
+           <fes:PropertyIsEqualTo>
+              <fes:ValueReference>myns:lastName</fes:ValueReference>
+              <fes:Literal>Smith</fes:Literal>
+           </fes:PropertyIsEqualTo>
+           <fes:PropertyIsEqualTo>
+              <fes:ValueReference>myns:Person/valueOf(myns:livesIn)/@gml:id</fes:ValueReference>
+              <fes:ValueReference>myns:House/@gml:id</fes:ValueReference>
+           </fes:PropertyIsEqualTo>
+           <fes:PropertyIsEqualTo>
+              <fes:ValueReference>myns:House/valueOf(abc:frontsOn)/@gml:id</fes:ValueReference>
+              <fes:ValueReference>abc:Road/@gml:id</fes:ValueReference>
+           </fes:PropertyIsEqualTo>
+        </fes:And>
+      </fes:Filter>
+   </Query>
+</GetFeature>

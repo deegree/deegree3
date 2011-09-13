@@ -92,11 +92,10 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.wfs.WFSRequestType;
-import org.deegree.protocol.wfs.capabilities.GetCapabilitiesKVPAdapter;
 import org.deegree.protocol.wfs.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapter;
@@ -110,6 +109,9 @@ import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLockXMLAdapter;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObjectKVPAdapter;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObjectXMLAdapter;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValueKVPAdapter;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValueXMLAdapter;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.protocol.wfs.lockfeature.LockFeatureKVPAdapter;
 import org.deegree.protocol.wfs.lockfeature.LockFeatureXMLAdapter;
@@ -127,12 +129,15 @@ import org.deegree.protocol.wfs.storedquery.ListStoredQueriesXMLAdapter;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionKVPAdapter;
 import org.deegree.protocol.wfs.transaction.TransactionXMLAdapter;
+import org.deegree.services.OWS;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException100XMLAdapter;
+import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
@@ -159,7 +164,7 @@ import org.w3c.dom.Element;
  * <ul>
  * <li>1.0.0</li>
  * <li>1.1.0</li>
- * <li>2.0.0 (in implementation)</li>
+ * <li>2.0.0</li>
  * </ul>
  * </p>
  * 
@@ -194,6 +199,8 @@ public class WebFeatureService extends AbstractOWS {
     private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
 
     private List<ICRS> queryCRS = new ArrayList<ICRS>();
+
+    private String metadataUrlTemplate;
 
     private final Map<String, Format> mimeTypeToFormat = new LinkedHashMap<String, Format>();
 
@@ -250,6 +257,7 @@ public class WebFeatureService extends AbstractOWS {
             }
         }
 
+        metadataUrlTemplate = jaxbConfig.getMetadataURLTemplate();
         // fill metadata map
         for ( FeatureTypeMetadata ftMd : jaxbConfig.getFeatureTypeMetadata() ) {
             ftNameToFtMetadata.put( ftMd.getName(), ftMd );
@@ -259,7 +267,7 @@ public class WebFeatureService extends AbstractOWS {
         try {
             service.init( jaxbConfig, controllerConf.getSystemId(), workspace );
         } catch ( Exception e ) {
-            throw new ResourceInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
+            throw new ResourceInitException( "Error initializing WFS/FeatureStores: " + e.getMessage(), e );
         }
 
         lockFeatureHandler = new LockFeatureHandler( this );
@@ -376,7 +384,7 @@ public class WebFeatureService extends AbstractOWS {
      * 
      * @return the underlying {@link WFSFeatureStoreManager}
      */
-    public WFSFeatureStoreManager getService() {
+    public WFSFeatureStoreManager getStoreManager() {
         return service;
     }
 
@@ -437,18 +445,20 @@ public class WebFeatureService extends AbstractOWS {
                 storedQueryHandler.doDropStoredQuery( dropStoredQuery, response );
                 break;
             case GetCapabilities:
-                GetCapabilities getCapabilities = GetCapabilitiesKVPAdapter.parse( requestVersion, kvpParamsUC );
+                GetCapabilities getCapabilities = GetCapabilitiesKVPParser.parse( kvpParamsUC );
                 doGetCapabilities( getCapabilities, response );
                 break;
             case GetFeature:
                 GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpParamsUC, nsMap );
-                format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
                 format.doGetFeature( getFeature, response );
                 break;
             case GetFeatureWithLock:
                 checkTransactionsEnabled( requestName );
                 GetFeatureWithLock getFeatureWithLock = GetFeatureWithLockKVPAdapter.parse( kvpParamsUC );
-                format = determineFormat( requestVersion, getFeatureWithLock.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
                 break;
             case GetGmlObject:
@@ -457,8 +467,11 @@ public class WebFeatureService extends AbstractOWS {
                 format.doGetGmlObject( getGmlObject, response );
                 break;
             case GetPropertyValue:
-                throw new OWSException( Messages.get( "WFS_OPERATION_NOT_IMPLEMENTED_YET", requestName ),
-                                        OWSException.OPERATION_NOT_SUPPORTED );
+                GetPropertyValue getPropertyValue = GetPropertyValueKVPAdapter.parse( kvpParamsUC );
+                format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
+                format.doGetPropertyValue( getPropertyValue, response );
+                break;
             case ListStoredQueries:
                 ListStoredQueries listStoredQueries = ListStoredQueriesKVPAdapter.parse( kvpParamsUC );
                 storedQueryHandler.doListStoredQueries( listStoredQueries, response );
@@ -556,7 +569,7 @@ public class WebFeatureService extends AbstractOWS {
             case DescribeFeatureType:
                 DescribeFeatureTypeXMLAdapter describeFtAdapter = new DescribeFeatureTypeXMLAdapter();
                 describeFtAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
-                DescribeFeatureType describeFt = describeFtAdapter.parse( requestVersion );
+                DescribeFeatureType describeFt = describeFtAdapter.parse();
                 Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
                 format.doDescribeFeatureType( describeFt, response );
                 break;
@@ -581,8 +594,9 @@ public class WebFeatureService extends AbstractOWS {
             case GetFeature:
                 GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
                 getFeatureAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
-                GetFeature getFeature = getFeatureAdapter.parse( requestVersion );
-                format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
+                GetFeature getFeature = getFeatureAdapter.parse();
+                format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
                 format.doGetFeature( getFeature, response );
                 break;
             case GetFeatureWithLock:
@@ -590,7 +604,8 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
-                format = determineFormat( requestVersion, getFeatureWithLock.getOutputFormat(), "outputFormat" );
+                format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
                 break;
             case GetGmlObject:
@@ -601,8 +616,13 @@ public class WebFeatureService extends AbstractOWS {
                 format.doGetGmlObject( getGmlObject, response );
                 break;
             case GetPropertyValue:
-                throw new OWSException( Messages.get( "WFS_OPERATION_NOT_IMPLEMENTED_YET", requestName ),
-                                        OWSException.OPERATION_NOT_SUPPORTED );
+                GetPropertyValueXMLAdapter getPropertyValueAdapter = new GetPropertyValueXMLAdapter();
+                getPropertyValueAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
+                GetPropertyValue getPropertyValue = getPropertyValueAdapter.parse();
+                format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
+                format.doGetPropertyValue( getPropertyValue, response );
+                break;
             case ListStoredQueries:
                 ListStoredQueriesXMLAdapter listStoredQueriesAdapter = new ListStoredQueriesXMLAdapter();
                 listStoredQueriesAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
@@ -776,12 +796,34 @@ public class WebFeatureService extends AbstractOWS {
             }
         }
 
+        String metadataUrlTemplate = this.metadataUrlTemplate;
+        if ( this.metadataUrlTemplate == null ) {
+            // use local CSW (if running)
+            WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+            Map<String, List<OWS>> ctrls = mgr.getAll();
+            for ( List<OWS> lists : ctrls.values() ) {
+                for ( OWS o : lists ) {
+                    ImplementationMetadata<?> md = o.getImplementationMetadata();
+                    for ( String s : md.getImplementedServiceName() ) {
+                        if ( s.equalsIgnoreCase( "csw" ) ) {
+                            metadataUrlTemplate = OGCFrontController.getHttpGetURL();
+                            if ( !metadataUrlTemplate.endsWith( "?" ) ) {
+                                metadataUrlTemplate = metadataUrlTemplate + "?";
+                            }
+                            metadataUrlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+                        }
+                    }
+                }
+            }
+        }
+
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
         Element extendedCapabilities = wfsVersionToExtendedCaps.get( negotiatedVersion );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      serviceId, serviceProvider, sortedFts,
-                                                                     ftNameToFtMetadata, sectionsUC,
-                                                                     enableTransactions, queryCRS, extendedCapabilities );
+                                                                     metadataUrlTemplate, ftNameToFtMetadata,
+                                                                     sectionsUC, enableTransactions, queryCRS,
+                                                                     extendedCapabilities );
         adapter.export();
         xmlWriter.flush();
     }
@@ -822,10 +864,12 @@ public class WebFeatureService extends AbstractOWS {
     public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
         String mime = "application/vnd.ogc.se_xml";
         XMLExceptionSerializer<OWSException> serializer = new OWSException100XMLAdapter();
-        if ( WFSConstants.VERSION_100.equals( requestVersion ) ) {
+        if ( VERSION_100.equals( requestVersion ) ) {
             serializer = new OGCExceptionXMLAdapter();
-        } else if ( WFSConstants.VERSION_110.equals( requestVersion ) ) {
+        } else if ( VERSION_110.equals( requestVersion ) ) {
             serializer = new OWSException100XMLAdapter();
+        } else if ( VERSION_200.equals( requestVersion ) ) {
+            serializer = new OWSException110XMLAdapter();
         }
         return new Pair<XMLExceptionSerializer<OWSException>, String>( serializer, mime );
     }
@@ -896,5 +940,36 @@ public class WebFeatureService extends AbstractOWS {
 
     public ICRS getDefaultQueryCrs() {
         return defaultQueryCRS;
+    }
+
+    /**
+     * Checks if a request version can be handled by this controller (i.e. if is supported by the implementation *and*
+     * offered by the current configuration).
+     * <p>
+     * NOTE: This method does use exception code {@link OWSException#INVALID_PARAMETER_VALUE}, not
+     * {@link OWSException#VERSION_NEGOTIATION_FAILED} -- the latter should only be used for failed GetCapabilities
+     * requests.
+     * </p>
+     * 
+     * @param requestedVersion
+     *            version to be checked, may be null (causes exception)
+     * @return <code>requestedVersion</code> (if it is not null), or highest version supported
+     * @throws OWSException
+     *             if the requested version is not available
+     */
+    protected Version checkVersion( Version requestedVersion )
+                            throws OWSException {
+
+        Version version = requestedVersion;
+        if ( requestedVersion == null ) {
+            LOG.debug( "Assuming version 1.1.0 (the only one that has an optional version attribute)." );
+            version = VERSION_110;
+        }
+        if ( !offeredVersions.contains( version ) ) {
+            throw new OWSException(
+                                    Messages.get( "CONTROLLER_UNSUPPORTED_VERSION", version, getOfferedVersionsString() ),
+                                    OWSException.INVALID_PARAMETER_VALUE );
+        }
+        return version;
     }
 }

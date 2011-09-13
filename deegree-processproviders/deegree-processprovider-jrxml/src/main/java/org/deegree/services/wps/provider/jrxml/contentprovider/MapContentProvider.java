@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.JASPERREPORTS_NS;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
@@ -65,7 +69,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.xml.bind.JAXBContext;
@@ -106,12 +109,15 @@ import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.remoteows.wms.WMSClient111;
 import org.deegree.rendering.r2d.Java2DRenderer;
+import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.AbstractDatasourceType;
+import org.deegree.services.wps.provider.jrxml.jaxb.map.Center;
+import org.deegree.services.wps.provider.jrxml.jaxb.map.Detail;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Style;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
@@ -142,6 +148,27 @@ public class MapContentProvider implements JrxmlContentProvider {
 
     final static String MIME_TYPE = "text/xml";
 
+    private static final String PARAM_PREFIX = "map";
+
+    final double INCH2M = 0.0254;
+
+    private enum SUFFIXES {
+
+        LEGEND_SUFFIX( "_legend" ), MAP_SUFFIX( "_img" ), SCALE_SUFFIX( "_scale" ), LAYERLIST_SUFFIX( "_layerlist" ), SCALEBAR_SUFFIX(
+                                                                                                                                      "_scalebar" );
+
+        private final String text;
+
+        private SUFFIXES( String text ) {
+            this.text = text;
+        }
+
+        private String getText() {
+            return text;
+        }
+
+    }
+
     @Override
     public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
@@ -156,9 +183,14 @@ public class MapContentProvider implements JrxmlContentProvider {
             if ( !handledParameters.contains( parameterName ) ) {
                 if ( jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
                                               new XPath( ".//jasper:image/jasper:imageExpression[text()='$P{"
-                                                         + parameterName + "}']", JrxmlUtils.nsContext ) ) != null ) {
+                                                         + parameterName + "}']", JrxmlUtils.nsContext ) ) != null
+                     || jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                 new XPath(
+                                                            ".//jasper:textField/jasper:textFieldExpression[text()='$P{"
+                                                                                    + parameterName + "}']",
+                                                            JrxmlUtils.nsContext ) ) != null ) {
                     if ( isMapParameter( parameterName ) ) {
-                        String mapId = getMapIdentifier( parameterName );
+                        String mapId = getIdentifierFromParameter( parameterName );
                         if ( !mapIds.contains( mapId ) ) {
                             mapIds.add( mapId );
                         }
@@ -188,22 +220,29 @@ public class MapContentProvider implements JrxmlContentProvider {
 
     }
 
-    private String getMapIdentifier( String imgParameter ) {
-        if ( isMapParameter( imgParameter ) ) {
-            imgParameter = imgParameter.substring( 3 );
-            if ( imgParameter.endsWith( "_legend" ) ) {
-                imgParameter = imgParameter.substring( 0, imgParameter.length() - 7 );
-            } else if ( imgParameter.endsWith( "_map" ) ) {
-                imgParameter = imgParameter.substring( 0, imgParameter.length() - 4 );
+    private String getIdentifierFromParameter( String parameter ) {
+        if ( isMapParameter( parameter ) ) {
+            for ( SUFFIXES suf : SUFFIXES.values() ) {
+                if ( parameter.endsWith( suf.getText() ) ) {
+                    parameter = parameter.substring( PARAM_PREFIX.length(), parameter.length() - suf.getText().length() );
+                }
             }
         }
-        return imgParameter;
+        return parameter;
+    }
+
+    private String getParameterFromIdentifier( String mapId, SUFFIXES suffix ) {
+        return PARAM_PREFIX + mapId + suffix.text;
     }
 
     private boolean isMapParameter( String imgParameter ) {
-        return imgParameter.startsWith( "wms" )
-               && ( imgParameter.endsWith( "_legend" ) || imgParameter.endsWith( "_map" )
-                    || imgParameter.endsWith( "_scale" ) || imgParameter.endsWith( "_scalebar" ) );
+        boolean hasSuffix = false;
+        for ( SUFFIXES suf : SUFFIXES.values() ) {
+            if ( imgParameter.endsWith( suf.getText() ) ) {
+                hasSuffix = true;
+            }
+        }
+        return hasSuffix && imgParameter.startsWith( PARAM_PREFIX );
     }
 
     @Override
@@ -232,7 +271,8 @@ public class MapContentProvider implements JrxmlContentProvider {
                         List<OrderedDatasource<?>> datasources = anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );
 
                         // MAP
-                        String mapKey = "wms" + mapId + "_map";
+                        int resolution = map.getResolution().intValue();
+                        String mapKey = getParameterFromIdentifier( mapId, SUFFIXES.MAP_SUFFIX );
                         if ( parameters.containsKey( mapKey ) ) {
                             OMElement mapImgRep = jrxmlAdapter.getElement( root,
                                                                            new XPath(
@@ -249,53 +289,45 @@ public class MapContentProvider implements JrxmlContentProvider {
                             int height = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep, new XPath( "@height",
                                                                                                       nsContext ) );
 
-                            String[] coords = map.getDetail().getBbox().split( "," );
-                            ICRS crs = CRSManager.getCRSRef( map.getDetail().getCrs() );
-                            Envelope bbox = new DefaultEnvelope(
-                                                                 null,
-                                                                 crs,
-                                                                 null,
-                                                                 new DefaultPoint(
-                                                                                   null,
-                                                                                   crs,
-                                                                                   null,
-                                                                                   new double[] {
-                                                                                                 Double.parseDouble( coords[0] ),
-                                                                                                 Double.parseDouble( coords[1] ) } ),
-                                                                 new DefaultPoint(
-                                                                                   null,
-                                                                                   crs,
-                                                                                   null,
-                                                                                   new double[] {
-                                                                                                 Double.parseDouble( coords[2] ),
-                                                                                                 Double.parseDouble( coords[3] ) } ) );
+                            width = adjustSpan( width, resolution );
+                            height = adjustSpan( height, resolution );
 
-                            params.put( mapKey,
-                                        prepareMap( datasources, parameters.get( mapKey ), width, height, bbox, crs ) );
+                            Envelope bbox = calculateBBox( map.getDetail(), mapId, width, height, resolution );
+
+                            params.put( mapKey, prepareMap( datasources, parameters.get( mapKey ), width, height, bbox ) );
 
                             // SCALE
-                            String scaleKey = "wms" + mapId + "_scale";
+                            double scale = Utils.calcScaleWMS130( width, height, bbox, bbox.getCoordinateSystem() );
+                            String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX );
                             if ( parameters.containsKey( scaleKey ) ) {
-                                double scale = Utils.calcScaleWMS130( width, height, bbox, crs );
                                 params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );
                             }
 
+                            // SCALEBAR
+                            String scalebarKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALEBAR_SUFFIX );
+                            if ( parameters.containsKey( scalebarKey ) ) {
+                                prepareScaleBar( scalebarKey, jrxmlAdapter, datasources, parameters.get( scalebarKey ),
+                                                 scale );
+                            }
                         }
 
                         // LAYERLIST
-                        prepareLayerlist( "wms" + mapId + "_layerList", jrxmlAdapter, map, datasources );
+                        prepareLayerlist( getParameterFromIdentifier( mapId, SUFFIXES.LAYERLIST_SUFFIX ), jrxmlAdapter,
+                                          map, datasources );
 
                         // LEGEND
-                        String legendKey = "wms" + mapId + "_legend";
+                        String legendKey = getParameterFromIdentifier( mapId, SUFFIXES.LEGEND_SUFFIX );
                         if ( parameters.containsKey( legendKey ) ) {
                             params.put( legendKey,
-                                        prepareLegend( legendKey, jrxmlAdapter, datasources, parameters.get( legendKey ) ) );
+                                        prepareLegend( legendKey, jrxmlAdapter, datasources,
+                                                       parameters.get( legendKey ), resolution ) );
                         }
 
-                        // SCALEBAR
-                        // get input stream
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         try {
+                            if ( LOG.isDebugEnabled() ) {
+                                LOG.debug( "Adjusted jrxml: " + jrxmlAdapter.getRootElement() );
+                            }
                             jrxmlAdapter.getRootElement().serialize( bos );
                             jrxml = new ByteArrayInputStream( bos.toByteArray() );
                         } catch ( XMLStreamException e ) {
@@ -327,6 +359,81 @@ public class MapContentProvider implements JrxmlContentProvider {
         return jrxml;
     }
 
+    private int adjustSpan( int inPxFromJrxml, int resolution ) {
+        // jasper assumes a resolution of 72 dpi
+        return new Double( inPxFromJrxml / 72d * resolution ).intValue();
+    }
+
+    private Envelope calculateBBox( Detail detail, String id, int mapWidth, int mapHeight, int dpi )
+                            throws ProcessletException {
+        ICRS crs = CRSManager.getCRSRef( detail.getCrs() );
+        Center center = detail.getCenter();
+        Envelope bbox = null;
+        if ( center != null ) {
+            int scaleDenominator = center.getScaleDenominator().intValue();
+            String[] coords = center.getValue().split( "," );
+            double pixelSize = INCH2M / dpi;
+            double w2 = ( scaleDenominator * pixelSize * mapWidth ) / 2d;
+            double x1 = Double.parseDouble( coords[0] ) - w2;
+            double x2 = Double.parseDouble( coords[0] ) + w2;
+            w2 = ( scaleDenominator * pixelSize * mapHeight ) / 2d;
+            double y1 = Double.parseDouble( coords[1] ) - w2;
+            double y2 = Double.parseDouble( coords[1] ) + w2;
+            bbox = new DefaultEnvelope( null, crs, null, new DefaultPoint( null, crs, null, new double[] { x1, y1 } ),
+                                        new DefaultPoint( null, crs, null, new double[] { x2, y2 } ) );
+        } else if ( detail.getBbox() != null ) {
+            String[] coords = detail.getBbox().split( "," );
+            double bboxXmin = Double.parseDouble( coords[0] );
+            double bboxYmin = Double.parseDouble( coords[1] );
+            double bboxXmax = Double.parseDouble( coords[2] );
+            double bboxYmax = Double.parseDouble( coords[3] );
+            double bboxWidth = bboxXmax - bboxXmin;
+            double bboxHeight = bboxYmax - bboxYmin;
+            double bboxAspectRatio = bboxWidth / bboxHeight;
+            double printAspectRatio = ( (double) mapWidth ) / mapHeight;
+            if ( bboxAspectRatio > printAspectRatio ) {
+                double centerY = bboxYmin + ( ( bboxYmax - bboxYmin ) / 2d );
+                double height = bboxWidth * ( 1.0 / printAspectRatio );
+                double minY = centerY - ( height / 2d );
+                double maxY = centerY + ( height / 2d );
+                bbox = new DefaultEnvelope( null, crs, null, new DefaultPoint( null, crs, null, new double[] {
+                                                                                                              bboxXmin,
+                                                                                                              minY } ),
+                                            new DefaultPoint( null, crs, null, new double[] { bboxXmax, maxY } ) );
+            } else {
+                double centerX = bboxXmin + ( ( bboxXmax - bboxXmin ) / 2d );
+                double width = bboxHeight * printAspectRatio;
+                double minX = centerX - ( width / 2d );
+                double maxX = centerX + ( width / 2d );
+                bbox = new DefaultEnvelope( null, crs, null, new DefaultPoint( null, crs, null,
+                                                                               new double[] { minX, bboxYmin } ),
+                                            new DefaultPoint( null, crs, null, new double[] { maxX, bboxYmax } ) );
+            }
+        } else {
+            throw new ProcessletException(
+                                           "Could not parse required parameter bbox or center for map component with id  '"
+                                                                   + id + "'." );
+        }
+        LOG.debug( "requested and adjusted bbox: {}", bbox );
+        return bbox;
+    }
+
+    private void prepareScaleBar( String scalebarKey, XMLAdapter jrxmlAdapter, List<OrderedDatasource<?>> datasources,
+                                  String string, double scale ) {
+
+        OMElement sbRep = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                   new XPath( ".//jasper:image[jasper:imageExpression/text()='$P{"
+                                                              + scalebarKey + "}']/jasper:reportElement", nsContext ) );
+
+        if ( sbRep != null ) {
+            // int w = jrxmlAdapter.getRequiredNodeAsInteger( sbRep, new XPath( "@width", nsContext ) );
+            // int h = jrxmlAdapter.getRequiredNodeAsInteger( sbRep, new XPath( "@height", nsContext ) );
+            // BufferedImage img = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB );
+            // Graphics2D g = img.createGraphics();
+            // g.dispose();
+        }
+    }
+
     private Object convert( double scale, String parameterType ) {
         if ( parameterType == null || "java.lang.String".equals( parameterType ) ) {
             return Double.toString( scale );
@@ -347,7 +454,7 @@ public class MapContentProvider implements JrxmlContentProvider {
     }
 
     private Object prepareLegend( String legendKey, XMLAdapter jrxmlAdapter, List<OrderedDatasource<?>> datasources,
-                                  String type )
+                                  String type, int resolution )
                             throws ProcessletException {
 
         OMElement legendRE = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
@@ -358,6 +465,8 @@ public class MapContentProvider implements JrxmlContentProvider {
             LOG.debug( "Found legend with key '" + legendKey + "'." );
             int width = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@width", nsContext ) );
             int height = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@height", nsContext ) );
+            width = adjustSpan( width, resolution );
+            height = adjustSpan( height, resolution );
             // TODO: bgcolor?
             Color bg = Color.decode( "0xFFFFFF" );
             BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
@@ -371,7 +480,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                 if ( k > bi.getHeight() ) {
                     LOG.warn( "The necessary legend size is larger than the available legend space." );
                 }
-                List<Pair<String, BufferedImage>> legends = datasources.get( i ).getLegends();
+                List<Pair<String, BufferedImage>> legends = datasources.get( i ).getLegends( width );
                 for ( Pair<String, BufferedImage> legend : legends ) {
                     BufferedImage img = legend.second;
                     if ( img != null ) {
@@ -401,43 +510,47 @@ public class MapContentProvider implements JrxmlContentProvider {
 
         OMElement layerListFrame = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
                                                             new XPath(
-                                                                       "/jasper:jasperReport/jasper:detail/jasper:band/jasper:frame[jasper:reportElement/@key='"
+                                                                       ".//jasper:band/jasper:frame[jasper:reportElement/@key='"
                                                                                                + layerListKey + "']",
                                                                        nsContext ) );
         if ( layerListFrame != null ) {
-            LOG.debug( "Found layer list with key '" + layerListKey + "' to adjust." );
+            LOG.debug( "Found layer list with key '{}' to adjust.", layerListKey );
             List<OMElement> elements = jrxmlAdapter.getElements( layerListFrame, new XPath( "jasper:staticText",
                                                                                             nsContext ) );
-            OMElement grpTemplate = elements.get( 0 );
-            OMElement fieldTemplate = elements.get( 1 );
-            for ( OMElement element : elements ) {
-                element.detach();
-            }
-            XMLAdapter grpAdapter = new XMLAdapter( grpTemplate );
-            int grpHeight = grpAdapter.getNodeAsInt( grpTemplate,
-                                                     new XPath( "jasper:reportElement/@height", nsContext ), 15 );
-            int grpY = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@y", nsContext ), 0 );
+            if ( elements.size() > 1 ) {
+                OMElement grpTemplate = elements.get( 0 );
+                OMElement fieldTemplate = elements.get( 1 );
+                for ( OMElement element : elements ) {
+                    element.detach();
+                }
+                XMLAdapter grpAdapter = new XMLAdapter( grpTemplate );
+                int grpHeight = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@height",
+                                                                                 nsContext ), 15 );
+                int grpY = grpAdapter.getNodeAsInt( grpTemplate, new XPath( "jasper:reportElement/@y", nsContext ), 0 );
 
-            XMLAdapter fieldAdapter = new XMLAdapter( fieldTemplate );
-            int fieldHeight = fieldAdapter.getNodeAsInt( fieldTemplate, new XPath( "jasper:reportElement/@height",
-                                                                                   nsContext ), 15 );
-            OMFactory factory = OMAbstractFactory.getOMFactory();
-            // y + height * index
-            int y = grpY;
-            for ( OrderedDatasource<?> datasource : datasources ) {
-                for ( String datasourceKey : datasource.getLayerList().keySet() ) {
-                    OMElement newGrp = createLayerEntry( grpTemplate, y, factory, datasourceKey );
-                    layerListFrame.addChild( newGrp );
-                    y += grpHeight;
-                    for ( String layerName : datasource.getLayerList().get( datasourceKey ) ) {
-                        OMElement newField = createLayerEntry( fieldTemplate, y, factory, layerName );
-                        layerListFrame.addChild( newField );
-                        y += fieldHeight;
+                XMLAdapter fieldAdapter = new XMLAdapter( fieldTemplate );
+                int fieldHeight = fieldAdapter.getNodeAsInt( fieldTemplate, new XPath( "jasper:reportElement/@height",
+                                                                                       nsContext ), 15 );
+                OMFactory factory = OMAbstractFactory.getOMFactory();
+                // y + height * index
+                int y = grpY;
+                for ( OrderedDatasource<?> datasource : datasources ) {
+                    for ( String datasourceKey : datasource.getLayerList().keySet() ) {
+                        OMElement newGrp = createLayerEntry( grpTemplate, y, factory, datasourceKey );
+                        layerListFrame.addChild( newGrp );
+                        y += grpHeight;
+                        for ( String layerName : datasource.getLayerList().get( datasourceKey ) ) {
+                            OMElement newField = createLayerEntry( fieldTemplate, y, factory, layerName );
+                            layerListFrame.addChild( newField );
+                            y += fieldHeight;
+                        }
                     }
                 }
+            } else {
+                LOG.info( "layerlist frame with key '{}' must have at least two child elements", layerListKey );
             }
         } else {
-            LOG.debug( "no layer list with key '" + layerListKey + "' found." );
+            LOG.debug( "no layer list with key '{}' found.", layerListKey );
         }
     }
 
@@ -454,14 +567,12 @@ public class MapContentProvider implements JrxmlContentProvider {
         return newGrp;
     }
 
-    private Object prepareMap( List<OrderedDatasource<?>> datasources, String type, int width, int height,
-                               Envelope bbox, ICRS crs )
+    private Object prepareMap( List<OrderedDatasource<?>> datasources, String type, int width, int height, Envelope bbox )
                             throws ProcessletException {
         BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
         Graphics g = bi.getGraphics();
-
         for ( OrderedDatasource<?> datasource : datasources ) {
-            BufferedImage image = datasource.getImage( width, height, bbox, crs );
+            BufferedImage image = datasource.getImage( width, height, bbox );
             if ( image != null ) {
                 g.drawImage( image, 0, 0, null );
             }
@@ -638,7 +749,7 @@ public class MapContentProvider implements JrxmlContentProvider {
             this.datasource = datasource;
         }
 
-        public abstract List<Pair<String, BufferedImage>> getLegends()
+        public abstract List<Pair<String, BufferedImage>> getLegends( int width )
                                 throws ProcessletException;
 
         public OrderedDatasource( T datasource, int min, int max ) {
@@ -647,7 +758,7 @@ public class MapContentProvider implements JrxmlContentProvider {
             this.max = max;
         }
 
-        abstract BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
+        abstract BufferedImage getImage( int width, int height, Envelope bbox )
                                 throws ProcessletException;
 
         abstract Map<String, List<String>> getLayerList();
@@ -673,6 +784,19 @@ public class MapContentProvider implements JrxmlContentProvider {
             return symbologyParser.parse( reader );
         }
 
+        protected BufferedImage getLegendImg( org.deegree.style.se.unevaluated.Style style, int width ) {
+            Legends legends = new Legends();
+            Pair<Integer, Integer> legendSize = legends.getLegendSize( style );
+            if ( legendSize.first < width )
+                width = legendSize.first;
+            BufferedImage img = new BufferedImage( width, legendSize.second, BufferedImage.TYPE_INT_ARGB );
+            Graphics2D g = img.createGraphics();
+            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
+            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
+            legends.paintLegend( style, width, legendSize.second, g );
+            g.dispose();
+            return img;
+        }
     }
 
     class WMSOrderedDatasource extends OrderedDatasource<WMSDatasource> {
@@ -690,8 +814,9 @@ public class MapContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
+        BufferedImage getImage( int width, int height, Envelope bbox )
                                 throws ProcessletException {
+            LOG.debug( "create map image for WMS datasource '{}'", datasource.getName() );
             try {
                 String user = datasource.getAuthentification() != null ? datasource.getAuthentification().getUser()
                                                                       : null;
@@ -709,7 +834,8 @@ public class MapContentProvider implements JrxmlContentProvider {
                     layerNames.add( l.getName() );
                 }
 
-                GetMap gm = new GetMap( layerNames, width, height, bbox, crs, "image/png", true );
+                // TODO: styles!
+                GetMap gm = new GetMap( layerNames, width, height, bbox, bbox.getCoordinateSystem(), "image/png", true );
                 Pair<BufferedImage, String> map = wmsClient.getMap( gm, null, 60, false );
                 if ( map.first == null )
                     LOG.debug( map.second );
@@ -775,33 +901,33 @@ public class MapContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        public List<Pair<String, BufferedImage>> getLegends()
+        public List<Pair<String, BufferedImage>> getLegends( int width )
                                 throws ProcessletException {
             List<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
             for ( Layer layer : layers ) {
-
+                String layerName = layer.getName();
                 try {
+                    BufferedImage bi = null;
                     org.deegree.style.se.unevaluated.Style style = getStyle( layer.getStyle() );
                     if ( style != null ) {
-
+                        bi = getLegendImg( style, width );
+                    } else {
+                        String legendUrl = getLegendUrl( layer );
+                        LOG.debug( "Try to load legend image from WMS {}: ", legendUrl );
+                        try {
+                            bi = loadImage( legendUrl );
+                        } catch ( IOException e ) {
+                            String msg = "Could not create legend for layer: " + layerName;
+                            LOG.error( msg );
+                            throw new ProcessletException( msg );
+                        }
                     }
+                    legends.add( new Pair<String, BufferedImage>( layerName, bi ) );
                 } catch ( Exception e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    String dsName = datasource.getName() != null ? datasource.getName() : datasource.getUrl();
+                    LOG.info( "Could not create legend image for datasource '" + dsName + "', layer " + layerName + ".",
+                              e );
                 }
-
-                String legendUrl = getLegendUrl( layer );
-                LOG.debug( "Try to load legend image: " + legendUrl );
-                String layerName = layer.getName();
-                BufferedImage bi = null;
-                try {
-                    bi = loadImage( legendUrl );
-                } catch ( IOException e ) {
-                    String msg = "Could not create legend for layer: " + layerName;
-                    LOG.error( msg );
-                    throw new ProcessletException( msg );
-                }
-                legends.add( new Pair<String, BufferedImage>( layerName, bi ) );
             }
             return legends;
         }
@@ -822,7 +948,6 @@ public class MapContentProvider implements JrxmlContentProvider {
             // STYLES=
             return sb.toString();
         }
-
     }
 
     class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
@@ -836,8 +961,9 @@ public class MapContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
+        BufferedImage getImage( int width, int height, Envelope bbox )
                                 throws ProcessletException {
+            LOG.debug( "create map image for WFS datasource '{}'", datasource.getName() );
             try {
                 String capURL = datasource.getUrl() + "?service=WFS&request=GetCapabilities&version="
                                 + datasource.getVersion();
@@ -849,7 +975,7 @@ public class MapContentProvider implements JrxmlContentProvider {
 
                 BufferedImage image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
                 Graphics2D g = image.createGraphics();
-                Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox /* pixelSize */);
+                Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox, bbox.getCoordinateDimension() /* pixelSize */);
 
                 // TODO
                 // XMLInputFactory fac = XMLInputFactory.newInstance();
@@ -891,15 +1017,16 @@ public class MapContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        public List<Pair<String, BufferedImage>> getLegends() {
+        public List<Pair<String, BufferedImage>> getLegends( int width ) {
             ArrayList<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
 
             BufferedImage legend = null;
             String name = datasource.getName() != null ? datasource.getName() : datasource.getUrl();
             try {
                 org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
-                URL legendURL = style.getLegendURL();
-                legend = ImageIO.read( legendURL );
+                if ( style != null ) {
+                    legend = getLegendImg( style, width );
+                }
             } catch ( Exception e ) {
                 LOG.debug( "Could not create legend for wfs datasource '{}': {}", name, e.getMessage() );
             }

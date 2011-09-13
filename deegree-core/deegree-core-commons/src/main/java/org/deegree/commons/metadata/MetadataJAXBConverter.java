@@ -55,13 +55,20 @@ import org.deegree.commons.utils.Pair;
  */
 public class MetadataJAXBConverter {
 
-    /**
-     * Maps a jaxb localised string.
-     */
-    public static final Mapper<LanguageString, LanguageStringType> LANG_MAPPER = new Mapper<LanguageString, LanguageStringType>() {
+    public static final Mapper<LanguageString, LanguageStringType> LANG_LANG_MAPPER = new Mapper<LanguageString, LanguageStringType>() {
         @Override
         public LanguageString apply( LanguageStringType u ) {
             return new LanguageString( u.getValue(), u.getLang() );
+        }
+    };
+
+    /**
+     * Maps a string to language string.
+     */
+    public static final Mapper<LanguageString, String> LANG_MAPPER = new Mapper<LanguageString, String>() {
+        @Override
+        public LanguageString apply( String u ) {
+            return new LanguageString( u, null );
         }
     };
 
@@ -75,7 +82,7 @@ public class MetadataJAXBConverter {
     public static final Mapper<Pair<List<LanguageString>, CodeType>, KeywordsType> KW_MAPPER = new Mapper<Pair<List<LanguageString>, CodeType>, KeywordsType>() {
         @Override
         public Pair<List<LanguageString>, CodeType> apply( KeywordsType u ) {
-            return new Pair<List<LanguageString>, CodeType>( map( u.getKeyword(), LANG_MAPPER ),
+            return new Pair<List<LanguageString>, CodeType>( map( u.getKeyword(), LANG_LANG_MAPPER ),
                                                              CODETYPE_MAPPER.apply( u.getType() ) );
         }
     };

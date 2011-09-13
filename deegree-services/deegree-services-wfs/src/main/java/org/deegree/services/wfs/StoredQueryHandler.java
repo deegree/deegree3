@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
-import static org.deegree.commons.xml.XMLAdapter.writeElement;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
@@ -46,21 +44,24 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
 import org.deegree.protocol.wfs.storedquery.DescribeStoredQueries;
 import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
 import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
+import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.slf4j.Logger;
@@ -79,9 +80,14 @@ class StoredQueryHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( StoredQueryHandler.class );
 
+    public static final String GET_FEATURE_BY_ID = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
+
     private final Map<String, StoredQueryDefinition> idToQuery = Collections.synchronizedMap( new TreeMap<String, StoredQueryDefinition>() );
 
-    StoredQueryHandler( WebFeatureService webFeatureService ) {
+    private WebFeatureService wfs;
+
+    StoredQueryHandler( WebFeatureService wfs ) {
+        this.wfs = wfs;
         // add mandatory GetFeatureById query
         URL url = StoredQueryHandler.class.getResource( "idquery.xml" );
         XMLAdapter xmlAdapter = new XMLAdapter( url );
@@ -141,9 +147,50 @@ class StoredQueryHandler {
         writer.setDefaultNamespace( WFS_200_NS );
         writer.writeStartElement( WFS_200_NS, "DescribeStoredQueriesResponse" );
         for ( StoredQueryDefinition queryDef : returnedDescriptions ) {
-            XMLStreamReader reader = queryDef.getRootElement().getXMLStreamReader();
-            skipStartDocument( reader );
-            writeElement( writer, reader );
+            writer.writeStartElement( WFS_200_NS, "StoredQueryDescription" );
+            writer.writeAttribute( "id", queryDef.getId() );
+            for ( LanguageString title : queryDef.getTitles() ) {
+                writer.writeStartElement( WFS_200_NS, "Title" );
+                if ( title.getLanguage() != null ) {
+                    // check this
+                    writer.writeAttribute( "xml:lang", title.getLanguage() );
+                }
+                writer.writeCharacters( title.getString() );
+                writer.writeEndElement();
+            }
+            for ( LanguageString abstr : queryDef.getAbstracts() ) {
+                writer.writeStartElement( WFS_200_NS, "Abstract" );
+                if ( abstr.getLanguage() != null ) {
+                    // check this
+                    writer.writeAttribute( "xml:lang", abstr.getLanguage() );
+                }
+                writer.writeCharacters( abstr.getString() );
+                writer.writeEndElement();
+            }
+
+            // TODO <xsd:element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
+
+            // TODO <xsd:element name="Parameter" type="wfs:ParameterExpressionType" minOccurs="0"
+            // maxOccurs="unbounded"/>
+
+            // <xsd:element name="QueryExpressionText" type="wfs:QueryExpressionTextType" minOccurs="1"
+            // maxOccurs="unbounded"/>
+            List<QueryExpressionText> queryExprTexts = queryDef.getQueryExpressionTextEls();
+            for ( QueryExpressionText queryExprText : queryExprTexts ) {
+                writer.writeStartElement( WFS_200_NS, "QueryExpressionText" );
+                // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
+                writer.writeAttribute( "language", queryExprText.getLanguage() );
+                if ( queryExprText.isPrivate() ) {
+                    writer.writeAttribute( "isPrivate", "true" );
+                } else {
+                    // TODO export actual query expression
+                    // XMLStreamReader reader = queryDef.getRootElement().getXMLStreamReader();
+                    // skipStartDocument( reader );
+                    // writeElement( writer, reader );
+                }
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
         }
         writer.writeEndElement();
     }
@@ -178,6 +225,7 @@ class StoredQueryHandler {
         XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
         writer.setDefaultNamespace( WFS_200_NS );
         writer.writeStartElement( WFS_200_NS, "ListStoredQueriesResponse" );
+
         for ( StoredQueryDefinition queryDef : idToQuery.values() ) {
             writer.writeStartElement( WFS_200_NS, "StoredQuery" );
             writer.writeAttribute( "id", queryDef.getId() );
@@ -188,6 +236,34 @@ class StoredQueryHandler {
                 }
                 writer.writeCharacters( title.getString() );
                 writer.writeEndElement();
+
+                List<QName> ftNames = new ArrayList<QName>( wfs.getStoreManager().getFeatureTypes().size() );
+                for ( FeatureType ft : wfs.getStoreManager().getFeatureTypes() ) {
+                    ftNames.add( ft.getName() );
+                }
+                Collections.sort( ftNames, new Comparator<QName>() {
+                    @Override
+                    public int compare( QName arg0, QName arg1 ) {
+                        String s0 = arg0.toString();
+                        String s1 = arg1.toString();
+                        return s0.compareTo( s1 );
+                    }
+                } );
+
+                for ( QName ftName : ftNames ) {
+                    writer.writeStartElement( WFS_200_NS, "ReturnFeatureType" );
+                    String prefix = ftName.getPrefix();
+                    if ( prefix == null && ftName.getNamespaceURI() != null ) {
+                        prefix = "app";
+                    }
+                    if ( ftName.getPrefix() != null ) {
+                        writer.writeNamespace( prefix, ftName.getNamespaceURI() );
+                        writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
+                    } else {
+                        writer.writeCharacters( ftName.getLocalPart() );
+                    }
+                    writer.writeEndElement();
+                }
             }
             writer.writeEndElement();
         }

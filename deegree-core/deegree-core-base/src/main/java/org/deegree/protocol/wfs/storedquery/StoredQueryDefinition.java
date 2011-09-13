@@ -35,20 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.storedquery;
 
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.query.StoredQuery;
 
 /**
- * Definition of a <code>StoredQuery</code>.
+ * Defines the template for a {@link StoredQuery}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -65,12 +65,16 @@ public class StoredQueryDefinition extends XMLAdapter {
 
     static {
         nsContext = new NamespaceBindings( XMLAdapter.nsContext );
-        nsContext.addNamespace( WFS_200_PREFIX, WFSConstants.WFS_200_NS );
+        nsContext.addNamespace( WFS_200_PREFIX, WFS_200_NS );
     }
 
     private final String id;
 
     private final List<LanguageString> titles;
+
+    private final List<LanguageString> abstracts;
+
+    private final List<QueryExpressionText> queryExpressionTexts;
 
     public StoredQueryDefinition( OMElement el ) {
         setRootElement( el );
@@ -87,11 +91,27 @@ public class StoredQueryDefinition extends XMLAdapter {
             titles.add( new LanguageString( value, lang ) );
         }
 
-        // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
-        
-        
-        
-        // <xsd:attribute name="isPrivate" type="xsd:boolean" default="false"/>
+        // <xsd:element ref="wfs:Abstract" minOccurs="0" maxOccurs="unbounded"/>
+        List<OMElement> abstractEls = getElements( el, new XPath( "wfs200:Abstract", nsContext ) );
+        abstracts = new ArrayList<LanguageString>( abstractEls.size() );
+        for ( OMElement abstractEl : abstractEls ) {
+            String lang = getNodeAsString( abstractEl, new XPath( "@xml:lang", nsContext ), null );
+            String value = abstractEl.getText();
+            abstracts.add( new LanguageString( value, lang ) );
+        }
+
+        // <xsd:element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
+
+        // <xsd:element name="Parameter" type="wfs:ParameterExpressionType" minOccurs="0" maxOccurs="unbounded"/>
+
+        // <xsd:element name="QueryExpressionText" type="wfs:QueryExpressionTextType" minOccurs="1"
+        // maxOccurs="unbounded"/>
+        List<OMElement> queryExprEls = getRequiredElements( el, new XPath( "wfs200:QueryExpressionText", nsContext ) );
+        queryExpressionTexts = new ArrayList<QueryExpressionText>( queryExprEls.size() );
+        for ( OMElement queryExprEl : queryExprEls ) {
+            queryExpressionTexts.add( new QueryExpressionText( queryExprEl ) );
+        }
+
     }
 
     /**
@@ -110,11 +130,11 @@ public class StoredQueryDefinition extends XMLAdapter {
         return titles;
     }
 
-    public List<QName> getReturnFeatureTypes() {
-        return null;
+    public List<LanguageString> getAbstracts() {
+        return abstracts;
     }
 
-    public boolean isPrivate() {
-        return true;
+    public List<QueryExpressionText> getQueryExpressionTextEls() {
+        return queryExpressionTexts;
     }
 }

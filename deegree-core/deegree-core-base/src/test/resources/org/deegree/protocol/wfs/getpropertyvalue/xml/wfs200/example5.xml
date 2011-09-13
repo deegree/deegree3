@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<!--
+Q. Get the road each house fronts on?
+-->
+<GetFeature
+   service="WFS"
+   version="2.0.0"
+   outputFormat="application/xml; subtype=gml/3.2"
+   xmlns="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:myns="http://www.myserver.com/myns"
+   xmlns:abc="http://www.myserver.com/abc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.someserver.com/myns ./myns.xsd
+                       http://www.someserver.com/abc ./abc.xsd">
+   <Query typeNames="myns:House abc:Road">
+     <fes:Filter>
+         <fes:PropertyIsEqualTo>
+            <fes:ValueReference>myns:House/valueOf(myns:frontsOn)/@gml:id</fes:ValueReference>
+            <fes:ValueReference>abd:Road/@gml:id</fes:ValueReference>
+         </fes:PropertyIsEqualTo>
+      </fes:Filter>
+   </Query>
+</GetFeature>

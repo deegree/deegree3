@@ -36,25 +36,21 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
-import static java.math.BigInteger.ZERO;
-import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -69,12 +65,13 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.filter.xml.Filter200XMLDecoder;
-import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
-import org.deegree.protocol.wfs.query.StoredQuery;
+import org.deegree.protocol.wfs.query.QueryXMLAdapter;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
  * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
@@ -85,6 +82,7 @@ import org.deegree.protocol.wfs.query.StoredQuery;
  * <li>1.1.0</li>
  * <li>2.0.0</li>
  * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -92,14 +90,19 @@ import org.deegree.protocol.wfs.query.StoredQuery;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
+public class GetFeatureXMLAdapter extends QueryXMLAdapter {
 
     /**
-     * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object.
+     * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object. *
+     * <p>
+     * Supported WFS versions:
+     * <ul>
+     * <li>1.0.0</li>
+     * <li>1.1.0</li>
+     * <li>2.0.0</li>
+     * </ul>
+     * </p>
      * 
-     * @param version
-     *            version of the request, may be <code>null</code> (in that case, a version attribute must be present in
-     *            the root element)
      * @return parsed {@link GetFeature} request, never <code>null</code>
      * @throws Exception
      * @throws XMLParsingException
@@ -109,15 +112,12 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public GetFeature parse( Version version )
+    public GetFeature parse()
                             throws Exception {
 
-        if ( version == null ) {
-            version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
-        }
+        Version version = determineVersion110Safe();
 
         GetFeature result = null;
-
         if ( VERSION_100.equals( version ) ) {
             result = parse100();
         } else if ( VERSION_110.equals( version ) ) {
@@ -128,7 +128,6 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             String msg = "Version '" + version + "' is not supported. Supported versions are 1.0.0, 1.1.0 and 2.0.0.";
             throw new Exception( msg );
         }
-
         return result;
     }
 
@@ -137,28 +136,11 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * 
      * @return a GetFeature instance
      */
-    @SuppressWarnings("boxing")
     public GetFeature parse100() {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
 
-        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
-        ResultType resultType = null;
-        if ( resultTypeStr != null ) {
-            if ( resultTypeStr.equalsIgnoreCase( ResultType.RESULTS.toString() ) ) {
-                resultType = ResultType.RESULTS;
-            } else if ( resultTypeStr.equalsIgnoreCase( ResultType.HITS.toString() ) ) {
-                resultType = ResultType.HITS;
-            }
-        }
-
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-
-        String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
-        Integer maxFeatures = null;
-        if ( maxFeaturesStr != null ) {
-            maxFeatures = Integer.parseInt( maxFeaturesStr );
-        }
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters100( rootElement );
 
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
         // check if all child elements are 'wfs:Query' elements (required for CITE)
@@ -172,13 +154,13 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
-            List<ValueReference> propNames = new ArrayList<ValueReference>();
+            List<ProjectionClause> propNames = new ArrayList<ProjectionClause>();
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "ogc:PropertyName", nsContext ) );
 
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                                   getNamespaceContext( propertyNameEl ) );
-                propNames.add( propertyName );
+                propNames.add( new ProjectionClause( propertyName, null, null ) );
             }
 
             Filter filter = null;
@@ -208,20 +190,16 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
             // convert some lists to arrays to conform the FilterQuery constructor signature
-            ValueReference[] propNamesArray = new ValueReference[propNames.size()];
+            ProjectionClause[] propNamesArray = new ProjectionClause[propNames.size()];
             propNames.toArray( propNamesArray );
 
             // build Query
             Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, null, propNamesArray, null,
-                                                 null, null, filter );
+                                                 filter );
             queries.add( filterQuery );
         }
 
-        Query[] queryArray = new FilterQuery[queries.size()];
-        queries.toArray( queryArray );
-
-        return new GetFeature( VERSION_100, handle, null, maxFeatures, outputFormat, resultType, null, null, null,
-                               queryArray );
+        return new GetFeature( VERSION_100, handle, presentationParams, null, queries );
     }
 
     /**
@@ -233,32 +211,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
 
-        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
-        ResultType resultType = null;
-        if ( resultTypeStr != null ) {
-            if ( resultTypeStr.equalsIgnoreCase( ResultType.RESULTS.toString() ) ) {
-                resultType = ResultType.RESULTS;
-            } else if ( resultTypeStr.equalsIgnoreCase( ResultType.HITS.toString() ) ) {
-                resultType = ResultType.HITS;
-            }
-        }
-
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-
-        String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
-        Integer maxFeatures = null;
-        if ( maxFeaturesStr != null ) {
-            maxFeatures = Integer.parseInt( maxFeaturesStr );
-        }
-
-        String traverseXlinkDepth = getNodeAsString( rootElement, new XPath( "@traverseXlinkDepth", nsContext ), null );
-
-        String traverseXlinkExpiryStr = getNodeAsString( rootElement, new XPath( "@traverseXlinkExpiry", nsContext ),
-                                                         null );
-        Integer resolveTimout = null;
-        if ( traverseXlinkExpiryStr != null ) {
-            resolveTimout = Integer.parseInt( traverseXlinkExpiryStr ) * 60;
-        }
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters110( rootElement );
+        ResolveParams resolveParams = parseStandardResolveParameters110( rootElement );
 
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
         // check if all child elements are 'wfs:Query' elements (required for CITE)
@@ -272,15 +226,14 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
-            List<ValueReference> propNames = new ArrayList<ValueReference>();
+            List<ProjectionClause> propNames = new ArrayList<ProjectionClause>();
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                                   getNamespaceContext( propertyNameEl ) );
-                propNames.add( propertyName );
+                propNames.add( new ProjectionClause( propertyName, null, null ) );
             }
 
-            List<XLinkPropertyName> xlinkPropNames = new ArrayList<XLinkPropertyName>();
             List<OMElement> xlinkPropertyElements = getElements( queryEl,
                                                                  new XPath( "wfs:XlinkPropertyName", nsContext ) );
             for ( OMElement xlinkPropertyEl : xlinkPropertyElements ) {
@@ -290,16 +243,18 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                                          nsContext ) );
                 String xlinkExpiry = getNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkExpiry", nsContext ),
                                                       null );
-                Integer xlinkExpiryInt = null;
+                BigInteger resolveTimeout = null;
                 try {
                     if ( xlinkExpiry != null ) {
-                        xlinkExpiryInt = Integer.parseInt( xlinkExpiry );
+                        resolveTimeout = new BigInteger( xlinkExpiry ).multiply( BigInteger.valueOf( 60 ) );
                     }
                 } catch ( NumberFormatException e ) {
                     // TODO string provided as time in minutes is not an integer
                 }
-                XLinkPropertyName xlinkPropName = new XLinkPropertyName( xlinkProperty, xlinkDepth, xlinkExpiryInt );
-                xlinkPropNames.add( xlinkPropName );
+                ProjectionClause xlinkPropName = new ProjectionClause( xlinkProperty,
+                                                                       new ResolveParams( null, xlinkDepth,
+                                                                                          resolveTimeout ), null );
+                propNames.add( xlinkPropName );
             }
 
             List<Function> functions = new ArrayList<Function>();
@@ -365,168 +320,49 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 crs = CRSManager.getCRSRef( srsName );
             }
 
-            // convert some lists to arrays to conform the FilterQuery constructor signature
-            ValueReference[] propNamesArray = new ValueReference[propNames.size()];
+            ProjectionClause[] propNamesArray = new ProjectionClause[propNames.size()];
             propNames.toArray( propNamesArray );
-
-            XLinkPropertyName[] xlinkPropNamesArray = new XLinkPropertyName[xlinkPropNames.size()];
-            xlinkPropNames.toArray( xlinkPropNamesArray );
-
-            Function[] functionsArray = new Function[functions.size()];
-            functions.toArray( functionsArray );
 
             SortProperty[] sortPropsArray = new SortProperty[sortProps.size()];
             sortProps.toArray( sortPropsArray );
 
             // build Query
             Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, crs, propNamesArray,
-                                                 xlinkPropNamesArray, functionsArray, sortPropsArray, filter );
+                                                 sortPropsArray, filter );
             queries.add( filterQuery );
         }
 
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
 
-        return new GetFeature( VERSION_110, handle, null, maxFeatures, outputFormat, resultType, null,
-                               traverseXlinkDepth, resolveTimout, queryArray );
+        return new GetFeature( VERSION_110, handle, presentationParams, resolveParams, queries );
     }
 
     /**
      * Parses a WFS 2.0.0 <code>GetFeature</code> document into a {@link GetFeature} object.
      * 
      * @return corresponding GetFeature instance, never <code>null</code>
+     * @throws OWSException
      */
-    public GetFeature parse200() {
+    public GetFeature parse200()
+                            throws OWSException {
 
         // <xsd:attribute name="handle" type="xsd:string"/>
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
 
-        // <xsd:attribute name="startIndex" type="xsd:nonNegativeInteger" default="0"/>
-        BigInteger startIndex = getNodeAsBigInt( rootElement, new XPath( "@startIndex", nsContext ), ZERO );
+        // <xsd:attributeGroup ref="wfs:StandardPresentationParams"/>
+        StandardPresentationParams presentationParams = parseStandardPresentationParameters200( rootElement );
 
-        // <xsd:attribute name="count" type="xsd:nonNegativeInteger"/>
-        BigInteger count = getNodeAsBigInt( rootElement, new XPath( "@count", nsContext ), null );
+        // <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
+        ResolveParams resolveParams = parseStandardResolveParameters200( rootElement );
 
-        // <xsd:attribute name="resultType" type="wfs:ResultTypeType" default="results"/>
-        ResultType resultType = null;
-        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
-        if ( resultTypeStr != null ) {
-            if ( resultTypeStr.equals( "results" ) ) {
-                resultType = ResultType.RESULTS;
-            } else if ( resultTypeStr.equals( "hits" ) ) {
-                resultType = ResultType.HITS;
-            }
-        }
-
-        // <xsd:attribute name="outputFormat" type="xsd:string" default="application/gml+xml; version=3.2"/>
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ),
-                                               "application/gml+xml; version=3.2" );
-
-        // <xsd:attribute name="resolve" type="wfs:ResolveValueType" default="none"/>
-        // TODO
-
-        // <xsd:attribute name="resolveDepth" type="wfs:positiveIntegerWithStar" default="*"/>
-        String resolveDepth = getNodeAsString( rootElement, new XPath( "@resolveDepth", nsContext ), "*" );
-
-        // <xsd:attribute name="resolveTimeout" type="xsd:positiveInteger" default="300"/>
-        BigInteger resolveTimeout = getNodeAsBigInt( rootElement, new XPath( "@resolveTimeout", nsContext ),
-                                                     new BigInteger( "300" ) );
-
+        // <xsd:element ref="fes:AbstractQueryExpression" maxOccurs="unbounded"/>
         List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
         List<Query> queries = new ArrayList<Query>( queryElements.size() );
         for ( OMElement queryEl : queryElements ) {
-            // <xsd:element ref="fes:AbstractQueryExpression" maxOccurs="unbounded"/>
             queries.add( parseAbstractQuery200( queryEl ) );
         }
 
-        Query[] queryArray = new Query[queries.size()];
-        queries.toArray( queryArray );
-
-        Integer countInt = null;
-        if ( count != null ) {
-            countInt = count.intValue();
-        }
-        Integer resolveTimeoutInt = null;
-        if ( resolveTimeout != null ) {
-            resolveTimeoutInt = resolveTimeout.intValue();
-        }
-
-        return new GetFeature( VERSION_200, handle, null, countInt, outputFormat, resultType, null, resolveDepth,
-                               resolveTimeoutInt, queryArray );
-    }
-
-    private Query parseAbstractQuery200( OMElement queryEl ) {
-        QName elName = queryEl.getQName();
-        if ( new QName( WFS_200_NS, "Query" ).equals( elName ) ) {
-            return parseQuery200( queryEl );
-        } else if ( new QName( WFS_200_NS, "StoredQuery" ).equals( elName ) ) {
-            return parseStoredQuery200( queryEl );
-        }
-        String msg = "Unexpected query element '" + elName + "' in GetFeature request.";
-        throw new XMLParsingException( this, queryEl, msg );
-    }
-
-    // <xsd:element name="Query" type="wfs:QueryType" substitutionGroup="fes:AbstractAdhocQueryExpression"/>
-    private Query parseQuery200( OMElement queryEl ) {
-
-        // <xsd:attribute name="handle" type="xsd:string"/>
-        String handle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
-
-        // <xsd:attribute name="typeNames" type="fes:TypeNamesListType" use="required"/>
-        String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeNames", nsContext ) );
-        TypeName[] typeNames = TypeName.valuesOf( queryEl, typeNameStr );
-
-        // <xsd:attribute name="aliases" type="fes:TypeNamesListType" use="required"/>
-
-        // <xsd:element ref="fes:AbstractProjectionClause" minOccurs="0" maxOccurs="unbounded"/>
-
-        // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
-        Filter filter = null;
-        OMElement filterEl = queryEl.getFirstChildWithName( new QName( FES_20_NS, "Filter" ) );
-        if ( filterEl != null ) {
-            try {
-                // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
-                // XMLStreamReader)
-                XMLStreamReader xmlStream = new XMLStreamReaderWrapper( filterEl.getXMLStreamReaderWithoutCaching(),
-                                                                        null );
-                // skip START_DOCUMENT
-                xmlStream.nextTag();
-                filter = Filter200XMLDecoder.parse( xmlStream );
-            } catch ( XMLStreamException e ) {
-                e.printStackTrace();
-                throw new XMLParsingException( this, filterEl, e.getMessage() );
-            }
-        }
-
-        // <xsd:element ref="fes:AbstractSortingClause" minOccurs="0"/>
-
-        String featureVersion = null;
-        ICRS crs = null;
-        ValueReference[] propNamesArray = null;
-        XLinkPropertyName[] xlinkPropNamesArray = null;
-        Function[] functionsArray = null;
-        SortProperty[] sortPropsArray = null;
-
-        return new FilterQuery( handle, typeNames, featureVersion, crs, propNamesArray, xlinkPropNamesArray,
-                                functionsArray, sortPropsArray, filter );
-    }
-
-    // <xsd:element name="StoredQuery" type="wfs:StoredQueryType" substitutionGroup="fes:AbstractQueryExpression"/>
-    private StoredQuery parseStoredQuery200( OMElement queryEl ) {
-
-        // <xsd:attribute name="handle" type="xsd:string"/>
-        String handle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
-
-        // <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
-        String id = getRequiredNodeAsString( queryEl, new XPath( "@id", nsContext ) );
-
-        // <xsd:element name="Parameter" type="wfs:ParameterType" minOccurs="0" maxOccurs="unbounded"/>
-        Map<String, OMElement> paramToValue = new HashMap<String, OMElement>();
-        List<OMElement> paramEls = getElements( queryEl, new XPath( "wfs200:Parameter", nsContext ) );
-        for ( OMElement paramEl : paramEls ) {
-            String paramName = getRequiredNodeAsString( paramEl, new XPath( "@name", nsContext ) );
-            paramToValue.put( paramName, paramEl );
-        }
-        return new StoredQuery( handle, id, paramToValue );
+        return new GetFeature( VERSION_200, handle, presentationParams, resolveParams, queries );
     }
 }
