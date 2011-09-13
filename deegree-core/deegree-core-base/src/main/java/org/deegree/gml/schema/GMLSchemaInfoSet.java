@@ -86,6 +86,7 @@ import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
 
 /**
  * Provides access to the <i>object</i> element declarations of a GML schema (both application and GML core schema
@@ -120,7 +121,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
     private static final String GML_32_NS = CommonNamespaces.GML3_2_NS;
 
-    private final GMLVersion version;
+    private GMLVersion version;
 
     private XSElementDeclaration abstractObjectElementDecl;
 
@@ -173,6 +174,27 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     public GMLSchemaInfoSet( GMLVersion version, String... schemaUrls ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         super( schemaUrls );
+        init( version );
+    }
+
+    /**
+     * Creates a new {@link GMLSchemaInfoSet} instance for the given GML version and using the specified inputs.
+     * 
+     * @param version
+     *            gml version of the schema files, can be null (auto-detect GML version)
+     * @param inputs
+     *            input objects forthe schema files to load, must not be <code>null</code>
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public GMLSchemaInfoSet( GMLVersion gmlVersion, LSInput... inputs ) throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        super( inputs );
+        init( gmlVersion );
+    }
+
+    private void init( GMLVersion version ) {
         if ( version == null ) {
             this.version = determineGMLVersion( this );
         } else {
@@ -339,10 +361,10 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         if ( appNamespaces == null ) {
             appNamespaces = new TreeSet<String>( getSchemaNamespaces() );
             appNamespaces.remove( version.getNamespace() );
-            appNamespaces.remove( XMLNS );            
+            appNamespaces.remove( XMLNS );
             appNamespaces.remove( XLNNS );
             appNamespaces.remove( XSNS );
-            appNamespaces.remove( "http://www.w3.org/XML/1998/namespace" );            
+            appNamespaces.remove( "http://www.w3.org/XML/1998/namespace" );
             appNamespaces.remove( ISOAP10GMDNS );
             appNamespaces.remove( ISO_2005_GCO_NS );
             appNamespaces.remove( ISO_2005_GSR_NS );

@@ -687,7 +687,7 @@ public class XMLStreamUtils {
     }
 
     /**
-     * makes a {@link Document} out of a {@link XMLStreamReader} 
+     * makes a {@link Document} out of a {@link XMLStreamReader}
      * 
      * @param xmlStreamReader
      *            the xmlStreamRader to convert
@@ -719,5 +719,47 @@ public class XMLStreamUtils {
         Document doc = builder.parse( store.getInputStream() );
         store.close();
         return doc;
+    }
+
+    /**
+     * Copies an XML element (including all attributes and subnodes) from the given {@link XMLStreamReader} to the given
+     * {@link XMLStreamWriter}.
+     * 
+     * @param writer
+     *            {@link XMLStreamWriter} that the xml is appended to
+     * @param reader
+     *            cursor must point at a <code>START_ELEMENT</code> event and points at the corresponding
+     *            <code>END_ELEMENT</code> event afterwards
+     * @throws XMLStreamException
+     */
+    public static void copy( XMLStreamWriter writer, XMLStreamReader reader )
+                            throws XMLStreamException {
+        skipStartDocument( reader );
+        XMLAdapter.writeElement( writer, reader );
+    }
+
+    /**
+     * Serializes the XML element (including all attributes and subnodes) from the given {@link XMLStreamReader} into a
+     * {@link StreamBufferStore}.
+     * 
+     * @param reader
+     *            cursor must point at a <code>START_ELEMENT</code> event and points at the corresponding
+     *            <code>END_ELEMENT</code> event afterwards
+     * @return stored document, never <code>null</code>
+     * @throws IOException
+     * @throws FactoryConfigurationError 
+     * @throws XMLStreamException 
+     */
+    public static StreamBufferStore serialize( XMLStreamReader reader )
+                            throws IOException, XMLStreamException, FactoryConfigurationError {
+        StreamBufferStore tmpStore = new StreamBufferStore();
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( tmpStore );
+        try {
+            copy( writer, reader );
+        } finally {
+            writer.close();
+            tmpStore.close();
+        }
+        return tmpStore;
     }
 }

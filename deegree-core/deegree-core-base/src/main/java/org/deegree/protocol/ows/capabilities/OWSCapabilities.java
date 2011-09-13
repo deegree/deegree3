@@ -45,8 +45,8 @@ import org.deegree.protocol.ows.metadata.ServiceProvider;
 /**
  * Specification and version agnostic representation of the capabilities reported by an OGC Web Service.
  * <p>
- * Data model has been carefully designed to capture the expressiveness of all OWS specifications and versions and was
- * verified against the following specifications:
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>

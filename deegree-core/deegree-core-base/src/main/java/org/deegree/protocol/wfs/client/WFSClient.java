@@ -36,19 +36,24 @@
 package org.deegree.protocol.wfs.client;
 
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.commons.xml.GenericLSInput;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLInputFactory;
@@ -57,9 +62,8 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
-import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.WFSVersion;
 import org.deegree.protocol.wfs.capabilities.WFS100CapabilitiesAdapter;
 import org.deegree.protocol.wfs.capabilities.WFS110CapabilitiesAdapter;
@@ -69,6 +73,7 @@ import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
 
 /**
  * API-level client for accessing servers that implement the <a
@@ -120,8 +125,8 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      * Creates a new {@link WFSClient} instance with default behavior.
      * 
      * @param capaUrl
-     *            url of a WFS capabilities document, usually this is a GetCapabilities request to a WFS service, must
-     *            not be <code>null</code>
+     *            url of a WFS capabilities document, usually this is a KVP-encoded <code>GetCapabilities</code> request
+     *            to a WFS service, must not be <code>null</code>
      * @throws OWSExceptionReport
      *             if the server replied with an exception report
      * @throws XMLStreamException
@@ -130,7 +135,6 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      */
     public WFSClient( URL capaUrl ) throws OWSExceptionReport, XMLStreamException, IOException {
         super( capaUrl );
-        initOperationUrls();
         wfsFts = capaDoc.parseFeatureTypeList();
     }
 
@@ -142,7 +146,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      *            service, must not be <code>null</code>
      * @param schema
      *            application schema that describes the feature types offered by the service, can be <code>null</code>
-     *            (in this case, the client performs <code>DescribeFeatureType</code> requests to determine the schema)
+     *            (in this case, <code>DescribeFeatureType</code> requests will be performed to determine the schema)
      * @throws OWSExceptionReport
      *             if the server replied with a service exception report
      * @throws XMLStreamException
@@ -152,32 +156,6 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
     public WFSClient( URL capaUrl, AppSchema schema ) throws OWSExceptionReport, XMLStreamException, IOException {
         this( capaUrl );
         this.schema = schema;
-    }
-
-    private void initOperationUrls() {
-        for ( WFSRequestType requestType : WFSRequestType.values() ) {
-            // TODO should we only consider the operations supported by the actual version?
-            addURLs( requestType, capaDoc );
-        }
-    }
-
-    private void addURLs( WFSRequestType request, WFSCapabilitiesAdapter capaDoc ) {
-        // URL[] urls = new URL[2];
-        // try {
-        // urls[0] = capaDoc.getOperationURL( request.name(), false );
-        // LOG.debug( "URL for operation: '" + request + "' (GET): " + urls[0] );
-        // } catch ( Throwable t ) {
-        // String msg = "Error retrieving URL for operation '" + request + "' (GET): " + t.getMessage();
-        // LOG.warn( msg );
-        // }
-        // try {
-        // urls[1] = capaDoc.getOperationURL( request.name(), true );
-        // LOG.debug( "URL for operation: '" + request + "' (POST): " + urls[1] );
-        // } catch ( Throwable t ) {
-        // String msg = "Error retrieving URL for operation '" + request + "' (POST): " + t.getMessage();
-        // LOG.warn( msg );
-        // }
-        // requestTypeToURLs.put( request, urls );
     }
 
     /**
@@ -212,44 +190,76 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      * Returns the (GML) {@link AppSchema} for all {@link FeatureType}s offered by this server.
      * 
      * @return application schema, never <code>null</code>
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws OWSExceptionReport
      */
-    public AppSchema getAppSchema() {
+    public synchronized AppSchema getAppSchema()
+                            throws OWSExceptionReport, XMLStreamException, IOException {
+
         if ( schema == null ) {
+            URL endPoint = getGetUrl( DescribeFeatureType.name() );
+            LinkedHashMap<String, String> kvp = new LinkedHashMap<String, String>();
+            kvp.put( "service", "WFS" );
+            kvp.put( "version", version.getOGCVersion().toString() );
+            kvp.put( "request", "DescribeFeatureType" );
+
+            OWSResponse response = doGet( endPoint, kvp, null );
+            XMLStreamReader xmlStream = null;
+            StreamBufferStore tmpStore = null;
             try {
-                URL url = getGetUrl( DescribeFeatureType.name() );
-                String requestUrl = url + "?version=1.0.0&service=WFS&request=DescribeFeatureType";
-                LOG.info( "Using URL '" + url + "': " + requestUrl );
-                AppSchemaXSDDecoder schemaDecoder = new AppSchemaXSDDecoder( null, null, requestUrl );
+                xmlStream = response.getXMLStream();
+                tmpStore = XMLStreamUtils.serialize( xmlStream );
+            } finally {
+                response.close();
+            }
+
+            try {
+                LSInput input = new GenericLSInput();
+                input.setByteStream( tmpStore.getInputStream() );
+                input.setSystemId( xmlStream.getLocation().getSystemId() );
+                AppSchemaXSDDecoder schemaDecoder = new AppSchemaXSDDecoder( null, null, input );
                 schema = schemaDecoder.extractFeatureTypeSchema();
             } catch ( Throwable t ) {
-                t.printStackTrace();
+                String msg = "Error parsing DescribeFeatureType response as GML application schema: " + t.getMessage();
+                throw new IOException( msg, t );
             }
         }
         return schema;
     }
 
+    /**
+     * Queries the features of the specified feature type.
+     * 
+     * @return stream feature collection, never <code>null</code>
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws OWSExceptionReport
+     */
     public StreamFeatureCollection getFeatures( QName ftName )
-                            throws OWSException {
+                            throws OWSExceptionReport, XMLStreamException, IOException {
 
-        URL requestUrl = null;
-        try {
-            URL url = getGetUrl( WFSRequestType.GetFeature.name() );
-            requestUrl = new URL( url.toString() + "?version=1.0.0&service=WFS&request=GetFeature&typeName="
-                                  + ftName.getLocalPart() );
-        } catch ( MalformedURLException e ) {
-            // should never happen
-        }
+        URL endPoint = getGetUrl( GetFeature.name() );
+        LinkedHashMap<String, String> kvp = new LinkedHashMap<String, String>();
+        kvp.put( "service", "WFS" );
+        kvp.put( "version", version.getOGCVersion().toString() );
+        kvp.put( "request", "GetFeature" );
+        kvp.put( "typeName", ftName.getLocalPart() );
+
+        OWSResponse response = doGet( endPoint, kvp, null );
         StreamFeatureCollection fc = null;
         try {
+            XMLStreamReader reader = response.getXMLStream();
             GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, requestUrl );
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, reader );
             gmlReader.setApplicationSchema( schema );
             // TODO default SRS
             fc = gmlReader.readFeatureCollectionStream();
         } catch ( Throwable t ) {
-            t.printStackTrace();
+            throw new IOException( t.getMessage(), t );
         }
-
+        
+        // TODO close response
         return fc;
     }
 

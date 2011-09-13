@@ -39,12 +39,14 @@ package org.deegree.gml.feature;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
@@ -52,9 +54,13 @@ import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
@@ -193,4 +199,21 @@ public class GMLFeatureWriterTest {
     //
     // writer.close();
     // }
+
+    @Test
+    public void testReexportDynamicallyParsedFeatureCollection()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
+                            TransformationException, FactoryConfigurationError, IOException {
+
+        URL url = GMLFeatureWriterTest.class.getResource( "testdata/features/test.gml" );
+        GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GML_2, url );
+        FeatureCollection fc = reader.readFeatureCollection();
+        XMLOutputFactory outfac = XMLOutputFactory.newInstance();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        XMLStreamWriter writer = outfac.createXMLStreamWriter( os );
+        GMLStreamWriter gmlwriter = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, writer );
+        gmlwriter.setNamespaceBindings( reader.getFeatureReader().getAppSchema().getNamespaceBindings() );
+        gmlwriter.write( fc );
+        gmlwriter.close ();
+    }
 }

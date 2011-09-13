@@ -727,12 +727,12 @@ public class GMLFeatureReader extends XMLAdapter {
                         break;
                     }
                 }
-                if ( !compatible ) {
-                    String msg = "Value for geometry property is invalid. Specified geometry value "
-                                 + geometry.getClass() + " is not allowed here. Allowed geometries are: "
-                                 + propDecl.getAllowedGeometryTypes();
-                    throw new XMLParsingException( xmlStream, msg );
-                }
+//                if ( !compatible ) {
+//                    String msg = "Value for geometry property is invalid. Specified geometry value "
+//                                 + geometry.getClass() + " is not allowed here. Allowed geometries are: "
+//                                 + propDecl.getAllowedGeometryTypes();
+//                    throw new XMLParsingException( xmlStream, msg );
+//                }
                 property = new GenericProperty( propDecl, propName, geometry, isNilled );
                 xmlStream.nextTag();
             } else {

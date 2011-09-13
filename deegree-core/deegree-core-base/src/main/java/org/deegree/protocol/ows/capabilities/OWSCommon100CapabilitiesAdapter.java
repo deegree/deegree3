@@ -46,7 +46,11 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
+import org.deegree.protocol.ows.metadata.domain.AllowedValues;
 import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.domain.PossibleValues;
+import org.deegree.protocol.ows.metadata.domain.Value;
+import org.deegree.protocol.ows.metadata.domain.Values;
 import org.deegree.protocol.ows.metadata.operation.DCP;
 import org.deegree.protocol.ows.metadata.operation.Operation;
 
@@ -240,5 +244,26 @@ public class OWSCommon100CapabilitiesAdapter extends AbstractOWSCommonCapabiliti
             url = new URL( href );
         }
         return url;
+    }
+
+    @Override
+    protected Domain parseDomain( OMElement domainEl ) {
+
+        // <attribute name="name" type="string" use="required">
+        String name = getNodeAsString( domainEl, new XPath( "@name", nsContext ), null );
+
+        // <element name="Value" type="string" maxOccurs="unbounded">
+        String[] valuesArray = getNodesAsStrings( domainEl, new XPath( "ows:Value", nsContext ) );
+        List<Values> values = new ArrayList<Values>( valuesArray.length );
+        for ( String value : valuesArray ) {
+            values.add( new Value( value ) );
+        }
+
+        PossibleValues possibleValues = new AllowedValues( values );
+
+        // <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
+        List<OMElement> metadataEls = getElements( domainEl, new XPath( "ows:Metadata", nsContext ) );
+
+        return new Domain( name, possibleValues, null, null, null, null, null, metadataEls );
     }
 }

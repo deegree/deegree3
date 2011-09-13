@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_110;
 import static org.junit.Assert.assertEquals;
@@ -42,7 +43,12 @@ import static org.junit.Assert.assertNull;
 
 import java.net.URL;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.utils.test.TestProperties;
+import org.deegree.feature.Feature;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ContactInfo;
@@ -120,8 +126,7 @@ public class WFSClientTest {
         assertEquals( "deegree 3 Utah Demo", si.getTitles().get( 0 ).getString() );
         assertEquals( null, si.getTitles().get( 0 ).getLanguage() );
         assertEquals( 1, si.getAbstracts().size() );
-        assertEquals( "WMS and WFS demonstration with Utah data",
-                      si.getAbstracts().get( 0 ).getString() );
+        assertEquals( "WMS and WFS demonstration with Utah data", si.getAbstracts().get( 0 ).getString() );
         assertEquals( null, si.getAbstracts().get( 0 ).getLanguage() );
         assertEquals( 0, si.getKeywords().size() );
         assertNull( si.getFees() );
@@ -148,5 +153,69 @@ public class WFSClientTest {
         assertEquals( "53177", add.getPostalCode() );
 
         // OperationMetadata (TODO)
+    }
+
+    @Test
+    public void testGetAppSchema100()
+                            throws Exception {
+
+        String wfsUtahDemo110Url = TestProperties.getProperty( WFS_UTAH_DEMO_100_URL );
+        if ( wfsUtahDemo110Url == null ) {
+            LOG.warn( "Skipping test, property '" + WFS_UTAH_DEMO_100_URL + "' not found in ~/.deegree-test.properties" );
+            return;
+        }
+
+        URL wfsCapaUrl = new URL( wfsUtahDemo110Url );
+        WFSClient client = new WFSClient( wfsCapaUrl );
+        assertEquals( WFS_100, client.getServiceVersion() );
+
+        AppSchema appSchema = client.getAppSchema();
+        // TODO should be GML 2
+        assertEquals( GML_31, appSchema.getGMLSchema().getVersion() );
+        assertEquals( 18, appSchema.getFeatureTypes().length );
+    }
+
+    @Test
+    public void testGetAppSchema110()
+                            throws Exception {
+
+        String wfsUtahDemo110Url = TestProperties.getProperty( WFS_UTAH_DEMO_110_URL );
+        if ( wfsUtahDemo110Url == null ) {
+            LOG.warn( "Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties" );
+            return;
+        }
+
+        URL wfsCapaUrl = new URL( wfsUtahDemo110Url );
+        WFSClient client = new WFSClient( wfsCapaUrl );
+        assertEquals( WFS_110, client.getServiceVersion() );
+
+        AppSchema appSchema = client.getAppSchema();
+        assertEquals( GML_31, appSchema.getGMLSchema().getVersion() );
+        assertEquals( 18, appSchema.getFeatureTypes().length );
+    }
+
+    @Test
+    public void testGetFeature110()
+                            throws Exception {
+
+        String wfsUtahDemo110Url = TestProperties.getProperty( WFS_UTAH_DEMO_110_URL );
+        if ( wfsUtahDemo110Url == null ) {
+            LOG.warn( "Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties" );
+            return;
+        }
+
+        URL wfsCapaUrl = new URL( wfsUtahDemo110Url );
+        WFSClient client = new WFSClient( wfsCapaUrl );
+        assertEquals( WFS_110, client.getServiceVersion() );
+
+        StreamFeatureCollection fc = client.getFeatures( QName.valueOf( "{http://www.deegree.org/app}SGID100_RoadsDLG100" ) );
+        try {
+            Feature f = null;
+            while ((f = fc.read()) != null) {
+                System.out.println (f.getId());
+            }
+        } finally {
+            fc.close();
+        }
     }
 }

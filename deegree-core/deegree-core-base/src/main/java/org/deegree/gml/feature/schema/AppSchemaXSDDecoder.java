@@ -83,14 +83,15 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
 
 /**
  * Provides access to the {@link FeatureType} hierarchy defined in a GML schema document.
  * <p>
- * Note that the generated {@link AppSchema} only contains user-defined feature types, i.e. all feature base
- * types from the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This
- * follows the idea that working with {@link AppSchema} objects should not involve GML (and GML-version)
- * specific details (such as the mentioned GML feature types).
+ * Note that the generated {@link AppSchema} only contains user-defined feature types, i.e. all feature base types from
+ * the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This follows
+ * the idea that working with {@link AppSchema} objects should not involve GML (and GML-version) specific details (such
+ * as the mentioned GML feature types).
  * </p>
  * 
  * @see AppSchema
@@ -156,6 +157,63 @@ public class AppSchemaXSDDecoder {
                             IllegalAccessException {
 
         analyzer = new GMLSchemaInfoSet( gmlVersion, schemaUrls );
+        this.gmlVersion = analyzer.getVersion();
+        gmlNs = this.gmlVersion.getNamespace();
+
+        for ( Entry<String, String> nsToPrefix : analyzer.getNamespacePrefixes().entrySet() ) {
+            this.nsToPrefix.put( nsToPrefix.getKey(), nsToPrefix.getValue() );
+            this.prefixToNs.put( nsToPrefix.getValue(), nsToPrefix.getKey() );
+        }
+
+        if ( namespaceHints != null ) {
+            for ( Entry<String, String> prefixToNs : namespaceHints.entrySet() ) {
+                nsToPrefix.put( prefixToNs.getValue(), prefixToNs.getKey() );
+                this.prefixToNs.put( prefixToNs.getKey(), prefixToNs.getValue() );
+            }
+        }
+
+        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
+
+        // feature element declarations
+        for ( XSElementDeclaration elementDecl : featureElementDecls ) {
+            QName ftName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+            ftNameToFtElement.put( ftName, elementDecl );
+            XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
+            if ( substitutionElement != null ) {
+                QName substitutionElementName = createQName( substitutionElement.getNamespace(),
+                                                             substitutionElement.getName() );
+                ftNameToSubstitutionGroupName.put( ftName, substitutionElementName );
+            }
+        }
+
+        // geometry element declarations
+        List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, false );
+        for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
+            QName elName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+            geometryNameToGeometryElement.put( elName, elementDecl );
+            LOG.debug( "Geometry element " + elName );
+        }
+    }
+
+    /**
+     * Creates a new {@link AppSchemaXSDDecoder} from the given <code>LSInput</code>s.
+     * 
+     * @param gmlVersion
+     *            gml version of the schema files, can be null (auto-detect GML version)
+     * @param namespaceHints
+     *            optional hints (key: prefix, value: namespaces) for generating 'nice' qualified feature type and
+     *            property type names, may be null
+     * @param inputs
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public AppSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, LSInput... inputs )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        analyzer = new GMLSchemaInfoSet( gmlVersion, inputs );
         this.gmlVersion = analyzer.getVersion();
         gmlNs = this.gmlVersion.getNamespace();
 

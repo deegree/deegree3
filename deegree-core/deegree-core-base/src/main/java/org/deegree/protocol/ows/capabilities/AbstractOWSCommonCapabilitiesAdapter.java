@@ -50,7 +50,6 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -71,7 +70,6 @@ import org.deegree.protocol.ows.metadata.domain.RangeClosure;
 import org.deegree.protocol.ows.metadata.domain.Value;
 import org.deegree.protocol.ows.metadata.domain.Values;
 import org.deegree.protocol.ows.metadata.domain.ValuesReference;
-import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ContactInfo;
 import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
@@ -362,64 +360,7 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
         return languages;
     }
 
-    /**
-     * @param domainEl
-     *            context {@link OMElement}
-     * @return an {@link Operation} instance, never <code>null</code>
-     */
-    protected Domain parseDomain( OMElement domainEl ) {
-
-        // <attribute name="name" type="string" use="required">
-        String name = getNodeAsString( domainEl, new XPath( "@name", nsContext ), null );
-
-        // <group ref="ows:PossibleValues"/>
-        OMElement possibleValuesEl = domainEl.getFirstElement();
-        if ( possibleValuesEl == null ) {
-            throw new XMLParsingException( this, domainEl, "Element from 'ows:PossibleValues' group is missing." );
-        }
-        PossibleValues possibleValues = parsePossibleValues( possibleValuesEl );
-
-        // <element ref="ows:DefaultValue" minOccurs="0">
-        String defaultValue = getNodeAsString( domainEl, new XPath( "ows:DefaultValue", nsContext ), null );
-
-        // <element ref="ows:Meaning" minOccurs="0">
-        StringOrRef meaning = null;
-        String meaningName = getNodeAsString( domainEl, new XPath( "ows:Meaning", nsContext ), null );
-        String meaningRef = getNodeAsString( domainEl, new XPath( "ows:Meaning/@reference", nsContext ), null );
-        if ( meaningName != null || meaningRef != null ) {
-            meaning = new StringOrRef( meaningName, meaningRef );
-        }
-
-        // <element ref="ows:DataType" minOccurs="0">
-        StringOrRef dataType = null;
-        String datatypeName = getNodeAsString( domainEl, new XPath( "ows:DataType", nsContext ), null );
-        String datatypeRef = getNodeAsString( domainEl, new XPath( "ows:DataType/@reference", nsContext ), null );
-        if ( datatypeName != null || datatypeRef != null ) {
-            dataType = new StringOrRef( datatypeName, datatypeRef );
-        }
-
-        // <group ref="ows:ValuesUnit" minOccurs="0">
-        StringOrRef valuesUnitUom = null;
-        String valuesUnitUomName = getNodeAsString( domainEl, new XPath( "ows:UOM", nsContext ), null );
-        String valuesUnitUomRef = getNodeAsString( domainEl, new XPath( "ows:UOM/@ows:reference", nsContext ), null );
-        if ( valuesUnitUomName != null || valuesUnitUomRef != null ) {
-            valuesUnitUom = new StringOrRef( valuesUnitUomName, valuesUnitUomRef );
-        }
-
-        StringOrRef valuesUnitRefSys = null;
-        String valuesUnitRefSysName = getNodeAsString( domainEl, new XPath( "ows:ReferenceSystem", nsContext ), null );
-        String valuesUnitRefSysRef = getNodeAsString( domainEl, new XPath( "ows:ReferenceSystem/@ows:reference",
-                                                                           nsContext ), null );
-        if ( valuesUnitRefSysName != null || valuesUnitRefSysRef != null ) {
-            valuesUnitRefSys = new StringOrRef( valuesUnitRefSysName, valuesUnitRefSysRef );
-        }
-
-        // <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
-        List<OMElement> metadataEls = getElements( domainEl, new XPath( "ows:Metadata", nsContext ) );
-
-        return new Domain( name, possibleValues, defaultValue, meaning, dataType, valuesUnitUom, valuesUnitRefSys,
-                           metadataEls );
-    }
+    protected abstract Domain parseDomain( OMElement domainEl );
 
     protected PossibleValues parsePossibleValues( OMElement possibleValuesEl ) {
         PossibleValues possibleValues = null;
