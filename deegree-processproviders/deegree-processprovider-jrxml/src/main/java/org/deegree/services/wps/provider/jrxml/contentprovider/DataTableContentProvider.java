@@ -48,6 +48,10 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.stax.StAXSource;
 
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
@@ -60,6 +64,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
@@ -236,8 +241,8 @@ public class DataTableContentProvider implements JrxmlContentProvider {
                             jrxml = new ByteArrayInputStream( bos.toByteArray() );
                         }
                         // add complete input xml
-                        InputStream xmlIs = complexIn.getValueAsBinaryStream();
-                        Document document = JRXmlUtils.parse( xmlIs );
+                        XMLStreamReader xmlIs = complexIn.getValueAsXMLStream();
+                        Document document = XMLStreamUtils.getAsDocument (xmlIs);
                         params.put( JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, document );
                     } catch ( Exception e ) {
                         String msg = "Could not process data table content: " + e.getMessage();
