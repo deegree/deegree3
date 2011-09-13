@@ -50,7 +50,8 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.metadata.Range;
+import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
+import org.deegree.protocol.ows.metadata.domain.Range;
 import org.deegree.protocol.wps.client.input.type.BBoxInputType;
 import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;
@@ -356,26 +357,10 @@ public class ProcessDetails {
             @SuppressWarnings({ "cast", "unchecked" })
             Iterator<OMElement> iterator2 = (Iterator<OMElement>) omAllowedValues.getChildrenWithName( rangeQName );
             rangeList = new ArrayList<Range>();
+            OWSCommon110CapabilitiesAdapter owsCommonsAdapter = new OWSCommon110CapabilitiesAdapter();
             for ( ; iterator2.hasNext(); ) {
                 OMElement omRange = iterator2.next();
-                Range range = new Range();
-
-                OMElement omMinimum = omRange.getFirstChildWithName( new QName( owsNS, "MinimumValue" ) );
-                if ( omMinimum != null ) {
-                    range.setMinimumValue( omMinimum.getText() );
-                }
-                OMElement omMaximum = omRange.getFirstChildWithName( new QName( owsNS, "MaximumValue" ) );
-                if ( omMaximum != null ) {
-                    range.setMaximumValue( omMaximum.getText() );
-                }
-                OMElement omSpacing = omRange.getFirstChildWithName( new QName( owsNS, "Spacing" ) );
-                if ( omSpacing != null ) {
-                    range.setSpacing( omSpacing.getText() );
-                }
-                String closure = omRange.getAttributeValue( new QName( owsNS, "rangeClosure" ) );
-                if ( closure != null ) {
-                    range.setRangeClosure( closure );
-                }
+                Range range = owsCommonsAdapter.parseRange( omRange );
                 rangeList.add( range );
             }
         }

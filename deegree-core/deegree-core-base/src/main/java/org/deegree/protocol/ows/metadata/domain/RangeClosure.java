@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,79 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.protocol.ows.metadata.domain;
 
 /**
- * The <code>Range</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * Specifies which of the boundary values are included in a {@link Range}.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * From OWS Common 2.0: <cite>Specifies which of the minimum and maximum values are included in the range. Note that
+ * plus and minus infinity are considered closed bounds.</cite>
+ * </p>
  * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Range {
-
-    private String minimumValue;
-
-    private String maximumValue;
-
-    private String spacing;
-
-    private String rangeClosure;
+public enum RangeClosure {
 
     /**
-     * @return minimumValue, may be <code>null</code>
+     * Minimum and maximum values are included.
      */
-    public String getMinimumValue() {
-        return minimumValue;
-    }
-
+    CLOSED,
     /**
-     * @param value
+     * Minimum and maximum values are NOT included.
      */
-    public void setMinimumValue( String value ) {
-        this.minimumValue = value;
-    }
-
+    OPEN,
     /**
-     * @return maximumValue, may be <code>null</code>
+     * Minimum value is NOT included in this range, and the specified maximum value IS included.
      */
-    public String getMaximumValue() {
-        return maximumValue;
-    }
-
+    OPEN_CLOSED,
     /**
-     * @param value
+     * Minimum value IS included in this range, and the specified maximum value is NOT included.
      */
-    public void setMaximumValue( String value ) {
-        this.maximumValue = value;
-    }
-
-    /**
-     * @return spacing, may be <code>null</code>.
-     */
-    public String getSpacing() {
-        return spacing;
-    }
-
-    /**
-     * @param value
-     */
-    public void setSpacing( String value ) {
-        this.spacing = value;
-    }
-
-    /**
-     * @param rangeClosure
-     */
-    public void setRangeClosure( String rangeClosure ) {
-        this.rangeClosure = rangeClosure;
-    }
-
-    /**
-     * @return rangeClosure, may be <code>null</code>.
-     */
-    public String getRangeClosure() {
-        return rangeClosure;
-    }
+    CLOSED_OPEN
 }

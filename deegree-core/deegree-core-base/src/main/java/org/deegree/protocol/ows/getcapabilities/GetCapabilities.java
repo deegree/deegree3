@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.capabilities;
+package org.deegree.protocol.ows.getcapabilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,12 +47,14 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
  * Generic representation of an OWS/OGC GetCapabilities <code>GetCapabilities</code>. Used for
- * <code>GetCapabilities</code> requests to all kinds of OGC web services.
+ * <code>GetCapabilities</code> requests to any OGC web services.
  * <p>
- * Compliance has been checked with the following specifications:
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
  * <ul>
  * <li>OWS Common 1.0.0</li>
  * <li>OWS Common 1.1.0</li>
+ * <li>OWS Common 2.0</li>
  * <li>WFS 1.0.0</li>
  * <li>WPS 1.0.0 (= OWS Commons 1.1.0 + multilanguage support)</li>
  * </ul>
@@ -79,27 +81,27 @@ public class GetCapabilities {
 
     private String updateSequence;
 
-    private List<String> languages = new ArrayList<String>();
+    private List<String> acceptLanguages = new ArrayList<String>();
 
     /**
-     * Constructs a new <code>GetCapabilities</code> request.
+     * Creates a new <code>GetCapabilities</code> instance.
      * 
      * @param version
      *            version hint, may be <code>null</code>
      * @param acceptVersions
      *            acceptable protocol versions in order of client preference, may be empty or <code>null</code>
      * @param sections
-     *            queried section names, may be empty or <code>null</code>
+     *            requested section names, may be empty or <code>null</code>
      * @param acceptFormats
      *            acceptable response formats, may be empty or <code>null</code>
      * @param updateSequence
      *            TODO (what does it do exactly), may be <code>null</code>
-     * @param languages
-     *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or
+     * @param acceptLanguages
+     *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be empty or
      *            <code>null</code>
      */
     public GetCapabilities( String version, Collection<String> acceptVersions, Collection<String> sections,
-                            Collection<String> acceptFormats, String updateSequence, Collection<String> languages ) {
+                            Collection<String> acceptFormats, String updateSequence, Collection<String> acceptLanguages ) {
         this.version = version;
         if ( acceptVersions != null ) {
             this.acceptVersions.addAll( acceptVersions );
@@ -111,8 +113,8 @@ public class GetCapabilities {
             this.acceptFormats.addAll( acceptFormats );
         }
         this.updateSequence = updateSequence;
-        if ( languages != null ) {
-            this.languages.addAll( languages );
+        if ( acceptLanguages != null ) {
+            this.acceptLanguages.addAll( acceptLanguages );
         }
     }
 
@@ -143,7 +145,7 @@ public class GetCapabilities {
         }
         this.updateSequence = updateSequence;
         if ( languages != null ) {
-            this.languages.addAll( languages );
+            this.acceptLanguages.addAll( languages );
         }
     }
 
@@ -164,9 +166,9 @@ public class GetCapabilities {
      * 
      * @param version
      *            old-style version information, may be <code>null</code>
-     */    
+     */
     public GetCapabilities( Version version ) {
-        if (version != null) {
+        if ( version != null ) {
             this.version = version.toString();
         }
     }
@@ -255,8 +257,8 @@ public class GetCapabilities {
      * 
      * @return list of RFC 4646 language codes, may be empty, but not <code>null</code>
      */
-    public List<String> getLanguages() {
-        return languages;
+    public List<String> getAcceptLanguages() {
+        return acceptLanguages;
     }
 
     @Override
@@ -266,7 +268,7 @@ public class GetCapabilities {
         s += "sections={" + ArrayUtils.join( ",", sections ) + "},";
         s += "acceptFormats={" + ArrayUtils.join( ",", acceptFormats ) + "},";
         s += "updateSequence={" + updateSequence + "},";
-        s += "languages={" + ArrayUtils.join( ",", languages ) + "}";
+        s += "acceptLanguages={" + ArrayUtils.join( ",", acceptLanguages ) + "}";
         s += "}";
         return s;
     }

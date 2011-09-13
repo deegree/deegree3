@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.capabilities;
 
+import java.util.List;
+
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
@@ -56,7 +58,7 @@ public interface OWSCapabilitiesAdapter {
      * 
      * @return service identification, can be <code>null</code> (if document does not contain such a section)
      * @throws XMLParsingException
-     *             if the <code>ServiceIdentification</code> section can not be parsed
+     *             if the <code>ServiceIdentification</code> section/information can not be parsed
      */
     ServiceIdentification parseServiceIdentification()
                             throws XMLParsingException;
@@ -66,7 +68,7 @@ public interface OWSCapabilitiesAdapter {
      * 
      * @return service provider, can be <code>null</code> (if document does not contain such a section)
      * @throws XMLParsingException
-     *             if the <code>ServiceProvider</code> section can not be parsed
+     *             if the <code>ServiceProvider</code> section/information can not be parsed
      */
     ServiceProvider parseServiceProvider()
                             throws XMLParsingException;
@@ -76,8 +78,18 @@ public interface OWSCapabilitiesAdapter {
      * 
      * @return operations metadata, can be <code>null</code> (if document does not contain such a section)
      * @throws XMLParsingException
-     *             if the <code>OperationsMetadata</code> section can not be parsed
+     *             if the <code>OperationsMetadata</code> section/information can not be parsed
      */
     OperationsMetadata parseOperationsMetadata()
+                            throws XMLParsingException;
+
+    /**
+     * Extracts the supported languages from the underlying XML document.
+     * 
+     * @return supported languages, can be <code>null</code> (if document does not contain such a section)
+     * @throws XMLParsingException
+     *             if the <code>Languages</code> section/information can not be parsed
+     */
+    List<String> parseLanguages()
                             throws XMLParsingException;
 }

@@ -47,13 +47,12 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
-import org.deegree.protocol.ows.metadata.Address;
-import org.deegree.protocol.ows.metadata.ContactInfo;
-import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.protocol.ows.metadata.ServiceContact;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
-import org.deegree.protocol.ows.metadata.Telephone;
+import org.deegree.protocol.ows.metadata.party.Address;
+import org.deegree.protocol.ows.metadata.party.ContactInfo;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
+import org.deegree.protocol.ows.metadata.party.Telephone;
 import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.KeywordsType;
@@ -105,15 +104,12 @@ public class MetadataUtils {
         if ( si == null ) {
             return null;
         }
-        ServiceIdentification res = new ServiceIdentification();
-
         // TODO Keywords
-        Description desc = new Description( null, map( si.getTitle(), LANG_MAPPER ), map( si.getTitle(), LANG_MAPPER ),
-                                            null );
-        res.setFees( si.getFees() );
-        res.setAccessConstraints( si.getAccessConstraints() );
-        res.setDescription( desc );
-        return res;
+        List<LanguageString> titles = map( si.getTitle(), LANG_MAPPER );
+        List<LanguageString> abstracts = map( si.getAbstract(), LANG_MAPPER );
+        String fees = si.getFees();
+        List<String> accessConstraints = si.getAccessConstraints();
+        return new ServiceIdentification( null, titles, abstracts, null, null, null, null, fees, accessConstraints );
     }
 
     public static Address convertFromJAXB( AddressType ad ) {
@@ -129,11 +125,11 @@ public class MetadataUtils {
         return address;
     }
 
-    public static ServiceContact convertFromJAXB( ServiceContactType sc ) {
+    public static ResponsibleParty convertFromJAXB( ServiceContactType sc ) {
         if ( sc == null ) {
             return null;
         }
-        ServiceContact res = new ServiceContact();
+        ResponsibleParty res = new ResponsibleParty();
         res.setIndividualName( sc.getIndividualName() );
         res.setPositionName( sc.getPositionName() );
         res.setRole( new CodeType( sc.getRole() ) );

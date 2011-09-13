@@ -18,7 +18,6 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
@@ -53,7 +52,7 @@ public class WFS100CapabilitiesAdapter extends XMLAdapter implements WFSCapabili
         OMElement serviceEl = getElement( rootElement, new XPath( "wfs:Service", nsContext ) );
         if ( serviceEl == null ) {
             LOG.warn( "Mandatory element 'wfs:Service' is missing." );
-            return new ServiceIdentification();
+            return null;
         }
 
         // <xsd:element name="Name" type="xsd:string"/>
@@ -91,12 +90,7 @@ public class WFS100CapabilitiesAdapter extends XMLAdapter implements WFSCapabili
             accessConstraints.add( accessConstraintsStr );
         }
 
-        Description desc = new Description( name, titles, abstracts, keywords );
-        ServiceIdentification si = new ServiceIdentification();
-        si.setDescription( desc );
-        si.setFees( fees );
-        si.setAccessConstraints( accessConstraints );
-        return si;
+        return new ServiceIdentification( name, titles, abstracts, keywords, null, null, null, fees, accessConstraints );
     }
 
     @Override
@@ -179,6 +173,12 @@ public class WFS100CapabilitiesAdapter extends XMLAdapter implements WFSCapabili
 
     @Override
     public Object parseFilterCapabilities() {
+        return null;
+    }
+
+    @Override
+    public List<String> parseLanguages()
+                            throws XMLParsingException {
         return null;
     }
 }

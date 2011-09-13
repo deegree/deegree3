@@ -38,8 +38,8 @@ package org.deegree.protocol.wfs.capabilities;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 
 /**

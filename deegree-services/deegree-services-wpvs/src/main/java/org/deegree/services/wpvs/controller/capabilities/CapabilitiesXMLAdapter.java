@@ -49,7 +49,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.jaxb.controller.DCPType;

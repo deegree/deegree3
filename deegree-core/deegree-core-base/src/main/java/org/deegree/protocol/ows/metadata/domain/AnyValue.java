@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,40 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos;
-
-import static org.junit.Assert.assertEquals;
-
-import java.io.InputStream;
-
-import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
-import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
-import org.junit.Test;
+package org.deegree.protocol.ows.metadata.domain;
 
 /**
+ * {@link PossibleValues} that allow any value.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * From OWS Common 2.0: <cite>Specifies that any value is allowed for this parameter.</cite>
+ * </p>
  * 
- * 
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
-public class ParseGetCapabilitiesRequestTest {
-
-    /**
-     * parse example from http://schemas.opengis.net/sos/1.0.0/examples/
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void parseGetCapabilitiesRequest()
-                            throws Exception {
-        InputStream requestStream = this.getClass().getResourceAsStream( "sosGetCapabilities.xml" );
-        GetCapabilities request = new GetCapabilitiesXMLParser(
-                                                                ParseGetObservationRequestTest.getRootElementFromStream( requestStream ) ).parse110();
-
-        assertEquals( "1.0.0", request.getAcceptVersions().get( 0 ).toString() );
-    }
-
+public class AnyValue implements PossibleValues {
+    // nothing in here
 }

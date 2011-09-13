@@ -33,45 +33,45 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.deegree.commons.utils.Pair;
+package org.deegree.protocol.ows.metadata.domain;
 
 /**
- * The <code>DCP</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * A single value.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * From OWS Common 2.0: <cite>A single value, encoded as a string. This type can be used for one value, for a spacing
+ * between allowed values, or for the default value of a parameter.</cite>
+ * </p>
  * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DCP {
+public class Value implements Values {
 
-    private List<Pair<URL, List<Domain>>> getURLs;
-
-    private List<Pair<URL, List<Domain>>> postURLs;
+    private String value;
 
     /**
-     * @return getURLs, never <code>null</code>
+     * Creates a new {@link Value} instance.
+     * 
+     * @param value
      */
-    public List<Pair<URL, List<Domain>>> getGetURLs() {
-        if ( getURLs == null ) {
-            getURLs = new ArrayList<Pair<URL, List<Domain>>>();
-        }
-        return getURLs;
+    public Value( String value ) {
+        this.value = value;
     }
 
-    /**
-     * @return getPostURLs, never <code>null</code>
-     */
-    public List<Pair<URL, List<Domain>>> getPostURLs() {
-        if ( postURLs == null ) {
-            postURLs = new ArrayList<Pair<URL, List<Domain>>>();
-        }
-        return postURLs;
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue( String value ) {
+        this.value = value;
     }
 }

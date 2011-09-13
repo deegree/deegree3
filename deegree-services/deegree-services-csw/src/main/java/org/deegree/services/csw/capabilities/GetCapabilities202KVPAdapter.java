@@ -38,8 +38,8 @@ package org.deegree.services.csw.capabilities;
 import java.util.Map;
 
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 
 /**
  * Encapsulates the method for parsing a kvp request via Http-GET. Due to the fact that the GetCapabilities operation is

@@ -175,7 +175,7 @@ public class ClientBean implements Serializable {
             String type = params.get( "type" );
             if ( WPS_INFOKEY.equals( type ) && wpsClient != null ) {
                 ServiceIdentification si = wpsClient.getMetadata().getServiceIdentification();
-                information = getAsLocaleString( si.getDescription().getAbstracts() );
+                information = getAsLocaleString( si.getAbstracts() );
             } else if ( PROCESS_INFOKEY.equals( type ) && selectedProcess != null ) {
                 information = selectedProcess.getAbstract() != null ? selectedProcess.getAbstract().getString() : "";
             } else if ( IN_INFOKEY.equals( type ) && params.containsKey( "dataId" ) && selectedProcess != null ) {

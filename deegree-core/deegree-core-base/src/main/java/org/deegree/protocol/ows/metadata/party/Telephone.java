@@ -33,80 +33,59 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.protocol.ows.metadata.party;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The <code>ValuesUnit</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * The <code>Telephone</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ValuesUnit {
+public class Telephone {
 
-    private String uomName;
+    private List<String> voice;
 
-    private String uomURI;
-
-    private String referenceSystemName;
-
-    private String referenceSystemURL;
+    private List<String> facsimile;
 
     /**
-     * @param uomName
+     * @param voice
+     *            the voice to set
      */
-    public void setUomName( String uomName ) {
-        this.uomName = uomName;
+    public void setVoice( List<String> voice ) {
+        this.voice = voice;
     }
 
     /**
-     * @return uomName, may be <code>null</code>.
+     * @param facsimile
+     *            the facsimile to set
      */
-    public String getUomName() {
-        return uomName;
+    public void setFacsimile( List<String> facsimile ) {
+        this.facsimile = facsimile;
     }
 
     /**
-     * @param uomURI
+     * @return voice, may be empty but never <code>null</code>.
      */
-    public void setUomURI( String uomURI ) {
-        this.uomURI = uomURI;
+    public List<String> getVoice() {
+        if ( voice == null ) {
+            voice = new ArrayList<String>();
+        }
+        return voice;
     }
 
     /**
-     * @return uomURI, may be <code>null</code>.
+     * @return facsimile, may be empty but never <code>null</code>.
      */
-    public String getUomURI() {
-        return uomURI;
-    }
-
-    /**
-     * @param referenceSystemName
-     */
-    public void setReferenceSystemName( String referenceSystemName ) {
-        this.referenceSystemName = referenceSystemName;
-    }
-
-    /**
-     * @return referenceSystemName, may be <code>null</code>.
-     */
-    public String getReferenceSystemName() {
-        return referenceSystemName;
-    }
-
-    /**
-     * @param referenceSystemURI
-     */
-    public void setReferenceSystemURL( String referenceSystemURI ) {
-        this.referenceSystemURL = referenceSystemURI;
-    }
-
-    /**
-     * @return referenceSystemURL, may be <code>null</code>.
-     */
-    public String getReferenceSystemURL() {
-        return referenceSystemURL;
+    public List<String> getFacsimile() {
+        if ( facsimile == null ) {
+            facsimile = new ArrayList<String>();
+        }
+        return facsimile;
     }
 
 }

@@ -49,7 +49,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;

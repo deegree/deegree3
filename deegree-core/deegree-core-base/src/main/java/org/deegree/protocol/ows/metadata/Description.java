@@ -44,7 +44,24 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
 
 /**
- * Encapsulates descriptive metadata provided by an OGC web service (as reported in the capabilities document).
+ * Encapsulates descriptive information on an object described in OGC web service metadata.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * From OWS Common 2.0: <cite>Human-readable descriptive information for the object it is included within. This type
+ * shall be extended if needed for specific OWS use to include additional metadata for each type of information. This
+ * type shall not be restricted for a specific OWS to change the multiplicity (or optionality) of some elements. If the
+ * xml:lang attribute is not included in a Title, Abstract or Keyword element, then no language is specified for that
+ * element unless specified by another means. All Title, Abstract and Keyword elements in the same Description that
+ * share the same xml:lang attribute value represent the description of the parent object in that language. Multiple
+ * Title or Abstract elements shall not exist in the same Description with the same xml:lang attribute value unless
+ * otherwise specified.</cite>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -83,11 +100,11 @@ public class Description {
     }
 
     /**
-     * Returns the name of the service.
+     * Returns the name of the object.
      * 
      * @deprecated This information is only provided by some older OWS specifications (e.g. WFS 1.0.0). Newer service
      *             specifications don't define it.
-     * @return name of the service, can be <code>null</code>
+     * @return name of the object, can be <code>null</code>
      */
     public String getName() {
         return name;

@@ -46,7 +46,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 
 /**
  * Parser for WPS GetCapabilities requests.

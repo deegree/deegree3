@@ -33,13 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.protocol.ows.metadata.party;
 
 import java.net.URL;
 
 /**
- * The <code>ContactInfo</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * Encapsulates information on the identification of, and the means of communication with the person/party responsible
+ * for the server.
+ * <p>
+ * Data model has been carefully designed to capture the expressiveness of all OWS specifications and versions and was
+ * verified for the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
@@ -58,6 +67,18 @@ public class ContactInfo {
     private String contactInstructions;
 
     /**
+     * Returns the telephone numbers.
+     * <p>
+     * From OWS Common 2.0: <cite>Telephone numbers at which the organization or individual may be contacted.</cite>
+     * </p>
+     * 
+     * @return telephone numbers, may be <code>null</code>
+     */
+    public Telephone getPhone() {
+        return phone;
+    }
+
+    /**
      * @param phone
      */
     public void setPhone( Telephone phone ) {
@@ -65,10 +86,16 @@ public class ContactInfo {
     }
 
     /**
-     * @return phone, may be <code>null</code>
+     * Returns the physical and email address information.
+     * <p>
+     * From OWS Common 2.0: <cite>Physical and email address at which the organization or individual may be
+     * contacted.</cite>
+     * </p>
+     * 
+     * @return physical and email address information, may be <code>null</code>
      */
-    public Telephone getPhone() {
-        return phone;
+    public Address getAddress() {
+        return address;
     }
 
     /**
@@ -79,10 +106,15 @@ public class ContactInfo {
     }
 
     /**
-     * @return address, may be <code>null</code>
+     * Returns the online resource.
+     * <p>
+     * From OWS Common 2.0: <cite>Reference to on-line resource from which data can be obtained.</cite>
+     * </p>
+     * 
+     * @return online resource, may be <code>null</code>
      */
-    public Address getAddress() {
-        return address;
+    public URL getOnlineResource() {
+        return onlineResource;
     }
 
     /**
@@ -93,10 +125,16 @@ public class ContactInfo {
     }
 
     /**
-     * @return onlineResource, may be <code>null</code>
+     * Returns the hours of service.
+     * <p>
+     * From OWS Common 2.0: <cite>Time period (including time zone) when individuals can contact the organization or
+     * individual.</cite>
+     * </p>
+     * 
+     * @return hours of service, may be <code>null</code>
      */
-    public URL getOnlineResource() {
-        return onlineResource;
+    public String getHoursOfService() {
+        return hoursOfService;
     }
 
     /**
@@ -107,10 +145,16 @@ public class ContactInfo {
     }
 
     /**
-     * @return hoursOfService, may be <code>null</code>
+     * Returns the contact instructions.
+     * <p>
+     * From OWS Common 2.0: <cite>Supplemental instructions on how or when to contact the individual or
+     * organization.</cite>
+     * </p>
+     * 
+     * @return contact instructions, may be <code>null</code>
      */
-    public String getHoursOfService() {
-        return hoursOfService;
+    public String getContactInstruction() {
+        return contactInstructions;
     }
 
     /**
@@ -118,12 +162,5 @@ public class ContactInfo {
      */
     public void setContactInstructions( String contactInstructions ) {
         this.contactInstructions = contactInstructions;
-    }
-
-    /**
-     * @return contactInstructions, may be <code>null</code>
-     */
-    public String getContactInstruction() {
-        return contactInstructions;
     }
 }

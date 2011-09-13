@@ -33,82 +33,46 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.protocol.ows.metadata.operation;
 
-import org.deegree.commons.tom.ows.CodeType;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.commons.utils.Pair;
+import org.deegree.protocol.ows.metadata.domain.Domain;
 
 /**
- * The <code>ServiceContact</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * The <code>DCP</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ServiceContact {
+public class DCP {
 
-    private String individualName;
+    private List<Pair<URL, List<Domain>>> getURLs;
 
-    private String positionName;
-
-    private ContactInfo contactInfo;
-
-    private CodeType role;
+    private List<Pair<URL, List<Domain>>> postURLs;
 
     /**
-     * @param individualName
+     * @return getURLs, never <code>null</code>
      */
-    public void setIndividualName( String individualName ) {
-        this.individualName = individualName;
+    public List<Pair<URL, List<Domain>>> getGetURLs() {
+        if ( getURLs == null ) {
+            getURLs = new ArrayList<Pair<URL, List<Domain>>>();
+        }
+        return getURLs;
     }
 
     /**
-     * @return individualName, may be <code>null</code>.
+     * @return getPostURLs, never <code>null</code>
      */
-    public String getIndividualName() {
-        return individualName;
+    public List<Pair<URL, List<Domain>>> getPostURLs() {
+        if ( postURLs == null ) {
+            postURLs = new ArrayList<Pair<URL, List<Domain>>>();
+        }
+        return postURLs;
     }
-
-    /**
-     * @param positionName
-     */
-    public void setPositionName( String positionName ) {
-        this.positionName = positionName;
-    }
-
-    /**
-     * @return positionName, may be <code>null</code>.
-     */
-    public String getPositionName() {
-        return positionName;
-    }
-
-    /**
-     * @param contactInfo
-     */
-    public void setContactInfo( ContactInfo contactInfo ) {
-        this.contactInfo = contactInfo;
-    }
-
-    /**
-     * @return contactInfo, may be <code>null</code>.
-     */
-    public ContactInfo getContactInfo() {
-        return contactInfo;
-    }
-
-    /**
-     * @param role
-     */
-    public void setRole( CodeType role ) {
-        this.role = role;
-    }
-
-    /**
-     * @return role, may be <code>null</code>.
-     */
-    public CodeType getRole() {
-        return role;
-    }
-
 }

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.capabilities;
+package org.deegree.protocol.ows.getcapabilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
