@@ -83,23 +83,25 @@ public class WorkspaceITMojo extends AbstractMojo {
 
         ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper( project, getLog() );
         for ( Artifact a : workspaces ) {
-
             getLog().info( "Testing workspace " + a.getArtifactId() );
 
             String url = helper.createBaseURL() + "config/upload/iut.zip";
             File file = a.getFile();
             try {
+                getLog().info( "Sending against: " + helper.createBaseURL() + "config/delete/iut" );
                 String response = get( UTF8STRING, helper.createBaseURL() + "config/delete/iut", null, "deegree",
                                        "deegree" ).trim();
                 getLog().info( "Response after initially deleting iut was: " + response );
+                getLog().info( "Sending against: " + helper.createBaseURL() + "config/restart" );
                 response = get( UTF8STRING, helper.createBaseURL() + "config/restart", null, "deegree", "deegree" ).trim();
                 getLog().info( "Response after initial restart was: " + response );
+                getLog().info( "Sending against: " + url );
                 response = post( UTF8STRING, url, file, null, "deegree", "deegree" ).trim();
                 getLog().info( "Response after uploading was: " + response );
+                getLog().info( "Sending against: " + helper.createBaseURL() + "config/restart/iut" );
                 response = get( UTF8STRING, helper.createBaseURL() + "config/restart/iut", null, "deegree", "deegree" ).trim();
                 getLog().info( "Response after starting workspace was: " + response );
             } catch ( IOException e ) {
-                getLog().debug( e );
                 throw new MojoFailureException( "Could not test workspace " + a.getArtifactId() + ": "
                                                 + e.getLocalizedMessage(), e );
             }
