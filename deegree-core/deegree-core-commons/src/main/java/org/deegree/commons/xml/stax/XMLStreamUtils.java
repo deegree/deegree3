@@ -51,6 +51,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -63,15 +64,25 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.Location;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.slf4j.Logger;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * General XML stream manipulation utilities.
@@ -225,7 +236,8 @@ public class XMLStreamUtils {
         return s;
     }
 
-    public static QName getRequiredAttributeValueAsQName( XMLStreamReader xmlStream, String namespaceURI, String localName )
+    public static QName getRequiredAttributeValueAsQName( XMLStreamReader xmlStream, String namespaceURI,
+                                                          String localName )
                             throws XMLParsingException {
         String s = xmlStream.getAttributeValue( namespaceURI, localName );
         if ( s == null ) {
@@ -234,7 +246,8 @@ public class XMLStreamUtils {
         return asQName( xmlStream, s );
     }
 
-    public static QName getAttributeValueAsQName( XMLStreamReader xmlStream, String namespaceURI, String localName, QName defaultValue )
+    public static QName getAttributeValueAsQName( XMLStreamReader xmlStream, String namespaceURI, String localName,
+                                                  QName defaultValue )
                             throws XMLParsingException {
         String s = xmlStream.getAttributeValue( namespaceURI, localName );
         if ( s == null ) {
@@ -242,7 +255,7 @@ public class XMLStreamUtils {
         }
         return asQName( xmlStream, s );
     }
-    
+
     private static boolean parseAsBoolean( XMLStreamReader xmlStream, String s ) {
         if ( "true".equals( s ) || "1".equals( s ) ) {
             return true;
@@ -671,5 +684,40 @@ public class XMLStreamUtils {
             attrs.put( reader.getAttributeName( i ), reader.getAttributeValue( i ) );
         }
         return attrs;
+    }
+
+    /**
+     * makes a {@link Document} out of a {@link XMLStreamReader} 
+     * 
+     * @param xmlStreamReader
+     *            the xmlStreamRader to convert
+     * @return the xmlStreamRader as {@link Document}
+     * @throws FactoryConfigurationError
+     * @throws XMLStreamException
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
+    public static Document getAsDocument( XMLStreamReader xmlStreamReader )
+                            throws XMLStreamException, FactoryConfigurationError, ParserConfigurationException,
+                            SAXException, IOException {
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        StreamBufferStore store = new StreamBufferStore();
+        XMLStreamWriter xmlWriter = null;
+        try {
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( store );
+            XMLAdapter.writeElement( xmlWriter, xmlStreamReader );
+        } finally {
+            if ( xmlWriter != null ) {
+                try {
+                    xmlWriter.close();
+                } catch ( XMLStreamException e ) {
+                    LOG.error( "Unable to close xmlwriter." );
+                }
+            }
+        }
+        Document doc = builder.parse( store.getInputStream() );
+        store.close();
+        return doc;
     }
 }
