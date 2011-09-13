@@ -35,17 +35,32 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
+import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
+import static org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider.DETAIL_SUFFIX;
+import static org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider.HEADER_SUFFIX;
+import static org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider.TABLE_PREFIX;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
+import org.deegree.geometry.standard.DefaultEnvelope;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.services.wps.ProcessletException;
+import org.deegree.services.wps.ProcessletInputs;
 import org.junit.Test;
 
 /**
@@ -92,54 +107,54 @@ public class TestDataTableContentProviderTest {
      * @throws XMLStreamException
      * @throws ProcessletException
      */
-//    @Test
-//    public void testPrepareJrxmlAndReadInputParameters()
-//                            throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
-//                            ProcessletException {
-//        DataTableContentProvider tableContentProvider = new DataTableContentProvider();
-//
-//        List<CodeType> processedIds = new ArrayList<CodeType>();
-//        InputStream jrxml = TestDataTableContentProviderTest.class.getResourceAsStream( "../templateWithTable.jrxml" );
-//        Map<String, Object> params = new HashMap<String, Object>();
-//        ProcessletInputs in = Utils.getInputs( "REPORT",
-//                                               MIME_TYPE,
-//                                               SCHEMA,
-//                                               TestMapContentProviderTest.class.getResourceAsStream( "complexInputTABLE" ) );
-//        jrxml = tableContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds,
-//                                                                         new HashMap<String, String>() );
-//
-//        assertEquals( 1, params.size() );
-//        assertEquals( 1, processedIds.size() );
-//        XMLAdapter a = new XMLAdapter( jrxml );
-//        String[] fieldNames = a.getNodesAsStrings( a.getRootElement(),
-//                                                   new XPath( "/jasper:jasperReport/jasper:field/@name", nsContext ) );
-//        List<String> detailFields = new ArrayList<String>();
-//        List<String> headerFields = new ArrayList<String>();
-//        for ( String field : fieldNames ) {
-//            if ( field.matches( TABLE_PREFIX + "[a-zA-Z0-9]*_(" + DETAIL_SUFFIX + ")[0-9]*" ) )
-//                detailFields.add( field );
-//            else if ( field.matches( TABLE_PREFIX + "[a-zA-Z0-9]*_(" + HEADER_SUFFIX + ")[0-9]*" ) )
-//                headerFields.add( field );
-//        }
-//
-//        String[] textFieldNames = a.getNodesAsStrings( a.getRootElement(),
-//                                                       new XPath( ".//jasper:textField/jasper:textFieldExpression",
-//                                                                  nsContext ) );
-//
-//        List<String> detailTextFields = new ArrayList<String>();
-//        List<String> headerTextFields = new ArrayList<String>();
-//        for ( String field : textFieldNames ) {
-//            if ( field.matches( "\\$F\\{" + TABLE_PREFIX + "[a-zA-Z0-9]*_(" + DETAIL_SUFFIX + ")[0-9]*\\}" ) )
-//                detailTextFields.add( field );
-//            else if ( field.matches( "\\$F\\{" + TABLE_PREFIX + "[a-zA-Z0-9]*_(" + HEADER_SUFFIX + ")[0-9]*\\}" ) )
-//                headerTextFields.add( field );
-//        }
-//
-//        assertEquals( 4, detailFields.size() );
-//        assertEquals( 4, headerFields.size() );
-//
-//        assertEquals( 4, detailTextFields.size() );
-//        assertEquals( 4, headerTextFields.size() );
-//    }
+    @Test
+    public void testPrepareJrxmlAndReadInputParameters()
+                            throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
+                            ProcessletException {
+        DataTableContentProvider tableContentProvider = new DataTableContentProvider();
+
+        List<CodeType> processedIds = new ArrayList<CodeType>();
+        InputStream jrxml = TestDataTableContentProviderTest.class.getResourceAsStream( "../templateWithTable.jrxml" );
+        Map<String, Object> params = new HashMap<String, Object>();
+        ProcessletInputs in = Utils.getInputs( "REPORT",
+                                               DataTableContentProvider.MIME_TYPE,
+                                               DataTableContentProvider.SCHEMA,
+                                               TestMapContentProviderTest.class.getResourceAsStream( "complexInputTABLE" ) );
+        jrxml = tableContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds,
+                                                                         new HashMap<String, String>() );
+
+        assertEquals( 1, params.size() );
+        assertEquals( 1, processedIds.size() );
+        XMLAdapter a = new XMLAdapter( jrxml );
+        String[] fieldNames = a.getNodesAsStrings( a.getRootElement(),
+                                                   new XPath( "/jasper:jasperReport/jasper:field/@name", nsContext ) );
+        List<String> detailFields = new ArrayList<String>();
+        List<String> headerFields = new ArrayList<String>();
+        for ( String field : fieldNames ) {
+            if ( field.matches( TABLE_PREFIX + "[a-zA-Z0-9]*_(" + DETAIL_SUFFIX + ")[0-9]*" ) )
+                detailFields.add( field );
+            else if ( field.matches( TABLE_PREFIX + "[a-zA-Z0-9]*_(" + HEADER_SUFFIX + ")[0-9]*" ) )
+                headerFields.add( field );
+        }
+
+        String[] textFieldNames = a.getNodesAsStrings( a.getRootElement(),
+                                                       new XPath( ".//jasper:textField/jasper:textFieldExpression",
+                                                                  nsContext ) );
+
+        List<String> detailTextFields = new ArrayList<String>();
+        List<String> headerTextFields = new ArrayList<String>();
+        for ( String field : textFieldNames ) {
+            if ( field.matches( "\\$F\\{" + TABLE_PREFIX + "[a-zA-Z0-9]*_(" + DETAIL_SUFFIX + ")[0-9]*\\}" ) )
+                detailTextFields.add( field );
+            else if ( field.matches( "\\$F\\{" + TABLE_PREFIX + "[a-zA-Z0-9]*_(" + HEADER_SUFFIX + ")[0-9]*\\}" ) )
+                headerTextFields.add( field );
+        }
+
+        assertEquals( 4, detailFields.size() );
+        assertEquals( 4, headerFields.size() );
+
+        assertEquals( 4, detailTextFields.size() );
+        assertEquals( 4, headerTextFields.size() );
+    }
 
 }
