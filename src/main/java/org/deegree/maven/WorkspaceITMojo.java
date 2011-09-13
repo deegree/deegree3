@@ -35,15 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.maven;
 
+import static org.apache.http.client.protocol.ClientContext.AUTH_CACHE;
 import static org.deegree.commons.utils.net.HttpUtils.UTF8STRING;
 import static org.deegree.commons.utils.net.HttpUtils.get;
-import static org.deegree.commons.utils.net.HttpUtils.post;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -88,18 +102,42 @@ public class WorkspaceITMojo extends AbstractMojo {
             String url = helper.createBaseURL() + "config/upload/iut.zip";
             File file = a.getFile();
             try {
+                DefaultHttpClient client = new DefaultHttpClient();
+                HttpConnectionParams.setConnectionTimeout( client.getParams(), 10000 );
+                HttpConnectionParams.setSoTimeout( client.getParams(), 300000 );
+                client.getCredentialsProvider().setCredentials( AuthScope.ANY,
+                                                                new UsernamePasswordCredentials( "deegree", "deegree" ) );
+                // preemptive authentication used to be easier in pre-4.x httpclient
+                AuthCache authCache = new BasicAuthCache();
+                BasicScheme basicAuth = new BasicScheme();
+                HttpHost host = new HttpHost( "localhost", Integer.parseInt( helper.getPort() ) );
+                authCache.put( host, basicAuth );
+                BasicHttpContext localcontext = new BasicHttpContext();
+                localcontext.setAttribute( AUTH_CACHE, authCache );
+
                 getLog().info( "Sending against: " + helper.createBaseURL() + "config/delete/iut" );
-                String response = get( UTF8STRING, helper.createBaseURL() + "config/delete/iut", null, "deegree",
-                                       "deegree" ).trim();
+                HttpGet get = new HttpGet( helper.createBaseURL() + "config/delete/iut" );
+                HttpResponse resp = client.execute( get );
+                String response = EntityUtils.toString( resp.getEntity(), "UTF-8" ).trim();
                 getLog().info( "Response after initially deleting iut was: " + response );
+
                 getLog().info( "Sending against: " + helper.createBaseURL() + "config/restart" );
-                response = get( UTF8STRING, helper.createBaseURL() + "config/restart", null, "deegree", "deegree" ).trim();
+                get = new HttpGet( helper.createBaseURL() + "config/restart" );
+                resp = client.execute( get );
+                response = EntityUtils.toString( resp.getEntity(), "UTF-8" ).trim();
                 getLog().info( "Response after initial restart was: " + response );
+
                 getLog().info( "Sending against: " + url );
-                response = post( UTF8STRING, url, file, null, "deegree", "deegree" ).trim();
+                HttpPost post = new HttpPost( url );
+                post.setEntity( new FileEntity( file, null ) );
+                resp = client.execute( post );
+                response = EntityUtils.toString( resp.getEntity() );
                 getLog().info( "Response after uploading was: " + response );
+
                 getLog().info( "Sending against: " + helper.createBaseURL() + "config/restart/iut" );
-                response = get( UTF8STRING, helper.createBaseURL() + "config/restart/iut", null, "deegree", "deegree" ).trim();
+                get = new HttpGet( helper.createBaseURL() + "config/restart/iut" );
+                resp = client.execute( get );
+                response = EntityUtils.toString( resp.getEntity(), "UTF-8" ).trim();
                 getLog().info( "Response after starting workspace was: " + response );
             } catch ( IOException e ) {
                 throw new MojoFailureException( "Could not test workspace " + a.getArtifactId() + ": "

@@ -94,7 +94,6 @@ public class ClasspathHelper {
 
         List<?> dependencies = project.getDependencies();
 
-        @SuppressWarnings("unchecked")
         Set<Artifact> dependencyArtifacts = createArtifacts( artifactFactory, dependencies, null, new ArtifactFilter() {
             @Override
             public boolean include( Artifact artifact ) {
@@ -130,13 +129,11 @@ public class ClasspathHelper {
 
         List<?> dependencies = project.getDependencies();
 
-        @SuppressWarnings("unchecked")
         Set<Artifact> dependencyArtifacts = createArtifacts( artifactFactory, dependencies, null, null, null );
 
         dependencyArtifacts.add( project.getArtifact() );
 
-        ArtifactResolutionResult result = artifactResolver.resolveTransitively(
-                                                                                dependencyArtifacts,
+        ArtifactResolutionResult result = artifactResolver.resolveTransitively( dependencyArtifacts,
                                                                                 project.getArtifact(),
                                                                                 EMPTY_MAP,
                                                                                 localRepository,

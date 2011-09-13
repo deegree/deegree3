@@ -69,6 +69,7 @@ public class CopyMojo extends AbstractMojo {
      */
     private Copy[] files;
 
+    @Override
     public void execute()
                             throws MojoExecutionException, MojoFailureException {
         Log log = getLog();
