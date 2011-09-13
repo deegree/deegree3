@@ -40,10 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence.standard;
 
-import static org.deegree.commons.metadata.MetadataJAXBConverter.KW_MAPPER;
-import static org.deegree.commons.metadata.MetadataJAXBConverter.LANG_MAPPER;
-import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.deegree.theme.Themes.aggregateSpatialMetadata;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
@@ -150,7 +148,9 @@ public class StandardThemeProvider implements ThemeProvider {
             }
 
             ThemeType root = cfg.getTheme();
-            return buildTheme( root, root.getLayer(), root.getTheme(), stores );
+            Theme theme = buildTheme( root, root.getLayer(), root.getTheme(), stores );
+            aggregateSpatialMetadata( theme );
+            return theme;
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse theme configuration file.", e );
         }
