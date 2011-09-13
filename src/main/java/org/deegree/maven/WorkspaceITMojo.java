@@ -131,7 +131,7 @@ public class WorkspaceITMojo extends AbstractMojo {
                 HttpPost post = new HttpPost( url );
                 post.setEntity( new FileEntity( file, null ) );
                 resp = client.execute( post );
-                response = EntityUtils.toString( resp.getEntity() );
+                response = EntityUtils.toString( resp.getEntity() ).trim();
                 getLog().info( "Response after uploading was: " + response );
 
                 getLog().info( "Sending against: " + helper.createBaseURL() + "config/restart/iut" );
