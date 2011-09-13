@@ -116,6 +116,8 @@ import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.AbstractDatasourceType;
+import org.deegree.services.wps.provider.jrxml.jaxb.map.Center;
+import org.deegree.services.wps.provider.jrxml.jaxb.map.Detail;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Style;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
@@ -147,6 +149,8 @@ public class MapContentProvider implements JrxmlContentProvider {
     final static String MIME_TYPE = "text/xml";
 
     private static final String PARAM_PREFIX = "map";
+
+    final double INCH2M = 0.0254;
 
     private enum SUFFIXES {
 
@@ -283,33 +287,13 @@ public class MapContentProvider implements JrxmlContentProvider {
                                                                                                      nsContext ) );
                             int height = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep, new XPath( "@height",
                                                                                                       nsContext ) );
+                            int resolution = map.getResolution().intValue();
+                            Envelope bbox = calculateBBox( map.getDetail(), mapId, width, height, resolution );
 
-                            String[] coords = map.getDetail().getBbox().split( "," );
-                            ICRS crs = CRSManager.getCRSRef( map.getDetail().getCrs() );
-                            Envelope bbox = new DefaultEnvelope(
-                                                                 null,
-                                                                 crs,
-                                                                 null,
-                                                                 new DefaultPoint(
-                                                                                   null,
-                                                                                   crs,
-                                                                                   null,
-                                                                                   new double[] {
-                                                                                                 Double.parseDouble( coords[0] ),
-                                                                                                 Double.parseDouble( coords[1] ) } ),
-                                                                 new DefaultPoint(
-                                                                                   null,
-                                                                                   crs,
-                                                                                   null,
-                                                                                   new double[] {
-                                                                                                 Double.parseDouble( coords[2] ),
-                                                                                                 Double.parseDouble( coords[3] ) } ) );
-
-                            params.put( mapKey,
-                                        prepareMap( datasources, parameters.get( mapKey ), width, height, bbox, crs ) );
+                            params.put( mapKey, prepareMap( datasources, parameters.get( mapKey ), width, height, bbox ) );
 
                             // SCALE
-                            double scale = Utils.calcScaleWMS130( width, height, bbox, crs );
+                            double scale = Utils.calcScaleWMS130( width, height, bbox, bbox.getCoordinateSystem() );
                             String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX );
                             if ( parameters.containsKey( scaleKey ) ) {
                                 params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );
@@ -368,6 +352,60 @@ public class MapContentProvider implements JrxmlContentProvider {
             }
         }
         return jrxml;
+    }
+
+    private Envelope calculateBBox( Detail detail, String id, int mapWidth, int mapHeight, int dpi )
+                            throws ProcessletException {
+        ICRS crs = CRSManager.getCRSRef( detail.getCrs() );
+        Center center = detail.getCenter();
+        Envelope bbox = null;
+        if ( center != null ) {
+            int scaleDenominator = center.getScaleDenominator().intValue();
+            String[] coords = center.getValue().split( "," );
+            double pixelSize = INCH2M / dpi;
+            double w2 = ( scaleDenominator * pixelSize * mapWidth ) / 2d;
+            double x1 = Double.parseDouble( coords[0] ) - w2;
+            double x2 = Double.parseDouble( coords[0] ) + w2;
+            w2 = ( scaleDenominator * pixelSize * mapHeight ) / 2d;
+            double y1 = Double.parseDouble( coords[1] ) - w2;
+            double y2 = Double.parseDouble( coords[1] ) + w2;
+            bbox = new DefaultEnvelope( null, crs, null, new DefaultPoint( null, crs, null, new double[] { x1, y1 } ),
+                                        new DefaultPoint( null, crs, null, new double[] { x2, y2 } ) );
+        } else if ( detail.getBbox() != null ) {
+            String[] coords = detail.getBbox().split( "," );
+            double bboxXmin = Double.parseDouble( coords[0] );
+            double bboxYmin = Double.parseDouble( coords[1] );
+            double bboxXmax = Double.parseDouble( coords[2] );
+            double bboxYmax = Double.parseDouble( coords[3] );
+            double bboxWidth = bboxXmax - bboxXmin;
+            double bboxHeight = bboxYmax - bboxYmin;
+            double bboxAspectRatio = bboxWidth / bboxHeight;
+            double printAspectRatio = ( (double) mapWidth ) / mapHeight;
+            if ( bboxAspectRatio > printAspectRatio ) {
+                double centerY = bboxYmin + ( ( bboxYmax - bboxYmin ) / 2d );
+                double height = bboxWidth * ( 1.0 / printAspectRatio );
+                double minY = centerY - ( height / 2d );
+                double maxY = centerY + ( height / 2d );
+                bbox = new DefaultEnvelope( null, crs, null, new DefaultPoint( null, crs, null, new double[] {
+                                                                                                              bboxXmin,
+                                                                                                              minY } ),
+                                            new DefaultPoint( null, crs, null, new double[] { bboxXmax, maxY } ) );
+            } else {
+                double centerX = bboxXmin + ( ( bboxXmax - bboxXmin ) / 2d );
+                double width = bboxHeight * printAspectRatio;
+                double minX = centerX - ( width / 2d );
+                double maxX = centerX + ( width / 2d );
+                bbox = new DefaultEnvelope( null, crs, null, new DefaultPoint( null, crs, null,
+                                                                               new double[] { minX, bboxYmin } ),
+                                            new DefaultPoint( null, crs, null, new double[] { maxX, bboxYmax } ) );
+            }
+        } else {
+            throw new ProcessletException(
+                                           "Could not parse required parameter bbox or center for map component with id  '"
+                                                                   + id + "'." );
+        }
+        LOG.debug( "requested and adjusted bbox: ", bbox );
+        return bbox;
     }
 
     private void prepareScaleBar( String scalebarKey, XMLAdapter jrxmlAdapter, List<OrderedDatasource<?>> datasources,
@@ -430,7 +468,6 @@ public class MapContentProvider implements JrxmlContentProvider {
                 if ( k > bi.getHeight() ) {
                     LOG.warn( "The necessary legend size is larger than the available legend space." );
                 }
-                // TODO: height must be
                 List<Pair<String, BufferedImage>> legends = datasources.get( i ).getLegends( width );
                 for ( Pair<String, BufferedImage> legend : legends ) {
                     BufferedImage img = legend.second;
@@ -518,14 +555,12 @@ public class MapContentProvider implements JrxmlContentProvider {
         return newGrp;
     }
 
-    private Object prepareMap( List<OrderedDatasource<?>> datasources, String type, int width, int height,
-                               Envelope bbox, ICRS crs )
+    private Object prepareMap( List<OrderedDatasource<?>> datasources, String type, int width, int height, Envelope bbox )
                             throws ProcessletException {
         BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
         Graphics g = bi.getGraphics();
-
         for ( OrderedDatasource<?> datasource : datasources ) {
-            BufferedImage image = datasource.getImage( width, height, bbox, crs );
+            BufferedImage image = datasource.getImage( width, height, bbox );
             if ( image != null ) {
                 g.drawImage( image, 0, 0, null );
             }
@@ -711,7 +746,7 @@ public class MapContentProvider implements JrxmlContentProvider {
             this.max = max;
         }
 
-        abstract BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
+        abstract BufferedImage getImage( int width, int height, Envelope bbox )
                                 throws ProcessletException;
 
         abstract Map<String, List<String>> getLayerList();
@@ -767,8 +802,9 @@ public class MapContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
+        BufferedImage getImage( int width, int height, Envelope bbox )
                                 throws ProcessletException {
+            LOG.debug( "create map image for WMS datasource '{}'", datasource.getName() );
             try {
                 String user = datasource.getAuthentification() != null ? datasource.getAuthentification().getUser()
                                                                       : null;
@@ -787,7 +823,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                 }
 
                 // TODO: styles!
-                GetMap gm = new GetMap( layerNames, width, height, bbox, crs, "image/png", true );
+                GetMap gm = new GetMap( layerNames, width, height, bbox, bbox.getCoordinateSystem(), "image/png", true );
                 Pair<BufferedImage, String> map = wmsClient.getMap( gm, null, 60, false );
                 if ( map.first == null )
                     LOG.debug( map.second );
@@ -913,8 +949,9 @@ public class MapContentProvider implements JrxmlContentProvider {
         }
 
         @Override
-        BufferedImage getImage( int width, int height, Envelope bbox, ICRS crs )
+        BufferedImage getImage( int width, int height, Envelope bbox )
                                 throws ProcessletException {
+            LOG.debug( "create map image for WFS datasource '{}'", datasource.getName() );
             try {
                 String capURL = datasource.getUrl() + "?service=WFS&request=GetCapabilities&version="
                                 + datasource.getVersion();
@@ -926,7 +963,7 @@ public class MapContentProvider implements JrxmlContentProvider {
 
                 BufferedImage image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
                 Graphics2D g = image.createGraphics();
-                Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox /* pixelSize */);
+                Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox, bbox.getCoordinateDimension() /* pixelSize */);
 
                 // TODO
                 // XMLInputFactory fac = XMLInputFactory.newInstance();
