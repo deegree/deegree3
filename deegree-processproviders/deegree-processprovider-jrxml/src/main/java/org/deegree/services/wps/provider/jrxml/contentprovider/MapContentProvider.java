@@ -271,6 +271,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                         List<OrderedDatasource<?>> datasources = anaylizeRequestOrder( map.getDatasources().getWMSDatasourceOrWFSDatasource() );
 
                         // MAP
+                        int resolution = map.getResolution().intValue();
                         String mapKey = getParameterFromIdentifier( mapId, SUFFIXES.MAP_SUFFIX );
                         if ( parameters.containsKey( mapKey ) ) {
                             OMElement mapImgRep = jrxmlAdapter.getElement( root,
@@ -287,7 +288,10 @@ public class MapContentProvider implements JrxmlContentProvider {
                                                                                                      nsContext ) );
                             int height = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep, new XPath( "@height",
                                                                                                       nsContext ) );
-                            int resolution = map.getResolution().intValue();
+
+                            width = adjustSpan( width, resolution );
+                            height = adjustSpan( height, resolution );
+
                             Envelope bbox = calculateBBox( map.getDetail(), mapId, width, height, resolution );
 
                             params.put( mapKey, prepareMap( datasources, parameters.get( mapKey ), width, height, bbox ) );
@@ -315,7 +319,8 @@ public class MapContentProvider implements JrxmlContentProvider {
                         String legendKey = getParameterFromIdentifier( mapId, SUFFIXES.LEGEND_SUFFIX );
                         if ( parameters.containsKey( legendKey ) ) {
                             params.put( legendKey,
-                                        prepareLegend( legendKey, jrxmlAdapter, datasources, parameters.get( legendKey ) ) );
+                                        prepareLegend( legendKey, jrxmlAdapter, datasources,
+                                                       parameters.get( legendKey ), resolution ) );
                         }
 
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -352,6 +357,11 @@ public class MapContentProvider implements JrxmlContentProvider {
             }
         }
         return jrxml;
+    }
+
+    private int adjustSpan( int inPxFromJrxml, int resolution ) {
+        // jasper assumes a resolution of 72 dpi
+        return new Double( inPxFromJrxml / 72d * resolution ).intValue();
     }
 
     private Envelope calculateBBox( Detail detail, String id, int mapWidth, int mapHeight, int dpi )
@@ -404,7 +414,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                                            "Could not parse required parameter bbox or center for map component with id  '"
                                                                    + id + "'." );
         }
-        LOG.debug( "requested and adjusted bbox: ", bbox );
+        LOG.debug( "requested and adjusted bbox: {}", bbox );
         return bbox;
     }
 
@@ -444,7 +454,7 @@ public class MapContentProvider implements JrxmlContentProvider {
     }
 
     private Object prepareLegend( String legendKey, XMLAdapter jrxmlAdapter, List<OrderedDatasource<?>> datasources,
-                                  String type )
+                                  String type, int resolution )
                             throws ProcessletException {
 
         OMElement legendRE = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
@@ -455,6 +465,8 @@ public class MapContentProvider implements JrxmlContentProvider {
             LOG.debug( "Found legend with key '" + legendKey + "'." );
             int width = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@width", nsContext ) );
             int height = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@height", nsContext ) );
+            width = adjustSpan( width, resolution );
+            height = adjustSpan( height, resolution );
             // TODO: bgcolor?
             Color bg = Color.decode( "0xFFFFFF" );
             BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
