@@ -35,11 +35,46 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
-public class WFSFeatureCollection {
+import java.util.Iterator;
+
+import javax.xml.stream.XMLStreamReader;
+
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.gml.GMLDocumentIdContext;
+
+/**
+ * Encapsulates the response to a <code>GetFeature</code> request while maintaining full scalability.
+ * <p>
+ * TODO in order to make this usable for <b>really</b> large amounts of complex features, {@link GMLDocumentIdContext}
+ * needs to be rewritten (so it doesn't keep everything in memory).
+ * </p>
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class WFSFeatureCollection<T> {
 
     private int numberMatched;
 
     private int numberReturned;
+
+    /**
+     * Creates a new {@link WFSFeatureCollection} instance.
+     * 
+     * @param xmlStream
+     * @param schema
+     */
+    WFSFeatureCollection( XMLStreamReader xmlStream, AppSchema schema ) {
+
+    }
+
+    public Object getTimeStamp() {
+        return null;
+    }
 
     public int getNumberReturned() {
         return numberReturned;
@@ -49,4 +84,19 @@ public class WFSFeatureCollection {
         return numberMatched;
     }
 
+    public Iterator<T> getMembers() {
+        return null;
+    }
+
+    public Iterator<GMLObject> getAdditionalObjects() {
+        return null;
+    }
+
+    public GMLDocumentIdContext getIdContext() {
+        return null;
+    }
+
+    public FeatureCollection toCollection() {
+        return null;
+    }
 }

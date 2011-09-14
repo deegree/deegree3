@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
@@ -77,8 +76,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOWSClient.class );
-
-    private static final XMLInputFactory xmlFac = XMLInputFactory.newInstance();
 
     private final HttpClient httpClient;
 
@@ -114,7 +111,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         httpClient = initHttpClient();
         OWSResponse response = doGet( capaUrl, null, null );
         try {
-            XMLAdapter xmlAdapter = new XMLAdapter( response.getXMLStream() );
+            XMLAdapter xmlAdapter = new XMLAdapter( response.getAsXMLStream() );
 
             OMElement rootEl = xmlAdapter.getRootElement();
             String version = rootEl.getAttributeValue( new QName( "version" ) );
@@ -258,7 +255,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
     /**
      * Performs an HTTP-GET request to the service.
      * <p>
-     * NOTE: The caller <b>must</b> call {@linK OWSResponse#close()} on the returned object eventually, or underlying
+     * NOTE: The caller <b>must</b> call {@link OWSResponse#close()} on the returned object eventually, otherwise underlying
      * resources (connections) may not be freed.
      * </p>
      * 
@@ -309,8 +306,8 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
     /**
      * Performs an HTTP-POST request to the service.
      * <p>
-     * NOTE: The caller <b>must</b> call {@linK OWSResponse#close()} on the returned object eventually, or underlying
-     * resources (connections) may not be freed.
+     * NOTE: The caller <b>must</b> call {@link OWSResponse#close()} on the returned object eventually, otherwise
+     * underlying resources (connections) may not be freed.
      * </p>
      * 
      * @param endPoint

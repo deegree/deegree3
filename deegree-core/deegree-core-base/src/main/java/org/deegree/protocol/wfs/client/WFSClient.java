@@ -208,7 +208,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
             XMLStreamReader xmlStream = null;
             StreamBufferStore tmpStore = null;
             try {
-                xmlStream = response.getXMLStream();
+                xmlStream = response.getAsXMLStream();
                 tmpStore = XMLStreamUtils.serialize( xmlStream );
             } finally {
                 response.close();
@@ -249,7 +249,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
         OWSResponse response = doGet( endPoint, kvp, null );
         StreamFeatureCollection fc = null;
         try {
-            XMLStreamReader reader = response.getXMLStream();
+            XMLStreamReader reader = response.getAsXMLStream();
             GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, reader );
             gmlReader.setApplicationSchema( schema );

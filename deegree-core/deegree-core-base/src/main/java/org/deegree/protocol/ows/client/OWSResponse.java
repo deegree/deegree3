@@ -54,9 +54,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * Encapsulates the raw HTTP response from an OGC web service.
+ * <p>
+ * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise system resources (connections) may not be
+ * freed.
+ * </p>
  * 
- * @author <a href="mailto:name@company.com">Your Name</a>
+ * @see AbstractOWSClient
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -69,10 +75,13 @@ public class OWSResponse {
 
     private final URI uri;
 
+    private final HttpResponse httpResponse;
+
     private final InputStream is;
 
-    public OWSResponse( URI uri, HttpResponse httpResponse ) throws IllegalStateException, IOException {
+    OWSResponse( URI uri, HttpResponse httpResponse ) throws IllegalStateException, IOException {
         this.uri = uri;
+        this.httpResponse = httpResponse;
         HttpEntity entity = httpResponse.getEntity();
         if ( entity == null ) {
             // TODO exception
@@ -80,11 +89,15 @@ public class OWSResponse {
         is = entity.getContent();
     }
 
-    public InputStream getBinaryStream() {
+    public HttpResponse getAsHttpResponse() {
+        return httpResponse;
+    }
+
+    public InputStream getAsBinaryStream() {
         return is;
     }
 
-    public XMLStreamReader getXMLStream()
+    public XMLStreamReader getAsXMLStream()
                             throws OWSExceptionReport, XMLStreamException {
         XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( uri.toString(), is );
         assertNoExceptionReport( xmlStream );
