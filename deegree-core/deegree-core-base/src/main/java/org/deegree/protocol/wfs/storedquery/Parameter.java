@@ -37,55 +37,48 @@ package org.deegree.protocol.wfs.storedquery;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.protocol.wfs.query.StoredQuery;
 
 /**
- * Defines the template for a {@link StoredQuery}.
+ * A parameter definition in a {@link StoredQueryDefinition}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StoredQueryDefinition {
+public class Parameter {
 
-    private final String id;
+    private final String name;
+
+    private final QName type;
 
     private final List<LanguageString> titles;
 
     private final List<LanguageString> abstracts;
 
-    private final List<OMElement> metadataEls;
+    private final List<OMElement> metadata;
 
-    private final List<Parameter> parameters;
-
-    private final List<QueryExpressionText> queryExpressionTexts;
-
-    public StoredQueryDefinition( String id, List<LanguageString> titles, List<LanguageString> abstracts,
-                                  List<OMElement> metadataEls, List<Parameter> parameters,
-                                  List<QueryExpressionText> queryExpressionTexts ) {
-        this.id = id;
+    Parameter( String name, QName type, List<LanguageString> titles, List<LanguageString> abstracts,
+               List<OMElement> metadata ) {
+        this.name = name;
+        this.type = type;
         this.titles = titles;
         this.abstracts = abstracts;
-        this.metadataEls = metadataEls;
-        this.parameters = parameters;
-        this.queryExpressionTexts = queryExpressionTexts;
+        this.metadata = metadata;
     }
 
-    /**
-     * 
-     * @return
-     */
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    /**
-     * 
-     * @return
-     */
+    public QName getType() {
+        return type;
+    }
+
     public List<LanguageString> getTitles() {
         return titles;
     }
@@ -95,14 +88,6 @@ public class StoredQueryDefinition {
     }
 
     public List<OMElement> getMetadata() {
-        return metadataEls;
-    }
-
-    public List<Parameter> getParameters() {
-        return parameters;
-    }
-
-    public List<QueryExpressionText> getQueryExpressionTextEls() {
-        return queryExpressionTexts;
+        return metadata;
     }
 }

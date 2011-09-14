@@ -87,7 +87,9 @@ public class CreateStoredQueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         List<OMElement> els = getElements( rootElement, new XPath( "wfs200:StoredQueryDefinition", nsContext ) );
         List<StoredQueryDefinition> queryDefinitions = new ArrayList<StoredQueryDefinition>();
         for ( OMElement el : els ) {
-            queryDefinitions.add( new StoredQueryDefinition( el ) );
+            StoredQueryDefinitionXMLAdapter queryDefAdapter = new StoredQueryDefinitionXMLAdapter();
+            queryDefAdapter.setRootElement( el );
+            queryDefinitions.add( queryDefAdapter.parse() );
         }
 
         return new CreateStoredQuery( version, handle, queryDefinitions );
