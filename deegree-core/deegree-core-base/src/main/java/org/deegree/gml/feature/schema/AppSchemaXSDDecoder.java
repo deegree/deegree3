@@ -347,82 +347,47 @@ public class AppSchemaXSDDecoder {
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
             XSParticle particle = typeDef.getParticle();
+            int minOccurs = particle.getMinOccurs();
+            int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
             XSTerm term = particle.getTerm();
             switch ( term.getType() ) {
             case XSConstants.MODEL_GROUP: {
-                XSModelGroup modelGroup = (XSModelGroup) term;
-                switch ( modelGroup.getCompositor() ) {
-                case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
-                    break;
-                }
-                case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
-                    break;
-                }
-                case XSModelGroup.COMPOSITOR_SEQUENCE: {
-                    XSObjectList sequence = modelGroup.getParticles();
-                    for ( int i = 0; i < sequence.getLength(); i++ ) {
-                        XSParticle particle2 = (XSParticle) sequence.item( i );
-                        switch ( particle2.getTerm().getType() ) {
-                        case XSConstants.ELEMENT_DECLARATION: {
-                            XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
-                            int minOccurs = particle2.getMinOccurs();
-                            int maxOccurs = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
-                            PropertyType pt = buildPropertyType( elementDecl2, minOccurs, maxOccurs );
-                            if ( pt != null ) {
-                                pts.add( pt );
-                            }
-                        }
-                        case XSConstants.WILDCARD: {
-                            LOG.debug( "Unhandled particle: WILDCARD" );
-                            break;
-                        }
-                        case XSConstants.MODEL_GROUP: {
-                            XSModelGroup modelGroup2 = (XSModelGroup) particle2.getTerm();
-                            addPropertyTypes( pts, modelGroup2 );
-                            break;
-                        }
-                        }
-                    }
-                    break;
-                }
-                default: {
-                    assert false;
-                }
-                }
-                break;
-            }
-            case XSConstants.WILDCARD: {
-                LOG.debug( "Unhandled particle: WILDCARD" );
+                addPropertyTypes( pts, (XSModelGroup) term, minOccurs, maxOccurs );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
+                pts.add( buildPropertyType( (XSElementDeclaration) term, minOccurs, maxOccurs ) );
                 break;
             }
+            case XSConstants.WILDCARD: {
+                String msg = "Broken GML application schema: Feature element '" + ftName
+                             + "' uses wildcard in type model.";
+                throw new IllegalArgumentException( msg );
+            }
             default: {
-                assert false;
+                String msg = "Internal error. Unhandled term type: " + term.getName();
+                throw new RuntimeException( msg );
             }
             }
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            LOG.debug( "Unhandled content type: EMPTY" );
+            LOG.debug( "Empty feature type declaration." );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_MIXED: {
-            LOG.debug( "Unhandled content type: MIXED" );
-            break;
+            String msg = "Broken GML application schema: Feature element '" + ftName
+                         + "' uses mixed content in type model.";
+            throw new IllegalArgumentException( msg );
         }
         case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
-            XSSimpleTypeDefinition simpleType = typeDef.getSimpleType();
-            QName simpleTypeName = createQName( simpleType.getNamespace(), simpleType.getName() );
-            // contents = new SimpleContent( simpleTypeName );
-            break;
+            String msg = "Broken GML application schema: Feature element '" + ftName
+                         + "' uses simple content in type model.";
+            throw new IllegalArgumentException( msg );
         }
         default: {
-            assert false;
+            String msg = "Internal error. Unhandled ContentType: " + typeDef.getContentType();
+            throw new RuntimeException( msg );
         }
         }
 
@@ -434,48 +399,49 @@ public class AppSchemaXSDDecoder {
         return new GenericFeatureType( ftName, pts, featureElementDecl.getAbstract() );
     }
 
-    private void addPropertyTypes( List<PropertyType> pts, XSModelGroup modelGroup ) {
-        LOG.trace( " - processing model group..." );
+    private void addPropertyTypes( List<PropertyType> pts, XSModelGroup modelGroup, int parentMinOccurs,
+                                   int parentMaxOccurs ) {
+
         switch ( modelGroup.getCompositor() ) {
         case XSModelGroup.COMPOSITOR_ALL: {
-            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+            LOG.warn( "Encountered 'All' compositor in feature type model definition -- treating as sequence." );
             break;
         }
         case XSModelGroup.COMPOSITOR_CHOICE: {
-            LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
+            LOG.warn( "Encountered 'Choice' compositor in feature type model definition -- treating as sequence." );
             break;
         }
-        case XSModelGroup.COMPOSITOR_SEQUENCE: {
-            XSObjectList sequence = modelGroup.getParticles();
-            for ( int i = 0; i < sequence.getLength(); i++ ) {
-                XSParticle particle = (XSParticle) sequence.item( i );
-                switch ( particle.getTerm().getType() ) {
-                case XSConstants.ELEMENT_DECLARATION: {
-                    XSElementDeclaration elementDecl = (XSElementDeclaration) particle.getTerm();
-                    int minOccurs = particle.getMinOccurs();
-                    int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
-                    PropertyType pt = buildPropertyType( elementDecl, minOccurs, maxOccurs );
-                    if ( pt != null ) {
-                        pts.add( pt );
-                    }
-                    break;
+        }
+
+        XSObjectList sequence = modelGroup.getParticles();
+        for ( int i = 0; i < sequence.getLength(); i++ ) {
+            XSParticle particle = (XSParticle) sequence.item( i );
+            int minOccurs = getCombinedOccurs( parentMinOccurs, particle.getMinOccurs() );
+            int maxOccurs = getCombinedOccurs( parentMaxOccurs,
+                                               particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs() );
+
+            switch ( particle.getTerm().getType() ) {
+            case XSConstants.ELEMENT_DECLARATION: {
+                XSElementDeclaration elementDecl = (XSElementDeclaration) particle.getTerm();
+                PropertyType pt = buildPropertyType( elementDecl, minOccurs, maxOccurs );
+                if ( pt != null ) {
+                    pts.add( pt );
                 }
-                case XSConstants.WILDCARD: {
-                    LOG.debug( "Unhandled particle: WILDCARD" );
-                    break;
-                }
-                case XSConstants.MODEL_GROUP: {
-                    XSModelGroup modelGroup2 = (XSModelGroup) particle.getTerm();
-                    addPropertyTypes( pts, modelGroup2 );
-                    break;
-                }
-                }
+                break;
             }
-            break;
-        }
-        default: {
-            assert false;
-        }
+            case XSConstants.MODEL_GROUP: {
+                addPropertyTypes( pts, (XSModelGroup) particle.getTerm(), minOccurs, maxOccurs );
+                break;
+            }
+            case XSConstants.WILDCARD: {
+                String msg = "Broken GML application schema: Encountered wildcard in feature type definition.";
+                throw new IllegalArgumentException( msg );
+            }
+            default: {
+                String msg = "Internal error. Unhandled term type: " + particle.getTerm().getName();
+                throw new RuntimeException( msg );
+            }
+            }
         }
     }
 
@@ -533,7 +499,6 @@ public class AppSchemaXSDDecoder {
         PropertyType pt = null;
         QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "- Property definition '" + ptName + "' uses a complex type for content definition." );
-        boolean isNillable = elementDecl.getNillable();
 
         // check for well known GML types first
         if ( typeDef.getName() != null ) {
@@ -577,6 +542,26 @@ public class AppSchemaXSDDecoder {
             pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions );
         }
         return pt;
+    }
+
+    /**
+     * Combines the minOccurs/maxOccurs information from a parent model group with the current one.
+     * <p>
+     * This is basically done to cope with GML application schemas that don't follow good practices (minOccurs/maxOccurs
+     * should only be set on the property element declaration).
+     * </p>
+     * 
+     * @param parentOccurs
+     *            occurence information of the parent model group, -1 means unbounded
+     * @param occurs
+     *            occurence information of the current particle, -1 means unbounded
+     * @return combined occurence information, -1 means unbounded
+     */
+    private int getCombinedOccurs( int parentOccurs, int occurs ) {
+        if ( parentOccurs == -1 || occurs == -1 ) {
+            return -1;
+        }
+        return parentOccurs * occurs;
     }
 
     private String getCodeListId( XSElementDeclaration elementDecl ) {

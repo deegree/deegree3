@@ -189,7 +189,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public GMLSchemaInfoSet( GMLVersion gmlVersion, LSInput... inputs ) throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public GMLSchemaInfoSet( GMLVersion gmlVersion, LSInput... inputs ) throws ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
         super( inputs );
         init( gmlVersion );
     }
@@ -592,7 +593,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         }
         if ( pt == null ) {
             if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
-                LOG.warn( "Identified generic object property, but handling is not implemented yet." );
+                LOG.warn( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
+                          + elDecl.getName() + "), but handling is not implemented yet." );
                 // // TODO actually determine allowed value representations
                 // pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
                 // elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
