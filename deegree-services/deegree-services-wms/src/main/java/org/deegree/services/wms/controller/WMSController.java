@@ -588,7 +588,10 @@ public class WMSController extends AbstractOWS {
                                                                                                          service ),
                                                                                      OGCFrontController.getContext().getCredentials() );
             for ( Layer l : fi.getQueryLayers() ) {
-                nsBindings.putAll( l.getFeatureType().getSchema().getNamespaceBindings() );
+                FeatureType ft = l.getFeatureType();
+                if ( ft != null && ft.getSchema() != null ) {
+                    nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
+                }
             }
             type = fi.getQueryLayers().get( 0 ).getFeatureType();
             crs = fi.getCoordinateSystem();
