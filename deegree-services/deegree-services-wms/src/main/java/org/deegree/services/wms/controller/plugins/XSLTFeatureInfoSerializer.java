@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -20,6 +21,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
@@ -53,9 +55,13 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
                 out = new IndentingXMLStreamWriter( out );
             }
             GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( gmlVersion, out );
-            if ( nsBindings != null ) {
-                writer.setNamespaceBindings( nsBindings );
+            if ( nsBindings == null ) {
+                nsBindings = new HashMap<String, String>();
             }
+            for ( Feature f : col ) {
+                nsBindings.putAll( f.getType().getSchema().getNamespaceBindings() );
+            }
+            writer.setNamespaceBindings( nsBindings );
             writer.write( col );
             writer.close();
             bos.flush();
