@@ -1,5 +1,5 @@
  <wps:ComplexData xmlns:wps="http://www.opengis.net/wps/1.0.0"  mimeType="text/xml">
-<Map resolution="300" xmlns="http://www.deegree.org/processprovider/map"
+<Map resolution="72" xmlns="http://www.deegree.org/processprovider/map"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/processprovider/map /home/lyn/workspaces/projekte/deegree3/deegree-processprovider-jrxml/src/main/resources/META-INF/schemas/map/0.1.0/map.xsd">
 	<Detail crs="EPSG:26912">
