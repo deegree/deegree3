@@ -27,40 +27,24 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.3</version>
-        <executions>
-          <execution>
-            <id>unpack-description</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.deegree</groupId>
-                  <artifactId>deegree-core-commons</artifactId>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.basedir}/target/schemas</outputDirectory>
-                  <includes>META-INF/schemas/description/3.1.0/description.xsd</includes>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.deegree</groupId>
-                  <artifactId>deegree-core-geometry</artifactId>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.basedir}/target/schemas</outputDirectory>
-                  <includes>META-INF/schemas/spatialmetadata/3.1.0/spatialmetadata.xsd</includes>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
+        <configuration>
+          <catalog>src/main/catalog/catalog.cat</catalog>
+          <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-core-commons</artifactId>
+            <version>3.1-pre13-SNAPSHOT</version>
+          </dependency>
+          <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-core-geometry</artifactId>
+            <version>3.1-pre13-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

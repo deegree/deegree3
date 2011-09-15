@@ -12,8 +12,8 @@
     </appinfo>
   </annotation>
 
-  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="../../../../../../../../target/schemas/META-INF/schemas/description/3.1.0/description.xsd" />
-  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="../../../../../../../../target/schemas/META-INF/schemas/spatialmetadata/3.1.0/spatialmetadata.xsd" />
+  <import namespace="http://www.deegree.org/metadata/description" />
+  <import namespace="http://www.deegree.org/metadata/spatial" />
 
   <element name="RemoteWMSLayers">
     <complexType>
