@@ -86,15 +86,27 @@ public class Operation {
 
         this.name = name;
         this.dcp = dcps;
-        this.parameters = params;
-        this.constraints = constraints;
-        this.metadata = metadata;
+        if ( params != null ) {
+            this.parameters = params;
+        } else {
+            this.parameters = new ArrayList<Domain>();
+        }
+        if ( constraints != null ) {
+            this.constraints = constraints;
+        } else {
+            this.constraints = new ArrayList<Domain>();
+        }
+        if ( metadata != null ) {
+            this.metadata = metadata;
+        } else {
+            this.metadata = new ArrayList<OMElement>();
+        }
 
         for ( DCP dcp : dcps ) {
-            for ( Pair<URL, List<Domain>> urls : dcp.getGetURLs() ) {
+            for ( Pair<URL, List<Domain>> urls : dcp.getGetEndpoints() ) {
                 getUrls.add( urls.first );
             }
-            for ( Pair<URL, List<Domain>> urls : dcp.getGetURLs() ) {
+            for ( Pair<URL, List<Domain>> urls : dcp.getGetEndpoints() ) {
                 postUrls.add( urls.first );
             }
         }

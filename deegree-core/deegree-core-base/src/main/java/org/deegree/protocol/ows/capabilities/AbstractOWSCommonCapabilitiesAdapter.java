@@ -41,6 +41,7 @@ import static org.deegree.protocol.ows.metadata.domain.RangeClosure.CLOSED_OPEN;
 import static org.deegree.protocol.ows.metadata.domain.RangeClosure.OPEN;
 import static org.deegree.protocol.ows.metadata.domain.RangeClosure.OPEN_CLOSED;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -70,6 +71,7 @@ import org.deegree.protocol.ows.metadata.domain.RangeClosure;
 import org.deegree.protocol.ows.metadata.domain.Value;
 import org.deegree.protocol.ows.metadata.domain.Values;
 import org.deegree.protocol.ows.metadata.domain.ValuesReference;
+import org.deegree.protocol.ows.metadata.operation.DCP;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ContactInfo;
 import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
@@ -439,5 +441,55 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
         }
 
         return new Range( min, max, spacing, closure );
+    }
+
+    /**
+     * @param dcpEl
+     *            context {@link OMElement}
+     * @return an {@link DCP} instance, never <code>null</code>
+     */
+    protected DCP parseDCP( OMElement dcpEl ) {
+        XPath xpath = new XPath( "ows:HTTP/ows:Get", nsContext );
+
+        List<OMElement> getEls = getElements( dcpEl, xpath );
+        List<Pair<URL, List<Domain>>> getEndpoints = new ArrayList<Pair<URL, List<Domain>>>( getEls.size() );
+        if ( getEls != null ) {
+            for ( OMElement getEl : getEls ) {
+                xpath = new XPath( "@xlink:href", nsContext );
+                URL href = getNodeAsURL( getEl, xpath, null );
+
+                xpath = new XPath( "ows:Constraint", nsContext );
+                List<OMElement> constaintEls = getElements( getEl, xpath );
+                List<Domain> domains = new ArrayList<Domain>();
+                for ( OMElement constaintEl : constaintEls ) {
+                    Domain constraint = parseDomain( constaintEl );
+                    domains.add( constraint );
+                }
+
+                getEndpoints.add( new Pair<URL, List<Domain>>( href, domains ) );
+            }
+        }
+
+        xpath = new XPath( "ows:HTTP/ows:Post", nsContext );
+        List<OMElement> postEls = getElements( dcpEl, xpath );
+        List<Pair<URL, List<Domain>>> postEndpoints = new ArrayList<Pair<URL, List<Domain>>>( postEls.size() );
+        if ( postEls != null ) {
+            for ( OMElement postEl : postEls ) {
+                xpath = new XPath( "@xlink:href", nsContext );
+                URL href = getNodeAsURL( postEl, xpath, null );
+
+                xpath = new XPath( "ows:Constraint", nsContext );
+                List<OMElement> constaintEls = getElements( postEl, xpath );
+                List<Domain> domains = new ArrayList<Domain>();
+                for ( OMElement constaintEl : constaintEls ) {
+                    Domain constraint = parseDomain( constaintEl );
+                    domains.add( constraint );
+                }
+
+                postEndpoints.add( new Pair<URL, List<Domain>>( href, domains ) );
+            }
+        }
+
+        return new DCP( getEndpoints, postEndpoints );
     }
 }

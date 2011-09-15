@@ -89,8 +89,6 @@ import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException110XMLAdapter;
-import org.deegree.services.controller.ows.OWSException120XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.capabilities.GetCapabilities202KVPAdapter;
 import org.deegree.services.csw.capabilities.GetCapabilitiesVersionXMLAdapter;
@@ -120,6 +118,8 @@ import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.OWSException120XMLAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

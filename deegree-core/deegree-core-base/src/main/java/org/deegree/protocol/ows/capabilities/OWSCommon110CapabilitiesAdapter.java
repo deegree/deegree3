@@ -171,55 +171,6 @@ public class OWSCommon110CapabilitiesAdapter extends AbstractOWSCommonCapabiliti
     }
 
     /**
-     * @param dcpEl
-     *            context {@link OMElement}
-     * @return an {@link DCP} instance, never <code>null</code>
-     */
-    private DCP parseDCP( OMElement dcpEl ) {
-        DCP dcp = new DCP();
-
-        XPath xpath = new XPath( "ows:HTTP/ows:Get", nsContext );
-        List<OMElement> getEls = getElements( dcpEl, xpath );
-        if ( getEls != null ) {
-            for ( OMElement getEl : getEls ) {
-                xpath = new XPath( "@xlink:href", nsContext );
-                URL href = getNodeAsURL( getEl, xpath, null );
-
-                xpath = new XPath( "ows:Constraint", nsContext );
-                List<OMElement> constaintEls = getElements( getEl, xpath );
-                List<Domain> domains = new ArrayList<Domain>();
-                for ( OMElement constaintEl : constaintEls ) {
-                    Domain constraint = parseDomain( constaintEl );
-                    domains.add( constraint );
-                }
-
-                dcp.getGetURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
-            }
-        }
-
-        xpath = new XPath( "ows:HTTP/ows:Post", nsContext );
-        List<OMElement> postEls = getElements( dcpEl, xpath );
-        if ( postEls != null ) {
-            for ( OMElement postEl : postEls ) {
-                xpath = new XPath( "@xlink:href", nsContext );
-                URL href = getNodeAsURL( postEl, xpath, null );
-
-                xpath = new XPath( "ows:Constraint", nsContext );
-                List<OMElement> constaintEls = getElements( postEl, xpath );
-                List<Domain> domains = new ArrayList<Domain>();
-                for ( OMElement constaintEl : constaintEls ) {
-                    Domain constraint = parseDomain( constaintEl );
-                    domains.add( constraint );
-                }
-
-                dcp.getPostURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
-            }
-        }
-
-        return dcp;
-    }
-
-    /**
      * Returns the URL for the specified operation and HTTP method.
      * 
      * @param operation

@@ -52,27 +52,53 @@ import org.deegree.protocol.ows.metadata.domain.Domain;
  */
 public class DCP {
 
-    private List<Pair<URL, List<Domain>>> getURLs;
+    private List<Pair<URL, List<Domain>>> getEndpoints;
 
-    private List<Pair<URL, List<Domain>>> postURLs;
+    private List<Pair<URL, List<Domain>>> postEndpoints;
+
+    /**
+     * Creates a new {@link DCP} instance.
+     * 
+     * @param getUrl
+     *            endpoint for HTTP-GET requests, can be <code>null</code>
+     * @param postUrl
+     *            endpoint for HTTP-POST requests, can be <code>null</code>
+     */
+    public DCP( URL getUrl, URL postUrl ) {
+        getEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+        if ( getUrl != null ) {
+            getEndpoints.add( new Pair<URL, List<Domain>>( getUrl, new ArrayList<Domain>() ) );
+        }
+        postEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+        if ( postUrl != null ) {
+            postEndpoints.add( new Pair<URL, List<Domain>>( postUrl, new ArrayList<Domain>() ) );
+        }
+    }
+
+    public DCP( List<Pair<URL, List<Domain>>> getEndpoints, List<Pair<URL, List<Domain>>> postEndpoints ) {
+        if ( getEndpoints != null ) {
+            getEndpoints = getEndpoints;
+        } else {
+            getEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+        }
+        if ( postEndpoints != null ) {
+            postEndpoints = postEndpoints;
+        } else {
+            postEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+        }
+    }
 
     /**
      * @return getURLs, never <code>null</code>
      */
-    public List<Pair<URL, List<Domain>>> getGetURLs() {
-        if ( getURLs == null ) {
-            getURLs = new ArrayList<Pair<URL, List<Domain>>>();
-        }
-        return getURLs;
+    public List<Pair<URL, List<Domain>>> getGetEndpoints() {
+        return getEndpoints;
     }
 
     /**
      * @return getPostURLs, never <code>null</code>
      */
-    public List<Pair<URL, List<Domain>>> getPostURLs() {
-        if ( postURLs == null ) {
-            postURLs = new ArrayList<Pair<URL, List<Domain>>>();
-        }
-        return postURLs;
+    public List<Pair<URL, List<Domain>>> getPostEndpoints() {
+        return postEndpoints;
     }
 }

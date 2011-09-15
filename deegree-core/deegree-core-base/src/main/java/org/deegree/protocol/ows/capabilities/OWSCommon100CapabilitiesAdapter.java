@@ -37,13 +37,10 @@ package org.deegree.protocol.ows.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.domain.AllowedValues;
@@ -166,84 +163,6 @@ public class OWSCommon100CapabilitiesAdapter extends AbstractOWSCommonCapabiliti
         List<OMElement> metadataEls = getElements( opEl, xpath );
 
         return new Operation( name, dcps, params, constraints, metadataEls );
-    }
-
-    /**
-     * @param dcpEl
-     *            context {@link OMElement}
-     * @return an {@link DCP} instance, never <code>null</code>
-     */
-    private DCP parseDCP( OMElement dcpEl ) {
-        DCP dcp = new DCP();
-
-        XPath xpath = new XPath( "ows:HTTP/ows:Get", nsContext );
-        List<OMElement> getEls = getElements( dcpEl, xpath );
-        if ( getEls != null ) {
-            for ( OMElement getEl : getEls ) {
-                xpath = new XPath( "@xlink:href", nsContext );
-                URL href = getNodeAsURL( getEl, xpath, null );
-
-                xpath = new XPath( "ows:Constraint", nsContext );
-                List<OMElement> constaintEls = getElements( getEl, xpath );
-                List<Domain> domains = new ArrayList<Domain>();
-                for ( OMElement constaintEl : constaintEls ) {
-                    Domain constraint = parseDomain( constaintEl );
-                    domains.add( constraint );
-                }
-
-                dcp.getGetURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
-            }
-        }
-
-        xpath = new XPath( "ows:HTTP/ows:Post", nsContext );
-        List<OMElement> postEls = getElements( dcpEl, xpath );
-        if ( postEls != null ) {
-            for ( OMElement postEl : postEls ) {
-                xpath = new XPath( "@xlink:href", nsContext );
-                URL href = getNodeAsURL( postEl, xpath, null );
-
-                xpath = new XPath( "ows:Constraint", nsContext );
-                List<OMElement> constaintEls = getElements( postEl, xpath );
-                List<Domain> domains = new ArrayList<Domain>();
-                for ( OMElement constaintEl : constaintEls ) {
-                    Domain constraint = parseDomain( constaintEl );
-                    domains.add( constraint );
-                }
-
-                dcp.getPostURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
-            }
-        }
-
-        return dcp;
-    }
-
-    /**
-     * Returns the URL for the specified operation and HTTP method.
-     * 
-     * @param operation
-     *            name of the operation, must not be <code>null</code>
-     * @param post
-     *            if set to true, the URL for POST requests will be returned, otherwise the URL for GET requests will be
-     *            returned
-     * @return the operation URL (trailing question marks are stripped), can be <code>null</code> (if the
-     *         operation/method is not announced by the service)
-     * @throws MalformedURLException
-     *             if the announced URL is malformed
-     */
-    public URL getOperationURL( String operation, boolean post )
-                            throws MalformedURLException {
-
-        String xpathStr = "ows:OperationsMetadata/ows:Operation[@name='" + operation + "']/ows:DCP/ows:HTTP/ows:"
-                          + ( post ? "Post" : "Get" ) + "/@xlink:href";
-        URL url = null;
-        String href = getNodeAsString( getRootElement(), new XPath( xpathStr, nsContext ), null );
-        if ( href != null ) {
-            if ( href.endsWith( "?" ) ) {
-                href = href.substring( 0, href.length() - 1 );
-            }
-            url = new URL( href );
-        }
-        return url;
     }
 
     @Override

@@ -1,9 +1,10 @@
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-services/deegree-services-commons/src/main/java/org/deegree/services/controller/ows/capabilities/OWSOperation.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,23 +32,34 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.services.controller.ows.capabilities;
+ ----------------------------------------------------------------------------*/
+package org.deegree.services.ows.capabilities;
 
+import static org.deegree.commons.xml.stax.XMLStreamUtils.copy;
+
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.dom.DOMSource;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
+import org.deegree.protocol.ows.metadata.OperationsMetadata;
+import org.deegree.protocol.ows.metadata.domain.AllowedValues;
+import org.deegree.protocol.ows.metadata.domain.AnyValue;
+import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.domain.NoValues;
+import org.deegree.protocol.ows.metadata.domain.PossibleValues;
+import org.deegree.protocol.ows.metadata.domain.Range;
+import org.deegree.protocol.ows.metadata.domain.Value;
+import org.deegree.protocol.ows.metadata.domain.Values;
+import org.deegree.protocol.ows.metadata.domain.ValuesReference;
+import org.deegree.protocol.ows.metadata.operation.DCP;
+import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.CodeType;
@@ -58,7 +70,6 @@ import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 /**
  * Provides methods for exporting
@@ -217,145 +228,136 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      * 
      * @param writer
      *            writer to append the xml, must not be <code>null</code>
-     * @param operations
-     *            operations, e.g. "GetCapabilities", must not be <code>null</code>
+     * @param operationsMd
+     *            operations metadata, must not be <code>null</code>
      * @param extendedCapabilities
      *            extended capabilities, can be <code>null</code>
      * @throws XMLStreamException
      */
-    public static void exportOperationsMetadata100( XMLStreamWriter writer, List<OWSOperation> operations,
-                                                    Element extendedCapabilities )
+    public static void exportOperationsMetadata100( XMLStreamWriter writer, OperationsMetadata operationsMd )
                             throws XMLStreamException {
 
         writer.writeStartElement( OWS_NS, "OperationsMetadata" );
 
-        for ( OWSOperation operation : operations ) {
+        for ( Operation operation : operationsMd.getOperation() ) {
+
             // ows:Operation
             writer.writeStartElement( OWS_NS, "Operation" );
             writer.writeAttribute( "name", operation.getName() );
-            exportDCP( writer, operation.getDcp().getHTTPGet(), operation.getDcp().getHTTPPost(), OWS_NS );
-            for ( Pair<String, List<String>> param : operation.getParams() ) {
+
+            // <element ref="ows:DCP" maxOccurs="unbounded">
+            for ( DCP dcp : operation.getDCPs() ) {
+                exportDCP( writer, dcp, OWS_NS );
+            }
+
+            // <element name="Parameter" type="ows:DomainType" minOccurs="0" maxOccurs="unbounded">
+            for ( Domain param : operation.getParameters() ) {
                 writer.writeStartElement( OWS_NS, "Parameter" );
-                writer.writeAttribute( "name", param.first );
-                for ( String value : param.second ) {
-                    writer.writeStartElement( OWS_NS, "Value" );
-                    writer.writeCharacters( value );
-                    writer.writeEndElement();
-                }
+                exportDomainType100( writer, param );
                 writer.writeEndElement();
             }
-            for ( Pair<String, List<String>> constraint : operation.getConstraints() ) {
+
+            // <element name="Constraint" type="ows:DomainType" minOccurs="0" maxOccurs="unbounded">
+            for ( Domain constraint : operation.getConstraints() ) {
                 writer.writeStartElement( OWS_NS, "Constraint" );
-                writer.writeAttribute( "name", constraint.first );
-                for ( String value : constraint.second ) {
-                    writer.writeStartElement( OWS_NS, "Value" );
-                    writer.writeCharacters( value );
-                    writer.writeEndElement();
-                }
+                exportDomainType100( writer, constraint );
                 writer.writeEndElement();
             }
+
+            // <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
+            for ( OMElement md : operation.getMetadata() ) {
+                copy( writer, md.getXMLStreamReader() );
+            }
+
             writer.writeEndElement();
         }
 
-        if ( extendedCapabilities != null ) {
-            DOMSource domSource = new DOMSource( extendedCapabilities );
-            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
-            XMLStreamUtils.skipStartDocument( reader );
-            XMLAdapter.writeElement( writer, reader );
+        // <element name="Parameter" type="ows:DomainType" minOccurs="0" maxOccurs="unbounded">
+        for ( Domain param : operationsMd.getParameters() ) {
+            writer.writeStartElement( OWS_NS, "Parameter" );
+            exportDomainType100( writer, param );
+            writer.writeEndElement();
+        }
+
+        // <element name="Constraint" type="ows:DomainType" minOccurs="0" maxOccurs="unbounded">
+        for ( Domain constraint : operationsMd.getConstraints() ) {
+            writer.writeStartElement( OWS_NS, "Constraint" );
+            exportDomainType100( writer, constraint );
+            writer.writeEndElement();
+        }
+
+        // <element ref="ows:ExtendedCapabilities" minOccurs="0"/>
+        if ( operationsMd.getExtendedCapabilities() != null ) {
+            copy( writer, operationsMd.getExtendedCapabilities().getXMLStreamReader() );
         }
 
         writer.writeEndElement();
     }
 
     /**
-     * Exports a list of {@link OWSOperation}s as an OWS 1.1.0 <code>OperationsMetadata</code> element.
+     * Exports an {@link OperationsMetadata} instance as an OWS 1.1.0 <code>OperationsMetadata</code> element.
      * 
      * @param writer
      *            writer to append the xml, must not be <code>null</code>
-     * @param operations
-     *            operations, e.g. "GetCapabilities", must not be <code>null</code>
-     * @param globalParams
-     * @param extendedCapabilities
-     *            extended capabilities, can be <code>null</code>
+     * @param operationsMd
+     *            operations metadata, must not be <code>null</code>
      * @throws XMLStreamException
      */
-    public static void exportOperationsMetadata110( XMLStreamWriter writer, List<OWSOperation> operations,
-                                                    List<Pair<String, List<String>>> globalParams,
-                                                    List<Pair<String, String>> profileConstraints,
-                                                    Element extendedCapabilities )
+    public static void exportOperationsMetadata110( XMLStreamWriter writer, OperationsMetadata operationsMd )
                             throws XMLStreamException {
+
         writer.writeStartElement( OWS110_NS, "OperationsMetadata" );
 
-        for ( OWSOperation operation : operations ) {
+        for ( Operation operation : operationsMd.getOperation() ) {
+
             // ows:Operation
             writer.writeStartElement( OWS110_NS, "Operation" );
             writer.writeAttribute( "name", operation.getName() );
-            exportDCP( writer, operation.getDcp().getHTTPGet(), operation.getDcp().getHTTPPost(), OWS110_NS );
-            for ( Pair<String, List<String>> param : operation.getParams() ) {
+
+            // <element ref="ows:DCP" maxOccurs="unbounded">
+            for ( DCP dcp : operation.getDCPs() ) {
+                exportDCP( writer, dcp, OWS110_NS );
+            }
+
+            // <element name="Parameter" type="ows:DomainType" minOccurs="0" maxOccurs="unbounded">
+            for ( Domain param : operation.getParameters() ) {
                 writer.writeStartElement( OWS110_NS, "Parameter" );
-                writer.writeAttribute( "name", param.first );
-                if ( param.second.isEmpty() ) {
-                    writer.writeEmptyElement( OWS110_NS, "AnyValue" );
-                } else {
-                    writer.writeStartElement( OWS110_NS, "AllowedValues" );
-                    for ( String value : param.second ) {
-                        writer.writeStartElement( OWS110_NS, "Value" );
-                        writer.writeCharacters( value );
-                        writer.writeEndElement();
-                    }
-                    writer.writeEndElement();
-                }
+                exportDomainType110( writer, param );
                 writer.writeEndElement();
             }
-            for ( Pair<String, List<String>> constraint : operation.getConstraints() ) {
+
+            // <element name="Constraint" type="ows:DomainType" minOccurs="0" maxOccurs="unbounded">
+            for ( Domain constraint : operation.getConstraints() ) {
                 writer.writeStartElement( OWS110_NS, "Constraint" );
-                writer.writeAttribute( "name", constraint.first );
-                for ( String value : constraint.second ) {
-                    writer.writeStartElement( OWS110_NS, "Value" );
-                    writer.writeCharacters( value );
-                    writer.writeEndElement();
-                }
+                exportDomainType110( writer, constraint );
                 writer.writeEndElement();
             }
+
+            // <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
+            for ( OMElement md : operation.getMetadata() ) {
+                copy( writer, md.getXMLStreamReader() );
+            }
+
             writer.writeEndElement();
         }
 
-        if ( globalParams != null ) {
-            for ( Pair<String, List<String>> param : globalParams ) {
-                writer.writeStartElement( OWS110_NS, "Parameter" );
-                writer.writeAttribute( "name", param.first );
-                if ( param.second.isEmpty() ) {
-                    writer.writeEmptyElement( OWS110_NS, "AnyValue" );
-                } else {
-                    writer.writeStartElement( OWS110_NS, "AllowedValues" );
-                    for ( String value : param.second ) {
-                        writer.writeStartElement( OWS110_NS, "Value" );
-                        writer.writeCharacters( value );
-                        writer.writeEndElement();
-                    }
-                    writer.writeEndElement();
-                }
-                writer.writeEndElement();
-            }
+        // <element name="Parameter" type="ows:DomainType" minOccurs="0" maxOccurs="unbounded">
+        for ( Domain param : operationsMd.getParameters() ) {
+            writer.writeStartElement( OWS110_NS, "Parameter" );
+            exportDomainType110( writer, param );
+            writer.writeEndElement();
         }
 
-        if ( profileConstraints != null ) {
-            for ( Pair<String, String> constraint : profileConstraints ) {
-                writer.writeStartElement( OWS110_NS, "Constraint" );
-                writer.writeAttribute( "name", constraint.first );
-                writer.writeEmptyElement( OWS110_NS, "NoValues" );
-                writer.writeStartElement( OWS110_NS, "DefaultValue" );
-                writer.writeCharacters( constraint.second );
-                writer.writeEndElement();
-                writer.writeEndElement();
-            }
+        // <element name="Constraint" type="ows:DomainType" minOccurs="0" maxOccurs="unbounded">
+        for ( Domain constraint : operationsMd.getConstraints() ) {
+            writer.writeStartElement( OWS110_NS, "Constraint" );
+            exportDomainType110( writer, constraint );
+            writer.writeEndElement();
         }
 
-        if ( extendedCapabilities != null ) {
-            DOMSource domSource = new DOMSource( extendedCapabilities );
-            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
-            XMLStreamUtils.skipStartDocument( reader );
-            XMLAdapter.writeElement( writer, reader );
+        // <element ref="ows:ExtendedCapabilities" minOccurs="0"/>
+        if ( operationsMd.getExtendedCapabilities() != null ) {
+            copy( writer, operationsMd.getExtendedCapabilities().getXMLStreamReader() );
         }
 
         writer.writeEndElement();
@@ -589,26 +591,42 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            namespace for the generated elements
      * @throws XMLStreamException
      */
-    public static void exportDCP( XMLStreamWriter writer, String get, String post, String owsNS )
+    public static void exportDCP( XMLStreamWriter writer, DCP dcp, String owsNS )
                             throws XMLStreamException {
 
         writer.writeStartElement( owsNS, "DCP" );
         writer.writeStartElement( owsNS, "HTTP" );
 
         // ows:Get (type="ows:RequestMethodType")
-        if ( get != null ) {
-            writer.writeStartElement( owsNS, "Get" );
-            writer.writeAttribute( XLN_NS, "href", get );
-            writer.writeEndElement();
+        if ( dcp.getGetEndpoints() != null ) {
+            for ( Pair<URL, List<Domain>> getEndpoint : dcp.getGetEndpoints() ) {
+                writer.writeEmptyElement( owsNS, "Get" );
+                writer.writeAttribute( XLN_NS, "href", getEndpoint.first.toString() );
+                // TODO: constraints
+            }
         }
 
         // ows:Post (type="ows:RequestMethodType")
-        if ( post != null ) {
-            writer.writeStartElement( owsNS, "Post" );
-            writer.writeAttribute( XLN_NS, "href", post );
-            writer.writeEndElement();
+        if ( dcp.getPostEndpoints() != null ) {
+            for ( Pair<URL, List<Domain>> postEndpoint : dcp.getPostEndpoints() ) {
+                writer.writeEmptyElement( owsNS, "Post" );
+                writer.writeAttribute( XLN_NS, "href", postEndpoint.first.toString() );
+                // TODO: constraints
+            }
         }
 
+        writer.writeEndElement(); // HTTP
+        writer.writeEndElement(); // DCP
+    }
+
+    public static void exportDCP( XMLStreamWriter writer, String get, String post, String owsNS )
+                            throws XMLStreamException {
+        writer.writeStartElement( owsNS, "DCP" );
+        writer.writeStartElement( owsNS, "HTTP" );
+        writer.writeEmptyElement( owsNS, "Get" );
+        writer.writeAttribute( XLN_NS, "href", get );
+        writer.writeEmptyElement( owsNS, "Post" );
+        writer.writeAttribute( XLN_NS, "href", post );
         writer.writeEndElement(); // HTTP
         writer.writeEndElement(); // DCP
     }
@@ -683,6 +701,159 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         if ( strings != null && strings.size() > 0 ) {
             for ( String t : strings ) {
                 writeElement( writer, owsNS, elementName, t );
+            }
+        }
+    }
+
+    public static void exportDomainType100( XMLStreamWriter writer, Domain domain )
+                            throws XMLStreamException {
+
+        if ( domain.getName() != null ) {
+            writer.writeAttribute( "name", domain.getName() );
+        }
+
+        PossibleValues values = domain.getPossibleValues();
+        if ( values instanceof AllowedValues ) {
+            for ( Values value : ( (AllowedValues) values ).getValues() ) {
+                if ( value instanceof Value ) {
+                    writer.writeStartElement( OWS_NS, "Value" );
+                    writer.writeCharacters( ( (Value) value ).getValue() );
+                    writer.writeEndElement();
+                } else if ( value instanceof Range ) {
+                    throw new IllegalArgumentException( "Ranges are not allowed in OWS 1.0.0 domains." );
+                }
+            }
+        } else if ( values instanceof AnyValue ) {
+            throw new IllegalArgumentException( "AnyValue is not allowed in OWS 1.0.0 domains." );
+        } else if ( values instanceof NoValues ) {
+            throw new IllegalArgumentException( "NoValues is not allowed in OWS 1.0.0 domains." );
+        } else if ( values instanceof ValuesReference ) {
+            throw new IllegalArgumentException( "ValuesReference is not allowed in OWS 1.0.0 domains." );
+        }
+
+        if ( domain.getDefaultValue() != null ) {
+            writer.writeStartElement( OWS110_NS, "DefaultValue" );
+            writer.writeCharacters( domain.getDefaultValue() );
+            writer.writeEndElement();
+        }
+
+        if ( domain.getMetadata() != null ) {
+            for ( OMElement metadataEl : domain.getMetadata() ) {
+                copy( writer, metadataEl.getXMLStreamReader() );
+            }
+        }
+    }
+
+    public static void exportDomainType110( XMLStreamWriter writer, Domain domain )
+                            throws XMLStreamException {
+
+        if ( domain.getName() != null ) {
+            writer.writeAttribute( "name", domain.getName() );
+        }
+
+        PossibleValues values = domain.getPossibleValues();
+        if ( values instanceof AllowedValues ) {
+            writer.writeStartElement( OWS110_NS, "AllowedValues" );
+            for ( Values value : ( (AllowedValues) values ).getValues() ) {
+                if ( value instanceof Value ) {
+                    writer.writeStartElement( OWS110_NS, "Value" );
+                    writer.writeCharacters( ( (Value) value ).getValue() );
+                    writer.writeEndElement();
+                } else if ( value instanceof Range ) {
+                    Range range = (Range) value;
+                    writer.writeStartElement( OWS110_NS, "Range" );
+                    if ( range.getClosure() != null ) {
+                        switch ( range.getClosure() ) {
+                        case CLOSED:
+                            writer.writeAttribute( "rangeClosure", "closed" );
+                            break;
+                        case CLOSED_OPEN:
+                            writer.writeAttribute( "rangeClosure", "closed-open" );
+                            break;
+                        case OPEN:
+                            writer.writeAttribute( "rangeClosure", "open" );
+                            break;
+                        case OPEN_CLOSED:
+                            writer.writeAttribute( "rangeClosure", "open-closed" );
+                            break;
+                        }
+                    }
+                    if ( range.getMin() != null ) {
+                        writer.writeStartElement( OWS110_NS, "MinimumValue" );
+                        writer.writeCharacters( range.getMin() );
+                        writer.writeEndElement();
+                    }
+                    if ( range.getMax() != null ) {
+                        writer.writeStartElement( OWS110_NS, "MaximumValue" );
+                        writer.writeCharacters( range.getMax() );
+                        writer.writeEndElement();
+                    }
+                    if ( range.getSpacing() != null ) {
+                        writer.writeStartElement( OWS110_NS, "Spacing" );
+                        writer.writeCharacters( range.getSpacing() );
+                        writer.writeEndElement();
+                    }
+                    writer.writeEndElement();
+                }
+            }
+            writer.writeEndElement();
+        } else if ( values instanceof AnyValue ) {
+            writer.writeEmptyElement( OWS110_NS, "AnyValue" );
+        } else if ( values instanceof NoValues ) {
+            writer.writeEmptyElement( OWS110_NS, "NoValues" );
+        } else if ( values instanceof ValuesReference ) {
+            ValuesReference valRef = (ValuesReference) values;
+            writer.writeStartElement( OWS110_NS, "ValuesReference" );
+            if ( valRef.getRef() != null ) {
+                writer.writeAttribute( OWS110_NS, "reference", valRef.getRef() );
+            }
+            writer.writeCharacters( valRef.getName() );
+            writer.writeEndElement();
+        }
+
+        if ( domain.getDefaultValue() != null ) {
+            writer.writeStartElement( OWS110_NS, "DefaultValue" );
+            writer.writeCharacters( domain.getDefaultValue() );
+            writer.writeEndElement();
+        }
+
+        if ( domain.getMeaning() != null ) {
+            writer.writeStartElement( OWS110_NS, "Meaning" );
+            if ( domain.getMeaning().getRef() != null ) {
+                writer.writeAttribute( OWS110_NS, "reference", domain.getMeaning().getRef() );
+            }
+            writer.writeCharacters( domain.getMeaning().getString() );
+            writer.writeEndElement();
+        }
+
+        if ( domain.getDataType() != null ) {
+            writer.writeStartElement( OWS110_NS, "DataType" );
+            if ( domain.getDataType().getRef() != null ) {
+                writer.writeAttribute( OWS110_NS, "reference", domain.getDataType().getRef() );
+            }
+            writer.writeCharacters( domain.getDataType().getString() );
+            writer.writeEndElement();
+        }
+
+        if ( domain.getValuesUnitUom() != null ) {
+            writer.writeStartElement( OWS110_NS, "UOM" );
+            if ( domain.getValuesUnitUom().getRef() != null ) {
+                writer.writeAttribute( OWS110_NS, "reference", domain.getValuesUnitUom().getRef() );
+            }
+            writer.writeCharacters( domain.getValuesUnitUom().getString() );
+            writer.writeEndElement();
+        } else if ( domain.getValuesUnitRefSys() != null ) {
+            writer.writeStartElement( OWS110_NS, "ReferenceSystem" );
+            if ( domain.getValuesUnitRefSys().getRef() != null ) {
+                writer.writeAttribute( OWS110_NS, "reference", domain.getValuesUnitRefSys().getRef() );
+            }
+            writer.writeCharacters( domain.getValuesUnitRefSys().getString() );
+            writer.writeEndElement();
+        }
+
+        if ( domain.getMetadata() != null ) {
+            for ( OMElement metadataEl : domain.getMetadata() ) {
+                copy( writer, metadataEl.getXMLStreamReader() );
             }
         }
     }

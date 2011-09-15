@@ -85,7 +85,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
 
 /**
- * Provides access to the {@link AppSchema} defined in a GML schema document.
+ * Provides access to the {@link AppSchema} defined in one or more GML schema documents.
  * <p>
  * Note that the generated {@link AppSchema} only contains user-defined feature types, i.e. all feature base types from
  * the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This follows

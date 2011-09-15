@@ -70,10 +70,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
 
+import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
@@ -135,9 +139,6 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
-import org.deegree.services.controller.ows.OWSException100XMLAdapter;
-import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
@@ -151,6 +152,9 @@ import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.ows.OGCExceptionXMLAdapter;
+import org.deegree.services.ows.OWSException100XMLAdapter;
+import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,7 +218,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean checkAreaOfUse;
 
-    private final Map<Version, Element> wfsVersionToExtendedCaps = new HashMap<Version, Element>();
+    private final Map<Version, OMElement> wfsVersionToExtendedCaps = new HashMap<Version, OMElement>();
 
     public WebFeatureService( URL configURL, ImplementationMetadata serviceInfo ) {
         super( configURL, serviceInfo );
@@ -246,13 +250,21 @@ public class WebFeatureService extends AbstractOWS {
         if ( extendedCapConfigs != null ) {
             for ( ExtendedCapabilities extendedCapConfig : extendedCapConfigs ) {
                 Element extendedCaps = extendedCapConfig.getAny();
+                DOMSource domSource = new DOMSource( extendedCaps );
+                XMLStreamReader xmlStream;
+                try {
+                    xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
+                } catch ( Throwable t ) {
+                    throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(), t );
+                }
+                OMElement omEl = new XMLAdapter( xmlStream ).getRootElement();
                 for ( String wfsVersion : extendedCapConfig.getWfsVersions() ) {
                     Version version = Version.parseVersion( wfsVersion );
                     if ( wfsVersionToExtendedCaps.containsKey( version ) ) {
                         String msg = "Multiple ExtendedCapabilities sections for WFS version: " + version + ".";
                         throw new ResourceInitException( msg );
                     }
-                    wfsVersionToExtendedCaps.put( version, extendedCaps );
+                    wfsVersionToExtendedCaps.put( version, omEl );
                 }
             }
         }
@@ -818,7 +830,7 @@ public class WebFeatureService extends AbstractOWS {
         }
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
-        Element extendedCapabilities = wfsVersionToExtendedCaps.get( negotiatedVersion );
+        OMElement extendedCapabilities = wfsVersionToExtendedCaps.get( negotiatedVersion );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      serviceId, serviceProvider, sortedFts,
                                                                      metadataUrlTemplate, ftNameToFtMetadata,

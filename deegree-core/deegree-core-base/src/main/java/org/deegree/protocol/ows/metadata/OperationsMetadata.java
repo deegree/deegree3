@@ -78,12 +78,21 @@ public class OperationsMetadata {
     private OMElement extendedCapabilities;
 
     public OperationsMetadata( List<Operation> operations, List<Domain> parameters, List<Domain> constraints,
-                               Object extendedCapabilities ) {
+                               OMElement extendedCapabilities ) {
         for ( Operation operation : operations ) {
             operationNameToMD.put( operation.getName(), operation );
         }
-        this.parameters = parameters;
-        this.constraints = constraints;
+        if ( parameters != null ) {
+            this.parameters = parameters;
+        } else {
+            this.parameters = new ArrayList<Domain>();
+        }
+        if ( constraints != null ) {
+            this.constraints = constraints;
+        } else {
+            this.constraints = new ArrayList<Domain>();
+        }
+        this.extendedCapabilities = extendedCapabilities;
     }
 
     /**
