@@ -37,6 +37,7 @@ package org.deegree.sqldialect.filter;
 
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -62,6 +64,7 @@ import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLessThan;
 import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
+import org.deegree.filter.comparison.PropertyIsNil;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Function;
@@ -443,6 +446,23 @@ public abstract class AbstractWhereBuilder {
             SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsNull.getPropertyName() ) );
             builder.add( " IS NULL" );
+            sqlOper = builder.toOperation();
+            break;
+        }
+        case PROPERTY_IS_NIL: {
+            PropertyIsNil propIsNil = (PropertyIsNil) op;
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            Expression expr = propIsNil.getPropertyName();
+            if ( !( expr instanceof ValueReference ) ) {
+                String msg = "Mapping of PropertyIsNil is only supported for ValueReference expressions.";
+                throw new UnmappableException( msg );
+            }
+            ValueReference valRef = (ValueReference) expr;
+            NamespaceBindings nsContext = valRef.getNsContext();
+            nsContext.addNamespace( "xsi", XSINS );
+            valRef = new ValueReference( valRef.getAsText() + "/@xsi:nil", nsContext );
+            // TODO what if the xsi:nil attribute is not explicitly mapped (fallback to NULL mapping?)
+            builder.add( toProtoSQL( valRef ) );
             sqlOper = builder.toOperation();
             break;
         }
