@@ -45,7 +45,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -215,7 +214,8 @@ public class OtherContentProvider implements JrxmlContentProvider {
                             value = df.parse( litValue );
                         } catch ( ParseException e ) {
                             throw new ProcessletException( "Invalid datatype for parameter '" + litIn.getIdentifier()
-                                                           + "': " + litValue + " is not a date value! Pattern: " + datePattern );
+                                                           + "': " + litValue + " is not a date value! Pattern: "
+                                                           + datePattern );
                         }
                     } else if ( "java.sql.Timestamp".equals( parameterType ) ) {
                         try {
@@ -278,5 +278,5 @@ public class OtherContentProvider implements JrxmlContentProvider {
         // nothing to prepare here
         return jrxml;
     }
-    
+
 }
