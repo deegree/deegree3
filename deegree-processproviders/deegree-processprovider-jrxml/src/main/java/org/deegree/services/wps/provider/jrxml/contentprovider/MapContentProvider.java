@@ -45,7 +45,9 @@ import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -63,6 +65,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -306,8 +309,8 @@ public class MapContentProvider implements JrxmlContentProvider {
                             // SCALEBAR
                             String scalebarKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALEBAR_SUFFIX );
                             if ( parameters.containsKey( scalebarKey ) ) {
-                                prepareScaleBar( scalebarKey, jrxmlAdapter, datasources, parameters.get( scalebarKey ),
-                                                 scale );
+                                prepareScaleBar( params, scalebarKey, jrxmlAdapter, datasources,
+                                                 parameters.get( scalebarKey ), bbox, width );
                             }
                         }
 
@@ -418,19 +421,73 @@ public class MapContentProvider implements JrxmlContentProvider {
         return bbox;
     }
 
-    private void prepareScaleBar( String scalebarKey, XMLAdapter jrxmlAdapter, List<OrderedDatasource<?>> datasources,
-                                  String string, double scale ) {
+    private void prepareScaleBar( Map<String, Object> params, String scalebarKey, XMLAdapter jrxmlAdapter,
+                                  List<OrderedDatasource<?>> datasources, String type, Envelope bbox, double mapWidth )
+                            throws ProcessletException {
 
         OMElement sbRep = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
                                                    new XPath( ".//jasper:image[jasper:imageExpression/text()='$P{"
                                                               + scalebarKey + "}']/jasper:reportElement", nsContext ) );
 
         if ( sbRep != null ) {
-            // int w = jrxmlAdapter.getRequiredNodeAsInteger( sbRep, new XPath( "@width", nsContext ) );
-            // int h = jrxmlAdapter.getRequiredNodeAsInteger( sbRep, new XPath( "@height", nsContext ) );
-            // BufferedImage img = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB );
-            // Graphics2D g = img.createGraphics();
-            // g.dispose();
+            // TODO: rework this!
+            LOG.debug( "Found scalebar with key '" + scalebarKey + "'." );
+            int w = jrxmlAdapter.getRequiredNodeAsInteger( sbRep, new XPath( "@width", nsContext ) );
+            int h = jrxmlAdapter.getRequiredNodeAsInteger( sbRep, new XPath( "@height", nsContext ) );
+            BufferedImage img = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB );
+            Graphics2D g = img.createGraphics();
+
+            String fontName = null;
+            int fontSize = 8;
+            int desiredWidth = w - 30;
+            // calculate scale bar max scale and size
+            int length = 0;
+            double lx = 0;
+            double scale = 0;
+            for ( int i = 0; i < 100; i++ ) {
+                double k = 0;
+                double dec = 30 * Math.pow( 10, i );
+                for ( int j = 0; j < 9; j++ ) {
+                    k += dec;
+                    double tx = -k * ( mapWidth / bbox.getSpan0() );
+                    if ( Math.abs( tx - lx ) < desiredWidth ) {
+                        length = (int) Math.round( Math.abs( tx - lx ) );
+                        scale = k;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            // draw scale bar base line
+            g.setStroke( new BasicStroke( ( desiredWidth + 30 ) / 250 ) );
+            g.setColor( Color.black );
+            g.drawLine( 10, 30, length + 10, 30 );
+            double dx = length / 3d;
+            double vdx = scale / 3;
+            double div = 1;
+            String uom = "m";
+            if ( scale > 1000 ) {
+                div = 1000;
+                uom = "km";
+            }
+            // draw scale bar scales
+            if ( fontName == null ) {
+                fontName = "SANS SERIF";
+            }
+            g.setFont( new Font( fontName, Font.PLAIN, fontSize ) );
+            DecimalFormat df = new DecimalFormat( "##.# " );
+            DecimalFormat dfWithUom = new DecimalFormat( "##.# " + uom );
+            for ( int i = 0; i < 4; i++ ) {
+                String label = i < 3 ? df.format( ( vdx * i ) / div ) : dfWithUom.format( ( vdx * i ) / div );
+                g.drawString( label, (int) Math.round( 10 + i * dx ) - 8, 10 );
+                g.drawLine( (int) Math.round( 10 + i * dx ), 30, (int) Math.round( 10 + i * dx ), 20 );
+            }
+            for ( int i = 0; i < 7; i++ ) {
+                g.drawLine( (int) Math.round( 10 + i * dx / 2d ), 30, (int) Math.round( 10 + i * dx / 2d ), 25 );
+            }
+            g.dispose();
+            params.put( scalebarKey, convertImageToReportFormat( type, img ) );
+            LOG.debug( "added scalebar" );
         }
     }
 
@@ -844,7 +901,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                 String msg = "could not reslove wms url " + datasource.getUrl() + "!";
                 LOG.error( msg, e );
                 throw new ProcessletException( msg );
-            } catch ( IOException e ) {
+            } catch ( Exception e ) {
                 String msg = "could not get map!";
                 LOG.error( msg, e );
                 throw new ProcessletException( msg );
@@ -1040,7 +1097,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                             throws ProcessletException {
         FileOutputStream fos = null;
         try {
-            File f = File.createTempFile( "createdMap", ".png" );
+            File f = File.createTempFile( "image", ".png" );
             fos = new FileOutputStream( f );
 
             PNGEncodeParam encodeParam = PNGEncodeParam.getDefaultEncodeParam( bi );
@@ -1052,10 +1109,10 @@ public class MapContentProvider implements JrxmlContentProvider {
             }
             com.sun.media.jai.codec.ImageEncoder encoder = ImageCodec.createImageEncoder( "PNG", fos, encodeParam );
             encoder.encode( bi.getData(), bi.getColorModel() );
-            LOG.debug( "Wrote map to file: {}", f.toString() );
+            LOG.debug( "Wrote image to file: {}", f.toString() );
             return f;
         } catch ( IOException e ) {
-            String msg = "Could not write map to file: " + e.getMessage();
+            String msg = "Could not write image to file: " + e.getMessage();
             LOG.debug( msg, e );
             throw new ProcessletException( msg );
         } finally {
