@@ -40,6 +40,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.XPathEvaluator;
 
 /**
@@ -75,7 +76,7 @@ public class PropertyIsNotEqualTo extends BinaryComparisonOperator {
                     return true;
                 }
                 if ( value1 != null && value2 != null ) {
-                    Pair<PrimitiveValue, PrimitiveValue> comparablePair = getPrimitives( value1, value2 );
+                    Pair<PrimitiveValue, PrimitiveValue> comparablePair = getPrimitiveValues( value1, value2 );
                     if ( !matchCase ) {
                         if ( !comparablePair.first.toString().equalsIgnoreCase( comparablePair.second.toString() ) ) {
                             return true;
@@ -86,6 +87,20 @@ public class PropertyIsNotEqualTo extends BinaryComparisonOperator {
                         }
                     }
                 }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean compare( PrimitiveValue param1, PrimitiveValue param2 ) {
+        if ( !matchCase ) {
+            if ( !param1.toString().equalsIgnoreCase( param2.toString() ) ) {
+                return true;
+            }
+        } else {
+            if ( !param1.equals( param2 ) ) {
+                return true;
             }
         }
         return false;

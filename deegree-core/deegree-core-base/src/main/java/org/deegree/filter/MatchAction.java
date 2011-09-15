@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.comparison;
+package org.deegree.filter;
 
 /**
- * Specifies how a comparison predicate shall be evaluated for a collection of values.
+ * Specifies how a predicate shall be evaluated for a collection of values.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

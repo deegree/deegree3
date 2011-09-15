@@ -40,6 +40,7 @@ import static org.deegree.filter.comparison.ComparisonOperator.SubType.PROPERTY_
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.XPathEvaluator;
 
 /**

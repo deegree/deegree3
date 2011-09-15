@@ -35,12 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchAction;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * Abstract base class for all binary comparison operators.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
@@ -69,4 +75,86 @@ public abstract class BinaryComparisonOperator extends ComparisonOperator {
     public Expression[] getParams() {
         return new Expression[] { param1, param2 };
     }
+
+    @Override
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+                            throws FilterEvaluationException {
+
+        TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
+        TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
+
+        MatchAction ma = matchAction != null ? matchAction : MatchAction.ANY;
+        switch ( ma ) {
+        case ANY: {
+            // evaluate to true if at least one pair of values matches the condition
+            for ( TypedObjectNode value1 : param1Values ) {
+                if ( value1 != null ) {
+                    for ( TypedObjectNode value2 : param2Values ) {
+                        if ( value2 != null ) {
+                            Pair<PrimitiveValue, PrimitiveValue> primitivePair = getPrimitiveValues( value1, value2 );
+                            if ( compare( primitivePair.first, primitivePair.second ) ) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+        }
+        case ALL: {
+            // evaluate to true if every value from A has a counterpart in B
+            if ( param1Values.length == 0 ) {
+                return false;
+            }
+            for ( TypedObjectNode value1 : param1Values ) {
+                if ( value1 != null ) {
+                    boolean foundMatch = false;
+                    for ( TypedObjectNode value2 : param2Values ) {
+                        if ( value2 != null ) {
+                            Pair<PrimitiveValue, PrimitiveValue> primitivePair = getPrimitiveValues( value1, value2 );
+                            if ( compare( primitivePair.first, primitivePair.second ) ) {
+                                foundMatch = true;
+                            }
+                        }
+                        if ( foundMatch ) {
+                            break;
+                        }
+                    }
+                    if ( !foundMatch ) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        case ONE: {
+            // evaluate to true if exactly one value from A has exactly one counterpart in B
+            boolean foundMatch = false;
+            for ( TypedObjectNode value1 : param1Values ) {
+                if ( value1 != null ) {
+                    for ( TypedObjectNode value2 : param2Values ) {
+                        if ( value2 != null ) {
+                            Pair<PrimitiveValue, PrimitiveValue> primitivePair = getPrimitiveValues( value1, value2 );
+                            if ( compare( primitivePair.first, primitivePair.second ) ) {
+                                if ( foundMatch ) {
+                                    // found a second match
+                                    return false;
+                                }
+                                foundMatch = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if ( !foundMatch ) {
+                return false;
+            }
+            return true;
+        }
+        }
+
+        return false;
+    }
+
+    protected abstract boolean compare( PrimitiveValue param1, PrimitiveValue param2 );
 }

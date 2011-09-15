@@ -41,6 +41,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.Operator;
 import org.deegree.filter.i18n.Messages;
 
@@ -107,7 +108,7 @@ public abstract class ComparisonOperator implements Operator {
      * @param value2
      * @throws FilterEvaluationException
      */
-    protected Pair<PrimitiveValue, PrimitiveValue> getPrimitives( TypedObjectNode value1, TypedObjectNode value2 )
+    protected Pair<PrimitiveValue, PrimitiveValue> getPrimitiveValues( TypedObjectNode value1, TypedObjectNode value2 )
                             throws FilterEvaluationException {
 
         if ( value1 instanceof Property ) {
