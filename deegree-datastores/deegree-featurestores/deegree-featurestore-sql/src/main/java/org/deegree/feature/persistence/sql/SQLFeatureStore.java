@@ -598,10 +598,13 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     @Override
-    public int queryHits( final Query[] queries )
+    public int[] queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO
-        return query( queries ).toCollection().size();
+        int[] hits = new int[queries.length];
+        for ( int i = 0; i < queries.length; i++ ) {
+            hits[i] = queryHits( queries[i] );
+        }
+        return hits;
     }
 
     public Map<String, String> getNamespaceContext() {
