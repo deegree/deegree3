@@ -101,7 +101,7 @@
 				</textElement>
 				<text><![CDATA[Datum:]]></text>
 			</staticText>
-			<textField pattern="" isBlankWhenNull="false">
+			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
 				<reportElement key="textField-3" mode="Transparent" x="692" y="24" width="75" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
