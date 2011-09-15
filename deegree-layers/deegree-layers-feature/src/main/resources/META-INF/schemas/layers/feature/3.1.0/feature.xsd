@@ -12,8 +12,8 @@
     </appinfo>
   </annotation>
 
-  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="http://schemas.deegree.org/commons/description/3.1.0/description.xsd" />
-  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
+  <import namespace="http://www.deegree.org/metadata/description" />
+  <import namespace="http://www.deegree.org/metadata/spatial" />
 
   <element name="FeatureLayer">
     <complexType>
@@ -40,14 +40,24 @@
   <complexType name="StyleRefType">
     <sequence>
       <element name="StyleStoreId" type="string" />
+      <!-- either use all styles with proper layer name from style store, or select them manually below: -->
       <element name="Style" minOccurs="0" maxOccurs="unbounded">
         <complexType>
           <sequence>
-            <element name="StyleName" type="string" minOccurs="0" />
-            <element name="LayerNameRef" type="string" minOccurs="0" />
-            <element name="StyleNameRef" type="string" minOccurs="0" />
+            <element name="StyleName" type="string" />
+            <element name="LayerNameRef" type="string" />
+            <element name="StyleNameRef" type="string" />
+            <!-- either use same style for legend, or one of the following -->
             <choice minOccurs="0">
-              <element name="LegendStyleStoreId" type="string" />
+              <!-- generate legend from different style -->
+              <element name="LegendStyle">
+                <complexType>
+                  <sequence>
+                    <element name="LayerNameRef" type="string" />
+                    <element name="StyleNameRef" type="string" />
+                  </sequence>
+                </complexType>
+              </element>
               <element name="LegendGraphic">
                 <complexType>
                   <simpleContent>
@@ -64,6 +74,7 @@
     </sequence>
   </complexType>
 
+  <!-- denominators are 0.28 mm standard SLD/SE scale denominators -->
   <complexType name="ScaleDenominatorsType">
     <attribute name="min" type="double" use="required" />
     <attribute name="max" type="double" use="required" />

@@ -29,6 +29,22 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
+        <configuration>
+          <catalog>src/main/catalog/catalog.cat</catalog>
+          <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-core-commons</artifactId>
+            <version>3.1-pre13-SNAPSHOT</version>
+          </dependency>
+          <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-core-geometry</artifactId>
+            <version>3.1-pre13-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

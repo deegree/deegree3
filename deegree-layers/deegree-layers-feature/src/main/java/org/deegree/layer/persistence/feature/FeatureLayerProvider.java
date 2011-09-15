@@ -42,6 +42,7 @@ package org.deegree.layer.persistence.feature;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
 import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
 
@@ -113,10 +114,19 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
             LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
 
+            if ( smd.getEnvelope() == null ) {
+                if ( featureType != null ) {
+                    smd.setEnvelope( fs.getEnvelope( featureType ) );
+                } else {
+                    smd.setEnvelope( getCombinedEnvelope( fs ) );
+                }
+            }
+
             ScaleDenominatorsType denoms = lay.getScaleDenominators();
             if ( denoms != null ) {
                 md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
             }
+
             Layer l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter, null, null );
             return new SingleLayerStore( l );
         } catch ( Throwable e ) {
