@@ -135,7 +135,7 @@ public interface FeatureType {
     /**
      * Returns the {@link AppSchema} that this feature type belongs to.
      * 
-     * @return the corresponding <code>ApplicationSchema</code> or null if this feature type has none
+     * @return the corresponding <code>ApplicationSchema</code> or <code>null</code> if this feature type has none
      */
     public AppSchema getSchema();
 }

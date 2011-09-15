@@ -84,7 +84,7 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
@@ -166,16 +166,16 @@ public class CityGMLImporter implements ModelImporter {
         BUILDING_QNAME = new QName( NS, "Building" );
         String schemaLoc = determineSchemaLocation( schemaLocation );
 
-        AppSchemaXSDDecoder adapter = null;
+        GMLAppSchemaReader adapter = null;
         try {
             LOG.info( "Using schemalocation: " + schemaLoc );
-            adapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaLoc );
+            adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaLoc );
         } catch ( Exception e ) {
             LOG.error( e.getMessage(), e );
             throw new IllegalArgumentException( "Could not create an ApplicationSchemaXSDAdapter from schemaLocation: "
                                                 + schemaLoc + " no way to import buildings.", e );
         }
-        schema = adapter.extractFeatureTypeSchema();
+        schema = adapter.extractAppSchema();
         if ( schema == null ) {
             throw new NullPointerException( "Application schema could not be extracted from schema location: "
                                             + schemaLoc );

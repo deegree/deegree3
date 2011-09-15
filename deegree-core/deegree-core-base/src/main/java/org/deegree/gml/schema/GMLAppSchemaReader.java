@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature.schema;
+package org.deegree.gml.schema;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -80,13 +80,12 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
 
 /**
- * Provides access to the {@link FeatureType} hierarchy defined in a GML schema document.
+ * Provides access to the {@link AppSchema} defined in a GML schema document.
  * <p>
  * Note that the generated {@link AppSchema} only contains user-defined feature types, i.e. all feature base types from
  * the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This follows
@@ -101,9 +100,9 @@ import org.w3c.dom.ls.LSInput;
  * 
  * @version $Revision$, $Date$
  */
-public class AppSchemaXSDDecoder {
+public class GMLAppSchemaReader {
 
-    private Logger LOG = LoggerFactory.getLogger( AppSchemaXSDDecoder.class );
+    private Logger LOG = LoggerFactory.getLogger( GMLAppSchemaReader.class );
 
     private GMLSchemaInfoSet analyzer;
 
@@ -139,7 +138,7 @@ public class AppSchemaXSDDecoder {
     private final String gmlNs;
 
     /**
-     * Creates a new {@link AppSchemaXSDDecoder} from the given schema URL(s).
+     * Creates a new {@link GMLAppSchemaReader} from the given schema URL(s).
      * 
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
@@ -152,7 +151,7 @@ public class AppSchemaXSDDecoder {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public AppSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
+    public GMLAppSchemaReader( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -196,7 +195,7 @@ public class AppSchemaXSDDecoder {
     }
 
     /**
-     * Creates a new {@link AppSchemaXSDDecoder} from the given <code>LSInput</code>s.
+     * Creates a new {@link GMLAppSchemaReader} from the given <code>LSInput</code>s.
      * 
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
@@ -209,7 +208,7 @@ public class AppSchemaXSDDecoder {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public AppSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, LSInput... inputs )
+    public GMLAppSchemaReader( GMLVersion gmlVersion, Map<String, String> namespaceHints, LSInput... inputs )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -253,7 +252,7 @@ public class AppSchemaXSDDecoder {
     }
 
     /**
-     * Creates a new {@link AppSchemaXSDDecoder} from the given schema file (which may be a directory).
+     * Creates a new {@link GMLAppSchemaReader} from the given schema file (which may be a directory).
      * 
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
@@ -268,7 +267,7 @@ public class AppSchemaXSDDecoder {
      * @throws MalformedURLException
      * @throws UnsupportedEncodingException
      */
-    public AppSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, File schemaFile )
+    public GMLAppSchemaReader( GMLVersion gmlVersion, Map<String, String> namespaceHints, File schemaFile )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, MalformedURLException, UnsupportedEncodingException {
         this( gmlVersion, namespaceHints, getSchemaURLs( schemaFile ) );
@@ -300,7 +299,7 @@ public class AppSchemaXSDDecoder {
         return schemaUrls.toArray( new String[schemaUrls.size()] );
     }
 
-    public AppSchema extractFeatureTypeSchema() {
+    public AppSchema extractAppSchema() {
 
         for ( QName ftName : ftNameToFtElement.keySet() ) {
             FeatureType ft = buildFeatureType( ftNameToFtElement.get( ftName ) );

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature.schema;
+package org.deegree.gml.schema;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -49,6 +49,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -60,18 +61,18 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ApplicationSchemaXSDDecoderTest {
+public class GMLAppSchemaReaderTest {
 
-    private static final Logger LOG = getLogger( ApplicationSchemaXSDDecoderTest.class );
+    private static final Logger LOG = getLogger( GMLAppSchemaReaderTest.class );
 
     @Test
     public void testParsingPhilosopher()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        String schemaURL = this.getClass().getResource( "Philosopher.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
         // TODO do more thorough testing
     }
@@ -81,10 +82,10 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL, schemaURL2 );
-        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL, schemaURL2 );
+        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         LOG.debug( "" + fts[0].getName() );
         Assert.assertEquals( 5, fts.length );
         // TODO do more thorough testing
@@ -96,8 +97,8 @@ public class ApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
-        AppSchema schema = adapter.extractFeatureTypeSchema();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 54, fts.length );
 
@@ -116,8 +117,8 @@ public class ApplicationSchemaXSDDecoderTest {
             return;
         }
 
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
-        AppSchema schema = adapter.extractFeatureTypeSchema();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
         schema.getFeatureTypes();
     }
 
@@ -126,9 +127,9 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf0.xsd" ).toString();
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        String schemaURL = this.getClass().getResource( "cite/cite-gmlsf0.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         Assert.assertEquals( 3, fts.length );
     }
 
@@ -137,9 +138,9 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf1.xsd" ).toString();
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        String schemaURL = this.getClass().getResource( "cite/cite-gmlsf1.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
         for ( FeatureType ft : fts ) {
             LOG.debug( "\nFt: " + ft.getName() );
@@ -154,9 +155,9 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf2.xsd" ).toString();
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        String schemaURL = this.getClass().getResource( "cite/cite-gmlsf2.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         for ( int i = 0; i < fts.length; i++ ) {
             LOG.debug( "" + fts[i] );
         }
@@ -169,9 +170,9 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "../testdata/schema/cite/all.xsd" ).toString();
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        String schemaURL = this.getClass().getResource( "cite/all.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         Assert.assertEquals( 19, fts.length );
     }
 
@@ -185,8 +186,8 @@ public class ApplicationSchemaXSDDecoderTest {
             return;
         }
 
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        AppSchema schema = adapter.extractFeatureTypeSchema();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
         Assert.assertEquals( 132, schema.getFeatureTypes().length );
     }
 
@@ -200,12 +201,12 @@ public class ApplicationSchemaXSDDecoderTest {
             return;
         }
 
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_30, null, schemaURL );
-        AppSchema schema = adapter.extractFeatureTypeSchema();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_30, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
         Assert.assertEquals( 237, schema.getFeatureTypes().length );
 
         QName ftName = new QName( "http://www.adv-online.de/namespaces/adv/gid/5.1.1", "AX_BesondereFlurstuecksgrenze" );
-        FeatureType ft = adapter.extractFeatureTypeSchema().getFeatureType( ftName );
+        FeatureType ft = adapter.extractAppSchema().getFeatureType( ftName );
         QName propName = new QName( "http://www.adv-online.de/namespaces/adv/gid/5.1.1", "position" );
         GeometryPropertyType pt = (GeometryPropertyType) ft.getPropertyDeclaration( propName );
         assertEquals( 2, pt.getAllowedGeometryTypes().size() );
@@ -223,8 +224,8 @@ public class ApplicationSchemaXSDDecoderTest {
             return;
         }
 
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
-        AppSchema schema = adapter.extractFeatureTypeSchema();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_32, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 75, fts.length );
         for ( String ns : schema.getGMLSchema().getAppNamespaces() ) {
@@ -237,9 +238,9 @@ public class ApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "../testdata/schema/CustomProperties.xsd" ).toString();
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        String schemaURL = this.getClass().getResource( "CustomProperties.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         Assert.assertEquals( 1, fts.length );
         FeatureType ft = fts[0];
         Assert.assertEquals( 4, ft.getPropertyDeclarations().size() );

@@ -51,7 +51,7 @@ import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,8 +80,8 @@ public class DefaultLockManagerTest {
         DeegreeWorkspace.getInstance().initAll();
 
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
-        AppSchemaXSDDecoder adapter = new AppSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        AppSchema schema = adapter.extractFeatureTypeSchema();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
 
         URL docURL = DefaultLockManagerTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         FeatureStore store = new MemoryFeatureStore( docURL, schema );

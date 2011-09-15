@@ -17,7 +17,7 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
  * <p>
  * Some notes:
  * <ul>
- * <li>May be based on a {@link GMLSchemaInfoSet}. If it is build from a GML schema, use {@link #getGMLSchema()} to *
+ * <li>May be based on a {@link GMLSchemaInfoSet}. If it is build from a GML schema, use {@link #getGMLSchema()} to
  * access to the full XML schema infoset.</li>
  * <li>There is no default head for the feature type substitution relation as in GML (prior to GML 3.2: element
  * <code>gml:_Feature</code>, since 3.2: <code>gml:AbstractFeature</code>). This is not necessary, as each

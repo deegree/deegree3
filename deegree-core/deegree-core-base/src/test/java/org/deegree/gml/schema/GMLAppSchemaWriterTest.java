@@ -33,20 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature.schema;
+package org.deegree.gml.schema;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -59,27 +70,23 @@ import org.slf4j.Logger;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLSchemaInfoSetTest {
+public class GMLAppSchemaWriterTest {
 
-    private static final Logger LOG = getLogger( GMLSchemaInfoSetTest.class );
+    private static final Logger LOG = getLogger( GMLAppSchemaWriterTest.class );
 
     @Test
     public void testPhilosopher()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet(
-                                                          null,
-                                                          this.getClass().getResource(
-                                                                                       "../testdata/schema/Philosopher.xsd" ).toString() );
-        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations(
-                                                                                                 "http://www.deegree.org/app",
+        GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null,
+                                                          this.getClass().getResource( "Philosopher.xsd" ).toString() );
+        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app",
                                                                                                  false );
         for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
             LOG.debug( "- Feature type: " + featureElementDecl.getName() );
         }
-        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations(
-                                                                                                                     null,
+        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations( null,
                                                                                                                      false );
         for ( XSElementDeclaration featureCollectionElementDecl : featureCollectionElementDecls ) {
             LOG.debug( "- Feature collection type: " + featureCollectionElementDecl.getName() );
@@ -99,7 +106,7 @@ public class GMLSchemaInfoSetTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL2, schemaURL );
         Assert.assertEquals( 4, analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app", true ).size() );
@@ -258,8 +265,7 @@ public class GMLSchemaInfoSetTest {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
-                                                                             new QName(
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractCurveSegment" ),
                                                                              "http://www.opengis.net/gml/3.2", true,
@@ -276,8 +282,7 @@ public class GMLSchemaInfoSetTest {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
-                                                                             new QName(
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractSurfacePatch" ),
                                                                              "http://www.opengis.net/gml/3.2", true,
@@ -294,8 +299,7 @@ public class GMLSchemaInfoSetTest {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
-                                                                             new QName(
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractGeometry" ),
                                                                              "http://www.opengis.net/gml/3.2", true,
@@ -315,5 +319,24 @@ public class GMLSchemaInfoSetTest {
             localNames.add( elementDecl.getName() );
         }
         return localNames;
+    }
+
+    @Test
+    public void testReexportCiteSF1()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException {
+
+        String schemaURL = this.getClass().getResource( "cite/cite-gmlsf1.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
+        OutputStream os = new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "out.xml" );
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( outputFactory.createXMLStreamWriter( os ) );
+        GMLAppSchemaWriter encoder = new GMLAppSchemaWriter( GMLVersion.GML_31, "http://cite.opengeospatial.org/gmlsf",
+                                                             null, schema.getNamespaceBindings() );
+        encoder.export( writer, schema );
+        writer.close();
     }
 }

@@ -96,7 +96,7 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -199,14 +199,14 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 schemaURLs[i++] = resolver.resolve( gmlSchema.trim() ).toString();
             }
 
-            AppSchemaXSDDecoder decoder = null;
+            GMLAppSchemaReader decoder = null;
             if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
                 File file = new File( new URL( schemaURLs[0] ).toURI() );
-                decoder = new AppSchemaXSDDecoder( null, null, file );
+                decoder = new GMLAppSchemaReader( null, null, file );
             } else {
-                decoder = new AppSchemaXSDDecoder( null, null, schemaURLs );
+                decoder = new GMLAppSchemaReader( null, null, schemaURLs );
             }
-            appSchema = decoder.extractFeatureTypeSchema();
+            appSchema = decoder.extractAppSchema();
         } catch ( Throwable t ) {
             String msg = "Error building GML application schema: " + t.getMessage();
             throw new FeatureStoreException( msg );

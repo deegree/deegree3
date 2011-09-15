@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature.schema;
+package org.deegree.gml.schema;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
@@ -120,21 +120,20 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream-based writer for exporting {@link FeatureType} instances as a GML application schema.
+ * Stream-based writer for exporting {@link AppSchema} or {@link FeatureType} instances as a GML application schema.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class AppSchemaXSDEncoder {
+public class GMLAppSchemaWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AppSchemaXSDEncoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLAppSchemaWriter.class );
 
     public static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2/feature.xsd";
 
@@ -172,7 +171,7 @@ public class AppSchemaXSDEncoder {
     private final Set<String> exportedTypes = new HashSet<String>();
 
     /**
-     * Creates a new {@link AppSchemaXSDEncoder} for the given GML version and optional import URL.
+     * Creates a new {@link GMLAppSchemaWriter} for the given GML version and optional import URL.
      * 
      * @param version
      *            gml version that exported schemas will comply to, must not be <code>null</code>
@@ -184,8 +183,8 @@ public class AppSchemaXSDEncoder {
      * @param prefixToNs
      *            keys: namespace prefixes, values: namespaces, may be <code>null</code>
      */
-    public AppSchemaXSDEncoder( GMLVersion version, String targetNamespace, Map<String, String> importURLs,
-                                        Map<String, String> prefixToNs ) {
+    public GMLAppSchemaWriter( GMLVersion version, String targetNamespace, Map<String, String> importURLs,
+                               Map<String, String> prefixToNs ) {
 
         this.version = version;
         this.targetNs = targetNamespace;

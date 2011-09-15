@@ -40,10 +40,10 @@ import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
 import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.gml.feature.schema.AppSchemaXSDEncoder.GML_2_DEFAULT_INCLUDE;
-import static org.deegree.gml.feature.schema.AppSchemaXSDEncoder.GML_30_DEFAULT_INCLUDE;
-import static org.deegree.gml.feature.schema.AppSchemaXSDEncoder.GML_31_DEFAULT_INCLUDE;
-import static org.deegree.gml.feature.schema.AppSchemaXSDEncoder.GML_32_DEFAULT_INCLUDE;
+import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_2_DEFAULT_INCLUDE;
+import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_30_DEFAULT_INCLUDE;
+import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_31_DEFAULT_INCLUDE;
+import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_32_DEFAULT_INCLUDE;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -78,7 +78,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.AppSchemaXSDEncoder;
+import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -210,7 +210,7 @@ class DescribeFeatureTypeHandler {
 
         Map<String, String> importMap = buildImportMap( request, importNs );
         Map<String, String> prefixToNs = service.getPrefixToNs();
-        AppSchemaXSDEncoder exporter = new AppSchemaXSDEncoder( version, targetNs, importMap,
+        GMLAppSchemaWriter exporter = new GMLAppSchemaWriter( version, targetNs, importMap,
                                                                                 prefixToNs );
 
         List<FeatureType> fts = new ArrayList<FeatureType>();
@@ -234,7 +234,7 @@ class DescribeFeatureTypeHandler {
     private void exportOriginalInfoSet( XMLStreamWriter writer, GMLSchemaInfoSet infoSet, String targetNs )
                             throws XMLStreamException {
         LOG.debug( "Exporting wrapper schema for original infoset." );
-        AppSchemaXSDEncoder.export( writer, infoSet, targetNs, new URITranslator() {
+        GMLAppSchemaWriter.export( writer, infoSet, targetNs, new URITranslator() {
             @SuppressWarnings("synthetic-access")
             @Override
             public String translate( String uri ) {

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
-import static org.deegree.gml.feature.schema.WellKnownGMLTypes.GML311_FEATURECOLLECTION;
+import static org.deegree.gml.schema.WellKnownGMLTypes.GML311_FEATURECOLLECTION;
 
 import java.io.IOException;
 import java.util.ArrayList;

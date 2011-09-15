@@ -60,7 +60,7 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StreamFeatureCollection;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
@@ -218,8 +218,8 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
                 LSInput input = new GenericLSInput();
                 input.setByteStream( tmpStore.getInputStream() );
                 input.setSystemId( xmlStream.getLocation().getSystemId() );
-                AppSchemaXSDDecoder schemaDecoder = new AppSchemaXSDDecoder( null, null, input );
-                schema = schemaDecoder.extractFeatureTypeSchema();
+                GMLAppSchemaReader schemaDecoder = new GMLAppSchemaReader( null, null, input );
+                schema = schemaDecoder.extractAppSchema();
             } catch ( Throwable t ) {
                 String msg = "Error parsing DescribeFeatureType response as GML application schema: " + t.getMessage();
                 throw new IOException( msg, t );

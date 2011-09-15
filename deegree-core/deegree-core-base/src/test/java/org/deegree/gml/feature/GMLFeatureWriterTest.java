@@ -61,7 +61,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
@@ -79,7 +79,7 @@ public class GMLFeatureWriterTest {
 
     private final String SOURCE_FILE = "Philosopher_FeatureCollection.xml";
 
-    private final String SCHEMA_LOCATION_ATTRIBUTE = "testdata/schema/Philosopher.xsd";
+    private final String SCHEMA_LOCATION_ATTRIBUTE = "../schema/Philosopher.xsd";
 
     private final String SCHEMA_LOCATION = "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/feature.xsd http://www.deegree.org/app testdata/schema/Philosopher.xsd";
 
@@ -89,8 +89,8 @@ public class GMLFeatureWriterTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
-        AppSchemaXSDDecoder xsdAdapter = new AppSchemaXSDDecoder( GML_31, null, schemaURL );
-        AppSchema schema = xsdAdapter.extractFeatureTypeSchema();
+        GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
+        AppSchema schema = xsdAdapter.extractAppSchema();
 
         URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
@@ -124,8 +124,8 @@ public class GMLFeatureWriterTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
-        AppSchemaXSDDecoder xsdAdapter = new AppSchemaXSDDecoder( GML_31, null, schemaURL );
-        AppSchema schema = xsdAdapter.extractFeatureTypeSchema();
+        GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
+        AppSchema schema = xsdAdapter.extractAppSchema();
 
         URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );

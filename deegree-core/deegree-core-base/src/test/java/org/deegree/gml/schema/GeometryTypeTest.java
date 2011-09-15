@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature.schema;
+package org.deegree.gml.schema;
 
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.COMPOSITE;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.COMPOSITE_CURVE;

@@ -53,9 +53,9 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
-import static org.deegree.gml.feature.schema.WellKnownGMLTypes.GML311_FEATURECOLLECTION;
-import static org.deegree.gml.feature.schema.WellKnownGMLTypes.GML321_FEATURECOLLECTION;
-import static org.deegree.gml.feature.schema.WellKnownGMLTypes.WFS110_FEATURECOLLECTION;
+import static org.deegree.gml.schema.WellKnownGMLTypes.GML311_FEATURECOLLECTION;
+import static org.deegree.gml.schema.WellKnownGMLTypes.GML321_FEATURECOLLECTION;
+import static org.deegree.gml.schema.WellKnownGMLTypes.WFS110_FEATURECOLLECTION;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -122,11 +122,11 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
-import org.deegree.gml.feature.schema.WellKnownGMLTypes;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
+import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -557,8 +557,8 @@ public class GMLFeatureReader extends XMLAdapter {
         // TODO handle multi-namespace schemas
         AppSchema schema = null;
         try {
-            AppSchemaXSDDecoder decoder = new AppSchemaXSDDecoder( version, null, schemaUrls );
-            schema = decoder.extractFeatureTypeSchema();
+            GMLAppSchemaReader decoder = new GMLAppSchemaReader( version, null, schemaUrls );
+            schema = decoder.extractAppSchema();
         } catch ( Throwable t ) {
             LOG.warn( Messages.getMessage( "BROKEN_SCHEMA", xmlStream.getSystemId(), t.getMessage() ), t );
             return new DynamicAppSchema();
