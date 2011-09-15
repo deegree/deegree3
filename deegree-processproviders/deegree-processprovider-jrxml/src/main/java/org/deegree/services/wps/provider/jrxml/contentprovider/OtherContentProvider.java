@@ -45,6 +45,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -175,6 +176,8 @@ public class OtherContentProvider implements JrxmlContentProvider {
 
                     LOG.debug( "Try to convert {} (parameter '{}') to {}", new Object[] { litIn.getIdentifier(),
                                                                                          litValue, parameterType } );
+
+                    String datePattern = "yyyy-MM-dd";
                     if ( parameterType == null || "java.lang.String".equals( parameterType ) ) {
                     } else if ( "java.lang.Boolean".equals( parameterType ) ) {
                         value = Boolean.parseBoolean( litValue );
@@ -208,11 +211,11 @@ public class OtherContentProvider implements JrxmlContentProvider {
                         }
                     } else if ( "java.util.Date".equals( parameterType ) ) {
                         try {
-                            SimpleDateFormat df = new SimpleDateFormat( litValue );
+                            SimpleDateFormat df = new SimpleDateFormat( datePattern );
                             value = df.parse( litValue );
                         } catch ( ParseException e ) {
                             throw new ProcessletException( "Invalid datatype for parameter '" + litIn.getIdentifier()
-                                                           + "': " + litValue + " is not a date value!" );
+                                                           + "': " + litValue + " is not a date value! Pattern: " + datePattern );
                         }
                     } else if ( "java.sql.Timestamp".equals( parameterType ) ) {
                         try {
@@ -275,4 +278,5 @@ public class OtherContentProvider implements JrxmlContentProvider {
         // nothing to prepare here
         return jrxml;
     }
+    
 }
