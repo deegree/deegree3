@@ -51,6 +51,7 @@ import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.ComparisonOperator;
@@ -311,6 +312,11 @@ public abstract class AbstractWhereBuilder {
                             throws UnmappableException, FilterEvaluationException {
 
         SQLOperation sqlOper = null;
+
+        if ( op.getMatchAction() != null && op.getMatchAction() != MatchAction.ANY ) {
+            LOG.warn( "Mapping of operators with matchAction=" + op.getMatchAction()
+                      + "to SQL is not implemented (and probably not possible)." );
+        }
 
         switch ( op.getSubType() ) {
         case PROPERTY_IS_BETWEEN: {
