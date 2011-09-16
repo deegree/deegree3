@@ -29,10 +29,6 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <configuration>
-          <catalog>src/main/catalog/catalog.cat</catalog>
-          <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
-        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.deegree</groupId>

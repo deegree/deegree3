@@ -1,2 +1,0 @@
-PUBLIC "http://www.deegree.org/metadata/description" "classpath:META-INF/schemas/description/3.1.0/description.xsd"
-PUBLIC "http://www.deegree.org/metadata/spatial" "classpath:META-INF/schemas/spatialmetadata/3.1.0/spatialmetadata.xsd"
