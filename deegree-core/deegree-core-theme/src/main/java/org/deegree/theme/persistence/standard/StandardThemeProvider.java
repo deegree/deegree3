@@ -109,7 +109,7 @@ public class StandardThemeProvider implements ThemeProvider {
                 }
             }
             if ( lay == null ) {
-                LOG.warn( "Layer with identifier {} is not available from any layer store.", l );
+                LOG.warn( "Layer with identifier {} is not available from any layer store.", l.getValue() );
                 continue;
             }
             lays.add( lay );
