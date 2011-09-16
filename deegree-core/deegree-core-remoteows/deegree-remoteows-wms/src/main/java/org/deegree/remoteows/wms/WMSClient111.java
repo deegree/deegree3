@@ -486,7 +486,7 @@ public class WMSClient111 implements WMSClient {
     @Override
     public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout )
                             throws IOException {
-        return getMap( getMap, hardParameters, timeout, true );
+        return getMap( getMap, hardParameters, timeout, false );
     }
 
     /**
