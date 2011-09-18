@@ -75,6 +75,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.parsers.DOMParser;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.io.StreamBufferStore;
@@ -82,6 +83,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -687,7 +689,7 @@ public class XMLStreamUtils {
     }
 
     /**
-     * makes a {@link Document} out of a {@link XMLStreamReader} 
+     * makes a {@link Document} out of a {@link XMLStreamReader}
      * 
      * @param xmlStreamReader
      *            the xmlStreamRader to convert
@@ -701,11 +703,11 @@ public class XMLStreamUtils {
     public static Document getAsDocument( XMLStreamReader xmlStreamReader )
                             throws XMLStreamException, FactoryConfigurationError, ParserConfigurationException,
                             SAXException, IOException {
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         StreamBufferStore store = new StreamBufferStore();
         XMLStreamWriter xmlWriter = null;
         try {
             xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( store );
+            xmlWriter.writeStartDocument();
             XMLAdapter.writeElement( xmlWriter, xmlStreamReader );
         } finally {
             if ( xmlWriter != null ) {
@@ -716,8 +718,56 @@ public class XMLStreamUtils {
                 }
             }
         }
-        Document doc = builder.parse( store.getInputStream() );
+
+        store.flush();
+        DOMParser parser = new DOMParser();
+        parser.parse( new InputSource( store.getInputStream() ) );
+        Document doc = parser.getDocument();
         store.close();
         return doc;
+    }
+
+
+
+    /**
+     * Copies an XML element (including all attributes and subnodes) from the given {@link XMLStreamReader} to the given
+     * {@link XMLStreamWriter}.
+     * 
+     * @param writer
+     *            {@link XMLStreamWriter} that the xml is appended to
+     * @param reader
+     *            cursor must point at a <code>START_ELEMENT</code> event and points at the corresponding
+     *            <code>END_ELEMENT</code> event afterwards
+     * @throws XMLStreamException
+     */
+    public static void copy( XMLStreamWriter writer, XMLStreamReader reader )
+                            throws XMLStreamException {
+        skipStartDocument( reader );
+        XMLAdapter.writeElement( writer, reader );
+    }
+
+    /**
+     * Serializes the XML element (including all attributes and subnodes) from the given {@link XMLStreamReader} into a
+     * {@link StreamBufferStore}.
+     * 
+     * @param reader
+     *            cursor must point at a <code>START_ELEMENT</code> event and points at the corresponding
+     *            <code>END_ELEMENT</code> event afterwards
+     * @return stored document, never <code>null</code>
+     * @throws IOException
+     * @throws FactoryConfigurationError
+     * @throws XMLStreamException
+     */
+    public static StreamBufferStore serialize( XMLStreamReader reader )
+                            throws IOException, XMLStreamException, FactoryConfigurationError {
+        StreamBufferStore tmpStore = new StreamBufferStore();
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( tmpStore );
+        try {
+            copy( writer, reader );
+        } finally {
+            writer.close();
+            tmpStore.close();
+        }
+        return tmpStore;
     }
 }

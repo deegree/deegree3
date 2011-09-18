@@ -68195,5 +68195,53 @@
                         <crs:AxisOrientation>up</crs:AxisOrientation>
                 </crs:HeightAxis>
                 <crs:DefaultHeight>0.0</crs:DefaultHeight>
-        </crs:CompoundCRS>        
+        </crs:CompoundCRS> 
+        <crs:CompoundCRS>
+                <crs:Id>epsg:5554</crs:Id>        
+                <crs:Id>urn:ogc:def:crs:epsg::5554</crs:Id>
+                <crs:Name>ETRS89 / UTM zone 31N + DHHN92 height</crs:Name>
+                <crs:Version>2011-07-21</crs:Version>
+                <crs:Description>Inserted by hand.</crs:Description>
+                <crs:AreaOfUse>5.75,47.27,6.0,55.03</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - onshore west of 6°E.</crs:AreaOfUse>
+                <crs:UsedCRS>epsg:25831</crs:UsedCRS>
+                <crs:HeightAxis>
+                        <crs:Name>height</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>up</crs:AxisOrientation>
+                </crs:HeightAxis>
+                <crs:DefaultHeight>0.0</crs:DefaultHeight>
+        </crs:CompoundCRS> 
+        <crs:CompoundCRS>
+                <crs:Id>epsg:5555</crs:Id>        
+                <crs:Id>urn:ogc:def:crs:epsg::5555</crs:Id>
+                <crs:Name>ETRS89 / UTM zone 32N + DHHN92 height</crs:Name>
+                <crs:Version>2011-07-21</crs:Version>
+                <crs:Description>Inserted by hand.</crs:Description>
+                <crs:AreaOfUse>6.0,47.27,12.0,55.03</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - onshore between 6°E and 12°E.</crs:AreaOfUse>
+                <crs:UsedCRS>epsg:25832</crs:UsedCRS>
+                <crs:HeightAxis>
+                        <crs:Name>height</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>up</crs:AxisOrientation>
+                </crs:HeightAxis>
+                <crs:DefaultHeight>0.0</crs:DefaultHeight>
+        </crs:CompoundCRS>  
+        <crs:CompoundCRS>
+                <crs:Id>epsg:5556</crs:Id>        
+                <crs:Id>urn:ogc:def:crs:epsg::5555</crs:Id>
+                <crs:Name>ETRS89 / UTM zone 33N + DHHN92 height</crs:Name>
+                <crs:Version>2011-07-21</crs:Version>
+                <crs:Description>Inserted by hand.</crs:Description>
+                <crs:AreaOfUse>12.0,47.27,15.03.0,55.03</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - onshore east of 12°E.</crs:AreaOfUse>
+                <crs:UsedCRS>epsg:25833</crs:UsedCRS>
+                <crs:HeightAxis>
+                        <crs:Name>height</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>up</crs:AxisOrientation>
+                </crs:HeightAxis>
+                <crs:DefaultHeight>0.0</crs:DefaultHeight>
+        </crs:CompoundCRS>       
 </crs:CRSDefinitions>

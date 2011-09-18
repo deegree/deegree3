@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature.schema;
+package org.deegree.gml.schema;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -80,17 +80,17 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
 
 /**
- * Provides access to the {@link FeatureType} hierarchy defined in a GML schema document.
+ * Provides access to the {@link AppSchema} defined in one or more GML schema documents.
  * <p>
- * Note that the generated {@link AppSchema} only contains user-defined feature types, i.e. all feature base
- * types from the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This
- * follows the idea that working with {@link AppSchema} objects should not involve GML (and GML-version)
- * specific details (such as the mentioned GML feature types).
+ * Note that the generated {@link AppSchema} only contains user-defined feature types, i.e. all feature base types from
+ * the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This follows
+ * the idea that working with {@link AppSchema} objects should not involve GML (and GML-version) specific details (such
+ * as the mentioned GML feature types).
  * </p>
  * 
  * @see AppSchema
@@ -100,9 +100,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class AppSchemaXSDDecoder {
+public class GMLAppSchemaReader {
 
-    private Logger LOG = LoggerFactory.getLogger( AppSchemaXSDDecoder.class );
+    private Logger LOG = LoggerFactory.getLogger( GMLAppSchemaReader.class );
 
     private GMLSchemaInfoSet analyzer;
 
@@ -138,7 +138,7 @@ public class AppSchemaXSDDecoder {
     private final String gmlNs;
 
     /**
-     * Creates a new {@link AppSchemaXSDDecoder} from the given schema URL(s).
+     * Creates a new {@link GMLAppSchemaReader} from the given schema URL(s).
      * 
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
@@ -151,7 +151,7 @@ public class AppSchemaXSDDecoder {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public AppSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
+    public GMLAppSchemaReader( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -195,7 +195,64 @@ public class AppSchemaXSDDecoder {
     }
 
     /**
-     * Creates a new {@link AppSchemaXSDDecoder} from the given schema file (which may be a directory).
+     * Creates a new {@link GMLAppSchemaReader} from the given <code>LSInput</code>s.
+     * 
+     * @param gmlVersion
+     *            gml version of the schema files, can be null (auto-detect GML version)
+     * @param namespaceHints
+     *            optional hints (key: prefix, value: namespaces) for generating 'nice' qualified feature type and
+     *            property type names, may be null
+     * @param inputs
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public GMLAppSchemaReader( GMLVersion gmlVersion, Map<String, String> namespaceHints, LSInput... inputs )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        analyzer = new GMLSchemaInfoSet( gmlVersion, inputs );
+        this.gmlVersion = analyzer.getVersion();
+        gmlNs = this.gmlVersion.getNamespace();
+
+        for ( Entry<String, String> nsToPrefix : analyzer.getNamespacePrefixes().entrySet() ) {
+            this.nsToPrefix.put( nsToPrefix.getKey(), nsToPrefix.getValue() );
+            this.prefixToNs.put( nsToPrefix.getValue(), nsToPrefix.getKey() );
+        }
+
+        if ( namespaceHints != null ) {
+            for ( Entry<String, String> prefixToNs : namespaceHints.entrySet() ) {
+                nsToPrefix.put( prefixToNs.getValue(), prefixToNs.getKey() );
+                this.prefixToNs.put( prefixToNs.getKey(), prefixToNs.getValue() );
+            }
+        }
+
+        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
+
+        // feature element declarations
+        for ( XSElementDeclaration elementDecl : featureElementDecls ) {
+            QName ftName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+            ftNameToFtElement.put( ftName, elementDecl );
+            XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
+            if ( substitutionElement != null ) {
+                QName substitutionElementName = createQName( substitutionElement.getNamespace(),
+                                                             substitutionElement.getName() );
+                ftNameToSubstitutionGroupName.put( ftName, substitutionElementName );
+            }
+        }
+
+        // geometry element declarations
+        List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, false );
+        for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
+            QName elName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+            geometryNameToGeometryElement.put( elName, elementDecl );
+            LOG.debug( "Geometry element " + elName );
+        }
+    }
+
+    /**
+     * Creates a new {@link GMLAppSchemaReader} from the given schema file (which may be a directory).
      * 
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
@@ -210,7 +267,7 @@ public class AppSchemaXSDDecoder {
      * @throws MalformedURLException
      * @throws UnsupportedEncodingException
      */
-    public AppSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, File schemaFile )
+    public GMLAppSchemaReader( GMLVersion gmlVersion, Map<String, String> namespaceHints, File schemaFile )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, MalformedURLException, UnsupportedEncodingException {
         this( gmlVersion, namespaceHints, getSchemaURLs( schemaFile ) );
@@ -242,7 +299,7 @@ public class AppSchemaXSDDecoder {
         return schemaUrls.toArray( new String[schemaUrls.size()] );
     }
 
-    public AppSchema extractFeatureTypeSchema() {
+    public AppSchema extractAppSchema() {
 
         for ( QName ftName : ftNameToFtElement.keySet() ) {
             FeatureType ft = buildFeatureType( ftNameToFtElement.get( ftName ) );
@@ -289,82 +346,47 @@ public class AppSchemaXSDDecoder {
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
             XSParticle particle = typeDef.getParticle();
+            int minOccurs = particle.getMinOccurs();
+            int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
             XSTerm term = particle.getTerm();
             switch ( term.getType() ) {
             case XSConstants.MODEL_GROUP: {
-                XSModelGroup modelGroup = (XSModelGroup) term;
-                switch ( modelGroup.getCompositor() ) {
-                case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
-                    break;
-                }
-                case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
-                    break;
-                }
-                case XSModelGroup.COMPOSITOR_SEQUENCE: {
-                    XSObjectList sequence = modelGroup.getParticles();
-                    for ( int i = 0; i < sequence.getLength(); i++ ) {
-                        XSParticle particle2 = (XSParticle) sequence.item( i );
-                        switch ( particle2.getTerm().getType() ) {
-                        case XSConstants.ELEMENT_DECLARATION: {
-                            XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
-                            int minOccurs = particle2.getMinOccurs();
-                            int maxOccurs = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
-                            PropertyType pt = buildPropertyType( elementDecl2, minOccurs, maxOccurs );
-                            if ( pt != null ) {
-                                pts.add( pt );
-                            }
-                        }
-                        case XSConstants.WILDCARD: {
-                            LOG.debug( "Unhandled particle: WILDCARD" );
-                            break;
-                        }
-                        case XSConstants.MODEL_GROUP: {
-                            XSModelGroup modelGroup2 = (XSModelGroup) particle2.getTerm();
-                            addPropertyTypes( pts, modelGroup2 );
-                            break;
-                        }
-                        }
-                    }
-                    break;
-                }
-                default: {
-                    assert false;
-                }
-                }
-                break;
-            }
-            case XSConstants.WILDCARD: {
-                LOG.debug( "Unhandled particle: WILDCARD" );
+                addPropertyTypes( pts, (XSModelGroup) term, minOccurs, maxOccurs );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
+                pts.add( buildPropertyType( (XSElementDeclaration) term, minOccurs, maxOccurs ) );
                 break;
             }
+            case XSConstants.WILDCARD: {
+                String msg = "Broken GML application schema: Feature element '" + ftName
+                             + "' uses wildcard in type model.";
+                throw new IllegalArgumentException( msg );
+            }
             default: {
-                assert false;
+                String msg = "Internal error. Unhandled term type: " + term.getName();
+                throw new RuntimeException( msg );
             }
             }
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            LOG.debug( "Unhandled content type: EMPTY" );
+            LOG.debug( "Empty feature type declaration." );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_MIXED: {
-            LOG.debug( "Unhandled content type: MIXED" );
-            break;
+            String msg = "Broken GML application schema: Feature element '" + ftName
+                         + "' uses mixed content in type model.";
+            throw new IllegalArgumentException( msg );
         }
         case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
-            XSSimpleTypeDefinition simpleType = typeDef.getSimpleType();
-            QName simpleTypeName = createQName( simpleType.getNamespace(), simpleType.getName() );
-            // contents = new SimpleContent( simpleTypeName );
-            break;
+            String msg = "Broken GML application schema: Feature element '" + ftName
+                         + "' uses simple content in type model.";
+            throw new IllegalArgumentException( msg );
         }
         default: {
-            assert false;
+            String msg = "Internal error. Unhandled ContentType: " + typeDef.getContentType();
+            throw new RuntimeException( msg );
         }
         }
 
@@ -376,48 +398,49 @@ public class AppSchemaXSDDecoder {
         return new GenericFeatureType( ftName, pts, featureElementDecl.getAbstract() );
     }
 
-    private void addPropertyTypes( List<PropertyType> pts, XSModelGroup modelGroup ) {
-        LOG.trace( " - processing model group..." );
+    private void addPropertyTypes( List<PropertyType> pts, XSModelGroup modelGroup, int parentMinOccurs,
+                                   int parentMaxOccurs ) {
+
         switch ( modelGroup.getCompositor() ) {
         case XSModelGroup.COMPOSITOR_ALL: {
-            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+            LOG.warn( "Encountered 'All' compositor in feature type model definition -- treating as sequence." );
             break;
         }
         case XSModelGroup.COMPOSITOR_CHOICE: {
-            LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
+            LOG.warn( "Encountered 'Choice' compositor in feature type model definition -- treating as sequence." );
             break;
         }
-        case XSModelGroup.COMPOSITOR_SEQUENCE: {
-            XSObjectList sequence = modelGroup.getParticles();
-            for ( int i = 0; i < sequence.getLength(); i++ ) {
-                XSParticle particle = (XSParticle) sequence.item( i );
-                switch ( particle.getTerm().getType() ) {
-                case XSConstants.ELEMENT_DECLARATION: {
-                    XSElementDeclaration elementDecl = (XSElementDeclaration) particle.getTerm();
-                    int minOccurs = particle.getMinOccurs();
-                    int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
-                    PropertyType pt = buildPropertyType( elementDecl, minOccurs, maxOccurs );
-                    if ( pt != null ) {
-                        pts.add( pt );
-                    }
-                    break;
+        }
+
+        XSObjectList sequence = modelGroup.getParticles();
+        for ( int i = 0; i < sequence.getLength(); i++ ) {
+            XSParticle particle = (XSParticle) sequence.item( i );
+            int minOccurs = getCombinedOccurs( parentMinOccurs, particle.getMinOccurs() );
+            int maxOccurs = getCombinedOccurs( parentMaxOccurs,
+                                               particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs() );
+
+            switch ( particle.getTerm().getType() ) {
+            case XSConstants.ELEMENT_DECLARATION: {
+                XSElementDeclaration elementDecl = (XSElementDeclaration) particle.getTerm();
+                PropertyType pt = buildPropertyType( elementDecl, minOccurs, maxOccurs );
+                if ( pt != null ) {
+                    pts.add( pt );
                 }
-                case XSConstants.WILDCARD: {
-                    LOG.debug( "Unhandled particle: WILDCARD" );
-                    break;
-                }
-                case XSConstants.MODEL_GROUP: {
-                    XSModelGroup modelGroup2 = (XSModelGroup) particle.getTerm();
-                    addPropertyTypes( pts, modelGroup2 );
-                    break;
-                }
-                }
+                break;
             }
-            break;
-        }
-        default: {
-            assert false;
-        }
+            case XSConstants.MODEL_GROUP: {
+                addPropertyTypes( pts, (XSModelGroup) particle.getTerm(), minOccurs, maxOccurs );
+                break;
+            }
+            case XSConstants.WILDCARD: {
+                String msg = "Broken GML application schema: Encountered wildcard in feature type definition.";
+                throw new IllegalArgumentException( msg );
+            }
+            default: {
+                String msg = "Internal error. Unhandled term type: " + particle.getTerm().getName();
+                throw new RuntimeException( msg );
+            }
+            }
         }
     }
 
@@ -475,7 +498,6 @@ public class AppSchemaXSDDecoder {
         PropertyType pt = null;
         QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "- Property definition '" + ptName + "' uses a complex type for content definition." );
-        boolean isNillable = elementDecl.getNillable();
 
         // check for well known GML types first
         if ( typeDef.getName() != null ) {
@@ -519,6 +541,26 @@ public class AppSchemaXSDDecoder {
             pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions );
         }
         return pt;
+    }
+
+    /**
+     * Combines the minOccurs/maxOccurs information from a parent model group with the current one.
+     * <p>
+     * This is basically done to cope with GML application schemas that don't follow good practices (minOccurs/maxOccurs
+     * should only be set on the property element declaration).
+     * </p>
+     * 
+     * @param parentOccurs
+     *            occurence information of the parent model group, -1 means unbounded
+     * @param occurs
+     *            occurence information of the current particle, -1 means unbounded
+     * @return combined occurence information, -1 means unbounded
+     */
+    private int getCombinedOccurs( int parentOccurs, int occurs ) {
+        if ( parentOccurs == -1 || occurs == -1 ) {
+            return -1;
+        }
+        return parentOccurs * occurs;
     }
 
     private String getCodeListId( XSElementDeclaration elementDecl ) {

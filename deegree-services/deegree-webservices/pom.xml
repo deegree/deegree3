@@ -38,7 +38,7 @@
             <configuration>
               <files>
                 <file>
-                  <from>src/main/tomcat/tomcat-users.xml</from>
+                  <from>src/main/tomcatconf/tomcat-users.xml</from>
                   <to>target/deegree-tomcat/conf/tomcat-users.xml</to>
                 </file>
               </files>

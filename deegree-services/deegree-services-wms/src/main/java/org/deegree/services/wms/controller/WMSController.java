@@ -109,7 +109,7 @@ import org.deegree.feature.utils.templating.TemplatingParser;
 import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
-import org.deegree.gml.feature.schema.AppSchemaXSDEncoder;
+import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -567,6 +567,7 @@ public class WMSController extends AbstractOWS {
         boolean geometries;
         FeatureType type = null;
         ICRS crs;
+        Map<String, String> nsBindings = new HashMap<String, String>();
         if ( service.isNewStyle() ) {
             org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map,
                                                                                                               version );
@@ -586,6 +587,12 @@ public class WMSController extends AbstractOWS {
                                                        : securityManager.preprocess( new GetFeatureInfo( map, version,
                                                                                                          service ),
                                                                                      OGCFrontController.getContext().getCredentials() );
+            for ( Layer l : fi.getQueryLayers() ) {
+                FeatureType ft = l.getFeatureType();
+                if ( ft != null && ft.getSchema() != null ) {
+                    nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
+                }
+            }
             type = fi.getQueryLayers().get( 0 ).getFeatureType();
             crs = fi.getCoordinateSystem();
             geometries = fi.returnGeometries();
@@ -613,8 +620,10 @@ public class WMSController extends AbstractOWS {
             fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
             GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
             List<FeatureType> schema = service.getSchema( fis );
-            serializer.serialize( schema.isEmpty() ? null : schema.get( 0 ).getSchema(), col,
-                                  response.getOutputStream() );
+            for ( FeatureType ft : schema ) {
+                nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
+            }
+            serializer.serialize( nsBindings, col, response.getOutputStream() );
             response.flushBuffer();
             return;
         }
@@ -705,7 +714,7 @@ public class WMSController extends AbstractOWS {
             if ( namespace != null && !namespace.isEmpty() ) {
                 nsToPrefix.put( "app", namespace );
             }
-            new AppSchemaXSDEncoder( GMLVersion.GML_2, namespace, null, nsToPrefix ).export( writer, schema );
+            new GMLAppSchemaWriter( GMLVersion.GML_2, namespace, null, nsToPrefix ).export( writer, schema );
             writer.writeEndDocument();
         } catch ( XMLStreamException e ) {
             LOG.error( "Unknown error", e );

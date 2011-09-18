@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.services.controller.ows;
+ ----------------------------------------------------------------------------*/
+package org.deegree.services.ows;
+
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -42,18 +44,18 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * This class can generate namespace-less exception reports.
- *
+ * This class can generate OWS Commons 1.1.0 ExceptionReports.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-public class NamespacelessOWSExceptionXMLAdapter extends XMLExceptionSerializer<OWSException> {
+public class OGCExceptionXMLAdapter extends XMLExceptionSerializer<OWSException> {
 
     /**
-     * Export an ExceptionReport without namespace.
+     * Export an ExceptionReport in WMS 1.3.0 format (and possibly others).
      */
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
@@ -61,8 +63,10 @@ public class NamespacelessOWSExceptionXMLAdapter extends XMLExceptionSerializer<
         if ( ex == null || writer == null ) {
             return;
         }
-        writer.writeStartElement( "ServiceExceptionReport" );
-        writer.writeStartElement( "ServiceException" );
+        writer.setDefaultNamespace( OGCNS );
+        writer.writeStartElement( OGCNS, "ServiceExceptionReport" );
+        writer.writeDefaultNamespace( OGCNS );
+        writer.writeStartElement( OGCNS, "ServiceException" );
         writer.writeAttribute( "code", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
             writer.writeAttribute( "locator", ex.getLocator() );
@@ -71,5 +75,4 @@ public class NamespacelessOWSExceptionXMLAdapter extends XMLExceptionSerializer<
         writer.writeEndElement(); // ServiceException
         writer.writeEndElement(); // ServiceExceptionReport
     }
-
 }

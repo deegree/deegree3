@@ -159,13 +159,13 @@ public interface FeatureStore extends Resource {
      * 
      * @param queries
      *            queries to be performed, must not be <code>null</code> and contain at least one entry
-     * @return number of matching features
+     * @return number of matching features, one entry per query
      * @throws FeatureStoreException
      *             if the query could not be performed
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    int queryHits( Query[] queries )
+    int[] queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**

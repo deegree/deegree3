@@ -2,7 +2,7 @@
   xmlns:fes="http://www.opengis.net/fes/2.0">
   <wfs:Title>GetFeatureById</wfs:Title>
   <wfs:Abstract>Returns the single feature whose value is equal to the specified value of the ID argument</wfs:Abstract>
-  <wfs:Parameter name="ID" type="xsd:string" />
+  <wfs:Parameter xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ID" type="xsd:string" />
   <wfs:QueryExpressionText returnFeatureTypes="${deegreewfs:ServedFeatureTypes}"
     language="urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression" isPrivate="true">
     <wfs:Query xmlns:gml="http://www.opengis.net/gml/3.2" typeNames="schema-element(gml:AbstractFeature)">

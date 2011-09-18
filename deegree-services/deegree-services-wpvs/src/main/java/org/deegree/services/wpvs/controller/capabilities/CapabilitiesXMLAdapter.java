@@ -50,8 +50,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
-import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.controller.ows.capabilities.OWSOperation;
+import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
@@ -62,6 +61,7 @@ import org.deegree.services.jaxb.wpvs.DEMTextureDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.RenderableDatasetConfig;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
+import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @throws XMLStreamException
      */
     public void export040( XMLStreamWriter writer, GetCapabilities request, ServiceIdentificationType serviceID,
-                           ServiceProviderType serviceProvider, List<OWSOperation> operations, DCPType dcp,
+                           ServiceProviderType serviceProvider, OperationsMetadata operations,
                            ServiceConfiguration serviceConfig )
                             throws XMLStreamException {
 
@@ -118,7 +118,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
             exportServiceProvider110( writer, serviceProvider );
         }
         if ( all || sections.contains( "OperationsMetadata" ) ) {
-            exportOperationsMetadata110( writer, operations, null, null, null );
+            exportOperationsMetadata110( writer, operations );
         }
         if ( all || sections.contains( "Dataset" ) ) {
             exportDatasets( writer, serviceConfig.getDatasetDefinitions() );

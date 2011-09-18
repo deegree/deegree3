@@ -85,6 +85,8 @@
                 </schemaIncludes>
                 <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
                 <episode>true</episode>
+                <catalog>target/deegree.xmlcatalog</catalog>
+                <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
               </configuration>
             </execution>
           </executions>
@@ -92,7 +94,7 @@
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <version>1.8</version>
+          <version>1.9</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -180,8 +182,16 @@
         <artifactId>deegree-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>buildinfo</id>
             <goals>
               <goal>generate-buildinfo</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jaxbcatalog</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate-jaxb-catalog</goal>
             </goals>
           </execution>
         </executions>
@@ -231,4 +241,13 @@
       </modules>
     </profile>
   </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-ssh</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
+
 </project>

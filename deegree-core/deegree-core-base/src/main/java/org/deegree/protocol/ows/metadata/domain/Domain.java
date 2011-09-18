@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
@@ -79,6 +80,40 @@ public class Domain {
     private List<OMElement> metadata;
 
     /**
+     * Creates a new {@link Domain} instance with an {@link AllowedValues} value model.
+     * 
+     * @param name
+     *            domain name, may be <code>null</code>
+     * @param allowedValues
+     *            allowed values, must not be <code>null</code>
+     */
+    public Domain( String name, List<String> allowedValues ) {
+        this.name = name;
+        List<Values> values = new ArrayList<Values>();
+        for ( String value : allowedValues ) {
+            values.add( new Value( value ) );
+        }
+        possibleValues = new AllowedValues( values );
+        this.metadata = new ArrayList<OMElement>();
+    }
+
+    /**
+     * Creates a new {@link Domain} instance with a {@link NoValues} value model and a default value (as used for
+     * service profile constraints, e.g. in WFS 2.0).
+     * 
+     * @param name
+     *            domain name, may be <code>null</code>
+     * @param defaultValue
+     *            default value, must not be <code>null</code>
+     */
+    public Domain( String name, String defaultValue ) {
+        this.name = name;
+        possibleValues = new NoValues();
+        this.defaultValue = defaultValue;
+        this.metadata = new ArrayList<OMElement>();
+    }
+
+    /**
      * Creates a new {@link Domain} instance.
      * 
      * @param name
@@ -108,7 +143,11 @@ public class Domain {
         this.dataType = dataType;
         this.valuesUnitUom = valuesUnitUom;
         this.valuesUnitRefSys = valuesUnitRefSys;
-        this.metadata = metadata;
+        if ( metadata != null ) {
+            this.metadata = metadata;
+        } else {
+            this.metadata = new ArrayList<OMElement>();
+        }
     }
 
     /**

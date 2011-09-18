@@ -831,10 +831,44 @@ public class GMLFormat implements Format {
 
         QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), master, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
-        String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
+        String schemaLocation = null;
+        if ( VERSION_100.equals( request.getVersion() ) ) {
+            schemaLocation = WFS_NS + " " + WFS_100_BASIC_SCHEMA_URL;
+        } else if ( VERSION_110.equals( request.getVersion() ) ) {
+            schemaLocation = WFS_NS + " " + WFS_110_SCHEMA_URL;
+        } else if ( VERSION_200.equals( request.getVersion() ) ) {
+            schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
+        }
 
         String contentType = getContentType( request.getPresentationParams().getOutputFormat(), request.getVersion() );
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
+
+        Map<org.deegree.protocol.wfs.query.Query, Integer> wfsQueryToIndex = new HashMap<org.deegree.protocol.wfs.query.Query, Integer>();
+        int i = 0;
+        for ( org.deegree.protocol.wfs.query.Query query : request.getQueries() ) {
+            wfsQueryToIndex.put( query, i++ );
+        }
+
+        int hitsTotal = 0;
+        int[] queryHits = new int[wfsQueryToIndex.size()];
+        Date[] queryTimeStamps = new Date[queryHits.length];
+
+        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
+            FeatureStore fs = fsToQueries.getKey();
+            Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
+            int[] hits = fs.queryHits( queries );
+
+            // map the hits from the feature store back to the original query sequence
+            for ( int j = 0; j < hits.length; j++ ) {
+                Query query = queries[j];
+                int singleHits = hits[j];
+                org.deegree.protocol.wfs.query.Query wfsQuery = analyzer.getQuery( query );
+                int index = wfsQueryToIndex.get( wfsQuery );
+                hitsTotal += singleHits;
+                queryHits[index] = queryHits[index] + singleHits;
+                queryTimeStamps[index] = new Date();
+            }
+        }
 
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
@@ -842,27 +876,30 @@ public class GMLFormat implements Format {
             if ( lockId != null ) {
                 xmlStream.writeAttribute( "lockId", lockId );
             }
+            xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
         } else if ( request.getVersion().equals( VERSION_110 ) ) {
             xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
             if ( lockId != null ) {
                 xmlStream.writeAttribute( "lockId", lockId );
             }
             xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+            xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
             xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
             xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+            xmlStream.writeAttribute( "numberMatched", "" + hitsTotal );
+            xmlStream.writeAttribute( "numberReturned", "0" );
+            if ( queryHits.length > 1 ) {
+                for ( int j = 0; j < queryHits.length; j++ ) {
+                    xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
+                    xmlStream.writeEmptyElement( "wfs", "FeatureCollection", WFS_200_NS );
+                    xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( queryTimeStamps[j] ) );
+                    xmlStream.writeAttribute( "numberMatched", "" + queryHits[j] );
+                    xmlStream.writeAttribute( "numberReturned", "0" );
+                    xmlStream.writeEndElement();
+                }
+            }
         }
-
-        int numHits = 0;
-
-        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
-            FeatureStore fs = fsToQueries.getKey();
-            Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
-            // TODO what about features that occur multiple times as result of different queries?
-            numHits += fs.queryHits( queries );
-        }
-
-        xmlStream.writeAttribute( "numberOfFeatures", "" + numHits );
 
         // "gml:boundedBy" is necessary for GML 2 schema compliance
         if ( gmlVersion.equals( GMLVersion.GML_2 ) ) {
@@ -876,7 +913,6 @@ public class GMLFormat implements Format {
         // close "wfs:FeatureCollection"
         xmlStream.writeEndElement();
         xmlStream.flush();
-
     }
 
     /**

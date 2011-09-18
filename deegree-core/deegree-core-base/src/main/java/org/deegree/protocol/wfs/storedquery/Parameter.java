@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,79 +33,61 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.ows.capabilities;
+package org.deegree.protocol.wfs.storedquery;
 
-import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.utils.Pair;
-import org.deegree.services.jaxb.controller.DCPType;
+import javax.xml.namespace.QName;
+
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ows.LanguageString;
 
 /**
- * Encapsulates the information required for exporting an OWS operation in a GetCapabilities response.
+ * A parameter definition in a {@link StoredQueryDefinition}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class OWSOperation {
+public class Parameter {
 
-    private String name;
+    private final String name;
 
-    private DCPType dcp;
+    private final QName type;
 
-    private List<Pair<String, List<String>>> params;
+    private final List<LanguageString> titles;
 
-    private List<Pair<String, List<String>>> constraints;
+    private final List<LanguageString> abstracts;
 
-    /**
-     * @param name
-     * @param dcp
-     * @param params
-     * @param constraints
-     */
-    public OWSOperation( String name, DCPType dcp, List<Pair<String, List<String>>> params,
-                         List<Pair<String, List<String>>> constraints ) {
+    private final List<OMElement> metadata;
+
+    Parameter( String name, QName type, List<LanguageString> titles, List<LanguageString> abstracts,
+               List<OMElement> metadata ) {
         this.name = name;
-        this.dcp = dcp;
-        if ( params != null ) {
-            this.params = params;
-        } else {
-            this.params = Collections.emptyList();
-        }
-        if ( constraints != null ) {
-            this.constraints = constraints;
-        } else {
-            this.constraints = Collections.emptyList();
-        }
+        this.type = type;
+        this.titles = titles;
+        this.abstracts = abstracts;
+        this.metadata = metadata;
     }
 
-    /**
-     * @return
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return
-     */
-    public DCPType getDcp() {
-        return dcp;
+    public QName getType() {
+        return type;
     }
 
-    /**
-     * @return
-     */
-    public List<Pair<String, List<String>>> getParams() {
-        return params;
+    public List<LanguageString> getTitles() {
+        return titles;
     }
 
-    /**
-     * @return
-     */
-    public List<Pair<String, List<String>>> getConstraints() {
-        return constraints;
+    public List<LanguageString> getAbstracts() {
+        return abstracts;
+    }
+
+    public List<OMElement> getMetadata() {
+        return metadata;
     }
 }

@@ -113,13 +113,13 @@ import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.Resul
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.sos.DeegreeSOS;
 import org.deegree.services.jaxb.sos.PublishedInformation;
+import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.sos.getobservation.Observation100XMLAdapter;

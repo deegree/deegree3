@@ -40,6 +40,7 @@ import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageSt
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -49,18 +50,22 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.stream.XMLInputFactory;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.stax.StAXSource;
+import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
-import net.sf.jasperreports.engine.util.JRXmlUtils;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -73,9 +78,11 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
+import org.jaxen.dom.DOMXPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * TODO add class documentation here
@@ -164,13 +171,12 @@ public class DataTableContentProvider implements JrxmlContentProvider {
                     LOG.debug( "Found input parameter " + tableId + " representing a xml datasource!" );
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     try {
-                        // TODO: read number of headerentries
-                        // XMLAdapter tableAdapter = new XMLAdapter( complexIn.getValueAsXMLStream() );
-                        // List<OMElement> elements = tableAdapter.getElements( tableAdapter.getRootElement(),
-                        // new XPath(
-                        // "/tbl:XMLDataSource/tbl:Header/tbl:HeaderEntry",
-                        // nsContext ) );
-                        int numberOfEntries = 4; // elements.size();
+                        XMLStreamReader tableAsStream = complexIn.getValueAsXMLStream();
+                        Document document = XMLStreamUtils.getAsDocument( tableAsStream );
+
+                        DOMXPath xpath = new DOMXPath( "tbl:Header/tbl:HeaderEntry" );
+                        xpath.addNamespace( "tbl", SCHEMA );
+                        int numberOfEntries = xpath.selectNodes( document.getDocumentElement() ).size();
                         if ( numberOfEntries > 1 ) {
                             XMLAdapter jrxmlAdapter = new XMLAdapter( jrxml );
                             OMElement root = jrxmlAdapter.getRootElement();
@@ -240,10 +246,14 @@ public class DataTableContentProvider implements JrxmlContentProvider {
                             root.serialize( bos );
                             jrxml = new ByteArrayInputStream( bos.toByteArray() );
                         }
-                        // add complete input xml
-                        XMLStreamReader xmlIs = complexIn.getValueAsXMLStream();
-                        Document document = XMLStreamUtils.getAsDocument (xmlIs);
-                        params.put( JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, document );
+                        // // add complete input xml
+                        // OMNodeEx e ;
+                        // OMElement document = tableAdapter.getRootElement();
+                        // DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                        // Document doc = builder.parse( tableAdapter.getRootElement() );
+                        //TODO: reload should not be required!
+                        Document doc = getAsDocument1( complexIn.getValueAsXMLStream() );
+                        params.put( JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, doc );
                     } catch ( Exception e ) {
                         String msg = "Could not process data table content: " + e.getMessage();
                         LOG.error( msg, e );
@@ -257,6 +267,29 @@ public class DataTableContentProvider implements JrxmlContentProvider {
         }
 
         return jrxml;
+    }
+
+    private static Document getAsDocument1( XMLStreamReader xmlStreamReader )
+                            throws XMLStreamException, FactoryConfigurationError, ParserConfigurationException,
+                            SAXException, IOException {
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        StreamBufferStore store = new StreamBufferStore();
+        XMLStreamWriter xmlWriter = null;
+        try {
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( store );
+            XMLAdapter.writeElement( xmlWriter, xmlStreamReader );
+        } finally {
+            if ( xmlWriter != null ) {
+                try {
+                    xmlWriter.close();
+                } catch ( XMLStreamException e ) {
+                    LOG.error( "Unable to close xmlwriter." );
+                }
+            }
+        }
+        Document doc = builder.parse( store.getInputStream() );
+        store.close();
+        return doc;
     }
 
     private void setText( OMFactory factory, OMElement txtElement, String text ) {

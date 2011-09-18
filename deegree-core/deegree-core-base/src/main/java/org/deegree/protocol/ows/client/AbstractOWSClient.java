@@ -35,24 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.client;
 
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
-import static org.deegree.protocol.ows.exception.OWSExceptionReader.isExceptionReport;
-import static org.deegree.protocol.ows.exception.OWSExceptionReader.parseExceptionReport;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.net.DURL;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
@@ -76,7 +77,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOWSClient.class );
 
-    private static final XMLInputFactory xmlFac = XMLInputFactory.newInstance();
+    private final HttpClient httpClient;
 
     protected final T capaDoc;
 
@@ -107,27 +108,32 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
             throw new NullPointerException( "Capabilities URL must not be null." );
         }
 
-        XMLStreamReader xmlStream = doGetXML( capaUrl, null, null );
-        XMLAdapter xmlAdapter = new XMLAdapter( xmlStream );
+        httpClient = initHttpClient();
+        OWSResponse response = doGet( capaUrl, null, null );
+        try {
+            XMLAdapter xmlAdapter = new XMLAdapter( response.getAsXMLStream() );
 
-        OMElement rootEl = xmlAdapter.getRootElement();
-        String version = rootEl.getAttributeValue( new QName( "version" ) );
-        capaDoc = getCapabilitiesAdapter( xmlAdapter.getRootElement(), version );
+            OMElement rootEl = xmlAdapter.getRootElement();
+            String version = rootEl.getAttributeValue( new QName( "version" ) );
+            capaDoc = getCapabilitiesAdapter( xmlAdapter.getRootElement(), version );
 
-        try {
-            identification = capaDoc.parseServiceIdentification();
-        } catch ( Throwable t ) {
-            LOG.warn( "Error parsing service identification section: " + t.getMessage() );
-        }
-        try {
-            provider = capaDoc.parseServiceProvider();
-        } catch ( Throwable t ) {
-            LOG.warn( "Error parsing service provider section: " + t.getMessage() );
-        }
-        try {
-            metadata = capaDoc.parseOperationsMetadata();
-        } catch ( Throwable t ) {
-            LOG.warn( "Error parsing metadata section: " + t.getMessage() );
+            try {
+                identification = capaDoc.parseServiceIdentification();
+            } catch ( Throwable t ) {
+                LOG.warn( "Error parsing service identification section: " + t.getMessage() );
+            }
+            try {
+                provider = capaDoc.parseServiceProvider();
+            } catch ( Throwable t ) {
+                LOG.warn( "Error parsing service provider section: " + t.getMessage() );
+            }
+            try {
+                metadata = capaDoc.parseOperationsMetadata();
+            } catch ( Throwable t ) {
+                LOG.warn( "Error parsing metadata section: " + t.getMessage() );
+            }
+        } finally {
+            response.close();
         }
 
         String baseUrl = capaUrl.toString();
@@ -140,6 +146,11 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
                 LOG.warn( t.getMessage() );
             }
         }
+    }
+
+    private HttpClient initHttpClient() {
+        ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager();
+        return new DefaultHttpClient( connManager );
     }
 
     /**
@@ -241,38 +252,73 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         return metadata.getPostUrls( operationName );
     }
 
-    protected InputStream doGetBinary( URL endPoint, Map<String, String> params, Map<String, String> headers )
+    /**
+     * Performs an HTTP-GET request to the service.
+     * <p>
+     * NOTE: The caller <b>must</b> call {@link OWSResponse#close()} on the returned object eventually, otherwise underlying
+     * resources (connections) may not be freed.
+     * </p>
+     * 
+     * @param endPoint
+     * @param params
+     * @param headers
+     * @return
+     * @throws IOException
+     */
+    protected OWSResponse doGet( URL endPoint, Map<String, String> params, Map<String, String> headers )
                             throws IOException {
-        InputStream is = null;
+
+        OWSResponse response = null;
+        URI uri = null;
         try {
-            LOG.debug( "Performing GET request on endpoint '{}'", endPoint );
-            DURL durl = new DURL( endPoint.toString() );
-            // TODO params + headers
-            is = durl.openStream();
+            StringBuilder sb = new StringBuilder( endPoint.toString() );
+
+            boolean first = true;
+            if ( params != null ) {
+                if ( sb.charAt( sb.length() - 1 ) != '?' ) {
+                    sb.append( '?' );
+                }
+                for ( Entry<String, String> param : params.entrySet() ) {
+                    if ( !first ) {
+                        sb.append( '&' );
+                    } else {
+                        first = false;
+                    }
+                    sb.append( URLEncoder.encode( param.getKey(), "UTF-8" ) );
+                    sb.append( '=' );
+                    sb.append( URLEncoder.encode( param.getValue(), "UTF-8" ) );
+                }
+            }
+
+            uri = new URI( sb.toString() );
+            HttpGet httpGet = new HttpGet( uri );
+            LOG.debug( "Performing GET request: " + uri );
+            HttpResponse httpResponse = httpClient.execute( httpGet );
+            response = new OWSResponse( uri, httpResponse );
         } catch ( Throwable e ) {
-            String msg = "Error performing GET request on endpoint '{}'" + endPoint + "': " + e.getMessage();
+            e.printStackTrace();
+            String msg = "Error performing GET request on '" + uri + "': " + e.getMessage();
             throw new IOException( msg );
         }
-        return is;
+        return response;
     }
 
-    protected XMLStreamReader doGetXML( URL endPoint, Map<String, String> params, Map<String, String> headers )
-                            throws OWSExceptionReport, XMLStreamException, IOException {
-
-        InputStream is = doGetBinary( endPoint, params, headers );
-        XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( is );
-        assertNoExceptionReport( xmlStream );
-        LOG.debug( "Response root element: " + xmlStream.getName() );
-        String version = xmlStream.getAttributeValue( null, "version" );
-        LOG.trace( "Response version attribute: " + version );
-        return xmlStream;
-    }
-
-    private void assertNoExceptionReport( XMLStreamReader xmlStream )
-                            throws OWSExceptionReport, XMLStreamException {
-        skipStartDocument( xmlStream );
-        if ( isExceptionReport( xmlStream.getName() ) ) {
-            throw parseExceptionReport( xmlStream );
-        }
+    /**
+     * Performs an HTTP-POST request to the service.
+     * <p>
+     * NOTE: The caller <b>must</b> call {@link OWSResponse#close()} on the returned object eventually, otherwise
+     * underlying resources (connections) may not be freed.
+     * </p>
+     * 
+     * @param endPoint
+     * @param body
+     * @param headers
+     * @return
+     * @throws IOException
+     */
+    protected OWSResponse doPost( URL endPoint, InputStream body, Map<String, String> headers )
+                            throws IOException {
+        // TODO
+        return null;
     }
 }

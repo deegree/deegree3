@@ -54,7 +54,15 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
+import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
+import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
+import static org.deegree.services.controller.OGCFrontController.getHttpPostURL;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,8 +76,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -85,17 +93,18 @@ import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.metadata.OperationsMetadata;
+import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.operation.DCP;
+import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.controller.ows.capabilities.OWSOperation;
-import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
+import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 /**
  * Handles a single {@link GetCapabilities} requests for the {@link WebFeatureService}.
@@ -124,6 +133,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final Version version;
 
+    // in descending order
+    private final List<Version> offeredVersions = new ArrayList<Version>();
+
+    private final List<String> offeredVersionStrings = new ArrayList<String>();
+
     private final XMLStreamWriter writer;
 
     private final ServiceIdentificationType serviceId;
@@ -144,7 +158,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final WebFeatureService master;
 
-    private final Element extendedCapabilities;
+    private final OMElement extendedCapabilities;
 
     private final String metadataUrlTemplate;
 
@@ -153,7 +167,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                             ServiceProviderType serviceProvider, Collection<FeatureType> servedFts,
                             String metadataUrlTemplate, Map<QName, FeatureTypeMetadata> ftNameToFtMetadata,
                             Set<String> sections, boolean enableTransactions, List<ICRS> querySRS,
-                            Element extendedCapabilities ) {
+                            OMElement extendedCapabilities ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -167,6 +181,12 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.enableTransactions = enableTransactions;
         this.querySRS = querySRS;
         this.extendedCapabilities = extendedCapabilities;
+
+        List<String> offeredVersions = master.getOfferedVersions();
+        for ( int i = offeredVersions.size() - 1; i >= 0; i-- ) {
+            this.offeredVersionStrings.add( offeredVersions.get( i ) );
+            this.offeredVersions.add( Version.parseVersion( offeredVersions.get( i ) ) );
+        }
     }
 
     /**
@@ -499,9 +519,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // ows:ServiceIdentification
         if ( sections == null || sections.contains( "SERVICEIDENTIFICATION" ) ) {
-            List<Version> serviceVersions = new ArrayList<Version>();
-            serviceVersions.add( Version.parseVersion( "1.1.0" ) );
-            exportServiceIdentification100( writer, serviceId, "WFS", serviceVersions );
+            exportServiceIdentification100( writer, serviceId, "WFS", offeredVersions );
         }
 
         // ows:ServiceProvider
@@ -511,76 +529,68 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // ows:OperationsMetadata
         if ( sections == null || sections.contains( "OPERATIONSMETADATA" ) ) {
-            List<OWSOperation> operations = new ArrayList<OWSOperation>();
-            DCPType dcp = new DCPType();
-            dcp.setHTTPGet( OGCFrontController.getHttpGetURL() );
-            dcp.setHTTPPost( OGCFrontController.getHttpPostURL() );
+            List<Operation> operations = new ArrayList<Operation>();
+            List<DCP> dcps = null;
+            try {
+                dcps = Collections.singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
+            } catch ( MalformedURLException e ) {
+                // should never happen
+            }
 
             // DescribeFeatureType
-            List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
+            List<Domain> params = new ArrayList<Domain>();
             List<String> outputFormats = new ArrayList<String>( master.getOutputFormats() );
-            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
-            List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();
-            operations.add( new OWSOperation( WFSRequestType.DescribeFeatureType.name(), dcp, params, constraints ) );
+            params.add( new Domain( "outputFormat", outputFormats ) );
+            operations.add( new Operation( WFSRequestType.DescribeFeatureType.name(), dcps, params, null, null ) );
 
             // GetCapabilities
-            params = new ArrayList<Pair<String, List<String>>>();
-            params.add( new Pair<String, List<String>>( "AcceptVersions", master.getOfferedVersions() ) );
-            params.add( new Pair<String, List<String>>( "AcceptFormats", Collections.singletonList( "text/xml" ) ) );
+            params = new ArrayList<Domain>();
+            params.add( new Domain( "AcceptVersions", offeredVersionStrings ) );
+            params.add( new Domain( "AcceptFormats", Collections.singletonList( "text/xml" ) ) );
             // List<String> sections = new ArrayList<String>();
             // sections.add( "ServiceIdentification" );
             // sections.add( "ServiceProvider" );
             // sections.add( "OperationsMetadata" );
             // sections.add( "FeatureTypeList" );
             // sections.add( "Filter_Capabilities" );
-            // params.add( new Pair<String, List<String>>( "Sections", sections ) );
-            constraints = new ArrayList<Pair<String, List<String>>>();
-            operations.add( new OWSOperation( WFSRequestType.GetCapabilities.name(), dcp, params, constraints ) );
+            // params.add( new Domain( "Sections", sections ) );
+            operations.add( new Operation( WFSRequestType.GetCapabilities.name(), dcps, params, null, null ) );
 
             // GetFeature
-            params = new ArrayList<Pair<String, List<String>>>();
-            params.add( new Pair<String, List<String>>( "resultType",
-                                                        Arrays.asList( new String[] { "results", "hits" } ) ) );
-            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
-            operations.add( new OWSOperation( WFSRequestType.GetFeature.name(), dcp, params, constraints ) );
+            params = new ArrayList<Domain>();
+            params.add( new Domain( "resultType", Arrays.asList( new String[] { "results", "hits" } ) ) );
+            params.add( new Domain( "outputFormat", outputFormats ) );
+            operations.add( new Operation( WFSRequestType.GetFeature.name(), dcps, params, null, null ) );
 
             // GetFeatureWithLock
             if ( enableTransactions ) {
-                params = new ArrayList<Pair<String, List<String>>>();
-                params.add( new Pair<String, List<String>>( "resultType", Arrays.asList( new String[] { "results",
-                                                                                                       "hits" } ) ) );
-                params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
-                operations.add( new OWSOperation( WFSRequestType.GetFeatureWithLock.name(), dcp, params, constraints ) );
+                params = new ArrayList<Domain>();
+                params.add( new Domain( "resultType", Arrays.asList( new String[] { "results", "hits" } ) ) );
+                params.add( new Domain( "outputFormat", outputFormats ) );
+                operations.add( new Operation( WFSRequestType.GetFeatureWithLock.name(), dcps, params, null, null ) );
             }
 
             // GetGmlObject
-            params = new ArrayList<Pair<String, List<String>>>();
-            params = new ArrayList<Pair<String, List<String>>>();
-            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
-            constraints = new ArrayList<Pair<String, List<String>>>();
-            operations.add( new OWSOperation( WFSRequestType.GetGmlObject.name(), dcp, params, constraints ) );
+            params = new ArrayList<Domain>();
+            params.add( new Domain( "outputFormat", outputFormats ) );
+            operations.add( new Operation( WFSRequestType.GetGmlObject.name(), dcps, params, null, null ) );
 
             if ( enableTransactions ) {
 
                 // LockFeature
-                params = new ArrayList<Pair<String, List<String>>>();
-                params.add( new Pair<String, List<String>>( "lockAction",
-                                                            Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
-                operations.add( new OWSOperation( WFSRequestType.LockFeature.name(), dcp, params, constraints ) );
+                params = new ArrayList<Domain>();
+                params.add( new Domain( "lockAction", Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
+                operations.add( new Operation( WFSRequestType.LockFeature.name(), dcps, params, null, null ) );
 
                 // Transaction
-                params = new ArrayList<Pair<String, List<String>>>();
-                params.add( new Pair<String, List<String>>( "inputFormat", outputFormats ) );
-                params.add( new Pair<String, List<String>>( "idgen", Arrays.asList( new String[] { "GenerateNew",
-                                                                                                  "UseExisting",
-                                                                                                  "ReplaceDuplicate" } ) ) );
-                params.add( new Pair<String, List<String>>( "releaseAction", Arrays.asList( new String[] { "ALL",
-                                                                                                          "SOME" } ) ) );
-                operations.add( new OWSOperation( WFSRequestType.Transaction.name(), dcp, params, constraints ) );
+                params = new ArrayList<Domain>();
+                params.add( new Domain( "inputFormat", outputFormats ) );
+                params.add( new Domain( "idgen", Arrays.asList( new String[] { "GenerateNew", "UseExisting",
+                                                                              "ReplaceDuplicate" } ) ) );
+                params.add( new Domain( "releaseAction", Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
+                operations.add( new Operation( WFSRequestType.Transaction.name(), dcps, params, null, null ) );
             }
-            // TODO
-
-            exportOperationsMetadata100( writer, operations, extendedCapabilities );
+            exportOperationsMetadata100( writer, new OperationsMetadata( operations, null, null, extendedCapabilities ) );
         }
 
         // wfs:FeatureTypeList
@@ -742,6 +752,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeStartElement( WFS_200_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "2.0.0" );
         writer.writeDefaultNamespace( WFS_200_NS );
+        // for QNames in QueryExpressions constraint
+        writer.writeNamespace( "wfs", WFS_200_NS );
         writer.writeNamespace( OWS_PREFIX, OWS110_NS );
         writer.writeNamespace( OGC_PREFIX, OGCNS );
         writer.writeNamespace( FES_PREFIX, FES_20_NS );
@@ -751,9 +763,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // ows:ServiceIdentification
         if ( sections == null || sections.contains( "ServiceIdentification" ) ) {
-            List<Version> serviceVersions = new ArrayList<Version>();
-            serviceVersions.add( Version.parseVersion( "2.0.0" ) );
-            exportServiceIdentification110( writer, serviceId, "WFS", serviceVersions );
+            exportServiceIdentification110( writer, serviceId, "WFS", offeredVersions );
         }
 
         // ows:ServiceProvider
@@ -763,71 +773,94 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // ows:OperationsMetadata
         if ( sections == null || sections.contains( "OPERATIONSMETADATA" ) ) {
-            List<OWSOperation> operations = new ArrayList<OWSOperation>();
-            DCPType dcp = new DCPType();
-            dcp.setHTTPGet( OGCFrontController.getHttpGetURL() );
-            dcp.setHTTPPost( OGCFrontController.getHttpPostURL() );
+            List<Operation> operations = new ArrayList<Operation>();
+            List<DCP> dcps = null;
+            try {
+                dcps = Collections.singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
+            } catch ( MalformedURLException e ) {
+                // should never happen
+            }
 
             // DescribeFeatureType
-            List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
-            List<String> outputFormats = new ArrayList<String>( master.getOutputFormats() );
-            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
-            List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();
-            operations.add( new OWSOperation( WFSRequestType.DescribeFeatureType.name(), dcp, params, constraints ) );
+            operations.add( new Operation( DescribeFeatureType.name(), dcps, null, null, null ) );
 
             // GetCapabilities
-            params = new ArrayList<Pair<String, List<String>>>();
-            params.add( new Pair<String, List<String>>( "AcceptVersions", master.getOfferedVersions() ) );
-            params.add( new Pair<String, List<String>>( "AcceptFormats", Collections.singletonList( "text/xml" ) ) );
+            List<Domain> params = new ArrayList<Domain>();
+            params.add( new Domain( "AcceptVersions", offeredVersionStrings ) );
+            params.add( new Domain( "AcceptFormats", Collections.singletonList( "text/xml" ) ) );
             List<String> sections = new ArrayList<String>();
             sections.add( "ServiceIdentification" );
             sections.add( "ServiceProvider" );
             sections.add( "OperationsMetadata" );
             sections.add( "FeatureTypeList" );
             sections.add( "Filter_Capabilities" );
-            params.add( new Pair<String, List<String>>( "Sections", sections ) );
-            constraints = new ArrayList<Pair<String, List<String>>>();
-            operations.add( new OWSOperation( WFSRequestType.GetCapabilities.name(), dcp, params, constraints ) );
+            params.add( new Domain( "Sections", sections ) );
+            operations.add( new Operation( GetCapabilities.name(), dcps, params, null, null ) );
 
             // GetFeature
-            params = new ArrayList<Pair<String, List<String>>>();
-            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
+            operations.add( new Operation( GetFeature.name(), dcps, null, null, null ) );
+
+            // GetPropertyValue
+            operations.add( new Operation( GetPropertyValue.name(), dcps, null, null, null ) );
+
+            // global parameter domains
+            List<Domain> globalParams = new ArrayList<Domain>();
+
+            // version
+            globalParams.add( new Domain( "version", offeredVersionStrings ) );
+            
+            
+            // srsName
+            List<String> srsNames = new ArrayList<String>();
+            for ( ICRS crs : querySRS ) {
+                srsNames.add( crs.getAlias() );
+            }
+            globalParams.add( new Domain( "srsName", srsNames ) );
+
+            // outputFormat
+            globalParams.add( new Domain( "outputFormat", new ArrayList<String>( master.getOutputFormats() ) ) );
+
+            // resolve
             List<String> resolve = new ArrayList<String>();
             resolve.add( "none" );
             resolve.add( "local" );
             resolve.add( "remote" );
             resolve.add( "all" );
-            params.add( new Pair<String, List<String>>( "resolve", resolve ) );
-            operations.add( new OWSOperation( WFSRequestType.GetFeature.name(), dcp, params, constraints ) );
+            globalParams.add( new Domain( "resolve", resolve ) );
 
-            // GetPropertyValue
-            params = new ArrayList<Pair<String, List<String>>>();
-            params.add( new Pair<String, List<String>>( "outputFormat", outputFormats ) );
-            params.add( new Pair<String, List<String>>( "resolve", resolve ) );
-            operations.add( new OWSOperation( WFSRequestType.GetPropertyValue.name(), dcp, params, constraints ) );
-
-            // global parameter domains
-            List<Pair<String, List<String>>> globalParams = new ArrayList<Pair<String, List<String>>>();
-            // globalParams.add( new Pair<String, List<String>>( "version", master.getOfferedVersions() ) );
+            List<Domain> constraints = new ArrayList<Domain>();
 
             // Service constraints
-            List<Pair<String, String>> profileConstraints = new ArrayList<Pair<String, String>>();
-            profileConstraints.add( new Pair<String, String>( "ImplementsBasicWFS", "TRUE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsTransactionalWFS", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsLockingWFS", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "KVPEncoding", "TRUE" ) );
-            profileConstraints.add( new Pair<String, String>( "XMLEncoding", "TRUE" ) );
-            profileConstraints.add( new Pair<String, String>( "SOAPEncoding", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsInheritance", "TRUE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsRemoteResolve", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsResultPaging", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsStandardJoins", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsSpatialJoins", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsTemporalJoins", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "ImplementsFeatureVersioning", "FALSE" ) );
-            profileConstraints.add( new Pair<String, String>( "ManageStoredQueries", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsBasicWFS", "TRUE" ) );
+            constraints.add( new Domain( "ImplementsTransactionalWFS", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsLockingWFS", "FALSE" ) );
+            constraints.add( new Domain( "KVPEncoding", "TRUE" ) );
+            constraints.add( new Domain( "XMLEncoding", "TRUE" ) );
+            constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsInheritance", "TRUE" ) );
+            constraints.add( new Domain( "ImplementsRemoteResolve", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsStandardJoins", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsTemporalJoins", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsFeatureVersioning", "FALSE" ) );
+            constraints.add( new Domain( "ManageStoredQueries", "FALSE" ) );
 
-            exportOperationsMetadata110( writer, operations, globalParams, profileConstraints, extendedCapabilities );
+            // capacity constraints
+            if ( master.getMaxFeatures() != -1 ) {
+                constraints.add( new Domain( "CountDefault", "" + master.getMaxFeatures() ) );
+            }
+
+            constraints.add( new Domain( "ResolveLocalScope", "*" ) );
+
+            List<String> queryExprs = new ArrayList<String>();
+            queryExprs.add( "wfs:Query" );
+            queryExprs.add( "wfs:StoredQuery" );
+            constraints.add( new Domain( "QueryExpressions", queryExprs ) );
+
+            OperationsMetadata operationsMd = new OperationsMetadata( operations, globalParams, constraints,
+                                                                      extendedCapabilities );
+            exportOperationsMetadata110( writer, operationsMd );
         }
 
         // wfs:WSDL

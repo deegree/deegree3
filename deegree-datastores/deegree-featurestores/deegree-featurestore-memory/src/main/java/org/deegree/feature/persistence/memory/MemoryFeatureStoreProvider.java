@@ -66,7 +66,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,16 +125,16 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                     gmlVersionType = jaxbSchemaURL.getVersion();
                 }
 
-                AppSchemaXSDDecoder decoder = null;
+                GMLAppSchemaReader decoder = null;
                 if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
                     File file = new File( new URL( schemaURLs[0] ).toURI() );
-                    decoder = new AppSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                    decoder = new GMLAppSchemaReader( GMLVersion.valueOf( gmlVersionType.name() ),
                                                        getHintMap( config.getNamespaceHint() ), file );
                 } else {
-                    decoder = new AppSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                    decoder = new GMLAppSchemaReader( GMLVersion.valueOf( gmlVersionType.name() ),
                                                        getHintMap( config.getNamespaceHint() ), schemaURLs );
                 }
-                schema = decoder.extractFeatureTypeSchema();
+                schema = decoder.extractAppSchema();
                 if ( config.getStorageCRS() != null ) {
                     storageSRS = CRSManager.lookup( config.getStorageCRS() );
                 }

@@ -137,10 +137,13 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     }
 
     @Override
-    public int queryHits( Query[] queries )
+    public int[] queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return 0;
+        int[] hits = new int[queries.length];
+        for ( int i = 0; i < queries.length; i++ ) {
+            hits[i] = queryHits( queries[i] );
+        }
+        return hits;
     }
 
     @Override

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+   Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,10 +32,8 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.ows;
-
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+----------------------------------------------------------------------------*/
+package org.deegree.services.ows;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -44,22 +42,18 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * {@link XMLExceptionSerializer} for OWS Commons 1.2.0 ExceptionReports. TODO the OGC 07-006r1 spec defines the
- * exception version 1.2.0 but the OWS schema location 1.0.0
- * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * This class can generate namespace-less exception reports.
+ *
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
+ *
  */
-public class OWSException120XMLAdapter extends XMLExceptionSerializer<OWSException> {
-
-    private static final String OWS_NS = "http://www.opengis.net/ows";
-
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
+public class NamespacelessOWSExceptionXMLAdapter extends XMLExceptionSerializer<OWSException> {
 
     /**
-     * Export an ExceptionReport to the ows 1.0.0 format.
+     * Export an ExceptionReport without namespace.
      */
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
@@ -67,20 +61,15 @@ public class OWSException120XMLAdapter extends XMLExceptionSerializer<OWSExcepti
         if ( ex == null || writer == null ) {
             return;
         }
-        writer.writeStartElement( "ows", "ExceptionReport", OWS_NS );
-        writer.writeNamespace( "xsi", XSINS );
-        writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "1.2.0" );
-        writer.writeStartElement( OWS_NS, "Exception" );
-        writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
+        writer.writeStartElement( "ServiceExceptionReport" );
+        writer.writeStartElement( "ServiceException" );
+        writer.writeAttribute( "code", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
             writer.writeAttribute( "locator", ex.getLocator() );
         }
-        writer.writeStartElement( OWS_NS, "ExceptionText" );
         writer.writeCharacters( ex.getMessage() );
-        writer.writeEndElement();
-        writer.writeEndElement(); // Exception
-        writer.writeEndElement(); // ExceptionReport
+        writer.writeEndElement(); // ServiceException
+        writer.writeEndElement(); // ServiceExceptionReport
     }
 
 }

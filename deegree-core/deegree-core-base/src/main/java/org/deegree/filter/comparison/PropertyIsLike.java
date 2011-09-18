@@ -40,6 +40,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.XPathEvaluator;
 
 /**
@@ -126,7 +127,7 @@ public class PropertyIsLike extends ComparisonOperator {
                     return true;
                 }
                 if ( value1 != null && value2 != null ) {
-                    Pair<PrimitiveValue, PrimitiveValue> primitivePair = getPrimitives( value1, value2 );
+                    Pair<PrimitiveValue, PrimitiveValue> primitivePair = getPrimitiveValues( value1, value2 );
                     String s1 = primitivePair.first.toString();
                     String s2 = primitivePair.second.toString();
                     if ( !matchCase ) {

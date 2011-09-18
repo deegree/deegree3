@@ -360,21 +360,19 @@ public class GeoCouchFeatureStore implements FeatureStore {
     @Override
     public int queryHits( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        return queryHits( new Query[] { query } );
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public int queryHits( Query[] queries )
+    public int[] queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     private Feature getFeatureById( String id ) {
