@@ -886,23 +886,23 @@ public class MapContentProvider implements JrxmlContentProvider {
                 }
                 String capUrl = datasource.getUrl() + "?request=GetCapabilities&service=WMS&version=1.1.1";
                 WMSClient111 wmsClient = new WMSClient111( new URL( capUrl ), 5, 60, user, passw );
-                List<String> layerNames = new ArrayList<String>();
+                List<Pair<String, String>> layerToStyle = new ArrayList<Pair<String, String>>();
                 for ( Layer l : layers ) {
-                    layerNames.add( l.getName() );
+                    String style = l.getStyle() != null ? l.getStyle().getNamedStyle() : null;
+                    layerToStyle.add( new Pair<String, String>( l.getName(), style ) );
                 }
-
-                // TODO: styles!
-                GetMap gm = new GetMap( layerNames, width, height, bbox, bbox.getCoordinateSystem(), "image/png", true );
+                GetMap gm = new GetMap( layerToStyle, width, height, bbox, "image/png", true );
                 Pair<BufferedImage, String> map = wmsClient.getMap( gm, null, 60, false );
                 if ( map.first == null )
-                    LOG.debug( map.second );
+                    throw new ProcessletException( "Could not get map from datasource " + datasource.getName() + ": "
+                                                   + map.second );
                 return map.first;
             } catch ( MalformedURLException e ) {
-                String msg = "could not reslove wms url " + datasource.getUrl() + "!";
+                String msg = "could not resolve wms url " + datasource.getUrl() + "!";
                 LOG.error( msg, e );
                 throw new ProcessletException( msg );
             } catch ( Exception e ) {
-                String msg = "could not get map!";
+                String msg = "could not get map: " + e.getMessage();
                 LOG.error( msg, e );
                 throw new ProcessletException( msg );
             }
@@ -1000,9 +1000,10 @@ public class MapContentProvider implements JrxmlContentProvider {
             sb.append( "VERSION=" ).append( datasource.getVersion() ).append( '&' );
             sb.append( "LAYER=" ).append( layer.getName() ).append( '&' );
             sb.append( "TRANSPARENT=" ).append( "TRUE" ).append( '&' );
-            sb.append( "FORMAT=" ).append( "image/png" );
-            // .append( '&' );
-            // STYLES=
+            sb.append( "FORMAT=" ).append( "image/png" ).append( '&' );
+            if ( layer.getStyle() != null && layer.getStyle().getNamedStyle() != null ) {
+                sb.append( "STYLE=" ).append( layer.getStyle().getNamedStyle() );
+            }
             return sb.toString();
         }
     }
