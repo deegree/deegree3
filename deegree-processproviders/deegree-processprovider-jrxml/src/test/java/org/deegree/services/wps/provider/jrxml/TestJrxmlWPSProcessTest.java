@@ -48,7 +48,6 @@ import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.junit.Test;
 
 /**
- * TODO add class documentation here
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -58,7 +57,7 @@ import org.junit.Test;
 public class TestJrxmlWPSProcessTest {
 
     @Test
-    public void test() {
+    public void testCreationOfAProcessOutOfAJRXML() {
         JrxmlWPSProcess wpsProcess = new JrxmlWPSProcess(
                                                           "id",
                                                           TestJrxmlParserTest.class.getResource( "testWPSreportTemplate.jrxml" ) );
@@ -72,9 +71,6 @@ public class TestJrxmlWPSProcessTest {
         assertNotNull( inputParameters );
 
         List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParameters.getProcessInput();
-        for ( JAXBElement<? extends ProcessletInputDefinition> jaxbElement : processInput ) {
-            System.out.println(jaxbElement.getName());
-        }
         assertNotNull( processInput );
         assertEquals( 6, processInput.size() );
     }
