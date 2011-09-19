@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-layers</artifactId>
-    <version>3.1-pre14-SNAPSHOT</version>
+    <version>3.1-pre13-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -29,18 +29,6 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.deegree</groupId>
-            <artifactId>deegree-core-commons</artifactId>
-            <version>3.1-pre13-SNAPSHOT</version>
-          </dependency>
-          <dependency>
-            <groupId>org.deegree</groupId>
-            <artifactId>deegree-core-geometry</artifactId>
-            <version>3.1-pre13-SNAPSHOT</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -48,23 +36,13 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-commons</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-geometry</artifactId>
-      <version>3.1-pre13-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
       <artifactId>deegree-core-layer</artifactId>
-      <version>3.1-pre14-SNAPSHOT</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-remoteows-wms</artifactId>
-      <version>3.1-pre14-SNAPSHOT</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
