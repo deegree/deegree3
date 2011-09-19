@@ -498,9 +498,9 @@ public class WMSClient111 implements WMSClient {
     public Pair<BufferedImage, String> getMap( GetMap getMap, Map<String, String> hardParameters, int timeout,
                                                boolean errorsInImage )
                             throws IOException {
-        Worker worker = new Worker( getMap.getLayers(), getMap.getWidth(), getMap.getHeight(), getMap.getBoundingBox(),
-                                    getMap.getCoordinateSystem(), getMap.getFormat(), getMap.getTransparent(),
-                                    errorsInImage, false, null, hardParameters );
+        Worker worker = new Worker( getMap.getLayers(), getMap.getStyles(), getMap.getWidth(), getMap.getHeight(),
+                                    getMap.getBoundingBox(), getMap.getCoordinateSystem(), getMap.getFormat(),
+                                    getMap.getTransparent(), errorsInImage, false, null, hardParameters );
 
         Pair<BufferedImage, String> result;
         try {
@@ -678,6 +678,8 @@ public class WMSClient111 implements WMSClient {
 
         private List<String> layers;
 
+        private List<String> styles;
+
         private int width;
 
         private int height;
@@ -698,10 +700,11 @@ public class WMSClient111 implements WMSClient {
 
         private final Map<String, String> hardParameters;
 
-        Worker( List<String> layers, int width, int height, Envelope bbox, ICRS srs, String format,
-                boolean transparent, boolean errorsInImage, boolean validate, List<String> validationErrors,
-                Map<String, String> hardParameters ) {
+        Worker( List<String> layers, List<String> styles, int width, int height, Envelope bbox, ICRS srs,
+                String format, boolean transparent, boolean errorsInImage, boolean validate,
+                List<String> validationErrors, Map<String, String> hardParameters ) {
             this.layers = layers;
+            this.styles = styles;
             this.width = width;
             this.height = height;
             this.bbox = bbox;
@@ -717,18 +720,18 @@ public class WMSClient111 implements WMSClient {
         @Override
         public Pair<BufferedImage, String> call()
                                 throws Exception {
-            return getMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
+            return getMap( layers, styles, width, height, bbox, srs, format, transparent, errorsInImage, validate,
                            validationErrors );
         }
 
-        private Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox,
-                                                    ICRS srs, String format, boolean transparent,
+        private Pair<BufferedImage, String> getMap( List<String> layers, List<String> styles, int width, int height,
+                                                    Envelope bbox, ICRS srs, String format, boolean transparent,
                                                     boolean errorsInImage, boolean validate,
                                                     List<String> validationErrors )
                                 throws IOException {
             if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
-                return getTiledMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
-                                    validationErrors );
+                return getTiledMap( layers, styles, width, height, bbox, srs, format, transparent, errorsInImage,
+                                    validate, validationErrors );
             }
 
             Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
@@ -774,7 +777,24 @@ public class WMSClient111 implements WMSClient {
                 map.put( "version", "1.1.1" );
                 map.put( "service", "WMS" );
                 map.put( "layers", join( ",", layers ) );
-                map.put( "styles", "" );
+                String stylesParam = "";
+                if ( styles != null && !styles.isEmpty() ) {
+                    boolean isFirst = true;
+                    StringBuilder sb = new StringBuilder();
+                    for ( String style : styles ) {
+                        if ( !isFirst ) {
+                            sb.append( "," );
+                        }
+                        if ( style != null ) {
+                            sb.append( style );
+                        } else {
+                            sb.append( "default" );
+                        }
+                        isFirst = false;
+                    }
+                    stylesParam = sb.toString();
+                }
+                map.put( "styles", stylesParam );
                 map.put( "width", Integer.toString( reqWidth ) );
                 map.put( "height", Integer.toString( reqHeight ) );
                 map.put( "bbox", reqEnv.getMin().get0() + "," + reqEnv.getMin().get1() + "," + reqEnv.getMax().get0()
@@ -877,9 +897,9 @@ public class WMSClient111 implements WMSClient {
         }
 
         // TODO handle axis direction and order correctly, depends on srs
-        private Pair<BufferedImage, String> getTiledMap( List<String> layers, int width, int height, Envelope bbox,
-                                                         ICRS srs, String format, boolean transparent,
-                                                         boolean errorsInImage, boolean validate,
+        private Pair<BufferedImage, String> getTiledMap( List<String> layers, List<String> styles, int width,
+                                                         int height, Envelope bbox, ICRS srs, String format,
+                                                         boolean transparent, boolean errorsInImage, boolean validate,
                                                          List<String> validationErrors )
                                 throws IOException {
 
@@ -946,8 +966,8 @@ public class WMSClient111 implements WMSClient {
             double[] max = rasterEnv.getWorldCoordinate( xMin + width, yMin );
 
             Envelope env = new GeometryFactory().createEnvelope( min, max, crs );
-            Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent,
-                                                           errorsInImage, false, null );
+            Pair<BufferedImage, String> response = getMap( layers, styles, width, height, env, crs, format,
+                                                           transparent, errorsInImage, false, null );
             if ( response.second != null ) {
                 throw new IOException( response.second );
             }
