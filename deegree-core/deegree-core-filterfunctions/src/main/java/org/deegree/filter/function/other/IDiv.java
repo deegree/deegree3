@@ -85,7 +85,7 @@ public class IDiv implements FunctionProvider {
 
     @Override
     public List<ParameterType> getArgs() {
-        return Collections.singletonList( INTEGER );
+        return INPUTS;
     }
 
     @Override

@@ -82,7 +82,7 @@ public class IMod implements FunctionProvider {
 
     @Override
     public List<ParameterType> getArgs() {
-        return Collections.singletonList( INTEGER );
+        return INPUTS;
     }
 
     @Override
