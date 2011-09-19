@@ -36,9 +36,14 @@
 package org.deegree.filter.function.other;
 
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.filter.function.ParameterType.ANYTYPE;
+import static org.deegree.filter.function.ParameterType.INTEGER;
+import static org.deegree.filter.function.ParameterType.STRING;
 import static org.deegree.filter.function.other.IMod.checkTwoArguments;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -52,6 +57,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.function.ParameterType;
 
 /**
  * Expects two arguments corresponding to two single values.
@@ -65,14 +71,26 @@ public class IDiv implements FunctionProvider {
 
     private static final String NAME = "IDiv";
 
+    private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>( 2 );
+
+    static {
+        INPUTS.add( INTEGER );
+        INPUTS.add( INTEGER );
+    }
+
     @Override
     public String getName() {
         return NAME;
     }
 
     @Override
-    public int getArgCount() {
-        return 2;
+    public List<ParameterType> getArgs() {
+        return Collections.singletonList( INTEGER );
+    }
+
+    @Override
+    public ParameterType getReturnType() {
+        return INTEGER;
     }
 
     @Override
@@ -112,7 +130,7 @@ public class IDiv implements FunctionProvider {
             }
         };
     }
-    
+
     @Override
     public void init( DeegreeWorkspace ws )
                             throws ResourceInitException {
@@ -122,5 +140,5 @@ public class IDiv implements FunctionProvider {
     @Override
     public void destroy() {
         // nothing to do
-    }     
+    }
 }

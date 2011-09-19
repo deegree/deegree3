@@ -42,17 +42,22 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.function.ParameterType;
+import org.deegree.gml.GMLVersion;
 
 /**
  * Writes <code>Filter_Capabilities</code> documents that describe the capabilities of deegree's filter implementation.
@@ -326,25 +331,45 @@ public class FilterCapabilitiesExporter {
             SortedSet<String> functionNames = new TreeSet<String>( functions.keySet() );
             for ( String functionName : functionNames ) {
                 FunctionProvider provider = functions.get( functionName );
-                exportFunction200( writer, provider );
+                boolean containsGMLTypes = false;
+                if ( provider.getReturnType().getType( GML_31 ).getNamespaceURI().equals( GMLNS ) ) {
+                    containsGMLTypes = true;
+                } else {
+                    for ( ParameterType arg : provider.getArgs() ) {
+                        if ( arg.getType( GML_31 ).getNamespaceURI().equals( GMLNS ) ) {
+                            containsGMLTypes = true;
+                            break;
+                        }
+                    }
+                }
+                if (containsGMLTypes) {
+                    exportFunction200( writer, provider, GML_31 );                    
+                }
+                exportFunction200( writer, provider, GML_32);
             }
             writer.writeEndElement();
         }
     }
 
-    private static void exportFunction200( XMLStreamWriter writer, FunctionProvider function )
+    private static void exportFunction200( XMLStreamWriter writer, FunctionProvider function, GMLVersion version )
                             throws XMLStreamException {
+
         writer.writeStartElement( FES_20_NS, "Function" );
         writer.writeAttribute( "name", function.getName() );
         writer.writeStartElement( FES_20_NS, "Returns" );
-        writer.writeCharacters( "TODO" );
+        QName typeName = function.getReturnType().getType( version );
+        writer.writeNamespace( typeName.getPrefix(), typeName.getNamespaceURI() );
+        writer.writeCharacters( typeName.getPrefix() + ":" + typeName.getLocalPart() );
         writer.writeEndElement();
         writer.writeStartElement( FES_20_NS, "Arguments" );
-        for ( int i = 1; i <= function.getArgCount(); i++ ) {
+        int i = 1;
+        for ( ParameterType inputType : function.getArgs() ) {
             writer.writeStartElement( FES_20_NS, "Argument" );
-            writer.writeAttribute( "name", "arg" + 1 );
+            writer.writeAttribute( "name", "arg" + ( i++ ) );
             writer.writeStartElement( FES_20_NS, "Type" );
-            writer.writeCharacters( "TODO" );
+            typeName = inputType.getType( version );
+            writer.writeNamespace( typeName.getPrefix(), typeName.getNamespaceURI() );
+            writer.writeCharacters( typeName.getPrefix() + ":" + typeName.getLocalPart() );
             writer.writeEndElement();
             writer.writeEndElement();
         }
@@ -392,7 +417,7 @@ public class FilterCapabilitiesExporter {
         for ( String functionName : functionNames ) {
             FunctionProvider provider = functions.get( functionName );
             writer.writeStartElement( OGCNS, "Function_Name" );
-            writer.writeAttribute( "nArgs", "" + provider.getArgCount() );
+            writer.writeAttribute( "nArgs", "" + provider.getArgs().size() );
             writer.writeCharacters( provider.getName() );
             writer.writeEndElement();
         }
@@ -433,7 +458,7 @@ public class FilterCapabilitiesExporter {
         for ( String functionName : functionNames ) {
             FunctionProvider provider = functions.get( functionName );
             writer.writeStartElement( OGCNS, "FunctionName" );
-            writer.writeAttribute( "nArgs", "" + provider.getArgCount() );
+            writer.writeAttribute( "nArgs", "" + provider.getArgs().size() );
             writer.writeCharacters( provider.getName() );
             writer.writeEndElement();
         }

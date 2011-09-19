@@ -35,10 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.geometry;
 
+import static org.deegree.filter.function.ParameterType.DOUBLE;
+import static org.deegree.filter.function.ParameterType.GEOMETRY;
 import static org.deegree.filter.utils.FilterUtils.getGeometryValue;
 import static org.deegree.geometry.utils.GeometryUtils.move;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -49,6 +53,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 
@@ -65,14 +70,27 @@ public class MoveGeometry implements FunctionProvider {
 
     private static final String NAME = "MoveGeometry";
 
+    private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>( 3 );
+
+    static {
+        INPUTS.add( GEOMETRY );
+        INPUTS.add( DOUBLE );
+        INPUTS.add( DOUBLE );
+    }
+
     @Override
     public String getName() {
         return NAME;
     }
 
     @Override
-    public int getArgCount() {
-        return 3;
+    public List<ParameterType> getArgs() {
+        return Collections.singletonList( GEOMETRY );
+    }
+
+    @Override
+    public ParameterType getReturnType() {
+        return DOUBLE;
     }
 
     @Override
