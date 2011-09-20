@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.1-pre14-SNAPSHOT</version>
+    <version>3.1-pre13-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
-      <version>3.1-pre14-SNAPSHOT</version>
+      <version>3.1-pre13-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
