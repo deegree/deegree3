@@ -93,7 +93,6 @@ import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
-import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProviderData;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.AbstractDatasourceType;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Center;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Detail;
@@ -124,7 +123,7 @@ public class MapContentProvider implements JrxmlContentProvider {
 
     private static final String PARAM_PREFIX = "map";
 
-    MapContentProviderData data = new MapContentProviderData( 0.0254 );
+    public double INCH2M = 0.0254;
 
     private enum SUFFIXES {
 
@@ -342,7 +341,7 @@ public class MapContentProvider implements JrxmlContentProvider {
         if ( center != null ) {
             int scaleDenominator = center.getScaleDenominator().intValue();
             String[] coords = center.getValue().split( "," );
-            double pixelSize = data.INCH2M / dpi;
+            double pixelSize = INCH2M / dpi;
             double w2 = ( scaleDenominator * pixelSize * mapWidth ) / 2d;
             double x1 = Double.parseDouble( coords[0] ) - w2;
             double x2 = Double.parseDouble( coords[0] ) + w2;
