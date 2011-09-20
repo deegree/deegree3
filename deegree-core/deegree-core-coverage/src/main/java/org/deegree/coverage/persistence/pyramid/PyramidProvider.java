@@ -148,6 +148,7 @@ public class PyramidProvider implements CoverageBuilder {
                 opts.add( OPT_FORMAT, "tiff" );
                 opts.add( CRS, crs.getAlias() );
                 AbstractRaster raster = RasterFactory.loadRasterFromFile( resolved, opts );
+                raster.setCoordinateSystem( crs );
                 mrr.addRaster( raster );
             }
             mrr.setCoordinateSystem( crs );
