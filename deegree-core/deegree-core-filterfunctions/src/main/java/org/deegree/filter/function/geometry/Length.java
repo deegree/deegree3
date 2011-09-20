@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.geometry;
 
+import static org.deegree.filter.function.ParameterType.DOUBLE;
+import static org.deegree.filter.function.ParameterType.GEOMETRY;
 import static org.deegree.filter.utils.FilterUtils.getGeometryValue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -49,6 +52,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Surface;
@@ -70,8 +74,13 @@ public class Length implements FunctionProvider {
     }
 
     @Override
-    public int getArgCount() {
-        return 1;
+    public List<ParameterType> getArgs() {
+        return Collections.singletonList( GEOMETRY );
+    }
+
+    @Override
+    public ParameterType getReturnType() {
+        return DOUBLE;
     }
 
     @Override

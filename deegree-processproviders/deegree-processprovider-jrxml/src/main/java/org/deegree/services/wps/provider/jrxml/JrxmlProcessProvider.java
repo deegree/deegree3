@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,6 @@ import java.util.Map;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.utils.Pair;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.slf4j.Logger;
@@ -63,10 +61,10 @@ public class JrxmlProcessProvider implements ProcessProvider {
 
     private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
 
-    public JrxmlProcessProvider( List<Pair<String, URL>> idToURL ) {
-        for ( Pair<String, URL> p : idToURL ) {
-            LOG.debug( "add process with id " + p.first + " from " + p.second );
-            idToProcess.put( new CodeType( p.first ), new JrxmlWPSProcess( p.first, p.second ) );
+    public JrxmlProcessProvider( List<JrxmlProcessDescription> idToURL ) {
+        for ( JrxmlProcessDescription p : idToURL ) {
+            LOG.debug( "add process with id " + p.getId() + " from " + p.getUrl() );
+            idToProcess.put( new CodeType( p.getId() ), new JrxmlWPSProcess( p ) );
         }
     }
 

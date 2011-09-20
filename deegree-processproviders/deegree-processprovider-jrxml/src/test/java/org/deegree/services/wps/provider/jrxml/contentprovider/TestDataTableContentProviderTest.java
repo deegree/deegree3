@@ -117,7 +117,7 @@ public class TestDataTableContentProviderTest {
         ProcessletInputs in = Utils.getInputs( "REPORT",
                                                DataTableContentProvider.MIME_TYPE,
                                                DataTableContentProvider.SCHEMA,
-                                               TestMapContentProviderTest.class.getResourceAsStream( "complexInputTABLE" ) );
+                                               TestDataTableContentProviderTest.class.getResourceAsStream( "complexInputTABLE" ) );
         jrxml = tableContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds,
                                                                          new HashMap<String, String>() );
 

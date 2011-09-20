@@ -35,44 +35,47 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.net.URL;
 
-import java.util.List;
-
-import javax.xml.bind.JAXBElement;
-
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
-import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.junit.Test;
+import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
 
 /**
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class TestJrxmlWPSProcessTest {
+class JrxmlProcessDescription {
 
-    @Test
-    public void testCreationOfAProcessOutOfAJRXML() {
-        JrxmlProcessDescription desc = new JrxmlProcessDescription(
-                                                                    "id",
-                                                                    TestJrxmlParserTest.class.getResource( "testWPSreportTemplate.jrxml" ) );
-        JrxmlWPSProcess wpsProcess = new JrxmlWPSProcess( desc );
-        ProcessDefinition pd = wpsProcess.getDescription();
-        assertNotNull( pd );
-        assertNotNull( pd.getIdentifier() );
-        assertEquals( "id", pd.getIdentifier().getValue() );
-        assertEquals( "createReportByAWPSProcess", pd.getTitle().getValue() );
+    private final String id;
 
-        InputParameters inputParameters = pd.getInputParameters();
-        assertNotNull( inputParameters );
+    private final URL url;
 
-        List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParameters.getProcessInput();
-        assertNotNull( processInput );
-        assertEquals( 6, processInput.size() );
+    private ResourceBundle resourceBundle;
+
+    JrxmlProcessDescription( String id, URL url ) {
+        this.id = id;
+        this.url = url;
     }
+
+    JrxmlProcessDescription( String id, URL url, ResourceBundle resourceBundle ) {
+        this.id = id;
+        this.url = url;
+        this.resourceBundle = resourceBundle;
+    }
+
+    String getId() {
+        return id;
+    }
+
+    URL getUrl() {
+        return url;
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
 }

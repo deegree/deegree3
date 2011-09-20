@@ -35,7 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.other;
 
+import static org.deegree.filter.function.ParameterType.ANYTYPE;
+import static org.deegree.filter.function.ParameterType.STRING;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -48,6 +52,7 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.function.ParameterType;
 
 /**
  * Expects one argument that refers to a property of {@link ExtraProps} and returns the value.
@@ -67,8 +72,13 @@ public class ExtraProp implements FunctionProvider {
     }
 
     @Override
-    public int getArgCount() {
-        return 1;
+    public List<ParameterType> getArgs() {
+        return Collections.singletonList( STRING );
+    }
+
+    @Override
+    public ParameterType getReturnType() {
+        return ANYTYPE;
     }
 
     @Override

@@ -33,46 +33,20 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider.jrxml;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.List;
-
-import javax.xml.bind.JAXBElement;
-
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
-import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.junit.Test;
+package org.deegree.services.wps.provider.jrxml.contentprovider.map;
 
 /**
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class TestJrxmlWPSProcessTest {
+class RenderUtils {
 
-    @Test
-    public void testCreationOfAProcessOutOfAJRXML() {
-        JrxmlProcessDescription desc = new JrxmlProcessDescription(
-                                                                    "id",
-                                                                    TestJrxmlParserTest.class.getResource( "testWPSreportTemplate.jrxml" ) );
-        JrxmlWPSProcess wpsProcess = new JrxmlWPSProcess( desc );
-        ProcessDefinition pd = wpsProcess.getDescription();
-        assertNotNull( pd );
-        assertNotNull( pd.getIdentifier() );
-        assertEquals( "id", pd.getIdentifier().getValue() );
-        assertEquals( "createReportByAWPSProcess", pd.getTitle().getValue() );
-
-        InputParameters inputParameters = pd.getInputParameters();
-        assertNotNull( inputParameters );
-
-        List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParameters.getProcessInput();
-        assertNotNull( processInput );
-        assertEquals( 6, processInput.size() );
+    static int adjustSpan( int inPxFromJrxml, int resolution ) {
+        // jasper assumes a resolution of 72 dpi
+        return new Double( inPxFromJrxml / 72d * resolution ).intValue();
     }
 }

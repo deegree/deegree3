@@ -649,13 +649,13 @@ public class TransformationFactory {
         // basic check for simple (invert) projections
         if ( sourceType == PROJECTED && targetType == GEOGRAPHIC ) {
             if ( ( ( (IProjectedCRS) resolve( sourceCRS.getUnderlyingCRS() ) ).getGeographicCRS() ).equals( targetCRS.getUnderlyingCRS() ) ) {
-                result = new ProjectionTransform( (IProjectedCRS) sourceCRS.getUnderlyingCRS() );
+                result = new ProjectionTransform( (IProjectedCRS) resolve( sourceCRS.getUnderlyingCRS() ) );
                 result.inverse();
             }
         }
         if ( sourceType == GEOGRAPHIC && targetType == PROJECTED ) {
             if ( ( ( (IProjectedCRS) resolve( targetCRS.getUnderlyingCRS() ) ).getGeographicCRS() ).equals( sourceCRS.getUnderlyingCRS() ) ) {
-                result = new ProjectionTransform( (IProjectedCRS) targetCRS.getUnderlyingCRS() );
+                result = new ProjectionTransform( (IProjectedCRS) resolve( targetCRS.getUnderlyingCRS() ) );
             }
         }
         if ( result == null ) {

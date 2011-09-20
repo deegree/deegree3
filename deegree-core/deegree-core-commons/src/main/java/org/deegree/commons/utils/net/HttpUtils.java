@@ -540,6 +540,28 @@ public class HttpUtils {
         }
     }
 
+    public static <T> Pair<T, HttpResponse> getFullResponse( Worker<T> worker, String url, Map<String, String> headers,
+                                                             String user, String pass, int readTimeout )
+                            throws IOException {
+        DURL u = new DURL( url );
+        if ( !u.valid() ) {
+            return null;
+        }
+        DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+        HttpConnectionParams.setSoTimeout( client.getParams(), readTimeout * 1000 );
+        if ( user != null && pass != null ) {
+            authenticate( client, user, pass, u );
+        }
+        HttpGet get = new HttpGet( url );
+        if ( headers != null ) {
+            for ( String key : headers.keySet() ) {
+                get.addHeader( key, headers.get( key ) );
+            }
+        }
+        HttpResponse response = client.execute( get );
+        return new Pair<T, HttpResponse>( worker.work( response.getEntity().getContent() ), response );
+    }
+
     /**
      * reads proxyHost and proxyPort from system parameters and sets them to the passed HttpClient instance
      * 

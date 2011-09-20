@@ -47,12 +47,11 @@ import javax.xml.bind.Unmarshaller;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
+import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcesses;
-import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcesses.JrxmlProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +82,7 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
 
         LOG.info( "Configuring jrxml process provider using file '" + configUrl + "'." );
 
-        List<Pair<String, URL>> processes = new ArrayList<Pair<String, URL>>();
+        List<JrxmlProcessDescription> processes = new ArrayList<JrxmlProcessDescription>();
         String jrxml = null;
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.provider.jrxml.jaxb.process",
@@ -95,8 +94,15 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
 
             List<JrxmlProcess> processList = config.getJrxmlProcess();
             for ( JrxmlProcess jrxmlProcess : processList ) {
-                jrxml = jrxmlProcess.getValue();
-                processes.add( new Pair<String, URL>( jrxmlProcess.getId(), a.resolve( jrxml ) ) );
+                jrxml = jrxmlProcess.getJrxml();
+                org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle = jrxmlProcess.getResourceBundle();
+
+                if ( resourceBundle != null ) {
+                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ),
+                                                                resourceBundle ) );
+                } else {
+                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ) ) );
+                }
             }
 
         } catch ( JAXBException e ) {

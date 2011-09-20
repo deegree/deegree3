@@ -1,6 +1,7 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://www.deegree.org/processes/jrxml"
-  targetNamespace="http://www.deegree.org/processes/jrxml" elementFormDefault="qualified" attributeFormDefault="unqualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+	targetNamespace="http://www.deegree.org/processes/jrxml"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 	<annotation>
 		<appinfo>
 			<jaxb:schemaBindings>
@@ -12,17 +13,31 @@
 	<element name="JrxmlProcesses">
 		<complexType>
 			<sequence>
-				<element name="jrxmlProcess" minOccurs="0" maxOccurs="unbounded">
-					<complexType>
-						<simpleContent>
-							<extension base="anyURI">
-								<attribute name="id" type="string" use="required" />
-							</extension>
-						</simpleContent>
-					</complexType>
-				</element>
+				<element ref="jr:JrxmlProcess" minOccurs="0" maxOccurs="unbounded" />
 			</sequence>
 			<attribute name="configVersion" use="required" fixed="0.1.0" />
+		</complexType>
+	</element>
+
+	<element name="JrxmlProcess">
+		<complexType>
+			<sequence>
+				<element name="jrxml" type="anyURI" minOccurs="1" />
+				<element ref="jr:ResourceBundle" minOccurs="0" />
+			</sequence>
+			<attribute name="id" type="string" use="required" />
+		</complexType>
+	</element>
+
+	<element name="ResourceBundle">
+		<complexType>
+			<sequence>
+				<element name="prefix" type="string" minOccurs="1" />
+				<element name="name" type="string" minOccurs="1" />
+				<element name="defaultLocale" type="string" minOccurs="1" />
+				<element name="supportedLocale" type="string" minOccurs="1"
+					maxOccurs="unbounded" />
+			</sequence>
 		</complexType>
 	</element>
 

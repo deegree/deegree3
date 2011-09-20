@@ -33,17 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider.jrxml.contentprovider;
+package org.deegree.services.wps.provider.jrxml.contentprovider.map;
 
-import static java.awt.RenderingHints.KEY_ANTIALIASING;
-import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
-import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
-import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.JASPERREPORTS_NS;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
+import static org.deegree.services.wps.provider.jrxml.contentprovider.map.RenderUtils.adjustSpan;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -59,31 +55,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.media.jai.JAI;
-import javax.media.jai.RenderedOp;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.dom.DOMSource;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -91,49 +76,34 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.feature.Feature;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.protocol.wfs.client.WFSClient;
 import org.deegree.protocol.wms.Utils;
-import org.deegree.protocol.wms.ops.GetMap;
-import org.deegree.remoteows.wms.WMSClient111;
-import org.deegree.rendering.r2d.Java2DRenderer;
-import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
+import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.AbstractDatasourceType;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Center;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Detail;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
-import org.deegree.services.wps.provider.jrxml.jaxb.map.Style;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WMSDatasource;
-import org.deegree.style.se.parser.SymbologyParser;
-import org.deegree.style.styling.Styling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.media.jai.codec.ImageCodec;
-import com.sun.media.jai.codec.MemoryCacheSeekableStream;
 import com.sun.media.jai.codec.PNGEncodeParam;
-import com.sun.media.jai.codec.SeekableStream;
 
 /**
  * Provides a map in the jrxml
@@ -153,7 +123,7 @@ public class MapContentProvider implements JrxmlContentProvider {
 
     private static final String PARAM_PREFIX = "map";
 
-    final double INCH2M = 0.0254;
+    public double INCH2M = 0.0254;
 
     private enum SUFFIXES {
 
@@ -287,18 +257,19 @@ public class MapContentProvider implements JrxmlContentProvider {
                                 LOG.info( "Could not find image tag in the jrxml for map parameter '" + mapKey + "'" );
                                 break;
                             }
-                            int width = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep, new XPath( "@width",
-                                                                                                     nsContext ) );
-                            int height = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep, new XPath( "@height",
-                                                                                                      nsContext ) );
+                            int originalWidth = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep, new XPath( "@width",
+                                                                                                             nsContext ) );
+                            int originalHeight = jrxmlAdapter.getRequiredNodeAsInteger( mapImgRep,
+                                                                                        new XPath( "@height", nsContext ) );
 
-                            width = adjustSpan( width, resolution );
-                            height = adjustSpan( height, resolution );
+                            int width = adjustSpan( originalWidth, resolution );
+                            int height = adjustSpan( originalHeight, resolution );
 
                             Envelope bbox = calculateBBox( map.getDetail(), mapId, width, height, resolution );
 
-                            params.put( mapKey, prepareMap( datasources, parameters.get( mapKey ), width, height, bbox ) );
-
+                            params.put( mapKey,
+                                        prepareMap( datasources, parameters.get( mapKey ), originalWidth,
+                                                    originalHeight, width, height, bbox, resolution ) );
                             // SCALE
                             double scale = Utils.calcScaleWMS130( width, height, bbox, bbox.getCoordinateSystem() );
                             String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX );
@@ -360,11 +331,6 @@ public class MapContentProvider implements JrxmlContentProvider {
             }
         }
         return jrxml;
-    }
-
-    private int adjustSpan( int inPxFromJrxml, int resolution ) {
-        // jasper assumes a resolution of 72 dpi
-        return new Double( inPxFromJrxml / 72d * resolution ).intValue();
     }
 
     private Envelope calculateBBox( Detail detail, String id, int mapWidth, int mapHeight, int dpi )
@@ -514,49 +480,57 @@ public class MapContentProvider implements JrxmlContentProvider {
                                   String type, int resolution )
                             throws ProcessletException {
 
-        OMElement legendRE = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
-                                                      new XPath( ".//jasper:image[jasper:imageExpression/text()='$P{"
-                                                                 + legendKey + "}']/jasper:reportElement", nsContext ) );
+        if ( "net.sf.jasperreports.engine.JRRenderable".equals( type ) ) {
+            return new LegendRenderable( datasources, resolution );
+        } else {
+            OMElement legendRE = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                          new XPath(
+                                                                     ".//jasper:image[jasper:imageExpression/text()='$P{"
+                                                                                             + legendKey
+                                                                                             + "}']/jasper:reportElement",
+                                                                     nsContext ) );
 
-        if ( legendRE != null ) {
-            LOG.debug( "Found legend with key '" + legendKey + "'." );
-            int width = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@width", nsContext ) );
-            int height = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@height", nsContext ) );
-            width = adjustSpan( width, resolution );
-            height = adjustSpan( height, resolution );
-            // TODO: bgcolor?
-            Color bg = Color.decode( "0xFFFFFF" );
-            BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-            Graphics g = bi.getGraphics();
-            g.setColor( bg );
-            g.fillRect( 0, 0, bi.getWidth(), bi.getHeight() );
-            g.setColor( Color.BLACK );
-            int k = 0;
+            if ( legendRE != null ) {
+                LOG.debug( "Found legend with key '" + legendKey + "'." );
+                int width = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@width", nsContext ) );
+                int height = jrxmlAdapter.getRequiredNodeAsInteger( legendRE, new XPath( "@height", nsContext ) );
+                width = adjustSpan( width, resolution );
+                height = adjustSpan( height, resolution );
 
-            for ( int i = 0; i < datasources.size(); i++ ) {
-                if ( k > bi.getHeight() ) {
-                    LOG.warn( "The necessary legend size is larger than the available legend space." );
-                }
-                List<Pair<String, BufferedImage>> legends = datasources.get( i ).getLegends( width );
-                for ( Pair<String, BufferedImage> legend : legends ) {
-                    BufferedImage img = legend.second;
-                    if ( img != null ) {
-                        if ( img.getWidth( null ) < 50 ) {
-                            // it is assumed that no label is assigned
-                            g.drawImage( img, 0, k, null );
-                            g.drawString( legend.first, img.getWidth( null ) + 10, k + img.getHeight( null ) / 2 );
+                BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+                Graphics2D g = bi.createGraphics();
+                // TODO: bgcolor?
+                Color bg = Color.decode( "0xFFFFFF" );
+                g.setColor( bg );
+                g.fillRect( 0, 0, width, height );
+                g.setColor( Color.BLACK );
+                int k = 0;
+
+                for ( int i = 0; i < datasources.size(); i++ ) {
+                    if ( k > height ) {
+                        LOG.warn( "The necessary legend size is larger than the available legend space." );
+                    }
+                    List<Pair<String, BufferedImage>> legends = datasources.get( i ).getLegends( width );
+                    for ( Pair<String, BufferedImage> legend : legends ) {
+                        BufferedImage img = legend.second;
+                        if ( img != null ) {
+                            if ( img.getWidth( null ) < 50 ) {
+                                // it is assumed that no label is assigned
+                                g.drawImage( img, 0, k, null );
+                                g.drawString( legend.first, img.getWidth( null ) + 10, k + img.getHeight( null ) / 2 );
+                            } else {
+                                g.drawImage( img, 0, k, null );
+                            }
+                            k = k + img.getHeight( null ) + 10;
                         } else {
-                            g.drawImage( img, 0, k, null );
+                            g.drawString( "- " + legend.first, 0, k + 10 );
+                            k = k + 20;
                         }
-                        k = k + img.getHeight( null ) + 10;
-                    } else {
-                        g.drawString( "- " + legend.first, 0, k + 10 );
-                        k = k + 20;
                     }
                 }
+                g.dispose();
+                return convertImageToReportFormat( type, bi );
             }
-            g.dispose();
-            return convertImageToReportFormat( type, bi );
         }
         return null;
     }
@@ -624,19 +598,23 @@ public class MapContentProvider implements JrxmlContentProvider {
         return newGrp;
     }
 
-    private Object prepareMap( List<OrderedDatasource<?>> datasources, String type, int width, int height, Envelope bbox )
+    private Object prepareMap( List<OrderedDatasource<?>> datasources, String type, int originalWidth,
+                               int originalHeight, int width, int height, Envelope bbox, int resolution )
                             throws ProcessletException {
-        BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-        Graphics g = bi.getGraphics();
-        for ( OrderedDatasource<?> datasource : datasources ) {
-            BufferedImage image = datasource.getImage( width, height, bbox );
-            if ( image != null ) {
-                g.drawImage( image, 0, 0, null );
+        if ( "net.sf.jasperreports.engine.JRRenderable".equals( type ) ) {
+            return new MapRenderable( datasources, bbox, resolution );
+        } else {
+            BufferedImage bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+            Graphics g = bi.getGraphics();
+            for ( OrderedDatasource<?> datasource : datasources ) {
+                BufferedImage image = datasource.getImage( width, height, bbox );
+                if ( image != null ) {
+                    g.drawImage( image, 0, 0, null );
+                }
             }
+            g.dispose();
+            return convertImageToReportFormat( type, bi );
         }
-        g.dispose();
-
-        return convertImageToReportFormat( type, bi );
     }
 
     private Object convertImageToReportFormat( String type, BufferedImage bi )
@@ -790,307 +768,6 @@ public class MapContentProvider implements JrxmlContentProvider {
             }
         }
         return null;
-    }
-
-    abstract class OrderedDatasource<T extends AbstractDatasourceType> {
-        // OrderedDatasource
-        // abstract String getRequest( int width, int height, String bbox, String crs );
-
-        int min = Integer.MIN_VALUE;
-
-        int max = Integer.MIN_VALUE;
-
-        final T datasource;
-
-        public OrderedDatasource( T datasource ) {
-            this.datasource = datasource;
-        }
-
-        public abstract List<Pair<String, BufferedImage>> getLegends( int width )
-                                throws ProcessletException;
-
-        public OrderedDatasource( T datasource, int min, int max ) {
-            this.datasource = datasource;
-            this.min = min;
-            this.max = max;
-        }
-
-        abstract BufferedImage getImage( int width, int height, Envelope bbox )
-                                throws ProcessletException;
-
-        abstract Map<String, List<String>> getLayerList();
-
-        protected org.deegree.style.se.unevaluated.Style getStyle( Style dsStyle )
-                                throws MalformedURLException, FactoryConfigurationError, XMLStreamException,
-                                IOException {
-            XMLStreamReader reader = null;
-            if ( dsStyle == null || dsStyle.getNamedStyle() != null ) {
-                return null;
-            } else if ( dsStyle.getExternalStyle() != null ) {
-                URL ex = new URL( dsStyle.getExternalStyle() );
-                XMLInputFactory fac = XMLInputFactory.newInstance();
-                reader = fac.createXMLStreamReader( ex.openStream() );
-            } else if ( dsStyle.getEmbeddedStyle() != null ) {
-                XMLInputFactory fac = XMLInputFactory.newInstance();
-                reader = fac.createXMLStreamReader( new DOMSource( dsStyle.getEmbeddedStyle() ) );
-                nextElement( reader );
-                nextElement( reader );
-            }
-
-            SymbologyParser symbologyParser = SymbologyParser.INSTANCE;
-            return symbologyParser.parse( reader );
-        }
-
-        protected BufferedImage getLegendImg( org.deegree.style.se.unevaluated.Style style, int width ) {
-            Legends legends = new Legends();
-            Pair<Integer, Integer> legendSize = legends.getLegendSize( style );
-            if ( legendSize.first < width )
-                width = legendSize.first;
-            BufferedImage img = new BufferedImage( width, legendSize.second, BufferedImage.TYPE_INT_ARGB );
-            Graphics2D g = img.createGraphics();
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
-            legends.paintLegend( style, width, legendSize.second, g );
-            g.dispose();
-            return img;
-        }
-    }
-
-    class WMSOrderedDatasource extends OrderedDatasource<WMSDatasource> {
-
-        List<Layer> layers;
-
-        public WMSOrderedDatasource( WMSDatasource datasource, List<Layer> layers ) {
-            super( datasource );
-            this.layers = layers;
-        }
-
-        public WMSOrderedDatasource( WMSDatasource datasource, List<Layer> layers, int min, int max ) {
-            super( datasource, min, max );
-            this.layers = layers;
-        }
-
-        @Override
-        BufferedImage getImage( int width, int height, Envelope bbox )
-                                throws ProcessletException {
-            LOG.debug( "create map image for WMS datasource '{}'", datasource.getName() );
-            try {
-                String user = datasource.getAuthentification() != null ? datasource.getAuthentification().getUser()
-                                                                      : null;
-                String passw = datasource.getAuthentification() != null ? datasource.getAuthentification().getPassword()
-                                                                       : null;
-                // TODO: version
-                if ( !"1.1.1".equals( datasource.getVersion() ) ) {
-                    throw new ProcessletException( "WMS version " + datasource.getVersion()
-                                                   + " is not yet supported. Supported values are: 1.1.1" );
-                }
-                String capUrl = datasource.getUrl() + "?request=GetCapabilities&service=WMS&version=1.1.1";
-                WMSClient111 wmsClient = new WMSClient111( new URL( capUrl ), 5, 60, user, passw );
-                List<String> layerNames = new ArrayList<String>();
-                for ( Layer l : layers ) {
-                    layerNames.add( l.getName() );
-                }
-
-                // TODO: styles!
-                GetMap gm = new GetMap( layerNames, width, height, bbox, bbox.getCoordinateSystem(), "image/png", true );
-                Pair<BufferedImage, String> map = wmsClient.getMap( gm, null, 60, false );
-                if ( map.first == null )
-                    LOG.debug( map.second );
-                return map.first;
-            } catch ( MalformedURLException e ) {
-                String msg = "could not reslove wms url " + datasource.getUrl() + "!";
-                LOG.error( msg, e );
-                throw new ProcessletException( msg );
-            } catch ( Exception e ) {
-                String msg = "could not get map!";
-                LOG.error( msg, e );
-                throw new ProcessletException( msg );
-            }
-        }
-
-        private BufferedImage loadImage( String request )
-                                throws IOException {
-            LOG.debug( "try to load image from request " + request );
-            InputStream is = null;
-            SeekableStream fss = null;
-            try {
-                URLConnection conn = new URL( request ).openConnection();
-                is = conn.getInputStream();
-
-                if ( LOG.isDebugEnabled() ) {
-                    File logFile = File.createTempFile( "loadedImg", "response" );
-                    OutputStream logStream = new FileOutputStream( logFile );
-
-                    byte[] buffer = new byte[1024];
-                    int read = 0;
-                    while ( ( read = is.read( buffer ) ) != -1 ) {
-                        logStream.write( buffer, 0, read );
-                    }
-                    logStream.close();
-
-                    is = new FileInputStream( logFile );
-                    LOG.debug( "response can be found at " + logFile );
-                }
-
-                try {
-                    fss = new MemoryCacheSeekableStream( is );
-                    RenderedOp ro = JAI.create( "stream", fss );
-                    return ro.getAsBufferedImage();
-                } catch ( Exception e ) {
-                    LOG.info( "could not load image!" );
-                    return null;
-                }
-            } finally {
-                IOUtils.closeQuietly( fss );
-                IOUtils.closeQuietly( is );
-            }
-        }
-
-        @Override
-        Map<String, List<String>> getLayerList() {
-            HashMap<String, List<String>> layerList = new HashMap<String, List<String>>();
-            ArrayList<String> layerNames = new ArrayList<String>( layers.size() );
-            for ( Layer layer : layers ) {
-                layerNames.add( layer.getTitle() != null ? layer.getTitle() : layer.getName() );
-            }
-            layerList.put( datasource.getName(), layerNames );
-            return layerList;
-        }
-
-        @Override
-        public List<Pair<String, BufferedImage>> getLegends( int width )
-                                throws ProcessletException {
-            List<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
-            for ( Layer layer : layers ) {
-                String layerName = layer.getName();
-                try {
-                    BufferedImage bi = null;
-                    org.deegree.style.se.unevaluated.Style style = getStyle( layer.getStyle() );
-                    if ( style != null ) {
-                        bi = getLegendImg( style, width );
-                    } else {
-                        String legendUrl = getLegendUrl( layer );
-                        LOG.debug( "Try to load legend image from WMS {}: ", legendUrl );
-                        try {
-                            bi = loadImage( legendUrl );
-                        } catch ( IOException e ) {
-                            String msg = "Could not create legend for layer: " + layerName;
-                            LOG.error( msg );
-                            throw new ProcessletException( msg );
-                        }
-                    }
-                    legends.add( new Pair<String, BufferedImage>( layerName, bi ) );
-                } catch ( Exception e ) {
-                    String dsName = datasource.getName() != null ? datasource.getName() : datasource.getUrl();
-                    LOG.info( "Could not create legend image for datasource '" + dsName + "', layer " + layerName + ".",
-                              e );
-                }
-            }
-            return legends;
-        }
-
-        String getLegendUrl( Layer layer ) {
-            String url = datasource.getUrl();
-            StringBuilder sb = new StringBuilder();
-            sb.append( url );
-            if ( !url.endsWith( "?" ) )
-                sb.append( '?' );
-            sb.append( "REQUEST=GetLegendGraphic&" );
-            sb.append( "SERVICE=WMS&" );
-            sb.append( "VERSION=" ).append( datasource.getVersion() ).append( '&' );
-            sb.append( "LAYER=" ).append( layer.getName() ).append( '&' );
-            sb.append( "TRANSPARENT=" ).append( "TRUE" ).append( '&' );
-            sb.append( "FORMAT=" ).append( "image/png" );
-            // .append( '&' );
-            // STYLES=
-            return sb.toString();
-        }
-    }
-
-    class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
-
-        public WFSOrderedDatasource( WFSDatasource datasource ) {
-            super( datasource );
-        }
-
-        public WFSOrderedDatasource( WFSDatasource datasource, int pos ) {
-            super( datasource, pos, pos );
-        }
-
-        @Override
-        BufferedImage getImage( int width, int height, Envelope bbox )
-                                throws ProcessletException {
-            LOG.debug( "create map image for WFS datasource '{}'", datasource.getName() );
-            try {
-                String capURL = datasource.getUrl() + "?service=WFS&request=GetCapabilities&version="
-                                + datasource.getVersion();
-                WFSClient wfsClient = new WFSClient( new URL( capURL ) );
-
-                StreamFeatureCollection features = wfsClient.getFeatures( new QName(
-                                                                                     datasource.getFeatureType().getValue(),
-                                                                                     datasource.getFeatureType().getValue() ) );
-
-                BufferedImage image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-                Graphics2D g = image.createGraphics();
-                Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox, bbox.getCoordinateDimension() /* pixelSize */);
-
-                // TODO
-                // XMLInputFactory fac = XMLInputFactory.newInstance();
-                // XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( datasource.getFilter() ) );
-                // nextElement( reader );
-                // nextElement( reader );
-                // Filter filter = Filter110XMLDecoder.parse( reader );
-                // reader.close();
-
-                org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
-                if ( style != null && features != null ) {
-                    Feature feature = null;
-                    while ( ( feature = features.read() ) != null ) {
-                        LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate = style.evaluate( feature,
-                                                                                                             new FeatureXPathEvaluator(
-                                                                                                                                        GMLVersion.GML_32 ) );
-                        for ( Triple<Styling, LinkedList<Geometry>, String> triple : evaluate ) {
-                            for ( Geometry geom : triple.second ) {
-                                renderer.render( triple.first, geom );
-                            }
-                        }
-                    }
-                }
-                g.dispose();
-                return image;
-            } catch ( Exception e ) {
-                String msg = "could nor create image from wfs datasource " + datasource.getName() + ":  "
-                             + e.getMessage();
-                LOG.error( msg, e );
-                throw new ProcessletException( msg );
-            }
-        }
-
-        @Override
-        Map<String, List<String>> getLayerList() {
-            HashMap<String, List<String>> layerList = new HashMap<String, List<String>>();
-            layerList.put( datasource.getName(), new ArrayList<String>() );
-            return layerList;
-        }
-
-        @Override
-        public List<Pair<String, BufferedImage>> getLegends( int width ) {
-            ArrayList<Pair<String, BufferedImage>> legends = new ArrayList<Pair<String, BufferedImage>>();
-
-            BufferedImage legend = null;
-            String name = datasource.getName() != null ? datasource.getName() : datasource.getUrl();
-            try {
-                org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
-                if ( style != null ) {
-                    legend = getLegendImg( style, width );
-                }
-            } catch ( Exception e ) {
-                LOG.debug( "Could not create legend for wfs datasource '{}': {}", name, e.getMessage() );
-            }
-            legends.add( new Pair<String, BufferedImage>( name, legend ) );
-            return legends;
-        }
-
     }
 
     private File writeImage( BufferedImage bi )
