@@ -74,7 +74,8 @@ import org.deegree.services.wps.input.ProcessletInput;
  */
 public class Utils {
 
-    static ProcessletInputs getInputs( String parameterId, String mimeType, String schema, InputStream complexInput )
+    public static ProcessletInputs getInputs( String parameterId, String mimeType, String schema,
+                                              InputStream complexInput )
                             throws IOException, XMLStreamException, FactoryConfigurationError {
         List<ProcessletInput> inputs = new ArrayList<ProcessletInput>();
         ProcessletInputs in = new ProcessletInputs( inputs );

@@ -51,8 +51,8 @@ import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.ImageContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
-import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

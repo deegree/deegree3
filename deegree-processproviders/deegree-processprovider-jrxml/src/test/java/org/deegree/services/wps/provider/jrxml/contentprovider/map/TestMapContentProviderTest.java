@@ -33,11 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider.jrxml.contentprovider;
+package org.deegree.services.wps.provider.jrxml.contentprovider.map;
 
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider.MIME_TYPE;
-import static org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider.SCHEMA;
+import static org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider.MIME_TYPE;
+import static org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider.SCHEMA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -67,8 +67,9 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
-import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider.OrderedDatasource;
-import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider.WMSOrderedDatasource;
+import org.deegree.services.wps.provider.jrxml.contentprovider.Utils;
+import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.map.WMSOrderedDatasource;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.junit.Assume;
 import org.junit.Test;
@@ -84,7 +85,7 @@ public class TestMapContentProviderTest {
 
     /**
      * Test method for
-     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider#inspectInputParametersFromJrxml(java.util.List, java.util.List, java.util.List)}
+     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider#inspectInputParametersFromJrxml(java.util.List, java.util.List, java.util.List)}
      * .
      */
     @Test
@@ -96,7 +97,7 @@ public class TestMapContentProviderTest {
         parameters.put( "LEGEND", "java.lang.String" );
         List<JAXBElement<? extends ProcessletInputDefinition>> inputs = new ArrayList<JAXBElement<? extends ProcessletInputDefinition>>();
         XMLAdapter adapter = new XMLAdapter(
-                                             TestMapContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" ) );
+                                             TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
         wmsContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
 
@@ -110,7 +111,7 @@ public class TestMapContentProviderTest {
 
     /**
      * Test method for
-     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
+     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
      * .
      * 
      * @throws URISyntaxException
@@ -125,7 +126,7 @@ public class TestMapContentProviderTest {
         MapContentProvider wmsContentProvider = new MapContentProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
-        InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" );
+        InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" );
         Map<String, Object> params = new HashMap<String, Object>();
         ProcessletInputs in = Utils.getInputs( "MAP", MIME_TYPE, SCHEMA,
                                                TestMapContentProviderTest.class.getResourceAsStream( "complexInput" ) );
@@ -161,7 +162,7 @@ public class TestMapContentProviderTest {
 
     /**
      * Test method for
-     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
+     * {@link org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider#prepareJrxmlAndReadInputParameters(java.io.InputStream, java.util.Map, org.deegree.services.wps.ProcessletInputs, java.util.List)}
      * .
      * 
      * @throws URISyntaxException
@@ -177,7 +178,7 @@ public class TestMapContentProviderTest {
         MapContentProvider wmsContentProvider = new MapContentProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
-        InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" );
+        InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" );
         Map<String, Object> params = new HashMap<String, Object>();
         ProcessletInputs in = Utils.getInputs( "MAP", MIME_TYPE, SCHEMA,
                                                TestMapContentProviderTest.class.getResourceAsStream( "complexInputWFS" ) );
