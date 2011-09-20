@@ -36,11 +36,11 @@
       <id>deegree-snapshots</id>
       <url>http://artefacts.deegree.org/libs-snapshots-local</url>
     </snapshotRepository>
-    <site>
+<!--    <site>
       <id>deegree-website</id>
       <name>deegree 3 Maven Modules Website</name>
       <url>scp://web.lat-lon.de/var/www/apidoc.deegree.org/${project.version}/</url>
-    </site>
+    </site> -->
   </distributionManagement>
 
   <pluginRepositories>
@@ -232,12 +232,12 @@
     </profile>
   </profiles>
 
-  <dependencies>
+<!--  <dependencies>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh</artifactId>
       <version>1.0</version>
     </dependency>
-  </dependencies>
+  </dependencies> -->
 
 </project>
