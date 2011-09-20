@@ -51,7 +51,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess;
-import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess.ResourceBundle;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcesses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,10 +95,11 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
             List<JrxmlProcess> processList = config.getJrxmlProcess();
             for ( JrxmlProcess jrxmlProcess : processList ) {
                 jrxml = jrxmlProcess.getJrxml();
-                ResourceBundle resourceBundle = jrxmlProcess.getResourceBundle();
+                org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle = jrxmlProcess.getResourceBundle();
+
                 if ( resourceBundle != null ) {
                     processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ),
-                                                                resourceBundle.getPrefix(), resourceBundle.getValue() ) );
+                                                                resourceBundle ) );
                 } else {
                     processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ) ) );
                 }

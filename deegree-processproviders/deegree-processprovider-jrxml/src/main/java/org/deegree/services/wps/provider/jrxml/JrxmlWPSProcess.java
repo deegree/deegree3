@@ -51,6 +51,7 @@ import org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentP
 import org.deegree.services.wps.provider.jrxml.contentprovider.ImageContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.PropertiesContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,13 +75,13 @@ public class JrxmlWPSProcess implements WPSProcess {
 
     private final List<JrxmlContentProvider> contentProviders = new ArrayList<JrxmlContentProvider>();
 
-    /**
-     * @param p
-     */
     public JrxmlWPSProcess( JrxmlProcessDescription p ) {
         contentProviders.add( new DataTableContentProvider() );
         contentProviders.add( new MapContentProvider() );
         contentProviders.add( new ImageContentProvider() );
+        if ( p.getResourceBundle() != null ) {
+            contentProviders.add( new PropertiesContentProvider( p.getResourceBundle() ) );
+        }
         contentProviders.add( new OtherContentProvider() );
         try {
             XMLAdapter a = new XMLAdapter( p.getUrl().openStream() );

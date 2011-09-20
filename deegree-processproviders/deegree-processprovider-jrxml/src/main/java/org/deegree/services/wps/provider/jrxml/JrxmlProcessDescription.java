@@ -37,6 +37,8 @@ package org.deegree.services.wps.provider.jrxml;
 
 import java.net.URL;
 
+import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
+
 /**
  * TODO add class documentation here
  * 
@@ -51,20 +53,17 @@ class JrxmlProcessDescription {
 
     private final URL url;
 
-    private String resourceBundlePrefix;
-
-    private String resourceBundleName;
+    private ResourceBundle resourceBundle;
 
     JrxmlProcessDescription( String id, URL url ) {
         this.id = id;
         this.url = url;
     }
 
-    JrxmlProcessDescription( String id, URL url, String resourceBundlePrefix, String resourceBundleName ) {
+    JrxmlProcessDescription( String id, URL url, ResourceBundle resourceBundle ) {
         this.id = id;
         this.url = url;
-        this.resourceBundlePrefix = resourceBundlePrefix;
-        this.resourceBundleName = resourceBundleName;
+        this.resourceBundle = resourceBundle;
     }
 
     String getId() {
@@ -75,12 +74,8 @@ class JrxmlProcessDescription {
         return url;
     }
 
-    String getResourceBundlePrefix() {
-        return resourceBundlePrefix;
-    }
-
-    String getResourceBundleName() {
-        return resourceBundleName;
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
     }
 
 }

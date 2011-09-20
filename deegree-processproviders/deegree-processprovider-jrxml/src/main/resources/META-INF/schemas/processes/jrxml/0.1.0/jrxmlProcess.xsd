@@ -23,19 +23,22 @@
 		<complexType>
 			<sequence>
 				<element name="jrxml" type="anyURI" minOccurs="1" />
-				<element name="resourceBundle" minOccurs="0">
-					<complexType>
-						<simpleContent>
-							<extension base="anyURI">
-								<attribute name="prefix" type="string" />
-							</extension>
-						</simpleContent>
-					</complexType>
-				</element>
+				<element ref="jr:ResourceBundle" minOccurs="0" />
 			</sequence>
 			<attribute name="id" type="string" use="required" />
 		</complexType>
 	</element>
 
+	<element name="ResourceBundle">
+		<complexType>
+			<sequence>
+				<element name="prefix" type="string" minOccurs="1" />
+				<element name="name" type="string" minOccurs="1" />
+				<element name="defaultLocale" type="string" minOccurs="1" />
+				<element name="supportedLocale" type="string" minOccurs="1"
+					maxOccurs="unbounded" />
+			</sequence>
+		</complexType>
+	</element>
 
 </schema>
