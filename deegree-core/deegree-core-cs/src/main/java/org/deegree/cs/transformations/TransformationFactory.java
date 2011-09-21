@@ -649,13 +649,13 @@ public class TransformationFactory {
         // basic check for simple (invert) projections
         if ( sourceType == PROJECTED && targetType == GEOGRAPHIC ) {
             if ( ( ( (IProjectedCRS) resolve( sourceCRS.getUnderlyingCRS() ) ).getGeographicCRS() ).equals( targetCRS.getUnderlyingCRS() ) ) {
-                result = new ProjectionTransform( (IProjectedCRS) sourceCRS.getUnderlyingCRS() );
+                result = new ProjectionTransform( (IProjectedCRS) resolve( sourceCRS.getUnderlyingCRS() ) );
                 result.inverse();
             }
         }
         if ( sourceType == GEOGRAPHIC && targetType == PROJECTED ) {
             if ( ( ( (IProjectedCRS) resolve( targetCRS.getUnderlyingCRS() ) ).getGeographicCRS() ).equals( sourceCRS.getUnderlyingCRS() ) ) {
-                result = new ProjectionTransform( (IProjectedCRS) targetCRS.getUnderlyingCRS() );
+                result = new ProjectionTransform( (IProjectedCRS) resolve( targetCRS.getUnderlyingCRS() ) );
             }
         }
         if ( result == null ) {
@@ -777,6 +777,18 @@ public class TransformationFactory {
             }
 
             result = concatenate( sourceTransformationChain, helmertTransformation, targetTransformationChain );
+        }
+        if ( result != null ) {
+            IdentityTransform srcT = null;
+            IdentityTransform targetT = null;
+            // set identity to false, to avoid detaching in the resulting concatenated transform
+            if ( !sourceCRS.equals( result.getSourceCRS() ) ) {
+                srcT = new IdentityTransform( sourceCRS, result.getSourceCRS() );
+            }
+            if ( !targetCRS.equals( result.getTargetCRS() ) ) {
+                targetT = new IdentityTransform( result.getTargetCRS(), targetCRS );
+            }
+            result = concatenate( srcT, result, targetT, true );
         }
         return result;
     }

@@ -73,11 +73,10 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.protocol.ows.metadata.Address;
-import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.protocol.ows.metadata.ServiceContact;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.ows.metadata.party.Address;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
@@ -593,18 +592,17 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         writeElement( writer, WMSNS, "Name", "WMS" );
 
-        Description desc = identification == null ? null : identification.getDescription();
-
-        List<LanguageString> titles = desc == null ? null : desc.getTitles();
+        List<LanguageString> titles = identification == null ? null : identification.getTitles();
         String title = ( titles != null && !titles.isEmpty() ) ? titles.get( 0 ).getString() : "deegree 3 WMS";
         writeElement( writer, WMSNS, "Title", title );
 
-        List<LanguageString> abstracts = desc == null ? null : desc.getAbstracts();
+        List<LanguageString> abstracts = identification == null ? null : identification.getAbstracts();
         if ( abstracts != null && !abstracts.isEmpty() ) {
             writeElement( writer, WMSNS, "Abstract", abstracts.get( 0 ).getString() );
         }
 
-        List<Pair<List<LanguageString>, CodeType>> keywords = desc == null ? null : desc.getKeywords();
+        List<Pair<List<LanguageString>, CodeType>> keywords = identification == null ? null
+                                                                                    : identification.getKeywords();
         if ( keywords != null && !keywords.isEmpty() ) {
             writer.writeStartElement( WMSNS, "KeywordList" );
 
@@ -635,7 +633,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         writer.writeEndElement();
 
         if ( provider != null ) {
-            ServiceContact contact = provider.getServiceContact();
+            ResponsibleParty contact = provider.getServiceContact();
             if ( contact != null ) {
                 writer.writeStartElement( WMSNS, "ContactInformation" );
 

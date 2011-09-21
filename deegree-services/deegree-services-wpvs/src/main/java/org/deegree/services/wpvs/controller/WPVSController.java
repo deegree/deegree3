@@ -36,6 +36,7 @@
 
 package org.deegree.services.wpvs.controller;
 
+import static java.util.Collections.EMPTY_LIST;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.services.wpvs.controller.WPVSProvider.IMPLEMENTATION_METADATA;
@@ -44,6 +45,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,20 +71,21 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
+import org.deegree.protocol.ows.metadata.OperationsMetadata;
+import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.operation.DCP;
+import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException110XMLAdapter;
-import org.deegree.services.controller.ows.capabilities.OWSOperation;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
@@ -90,6 +93,7 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
+import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -243,8 +247,7 @@ public class WPVSController extends AbstractOWS {
             }
         } catch ( Throwable t ) {
             sendServiceException( new OWSException( "An exception occurred while processing your request: "
-                                                    + t.getMessage(), OWSException.NO_APPLICABLE_CODE ),
-                                  response );
+                                                    + t.getMessage(), OWSException.NO_APPLICABLE_CODE ), response );
         }
 
     }
@@ -331,29 +334,26 @@ public class WPVSController extends AbstractOWS {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void sendCapabilities( Map<String, String> map, HttpServletRequest request, HttpResponseBuffer response )
                             throws IOException {
+
         GetCapabilities req = GetCapabilitiesKVPParser.parse( map );
 
-        DCPType wpvsDCP = new DCPType();
-        wpvsDCP.setHTTPGet( OGCFrontController.getHttpGetURL() );
-
-        /*
-         * post is currently not supported
-         */
-        // wpvsDCP.setHTTPPost( OGCFrontController.getHttpPostURL() );
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( IS_REPAIRING_NAMESPACES, true );
         try {
             XMLStreamWriter xsw = factory.createXMLStreamWriter( response.getOutputStream(), "UTF-8" );
             IndentingXMLStreamWriter xmlWriter = new IndentingXMLStreamWriter( xsw );
-            List<OWSOperation> operations = new ArrayList<OWSOperation>();
-            List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
-            List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();
+            List<Operation> operations = new ArrayList<Operation>();
+            List<DCP> dcps = Collections.singletonList( new DCP( new URL( OGCFrontController.getHttpGetURL() ), null ) );
+            List<Domain> params = Collections.emptyList();
+            List<Domain> constraints = Collections.emptyList();
             for ( String operation : allowedOperations ) {
-                operations.add( new OWSOperation( operation, wpvsDCP, params, constraints ) );
+                operations.add( new Operation( operation, dcps, params, constraints, EMPTY_LIST ) );
             }
-            new CapabilitiesXMLAdapter().export040( xmlWriter, req, identification, provider, operations, wpvsDCP,
+            OperationsMetadata operationsMd = new OperationsMetadata( operations, params, constraints, null );
+            new CapabilitiesXMLAdapter().export040( xmlWriter, req, identification, provider, operationsMd,
                                                     service.getServiceConfiguration() );
             xmlWriter.writeEndDocument();
         } catch ( XMLStreamException e ) {

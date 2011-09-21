@@ -35,15 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.storedquery;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 
 /**
  * Actual code of a {@link StoredQueryDefinition}.
@@ -63,22 +60,13 @@ public class QueryExpressionText extends XMLAdapter {
 
     private final boolean isPrivate;
 
-    QueryExpressionText( OMElement el ) {
-        setRootElement( el );
+    private final List<OMElement> childEls;
 
-        // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
-        String returnFtsStr = getRequiredNodeAsString( el, new XPath( "@returnFeatureTypes", nsContext ) );
-        String[] tokens = StringUtils.split( returnFtsStr, " " );
-        returnFtNames = new ArrayList<QName>( tokens.length );
-        for ( String token : tokens ) {
-            returnFtNames.add( parseQName( token, el ) );
-        }
-
-        // <xsd:attribute name="language" type="xsd:anyURI" use="required"/>
-        language = getRequiredNodeAsString( el, new XPath( "@language", nsContext ) );
-
-        // <xsd:attribute name="isPrivate" type="xsd:boolean" default="false"/>
-        isPrivate = getNodeAsBoolean( el, new XPath( "@isPrivate", nsContext ), false );
+    public QueryExpressionText( List<QName> returnFtNames, String language, boolean isPrivate, List<OMElement> childEls ) {
+        this.returnFtNames = returnFtNames;
+        this.language = language;
+        this.isPrivate = isPrivate;
+        this.childEls = childEls; 
     }
 
     public List<QName> getReturnFeatureTypes() {
@@ -91,5 +79,9 @@ public class QueryExpressionText extends XMLAdapter {
 
     public boolean isPrivate() {
         return isPrivate;
+    }
+
+    public List<OMElement> getChildEls() {
+        return childEls;
     }
 }

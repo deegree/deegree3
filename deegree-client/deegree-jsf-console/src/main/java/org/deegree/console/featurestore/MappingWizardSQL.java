@@ -79,7 +79,7 @@ import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectManager;
 import org.slf4j.Logger;
@@ -262,8 +262,8 @@ public class MappingWizardSQL {
         }
 
         try {
-            AppSchemaXSDDecoder xsdDecoder = new AppSchemaXSDDecoder( null, null, schemaUrls );
-            appSchema = xsdDecoder.extractFeatureTypeSchema();
+            GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaUrls );
+            appSchema = xsdDecoder.extractAppSchema();
             appSchemaInfo = new AppSchemaInfo( appSchema );
         } catch ( Throwable t ) {
             String msg = "Unable to parse GML application schema.";

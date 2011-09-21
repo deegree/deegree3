@@ -72,12 +72,14 @@ import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSNamespaceItem;
 import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.xml.GenericLSInput;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMError;
 import org.w3c.dom.DOMErrorHandler;
+import org.w3c.dom.ls.LSInput;
 
 /**
  * Provides convenient methods to retrieve "relevant" element and type declarations of an XML schema infoset.
@@ -116,6 +118,7 @@ public class XMLSchemaInfoSet {
      */
     public XMLSchemaInfoSet( XSModel xmlSchema ) {
         this.xsModel = xmlSchema;
+        init();
     }
 
     /**
@@ -131,7 +134,26 @@ public class XMLSchemaInfoSet {
     public XMLSchemaInfoSet( String... schemaUrls ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
         xsModel = loadModel( schemaUrls );
+        init();
+    }
 
+    /**
+     * Creates a new {@link XMLSchemaInfoSet} instance that reads the schema documents from the given inputs.
+     * 
+     * @param inputs
+     *            schema documents, must not be <code>null</code> and contain at least one entry
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public XMLSchemaInfoSet( LSInput... inputs ) throws ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException {
+        xsModel = loadModel( inputs );
+        init();
+    }
+
+    private void init() {
         // build lookup map to avoid usage of XSModel#getElementDeclaration(...) -- sometimes returns null for element
         // declarations that definitely exist (observed for XPlanGML 4.0 schemas with ADE)
         XSNamedMap elDecls = xsModel.getComponents( XSConstants.ELEMENT_DECLARATION );
@@ -459,6 +481,77 @@ public class XMLSchemaInfoSet {
         // }
 
         XSModel model = schemaLoader.loadURIList( new StringListImpl( schemaUrls, schemaUrls.length ) );
+        if ( !errorHandler.getErrors().isEmpty() ) {
+            throw new XMLProcessingException( errorHandler.getErrors().get( 0 ) );
+        }
+        for ( String warning : errorHandler.getWarnings() ) {
+            LOG.debug( warning );
+        }
+        return model;
+    }
+
+    /**
+     * Creates a Xerces {@link XSModel} from the given input schemas, using the {@link RedirectingEntityResolver}, so
+     * OGC schemas URLs are redirected to a local copy.
+     * 
+     * @param inputs
+     *            schema document inputs, must not be <code>null</code> and contain at least one entry
+     * @return the XML schema infoset, never <code>null</code>
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public static XSModel loadModel( LSInput... inputs )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
+        DOMConfiguration config = schemaLoader.getConfig();
+        ErrorHandler errorHandler = new ErrorHandler();
+
+        config.setParameter( "error-handler", errorHandler );
+        config.setParameter( "validate", Boolean.TRUE );
+
+        LSInput[] redirectedInputs = new LSInput[inputs.length];
+        RedirectingEntityResolver resolver = new RedirectingEntityResolver();
+        for ( int i = 0; i < inputs.length; i++ ) {
+            if ( inputs[i].getSystemId() != null ) {
+                String url = resolver.redirect( inputs[i].getSystemId() );
+                if ( !( url.equals( inputs[i].getSystemId() ) ) ) {
+                    LSInput redirectedInput = new GenericLSInput();
+                    redirectedInput.setSystemId( url );
+                    redirectedInputs[i] = redirectedInput;
+                } else {
+                    redirectedInputs[i] = inputs[i];
+                }
+            } else {
+                redirectedInputs[i] = inputs[i];
+            }
+        }
+        schemaLoader.setEntityResolver( resolver );
+
+        // // TODO what about preparsing of GML schemas?
+        // try {
+        // schemaLoader.setProperty( XMLGRAMMAR_POOL, GrammarPoolManager.getGrammarPool(
+        // "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" ) );
+        // } catch ( XMLConfigurationException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( XNIException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        
+        for (LSInput input : redirectedInputs) {
+            System.out.println (input);
+        }
+        
+        LSInputListImpl inputList = new LSInputListImpl( redirectedInputs );
+        XSModel model = schemaLoader.loadInputList( inputList );
         if ( !errorHandler.getErrors().isEmpty() ) {
             throw new XMLProcessingException( errorHandler.getErrors().get( 0 ) );
         }

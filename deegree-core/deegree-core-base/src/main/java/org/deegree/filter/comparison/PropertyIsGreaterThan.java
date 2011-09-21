@@ -35,12 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.MatchAction;
 
 /**
  * TODO add documentation here
@@ -62,22 +59,9 @@ public class PropertyIsGreaterThan extends BinaryComparisonOperator {
     }
 
     @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-
-        TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
-        TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
-
-        // evaluate to true if at least one pair of values matches the condition
-        for ( TypedObjectNode value1 : param1Values ) {
-            for ( TypedObjectNode value2 : param2Values ) {
-                if ( value1 != null && value2 != null ) {
-                    Pair<PrimitiveValue, PrimitiveValue> comparablePair = getPrimitives( value1, value2 );
-                    if ( ( comparablePair.first ).compareTo( comparablePair.second ) > 0 ) {
-                        return true;
-                    }
-                }
-            }
+    protected boolean compare( PrimitiveValue param1, PrimitiveValue param2 ) {
+        if ( ( param1 ).compareTo( param2 ) > 0 ) {
+            return true;
         }
         return false;
     }

@@ -35,8 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.geometry;
 
+import static org.deegree.filter.function.ParameterType.GEOMETRY;
+import static org.deegree.filter.function.ParameterType.STRING;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -49,6 +52,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.io.WKTReader;
 import org.slf4j.Logger;
 
@@ -67,14 +71,26 @@ public class GeometryFromWKT implements FunctionProvider {
 
     private static final String NAME = "GeometryFromWKT";
 
+    private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>( 2 );
+
+    static {
+        INPUTS.add( STRING );
+        INPUTS.add( STRING );
+    }
+
     @Override
     public String getName() {
         return NAME;
     }
 
     @Override
-    public int getArgCount() {
-        return 2;
+    public List<ParameterType> getArgs() {
+        return INPUTS;
+    }
+
+    @Override
+    public ParameterType getReturnType() {
+        return GEOMETRY;
     }
 
     @Override
@@ -117,5 +133,5 @@ public class GeometryFromWKT implements FunctionProvider {
     @Override
     public void destroy() {
         // nothing to do
-    }    
+    }
 }

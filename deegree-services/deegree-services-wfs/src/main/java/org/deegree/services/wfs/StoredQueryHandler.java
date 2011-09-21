@@ -45,8 +45,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
@@ -54,15 +56,16 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
 import org.deegree.protocol.wfs.storedquery.DescribeStoredQueries;
 import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
 import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
+import org.deegree.protocol.wfs.storedquery.Parameter;
 import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
+import org.deegree.protocol.wfs.storedquery.StoredQueryDefinitionXMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,9 +93,9 @@ class StoredQueryHandler {
         this.wfs = wfs;
         // add mandatory GetFeatureById query
         URL url = StoredQueryHandler.class.getResource( "idquery.xml" );
-        XMLAdapter xmlAdapter = new XMLAdapter( url );
-        StoredQueryDefinition queryDefinition = new StoredQueryDefinition( xmlAdapter.getRootElement() );
-        addStoredQuery( queryDefinition );
+        StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
+        xmlAdapter.load( url );
+        addStoredQuery( xmlAdapter.parse() );
     }
 
     private void addStoredQuery( StoredQueryDefinition queryDefinition ) {
@@ -170,15 +173,88 @@ class StoredQueryHandler {
 
             // TODO <xsd:element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
 
-            // TODO <xsd:element name="Parameter" type="wfs:ParameterExpressionType" minOccurs="0"
+            // <xsd:element name="Parameter" type="wfs:ParameterExpressionType" minOccurs="0"
             // maxOccurs="unbounded"/>
+            for ( Parameter parameter : queryDef.getParameters() ) {
+                writer.writeStartElement( WFS_200_NS, "Parameter" );
+
+                // <xsd:attribute name="name" type="xsd:string" use="required"/>
+                writer.writeAttribute( "name", parameter.getName() );
+
+                // <xsd:attribute name="type" type="xsd:QName" use="required"/>
+                QName type = parameter.getType();
+                String prefixedName = type.getLocalPart();
+                if ( type.getPrefix() != null ) {
+                    prefixedName = type.getPrefix() + ":" + type.getLocalPart();
+                    writer.writeNamespace( type.getPrefix(), type.getNamespaceURI() );
+                }
+                writer.writeAttribute( "type", prefixedName );
+
+                // <xsd:element ref="wfs:Title" minOccurs="0" maxOccurs="unbounded"/>
+                for ( LanguageString title : parameter.getTitles() ) {
+                    writer.writeStartElement( WFS_200_NS, "Title" );
+                    if ( title.getLanguage() != null ) {
+                        // check this
+                        writer.writeAttribute( "xml:lang", title.getLanguage() );
+                    }
+                    writer.writeCharacters( title.getString() );
+                    writer.writeEndElement();
+                }
+
+                // <xsd:element ref="wfs:Abstract" minOccurs="0" maxOccurs="unbounded"/>
+                for ( LanguageString abstr : parameter.getAbstracts() ) {
+                    writer.writeStartElement( WFS_200_NS, "Abstract" );
+                    if ( abstr.getLanguage() != null ) {
+                        // check this
+                        writer.writeAttribute( "xml:lang", abstr.getLanguage() );
+                    }
+                    writer.writeCharacters( abstr.getString() );
+                    writer.writeEndElement();
+                }
+
+                // <xsd:element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
+
+                writer.writeEndElement();
+            }
 
             // <xsd:element name="QueryExpressionText" type="wfs:QueryExpressionTextType" minOccurs="1"
             // maxOccurs="unbounded"/>
             List<QueryExpressionText> queryExprTexts = queryDef.getQueryExpressionTextEls();
             for ( QueryExpressionText queryExprText : queryExprTexts ) {
                 writer.writeStartElement( WFS_200_NS, "QueryExpressionText" );
+
                 // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
+                List<QName> ftNames = new ArrayList<QName>( wfs.getStoreManager().getFeatureTypes().size() );
+                for ( FeatureType ft : wfs.getStoreManager().getFeatureTypes() ) {
+                    ftNames.add( ft.getName() );
+                }
+                Collections.sort( ftNames, new Comparator<QName>() {
+                    @Override
+                    public int compare( QName arg0, QName arg1 ) {
+                        String s0 = arg0.toString();
+                        String s1 = arg1.toString();
+                        return s0.compareTo( s1 );
+                    }
+                } );
+
+                StringBuilder returnFeatureTypes = new StringBuilder();
+                Set<String> exportedPrefixes = new HashSet<String>();
+                for ( QName ftName : ftNames ) {
+                    if ( returnFeatureTypes.length() != 0 ) {
+                        returnFeatureTypes.append( ' ' );
+                    }
+                    String prefixedName = ftName.getLocalPart();
+                    if ( ftName.getPrefix() != null ) {
+                        prefixedName = ftName.getPrefix() + ":" + ftName.getLocalPart();
+                        if ( !exportedPrefixes.contains( ftName.getPrefix() ) ) {
+                            writer.writeNamespace( ftName.getPrefix(), ftName.getNamespaceURI() );
+                            exportedPrefixes.add( ftName.getPrefix() );
+                        }
+                        returnFeatureTypes.append( prefixedName );
+                    }
+                }
+                writer.writeAttribute( "returnFeatureTypes", returnFeatureTypes.toString() );
+
                 writer.writeAttribute( "language", queryExprText.getLanguage() );
                 if ( queryExprText.isPrivate() ) {
                     writer.writeAttribute( "isPrivate", "true" );

@@ -56,12 +56,12 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
-import org.deegree.protocol.ows.metadata.ContactInfo;
-import org.deegree.protocol.ows.metadata.Operation;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.ServiceContact;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.ows.metadata.operation.Operation;
+import org.deegree.protocol.ows.metadata.party.ContactInfo;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.protocol.wps.client.input.type.BBoxInputType;
@@ -114,11 +114,10 @@ public class WPSClientTest {
         Assert.assertNotNull( client );
         ServiceIdentification serviceId = client.getMetadata().getServiceIdentification();
         Assert.assertNotNull( serviceId );
-        Assert.assertEquals( serviceId.getDescription().getTitles().size(), 1 );
-        Assert.assertEquals( serviceId.getDescription().getTitles().get( 0 ).getString(), "deegree 3 WPS" );
-        Assert.assertEquals( serviceId.getDescription().getAbstracts().size(), 1 );
-        Assert.assertEquals( serviceId.getDescription().getAbstracts().get( 0 ).getString(),
-                             "deegree 3 WPS implementation" );
+        Assert.assertEquals( serviceId.getTitles().size(), 1 );
+        Assert.assertEquals( serviceId.getTitles().get( 0 ).getString(), "deegree 3 WPS" );
+        Assert.assertEquals( serviceId.getAbstracts().size(), 1 );
+        Assert.assertEquals( serviceId.getAbstracts().get( 0 ).getString(), "deegree 3 WPS implementation" );
 
         Assert.assertEquals( serviceId.getServiceType().getCode(), "WPS" );
         Assert.assertEquals( serviceId.getServiceTypeVersion().get( 0 ).toString(), "1.0.0" );
@@ -127,7 +126,7 @@ public class WPSClientTest {
         Assert.assertEquals( serviceProvider.getProviderName(), "lat/lon GmbH" );
         Assert.assertEquals( serviceProvider.getProviderSite(), "http://www.lat-lon.de" );
 
-        ServiceContact serviceContact = serviceProvider.getServiceContact();
+        ResponsibleParty serviceContact = serviceProvider.getServiceContact();
         Assert.assertEquals( serviceContact.getIndividualName(), "Johannes Wilden" );
         Assert.assertEquals( serviceContact.getPositionName(), "Release Manager" );
 

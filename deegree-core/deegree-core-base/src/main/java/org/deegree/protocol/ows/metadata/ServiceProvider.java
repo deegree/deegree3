@@ -35,9 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata;
 
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
+
 /**
- * Encapsulates service provider metadata provided by an OGC web service (as reported in the capabilities document).
+ * Encapsulates service provider metadata reported by an OGC web service.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
@@ -49,22 +59,39 @@ public class ServiceProvider {
 
     private final String providerSite;
 
-    private final ServiceContact serviceContact;
+    private final ResponsibleParty serviceContact;
 
-    public ServiceProvider( String providerName, String providerSite, ServiceContact serviceContact ) {
+    /**
+     * Creates a new {@link ServiceProvider} instance.
+     * 
+     * @param providerName
+     * @param providerSite
+     * @param serviceContact
+     */
+    public ServiceProvider( String providerName, String providerSite, ResponsibleParty serviceContact ) {
         this.providerName = providerName;
         this.providerSite = providerSite;
         this.serviceContact = serviceContact;
     }
 
     /**
-     * @return providerName, may be <code>null</code>.
+     * Returns the reported service provider name.
+     * <p>
+     * From OWS Common 2.0: <cite>A unique identifier for the service provider organization.</cite>
+     * </p>
+     * 
+     * @return providerName, may be <code>null</code>
      */
     public String getProviderName() {
         return providerName;
     }
 
     /**
+     * Returns the URL of the provider site.
+     * <p>
+     * From OWS Common 2.0: <cite>Reference to the most relevant web site of the service provider.</cite>
+     * </p>
+     * 
      * @return providerSite, may be <code>null</code>.
      */
     public String getProviderSite() {
@@ -72,9 +99,15 @@ public class ServiceProvider {
     }
 
     /**
-     * @return serviceContact, may be <code>null</code>.
+     * Returns the information for contacting the service provider.
+     * <p>
+     * From OWS Common 2.0: <cite>Information for contacting the service provider. The OnlineResource element within
+     * this ServiceContact element should not be used to reference a web site of the service provider.</cite>
+     * </p>
+     * 
+     * @return information for contacting the service provider, may be <code>null</code>
      */
-    public ServiceContact getServiceContact() {
+    public ResponsibleParty getServiceContact() {
         return serviceContact;
     }
 }

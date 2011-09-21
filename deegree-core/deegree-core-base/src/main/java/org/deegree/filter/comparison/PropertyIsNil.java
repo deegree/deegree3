@@ -37,9 +37,15 @@ package org.deegree.filter.comparison;
 
 import static org.deegree.filter.comparison.ComparisonOperator.SubType.PROPERTY_IS_NIL;
 
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.XPathEvaluator;
 
 /**
@@ -51,6 +57,8 @@ import org.deegree.filter.XPathEvaluator;
  * @version $Revision$, $Date$
  */
 public class PropertyIsNil extends ComparisonOperator {
+
+    private final static QName XSI_NIL = new QName( CommonNamespaces.XSINS, "nil" );
 
     private final Expression propName;
 
@@ -76,9 +84,15 @@ public class PropertyIsNil extends ComparisonOperator {
         if ( paramValues.length == 0 ) {
             return true;
         }
-        for ( Object value : paramValues ) {
-            if ( value == null ) {
-                return true;
+        for ( TypedObjectNode value : paramValues ) {
+            if ( !( value instanceof ElementNode ) ) {
+                return false;
+            }
+            PrimitiveValue nil = ( (ElementNode) value ).getAttributes().get( XSI_NIL );
+            if ( nil != null && nil.getValue() instanceof Boolean ) {
+                if ( (Boolean) nil.getValue() ) {
+                    return true;
+                }
             }
         }
         return false;

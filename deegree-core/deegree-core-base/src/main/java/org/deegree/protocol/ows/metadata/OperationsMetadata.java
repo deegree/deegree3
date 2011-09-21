@@ -42,9 +42,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.operation.Operation;
 
 /**
  * Encapsulates metadata on operations provided by an OGC web service (as reported in the capabilities document).
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * From OWS Common 2.0: <cite>Metadata about the operations and related abilities specified by this service and
+ * implemented by this server, including the URLs for operation requests. The basic contents of this section shall be
+ * the same for all OWS types, but individual services can add elements and/or change the optionality of optional
+ * elements.</cite>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -63,16 +78,30 @@ public class OperationsMetadata {
     private OMElement extendedCapabilities;
 
     public OperationsMetadata( List<Operation> operations, List<Domain> parameters, List<Domain> constraints,
-                               Object extendedCapabilities ) {
+                               OMElement extendedCapabilities ) {
         for ( Operation operation : operations ) {
             operationNameToMD.put( operation.getName(), operation );
         }
-        this.parameters = parameters;
-        this.constraints = constraints;
+        if ( parameters != null ) {
+            this.parameters = parameters;
+        } else {
+            this.parameters = new ArrayList<Domain>();
+        }
+        if ( constraints != null ) {
+            this.constraints = constraints;
+        } else {
+            this.constraints = new ArrayList<Domain>();
+        }
+        this.extendedCapabilities = extendedCapabilities;
     }
 
     /**
      * Returns the metadata for all operations.
+     * <p>
+     * From OWS Common 2.0: <cite>Metadata for unordered list of all the (requests for) operations that this server
+     * interface implements. The list of required and optional operations implemented shall be specified in the
+     * Implementation Specification for this service.</cite>
+     * </p>
      * 
      * @return operation metadata, may be empty, but never <code>null</code>
      */
@@ -118,19 +147,42 @@ public class OperationsMetadata {
     }
 
     /**
-     * @return parameters, may be empty but never <code>null</code>
+     * Returns the global parameter validity domains that apply to all operations.
+     * <p>
+     * From OWS Common 2.0: <cite>Optional unordered list of parameter valid domains that each apply to one or more
+     * operations which this server interface implements. The list of required and optional parameter domain limitations
+     * shall be specified in the Implementation Specification for this service.</cite>
+     * </p>
+     * 
+     * @return global parameter validity domains, may be empty, but never <code>null</code>
      */
     public List<Domain> getParameters() {
         return parameters;
     }
 
     /**
-     * @return constraints, may be empty but never <code>null</code>
+     * Returns the global domain validity constraints that apply to all operations.
+     * <p>
+     * From OWS Common 2.0: <cite>Optional unordered list of valid domain constraints on non-parameter quantities that
+     * each apply to this server. The list of required and optional constraints shall be specified in the Implementation
+     * Specification for this service.</cite>
+     * </p>
+     * 
+     * @return global domain validity constraints, may be empty, but never <code>null</code>
      */
     public List<Domain> getConstraints() {
         return constraints;
     }
 
+    /**
+     * Returns the extended capabilities.
+     * <p>
+     * From OWS Common 2.0: <cite>Individual software vendors and servers can use this element to provide metadata about
+     * any additional server abilities.</cite>
+     * </p>
+     * 
+     * return extended capabilities, may be <code>null</code>
+     */
     public OMElement getExtendedCapabilities() {
         return extendedCapabilities;
     }

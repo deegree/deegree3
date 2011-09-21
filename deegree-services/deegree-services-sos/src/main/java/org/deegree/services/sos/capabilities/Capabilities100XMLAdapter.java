@@ -48,12 +48,12 @@ import org.deegree.observation.model.Offering;
 import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.jaxb.metadata.CodeType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.KeywordsType;
 import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 
 /**
  * This is an xml adapter for SOS 1.0.0 Capabilities documents.
@@ -184,6 +184,8 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
 
         writer.writeEndElement();
     }
+
+
 
     private static void exportFilterCapabilities( XMLStreamWriter writer )
                             throws XMLStreamException {

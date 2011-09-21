@@ -108,11 +108,11 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.slf4j.Logger;
 
 /**

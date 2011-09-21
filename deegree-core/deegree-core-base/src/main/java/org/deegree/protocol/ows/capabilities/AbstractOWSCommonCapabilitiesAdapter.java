@@ -36,8 +36,14 @@
 package org.deegree.protocol.ows.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.protocol.ows.metadata.domain.RangeClosure.CLOSED;
+import static org.deegree.protocol.ows.metadata.domain.RangeClosure.CLOSED_OPEN;
+import static org.deegree.protocol.ows.metadata.domain.RangeClosure.OPEN;
+import static org.deegree.protocol.ows.metadata.domain.RangeClosure.OPEN_CLOSED;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -49,15 +55,29 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.metadata.Address;
-import org.deegree.protocol.ows.metadata.ContactInfo;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.ServiceContact;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
-import org.deegree.protocol.ows.metadata.Telephone;
+import org.deegree.protocol.ows.metadata.domain.AllowedValues;
+import org.deegree.protocol.ows.metadata.domain.AnyValue;
+import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.domain.NoValues;
+import org.deegree.protocol.ows.metadata.domain.PossibleValues;
+import org.deegree.protocol.ows.metadata.domain.Range;
+import org.deegree.protocol.ows.metadata.domain.RangeClosure;
+import org.deegree.protocol.ows.metadata.domain.Value;
+import org.deegree.protocol.ows.metadata.domain.Values;
+import org.deegree.protocol.ows.metadata.domain.ValuesReference;
+import org.deegree.protocol.ows.metadata.operation.DCP;
+import org.deegree.protocol.ows.metadata.party.Address;
+import org.deegree.protocol.ows.metadata.party.ContactInfo;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
+import org.deegree.protocol.ows.metadata.party.Telephone;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for {@link OWSCapabilitiesAdapter} implementations that process <a
@@ -69,6 +89,8 @@ import org.deegree.protocol.ows.metadata.Telephone;
  * @version $Revision$, $Date$
  */
 abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implements OWSCapabilitiesAdapter {
+
+    private static final Logger LOG = LoggerFactory.getLogger( AbstractOWSCommonCapabilitiesAdapter.class );
 
     protected static final String XML1998NS = "http://www.w3.org/XML/1998/namespace";
 
@@ -90,8 +112,9 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
         ServiceIdentification serviceId = parseServiceIdentification();
         ServiceProvider serviceProvider = parseServiceProvider();
         OperationsMetadata opMetadata = parseOperationsMetadata();
+        List<String> languages = parseLanguages();
 
-        return new OWSCapabilities( version, sequence, serviceId, serviceProvider, opMetadata );
+        return new OWSCapabilities( version, sequence, serviceId, serviceProvider, opMetadata, languages );
     }
 
     @Override
@@ -102,38 +125,38 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
             return null;
         }
 
-        ServiceIdentification serviceId = new ServiceIdentification();
-
         Description description = parseDescription( serviceIdEl );
-        serviceId.setDescription( description );
 
         OMElement serviceTypeEl = getElement( serviceIdEl, new XPath( "ows:ServiceType", nsContext ) );
         CodeType serviceType = parseCodeSpace( serviceTypeEl );
-        serviceId.setServiceType( serviceType );
 
         XPath xpath = new XPath( "ows:ServiceTypeVersion", nsContext );
         List<OMElement> serviceTypeVersionEls = getElements( serviceIdEl, xpath );
+        List<Version> serviceTypeVersions = null;
         if ( serviceTypeVersionEls != null ) {
+            serviceTypeVersions = new ArrayList<Version>( serviceTypeVersionEls.size() );
             for ( OMElement serviceTypeVersionEl : serviceTypeVersionEls ) {
                 Version version = getNodeAsVersion( serviceTypeVersionEl, new XPath( ".", nsContext ), null );
-                serviceId.getServiceTypeVersion().add( version );
+                serviceTypeVersions.add( version );
             }
         }
 
-        String[] profiles = getNodesAsStrings( serviceIdEl, new XPath( "ows:Profiles", nsContext ) );
-        for ( int i = 0; i < profiles.length; i++ ) {
-            serviceId.getProfiles().add( profiles[i] );
+        String[] profilesArray = getNodesAsStrings( serviceIdEl, new XPath( "ows:Profiles", nsContext ) );
+        List<String> profiles = new ArrayList<String>( profilesArray.length );
+        for ( int i = 0; i < profilesArray.length; i++ ) {
+            profiles.add( profilesArray[i] );
         }
 
         String fees = getNodeAsString( serviceIdEl, new XPath( "ows:Fees", nsContext ), null );
-        serviceId.setFees( fees );
 
-        String[] constraints = getNodesAsStrings( serviceIdEl, new XPath( "ows:AccessConstraints", nsContext ) );
-        for ( String constraint : constraints ) {
-            serviceId.getAccessConstraints().add( constraint );
+        String[] constraintsArray = getNodesAsStrings( serviceIdEl, new XPath( "ows:AccessConstraints", nsContext ) );
+        List<String> constraints = new ArrayList<String>( constraintsArray.length );
+        for ( String constraint : constraintsArray ) {
+            constraints.add( constraint );
         }
 
-        return serviceId;
+        return new ServiceIdentification( description.getName(), description.getTitles(), description.getAbstracts(),
+                                          null, serviceType, serviceTypeVersions, profiles, fees, constraints );
     }
 
     /**
@@ -193,7 +216,7 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
                                                new XPath( "ows:ProviderSite/@xlink:href", nsContext ), null );
 
         OMElement serviceContactEl = getElement( serviceProviderEl, new XPath( "ows:ServiceContact", nsContext ) );
-        ServiceContact serviceContact = null;
+        ResponsibleParty serviceContact = null;
         if ( serviceContactEl != null ) {
             serviceContact = parseServiceContact( serviceContactEl );
         }
@@ -203,10 +226,10 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
     /**
      * @param serviceContactEl
      *            context {@link OMElement}
-     * @return an {@link ServiceContact} instance, never <code>null</code>
+     * @return an {@link ResponsibleParty} instance, never <code>null</code>
      */
-    protected ServiceContact parseServiceContact( OMElement serviceContactEl ) {
-        ServiceContact serviceContact = new ServiceContact();
+    protected ResponsibleParty parseServiceContact( OMElement serviceContactEl ) {
+        ResponsibleParty serviceContact = new ResponsibleParty();
 
         XPath xpath = new XPath( "ows:IndividualName", nsContext );
         serviceContact.setIndividualName( getNodeAsString( serviceContactEl, xpath, null ) );
@@ -323,5 +346,150 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
             return new CodeType( omelement.getText(), codeSpace );
         }
         return new CodeType( omelement.getText() );
+    }
+
+    @Override
+    public List<String> parseLanguages() {
+        OMElement languagesEl = getElement( getRootElement(), new XPath( "ows:Languages", nsContext ) );
+        if ( languagesEl == null ) {
+            return null;
+        }
+        String[] langs = getNodesAsStrings( languagesEl, new XPath( "ows:Language", nsContext ) );
+        List<String> languages = new ArrayList<String>();
+        for ( String language : langs ) {
+            languages.add( language );
+        }
+        return languages;
+    }
+
+    protected abstract Domain parseDomain( OMElement domainEl );
+
+    protected PossibleValues parsePossibleValues( OMElement possibleValuesEl ) {
+        PossibleValues possibleValues = null;
+        String name = possibleValuesEl.getLocalName();
+        if ( "AllowedValues".equals( name ) ) {
+            List<Values> values = new ArrayList<Values>();
+            @SuppressWarnings("unchecked")
+            Iterator<OMElement> iter = possibleValuesEl.getChildElements();
+            while ( iter.hasNext() ) {
+                OMElement childEl = iter.next();
+                String childName = childEl.getLocalName();
+                if ( "Range".equals( childName ) ) {
+                    values.add( parseRange( childEl ) );
+                } else if ( "Value".equals( childName ) ) {
+                    values.add( new Value( childEl.getText() ) );
+                } else {
+                    LOG.warn( "Unrecognized child element in 'ows:Range': '" + childEl.getQName() + "'." );
+                }
+            }
+            possibleValues = new AllowedValues( values );
+        } else if ( "AnyValue".equals( name ) ) {
+            possibleValues = new AnyValue();
+        } else if ( "NoValues".equals( name ) ) {
+            possibleValues = new NoValues();
+        } else if ( "ValuesReference".equals( name ) ) {
+            String valuesRefName = possibleValuesEl.getText();
+            String valuesRefRef = getNodeAsString( possibleValuesEl, new XPath( "@ows:reference", nsContext ), null );
+            possibleValues = new ValuesReference( valuesRefName, valuesRefRef );
+        } else {
+            throw new XMLParsingException( this, possibleValuesEl, "Element from 'ows:PossibleValues' group expected." );
+        }
+        return possibleValues;
+    }
+
+    /**
+     * Parses the given <code>ows:Range</code> element.
+     * <p>
+     * Verified for the following OWS Commons versions:
+     * <ul>
+     * <li>OWS 1.0.0</li>
+     * <li>OWS 1.1.0</li>
+     * <li>OWS 2.0</li>
+     * </ul>
+     * </p>
+     * 
+     * @param rangeEl
+     *            <code>ows:Range</code> element, must not be <code>null</code>
+     * @return corresponding object representation, never <code>null</code>
+     */
+    public Range parseRange( OMElement rangeEl ) {
+
+        // <element ref="ows:MinimumValue" minOccurs="0"/>
+        String min = getNodeAsString( rangeEl, new XPath( "ows:MinimumValue", nsContext ), null );
+
+        // <element ref="ows:MaximumValue" minOccurs="0"/>
+        String max = getNodeAsString( rangeEl, new XPath( "ows:MaximumValue", nsContext ), null );
+
+        // <element ref="ows:Spacing" minOccurs="0">
+        String spacing = getNodeAsString( rangeEl, new XPath( "ows:Spacing", nsContext ), null );
+
+        // <attribute ref="ows:rangeClosure" use="optional">
+        RangeClosure closure = null;
+        String rangeClosureStr = getNodeAsString( rangeEl, new XPath( "@ows:rangeClosure", nsContext ), null );
+        if ( rangeClosureStr != null ) {
+            if ( "closed".equals( rangeClosureStr ) ) {
+                closure = CLOSED;
+            } else if ( "open".equals( rangeClosureStr ) ) {
+                closure = OPEN;
+            } else if ( "open-closed".equals( rangeClosureStr ) ) {
+                closure = OPEN_CLOSED;
+            } else if ( "closed-open".equals( rangeClosureStr ) ) {
+                closure = CLOSED_OPEN;
+            } else {
+                LOG.warn( "Unrecognized range closure: '" + rangeClosureStr + "'." );
+            }
+        }
+
+        return new Range( min, max, spacing, closure );
+    }
+
+    /**
+     * @param dcpEl
+     *            context {@link OMElement}
+     * @return an {@link DCP} instance, never <code>null</code>
+     */
+    protected DCP parseDCP( OMElement dcpEl ) {
+        XPath xpath = new XPath( "ows:HTTP/ows:Get", nsContext );
+
+        List<OMElement> getEls = getElements( dcpEl, xpath );
+        List<Pair<URL, List<Domain>>> getEndpoints = new ArrayList<Pair<URL, List<Domain>>>( getEls.size() );
+        if ( getEls != null ) {
+            for ( OMElement getEl : getEls ) {
+                xpath = new XPath( "@xlink:href", nsContext );
+                URL href = getNodeAsURL( getEl, xpath, null );
+
+                xpath = new XPath( "ows:Constraint", nsContext );
+                List<OMElement> constaintEls = getElements( getEl, xpath );
+                List<Domain> domains = new ArrayList<Domain>();
+                for ( OMElement constaintEl : constaintEls ) {
+                    Domain constraint = parseDomain( constaintEl );
+                    domains.add( constraint );
+                }
+
+                getEndpoints.add( new Pair<URL, List<Domain>>( href, domains ) );
+            }
+        }
+
+        xpath = new XPath( "ows:HTTP/ows:Post", nsContext );
+        List<OMElement> postEls = getElements( dcpEl, xpath );
+        List<Pair<URL, List<Domain>>> postEndpoints = new ArrayList<Pair<URL, List<Domain>>>( postEls.size() );
+        if ( postEls != null ) {
+            for ( OMElement postEl : postEls ) {
+                xpath = new XPath( "@xlink:href", nsContext );
+                URL href = getNodeAsURL( postEl, xpath, null );
+
+                xpath = new XPath( "ows:Constraint", nsContext );
+                List<OMElement> constaintEls = getElements( postEl, xpath );
+                List<Domain> domains = new ArrayList<Domain>();
+                for ( OMElement constaintEl : constaintEls ) {
+                    Domain constraint = parseDomain( constaintEl );
+                    domains.add( constraint );
+                }
+
+                postEndpoints.add( new Pair<URL, List<Domain>>( href, domains ) );
+            }
+        }
+
+        return new DCP( getEndpoints, postEndpoints );
     }
 }

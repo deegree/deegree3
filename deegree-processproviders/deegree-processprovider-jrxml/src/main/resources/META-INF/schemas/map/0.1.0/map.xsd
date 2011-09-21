@@ -112,10 +112,22 @@
 			<xs:sequence>
 				<xs:choice>
 					<xs:element name="bbox" type="xs:string" />
-					<xs:element name="center" type="xs:string" />
+					<xs:element ref="map:center" />
 				</xs:choice>
+				<xs:element name="scaleDenominator" type="xs:integer">
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="crs" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="center">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="scaleDenominator" type="xs:integer"
+						use="required" />
+				</xs:extension>
+			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Datasources">

@@ -36,7 +36,6 @@
 package org.deegree.services.wps.provider.jrxml;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +50,9 @@ import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.jrxml.contentprovider.DataTableContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.ImageContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
-import org.deegree.services.wps.provider.jrxml.contentprovider.MapContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.PropertiesContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,27 +75,26 @@ public class JrxmlWPSProcess implements WPSProcess {
 
     private final List<JrxmlContentProvider> contentProviders = new ArrayList<JrxmlContentProvider>();
 
-    /**
-     * @param processId
-     * @param file
-     */
-    public JrxmlWPSProcess( String processId, URL jrxml ) {
+    public JrxmlWPSProcess( JrxmlProcessDescription p ) {
         contentProviders.add( new DataTableContentProvider() );
         contentProviders.add( new MapContentProvider() );
         contentProviders.add( new ImageContentProvider() );
+        if ( p.getResourceBundle() != null ) {
+            contentProviders.add( new PropertiesContentProvider( p.getResourceBundle() ) );
+        }
         contentProviders.add( new OtherContentProvider() );
         try {
-            XMLAdapter a = new XMLAdapter( jrxml.openStream() );
-            String name = jrxml.getFile();
+            XMLAdapter a = new XMLAdapter( p.getUrl().openStream() );
+            String name = p.getUrl().getFile();
             if ( name.contains( "." ) )
                 name = name.substring( 0, name.lastIndexOf( '.' ) );
             if ( name.contains( "/" ) )
                 name = name.substring( name.lastIndexOf( '/' ) + 1, name.length() );
 
-            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( processId, name, a,
+            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( p.getId(), name, a,
                                                                                            contentProviders );
             this.description = parsed.first;
-            this.processlet = new JrxmlProcesslet( jrxml, contentProviders, parsed.second );
+            this.processlet = new JrxmlProcesslet( p.getUrl(), contentProviders, parsed.second );
         } catch ( XMLProcessingException e ) {
             String msg = "could not parse jrxml file: " + e.getMessage();
             LOG.error( msg, e );

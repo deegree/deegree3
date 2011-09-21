@@ -36,8 +36,11 @@
 package org.deegree.filter.function.other;
 
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.filter.function.ParameterType.DOUBLE;
+import static org.deegree.filter.function.ParameterType.INTEGER;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -49,6 +52,7 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.function.ParameterType;
 
 /**
  * Uppercasing function.
@@ -68,8 +72,13 @@ public class Upper implements FunctionProvider {
     }
 
     @Override
-    public int getArgCount() {
-        return 1;
+    public List<ParameterType> getArgs() {
+        return Collections.singletonList( DOUBLE );
+    }
+
+    @Override
+    public ParameterType getReturnType() {
+        return INTEGER;
     }
 
     @Override

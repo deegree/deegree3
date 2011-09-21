@@ -92,6 +92,11 @@ public class ServiceIntegrationTestHelper {
         this.project = project;
     }
 
+    public String getPort() {
+        Object port = project.getProperties().get( "portnumber" );
+        return port.toString();
+    }
+
     public String createBaseURL() {
         Object port = project.getProperties().get( "portnumber" );
         return "http://localhost:" + port + "/" + project.getArtifactId() + "/";
@@ -179,7 +184,7 @@ public class ServiceIntegrationTestHelper {
         }
     }
 
-    public double determineSimilarity( String name, InputStream in1, InputStream in2 )
+    public static double determineSimilarity( String name, InputStream in1, InputStream in2 )
                             throws IOException, MojoFailureException {
         try {
             byte[] buf1 = toByteArray( in1 );

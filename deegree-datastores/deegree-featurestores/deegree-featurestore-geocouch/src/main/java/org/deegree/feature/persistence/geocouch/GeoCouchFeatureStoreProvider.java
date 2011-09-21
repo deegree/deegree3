@@ -50,7 +50,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.geocouch.jaxb.GeoCouchFeatureStoreConfig;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.gml.feature.schema.AppSchemaXSDDecoder;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,8 +113,8 @@ public class GeoCouchFeatureStoreProvider implements FeatureStoreProvider {
                 schemas[++i] = resolver.resolve( s ).toString();
             }
 
-            AppSchemaXSDDecoder decoder = new AppSchemaXSDDecoder( null, null, schemas );
-            AppSchema schema = decoder.extractFeatureTypeSchema();
+            GMLAppSchemaReader decoder = new GMLAppSchemaReader( null, null, schemas );
+            AppSchema schema = decoder.extractAppSchema();
 
             fs = new GeoCouchFeatureStore( crs, schema, couchUrl );
 

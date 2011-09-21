@@ -332,6 +332,16 @@ class LSInputListImpl implements LSInputList, List {
     /**
      * Creates a new {@link LSInputListImpl} instance.
      * 
+     * @param inputs
+     *            inputs, must not be null
+     */
+    LSInputListImpl( LSInput[] inputs ) {
+        this.inputs.addAll( Arrays.asList( inputs ) );
+    }
+
+    /**
+     * Creates a new {@link LSInputListImpl} instance.
+     * 
      * @param input
      *            first input, must not be null
      * @param additionalInputs

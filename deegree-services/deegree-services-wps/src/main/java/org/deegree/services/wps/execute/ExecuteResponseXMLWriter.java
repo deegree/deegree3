@@ -55,7 +55,7 @@ import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
 import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
-import org.deegree.services.controller.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.deegree.services.wps.ProcessExecution;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.BoundingBoxInput;

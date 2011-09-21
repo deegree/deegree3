@@ -167,7 +167,9 @@ public class QueryAnalyzer {
             AdHocQuery wfsQuery = adHocQueries.get( i );
             Query query = validateQuery( wfsQuery );
             queries[i] = query;
-            queryToWFSQuery.put( query, wfsQuery );
+
+            // yes, use the original WFS query (not necessarily adHoc)
+            queryToWFSQuery.put( query, wfsQueries.get( i ) );
 
             // TODO what about queries with different SRS?
             if ( wfsQuery.getSrsName() != null ) {
@@ -221,6 +223,8 @@ public class QueryAnalyzer {
                     }
                     LOG.debug( "GetFeatureById query" );
                     requestedId = literalEl.getText();
+                    adHocQueries.add( new FeatureIdQuery( null, null, null, null, null, null,
+                                                          new String[] { requestedId } ) );
                 } else {
                     String msg = "Stored query with id '" + storedQuery.getId() + "' is not known.";
                     throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "storedQueryId" );
@@ -257,6 +261,16 @@ public class QueryAnalyzer {
      */
     public Map<FeatureStore, List<Query>> getQueries() {
         return fsToQueries;
+    }
+
+    /**
+     * Returns the original <code>GetFeature</code> query that the given query was derived from.
+     * 
+     * @param query
+     * @return
+     */
+    public org.deegree.protocol.wfs.query.Query getQuery( Query query ) {
+        return queryToWFSQuery.get( query );
     }
 
     /**

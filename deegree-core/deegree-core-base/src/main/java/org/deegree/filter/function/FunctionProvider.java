@@ -76,11 +76,18 @@ public interface FunctionProvider {
     public String getName();
 
     /**
-     * Returns the number of arguments of the provided function.
+     * Returns the type information for the inputs of the provided function.
      * 
-     * @return the number of arguments
+     * @return type information for the inputs, can be empty, but never <code>null</code>
      */
-    public int getArgCount();
+    public List<ParameterType> getArgs();
+
+    /**
+     * Returns the type information for the output of the provided function.
+     * 
+     * @return type information for the output, never <code>null</code>
+     */
+    public ParameterType getReturnType();
 
     /**
      * Creates a new {@link Function} instance.

@@ -35,16 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.storedquery;
 
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.wfs.query.StoredQuery;
 
 /**
@@ -55,18 +49,7 @@ import org.deegree.protocol.wfs.query.StoredQuery;
  * 
  * @version $Revision$, $Date$
  */
-public class StoredQueryDefinition extends XMLAdapter {
-
-    /** Namespace context with predefined bindings "wfs200" */
-    protected static final NamespaceBindings nsContext;
-
-    /** Namespace binding for WFS 2.0.0 constructs */
-    protected final static String WFS_200_PREFIX = "wfs200";
-
-    static {
-        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
-        nsContext.addNamespace( WFS_200_PREFIX, WFS_200_NS );
-    }
+public class StoredQueryDefinition {
 
     private final String id;
 
@@ -74,44 +57,21 @@ public class StoredQueryDefinition extends XMLAdapter {
 
     private final List<LanguageString> abstracts;
 
+    private final List<OMElement> metadataEls;
+
+    private final List<Parameter> parameters;
+
     private final List<QueryExpressionText> queryExpressionTexts;
 
-    public StoredQueryDefinition( OMElement el ) {
-        setRootElement( el );
-
-        // <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
-        this.id = getRequiredNodeAsString( el, new XPath( "@id", nsContext ) );
-
-        // <xsd:element ref="wfs:Title" minOccurs="0" maxOccurs="unbounded"/>
-        List<OMElement> titleEls = getElements( el, new XPath( "wfs200:Title", nsContext ) );
-        titles = new ArrayList<LanguageString>( titleEls.size() );
-        for ( OMElement titleEl : titleEls ) {
-            String lang = getNodeAsString( titleEl, new XPath( "@xml:lang", nsContext ), null );
-            String value = titleEl.getText();
-            titles.add( new LanguageString( value, lang ) );
-        }
-
-        // <xsd:element ref="wfs:Abstract" minOccurs="0" maxOccurs="unbounded"/>
-        List<OMElement> abstractEls = getElements( el, new XPath( "wfs200:Abstract", nsContext ) );
-        abstracts = new ArrayList<LanguageString>( abstractEls.size() );
-        for ( OMElement abstractEl : abstractEls ) {
-            String lang = getNodeAsString( abstractEl, new XPath( "@xml:lang", nsContext ), null );
-            String value = abstractEl.getText();
-            abstracts.add( new LanguageString( value, lang ) );
-        }
-
-        // <xsd:element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
-
-        // <xsd:element name="Parameter" type="wfs:ParameterExpressionType" minOccurs="0" maxOccurs="unbounded"/>
-
-        // <xsd:element name="QueryExpressionText" type="wfs:QueryExpressionTextType" minOccurs="1"
-        // maxOccurs="unbounded"/>
-        List<OMElement> queryExprEls = getRequiredElements( el, new XPath( "wfs200:QueryExpressionText", nsContext ) );
-        queryExpressionTexts = new ArrayList<QueryExpressionText>( queryExprEls.size() );
-        for ( OMElement queryExprEl : queryExprEls ) {
-            queryExpressionTexts.add( new QueryExpressionText( queryExprEl ) );
-        }
-
+    public StoredQueryDefinition( String id, List<LanguageString> titles, List<LanguageString> abstracts,
+                                  List<OMElement> metadataEls, List<Parameter> parameters,
+                                  List<QueryExpressionText> queryExpressionTexts ) {
+        this.id = id;
+        this.titles = titles;
+        this.abstracts = abstracts;
+        this.metadataEls = metadataEls;
+        this.parameters = parameters;
+        this.queryExpressionTexts = queryExpressionTexts;
     }
 
     /**
@@ -132,6 +92,14 @@ public class StoredQueryDefinition extends XMLAdapter {
 
     public List<LanguageString> getAbstracts() {
         return abstracts;
+    }
+
+    public List<OMElement> getMetadata() {
+        return metadataEls;
+    }
+
+    public List<Parameter> getParameters() {
+        return parameters;
     }
 
     public List<QueryExpressionText> getQueryExpressionTextEls() {

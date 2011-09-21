@@ -66,10 +66,10 @@ import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

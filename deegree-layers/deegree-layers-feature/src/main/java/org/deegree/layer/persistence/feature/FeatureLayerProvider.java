@@ -42,10 +42,11 @@ package org.deegree.layer.persistence.feature;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
+import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
+import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -56,18 +57,18 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.DoublePair;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.SingleLayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayer;
 import org.deegree.layer.persistence.feature.jaxb.ScaleDenominatorsType;
+import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.wms.metadata.LayerMetadata;
 
 /**
@@ -109,23 +110,24 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                                                  + " is not available." );
             }
 
-            SpatialMetadata smd = new SpatialMetadata( null, null );
-            // TODO name/description/smd
-            LayerMetadata md = new LayerMetadata( null, null, smd );
-            List<ICRS> crs = new ArrayList<ICRS>();
-            if ( lay.getCRS() != null ) {
-                String[] ss = lay.getCRS().split( "\\s" );
-                for ( String s : ss ) {
-                    crs.add( CRSManager.lookup( s ) );
+            SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
+            Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
+            LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
+
+            if ( smd.getEnvelope() == null ) {
+                if ( featureType != null ) {
+                    smd.setEnvelope( fs.getEnvelope( featureType ) );
+                } else {
+                    smd.setEnvelope( getCombinedEnvelope( fs ) );
                 }
             }
-            smd.setCoordinateSystems( crs );
+
             ScaleDenominatorsType denoms = lay.getScaleDenominators();
             if ( denoms != null ) {
                 md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
             }
-            org.deegree.layer.persistence.feature.FeatureLayer l;
-            l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter, null, null );
+
+            Layer l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter, null, null );
             return new SingleLayerStore( l );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse layer configuration file.", e );

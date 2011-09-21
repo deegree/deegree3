@@ -43,22 +43,27 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.metadata.DCP;
-import org.deegree.protocol.ows.metadata.Domain;
-import org.deegree.protocol.ows.metadata.Operation;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.PossibleValues;
-import org.deegree.protocol.ows.metadata.Range;
-import org.deegree.protocol.ows.metadata.ValuesUnit;
+import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.domain.PossibleValues;
+import org.deegree.protocol.ows.metadata.operation.DCP;
+import org.deegree.protocol.ows.metadata.operation.Operation;
 
 /**
  * {@link OWSCapabilitiesAdapter} for capabilities documents that comply to the <a
- * href="http://www.opengeospatial.org/standards/common">OWS 1.1.0</a> specification.
+ * href="http://www.opengeospatial.org/standards/common">OWS Common 1.1.0</a> specification.
+ * <p>
+ * Known OWS Common 1.1.0-based specifications:
+ * <ul>
+ * <li>WFS 2.0.0</li>
+ * <li>WPS 1.0.0</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -160,208 +165,9 @@ public class OWSCommon110CapabilitiesAdapter extends AbstractOWSCommonCapabiliti
             }
         }
 
-        xpath = new XPath( "ows:Metadata", nsContext );
-        List<OMElement> metadataEls = getElements( opEl, xpath );
-        List<Pair<URL, URL>> metadata = new ArrayList<Pair<URL, URL>>( metadataEls.size() );
-        if ( metadataEls != null ) {
-            for ( OMElement metadataEl : metadataEls ) {
-                xpath = new XPath( "@xlink:href", nsContext );
-                URL ref = getNodeAsURL( metadataEl, xpath, null );
+        List<OMElement> metadataEls = getElements( opEl, new XPath( "ows:Metadata", nsContext ) );
 
-                xpath = new XPath( "@about", nsContext );
-                URL about = getNodeAsURL( metadataEl, xpath, null );
-                metadata.add( new Pair<URL, URL>( ref, about ) );
-            }
-        }
-
-        return new Operation( name, dcps, params, constraints, metadata );
-    }
-
-    /**
-     * @param domainEl
-     *            context {@link OMElement}
-     * @return an {@link Operation} instance, never <code>null</code>
-     */
-    private Domain parseDomain( OMElement domainEl ) {
-        Domain domain = new Domain();
-
-        XPath xpath = new XPath( "@name", nsContext );
-        domain.setName( getNodeAsString( domainEl, xpath, null ) );
-
-        PossibleValues possbileVals = parsePossibleValues( domainEl );
-        domain.setPossibleValues( possbileVals );
-
-        xpath = new XPath( "ows:DefaultValue", nsContext );
-        domain.setDefaultValue( getNodeAsString( domainEl, xpath, null ) );
-
-        xpath = new XPath( "ows:Meaning", nsContext );
-        OMElement meaningEl = getElement( domainEl, xpath );
-        String meaningRef = meaningEl.getAttributeValue( new QName( OWS_11_NS, "reference" ) );
-        domain.setMeaningURL( meaningRef );
-        String meangingText = meaningEl.getText();
-        domain.setMeaningName( meangingText );
-
-        xpath = new XPath( "ows:DataType", nsContext );
-        OMElement datatypeEl = getElement( domainEl, xpath );
-        String datatypeRef = datatypeEl.getAttributeValue( new QName( OWS_11_NS, "reference" ) );
-        domain.setDataTypeURL( datatypeRef );
-        String datatypeText = datatypeEl.getText();
-        domain.setDataTypeName( datatypeText );
-
-        ValuesUnit vals = parseValuesUnit( domainEl );
-        domain.setValuesUnit( vals );
-
-        xpath = new XPath( "ows:Metadata", nsContext );
-        List<OMElement> metadataEls = getElements( domainEl, xpath );
-        for ( OMElement metadataEl : metadataEls ) {
-            xpath = new XPath( "@xlink:href", nsContext );
-            URL ref = getNodeAsURL( metadataEl, xpath, null );
-
-            xpath = new XPath( "@about", nsContext );
-            URL about = getNodeAsURL( metadataEl, xpath, null );
-            domain.getMetadata().add( new Pair<URL, URL>( ref, about ) );
-        }
-
-        return domain;
-    }
-
-    /**
-     * @param domainEl
-     *            context {@link OMElement}
-     * @return an {@link ValuesUnit} instance, never <code>null</code>
-     */
-    private ValuesUnit parseValuesUnit( OMElement domainEl ) {
-        ValuesUnit values = new ValuesUnit();
-
-        XPath xpath = new XPath( "ows:ValueUnit", nsContext );
-        OMElement valueUnitEl = getElement( domainEl, xpath );
-        xpath = new XPath( "ows:UOM", nsContext );
-        OMElement uomEl = getElement( valueUnitEl, xpath );
-        String uomReference = uomEl.getAttributeValue( new QName( OWS_11_NS, "reference" ) );
-        values.setUomURI( uomReference );
-        String uomText = uomEl.getText();
-        values.setUomName( uomText );
-
-        xpath = new XPath( "ows:ReferenceSystem", nsContext );
-        OMElement refSysEl = getElement( valueUnitEl, xpath );
-        String refSysReference = refSysEl.getAttributeValue( new QName( OWS_11_NS, "reference" ) );
-        values.setReferenceSystemURL( refSysReference );
-        String refSysText = refSysEl.getText();
-        values.setReferenceSystemName( refSysText );
-
-        return values;
-    }
-
-    /**
-     * @param domainEl
-     *            context {@link OMElement}
-     * @return an {@link PossibleValues} instance, never <code>null</code>
-     */
-    private PossibleValues parsePossibleValues( OMElement domainEl ) {
-        PossibleValues possibleVals = new PossibleValues();
-
-        XPath xpath = new XPath( "ows:AllowedValues", nsContext );
-        OMElement allowedEl = getElement( domainEl, xpath );
-        xpath = new XPath( "ows:Value", nsContext );
-        String[] values = getNodesAsStrings( allowedEl, xpath );
-        for ( int i = 0; i < values.length; i++ ) {
-            possibleVals.getValue().add( values[i] );
-        }
-
-        xpath = new XPath( "ows:Range", nsContext );
-        List<OMElement> rangeEls = getElements( domainEl, xpath );
-        for ( OMElement rangeEl : rangeEls ) {
-            Range range = parseRange( rangeEl );
-            possibleVals.getRange().add( range );
-        }
-
-        xpath = new XPath( "ows:AnyValue", nsContext );
-        if ( getNode( domainEl, xpath ) != null ) {
-            possibleVals.setAnyValue();
-        }
-
-        xpath = new XPath( "ows:NoValues", nsContext );
-        if ( getNode( domainEl, xpath ) != null ) {
-            possibleVals.setNoValue();
-        }
-
-        xpath = new XPath( "ows:ValuesReference", nsContext );
-        OMElement valuesRefEl = getElement( domainEl, xpath );
-        String valuesRef = valuesRefEl.getAttributeValue( new QName( OWS_11_NS, "reference" ) );
-        possibleVals.setReferenceURL( valuesRef );
-        String valuesRefName = valuesRefEl.getText();
-        possibleVals.setReferenceName( valuesRefName );
-
-        return possibleVals;
-    }
-
-    /**
-     * @param rangeEl
-     *            context {@link OMElement}
-     * @return an {@link Range} instance, never <code>null</code>
-     */
-    private Range parseRange( OMElement rangeEl ) {
-        Range range = new Range();
-
-        XPath xpath = new XPath( "ows:MinimumValue", nsContext );
-        range.setMinimumValue( getNodeAsString( rangeEl, xpath, null ) );
-        xpath = new XPath( "ows:MaximumValue", nsContext );
-        range.setMaximumValue( getNodeAsString( rangeEl, xpath, null ) );
-        xpath = new XPath( "ows:Spacing", nsContext );
-        range.setSpacing( getNodeAsString( rangeEl, xpath, null ) );
-        xpath = new XPath( "@ows:rangeClosure", nsContext );
-        range.setRangeClosure( getNodeAsString( rangeEl, xpath, null ) );
-
-        return range;
-    }
-
-    /**
-     * @param dcpEl
-     *            context {@link OMElement}
-     * @return an {@link DCP} instance, never <code>null</code>
-     */
-    private DCP parseDCP( OMElement dcpEl ) {
-        DCP dcp = new DCP();
-
-        XPath xpath = new XPath( "ows:HTTP/ows:Get", nsContext );
-        List<OMElement> getEls = getElements( dcpEl, xpath );
-        if ( getEls != null ) {
-            for ( OMElement getEl : getEls ) {
-                xpath = new XPath( "@xlink:href", nsContext );
-                URL href = getNodeAsURL( getEl, xpath, null );
-
-                xpath = new XPath( "ows:Constraint", nsContext );
-                List<OMElement> constaintEls = getElements( getEl, xpath );
-                List<Domain> domains = new ArrayList<Domain>();
-                for ( OMElement constaintEl : constaintEls ) {
-                    Domain constraint = parseDomain( constaintEl );
-                    domains.add( constraint );
-                }
-
-                dcp.getGetURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
-            }
-        }
-
-        xpath = new XPath( "ows:HTTP/ows:Post", nsContext );
-        List<OMElement> postEls = getElements( dcpEl, xpath );
-        if ( postEls != null ) {
-            for ( OMElement postEl : postEls ) {
-                xpath = new XPath( "@xlink:href", nsContext );
-                URL href = getNodeAsURL( postEl, xpath, null );
-
-                xpath = new XPath( "ows:Constraint", nsContext );
-                List<OMElement> constaintEls = getElements( postEl, xpath );
-                List<Domain> domains = new ArrayList<Domain>();
-                for ( OMElement constaintEl : constaintEls ) {
-                    Domain constraint = parseDomain( constaintEl );
-                    domains.add( constraint );
-                }
-
-                dcp.getPostURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
-            }
-        }
-
-        return dcp;
+        return new Operation( name, dcps, params, constraints, metadataEls );
     }
 
     /**
@@ -391,5 +197,64 @@ public class OWSCommon110CapabilitiesAdapter extends AbstractOWSCommonCapabiliti
             url = new URL( href );
         }
         return url;
+    }
+
+    /**
+     * @param domainEl
+     *            context {@link OMElement}
+     * @return an {@link Operation} instance, never <code>null</code>
+     */
+    protected Domain parseDomain( OMElement domainEl ) {
+
+        // <attribute name="name" type="string" use="required">
+        String name = getNodeAsString( domainEl, new XPath( "@name", nsContext ), null );
+
+        // <group ref="ows:PossibleValues"/>
+        OMElement possibleValuesEl = domainEl.getFirstElement();
+        if ( possibleValuesEl == null ) {
+            throw new XMLParsingException( this, domainEl, "Element from 'ows:PossibleValues' group is missing." );
+        }
+        PossibleValues possibleValues = parsePossibleValues( possibleValuesEl );
+
+        // <element ref="ows:DefaultValue" minOccurs="0">
+        String defaultValue = getNodeAsString( domainEl, new XPath( "ows:DefaultValue", nsContext ), null );
+
+        // <element ref="ows:Meaning" minOccurs="0">
+        StringOrRef meaning = null;
+        String meaningName = getNodeAsString( domainEl, new XPath( "ows:Meaning", nsContext ), null );
+        String meaningRef = getNodeAsString( domainEl, new XPath( "ows:Meaning/@reference", nsContext ), null );
+        if ( meaningName != null || meaningRef != null ) {
+            meaning = new StringOrRef( meaningName, meaningRef );
+        }
+
+        // <element ref="ows:DataType" minOccurs="0">
+        StringOrRef dataType = null;
+        String datatypeName = getNodeAsString( domainEl, new XPath( "ows:DataType", nsContext ), null );
+        String datatypeRef = getNodeAsString( domainEl, new XPath( "ows:DataType/@reference", nsContext ), null );
+        if ( datatypeName != null || datatypeRef != null ) {
+            dataType = new StringOrRef( datatypeName, datatypeRef );
+        }
+
+        // <group ref="ows:ValuesUnit" minOccurs="0">
+        StringOrRef valuesUnitUom = null;
+        String valuesUnitUomName = getNodeAsString( domainEl, new XPath( "ows:UOM", nsContext ), null );
+        String valuesUnitUomRef = getNodeAsString( domainEl, new XPath( "ows:UOM/@ows:reference", nsContext ), null );
+        if ( valuesUnitUomName != null || valuesUnitUomRef != null ) {
+            valuesUnitUom = new StringOrRef( valuesUnitUomName, valuesUnitUomRef );
+        }
+
+        StringOrRef valuesUnitRefSys = null;
+        String valuesUnitRefSysName = getNodeAsString( domainEl, new XPath( "ows:ReferenceSystem", nsContext ), null );
+        String valuesUnitRefSysRef = getNodeAsString( domainEl, new XPath( "ows:ReferenceSystem/@ows:reference",
+                                                                           nsContext ), null );
+        if ( valuesUnitRefSysName != null || valuesUnitRefSysRef != null ) {
+            valuesUnitRefSys = new StringOrRef( valuesUnitRefSysName, valuesUnitRefSysRef );
+        }
+
+        // <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
+        List<OMElement> metadataEls = getElements( domainEl, new XPath( "ows:Metadata", nsContext ) );
+
+        return new Domain( name, possibleValues, defaultValue, meaning, dataType, valuesUnitUom, valuesUnitRefSys,
+                           metadataEls );
     }
 }

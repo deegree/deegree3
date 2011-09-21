@@ -7,6 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -19,8 +21,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
@@ -43,7 +45,7 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
     }
 
     @Override
-    public void serialize( AppSchema schema, FeatureCollection col, OutputStream outputStream ) {
+    public void serialize( Map<String, String> nsBindings, FeatureCollection col, OutputStream outputStream ) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader( workspace.getModuleClassLoader() );
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -53,9 +55,13 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
                 out = new IndentingXMLStreamWriter( out );
             }
             GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( gmlVersion, out );
-            if ( schema != null ) {
-                writer.setNamespaceBindings( schema.getNamespaceBindings() );
+            if ( nsBindings == null ) {
+                nsBindings = new HashMap<String, String>();
             }
+            for ( Feature f : col ) {
+                nsBindings.putAll( f.getType().getSchema().getNamespaceBindings() );
+            }
+            writer.setNamespaceBindings( nsBindings );
             writer.write( col );
             writer.close();
             bos.flush();

@@ -46,7 +46,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeVa
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
-import static org.deegree.filter.comparison.MatchAction.ALL;
+import static org.deegree.filter.MatchAction.ALL;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.text.ParseException;
@@ -78,13 +78,13 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.ResourceId;
 import org.deegree.filter.comparison.BinaryComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator.SubType;
-import org.deegree.filter.comparison.MatchAction;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsGreaterThan;

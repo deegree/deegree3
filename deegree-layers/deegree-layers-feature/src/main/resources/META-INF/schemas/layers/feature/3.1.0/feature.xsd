@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/layers/feature" xmlns:l="http://www.deegree.org/layers/feature"
-  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1"
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial">
 
   <annotation>
     <appinfo>
@@ -11,19 +12,24 @@
     </appinfo>
   </annotation>
 
+  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="http://schemas.deegree.org/commons/description/3.1.0/description.xsd" />
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
+
   <element name="FeatureLayer">
     <complexType>
       <sequence>
         <element name="FeatureStoreId" type="string" />
         <element name="FeatureType" type="QName" minOccurs="0" />
-        <element name="Filter" type="anyType">
+        <element name="Filter" minOccurs="0" type="anyType">
           <annotation>
             <appinfo>
               <jaxb:dom />
             </appinfo>
           </annotation>
         </element>
-        <element name="CRS" type="string" minOccurs="0" />
+        <element name="Name" type="string" />
+        <group ref="d:Description" />
+        <group ref="s:SpatialMetadata" />
         <element name="ScaleDenominators" type="l:ScaleDenominatorsType" minOccurs="0" />
         <element name="Dimension" type="l:DimensionType" minOccurs="0" maxOccurs="unbounded" />
         <element name="StyleRef" minOccurs="0" maxOccurs="unbounded" type="l:StyleRefType" />
@@ -34,14 +40,24 @@
   <complexType name="StyleRefType">
     <sequence>
       <element name="StyleStoreId" type="string" />
+      <!-- either use all styles with proper layer name from style store, or select them manually below: -->
       <element name="Style" minOccurs="0" maxOccurs="unbounded">
         <complexType>
           <sequence>
-            <element name="StyleName" type="string" minOccurs="0" />
-            <element name="LayerNameRef" type="string" minOccurs="0" />
-            <element name="StyleNameRef" type="string" minOccurs="0" />
+            <element name="StyleName" type="string" />
+            <element name="LayerNameRef" type="string" />
+            <element name="StyleNameRef" type="string" />
+            <!-- either use same style for legend, or one of the following -->
             <choice minOccurs="0">
-              <element name="LegendStyleStoreId" type="string" />
+              <!-- generate legend from different style -->
+              <element name="LegendStyle">
+                <complexType>
+                  <sequence>
+                    <element name="LayerNameRef" type="string" />
+                    <element name="StyleNameRef" type="string" />
+                  </sequence>
+                </complexType>
+              </element>
               <element name="LegendGraphic">
                 <complexType>
                   <simpleContent>
@@ -58,6 +74,7 @@
     </sequence>
   </complexType>
 
+  <!-- denominators are 0.28 mm standard SLD/SE scale denominators -->
   <complexType name="ScaleDenominatorsType">
     <attribute name="min" type="double" use="required" />
     <attribute name="max" type="double" use="required" />

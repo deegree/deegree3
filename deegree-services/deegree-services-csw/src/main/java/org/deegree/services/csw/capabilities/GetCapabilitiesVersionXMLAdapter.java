@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.capabilities;
 
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 
 /**
  * Encapsulates the method for parsing a XML request via Http-POST. Due to the fact that the GetCapabilities operation

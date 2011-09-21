@@ -43,6 +43,8 @@ import static org.junit.Assert.assertTrue;
 import java.net.URL;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 import org.junit.Test;
 
 /**

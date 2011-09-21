@@ -36,7 +36,10 @@
 
 package org.deegree.services.wps.capabilities;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,16 +47,18 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.utils.Pair;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
+import org.deegree.protocol.ows.metadata.OperationsMetadata;
+import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.operation.DCP;
+import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.controller.ows.capabilities.OWSOperation;
-import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.wsdl.WSDL;
 
@@ -200,19 +205,28 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
     private static void exportOperationsMetadata( XMLStreamWriter writer )
                             throws XMLStreamException {
 
-        List<OWSOperation> operations = new LinkedList<OWSOperation>();
-        DCPType dcp = new DCPType();
-        dcp.setHTTPGet( OGCFrontController.getHttpGetURL() );
-        dcp.setHTTPPost( OGCFrontController.getHttpPostURL() );
+        List<Operation> operations = new LinkedList<Operation>();
 
-        List<Pair<String, List<String>>> params = new ArrayList<Pair<String, List<String>>>();
-        List<Pair<String, List<String>>> constraints = new ArrayList<Pair<String, List<String>>>();
+        List<DCP> dcps = null;
+        try {
+            DCP dcp = new DCP( new URL( OGCFrontController.getHttpGetURL() ),
+                               new URL( OGCFrontController.getHttpPostURL() ) );
+            dcps = Collections.singletonList( dcp );
+        } catch ( MalformedURLException e ) {
+            // should never happen
+        }
 
-        operations.add( new OWSOperation( "GetCapabilities", dcp, params, constraints ) );
-        operations.add( new OWSOperation( "DescribeProcess", dcp, params, constraints ) );
-        operations.add( new OWSOperation( "Execute", dcp, params, constraints ) );
+        List<Domain> params = new ArrayList<Domain>();
+        List<Domain> constraints = new ArrayList<Domain>();
+        List<OMElement> mdEls = new ArrayList<OMElement>();
 
-        exportOperationsMetadata110( writer, operations, null, null, null );
+        operations.add( new Operation( "GetCapabilities", dcps, params, constraints, mdEls ) );
+        operations.add( new Operation( "DescribeProcess", dcps, params, constraints, mdEls ) );
+        operations.add( new Operation( "Execute", dcps, params, constraints, mdEls ) );
+
+        OperationsMetadata operationsMd = new OperationsMetadata( operations, params, constraints, null );
+
+        exportOperationsMetadata110( writer, operationsMd );
     }
 
     private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType ident )

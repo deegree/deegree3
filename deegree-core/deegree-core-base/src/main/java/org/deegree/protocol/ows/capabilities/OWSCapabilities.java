@@ -35,13 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.capabilities;
 
+import java.util.List;
+
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 
 /**
- * Capabilities reported by an OGC Web Service.
+ * Specification and version agnostic representation of the capabilities reported by an OGC Web Service.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -62,56 +71,87 @@ public class OWSCapabilities {
 
     private final OperationsMetadata operationsMetadata;
 
+    private final List<String> languages;
+
     /**
      * Creates a new {@link OWSCapabilities} instance.
      * 
      * @param version
+     *            service specification version, may be <code>null</code>
      * @param updateSequence
+     *            service metadata document version, may be <code>null</code>
      * @param serviceIdentification
+     *            general server-specific metadata, may be <code>null</code>
      * @param serviceProvider
+     *            metadata about the organization that provides the server, may be <code>null</code>
      * @param operationsMetadata
+     *            metadata about the operations and related abilities implemented by the server, may be
+     *            <code>null</code>
+     * @param languages
+     *            list of languages that the server is able to fully support, may be <code>null</code>
      */
     public OWSCapabilities( Version version, String updateSequence, ServiceIdentification serviceIdentification,
-                            ServiceProvider serviceProvider, OperationsMetadata operationsMetadata ) {
+                            ServiceProvider serviceProvider, OperationsMetadata operationsMetadata,
+                            List<String> languages ) {
         this.version = version;
         this.updateSequence = updateSequence;
         this.serviceIdentification = serviceIdentification;
         this.serviceProvider = serviceProvider;
         this.operationsMetadata = operationsMetadata;
+        this.languages = languages;
     }
 
     /**
-     * @return version, may be <code>null</code>.
+     * Returns the service specification version.
+     * 
+     * @return specification version, may be <code>null</code>
      */
     public Version getVersion() {
         return version;
     }
 
     /**
-     * @return updateSequence, may be <code>null</code>.
+     * Returns the service metadata document version.
+     * 
+     * @return service metadata document version, may be <code>null</code>
      */
     public String getUpdateSequence() {
         return updateSequence;
     }
 
     /**
-     * @return serviceIndentification, may be <code>null</code>.
+     * Returns the general server-specific metadata.
+     * 
+     * @return general server-specific metadata, may be <code>null</code>
      */
     public ServiceIdentification getServiceIdentification() {
         return serviceIdentification;
     }
 
     /**
-     * @return serviceProvider, may be <code>null</code>.
+     * Returns the metadata about the organization that provides the server.
+     * 
+     * @return metadata about the organization that provides the server, may be <code>null</code>
      */
     public ServiceProvider getServiceProvider() {
         return serviceProvider;
     }
 
     /**
-     * @return operationsMetadata, may be <code>null</code>.
+     * Returns the metadata about the operations and related abilities implemented by the server.
+     * 
+     * @return metadata about the operations and related abilities implemented by the server, may be <code>null</code>
      */
     public OperationsMetadata getOperationsMetadata() {
         return operationsMetadata;
+    }
+
+    /**
+     * Returns the list of languages that the server is able to fully support.
+     * 
+     * @return list of languages that the server is able to fully support, may be <code>null</code>
+     */
+    public List<String> getLanguages() {
+        return languages;
     }
 }

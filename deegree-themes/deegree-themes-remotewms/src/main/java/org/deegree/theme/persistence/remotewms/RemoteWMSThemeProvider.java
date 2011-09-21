@@ -36,6 +36,7 @@
 package org.deegree.theme.persistence.remotewms;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.deegree.theme.Themes.aggregateSpatialMetadata;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -117,7 +118,9 @@ public class RemoteWMSThemeProvider implements ThemeProvider {
             WMSClient client = ( (RemoteWMS) ows ).getClient();
             Tree<LayerMetadata> tree = client.getLayerTree();
 
-            return buildTheme( tree, store );
+            Theme theme = buildTheme( tree, store );
+            aggregateSpatialMetadata( theme );
+            return theme;
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse remote WMS theme config.", e );
         }

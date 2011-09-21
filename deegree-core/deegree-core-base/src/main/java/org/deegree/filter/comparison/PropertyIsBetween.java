@@ -40,6 +40,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.XPathEvaluator;
 
 /**
@@ -102,12 +103,12 @@ public class PropertyIsBetween extends ComparisonOperator {
             if ( propertyValue != null ) {
                 for ( TypedObjectNode upperValue : upperBoundaryValues ) {
                     if ( upperValue != null ) {
-                        Pair<PrimitiveValue, PrimitiveValue> propUpper = getPrimitives( propertyValue, upperValue );
+                        Pair<PrimitiveValue, PrimitiveValue> propUpper = getPrimitiveValues( propertyValue, upperValue );
                         if ( ( propUpper.first ).compareTo( propUpper.second ) <= 0 ) {
                             // now check for one lower value that is smaller than the propertyValue
                             for ( TypedObjectNode lowerValue : lowerBoundaryValues ) {
                                 if ( lowerValue != null ) {
-                                    Pair<PrimitiveValue, PrimitiveValue> propLower = getPrimitives( propertyValue,
+                                    Pair<PrimitiveValue, PrimitiveValue> propLower = getPrimitiveValues( propertyValue,
                                                                                                     lowerValue );
                                     if ( ( propLower.first ).compareTo( propLower.second ) >= 0 ) {
                                         return true;

@@ -36,8 +36,11 @@
 package org.deegree.filter.function.other;
 
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.filter.function.ParameterType.INTEGER;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -51,6 +54,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
+import org.deegree.filter.function.ParameterType;
 
 /**
  * Expects two arguments corresponding to two single values.
@@ -64,14 +68,26 @@ public class IMod implements FunctionProvider {
 
     private static final String NAME = "IMod";
 
+    private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>( 2 );
+
+    static {
+        INPUTS.add( INTEGER );
+        INPUTS.add( INTEGER );
+    }
+
     @Override
     public String getName() {
         return NAME;
     }
 
     @Override
-    public int getArgCount() {
-        return 2;
+    public List<ParameterType> getArgs() {
+        return INPUTS;
+    }
+
+    @Override
+    public ParameterType getReturnType() {
+        return INTEGER;
     }
 
     static void checkTwoArguments( String name, TypedObjectNode[] vals1, TypedObjectNode[] vals2 )

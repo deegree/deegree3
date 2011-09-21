@@ -4,7 +4,7 @@
   targetNamespace="http://www.deegree.org/themes/standard" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   jaxb:version="2.1" xmlns:d="http://www.deegree.org/metadata/description">
 
-  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="../../../../../../../target/schemas/META-INF/schemas/description/3.1.0/description.xsd" />
+  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="http://schemas.deegree.org/commons/description/3.1.0/description.xsd" />
 
   <annotation>
     <appinfo>
@@ -23,7 +23,6 @@
           </complexType>
         </element>
         <sequence>
-          <!-- TODO also implement stuff like bounding box/abstract etc. -->
           <element name="Identifier" type="string" minOccurs="0" />
           <group ref="d:Description" />
         </sequence>

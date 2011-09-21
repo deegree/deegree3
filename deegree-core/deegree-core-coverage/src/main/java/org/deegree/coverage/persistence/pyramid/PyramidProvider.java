@@ -126,14 +126,21 @@ public class PyramidProvider implements CoverageBuilder {
                 throw new ResourceInitException( "No TIFF reader was found for imageio." );
             }
 
+            ICRS crs = null;
+            if ( config.getCRS() != null ) {
+                crs = CRSManager.getCRSRef( config.getCRS() );
+            }
+
             MultiResolutionRaster mrr = new MultiResolutionRaster();
             String file = config.getPyramidFile();
             File resolved = new File( configUrl.toURI().resolve( file ) );
             ImageInputStream iis = ImageIO.createImageInputStream( resolved );
             reader.setInput( iis );
             int num = reader.getNumImages( true );
-            IIOMetadata md = reader.getImageMetadata( 0 );
-            ICRS crs = getCRS( md );
+            if ( crs == null ) {
+                IIOMetadata md = reader.getImageMetadata( 0 );
+                crs = getCRS( md );
+            }
             iis.close();
             for ( int i = 0; i < num; ++i ) {
                 RasterIOOptions opts = new RasterIOOptions();
@@ -141,6 +148,7 @@ public class PyramidProvider implements CoverageBuilder {
                 opts.add( OPT_FORMAT, "tiff" );
                 opts.add( CRS, crs.getAlias() );
                 AbstractRaster raster = RasterFactory.loadRasterFromFile( resolved, opts );
+                raster.setCoordinateSystem( crs );
                 mrr.addRaster( raster );
             }
             mrr.setCoordinateSystem( crs );
