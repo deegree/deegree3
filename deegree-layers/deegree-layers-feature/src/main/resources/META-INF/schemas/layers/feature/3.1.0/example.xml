@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <FeatureLayer xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/layers/feature feature.xsd" xmlns:d="http://www.deegree.org/metadata/description">
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/feature feature.xsd">
   <FeatureStoreId>inspire</FeatureStoreId>
   <Filter>
     <Filter xmlns="http://www.opengis.net/ogc">
@@ -10,14 +10,14 @@
       </PropertyIsEqualTo>
     </Filter>
   </Filter>
-  <Name>example</Name>
+  <l:Name>example</l:Name>
   <d:Title>Example INSPIRE layer</d:Title>
-  <StyleRef>
-    <StyleStoreId>inspire</StyleStoreId>
-    <Style>
-      <StyleName>newname</StyleName>
-      <LayerNameRef>someLayer</LayerNameRef>
-      <StyleNameRef>someStyle</StyleNameRef>
-    </Style>
-  </StyleRef>
+  <l:StyleRef>
+    <l:StyleStoreId>inspire</l:StyleStoreId>
+    <l:Style>
+      <l:StyleName>newname</l:StyleName>
+      <l:LayerNameRef>someLayer</l:LayerNameRef>
+      <l:StyleNameRef>someStyle</l:StyleNameRef>
+    </l:Style>
+  </l:StyleRef>
 </FeatureLayer>

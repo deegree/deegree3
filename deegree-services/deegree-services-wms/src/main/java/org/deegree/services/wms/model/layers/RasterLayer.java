@@ -140,7 +140,7 @@ public class RasterLayer extends Layer {
 
         if ( raster == null && multiraster == null ) {
             available = false;
-            LOG.info( "Raster layer with name '{}' is not available, because the coverage "
+            LOG.warn( "Raster layer with name '{}' is not available, because the coverage "
                       + "store with id '{}' cannot be loaded.", getName(), lay.getCoverageStoreId() );
             return;
         }
