@@ -596,6 +596,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     if ( !( me instanceof DBField ) ) {
                         continue;
                     }
+                    column = ( (DBField) me ).getColumn();                    
                     if ( !first ) {
                         sql.append( "," );
                     } else {
