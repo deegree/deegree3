@@ -778,6 +778,18 @@ public class TransformationFactory {
 
             result = concatenate( sourceTransformationChain, helmertTransformation, targetTransformationChain );
         }
+        if ( result != null ) {
+            IdentityTransform srcT = null;
+            IdentityTransform targetT = null;
+            // set identity to false, to avoid detaching in the resulting concatenated transform
+            if ( !sourceCRS.equals( result.getSourceCRS() ) ) {
+                srcT = new IdentityTransform( sourceCRS, result.getSourceCRS() );
+            }
+            if ( !targetCRS.equals( result.getTargetCRS() ) ) {
+                targetT = new IdentityTransform( result.getTargetCRS(), targetCRS );
+            }
+            result = concatenate( srcT, result, targetT, true );
+        }
         return result;
     }
 
