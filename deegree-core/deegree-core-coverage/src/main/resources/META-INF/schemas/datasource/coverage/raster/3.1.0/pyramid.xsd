@@ -17,7 +17,6 @@
         <!-- overrides the one in the geotiff -->
         <element name="CRS" type="string" minOccurs="0" />
       </sequence>
-      <attribute name="nodata" type="decimal" />
       <attribute name="configVersion" use="required" fixed="3.1.0" />
     </complexType>
   </element>
