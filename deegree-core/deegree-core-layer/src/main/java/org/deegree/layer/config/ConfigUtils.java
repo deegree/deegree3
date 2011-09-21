@@ -48,16 +48,17 @@ import java.util.Map;
 import java_cup.runtime.Symbol;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.Pair;
 import org.deegree.layer.Dimension;
 import org.deegree.layer.persistence.base.jaxb.DimensionType;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType;
-import org.deegree.layer.persistence.base.jaxb.StyleRefType.Style;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType.Style.LegendGraphic;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType.Style.LegendStyle;
 import org.deegree.protocol.wms.dims.DimensionLexer;
 import org.deegree.protocol.wms.dims.parser;
 import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -72,12 +73,11 @@ public class ConfigUtils {
 
     private static final Logger LOG = getLogger( ConfigUtils.class );
 
-    public static void parseStyles( DeegreeWorkspace workspace, String layerName, List<StyleRefType> styles ) {
+    public static Pair<Map<String, Style>, Map<String, Style>> parseStyles( DeegreeWorkspace workspace,
+                                                                            String layerName, List<StyleRefType> styles ) {
         // hail java 7 to finally be able to do some really complicated type inference
-        Map<String, org.deegree.style.se.unevaluated.Style> styleMap;
-        styleMap = new LinkedHashMap<String, org.deegree.style.se.unevaluated.Style>();
-        Map<String, org.deegree.style.se.unevaluated.Style> legendStyleMap;
-        legendStyleMap = new LinkedHashMap<String, org.deegree.style.se.unevaluated.Style>();
+        Map<String, Style> styleMap = new LinkedHashMap<String, Style>();
+        Map<String, Style> legendStyleMap = new LinkedHashMap<String, Style>();
 
         StyleStoreManager mgr = workspace.getSubsystemManager( StyleStoreManager.class );
         for ( StyleRefType srt : styles ) {
@@ -88,18 +88,18 @@ public class ConfigUtils {
                 continue;
             }
             if ( srt.getStyle() == null || srt.getStyle().isEmpty() ) {
-                for ( org.deegree.style.se.unevaluated.Style s : store.getAll( layerName ) ) {
+                for ( Style s : store.getAll( layerName ) ) {
                     styleMap.put( s.getName(), s );
                     legendStyleMap.put( s.getName(), s );
                 }
                 continue;
             }
             // else use selected styles only
-            for ( Style s : srt.getStyle() ) {
+            for ( org.deegree.layer.persistence.base.jaxb.StyleRefType.Style s : srt.getStyle() ) {
                 String name = s.getStyleName();
                 String nameRef = s.getStyleNameRef();
                 String layerRef = s.getLayerNameRef();
-                org.deegree.style.se.unevaluated.Style st = store.getStyle( layerRef, nameRef );
+                Style st = store.getStyle( layerRef, nameRef );
                 if ( st == null ) {
                     LOG.warn( "The combination of layer {} and style {} from store {} is not available.",
                               new Object[] { layerRef, nameRef, id } );
@@ -119,6 +119,7 @@ public class ConfigUtils {
                 }
             }
         }
+        return new Pair<Map<String, Style>, Map<String, Style>>( styleMap, legendStyleMap );
     }
 
     public static Map<String, Dimension<Object>> parseDimensions( String layerName, List<DimensionType> dimensions ) {
