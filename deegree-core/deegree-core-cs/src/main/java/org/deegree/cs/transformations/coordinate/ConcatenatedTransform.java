@@ -176,10 +176,14 @@ public class ConcatenatedTransform extends Transformation {
      *            The first transform to apply to points.
      * @param second
      *            The second transform to apply to points.
+     * @param keepIdentity
+     *            true if identity {@link Transformation}s should be kept in the resulting {@link ConcatenatedTransform}
+     *            . Default value is <code>false</code>.
      * @return The concatenated transform.
      * 
      */
-    private static Transformation concatenateTransformations( Transformation first, Transformation second ) {
+    private static Transformation concatenateTransformations( Transformation first, Transformation second,
+                                                              final boolean keepIdentity ) {
         if ( first == null ) {
             LOG.debug( "Concatenate: the first transform  is null." );
             return second;
@@ -189,11 +193,11 @@ public class ConcatenatedTransform extends Transformation {
             return first;
         }
         // if one of the two is an identity transformation, just return the other.
-        if ( first.isIdentity() ) {
+        if ( !keepIdentity && first.isIdentity() ) {
             LOG.debug( "Concatenate:  the first transform  is the identity." );
             return second;
         }
-        if ( second.isIdentity() ) {
+        if ( !keepIdentity && second.isIdentity() ) {
             LOG.debug( "Concatenate:  the second transform is the identity." );
             return first;
         }
@@ -244,10 +248,10 @@ public class ConcatenatedTransform extends Transformation {
         if ( first instanceof ConcatenatedTransform ) {
             final ConcatenatedTransform ctr = (ConcatenatedTransform) first;
             first = ctr.getFirstTransform();
-            second = concatenateTransformations( ctr.getSecondTransform(), second );
+            second = concatenateTransformations( ctr.getSecondTransform(), second, keepIdentity );
         } else if ( second instanceof ConcatenatedTransform ) {
             final ConcatenatedTransform ctr = (ConcatenatedTransform) second;
-            first = concatenateTransformations( first, ctr.getFirstTransform() );
+            first = concatenateTransformations( first, ctr.getFirstTransform(), keepIdentity );
             second = ctr.getSecondTransform();
         }
         // because of the concatenation one of the transformations may be null.
@@ -268,16 +272,62 @@ public class ConcatenatedTransform extends Transformation {
      *            The first step, or <code>null</code> for the identity transform.
      * @param step2
      *            The second step, or <code>null</code> for the identity transform.
+     * @param keepIdentity
+     *            true if identity {@link Transformation}s should be kept in the resulting {@link ConcatenatedTransform}
+     *            . Default value is <code>false</code>.
      * @return A concatenated transform, or <code>null</code> if all arguments was nul.
      */
-    public static Transformation concatenate( final Transformation step1, final Transformation step2 ) {
+    public static Transformation concatenate( final Transformation step1, final Transformation step2,
+                                              final boolean keepIdentity ) {
         if ( step1 == null ) {
             return step2;
         }
         if ( step2 == null ) {
             return step1;
         }
-        return concatenateTransformations( step1, step2 );
+        return concatenateTransformations( step1, step2, keepIdentity );
+    }
+
+    /**
+     * Concatenate two transformations.
+     * 
+     * @param step1
+     *            The first step, or <code>null</code> for the identity transform.
+     * @param step2
+     *            The second step, or <code>null</code> for the identity transform.
+     * @return A concatenated transform, or <code>null</code> if all arguments was nul.
+     */
+    public static Transformation concatenate( final Transformation step1, final Transformation step2 ) {
+        return concatenate( step1, step2, false );
+    }
+
+    /**
+     * Concatenate three transformations into one.
+     * 
+     * @param step1
+     *            The first step, or <code>null</code> for the identity transform.
+     * @param step2
+     *            The second step, or <code>null</code> for the identity transform.
+     * @param step3
+     *            The third step, or <code>null</code> for the identity transform.
+     * @param keepIdentity
+     *            true if identity {@link Transformation}s should be kept in the resulting {@link ConcatenatedTransform}
+     *            . Default value is <code>false</code>.
+     * @return A concatenated transform, or <code>null</code> if all arguments were <code>null</code>.
+     */
+    public static Transformation concatenate( final Transformation step1, final Transformation step2,
+                                              final Transformation step3, final boolean keepIdentity ) {
+        if ( step1 == null ) {
+            return concatenate( step2, step3, keepIdentity );
+        }
+        if ( step2 == null ) {
+            return concatenate( step1, step3, keepIdentity );
+        }
+        if ( step3 == null ) {
+            return concatenate( step1, step2, keepIdentity );
+        }
+        return concatenateTransformations( step1, concatenateTransformations( step2, step3, keepIdentity ),
+                                           keepIdentity );
     }
 
     /**
@@ -293,16 +343,7 @@ public class ConcatenatedTransform extends Transformation {
      */
     public static Transformation concatenate( final Transformation step1, final Transformation step2,
                                               final Transformation step3 ) {
-        if ( step1 == null ) {
-            return concatenate( step2, step3 );
-        }
-        if ( step2 == null ) {
-            return concatenate( step1, step3 );
-        }
-        if ( step3 == null ) {
-            return concatenate( step1, step2 );
-        }
-        return concatenateTransformations( step1, concatenateTransformations( step2, step3 ) );
+        return concatenate( step1, step2, step3, false );
     }
 
 }
