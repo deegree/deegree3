@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -246,12 +247,20 @@ public class StreamFeatureCollection implements FeatureInputStream {
 
             @Override
             public boolean hasNext() {
-                return next == null;
+                return next != null;
             }
 
             @Override
             public Feature next() {
+                if ( next == null ) {
+                    throw new NoSuchElementException();
+                }
                 Feature currentFeature = nextFeature;
+                try {
+                    next = read();
+                } catch ( IOException e ) {
+                    throw new RuntimeException();
+                }
                 return currentFeature;
             }
 

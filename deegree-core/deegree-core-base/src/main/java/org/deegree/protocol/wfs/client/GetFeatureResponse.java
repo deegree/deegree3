@@ -40,7 +40,7 @@ import org.deegree.protocol.ows.client.OWSResponse;
 /**
  * TODO add class documentation here
  * 
- * @author <a href="mailto:name@company.com">Your Name</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$

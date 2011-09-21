@@ -90,8 +90,8 @@ import org.w3c.dom.ls.LSInput;
  * ...
  * </pre>
  * 
- * Afterwards, the initialized {@link WFSClient} instance is bound to the specified service and allows to access service
- * metadata, feature type information as well as performing queries and transactions.
+ * Afterwards, the initialized {@link WFSClient} instance is bound to the specified service and WFS protocol version.
+ * Now, it's possible to access service metadata, feature type information as well as performing queries.
  * 
  * <h4>Accessing service metadata</h4> The method {@link #getMetadata()} allows to access service metadata announced by
  * the service, such as title, abstract, provider etc.
@@ -128,7 +128,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      *            url of a WFS capabilities document, usually this is a KVP-encoded <code>GetCapabilities</code> request
      *            to a WFS service, must not be <code>null</code>
      * @throws OWSExceptionReport
-     *             if the server replied with an exception report
+     *             if the server responded with an exception report
      * @throws XMLStreamException
      * @throws IOException
      *             if a communication/network problem occured
@@ -148,7 +148,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      *            application schema that describes the feature types offered by the service, can be <code>null</code>
      *            (in this case, <code>DescribeFeatureType</code> requests will be performed to determine the schema)
      * @throws OWSExceptionReport
-     *             if the server replied with a service exception report
+     *             if the server responded with a service exception report
      * @throws XMLStreamException
      * @throws IOException
      *             if a communication/network problem occured
@@ -190,9 +190,10 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      * Returns the (GML) {@link AppSchema} for all {@link FeatureType}s offered by this server.
      * 
      * @return application schema, never <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server responded with a service exception report
      * @throws IOException
      * @throws XMLStreamException
-     * @throws OWSExceptionReport
      */
     public synchronized AppSchema getAppSchema()
                             throws OWSExceptionReport, XMLStreamException, IOException {
@@ -232,9 +233,10 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      * Queries the features of the specified feature type.
      * 
      * @return stream feature collection, never <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server responded with a service exception report
      * @throws IOException
      * @throws XMLStreamException
-     * @throws OWSExceptionReport
      */
     public StreamFeatureCollection getFeatures( QName ftName )
                             throws OWSExceptionReport, XMLStreamException, IOException {
@@ -258,7 +260,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
         } catch ( Throwable t ) {
             throw new IOException( t.getMessage(), t );
         }
-        
+
         // TODO close response
         return fc;
     }
