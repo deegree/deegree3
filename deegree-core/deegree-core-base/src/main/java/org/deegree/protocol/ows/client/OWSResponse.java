@@ -54,7 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Encapsulates the raw HTTP response from an OGC web service.
+ * Encapsulates an HTTP response from an OGC web service.
  * <p>
  * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise system resources (connections) may not be
  * freed.

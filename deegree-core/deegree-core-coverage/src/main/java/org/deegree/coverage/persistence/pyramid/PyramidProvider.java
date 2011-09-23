@@ -142,6 +142,12 @@ public class PyramidProvider implements CoverageBuilder {
                 crs = getCRS( md );
             }
             iis.close();
+
+            if ( crs == null ) {
+                throw new ResourceInitException(
+                                                 "No CRS information could be read from GeoTIFF, and none was configured. Please configure a CRS or add one to the GeoTIFF." );
+            }
+
             for ( int i = 0; i < num; ++i ) {
                 RasterIOOptions opts = new RasterIOOptions();
                 opts.add( IMAGE_INDEX, "" + i );

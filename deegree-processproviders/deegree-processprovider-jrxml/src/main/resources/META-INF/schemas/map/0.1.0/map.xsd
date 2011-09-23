@@ -77,7 +77,7 @@
 								</xs:appinfo>
 							</xs:annotation>
 						</xs:element>
-						<xs:element ref="map:Style" minOccurs="0" />
+						<xs:element ref="map:Style" minOccurs="1" />
 						<xs:element name="position" type="xs:integer"
 							minOccurs="0" />
 					</xs:sequence>
