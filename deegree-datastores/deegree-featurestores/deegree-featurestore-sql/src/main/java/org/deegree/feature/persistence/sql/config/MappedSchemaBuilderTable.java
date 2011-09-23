@@ -162,8 +162,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         GeometryStorageParams geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( "EPSG:4326" ),
                                                                           dialect.getUndefinedSrid(),
                                                                           CoordinateDimension.DIM_2 );
-        return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null,
-                                            geometryParams );
+        return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null, geometryParams );
     }
 
     private void process( FeatureTypeJAXB ftDecl )
@@ -475,22 +474,25 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                             stmt = conn.createStatement();
                             String sql = dialect.geometryMetadata( qTable, column );
                             rs2 = stmt.executeQuery( sql );
-                            rs2.next();
-                            if ( rs2.getInt( 2 ) != -1 ) {
-                                crs = CRSManager.lookup( "EPSG:" + rs2.getInt( 2 ), true );
-                                srid = "" + rs2.getInt( 2 );
+                            if ( rs2.next() ) {
+                                if ( rs2.getInt( 2 ) != -1 ) {
+                                    crs = CRSManager.lookup( "EPSG:" + rs2.getInt( 2 ), true );
+                                    srid = "" + rs2.getInt( 2 );
+                                } else {
+                                    srid = dialect.getUndefinedSrid();
+                                }
+                                if ( rs2.getInt( 1 ) == 3 ) {
+                                    dim = DIM_3;
+                                }
+                                geomType = getGeometryType( rs2.getString( 3 ) );
+                                LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
+                                           + ", dim: " + dim + "" );
                             } else {
-                                srid = dialect.getUndefinedSrid();
+                                LOG.warn( "No metadata for geometry column '" + column + "' available in DB. Using defaults." );
                             }
-                            if ( rs2.getInt( 1 ) == 3 ) {
-                                dim = DIM_3;
-                            }
-                            geomType = getGeometryType( rs2.getString( 3 ) );
-                            LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
-                                       + ", dim: " + dim + "" );
                         } catch ( Exception e ) {
                             LOG.warn( "Unable to determine geometry column details: " + e.getMessage()
-                                      + ". Using defaults." );
+                                      + ". Using defaults.", e );
                         } finally {
                             JDBCUtils.close( rs2, stmt, null, LOG );
                         }
