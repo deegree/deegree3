@@ -456,14 +456,13 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     try {
                         isAutoincrement = "YES".equals( rs.getString( 23 ) );
                     } catch ( Throwable t ) {
-                        // thanks to Larry
+                        // thanks to Larry E. for this
                     }
                     LOG.debug( "Found column '" + column + "', typeName: '" + sqlTypeName + "', typeCode: '" + sqlType
                                + "', isNullable: '" + isNullable + "', isAutoincrement:' " + isAutoincrement + "'" );
 
                     // type name works for PostGIS, MSSQL and Oracle
                     if ( sqlTypeName.toLowerCase().contains( "geometry" ) ) {
-
                         String srid = dialect.getUndefinedSrid();
                         ICRS crs = CRSManager.getCRSRef( "EPSG:4326", true );
                         CoordinateDimension dim = DIM_2;
@@ -472,7 +471,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                         ResultSet rs2 = null;
                         try {
                             stmt = conn.createStatement();
-                            String sql = dialect.geometryMetadata( qTable, column );
+                            String sql = dialect.geometryMetadata( qTable, column, false );
                             rs2 = stmt.executeQuery( sql );
                             if ( rs2.next() ) {
                                 if ( rs2.getInt( 2 ) != -1 ) {
@@ -488,7 +487,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                                 LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
                                            + ", dim: " + dim + "" );
                             } else {
-                                LOG.warn( "No metadata for geometry column '" + column + "' available in DB. Using defaults." );
+                                LOG.warn( "No metadata for geometry column '" + column
+                                          + "' available in DB. Using defaults." );
                             }
                         } catch ( Exception e ) {
                             LOG.warn( "Unable to determine geometry column details: " + e.getMessage()
@@ -496,6 +496,46 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                         } finally {
                             JDBCUtils.close( rs2, stmt, null, LOG );
                         }
+                        ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
+                                                                      geomType, dim, crs, srid );
+                        columnNameToMD.put( column.toLowerCase(), columnMd );
+                    } else if ( sqlTypeName.toLowerCase().contains( "geography" ) ) {
+
+                        LOG.warn( "Detected geography column. This is not fully supported yet. Expect bugs." );
+                        String srid = dialect.getUndefinedSrid();
+                        ICRS crs = CRSManager.getCRSRef( "EPSG:4326", true );
+                        CoordinateDimension dim = DIM_2;
+                        GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
+                        Statement stmt = null;
+                        ResultSet rs2 = null;
+                        try {
+                            stmt = conn.createStatement();
+                            String sql = dialect.geometryMetadata( qTable, column, true );
+                            rs2 = stmt.executeQuery( sql );
+                            if ( rs2.next() ) {
+                                if ( rs2.getInt( 2 ) != -1 ) {
+                                    crs = CRSManager.lookup( "EPSG:" + rs2.getInt( 2 ), true );
+                                    srid = "" + rs2.getInt( 2 );
+                                } else {
+                                    srid = dialect.getUndefinedSrid();
+                                }
+                                if ( rs2.getInt( 1 ) == 3 ) {
+                                    dim = DIM_3;
+                                }
+                                geomType = getGeometryType( rs2.getString( 3 ).toUpperCase() );
+                                LOG.debug( "Derived geometry type (geography): " + geomType + ", crs: " + crs
+                                           + ", srid: " + srid + ", dim: " + dim + "" );
+                            } else {
+                                LOG.warn( "No metadata for geography column '" + column
+                                          + "' available in DB. Using defaults." );
+                            }
+                        } catch ( Exception e ) {
+                            LOG.warn( "Unable to determine geography column details: " + e.getMessage()
+                                      + ". Using defaults.", e );
+                        } finally {
+                            JDBCUtils.close( rs2, stmt, null, LOG );
+                        }
+
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
                                                                       geomType, dim, crs, srid );
                         columnNameToMD.put( column.toLowerCase(), columnMd );
