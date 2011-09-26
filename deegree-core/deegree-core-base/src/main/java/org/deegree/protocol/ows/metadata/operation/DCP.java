@@ -77,14 +77,14 @@ public class DCP {
 
     public DCP( List<Pair<URL, List<Domain>>> getEndpoints, List<Pair<URL, List<Domain>>> postEndpoints ) {
         if ( getEndpoints != null ) {
-            getEndpoints = getEndpoints;
+            this.getEndpoints = getEndpoints;
         } else {
-            getEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+            this.getEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
         }
         if ( postEndpoints != null ) {
-            postEndpoints = postEndpoints;
+            this.postEndpoints = postEndpoints;
         } else {
-            postEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+            this.postEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
         }
     }
 
