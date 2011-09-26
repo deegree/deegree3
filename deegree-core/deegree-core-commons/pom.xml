@@ -150,5 +150,15 @@
       <artifactId>deegree-ogcschemas</artifactId>
       <version>20110513</version>
     </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.7.1</version>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>serializer</artifactId>
+      <version>2.7.1</version>
+    </dependency>
   </dependencies>
 </project>
