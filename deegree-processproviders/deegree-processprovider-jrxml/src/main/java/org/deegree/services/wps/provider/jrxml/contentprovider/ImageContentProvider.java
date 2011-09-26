@@ -53,6 +53,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ComplexFormatType;
@@ -101,7 +102,7 @@ public class ImageContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public InputStream prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
+    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
                                                            ProcessletInputs in, List<CodeType> processedIds,
                                                            Map<String, String> parameters )
                             throws ProcessletException {
@@ -147,7 +148,7 @@ public class ImageContentProvider implements JrxmlContentProvider {
             }
         }
         // nothing to prepare here
-        return jrxml;
+        return new Pair<InputStream, Boolean>( jrxml, false );
     }
 
     private File writeToFile( InputStream is )

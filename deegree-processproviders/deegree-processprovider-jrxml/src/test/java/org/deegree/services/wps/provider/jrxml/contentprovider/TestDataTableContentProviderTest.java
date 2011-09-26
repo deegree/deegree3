@@ -54,6 +54,7 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
@@ -112,18 +113,20 @@ public class TestDataTableContentProviderTest {
         DataTableContentProvider tableContentProvider = new DataTableContentProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
-        InputStream jrxml = TestDataTableContentProviderTest.class.getResourceAsStream( "../templateWithTable.jrxml" );
+        Pair<InputStream, Boolean> jrxml = new Pair<InputStream, Boolean>(
+                                                                           TestDataTableContentProviderTest.class.getResourceAsStream( "../templateWithTable.jrxml" ),
+                                                                           false );
         Map<String, Object> params = new HashMap<String, Object>();
         ProcessletInputs in = Utils.getInputs( "REPORT",
                                                DataTableContentProvider.MIME_TYPE,
                                                DataTableContentProvider.SCHEMA,
                                                TestDataTableContentProviderTest.class.getResourceAsStream( "complexInputTABLE" ) );
-        jrxml = tableContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds,
+        jrxml = tableContentProvider.prepareJrxmlAndReadInputParameters( jrxml.first, params, in, processedIds,
                                                                          new HashMap<String, String>() );
 
         assertEquals( 1, params.size() );
         assertEquals( 1, processedIds.size() );
-        XMLAdapter a = new XMLAdapter( jrxml );
+        XMLAdapter a = new XMLAdapter( jrxml.first );
         String[] fieldNames = a.getNodesAsStrings( a.getRootElement(),
                                                    new XPath( "/jasper:jasperReport/jasper:field/@name", nsContext ) );
         List<String> detailFields = new ArrayList<String>();

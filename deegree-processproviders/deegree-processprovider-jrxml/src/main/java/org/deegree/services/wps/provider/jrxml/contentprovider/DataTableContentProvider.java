@@ -58,6 +58,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.jasperreports.engine.data.JRXmlDataSource;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 
 import org.apache.axiom.om.OMAbstractFactory;
@@ -65,6 +66,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -96,9 +98,9 @@ public class DataTableContentProvider implements JrxmlContentProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( DataTableContentProvider.class );
 
-    static final String SCHEMA = "http://www.deegree.org/processprovider/table";
+    public static final String SCHEMA = "http://www.deegree.org/processprovider/table";
 
-    final static String MIME_TYPE = "text/xml";
+    public final static String MIME_TYPE = "text/xml";
 
     static final String TABLE_PREFIX = "xml";
 
@@ -107,8 +109,19 @@ public class DataTableContentProvider implements JrxmlContentProvider {
     static final String HEADER_SUFFIX = "HeaderEntry";
 
     private static final NamespaceBindings nsContext;
+
+    private String datasourceParameterName = JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT;
+
     static {
         nsContext = JrxmlUtils.nsContext.addNamespace( "tbl", SCHEMA );
+    }
+
+    public DataTableContentProvider() {
+    }
+
+    public DataTableContentProvider( String datasourceParameterName ) {
+        if ( datasourceParameterName != null )
+            this.datasourceParameterName = datasourceParameterName;
     }
 
     @Override
@@ -158,10 +171,13 @@ public class DataTableContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public InputStream prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
-                                                           ProcessletInputs in, List<CodeType> processedIds,
-                                                           Map<String, String> parameters )
+    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml,
+                                                                          Map<String, Object> params,
+                                                                          ProcessletInputs in,
+                                                                          List<CodeType> processedIds,
+                                                                          Map<String, String> parameters )
                             throws ProcessletException {
+        boolean hasDatasourceInserted = false;
         for ( ProcessletInput input : in.getParameters() ) {
             if ( !processedIds.contains( input ) && input instanceof ComplexInput ) {
                 ComplexInput complexIn = (ComplexInput) input;
@@ -239,8 +255,8 @@ public class DataTableContentProvider implements JrxmlContentProvider {
 
                                 }
                             }
-                            if ( LOG.isDebugEnabled() ) {
-                                LOG.debug( "Adjusted jrxml: " + root );
+                            if ( LOG.isTraceEnabled() ) {
+                                LOG.trace( "Adjusted jrxml: " + root );
                             }
                             // reset xml
                             root.serialize( bos );
@@ -251,9 +267,16 @@ public class DataTableContentProvider implements JrxmlContentProvider {
                         // OMElement document = tableAdapter.getRootElement();
                         // DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                         // Document doc = builder.parse( tableAdapter.getRootElement() );
-                        //TODO: reload should not be required!
-                        Document doc = getAsDocument1( complexIn.getValueAsXMLStream() );
-                        params.put( JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, doc );
+                        // TODO: reload should not be required!
+                        if ( parameters.containsKey( datasourceParameterName )
+                             && "net.sf.jasperreports.engine.JRDataSource".equals( parameters.get( datasourceParameterName ) ) ) {
+                            Document doc = getAsDocument1( complexIn.getValueAsXMLStream() );
+                            params.put( datasourceParameterName, new JRXmlDataSource( doc ) );
+                        } else {
+                            Document doc = getAsDocument1( complexIn.getValueAsXMLStream() );
+                            params.put( datasourceParameterName, doc );
+                        }
+                        hasDatasourceInserted = true;
                     } catch ( Exception e ) {
                         String msg = "Could not process data table content: " + e.getMessage();
                         LOG.error( msg, e );
@@ -266,10 +289,10 @@ public class DataTableContentProvider implements JrxmlContentProvider {
             }
         }
 
-        return jrxml;
+        return new Pair<InputStream, Boolean>( jrxml, hasDatasourceInserted );
     }
 
-    private static Document getAsDocument1( XMLStreamReader xmlStreamReader )
+    public static Document getAsDocument1( XMLStreamReader xmlStreamReader )
                             throws XMLStreamException, FactoryConfigurationError, ParserConfigurationException,
                             SAXException, IOException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

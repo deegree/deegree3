@@ -24,6 +24,31 @@
 			<sequence>
 				<element name="jrxml" type="anyURI" minOccurs="1" />
 				<element ref="jr:ResourceBundle" minOccurs="0" />
+				<element name="subreport" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							Describe all subreports used in the main report
+							here.  
+					</documentation>
+					</annotation>
+					<complexType>
+						<simpleContent>
+							<extension base="anyURI">
+								<annotation>
+									<documentation>The reference to the subreport, must be a jrxml
+										file.
+								</documentation>
+								</annotation>
+								<attribute name="id" type="string" use="required">
+									<annotation>
+										<documentation>The parameter referencing the subreport.
+										</documentation>
+									</annotation>
+								</attribute>
+							</extension>
+						</simpleContent>
+					</complexType>
+				</element>
 			</sequence>
 			<attribute name="id" type="string" use="required" />
 		</complexType>

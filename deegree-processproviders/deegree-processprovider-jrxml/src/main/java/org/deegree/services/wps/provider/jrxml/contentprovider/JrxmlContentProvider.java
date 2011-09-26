@@ -42,6 +42,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletException;
@@ -90,8 +91,10 @@ public interface JrxmlContentProvider {
      *            <code>null</code>
      * @param parameters
      *            metainformation about the parameters (name, type)
+     * @return the adjusted jrxml as {@link InputStream} and an information if a datasource was inserted or not
      */
-    InputStream prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params, ProcessletInputs in,
-                                                    List<CodeType> processedIds, Map<String, String> parameters )
+    Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
+                                                                   ProcessletInputs in, List<CodeType> processedIds,
+                                                                   Map<String, String> parameters )
                             throws ProcessletException;
 }
