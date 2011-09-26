@@ -129,7 +129,11 @@ public class WorkspaceMojo extends AbstractMojo {
             if ( !name.isEmpty() && !visitedFiles.contains( name ) ) {
                 visitedFiles.add( name );
                 ZipEntry e = new ZipEntry( name );
-                out.putNextEntry( e );
+                try {
+                    out.putNextEntry( e );
+                } catch ( IOException ex ) {
+                    // probably duplicate entry
+                }
             }
             File[] fs = f.listFiles();
             if ( fs != null ) {
@@ -141,7 +145,11 @@ public class WorkspaceMojo extends AbstractMojo {
             if ( !visitedFiles.contains( name ) ) {
                 visitedFiles.add( name );
                 ZipEntry e = new ZipEntry( name );
-                out.putNextEntry( e );
+                try {
+                    out.putNextEntry( e );
+                } catch ( IOException ex ) {
+                    // probably duplicate entry
+                }
                 InputStream is = null;
                 try {
                     is = new FileInputStream( f );
@@ -191,8 +199,12 @@ public class WorkspaceMojo extends AbstractMojo {
 
             if ( !jarDeps.isEmpty() && !visitedFiles.contains( "modules" ) && !visitedFiles.contains( "modules/" ) ) {
                 ZipEntry e = new ZipEntry( "modules/" );
-                out.putNextEntry( e );
-                out.closeEntry();
+                try {
+                    out.putNextEntry( e );
+                    out.closeEntry();
+                } catch ( IOException ex ) {
+                    // probably duplicate entry
+                }
                 visitedFiles.add( "modules/" );
             }
             for ( Object o : jarDeps ) {
@@ -202,11 +214,16 @@ public class WorkspaceMojo extends AbstractMojo {
                     log.info( "Adding " + a + " to workspace modules directory." );
                     ZipEntry entry = new ZipEntry( "modules/" + a.getFile().getName() );
                     visitedFiles.add( "modules/" + a.getFile().getName() );
-                    out.putNextEntry( entry );
-                    FileInputStream in = new FileInputStream( a.getFile() );
-                    IOUtils.copy( in, out );
-                    out.closeEntry();
-                    in.close();
+                    try {
+                        out.putNextEntry( entry );
+                        FileInputStream in = new FileInputStream( a.getFile() );
+                        IOUtils.copy( in, out );
+                        out.closeEntry();
+                        in.close();
+                    } catch ( IOException e ) {
+                        // probably duplicate entry
+                        continue;
+                    }
                 }
             }
 
