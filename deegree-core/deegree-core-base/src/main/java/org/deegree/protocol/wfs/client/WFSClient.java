@@ -39,14 +39,17 @@ import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -54,12 +57,14 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.GenericLSInput;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.Feature;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLStreamReader;
+import org.deegree.filter.Filter;
+import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.client.OWSResponse;
@@ -232,14 +237,15 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
     /**
      * Queries the features of the specified feature type.
      * 
-     * @return stream feature collection, never <code>null</code>
-     * @throws OWSExceptionReport
-     *             if the server responded with a service exception report
+     * @return query reponse, never <code>null</code>
      * @throws IOException
      * @throws XMLStreamException
+     * @throws TransformationException
+     * @throws UnknownCRSException
      */
-    public StreamFeatureCollection getFeatures( QName ftName )
-                            throws OWSExceptionReport, XMLStreamException, IOException {
+    public GetFeatureResponse<Feature> getFeatures( QName ftName, Filter filter )
+                            throws OWSExceptionReport, XMLStreamException, IOException, UnknownCRSException,
+                            TransformationException {
 
         URL endPoint = getGetUrl( GetFeature.name() );
         LinkedHashMap<String, String> kvp = new LinkedHashMap<String, String>();
@@ -247,23 +253,52 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
         kvp.put( "version", version.getOGCVersion().toString() );
         kvp.put( "request", "GetFeature" );
         kvp.put( "typeName", ftName.getLocalPart() );
-
-        OWSResponse response = doGet( endPoint, kvp, null );
-        StreamFeatureCollection fc = null;
-        try {
-            XMLStreamReader reader = response.getAsXMLStream();
-            GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, reader );
-            gmlReader.setApplicationSchema( schema );
-            // TODO default SRS
-            fc = gmlReader.readFeatureCollectionStream();
-        } catch ( Throwable t ) {
-            throw new IOException( t.getMessage(), t );
+        if ( filter != null ) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( bos, "UTF-8" );
+            switch ( version ) {
+            case WFS_110:
+                Filter110XMLEncoder.export( filter, xmlWriter );
+                break;
+            case WFS_100:
+            case WFS_200:
+                String msg = "Only exporting of WFS 1.1.0 filters is currently implemented.";
+                throw new UnsupportedOperationException( msg );
+            }
+            xmlWriter.close();
+            kvp.put( "filter", bos.toString( "UTF-8" ) );
         }
 
-        // TODO close response
-        return fc;
+        OWSResponse response = doGet( endPoint, kvp, null );
+
+        GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
+        return new GetFeatureResponse<Feature>( response, getAppSchema(), gmlVersion );
     }
+
+    // /**
+    // * Performs the given {@link GetFeature} request.
+    // *
+    // * @return stream feature collection, never <code>null</code>
+    // * @throws OWSExceptionReport
+    // * if the server responded with a service exception report
+    // * @throws IOException
+    // * @throws XMLStreamException
+    // */
+    // public GetFeatureResponse<Feature> getFeatures( GetFeature request )
+    // throws OWSExceptionReport, XMLStreamException, IOException {
+    //
+    // URL endPoint = getGetUrl( GetFeature.name() );
+    // LinkedHashMap<String, String> kvp = new LinkedHashMap<String, String>();
+    // kvp.put( "service", "WFS" );
+    // kvp.put( "version", request.getVersion().toString() );
+    // kvp.put( "request", "GetFeature" );
+    // kvp.put( "typeName", ftName.getLocalPart() );
+    //
+    // OWSResponse response = doGet( endPoint, kvp, null );
+    //
+    // GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
+    // return new GetFeatureResponse<Feature>( response, getAppSchema(), gmlVersion );
+    // }
 
     public GMLObject getGMLObject( GetGmlObject request ) {
         return null;

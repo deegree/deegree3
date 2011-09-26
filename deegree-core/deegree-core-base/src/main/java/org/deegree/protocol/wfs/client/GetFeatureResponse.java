@@ -35,29 +35,79 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
+import java.io.IOException;
+
+import javax.xml.stream.XMLStreamException;
+
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.client.OWSResponse;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 
 /**
- * TODO add class documentation here
+ * Encapsulates the response to a WFS <code>GetFeature</code> request.
+ * <p>
+ * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise system resources (connections) may not be
+ * freed.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GetFeatureResponse {
+public class GetFeatureResponse<T> {
 
-    private OWSResponse response;
+    private final OWSResponse response;
 
-    GetFeatureResponse( OWSResponse response ) {
+    private final AppSchema appSchema;
+
+    private final GMLVersion gmlVersion;
+
+    /**
+     * 
+     * @param response
+     * @param appSchema
+     * @param gmlVersion
+     */
+    GetFeatureResponse( OWSResponse response, AppSchema appSchema, GMLVersion gmlVersion ) {
         this.response = response;
+        this.appSchema = appSchema;
+        this.gmlVersion = gmlVersion;
     }
 
-    public OWSResponse getRawResponse() {
+    /**
+     * Provides access to the raw response.
+     * 
+     * @return the raw response, never <code>null</code>
+     */
+    public OWSResponse getAsRawResponse() {
         return response;
     }
 
-    public WFSFeatureCollection getAsWFSFeatureCollection() {
-        return null;
+    /**
+     * Provides access to the feature objects and WFS provided information in the response.
+     * 
+     * @return WFS feature collection, never <code>null</code>
+     * 
+     * @throws OWSExceptionReport
+     * @throws UnknownCRSException
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public WFSFeatureCollection<T> getAsWFSFeatureCollection()
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException, OWSExceptionReport {
+        return new WFSFeatureCollection<T>( response.getAsXMLStream(), gmlVersion, appSchema );
+    }
+
+    /**
+     * 
+     * @throws IOException
+     */
+    public void close()
+                            throws IOException {
+        response.close();
     }
 }
