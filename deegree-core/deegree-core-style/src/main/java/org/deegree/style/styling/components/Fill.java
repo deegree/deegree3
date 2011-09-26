@@ -60,6 +60,7 @@ public class Fill implements Copyable<Fill> {
      */
     public Graphic graphic;
 
+    @Override
     public Fill copy() {
         Fill copy = new Fill();
         copy.color = color;

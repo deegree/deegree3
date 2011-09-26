@@ -113,6 +113,7 @@ public class TextStyling implements Styling<TextStyling> {
         fill.color = BLACK;
     }
 
+    @Override
     public TextStyling copy() {
         TextStyling copy = new TextStyling();
         copy.font = font.copy();

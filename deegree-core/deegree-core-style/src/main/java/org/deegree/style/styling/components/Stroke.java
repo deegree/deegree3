@@ -135,6 +135,7 @@ public class Stroke implements Copyable<Stroke> {
         SQUARE
     }
 
+    @Override
     public Stroke copy() {
         Stroke copy = new Stroke();
         copy.color = color;

@@ -76,6 +76,7 @@ public class LineStyling implements Styling<LineStyling> {
         return generateToString( this );
     }
 
+    @Override
     public LineStyling copy() {
         LineStyling copy = new LineStyling();
         copy.stroke = stroke.copy();

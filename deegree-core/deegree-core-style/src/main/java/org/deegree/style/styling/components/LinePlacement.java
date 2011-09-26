@@ -83,6 +83,7 @@ public class LinePlacement implements Copyable<LinePlacement> {
      */
     public boolean generalizeLine;
 
+    @Override
     public LinePlacement copy() {
         LinePlacement copy = new LinePlacement();
         copy.perpendicularOffset = perpendicularOffset;

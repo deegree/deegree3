@@ -115,6 +115,7 @@ public class RasterLegendItem implements LegendItem {
         }
     }
 
+    @Override
     public int getHeight() {
         if ( styling.interpolate != null ) {
             return styling.interpolate.getDatas().length;
@@ -125,6 +126,7 @@ public class RasterLegendItem implements LegendItem {
         return 0;
     }
 
+    @Override
     public int getMaxWidth( LegendOptions opts ) {
         int res = 2 * opts.spacing + opts.baseWidth;
 
@@ -140,6 +142,7 @@ public class RasterLegendItem implements LegendItem {
         return res;
     }
 
+    @Override
     public void paint( int origin, LegendOptions opts ) {
         if ( styling.interpolate != null ) {
             Double[] datas = styling.interpolate.getDatas();

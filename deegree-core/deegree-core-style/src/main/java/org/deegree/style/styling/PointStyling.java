@@ -62,6 +62,7 @@ public class PointStyling implements Styling<PointStyling> {
      */
     public Graphic graphic = new Graphic();
 
+    @Override
     public PointStyling copy() {
         PointStyling other = new PointStyling();
         other.graphic = graphic.copy();

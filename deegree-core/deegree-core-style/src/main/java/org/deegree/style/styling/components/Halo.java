@@ -68,6 +68,7 @@ public class Halo implements Copyable<Halo> {
         fill.color = WHITE;
     }
 
+    @Override
     public Halo copy() {
         Halo copy = new Halo();
         copy.fill = fill == null ? null : fill.copy();
