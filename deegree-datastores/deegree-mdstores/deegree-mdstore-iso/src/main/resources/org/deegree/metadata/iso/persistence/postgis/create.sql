@@ -157,7 +157,7 @@ CREATE INDEX title_idx ON IDXTB_MAIN (title);
 CREATE INDEX abstract_idx ON IDXTB_MAIN (abstract);
 CREATE INDEX anytext_idx ON IDXTB_MAIN (anytext);
 CREATE INDEX fileidentifier_idx ON IDXTB_MAIN (fileidentifier);
-CREATE INDEX modified_idx ON IDXTB_MAIN (fileidentifier);
+CREATE INDEX modified_idx ON IDXTB_MAIN (modified);
 CREATE INDEX type_idx ON IDXTB_MAIN (type);
 CREATE INDEX topicCategories_idx ON IDXTB_MAIN (topicCategories);
 CREATE INDEX publicationdate_idx ON IDXTB_MAIN (publicationdate);
