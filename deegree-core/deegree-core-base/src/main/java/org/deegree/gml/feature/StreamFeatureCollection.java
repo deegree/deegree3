@@ -255,7 +255,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
                 if ( next == null ) {
                     throw new NoSuchElementException();
                 }
-                Feature currentFeature = nextFeature;
+                Feature currentFeature = next;
                 try {
                     next = read();
                 } catch ( IOException e ) {

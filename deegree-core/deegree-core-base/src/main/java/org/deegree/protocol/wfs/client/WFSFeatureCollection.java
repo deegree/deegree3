@@ -256,7 +256,6 @@ public class WFSFeatureCollection<T> {
                 T value = null;
                 try {
                     value = parse200MemberProperty();
-
                 } catch ( Throwable t ) {
                     throw new RuntimeException( t.getMessage(), t );
                 }

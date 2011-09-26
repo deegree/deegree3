@@ -56,9 +56,18 @@ public class OWSExceptionReport extends Exception {
     private final List<OWSException> exceptions;
 
     public OWSExceptionReport( List<OWSException> exceptions, String lang, String version ) {
+        super( buildMessage( exceptions ) );
         this.version = version;
         this.lang = lang;
         this.exceptions = exceptions;
+    }
+
+    private static String buildMessage( List<OWSException> exceptions ) {
+        StringBuilder sb = new StringBuilder();
+        for ( OWSException exception : exceptions ) {
+            sb.append( exception.getMessage() );
+        }
+        return sb.toString();
     }
 
     public String getVersion() {

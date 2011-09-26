@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_110;
@@ -42,13 +43,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.net.URL;
+import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.gml.feature.StreamFeatureCollection;
+import org.deegree.filter.Filter;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ContactInfo;
@@ -141,7 +151,7 @@ public class WFSClientTest {
         ContactInfo ci = sc.getContactInfo();
         assertEquals( "http://www.deegree.org", ci.getOnlineResource().toString() );
         assertEquals( "24x7", ci.getHoursOfService() );
-        assertEquals( "Do not hesitate to contact us", ci.getContactInstruction() );
+        assertEquals( "Do not hesitate to call", ci.getContactInstruction() );
         Address add = ci.getAddress();
         assertEquals( "NRW", add.getAdministrativeArea() );
         assertEquals( "Bonn", add.getCity() );
@@ -208,14 +218,63 @@ public class WFSClientTest {
         WFSClient client = new WFSClient( wfsCapaUrl );
         assertEquals( WFS_110, client.getServiceVersion() );
 
-        StreamFeatureCollection fc = client.getFeatures( QName.valueOf( "{http://www.deegree.org/app}SGID100_RoadsDLG100" ) );
+        GetFeatureResponse<Feature> resp = client.getFeatures( QName.valueOf( "{http://www.deegree.org/app}SGID024_StateBoundary" ),
+                                                               null );
+        int i = 0;
         try {
-            Feature f = null;
-            while ((f = fc.read()) != null) {
-                System.out.println (f.getId());
+            WFSFeatureCollection<Feature> wfsFc = resp.getAsWFSFeatureCollection();
+            Iterator<Feature> iter = wfsFc.getMembers();
+            while ( iter.hasNext() ) {
+                Feature f = iter.next();
+                assertNotNull( f );
+                i++;
             }
         } finally {
-            fc.close();
+            resp.close();
         }
+        assertEquals( 2, i );
+    }
+
+    @Test
+    public void testGetFeature110PropertyIsEqualToFilter()
+                            throws Exception {
+
+        String wfsUtahDemo110Url = TestProperties.getProperty( WFS_UTAH_DEMO_110_URL );
+        if ( wfsUtahDemo110Url == null ) {
+            LOG.warn( "Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties" );
+            return;
+        }
+
+        URL wfsCapaUrl = new URL( wfsUtahDemo110Url );
+        WFSClient client = new WFSClient( wfsCapaUrl );
+        assertEquals( WFS_110, client.getServiceVersion() );
+
+        ValueReference propName = new ValueReference( new QName( "http://www.deegree.org/app", "STATE", "app" ) );
+        PrimitiveType pt = new PrimitiveType( BaseType.STRING );
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( new PrimitiveValue( "Utah", pt ), null );
+        Operator rootOperator = new PropertyIsEqualTo( propName, literal, true, null );
+        Filter filter = new OperatorFilter( rootOperator );
+
+        GetFeatureResponse<Feature> resp = null;
+        try {
+            resp = client.getFeatures( QName.valueOf( "{http://www.deegree.org/app}SGID024_StateBoundary" ), filter );
+        } catch ( Exception t ) {
+            t.printStackTrace();
+            throw t;
+        }
+
+        int i = 0;
+        try {
+            WFSFeatureCollection<Feature> wfsFc = resp.getAsWFSFeatureCollection();
+            Iterator<Feature> iter = wfsFc.getMembers();
+            while ( iter.hasNext() ) {
+                Feature f = iter.next();
+                assertNotNull( f );
+                i++;
+            }
+        } finally {
+            resp.close();
+        }
+        assertEquals( 1, i );
     }
 }

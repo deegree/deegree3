@@ -154,11 +154,13 @@
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
       <version>2.7.1</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>xalan</groupId>
       <artifactId>serializer</artifactId>
       <version>2.7.1</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 </project>
