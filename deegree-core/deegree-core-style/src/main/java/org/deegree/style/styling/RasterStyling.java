@@ -114,6 +114,7 @@ public class RasterStyling implements Styling<RasterStyling> {
         /** Vertical angle of illumination source. Default is 45 degrees. */
         public double alt = 45;
 
+        @Override
         public ShadedRelief copy() {
             ShadedRelief copy = new ShadedRelief();
 
@@ -150,6 +151,7 @@ public class RasterStyling implements Styling<RasterStyling> {
         /** Default is 1 == no gamma correction. */
         public double gamma = 1;
 
+        @Override
         public ContrastEnhancement copy() {
             ContrastEnhancement copy = new ContrastEnhancement();
 
@@ -186,6 +188,7 @@ public class RasterStyling implements Styling<RasterStyling> {
         RANDOM
     }
 
+    @Override
     public RasterStyling copy() {
         RasterStyling copy = new RasterStyling();
 

@@ -67,7 +67,6 @@ import org.deegree.style.se.unevaluated.Symbolizer;
 import org.deegree.style.styling.RasterStyling;
 import org.deegree.style.styling.Styling;
 import org.deegree.style.styling.TextStyling;
-import org.deegree.style.styling.components.UOM;
 import org.slf4j.Logger;
 
 /**
@@ -119,8 +118,8 @@ public class Legends {
         }
     }
 
-    private List<LegendItem> prepareLegend( Style style, Java2DRenderer renderer, Java2DTextRenderer textRenderer,
-                                            Java2DRasterRenderer rasterRenderer ) {
+    private static List<LegendItem> prepareLegend( Style style, Java2DRenderer renderer,
+                                                   Java2DTextRenderer textRenderer, Java2DRasterRenderer rasterRenderer ) {
         List<LegendItem> items = new LinkedList<LegendItem>();
         LinkedList<Class<?>> ruleTypes = style.getRuleTypes();
         Iterator<Class<?>> types = ruleTypes.iterator();

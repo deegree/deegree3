@@ -90,6 +90,7 @@ public class Mark implements Copyable<Mark> {
         stroke.color = BLACK;
     }
 
+    @Override
     public Mark copy() {
         Mark copy = new Mark();
         copy.wellKnown = wellKnown;

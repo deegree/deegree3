@@ -97,6 +97,7 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
         this.channelContrastEnhancements = enhancements;
     }
 
+    @Override
     public RasterChannelSelection copy() {
         RasterChannelSelection copy = new RasterChannelSelection( redChannel, greenChannel, blueChannel, grayChannel,
                                                                   channelContrastEnhancements );

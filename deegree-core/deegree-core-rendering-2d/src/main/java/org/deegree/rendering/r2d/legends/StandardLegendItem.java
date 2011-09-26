@@ -106,10 +106,12 @@ public class StandardLegendItem implements LegendItem {
         this.textRenderer = textRenderer;
     }
 
+    @Override
     public int getHeight() {
         return 1;
     }
 
+    @Override
     public void paint( int origin, LegendOptions opts ) {
         Mapper<Boolean, Styling> pointStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( PointStyling.class );
         Mapper<Boolean, Styling> lineStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( LineStyling.class );
@@ -174,6 +176,7 @@ public class StandardLegendItem implements LegendItem {
         }
     }
 
+    @Override
     public int getMaxWidth( LegendOptions opts ) {
         int res = 2 * opts.spacing + opts.baseWidth;
 

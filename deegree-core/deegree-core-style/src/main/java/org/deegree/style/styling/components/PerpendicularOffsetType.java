@@ -85,6 +85,7 @@ public class PerpendicularOffsetType implements Copyable<PerpendicularOffsetType
         NegativeOffset
     }
 
+    @Override
     public PerpendicularOffsetType copy() {
         PerpendicularOffsetType copy = new PerpendicularOffsetType();
         copy.type = type;

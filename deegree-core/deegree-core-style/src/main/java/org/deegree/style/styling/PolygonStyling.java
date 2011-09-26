@@ -87,6 +87,7 @@ public class PolygonStyling implements Styling<PolygonStyling> {
     /** Default is Standard. */
     public PerpendicularOffsetType perpendicularOffsetType = new PerpendicularOffsetType();
 
+    @Override
     public PolygonStyling copy() {
         PolygonStyling copy = new PolygonStyling();
         copy.fill = fill == null ? null : fill.copy();

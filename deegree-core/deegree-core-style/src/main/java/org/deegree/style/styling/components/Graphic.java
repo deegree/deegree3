@@ -102,6 +102,7 @@ public class Graphic implements Copyable<Graphic> {
      */
     public Mark mark = new Mark();
 
+    @Override
     public Graphic copy() {
         Graphic other = new Graphic();
         other.opacity = opacity;
@@ -112,6 +113,7 @@ public class Graphic implements Copyable<Graphic> {
         other.displacementX = displacementX;
         other.displacementY = displacementY;
         other.image = image;
+        other.imageURL = imageURL;
         other.mark = mark.copy();
         return other;
     }

@@ -88,6 +88,7 @@ public class Font implements Copyable<Font> {
         NORMAL
     }
 
+    @Override
     public Font copy() {
         Font copy = new Font();
         copy.fontFamily.addAll( fontFamily );
