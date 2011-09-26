@@ -158,7 +158,10 @@ public abstract class Layer {
         keywords = new LinkedList<Pair<CodeType, LanguageStringType>>();
         if ( kwType != null ) {
             org.deegree.services.jaxb.wms.CodeType jaxbct = kwType.getType();
-            CodeType ct = new CodeType( jaxbct.getValue(), jaxbct.getCodeSpace() );
+            CodeType ct = null;
+            if ( jaxbct != null ) {
+                ct = new CodeType( jaxbct.getValue(), jaxbct.getCodeSpace() );
+            }
             for ( LanguageStringType lst : kwType.getKeyword() ) {
                 keywords.add( new Pair<CodeType, LanguageStringType>( ct, lst ) );
             }
