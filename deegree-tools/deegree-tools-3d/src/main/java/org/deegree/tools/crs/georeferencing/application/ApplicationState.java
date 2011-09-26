@@ -40,6 +40,7 @@ import static java.awt.Cursor.getPredefinedCursor;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -149,6 +151,10 @@ public class ApplicationState {
 
     public MapService service;
 
+    public ActionListener transformationListener;
+
+    public boolean systemExitOnClose;
+    
     /**
      * Removes sample points in panels and the table.
      * 
@@ -157,7 +163,7 @@ public class ApplicationState {
      */
     public void removeFromMappedPoints( int[] tableRows ) {
         for ( int i = tableRows.length - 1; i >= 0; i-- ) {
-            mappedPoints.remove( tableRows[i] );
+            this.mappedPoints.remove( tableRows[i] );
         }
 
     }
@@ -166,37 +172,37 @@ public class ApplicationState {
      * Initializes the georeferenced scene.
      */
     public void initGeoReferencingScene() {
-        isInitGeoref = true;
-        if ( isInitFoot ) {
-            tablePanel.getSaveButton().setEnabled( true );
-            tablePanel.getLoadButton().setEnabled( true );
+        this.isInitGeoref = true;
+        if ( this.isInitFoot ) {
+            this.tablePanel.getSaveButton().setEnabled( true );
+            this.tablePanel.getLoadButton().setEnabled( true );
         }
 
-        mouseGeoRef = new GeoReferencedMouseModel();
-        init();
-        Controller.removeListeners( conModel.getPanel() );
-        conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener( this ) );
-        conModel.getPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
-        conModel.getPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
+        this.mouseGeoRef = new GeoReferencedMouseModel();
+        this.init();
+        Controller.removeListeners( this.conModel.getPanel() );
+        this.conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener( this ) );
+        this.conModel.getPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
+        this.conModel.getPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
     }
 
     /**
      * Initializes the computing and the painting of the maps.
      */
     void init() {
-        if ( mapController != null ) {
-            sceneValues.setGeorefDimension( new Rectangle( conModel.getPanel().getWidth(),
-                                                           conModel.getPanel().getHeight() ) );
-            conModel.getPanel().setImageDimension( sceneValues.getGeorefDimension() );
-            conModel.getPanel().updatePoints( sceneValues );
-            Component glassPane = ( (JFrame) conModel.getPanel().getTopLevelAncestor() ).getGlassPane();
+        if ( this.mapController != null ) {
+            this.sceneValues.setGeorefDimension( new Rectangle( this.conModel.getPanel().getWidth(),
+                                                                this.conModel.getPanel().getHeight() ) );
+            this.conModel.getPanel().setImageDimension( this.sceneValues.getGeorefDimension() );
+            this.conModel.getPanel().updatePoints( this.sceneValues );
+            Component glassPane = ( (JFrame) this.conModel.getPanel().getTopLevelAncestor() ).getGlassPane();
             MouseAdapter mouseAdapter = new MouseAdapter() {
                 // else the wait cursor will not appear
             };
             glassPane.addMouseListener( mouseAdapter );
             glassPane.setCursor( getPredefinedCursor( Cursor.WAIT_CURSOR ) );
             glassPane.setVisible( true );
-            conModel.getPanel().repaint();
+            this.conModel.getPanel().repaint();
             glassPane.removeMouseListener( mouseAdapter );
             glassPane.setCursor( getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
             glassPane.setVisible( false );
@@ -207,24 +213,24 @@ public class ApplicationState {
      * Initializes the footprint scene.
      */
     public void initFootprintScene( String filePath ) {
-        isInitFoot = true;
-        if ( isInitGeoref ) {
-            tablePanel.getSaveButton().setEnabled( true );
-            tablePanel.getLoadButton().setEnabled( true );
+        this.isInitFoot = true;
+        if ( this.isInitGeoref ) {
+            this.tablePanel.getSaveButton().setEnabled( true );
+            this.tablePanel.getLoadButton().setEnabled( true );
         }
 
-        this.footPrint = new Footprint( sceneValues, geom );
-        Controller.removeListeners( conModel.getFootPanel() );
-        conModel.getFootPanel().addScene2DMouseListener( new FootprintMouseListener( this ) );
-        conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
-        conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
+        this.footPrint = new Footprint( this.sceneValues, this.geom );
+        Controller.removeListeners( this.conModel.getFootPanel() );
+        this.conModel.getFootPanel().addScene2DMouseListener( new FootprintMouseListener( this ) );
+        this.conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
+        this.conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
 
-        mouseFootprint = new FootprintMouseModel();
-        List<WorldRenderableObject> rese = File3dImporter.open( conModel.getView(), filePath );
-        sourceCRS = null;
+        this.mouseFootprint = new FootprintMouseModel();
+        List<WorldRenderableObject> rese = File3dImporter.open( this.conModel.getView(), filePath );
+        this.sourceCRS = null;
         for ( WorldRenderableObject res : rese ) {
-            sourceCRS = res.getBbox().getCoordinateSystem();
-            glHandler.addDataObjectToScene( res );
+            this.sourceCRS = res.getBbox().getCoordinateSystem();
+            this.glHandler.addDataObjectToScene( res );
         }
         List<float[]> geometryThatIsTaken = new ArrayList<float[]>();
         for ( GeometryQualityModel g : File3dImporter.gm ) {
@@ -255,33 +261,60 @@ public class ApplicationState {
 
         }
 
-        footPrint.generateFootprints( geometryThatIsTaken );
+        this.footPrint.generateFootprints( geometryThatIsTaken );
 
-        sceneValues.setDimensionFootpanel( new Rectangle( conModel.getFootPanel().getBounds().width,
-                                                          conModel.getFootPanel().getBounds().height ) );
-        conModel.getFootPanel().updatePoints( sceneValues );
+        this.sceneValues.setDimensionFootpanel( new Rectangle( this.conModel.getFootPanel().getBounds().width,
+                                                               this.conModel.getFootPanel().getBounds().height ) );
+        this.conModel.getFootPanel().updatePoints( this.sceneValues );
 
-        conModel.getFootPanel().setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
+        this.conModel.getFootPanel().setPolygonList( this.footPrint.getWorldCoordinateRingList(), this.sceneValues );
 
-        conModel.getFootPanel().repaint();
+        this.conModel.getFootPanel().repaint();
+
+    }
+
+    public void initFootprintSceneFromLinearRings( List<Ring> rings ) {
+        this.isInitFoot = true;
+        if ( this.isInitGeoref ) {
+            this.tablePanel.getSaveButton().setEnabled( true );
+            this.tablePanel.getLoadButton().setEnabled( true );
+        }
+
+        this.footPrint = new Footprint( this.sceneValues, this.geom );
+        Controller.removeListeners( this.conModel.getFootPanel() );
+        this.conModel.getFootPanel().addScene2DMouseListener( new FootprintMouseListener( this ) );
+        this.conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
+        this.conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
+
+        this.mouseFootprint = new FootprintMouseModel();
+
+        this.footPrint.generateFootprintsFromLinearRings( rings );
+
+        this.sceneValues.setDimensionFootpanel( new Rectangle( this.conModel.getFootPanel().getBounds().width,
+                                                               this.conModel.getFootPanel().getBounds().height ) );
+        this.conModel.getFootPanel().updatePoints( this.sceneValues );
+
+        this.conModel.getFootPanel().setPolygonList( this.footPrint.getWorldCoordinateRingList(), this.sceneValues );
+
+        this.conModel.getFootPanel().repaint();
 
     }
 
     public void updateResidualsWithLastAbstractPoint() {
-        if ( conModel.getFootPanel().getLastAbstractPoint() != null
-             && conModel.getPanel().getLastAbstractPoint() != null ) {
-            mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>(
-                                                                                     conModel.getFootPanel().getLastAbstractPoint(),
-                                                                                     conModel.getPanel().getLastAbstractPoint(),
-                                                                                     null ) );
-            updateMappedPoints();
-            updateResiduals( conModel.getTransformationType() );
+        if ( this.conModel.getFootPanel().getLastAbstractPoint() != null
+             && this.conModel.getPanel().getLastAbstractPoint() != null ) {
+            this.mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>(
+                                                                                          this.conModel.getFootPanel().getLastAbstractPoint(),
+                                                                                          this.conModel.getPanel().getLastAbstractPoint(),
+                                                                                          null ) );
+            this.updateMappedPoints();
+            this.updateResiduals( this.conModel.getTransformationType() );
 
             // remove the last element...should be the before inserted value
-            mappedPoints.remove( mappedPoints.size() - 1 );
+            this.mappedPoints.remove( this.mappedPoints.size() - 1 );
         } else {
-            updateMappedPoints();
-            updateResiduals( conModel.getTransformationType() );
+            this.updateMappedPoints();
+            this.updateResiduals( this.conModel.getTransformationType() );
         }
     }
 
@@ -307,7 +340,7 @@ public class ApplicationState {
         List<Triple<Point4Values, Point4Values, PointResidual>> temp = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
 
         int counter = 0;
-        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+        for ( Triple<Point4Values, Point4Values, PointResidual> p : this.mappedPoints ) {
             System.out.println( "[Controller] before: " + p );
             Point4Values f = new Point4Values( p.first.getOldValue(), p.first.getInitialValue(), p.first.getNewValue(),
                                                p.first.getWorldCoords(), new RowColumn( counter,
@@ -326,8 +359,8 @@ public class ApplicationState {
                 temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, null ) );
             }
         }
-        mappedPoints.clear();
-        mappedPoints.addAll( temp );
+        this.mappedPoints.clear();
+        this.mappedPoints.addAll( temp );
     }
 
     /**
@@ -340,12 +373,12 @@ public class ApplicationState {
     public void updateResiduals( AbstractTransformation.TransformationType type ) {
 
         try {
-            AbstractTransformation t = determineTransformationType( type );
+            AbstractTransformation t = this.determineTransformationType( type );
             PointResidual[] r = t.calculateResiduals();
             if ( r != null ) {
                 Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
                 int counter = 0;
-                for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
+                for ( Triple<Point4Values, Point4Values, PointResidual> point : this.mappedPoints ) {
                     Vector<Double> element = new Vector<Double>( 6 );
                     element.add( point.second.getWorldCoords().x );
                     element.add( point.second.getWorldCoords().y );
@@ -358,8 +391,8 @@ public class ApplicationState {
                     point.third = r[counter++];
 
                 }
-                tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
-                tablePanel.getModel().fireTableDataChanged();
+                this.tablePanel.getModel().setDataVector( data, this.tablePanel.getColumnNamesAsVector() );
+                this.tablePanel.getModel().fireTableDataChanged();
             }
         } catch ( UnknownCRSException e ) {
             // TODO Auto-generated catch block
@@ -371,16 +404,16 @@ public class ApplicationState {
      * Removes everything after a complete deletion of the points.
      */
     public void removeAllFromMappedPoints() {
-        mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
-        tablePanel.removeAllRows();
-        conModel.getPanel().removeAllFromSelectedPoints();
-        conModel.getFootPanel().removeAllFromSelectedPoints();
-        conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-        conModel.getPanel().setPolygonList( null, null );
-        conModel.getPanel().setLastAbstractPoint( null, null, null );
-        conModel.getPanel().repaint();
-        conModel.getFootPanel().repaint();
-        reset();
+        this.mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
+        this.tablePanel.removeAllRows();
+        this.conModel.getPanel().removeAllFromSelectedPoints();
+        this.conModel.getFootPanel().removeAllFromSelectedPoints();
+        this.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        this.conModel.getPanel().setPolygonList( null, null );
+        this.conModel.getPanel().setLastAbstractPoint( null, null, null );
+        this.conModel.getPanel().repaint();
+        this.conModel.getFootPanel().repaint();
+        this.reset();
 
     }
 
@@ -388,9 +421,9 @@ public class ApplicationState {
      * Resets the focus of the panels and the startPanel.
      */
     public void reset() {
-        conModel.getPanel().setFocus( false );
-        conModel.getFootPanel().setFocus( false );
-        start = false;
+        this.conModel.getPanel().setFocus( false );
+        this.conModel.getFootPanel().setFocus( false );
+        this.start = false;
 
     }
 
@@ -405,19 +438,21 @@ public class ApplicationState {
     public AbstractTransformation determineTransformationType( AbstractTransformation.TransformationType type )
                             throws UnknownCRSException {
         AbstractTransformation t = null;
-        if ( targetCRS == null ) {
+        if ( this.targetCRS == null ) {
             return null;
         }
         switch ( type ) {
         case Polynomial:
-            t = new Polynomial( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, conModel.getOrder() );
+            t = new Polynomial( this.mappedPoints, this.footPrint, this.sceneValues, this.targetCRS, this.targetCRS,
+                                this.conModel.getOrder() );
             break;
         case Helmert_4:
-            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, targetCRS, conModel.getOrder() );
+            t = new Helmert4Transform( this.mappedPoints, this.footPrint, this.sceneValues, this.targetCRS,
+                                       this.conModel.getOrder() );
             break;
         case Affine:
-            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS,
-                                          conModel.getOrder() );
+            t = new AffineTransformation( this.mappedPoints, this.footPrint, this.sceneValues, this.targetCRS,
+                                          this.targetCRS, this.conModel.getOrder() );
             break;
         }
 
@@ -431,16 +466,16 @@ public class ApplicationState {
     public void updateDrawingPanels() {
         List<Point4Values> panelList = new ArrayList<Point4Values>();
         List<Point4Values> footPanelList = new ArrayList<Point4Values>();
-        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+        for ( Triple<Point4Values, Point4Values, PointResidual> p : this.mappedPoints ) {
             panelList.add( p.second );
             footPanelList.add( p.first );
         }
 
-        conModel.getPanel().setSelectedPoints( panelList, sceneValues );
-        conModel.getFootPanel().setSelectedPoints( footPanelList, sceneValues );
+        this.conModel.getPanel().setSelectedPoints( panelList, this.sceneValues );
+        this.conModel.getFootPanel().setSelectedPoints( footPanelList, this.sceneValues );
 
-        conModel.getPanel().repaint();
-        conModel.getFootPanel().repaint();
+        this.conModel.getPanel().repaint();
+        this.conModel.getFootPanel().repaint();
 
     }
 
@@ -448,18 +483,18 @@ public class ApplicationState {
      * Sets values to the JTableModel.
      */
     public void setValues() {
-        conModel.getFootPanel().addToSelectedPoints( conModel.getFootPanel().getLastAbstractPoint() );
-        conModel.getPanel().addToSelectedPoints( conModel.getPanel().getLastAbstractPoint() );
-        if ( mappedPoints != null && mappedPoints.size() >= 1 ) {
-            addToMappedPoints( conModel.getFootPanel().getLastAbstractPoint(),
-                               conModel.getPanel().getLastAbstractPoint(), null );
-            updateResiduals( conModel.getTransformationType() );
+        this.conModel.getFootPanel().addToSelectedPoints( this.conModel.getFootPanel().getLastAbstractPoint() );
+        this.conModel.getPanel().addToSelectedPoints( this.conModel.getPanel().getLastAbstractPoint() );
+        if ( this.mappedPoints != null && this.mappedPoints.size() >= 1 ) {
+            this.addToMappedPoints( this.conModel.getFootPanel().getLastAbstractPoint(),
+                                    this.conModel.getPanel().getLastAbstractPoint(), null );
+            this.updateResiduals( this.conModel.getTransformationType() );
         } else {
-            addToMappedPoints( conModel.getFootPanel().getLastAbstractPoint(),
-                               conModel.getPanel().getLastAbstractPoint(), null );
+            this.addToMappedPoints( this.conModel.getFootPanel().getLastAbstractPoint(),
+                                    this.conModel.getPanel().getLastAbstractPoint(), null );
         }
-        conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-        conModel.getPanel().setLastAbstractPoint( null, null, null );
+        this.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        this.conModel.getPanel().setLastAbstractPoint( null, null, null );
 
     }
 }

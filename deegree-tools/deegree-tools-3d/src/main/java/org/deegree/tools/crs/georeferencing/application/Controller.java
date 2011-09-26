@@ -88,8 +88,8 @@ public class Controller {
 
     public Controller( GRViewerGUI view, ApplicationState state ) {
         this.state = state;
-        geom = new GeometryFactory();
-        state.sceneValues = new Scene2DValues( geom );
+        this.geom = new GeometryFactory();
+        state.sceneValues = new Scene2DValues( this.geom );
 
         state.conModel = new ControllerModel( view, view.getFootprintPanel(), view.getScenePanel2D(),
                                               new OptionDialogModel() );
@@ -129,6 +129,10 @@ public class Controller {
 
         }
 
+    }
+
+    public ApplicationState getState() {
+        return this.state;
     }
 
     /**
@@ -201,11 +205,11 @@ public class Controller {
             if ( column != -1 && model.getValueAt( row, column ) != null ) {
                 Object data = model.getValueAt( row, column );
 
-                for ( Triple<Point4Values, Point4Values, PointResidual> p : state.mappedPoints ) {
-                    boolean changed = changePointLocation( p, data, row, column );
+                for ( Triple<Point4Values, Point4Values, PointResidual> p : Controller.this.state.mappedPoints ) {
+                    boolean changed = Controller.this.changePointLocation( p, data, row, column );
                     if ( changed ) {
 
-                        state.updateDrawingPanels();
+                        Controller.this.state.updateDrawingPanels();
 
                     }
                 }
@@ -213,25 +217,25 @@ public class Controller {
                 if ( row == e.getLastRow() ) {
                     Triple<Point4Values, Point4Values, PointResidual> newLastPair;
                     newLastPair = new Triple<Point4Values, Point4Values, PointResidual>(
-                                                                                         state.conModel.getFootPanel().getLastAbstractPoint(),
-                                                                                         state.conModel.getPanel().getLastAbstractPoint(),
+                                                                                         Controller.this.state.conModel.getFootPanel().getLastAbstractPoint(),
+                                                                                         Controller.this.state.conModel.getPanel().getLastAbstractPoint(),
                                                                                          null );
-                    if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
-                         && state.conModel.getPanel().getLastAbstractPoint() != null ) {
-                        boolean changed = changePointLocation( newLastPair, data, row, column );
+                    if ( Controller.this.state.conModel.getFootPanel().getLastAbstractPoint() != null
+                         && Controller.this.state.conModel.getPanel().getLastAbstractPoint() != null ) {
+                        boolean changed = Controller.this.changePointLocation( newLastPair, data, row, column );
                         if ( changed ) {
 
-                            if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
-                                 && state.conModel.getPanel().getLastAbstractPoint() != null ) {
-                                state.conModel.getPanel().setLastAbstractPoint( newLastPair.second.getNewValue(),
-                                                                                newLastPair.second.getWorldCoords(),
-                                                                                newLastPair.second.getRc() );
-                                state.conModel.getFootPanel().setLastAbstractPoint( newLastPair.first.getNewValue(),
-                                                                                    newLastPair.first.getWorldCoords(),
-                                                                                    newLastPair.first.getRc() );
+                            if ( Controller.this.state.conModel.getFootPanel().getLastAbstractPoint() != null
+                                 && Controller.this.state.conModel.getPanel().getLastAbstractPoint() != null ) {
+                                Controller.this.state.conModel.getPanel().setLastAbstractPoint( newLastPair.second.getNewValue(),
+                                                                                                newLastPair.second.getWorldCoords(),
+                                                                                                newLastPair.second.getRc() );
+                                Controller.this.state.conModel.getFootPanel().setLastAbstractPoint( newLastPair.first.getNewValue(),
+                                                                                                    newLastPair.first.getWorldCoords(),
+                                                                                                    newLastPair.first.getRc() );
                             }
-                            state.conModel.getPanel().repaint();
-                            state.conModel.getFootPanel().repaint();
+                            Controller.this.state.conModel.getPanel().repaint();
+                            Controller.this.state.conModel.getFootPanel().repaint();
 
                         }
                     }
@@ -268,7 +272,7 @@ public class Controller {
             if ( column == fcpx ) {
                 worldCoords = new FootprintPoint( new Double( data.toString() ).doubleValue(),
                                                   p.first.getWorldCoords().y );
-                int[] i = state.sceneValues.getPixelCoord( worldCoords );
+                int[] i = this.state.sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new FootprintPoint( i[0], i[1] );
 
                 p.first = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.first.getRc() );
@@ -276,14 +280,14 @@ public class Controller {
             } else if ( column == fcpy ) {
                 worldCoords = new FootprintPoint( p.first.getWorldCoords().x,
                                                   new Double( data.toString() ).doubleValue() );
-                int[] i = state.sceneValues.getPixelCoord( worldCoords );
+                int[] i = this.state.sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new FootprintPoint( i[0], i[1] );
                 p.first = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.first.getRc() );
                 changed = true;
             } else if ( column == scpx ) {
                 worldCoords = new GeoReferencedPoint( new Double( data.toString() ).doubleValue(),
                                                       p.second.getWorldCoords().y );
-                int[] i = state.sceneValues.getPixelCoord( worldCoords );
+                int[] i = this.state.sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new GeoReferencedPoint( i[0], i[1] );
 
                 p.second = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.second.getRc() );
@@ -291,7 +295,7 @@ public class Controller {
             } else if ( column == scpy ) {
                 worldCoords = new GeoReferencedPoint( p.second.getWorldCoords().x,
                                                       new Double( data.toString() ).doubleValue() );
-                int[] i = state.sceneValues.getPixelCoord( worldCoords );
+                int[] i = this.state.sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new GeoReferencedPoint( i[0], i[1] );
 
                 p.second = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.second.getRc() );
@@ -323,7 +327,7 @@ public class Controller {
         @Override
         public void run() {
 
-            state.changePoint = new Point2d( changing.x, changing.y );
+            Controller.this.state.changePoint = new Point2d( this.changing.x, this.changing.y );
 
             // model.generatePredictedImage( changing );
             // model.generateImage( changing );
@@ -354,12 +358,12 @@ public class Controller {
             Object source = c.getSource();
 
             if ( source instanceof JFrame ) {
-                if ( state.mapController != null ) {
-                    if ( state.sceneValues != null ) {
-                        state.mapController.setSize( state.conModel.getFootPanel().getBounds().width,
-                                                     state.conModel.getFootPanel().getBounds().height );
-                        state.conModel.getFootPanel().updatePoints( state.sceneValues );
-                        state.conModel.getFootPanel().repaint();
+                if ( this.state.mapController != null ) {
+                    if ( this.state.sceneValues != null ) {
+                        this.state.mapController.setSize( this.state.conModel.getFootPanel().getBounds().width,
+                                                          this.state.conModel.getFootPanel().getBounds().height );
+                        this.state.conModel.getFootPanel().updatePoints( this.state.sceneValues );
+                        this.state.conModel.getFootPanel().repaint();
                     }
 
                 }
@@ -370,7 +374,7 @@ public class Controller {
     }
 
     public ControllerModel getConModel() {
-        return state.conModel;
+        return this.state.conModel;
     }
 
 }

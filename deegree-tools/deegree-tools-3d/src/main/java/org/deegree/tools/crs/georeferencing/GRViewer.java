@@ -62,6 +62,7 @@ public class GRViewer {
     public static void main( String[] args )
                             throws IOException {
         ApplicationState state = new ApplicationState();
+        state.systemExitOnClose = true;
         GRViewerGUI gui = new GRViewerGUI( state );
 
         new Controller( gui, state );

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.listeners;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -65,89 +66,89 @@ public class Scene2DMouseListener extends MouseAdapter {
 
     @Override
     public void mouseEntered( MouseEvent m ) {
-        state.mouseGeoRef.setMouseInside( true );
+        this.state.mouseGeoRef.setMouseInside( true );
     }
 
     @Override
     public void mouseExited( MouseEvent m ) {
-        state.mouseGeoRef.setMouseInside( false );
+        this.state.mouseGeoRef.setMouseInside( false );
     }
 
     @Override
     public void mousePressed( MouseEvent m ) {
-        if ( state.mapController != null ) {
-            if ( state.zoomIn ) {
-                state.mapController.setZoomRectStart( m.getX(), m.getY() );
+        if ( this.state.mapController != null ) {
+            if ( this.state.zoomIn ) {
+                this.state.mapController.setZoomRectStart( m.getX(), m.getY() );
             }
-            if ( state.pan ) {
-                state.mapController.startPanning( m.getX(), m.getY() );
-                state.previewing = true;
+            if ( this.state.pan ) {
+                this.state.mapController.startPanning( m.getX(), m.getY() );
+                this.state.previewing = true;
             }
         }
-        state.mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
-        state.isControlDown = m.isControlDown();
+        this.state.mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+        this.state.isControlDown = m.isControlDown();
     }
 
     @Override
     public void mouseReleased( MouseEvent m ) {
         boolean isFirstNumber = false;
-        if ( state.mapController != null ) {
-            if ( state.isControlDown || state.zoomIn || state.zoomOut ) {
-                if ( state.zoomIn ) {
-                    if ( !state.mapController.finishZoomin( m.getX(), m.getY() ) ) {
-                        state.mapController.zoom( 1 - state.conModel.getDialogModel().getResizeValue().second,
-                                                  m.getX(), m.getY() );
+        if ( this.state.mapController != null ) {
+            if ( this.state.isControlDown || this.state.zoomIn || this.state.zoomOut ) {
+                if ( this.state.zoomIn ) {
+                    if ( !this.state.mapController.finishZoomin( m.getX(), m.getY() ) ) {
+                        this.state.mapController.zoom( 1 - this.state.conModel.getDialogModel().getResizeValue().second,
+                                                       m.getX(), m.getY() );
                     }
-                } else if ( state.zoomOut ) {
-                    state.mapController.zoom( 1 / ( 1 - state.conModel.getDialogModel().getResizeValue().second ),
-                                              m.getX(), m.getY() );
+                } else if ( this.state.zoomOut ) {
+                    this.state.mapController.zoom( 1 / ( 1 - this.state.conModel.getDialogModel().getResizeValue().second ),
+                                                   m.getX(), m.getY() );
                 }
 
-                updateTransformation( state );
-                state.conModel.getPanel().updatePoints( state.sceneValues );
-                state.conModel.getPanel().repaint();
+                updateTransformation( this.state );
+                this.state.conModel.getPanel().updatePoints( this.state.sceneValues );
+                this.state.conModel.getPanel().repaint();
             }
 
             else {
-                if ( state.referencing && state.referencingLeft ) {
-                    if ( state.start == false ) {
-                        state.start = true;
-                        state.conModel.getFootPanel().setFocus( false );
-                        state.conModel.getPanel().setFocus( true );
+                if ( this.state.referencing && this.state.referencingLeft ) {
+                    if ( this.state.start == false ) {
+                        this.state.start = true;
+                        this.state.conModel.getFootPanel().setFocus( false );
+                        this.state.conModel.getPanel().setFocus( true );
                     }
-                    if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
-                         && state.conModel.getPanel().getLastAbstractPoint() != null
-                         && state.conModel.getPanel().getFocus() == true ) {
-                        state.setValues();
+                    if ( this.state.conModel.getFootPanel().getLastAbstractPoint() != null
+                         && this.state.conModel.getPanel().getLastAbstractPoint() != null
+                         && this.state.conModel.getPanel().getFocus() == true ) {
+                        this.state.setValues();
                     }
-                    if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
-                         && state.conModel.getPanel().getLastAbstractPoint() == null
-                         && state.conModel.getPanel().getFocus() == true ) {
-                        state.tablePanel.addRow();
+                    if ( this.state.conModel.getFootPanel().getLastAbstractPoint() == null
+                         && this.state.conModel.getPanel().getLastAbstractPoint() == null
+                         && this.state.conModel.getPanel().getFocus() == true ) {
+                        this.state.tablePanel.addRow();
                         isFirstNumber = true;
                     }
 
                     double x = m.getX();
                     double y = m.getY();
-                    state.sceneValues.setEnvelopeGeoref( state.mapController.getCurrentEnvelope() );
+                    this.state.sceneValues.setEnvelopeGeoref( this.state.mapController.getCurrentEnvelope() );
                     GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                    GeoReferencedPoint g = (GeoReferencedPoint) state.sceneValues.getWorldPoint( geoReferencedPoint );
-                    state.rc = state.tablePanel.setCoords( g );
-                    state.conModel.getPanel().setLastAbstractPoint( geoReferencedPoint, g, state.rc );
+                    GeoReferencedPoint g = (GeoReferencedPoint) this.state.sceneValues.getWorldPoint( geoReferencedPoint );
+                    this.state.rc = this.state.tablePanel.setCoords( g );
+                    this.state.conModel.getPanel().setLastAbstractPoint( geoReferencedPoint, g, this.state.rc );
                     if ( isFirstNumber == false ) {
-                        state.updateResidualsWithLastAbstractPoint();
+                        this.state.updateResidualsWithLastAbstractPoint();
                     }
-                    state.referencingLeft = false;
+                    this.state.referencingLeft = false;
 
-                    updateTransformation( state );
+                    updateTransformation( this.state );
 
-                } else if ( state.pan ) {
-                    state.previewing = false;
-                    state.mapController.endPanning();
-                    state.conModel.getPanel().updatePoints( state.sceneValues );
+                } else if ( this.state.pan ) {
+                    this.state.previewing = false;
+                    this.state.mapController.endPanning();
+                    this.state.conModel.getPanel().updatePoints( this.state.sceneValues );
                 }
 
-                state.conModel.getPanel().repaint();
+                this.state.conModel.getPanel().repaint();
             }
 
         }
@@ -180,6 +181,9 @@ public class Scene2DMouseListener extends MouseAdapter {
         state.conModel.getPanel().repaint();
 
         state.reset();
+
+        if ( state.transformationListener != null )
+            state.transformationListener.actionPerformed( new ActionEvent( state, 0, "transformationupdated" ) );
     }
 
 }

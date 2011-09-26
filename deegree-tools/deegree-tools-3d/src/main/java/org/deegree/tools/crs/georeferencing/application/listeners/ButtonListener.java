@@ -137,24 +137,24 @@ public class ButtonListener implements ActionListener {
         Object source = e.getSource();
         if ( source instanceof JToggleButton ) {
             if ( source instanceof JRadioButton ) {
-                int pointSize = ( (ViewPanel) state.optionSettingPanel ).getTbm().getButtons().get( source );
-                state.conModel.getDialogModel().setSelectionPointSize( pointSize );
+                int pointSize = ( (ViewPanel) this.state.optionSettingPanel ).getTbm().getButtons().get( source );
+                this.state.conModel.getDialogModel().setSelectionPointSize( pointSize );
 
             } else if ( source instanceof JCheckBox ) {
                 JCheckBox selectedCheckbox = (JCheckBox) source;
 
-                new JCheckboxHandler( selectedCheckbox, state.conModel, state.wmsParameter );
+                new JCheckboxHandler( selectedCheckbox, this.state.conModel, this.state.wmsParameter );
             }
         } else if ( source instanceof JButton ) {
 
             if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
-                int[] tableRows = state.tablePanel.getTable().getSelectedRows();
+                int[] tableRows = this.state.tablePanel.getTable().getSelectedRows();
                 List<Integer> deleteableRows = new ArrayList<Integer>();
 
                 for ( int tableRow : tableRows ) {
                     boolean contained = false;
 
-                    for ( Triple<Point4Values, Point4Values, PointResidual> p : state.mappedPoints ) {
+                    for ( Triple<Point4Values, Point4Values, PointResidual> p : this.state.mappedPoints ) {
                         if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
 
                             contained = true;
@@ -166,8 +166,8 @@ public class ButtonListener implements ActionListener {
                     }
                     if ( contained == false ) {
 
-                        state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-                        state.conModel.getPanel().setLastAbstractPoint( null, null, null );
+                        this.state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+                        this.state.conModel.getPanel().setLastAbstractPoint( null, null, null );
                     }
                 }
                 if ( deleteableRows.size() != 0 ) {
@@ -175,97 +175,96 @@ public class ButtonListener implements ActionListener {
                     for ( int i = 0; i < temp.length; i++ ) {
                         temp[i] = deleteableRows.get( i );
                     }
-                    state.removeFromMappedPoints( temp );
+                    this.state.removeFromMappedPoints( temp );
                 }
-                state.updateResidualsWithLastAbstractPoint();
-                state.updateDrawingPanels();
+                this.state.updateResidualsWithLastAbstractPoint();
+                this.state.updateDrawingPanels();
             } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
 
-                FileInputHandler in = new FileInputHandler( state.tablePanel );
+                FileInputHandler in = new FileInputHandler( this.state.tablePanel );
                 if ( in.getData() != null ) {
-                    VectorTransformer vt = new VectorTransformer( in.getData(), state.sceneValues );
-                    state.mappedPoints.clear();
-                    state.mappedPoints.addAll( vt.getMappedPoints() );
-                    state.updateDrawingPanels();
+                    VectorTransformer vt = new VectorTransformer( in.getData(), this.state.sceneValues );
+                    this.state.mappedPoints.clear();
+                    this.state.mappedPoints.addAll( vt.getMappedPoints() );
+                    this.state.updateDrawingPanels();
                 }
 
             } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.SAVE_POINTTABLE ) ) {
 
-                new FileOutputHandler( state.tablePanel );
+                new FileOutputHandler( this.state.tablePanel );
 
             } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
-                state.removeAllFromMappedPoints();
+                this.state.removeAllFromMappedPoints();
             } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
-                if ( state.optionDialog != null && state.optionDialog.isVisible() == true ) {
-                    state.conModel.getDialogModel().transferOldToNew();
-                    AbstractPanel2D.selectedPointSize = state.conModel.getDialogModel().getSelectionPointSize().first;
-                    state.conModel.getPanel().repaint();
-                    state.conModel.getFootPanel().repaint();
-                    state.optionDialog.setVisible( false );
-                } else if ( state.wmsStartDialog != null && state.wmsStartDialog.isVisible() == true ) {
-                    state.wmsStartDialog.setVisible( false );
+                if ( this.state.optionDialog != null && this.state.optionDialog.isVisible() == true ) {
+                    this.state.conModel.getDialogModel().transferOldToNew();
+                    AbstractPanel2D.selectedPointSize = this.state.conModel.getDialogModel().getSelectionPointSize().first;
+                    this.state.conModel.getPanel().repaint();
+                    this.state.conModel.getFootPanel().repaint();
+                    this.state.optionDialog.setVisible( false );
+                } else if ( this.state.wmsStartDialog != null && this.state.wmsStartDialog.isVisible() == true ) {
+                    this.state.wmsStartDialog.setVisible( false );
 
-                } else if ( state.wmsParameter != null && state.wmsParameter.isVisible() == true ) {
-                    state.wmsParameter.setVisible( false );
-                    state.wmsStartDialog.setVisible( true );
+                } else if ( this.state.wmsParameter != null && this.state.wmsParameter.isVisible() == true ) {
+                    this.state.wmsParameter.setVisible( false );
+                    this.state.wmsStartDialog.setVisible( true );
                 }
 
             } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_OK ) ) {
-                if ( state.optionDialog != null && state.optionDialog.isVisible() == true ) {
+                if ( this.state.optionDialog != null && this.state.optionDialog.isVisible() == true ) {
 
-                    if ( state.optionSettingPanel != null ) {
+                    if ( this.state.optionSettingPanel != null ) {
 
-                        if ( state.optionSettingPanel instanceof GeneralPanel ) {
-                            String p = ( (GeneralPanel) state.optionSettingPanel ).getTextField(
-                                                                                                 ( (GeneralPanel) state.optionSettingPanel ).getZoomValue() ).getText();
+                        if ( this.state.optionSettingPanel instanceof GeneralPanel ) {
+                            String p = ( (GeneralPanel) this.state.optionSettingPanel ).getTextField( ( (GeneralPanel) this.state.optionSettingPanel ).getZoomValue() ).getText();
                             String p1 = p.replace( ',', '.' );
-                            state.conModel.getDialogModel().setResizeValue( new Double( p1 ).doubleValue() );
-                            exceptionThrown = false;
+                            this.state.conModel.getDialogModel().setResizeValue( new Double( p1 ).doubleValue() );
+                            this.exceptionThrown = false;
                         }
                     }
-                    if ( exceptionThrown == false ) {
-                        state.conModel.getDialogModel().transferNewToOld();
-                        AbstractPanel2D.selectedPointSize = state.conModel.getDialogModel().getSelectionPointSize().first;
-                        state.conModel.getPanel().repaint();
-                        state.conModel.getFootPanel().repaint();
-                        state.optionDialog.setVisible( false );
+                    if ( this.exceptionThrown == false ) {
+                        this.state.conModel.getDialogModel().transferNewToOld();
+                        AbstractPanel2D.selectedPointSize = this.state.conModel.getDialogModel().getSelectionPointSize().first;
+                        this.state.conModel.getPanel().repaint();
+                        this.state.conModel.getFootPanel().repaint();
+                        this.state.optionDialog.setVisible( false );
                     }
-                } else if ( state.wmsStartDialog != null && state.wmsStartDialog.isVisible() == true ) {
-                    String mapURLString = state.wmsStartDialog.getTextField().getText();
-                    state.wmsStartDialog.setVisible( false );
+                } else if ( this.state.wmsStartDialog != null && this.state.wmsStartDialog.isVisible() == true ) {
+                    String mapURLString = this.state.wmsStartDialog.getTextField().getText();
+                    this.state.wmsStartDialog.setVisible( false );
                     try {
-                        state.wmsParameter = new WMSParameterChooser( state.wmsStartDialog, mapURLString );
-                        state.wmsParameter.addCheckBoxListener( new ButtonListener( state ) );
+                        this.state.wmsParameter = new WMSParameterChooser( this.state.wmsStartDialog, mapURLString );
+                        this.state.wmsParameter.addCheckBoxListener( new ButtonListener( this.state ) );
                     } catch ( MalformedURLException e1 ) {
-                        new ErrorDialog( state.wmsStartDialog, ImageObserver.ERROR,
+                        new ErrorDialog( this.state.wmsStartDialog, ImageObserver.ERROR,
                                          "The requested URL is malformed! There is no response gotten from the server. " );
-                        exceptionThrown = true;
+                        this.exceptionThrown = true;
                     } catch ( NullPointerException e2 ) {
-                        new ErrorDialog( state.wmsStartDialog, ImageObserver.ERROR,
+                        new ErrorDialog( this.state.wmsStartDialog, ImageObserver.ERROR,
                                          "The requested URL is malformed! There is no response gotten from the server. " );
-                        exceptionThrown = true;
+                        this.exceptionThrown = true;
                     }
-                    if ( exceptionThrown == false ) {
-                        state.wmsParameter.addListeners( new ButtonListener( state ) );
-                        state.wmsParameter.setVisible( true );
+                    if ( this.exceptionThrown == false ) {
+                        this.state.wmsParameter.addListeners( new ButtonListener( this.state ) );
+                        this.state.wmsParameter.setVisible( true );
                     }
 
-                } else if ( state.wmsParameter != null && state.wmsParameter.isVisible() == true ) {
+                } else if ( this.state.wmsParameter != null && this.state.wmsParameter.isVisible() == true ) {
 
-                    ICRS crs = state.wmsParameter.getCheckBoxSRS();
-                    String layers = state.wmsParameter.getCheckBoxListAsString().toString();
-                    List<String> layerList = state.wmsParameter.getCheckBoxListLayerText();
-                    String format = state.wmsParameter.getCheckBoxFormatAsString().toString();
+                    ICRS crs = this.state.wmsParameter.getCheckBoxSRS();
+                    String layers = this.state.wmsParameter.getCheckBoxListAsString().toString();
+                    List<String> layerList = this.state.wmsParameter.getCheckBoxListLayerText();
+                    String format = this.state.wmsParameter.getCheckBoxFormatAsString().toString();
 
                     if ( layers == null || layers.length() == 0 ) {
-                        new ErrorDialog( state.wmsParameter, ImageObserver.ERROR,
+                        new ErrorDialog( this.state.wmsParameter, ImageObserver.ERROR,
                                          "There is no Layer selected. Please selected at least one. " );
                     } else if ( format == null || format.equals( "" ) ) {
-                        new ErrorDialog( state.wmsParameter, ImageObserver.ERROR, "There is no format selected. " );
+                        new ErrorDialog( this.state.wmsParameter, ImageObserver.ERROR, "There is no format selected. " );
                     } else if ( crs == null ) {
-                        new ErrorDialog( state.wmsParameter, ImageObserver.ERROR, "There is no CRS selected. " );
+                        new ErrorDialog( this.state.wmsParameter, ImageObserver.ERROR, "There is no CRS selected. " );
                     } else {
-                        Envelope env = state.wmsParameter.getEnvelope( crs, layerList );
+                        Envelope env = this.state.wmsParameter.getEnvelope( crs, layerList );
                         if ( env != null ) {
 
                             try {
@@ -281,35 +280,36 @@ public class ButtonListener implements ActionListener {
                                 e1.printStackTrace();
                             }
 
-                            if ( state.service == null ) {
-                                state.service = new MapService();
+                            if ( this.state.service == null ) {
+                                this.state.service = new MapService();
                             }
-                            Layer root = state.service.getRootLayer();
+                            Layer root = this.state.service.getRootLayer();
                             root.setSrs( Collections.singleton( env.getCoordinateSystem() ) );
 
                             HashMap<String, LayerOptions> layerMap = new HashMap<String, LayerOptions>();
                             for ( String l : layerList ) {
                                 layerMap.put( l, new LayerOptions() );
                             }
-                            RemoteWMSStore store = new RemoteWMSStore( state.wmsParameter.getWmsClient(), layerMap,
-                                                                       layerList );
-                            RemoteWMSLayer layer = new RemoteWMSLayer( state.service, store, "wms", "wms",
-                                                                       state.service.getRootLayer() );
+                            RemoteWMSStore store = new RemoteWMSStore( this.state.wmsParameter.getWmsClient(),
+                                                                       layerMap, layerList );
+                            RemoteWMSLayer layer = new RemoteWMSLayer( this.state.service, store, "wms", "wms",
+                                                                       this.state.service.getRootLayer() );
                             root.addOrReplace( layer );
-                            state.service.layers.put( "wms", layer );
+                            this.state.service.layers.put( "wms", layer );
                             root.setBbox( env );
                             MapService.fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
 
-                            state.mapController = new MapController( state.service, env.getCoordinateSystem(),
-                                                                     state.conModel.getPanel().getWidth(),
-                                                                     state.conModel.getPanel().getHeight() );
-                            state.mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
+                            this.state.mapController = new MapController( this.state.service,
+                                                                          env.getCoordinateSystem(),
+                                                                          this.state.conModel.getPanel().getWidth(),
+                                                                          this.state.conModel.getPanel().getHeight() );
+                            this.state.mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
 
-                            state.targetCRS = crs;
-                            state.initGeoReferencingScene();
-                            state.wmsParameter.setVisible( false );
+                            this.state.targetCRS = crs;
+                            this.state.initGeoReferencingScene();
+                            this.state.wmsParameter.setVisible( false );
                         } else {
-                            new ErrorDialog( state.wmsParameter, ImageObserver.ERROR,
+                            new ErrorDialog( this.state.wmsParameter, ImageObserver.ERROR,
                                              "There is no Envelope for this request. " );
                         }
                     }
@@ -321,19 +321,21 @@ public class ButtonListener implements ActionListener {
             if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_EDIT_OPTIONS" ) ) ) {
                 DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
-                state.conModel.getDialogModel().createNodes( root );
-                state.optionDialog = new OptionDialog( state.conModel.getView(), root );
-                state.optionDialog.getButtonPanel().addListeners( new ButtonListener( state ) );
-                state.optionNavPanel = state.optionDialog.getNavigationPanel();
-                state.optionSettPanel = state.optionDialog.getSettingsPanel();
+                this.state.conModel.getDialogModel().createNodes( root );
+                this.state.optionDialog = new OptionDialog( this.state.conModel.getView(), root );
+                this.state.optionDialog.getButtonPanel().addListeners( new ButtonListener( this.state ) );
+                this.state.optionNavPanel = this.state.optionDialog.getNavigationPanel();
+                this.state.optionSettPanel = this.state.optionDialog.getSettingsPanel();
 
                 // add the listener to the navigation panel
-                state.optionNavPanel.addTreeListener( new NavigationTreeSelectionListener( state ) );
+                this.state.optionNavPanel.addTreeListener( new NavigationTreeSelectionListener( this.state ) );
 
-                state.optionDialog.setVisible( true );
+                this.state.optionDialog.setVisible( true );
 
             } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_EXIT" ) ) ) {
-                System.exit( 0 );
+                if ( state.systemExitOnClose ) {
+                    System.exit( 0 );
+                }
             } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_SAVE_BUILDING" ) ) ) {
                 List<String> list = new ArrayList<String>();
                 list.add( "gml" );
@@ -342,21 +344,21 @@ public class ButtonListener implements ActionListener {
                 Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                 List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                 supportedOpenFiles.add( supportedFiles );
-                FileChooser fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), true );
-                state.chosenFile = fileChooser.getOpenPath();
-                fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), false );
+                FileChooser fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView(), true );
+                this.state.chosenFile = fileChooser.getOpenPath();
+                fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView(), false );
                 File saveFile = fileChooser.getSaveFile();
-                if ( state.chosenFile != null && saveFile != null ) {
+                if ( this.state.chosenFile != null && saveFile != null ) {
                     XMLStreamReader reader = null;
                     XMLStreamWriter writer = null;
                     try {
                         XMLInputFactory inFac = XMLInputFactory.newInstance();
-                        reader = inFac.createXMLStreamReader( new File( state.chosenFile ).toURI().toURL().openStream() );
+                        reader = inFac.createXMLStreamReader( new File( this.state.chosenFile ).toURI().toURL().openStream() );
 
                         XMLOutputFactory outFac = XMLOutputFactory.newInstance();
                         writer = outFac.createXMLStreamWriter( new FileOutputStream( saveFile ) );
 
-                        XMLTransformer transformer = new XMLTransformer( state.conModel.getTransform() );
+                        XMLTransformer transformer = new XMLTransformer( this.state.conModel.getTransform() );
                         transformer.transform( reader, writer, GMLVersion.GML_31 );
 
                     } catch ( ClassCastException e1 ) {
@@ -398,10 +400,10 @@ public class ButtonListener implements ActionListener {
                 Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                 List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                 supportedOpenFiles.add( supportedFiles );
-                FileChooser fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), true );
-                state.chosenFile = fileChooser.getOpenPath();
-                if ( state.chosenFile != null ) {
-                    state.initFootprintScene( state.chosenFile );
+                FileChooser fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView(), true );
+                this.state.chosenFile = fileChooser.getOpenPath();
+                if ( this.state.chosenFile != null ) {
+                    this.state.initFootprintScene( this.state.chosenFile );
                 }
             } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_SHAPEFILE" ) ) ) {
                 List<String> list = new ArrayList<String>();
@@ -411,38 +413,38 @@ public class ButtonListener implements ActionListener {
                 Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                 List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                 supportedOpenFiles.add( supportedFiles );
-                FileChooser fileChooser = new FileChooser( supportedOpenFiles, state.conModel.getView(), true );
+                FileChooser fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView(), true );
                 String fileChoosed = fileChooser.getOpenPath();
                 if ( fileChoosed != null ) {
-                    if ( state.service == null ) {
-                        state.service = new MapService();
+                    if ( this.state.service == null ) {
+                        this.state.service = new MapService();
                     }
 
                     try {
-                        if ( state.service.layers.get( "shape" ) != null ) {
-                            state.service.layers.get( "shape" ).close();
+                        if ( this.state.service.layers.get( "shape" ) != null ) {
+                            this.state.service.layers.get( "shape" ).close();
                         }
-                        Layer root = state.service.getRootLayer();
-                        FeatureLayer layer = new FeatureLayer( state.service, "shape", "shape", root, fileChoosed );
+                        Layer root = this.state.service.getRootLayer();
+                        FeatureLayer layer = new FeatureLayer( this.state.service, "shape", "shape", root, fileChoosed );
                         root.addOrReplace( layer );
-                        state.service.layers.put( "shape", layer );
+                        this.state.service.layers.put( "shape", layer );
                         Envelope bbox = layer.getDataStore().getEnvelope( null );
                         root.setBbox( layer.getBbox() );
                         root.setSrs( singleton( bbox.getCoordinateSystem() ) );
-                        state.service.registry.put( "shape", new Style( colors[colorIndex] ), true );
+                        this.state.service.registry.put( "shape", new Style( colors[colorIndex] ), true );
                         ++colorIndex;
                         if ( colorIndex == colors.length ) {
                             colorIndex = 0;
                         }
                         MapService.fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
 
-                        state.mapController = new MapController( state.service, bbox.getCoordinateSystem(),
-                                                                 state.conModel.getPanel().getWidth(),
-                                                                 state.conModel.getPanel().getHeight() );
-                        state.mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
+                        this.state.mapController = new MapController( this.state.service, bbox.getCoordinateSystem(),
+                                                                      this.state.conModel.getPanel().getWidth(),
+                                                                      this.state.conModel.getPanel().getHeight() );
+                        this.state.mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
 
-                        state.targetCRS = bbox.getCoordinateSystem();
-                        state.initGeoReferencingScene();
+                        this.state.targetCRS = bbox.getCoordinateSystem();
+                        this.state.initGeoReferencingScene();
                     } catch ( FileNotFoundException e1 ) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
@@ -458,9 +460,9 @@ public class ButtonListener implements ActionListener {
 
             } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_WMS_LAYER" ) ) ) {
 
-                state.wmsStartDialog = new OpenWMS( state.conModel.getView() );
-                state.wmsStartDialog.addListeners( new ButtonListener( state ) );
-                state.wmsStartDialog.setVisible( true );
+                this.state.wmsStartDialog = new OpenWMS( this.state.conModel.getView() );
+                this.state.wmsStartDialog.addListeners( new ButtonListener( this.state ) );
+                this.state.wmsStartDialog.setVisible( true );
 
             }
 

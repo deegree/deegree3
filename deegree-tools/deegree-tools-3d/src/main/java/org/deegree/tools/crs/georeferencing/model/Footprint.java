@@ -81,7 +81,7 @@ public class Footprint {
      *            the points from the <Code>WorldRenderableObject</Code>
      */
     public void generateFootprints( List<float[]> footprintPointsList ) {
-        worldCoordinateRingList = new ArrayList<Ring>();
+        this.worldCoordinateRingList = new ArrayList<Ring>();
         List<Point> pointList;
         int size = 0;
         for ( float[] f : footprintPointsList ) {
@@ -117,17 +117,35 @@ public class Footprint {
                     maxY = y[count];
                 }
 
-                pointList.add( geom.createPoint( "point", x[count], y[count], null ) );
+                pointList.add( this.geom.createPoint( "point", x[count], y[count], null ) );
 
                 count++;
 
             }
             Points points = new PointsList( pointList );
-            worldCoordinateRingList.add( geom.createLinearRing( "ring", null, points ) );
+            this.worldCoordinateRingList.add( this.geom.createLinearRing( "ring", null, points ) );
         }
         System.out.println( "[Footprint] " + minX + " " + minY + " " + maxX + " " + maxY );
-        this.values.setEnvelopeFootprint( geom.createEnvelope( minX, minY, maxX, maxY, null ) );
+        this.values.setEnvelopeFootprint( this.geom.createEnvelope( minX, minY, maxX, maxY, null ) );
 
+    }
+
+    public void generateFootprintsFromLinearRings( List<Ring> footprintPointsList ) {
+        this.worldCoordinateRingList = new ArrayList<Ring>( footprintPointsList );
+        double minX = EP10;
+        double minY = EP10;
+        double maxX = EPS10;
+        double maxY = EPS10;
+        for ( Ring ls : footprintPointsList ) {
+            for ( Point p : ls.getControlPoints() ) {
+                minX = Math.min( minX, p.get0() );
+                minY = Math.min( minY, p.get1() );
+                maxX = Math.max( maxX, p.get0() );
+                maxY = Math.max( maxY, p.get1() );
+            }
+        }
+        System.out.println( "[Footprint] " + minX + " " + minY + " " + maxX + " " + maxY );
+        this.values.setEnvelopeFootprint( this.geom.createEnvelope( minX, minY, maxX, maxY, null ) );
     }
 
     /**
@@ -135,7 +153,7 @@ public class Footprint {
      * @return the list of polygons in world-coordinates
      */
     public List<Ring> getWorldCoordinateRingList() {
-        return worldCoordinateRingList;
+        return this.worldCoordinateRingList;
     }
 
 }
