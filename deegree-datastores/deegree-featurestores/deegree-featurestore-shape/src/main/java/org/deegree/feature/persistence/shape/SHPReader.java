@@ -794,10 +794,6 @@ public class SHPReader {
 
     private Geometry readPolyline( ByteBuffer buffer, boolean z, boolean m, int length ) {
         Points[] ps = readLines( buffer, m, z, length );
-        if ( ps.length == 1 ) {
-            return fac.createLineString( null, crs, ps[0] );
-        }
-
         List<LineString> cs = new ArrayList<LineString>( ps.length );
         for ( int i = 0; i < ps.length; ++i ) {
             cs.add( fac.createLineString( null, crs, ps[i] ) );
