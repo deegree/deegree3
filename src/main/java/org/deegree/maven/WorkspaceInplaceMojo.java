@@ -135,8 +135,8 @@ public class WorkspaceInplaceMojo extends AbstractMojo {
             }
             for ( Object o : jarDeps ) {
                 Artifact a = (Artifact) o;
-                if ( a.getScope() != null
-                     && ( a.getScope().equalsIgnoreCase( "runtime" ) || a.getScope().equalsIgnoreCase( "compile" ) ) ) {
+                if ( a.getScope() == null || a.getScope().equalsIgnoreCase( "runtime" )
+                     || a.getScope().equalsIgnoreCase( "compile" ) ) {
                     log.info( "Copying " + a + " to workspace modules directory." );
                     copyFileToDirectory( a.getFile(), modules );
                 }
