@@ -52,6 +52,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.AllowedValues;
 import org.deegree.process.jaxb.java.LiteralInputDefinition;
@@ -161,7 +162,7 @@ public class OtherContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public InputStream prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
+    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
                                                            ProcessletInputs in, List<CodeType> processedIds,
                                                            Map<String, String> parameters )
                             throws ProcessletException {
@@ -276,7 +277,7 @@ public class OtherContentProvider implements JrxmlContentProvider {
             }
         }
         // nothing to prepare here
-        return jrxml;
+        return new Pair<InputStream, Boolean>(jrxml, false);
     }
 
 }

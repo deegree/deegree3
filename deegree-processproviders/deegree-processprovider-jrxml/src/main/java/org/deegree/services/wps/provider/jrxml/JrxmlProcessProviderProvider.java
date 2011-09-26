@@ -38,7 +38,9 @@ package org.deegree.services.wps.provider.jrxml;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -51,6 +53,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess;
+import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess.Subreport;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcesses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,11 +100,15 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
                 jrxml = jrxmlProcess.getJrxml();
                 org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle = jrxmlProcess.getResourceBundle();
 
+                Map<String, URL> subreports = new HashMap<String, URL>();
+                for ( Subreport subreport : jrxmlProcess.getSubreport() ) {
+                    subreports.put( subreport.getId(), a.resolve( subreport.getValue() ) );
+                }
                 if ( resourceBundle != null ) {
-                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ),
+                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), subreports,
                                                                 resourceBundle ) );
                 } else {
-                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ) ) );
+                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), subreports ) );
                 }
             }
 

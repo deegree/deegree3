@@ -36,6 +36,7 @@
 package org.deegree.services.wps.provider.jrxml;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
 
@@ -47,22 +48,24 @@ import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
  * 
  * @version $Revision: $, $Date: $
  */
-class JrxmlProcessDescription {
+public class JrxmlProcessDescription {
 
     private final String id;
 
     private final URL url;
 
-    private ResourceBundle resourceBundle;
+    private final Map<String, URL> subreports;
 
-    JrxmlProcessDescription( String id, URL url ) {
-        this.id = id;
-        this.url = url;
+    private final ResourceBundle resourceBundle;
+
+    public JrxmlProcessDescription( String id, URL url, Map<String, URL> subreports ) {
+        this( id, url, subreports, null );
     }
 
-    JrxmlProcessDescription( String id, URL url, ResourceBundle resourceBundle ) {
+    public JrxmlProcessDescription( String id, URL url, Map<String, URL> subreports, ResourceBundle resourceBundle ) {
         this.id = id;
         this.url = url;
+        this.subreports = subreports;
         this.resourceBundle = resourceBundle;
     }
 
@@ -76,6 +79,10 @@ class JrxmlProcessDescription {
 
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
+    }
+
+    public Map<String, URL> getSubreports() {
+        return subreports;
     }
 
 }

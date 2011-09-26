@@ -51,6 +51,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.LiteralInputDefinition;
 import org.deegree.process.jaxb.java.LiteralInputDefinition.DataType;
@@ -117,9 +118,11 @@ public class PropertiesContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public InputStream prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
-                                                           ProcessletInputs in, List<CodeType> processedIds,
-                                                           Map<String, String> parameters )
+    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml,
+                                                                          Map<String, Object> params,
+                                                                          ProcessletInputs in,
+                                                                          List<CodeType> processedIds,
+                                                                          Map<String, String> parameters )
                             throws ProcessletException {
 
         Locale l;
@@ -153,6 +156,6 @@ public class PropertiesContentProvider implements JrxmlContentProvider {
         } else {
             LOG.info( "Could not find resource bundle for name '{}'.", resourceBundle.getName() );
         }
-        return jrxml;
+        return new Pair<InputStream, Boolean>( jrxml, false );
     }
 }

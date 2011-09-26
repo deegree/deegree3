@@ -114,10 +114,11 @@ public interface SQLDialect {
     /**
      * @param qTable
      * @param column
+     * @param isGeographical
      * @return statement to determine the coordinate dimension, the srid and the geometry type of a given column (in
      *         this order)
      */
-    String geometryMetadata( QTableName qTable, String column );
+    String geometryMetadata( QTableName qTable, String column, boolean isGeographical );        
 
     /**
      * Returns an {@link AbstractWhereBuilder} instance for the given parameters.

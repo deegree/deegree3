@@ -52,6 +52,7 @@ import org.deegree.services.wps.provider.jrxml.contentprovider.ImageContentProvi
 import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.PropertiesContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.SubreportContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +82,10 @@ public class JrxmlWPSProcess implements WPSProcess {
         contentProviders.add( new ImageContentProvider() );
         if ( p.getResourceBundle() != null ) {
             contentProviders.add( new PropertiesContentProvider( p.getResourceBundle() ) );
+        }
+        for ( String parameterName : p.getSubreports().keySet() ) {
+            contentProviders.add( new SubreportContentProvider( parameterName, p.getSubreports().get( parameterName ),
+                                                                p.getResourceBundle() ) );
         }
         contentProviders.add( new OtherContentProvider() );
         try {

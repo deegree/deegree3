@@ -115,11 +115,16 @@ public class PostGISDialect implements SQLDialect {
     }
 
     @Override
-    public String geometryMetadata( QTableName qTable, String column ) {
+    public String geometryMetadata( QTableName qTable, String column, boolean isGeographical ) {
         String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
         String table = qTable.getTable();
-        return "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
-               + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase() + "' AND f_geometry_column='"
+        if ( !isGeographical ) {
+            return "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
+                   + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase()
+                   + "' AND f_geometry_column='" + column.toLowerCase() + "'";
+        }
+        return "SELECT coord_dimension,srid,type FROM public.geography_columns WHERE f_table_schema='"
+               + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase() + "' AND f_geography_column='"
                + column.toLowerCase() + "'";
     }
 

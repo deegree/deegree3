@@ -68,8 +68,6 @@ import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.provider.jrxml.contentprovider.Utils;
-import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
-import org.deegree.services.wps.provider.jrxml.contentprovider.map.WMSOrderedDatasource;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.junit.Assume;
 import org.junit.Test;
@@ -126,7 +124,9 @@ public class TestMapContentProviderTest {
         MapContentProvider wmsContentProvider = new MapContentProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
-        InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" );
+        Pair<InputStream, Boolean> jrxml = new Pair<InputStream, Boolean>(
+                                                                           TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" ),
+                                                                           false );
         Map<String, Object> params = new HashMap<String, Object>();
         ProcessletInputs in = Utils.getInputs( "MAP", MIME_TYPE, SCHEMA,
                                                TestMapContentProviderTest.class.getResourceAsStream( "complexInput" ) );
@@ -135,14 +135,15 @@ public class TestMapContentProviderTest {
         parameters.put( "mapMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         try {
-            jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
+            jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml.first, params, in, processedIds,
+                                                                           parameters );
         } catch ( ProcessletException e ) {
             // maybe connection to demo.deegree.org failed!
             Assume.assumeNoException( e );
         }
         assertEquals( 2, params.size() );
         assertEquals( 1, processedIds.size() );
-        XMLAdapter a = new XMLAdapter( jrxml );
+        XMLAdapter a = new XMLAdapter( jrxml.first );
         String[] elements = a.getNodesAsStrings( a.getRootElement(),
                                                  new XPath(
                                                             "/jasper:jasperReport/jasper:detail/jasper:band/jasper:frame/jasper:staticText/jasper:text/text()",
@@ -178,7 +179,9 @@ public class TestMapContentProviderTest {
         MapContentProvider wmsContentProvider = new MapContentProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
-        InputStream jrxml = TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" );
+        Pair<InputStream, Boolean> jrxml = new Pair<InputStream, Boolean>(
+                                                                           TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" ),
+                                                                           false );
         Map<String, Object> params = new HashMap<String, Object>();
         ProcessletInputs in = Utils.getInputs( "MAP", MIME_TYPE, SCHEMA,
                                                TestMapContentProviderTest.class.getResourceAsStream( "complexInputWFS" ) );
@@ -187,7 +190,8 @@ public class TestMapContentProviderTest {
         parameters.put( "mapMAP_legend", "java.lang.String" );
         parameters.put( "LEGEND", "java.lang.String" );
         try {
-            jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
+            jrxml = wmsContentProvider.prepareJrxmlAndReadInputParameters( jrxml.first, params, in, processedIds,
+                                                                           parameters );
         } catch ( ProcessletException e ) {
             // maybe connection to demo.deegree.org failed!
             Assume.assumeNoException( e );

@@ -17,9 +17,6 @@
 				</Layer>
 				<Layer visible="true">
 					<name>StateOverview</name>
-					<Style>
-						<namedStyle>blue</namedStyle>
-					</Style>
 					<position>3</position>
 				</Layer>
 			</Layers>

@@ -38,6 +38,8 @@ package org.deegree.services.wps.provider.jrxml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
@@ -60,7 +62,8 @@ public class TestJrxmlWPSProcessTest {
     public void testCreationOfAProcessOutOfAJRXML() {
         JrxmlProcessDescription desc = new JrxmlProcessDescription(
                                                                     "id",
-                                                                    TestJrxmlParserTest.class.getResource( "testWPSreportTemplate.jrxml" ) );
+                                                                    TestJrxmlParserTest.class.getResource( "testWPSreportTemplate.jrxml" ),
+                                                                    new HashMap<String, URL>() );
         JrxmlWPSProcess wpsProcess = new JrxmlWPSProcess( desc );
         ProcessDefinition pd = wpsProcess.getDescription();
         assertNotNull( pd );

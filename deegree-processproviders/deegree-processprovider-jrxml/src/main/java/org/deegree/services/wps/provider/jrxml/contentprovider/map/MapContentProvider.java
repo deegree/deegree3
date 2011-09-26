@@ -123,7 +123,9 @@ public class MapContentProvider implements JrxmlContentProvider {
 
     private static final String PARAM_PREFIX = "map";
 
-    public double INCH2M = 0.0254;
+    public static final double INCH2M = 0.0254;
+
+    private List<org.deegree.process.jaxb.java.CodeType> inputIds = new ArrayList<org.deegree.process.jaxb.java.CodeType>();
 
     private enum SUFFIXES {
 
@@ -179,7 +181,8 @@ public class MapContentProvider implements JrxmlContentProvider {
             LOG.debug( "Found map component with id " + mapId );
             ComplexInputDefinition comp = new ComplexInputDefinition();
             comp.setTitle( getAsLanguageStringType( mapId ) );
-            comp.setIdentifier( getAsCodeType( mapId ) );
+            org.deegree.process.jaxb.java.CodeType id = getAsCodeType( mapId );
+            comp.setIdentifier( id );
             ComplexFormatType format = new ComplexFormatType();
             format.setEncoding( "UTF-8" );
             format.setMimeType( MIME_TYPE );
@@ -189,6 +192,7 @@ public class MapContentProvider implements JrxmlContentProvider {
             comp.setMinOccurs( BigInteger.valueOf( 0 ) );
             inputs.add( new JAXBElement<ComplexInputDefinition>( new QName( "ProcessInput" ),
                                                                  ComplexInputDefinition.class, comp ) );
+            inputIds.add( id );
         }
 
     }
@@ -219,12 +223,14 @@ public class MapContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public InputStream prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
-                                                           ProcessletInputs in, List<CodeType> processedIds,
-                                                           Map<String, String> parameters )
+    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml,
+                                                                          Map<String, Object> params,
+                                                                          ProcessletInputs in,
+                                                                          List<CodeType> processedIds,
+                                                                          Map<String, String> parameters )
                             throws ProcessletException {
         for ( ProcessletInput input : in.getParameters() ) {
-            if ( !processedIds.contains( input ) && input instanceof ComplexInput ) {
+            if ( !processedIds.contains( input.getIdentifier() ) && input instanceof ComplexInput ) {
                 ComplexInput complexIn = (ComplexInput) input;
                 if ( SCHEMA.equals( complexIn.getSchema() ) && MIME_TYPE.equals( complexIn.getMimeType() ) ) {
 
@@ -299,8 +305,8 @@ public class MapContentProvider implements JrxmlContentProvider {
 
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         try {
-                            if ( LOG.isDebugEnabled() ) {
-                                LOG.debug( "Adjusted jrxml: " + jrxmlAdapter.getRootElement() );
+                            if ( LOG.isTraceEnabled() ) {
+                                LOG.trace( "Adjusted jrxml: " + jrxmlAdapter.getRootElement() );
                             }
                             jrxmlAdapter.getRootElement().serialize( bos );
                             jrxml = new ByteArrayInputStream( bos.toByteArray() );
@@ -330,7 +336,7 @@ public class MapContentProvider implements JrxmlContentProvider {
                 }
             }
         }
-        return jrxml;
+        return new Pair<InputStream, Boolean>( jrxml, false );
     }
 
     private Envelope calculateBBox( Detail detail, String id, int mapWidth, int mapHeight, int dpi )

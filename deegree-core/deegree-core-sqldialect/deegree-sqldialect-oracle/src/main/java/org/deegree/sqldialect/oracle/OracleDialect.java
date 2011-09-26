@@ -142,7 +142,7 @@ public class OracleDialect implements SQLDialect {
     }
 
     @Override
-    public String geometryMetadata( QTableName qTable, String column ) {
+    public String geometryMetadata( QTableName qTable, String column, boolean isGeography ) {
         // return "SELECT 2, -1, 'GEOMETRY' FROM DUAL";
 
         StringBuilder sb = new StringBuilder();
@@ -167,7 +167,7 @@ public class OracleDialect implements SQLDialect {
     public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
                                                  SortProperty[] sortCrit, boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException {
-        return new OracleWhereBuilder(this, mapper, filter, sortCrit, allowPartialMappings, versionMajor );
+        return new OracleWhereBuilder( this, mapper, filter, sortCrit, allowPartialMappings, versionMajor );
     }
 
     @Override

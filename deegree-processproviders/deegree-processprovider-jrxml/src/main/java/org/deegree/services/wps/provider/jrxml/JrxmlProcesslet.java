@@ -50,9 +50,9 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
@@ -100,20 +100,22 @@ public class JrxmlProcesslet implements Processlet {
     public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
                             throws ProcessletException {
         try {
-            InputStream is = jrxml.openStream();
+            Pair<InputStream, Boolean> is = new Pair<InputStream, Boolean>( jrxml.openStream(), false );
             Map<String, Object> params = new HashMap<String, Object>();
             List<CodeType> processedIds = new ArrayList<CodeType>();
             for ( JrxmlContentProvider contentProvider : contentProviders ) {
                 LOG.debug( "ContentProvider: " + contentProvider.getClass().getName() );
-                is = contentProvider.prepareJrxmlAndReadInputParameters( is, params, in, processedIds, parameters );
+                is = contentProvider.prepareJrxmlAndReadInputParameters( is.first, params, in, processedIds, parameters );
             }
 
-            // TODO: how to handle with datasources!?
             JasperPrint fillReport;
-            if ( params.get( JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT ) != null ) {
-                fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is ), params );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "a datasource was" + ( is.second ? " " : " not " ) + "inserted" );
+            }
+            if ( is.second ) {
+                fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is.first ), params );
             } else {
-                fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is ), params,
+                fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is.first ), params,
                                                            new JREmptyDataSource() );
             }
             ProcessletOutput output = out.getParameter( "report" );
