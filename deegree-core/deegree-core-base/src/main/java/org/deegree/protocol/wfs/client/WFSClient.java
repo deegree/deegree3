@@ -235,8 +235,10 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
     }
 
     /**
-     * Queries the features of the specified feature type.
+     * Queries features of the specified feature type and with an optional filter.
      * 
+     * @param ftName
+     * @param filter
      * @return query reponse, never <code>null</code>
      * @throws IOException
      * @throws XMLStreamException

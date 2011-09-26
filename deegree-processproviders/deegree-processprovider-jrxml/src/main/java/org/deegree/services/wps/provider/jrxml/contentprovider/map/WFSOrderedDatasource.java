@@ -40,6 +40,7 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +54,9 @@ import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.StreamFeatureCollection;
+import org.deegree.protocol.wfs.client.GetFeatureResponse;
 import org.deegree.protocol.wfs.client.WFSClient;
+import org.deegree.protocol.wfs.client.WFSFeatureCollection;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
@@ -87,42 +89,49 @@ class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
     BufferedImage getImage( int width, int height, Envelope bbox )
                             throws ProcessletException {
         LOG.debug( "create map image for WFS datasource '{}'", datasource.getName() );
+        GetFeatureResponse<Feature> response = null;
+        BufferedImage image = null;
         try {
             String capURL = datasource.getUrl() + "?service=WFS&request=GetCapabilities&version="
                             + datasource.getVersion();
             WFSClient wfsClient = new WFSClient( new URL( capURL ) );
 
-            StreamFeatureCollection features = wfsClient.getFeatures( new QName(
-                                                                                 datasource.getFeatureType().getValue(),
-                                                                                 datasource.getFeatureType().getValue() ) );
+            response = wfsClient.getFeatures( new QName( datasource.getFeatureType().getValue(),
+                                                         datasource.getFeatureType().getValue() ), null );
+            try {
+                image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+                Graphics2D g = image.createGraphics();
+                Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox, bbox.getCoordinateDimension() /* pixelSize */);
 
-            BufferedImage image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-            Graphics2D g = image.createGraphics();
-            Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox, bbox.getCoordinateDimension() /* pixelSize */);
+                // TODO
+                // XMLInputFactory fac = XMLInputFactory.newInstance();
+                // XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( datasource.getFilter() ) );
+                // nextElement( reader );
+                // nextElement( reader );
+                // Filter filter = Filter110XMLDecoder.parse( reader );
+                // reader.close();
 
-            // TODO
-            // XMLInputFactory fac = XMLInputFactory.newInstance();
-            // XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( datasource.getFilter() ) );
-            // nextElement( reader );
-            // nextElement( reader );
-            // Filter filter = Filter110XMLDecoder.parse( reader );
-            // reader.close();
-
-            org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
-            if ( style != null && features != null ) {
-                Feature feature = null;
-                while ( ( feature = features.read() ) != null ) {
-                    LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate = style.evaluate( feature,
-                                                                                                         new FeatureXPathEvaluator(
-                                                                                                                                    GMLVersion.GML_32 ) );
-                    for ( Triple<Styling, LinkedList<Geometry>, String> triple : evaluate ) {
-                        for ( Geometry geom : triple.second ) {
-                            renderer.render( triple.first, geom );
+                org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
+                if ( style != null && response != null ) {
+                    WFSFeatureCollection wfsFc = response.getAsWFSFeatureCollection();
+                    @SuppressWarnings("unchecked")
+                    Iterator<Feature> iter = wfsFc.getMembers();
+                    while ( iter.hasNext() ) {
+                        Feature feature = iter.next();
+                        LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate = style.evaluate( feature,
+                                                                                                             new FeatureXPathEvaluator(
+                                                                                                                                        GMLVersion.GML_32 ) );
+                        for ( Triple<Styling, LinkedList<Geometry>, String> triple : evaluate ) {
+                            for ( Geometry geom : triple.second ) {
+                                renderer.render( triple.first, geom );
+                            }
                         }
                     }
                 }
+                g.dispose();
+            } finally {
+                response.close();
             }
-            g.dispose();
             return image;
         } catch ( Exception e ) {
             String msg = "could nor create image from wfs datasource " + datasource.getName() + ":  " + e.getMessage();
