@@ -197,8 +197,8 @@ public class WorkspaceMojo extends AbstractMojo {
             }
             for ( Object o : jarDeps ) {
                 Artifact a = (Artifact) o;
-                if ( a.getScope() != null
-                     && ( a.getScope().equalsIgnoreCase( "runtime" ) || a.getScope().equalsIgnoreCase( "compile" ) ) ) {
+                if ( a.getScope() == null || a.getScope().equalsIgnoreCase( "runtime" )
+                     || a.getScope().equalsIgnoreCase( "compile" ) ) {
                     log.info( "Adding " + a + " to workspace modules directory." );
                     ZipEntry entry = new ZipEntry( "modules/" + a.getFile().getName() );
                     visitedFiles.add( "modules/" + a.getFile().getName() );
