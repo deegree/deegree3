@@ -97,4 +97,11 @@ public interface FeatureInputStream extends Iterable<Feature> {
      * @return members as feature collection, never <code>null</code>
      */
     public FeatureCollection toCollection();
+
+    /**
+     * Counts the remaining features in the stream (and consumes them) and closes it.
+     * 
+     * @return number of remaining features
+     */
+    public int count();
 }

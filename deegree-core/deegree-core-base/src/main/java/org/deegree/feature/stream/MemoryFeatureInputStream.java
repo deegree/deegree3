@@ -77,4 +77,9 @@ public class MemoryFeatureInputStream implements FeatureInputStream {
     public Iterator<Feature> iterator() {
         return fc.iterator();
     }
+
+    @Override
+    public int count() {
+        return fc.size();
+    }
 }

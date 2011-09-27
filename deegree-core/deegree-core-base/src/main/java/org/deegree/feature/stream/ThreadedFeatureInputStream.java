@@ -66,8 +66,8 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
     private final QueueFiller producer;
 
     /**
-     * Creates a new {@link ThreadedFeatureInputStream} based on the given {@link FeatureInputStream} that uses the given thread to
-     * keep the internal queue of results filled.
+     * Creates a new {@link ThreadedFeatureInputStream} based on the given {@link FeatureInputStream} that uses the
+     * given thread to keep the internal queue of results filled.
      * 
      * @param rs
      * @param maxFill
@@ -107,6 +107,15 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    @Override
+    public int count() {
+        int i = 0;
+        for ( Feature f : this ) {
+            i++;
+        }
+        return i;
     }
 
     private class QueueFiller implements Runnable {
