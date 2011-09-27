@@ -23,6 +23,7 @@
 		<complexType>
 			<sequence>
 				<element name="jrxml" type="anyURI" minOccurs="1" />
+				<element name="template" type="anyURI" minOccurs="0" />
 				<element ref="jr:ResourceBundle" minOccurs="0" />
 				<element name="subreport" minOccurs="0" maxOccurs="unbounded">
 					<annotation>

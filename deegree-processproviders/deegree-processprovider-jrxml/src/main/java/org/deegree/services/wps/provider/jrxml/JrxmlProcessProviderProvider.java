@@ -99,16 +99,20 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
             for ( JrxmlProcess jrxmlProcess : processList ) {
                 jrxml = jrxmlProcess.getJrxml();
                 org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle = jrxmlProcess.getResourceBundle();
-
+                URL template = null;
+                if ( jrxmlProcess.getTemplate() != null ) {
+                    template = a.resolve( jrxmlProcess.getTemplate() );
+                }
                 Map<String, URL> subreports = new HashMap<String, URL>();
                 for ( Subreport subreport : jrxmlProcess.getSubreport() ) {
                     subreports.put( subreport.getId(), a.resolve( subreport.getValue() ) );
                 }
                 if ( resourceBundle != null ) {
-                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), subreports,
-                                                                resourceBundle ) );
+                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), template,
+                                                                subreports, resourceBundle ) );
                 } else {
-                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), subreports ) );
+                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), template,
+                                                                subreports ) );
                 }
             }
 

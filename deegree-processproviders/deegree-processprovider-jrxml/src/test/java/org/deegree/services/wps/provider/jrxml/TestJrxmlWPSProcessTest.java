@@ -63,7 +63,7 @@ public class TestJrxmlWPSProcessTest {
         JrxmlProcessDescription desc = new JrxmlProcessDescription(
                                                                     "id",
                                                                     TestJrxmlParserTest.class.getResource( "testWPSreportTemplate.jrxml" ),
-                                                                    new HashMap<String, URL>() );
+                                                                    null, new HashMap<String, URL>() );
         JrxmlWPSProcess wpsProcess = new JrxmlWPSProcess( desc );
         ProcessDefinition pd = wpsProcess.getDescription();
         assertNotNull( pd );
