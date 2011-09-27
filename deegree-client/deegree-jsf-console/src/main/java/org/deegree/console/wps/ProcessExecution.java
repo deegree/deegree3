@@ -39,8 +39,6 @@ import static org.deegree.protocol.wps.WPSConstants.ExecutionState.SUCCEEDED;
 
 import java.text.SimpleDateFormat;
 
-import lombok.Getter;
-
 /**
  * Encapsulates all information for displaying a {@link org.deegree.services.wps.ProcessExecution}.
  * 
@@ -51,23 +49,41 @@ import lombok.Getter;
  */
 public class ProcessExecution {
 
-    @Getter
     public String id;
 
-    @Getter
     public String state;
 
-    @Getter
     public String percentage = "100";
 
-    @Getter
     public String startTime;
 
-    @Getter
     public String finishTime = "-";
 
-    @Getter
     public String duration = "-";
+
+    public String getId() {
+        return id;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getPercentage() {
+        return percentage;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public String getFinishTime() {
+        return finishTime;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
 
     /**
      * @param p

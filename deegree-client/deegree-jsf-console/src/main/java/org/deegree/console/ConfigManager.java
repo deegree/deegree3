@@ -53,9 +53,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
@@ -76,25 +73,61 @@ public class ConfigManager {
 
     private static final Logger LOG = getLogger( ConfigManager.class );
 
-    @Getter
     private ResourceManagerMetadata2 currentResourceManager;
 
-    @Getter
     private String newConfigType;
 
-    @Getter
     private List<String> newConfigTypeTemplates;
 
-    @Getter
-    @Setter
     private String newConfigTypeTemplate;
 
-    @Getter
-    @Setter
     private String newConfigId;
 
-    @Getter
     private Config proxyConfig;
+
+    public ResourceManagerMetadata2 getCurrentResourceManager() {
+        return currentResourceManager;
+    }
+
+    public void setCurrentResourceManager( ResourceManagerMetadata2 currentResourceManager ) {
+        this.currentResourceManager = currentResourceManager;
+    }
+
+    public List<String> getNewConfigTypeTemplates() {
+        return newConfigTypeTemplates;
+    }
+
+    public void setNewConfigTypeTemplates( List<String> newConfigTypeTemplates ) {
+        this.newConfigTypeTemplates = newConfigTypeTemplates;
+    }
+
+    public String getNewConfigTypeTemplate() {
+        return newConfigTypeTemplate;
+    }
+
+    public void setNewConfigTypeTemplate( String newConfigTypeTemplate ) {
+        this.newConfigTypeTemplate = newConfigTypeTemplate;
+    }
+
+    public String getNewConfigId() {
+        return newConfigId;
+    }
+
+    public void setNewConfigId( String newConfigId ) {
+        this.newConfigId = newConfigId;
+    }
+
+    public Config getProxyConfig() {
+        return proxyConfig;
+    }
+
+    public void setProxyConfig( Config proxyConfig ) {
+        this.proxyConfig = proxyConfig;
+    }
+
+    public String getNewConfigType() {
+        return newConfigType;
+    }
 
     public ConfigManager() {
         File proxyLocation = new File( getServiceWorkspace().getLocation(), "proxy.xml" );

@@ -40,8 +40,6 @@ import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
-import lombok.Getter;
-
 import org.deegree.commons.jdbc.ConnectionManager;
 
 /**
@@ -58,11 +56,17 @@ public class Connection implements Serializable {
 
     private static final long serialVersionUID = 6495856816506360039L;
 
-    @Getter
     private String id;
 
-    @Getter
     private String status = "OK";
+
+    public String getId() {
+        return id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 
     Connection( String id ) {
         try {

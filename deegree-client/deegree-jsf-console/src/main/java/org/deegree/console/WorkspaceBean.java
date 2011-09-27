@@ -61,9 +61,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.deegree.client.core.model.UploadedFile;
@@ -106,22 +103,79 @@ public class WorkspaceBean implements Serializable {
 
     private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
 
-    @Getter
     private String lastMessage = "Workspace initialized.";
 
-    @Getter
-    @Setter
     private String workspaceImportUrl;
 
-    @Getter
-    @Setter
     private String workspaceImportName;
 
-    @Getter
-    @Setter
     private UploadedFile upload;
 
     private boolean modified;
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage( String lastMessage ) {
+        this.lastMessage = lastMessage;
+    }
+
+    public String getWorkspaceImportUrl() {
+        return workspaceImportUrl;
+    }
+
+    public void setWorkspaceImportUrl( String workspaceImportUrl ) {
+        this.workspaceImportUrl = workspaceImportUrl;
+    }
+
+    public String getWorkspaceImportName() {
+        return workspaceImportName;
+    }
+
+    public void setWorkspaceImportName( String workspaceImportName ) {
+        this.workspaceImportName = workspaceImportName;
+    }
+
+    public UploadedFile getUpload() {
+        return upload;
+    }
+
+    public void setUpload( UploadedFile upload ) {
+        this.upload = upload;
+    }
+
+    public boolean isModified() {
+        return modified;
+    }
+
+    public void setModified( boolean modified ) {
+        this.modified = modified;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public static String getWsMainView() {
+        return WS_MAIN_VIEW;
+    }
+
+    public static String getWsUploadView() {
+        return WS_UPLOAD_VIEW;
+    }
+
+    public static String getWsDownloadBaseUrl() {
+        return WS_DOWNLOAD_BASE_URL;
+    }
+
+    public static String[] getWsDownloadUrls() {
+        return WS_DOWNLOAD_URLS;
+    }
+
+    public HashMap<String, String> getWorkspaceLocations() {
+        return workspaceLocations;
+    }
 
     public String getWorkspaceRoot() {
         return DeegreeWorkspace.getWorkspaceRoot();
