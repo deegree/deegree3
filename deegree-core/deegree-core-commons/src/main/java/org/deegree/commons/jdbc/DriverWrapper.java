@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.jdbc;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
@@ -94,7 +96,21 @@ public class DriverWrapper implements Driver {
 
     public Logger getParentLogger()
                             throws SQLFeatureNotSupportedException {
-        return d.getParentLogger();
+        Logger logger = null;
+        try {
+            Method m = d.getClass().getDeclaredMethod( "getParentLogger", new Class[0] );
+            logger = (Logger) m.invoke( d, new Object[0] );
+        } catch ( NoSuchMethodException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        } catch ( SecurityException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        } catch ( IllegalAccessException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        } catch ( IllegalArgumentException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        } catch ( InvocationTargetException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        }
+        return logger;
     }
-
 }
