@@ -68230,7 +68230,7 @@
         </crs:CompoundCRS>  
         <crs:CompoundCRS>
                 <crs:Id>epsg:5556</crs:Id>        
-                <crs:Id>urn:ogc:def:crs:epsg::5555</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::5556</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 33N + DHHN92 height</crs:Name>
                 <crs:Version>2011-07-21</crs:Version>
                 <crs:Description>Inserted by hand.</crs:Description>
