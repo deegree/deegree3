@@ -58,6 +58,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +85,7 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition.Metadata;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
@@ -135,10 +137,6 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
             this.text = text;
         }
 
-        private String getText() {
-            return text;
-        }
-
     }
 
     @Override
@@ -151,21 +149,24 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
         // * wmsXYZ_legend -> as imgage parameter
         // * wmsXYZ_layerList -> as frame key
         // where XYZ is a string which is the identifier of the process parameter.
-        List<String> mapIds = new ArrayList<String>();
+        Map<String, Pair<Integer, Integer>> mapIds = new HashMap<String, Pair<Integer,Integer>>();
         for ( String parameterName : parameters.keySet() ) {
             if ( !handledParameters.contains( parameterName ) ) {
-                if ( jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
-                                              new XPath( ".//jasper:image/jasper:imageExpression[text()='$P{"
-                                                         + parameterName + "}']", JrxmlUtils.nsContext ) ) != null
-                     || jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
-                                                 new XPath(
-                                                            ".//jasper:textField/jasper:textFieldExpression[text()='$P{"
-                                                                                    + parameterName + "}']",
-                                                            JrxmlUtils.nsContext ) ) != null ) {
-                    if ( isMapParameter( parameterName ) ) {
-                        String mapId = getIdentifierFromParameter( parameterName );
-                        if ( !mapIds.contains( mapId ) ) {
-                            mapIds.add( mapId );
+                OMElement imgElement = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                                new XPath(
+                                                                           ".//jasper:image[jasper:imageExpression/text()='$P{"
+                                                                                                   + parameterName
+                                                                                                   + "}']/jasper:reportElement",
+                                                                           JrxmlUtils.nsContext ) );
+                if ( imgElement != null ) {
+                    if ( parameterName.endsWith( SUFFIXES.MAP_SUFFIX.text ) && parameterName.startsWith( PARAM_PREFIX ) ) {
+                        String mapId = parameterName.substring( PARAM_PREFIX.length(),
+                                                                parameterName.length()
+                                                                                        - SUFFIXES.MAP_SUFFIX.text.length() );
+                        if ( !mapIds.containsKey( mapId ) ) {
+                            int width = jrxmlAdapter.getRequiredNodeAsInteger( imgElement, new XPath("@width", nsContext) );
+                            int height = jrxmlAdapter.getRequiredNodeAsInteger( imgElement, new XPath("@height", nsContext) );
+                            mapIds.put( mapId, new Pair<Integer, Integer>( width, height ) );
                         }
                         // TODO: maybe a status information would be the better way?
                         // remove used parameter
@@ -175,7 +176,7 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
             }
         }
 
-        for ( String mapId : mapIds ) {
+        for ( String mapId : mapIds.keySet() ) {
             LOG.debug( "Found map component with id " + mapId );
             ComplexInputDefinition comp = new ComplexInputDefinition();
             addInput( comp, parameterDescriptions, mapId, 1, 0 );
@@ -184,35 +185,17 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
             format.setMimeType( MIME_TYPE );
             format.setSchema( SCHEMA );
             comp.setDefaultFormat( format );
+            List<Metadata> metadata = comp.getMetadata();
+            Metadata meta = new Metadata();
+            metadata.add( meta  );
             inputs.add( new JAXBElement<ComplexInputDefinition>( new QName( "ProcessInput" ),
                                                                  ComplexInputDefinition.class, comp ) );
         }
 
     }
 
-    private String getIdentifierFromParameter( String parameter ) {
-        if ( isMapParameter( parameter ) ) {
-            for ( SUFFIXES suf : SUFFIXES.values() ) {
-                if ( parameter.endsWith( suf.getText() ) ) {
-                    parameter = parameter.substring( PARAM_PREFIX.length(), parameter.length() - suf.getText().length() );
-                }
-            }
-        }
-        return parameter;
-    }
-
     private String getParameterFromIdentifier( String mapId, SUFFIXES suffix ) {
         return PARAM_PREFIX + mapId + suffix.text;
-    }
-
-    private boolean isMapParameter( String imgParameter ) {
-        boolean hasSuffix = false;
-        for ( SUFFIXES suf : SUFFIXES.values() ) {
-            if ( imgParameter.endsWith( suf.getText() ) ) {
-                hasSuffix = true;
-            }
-        }
-        return hasSuffix && imgParameter.startsWith( PARAM_PREFIX );
     }
 
     @Override

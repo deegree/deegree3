@@ -93,7 +93,7 @@ public class ConfigServlet extends HttpServlet {
             data.append( "\nHTTP response codes used:\n" );
             data.append( "200 - ok\n" );
             data.append( "403 - if you tried something you shouldn't have\n" );
-            data.append( "404 - if a file or directory needed to fullfil a request was not found\n" );
+            data.append( "404 - if a file or directory needed to fulfill a request was not found\n" );
             data.append( "500 - if something serious went wrong on the server side\n" );
             IOUtils.write( data.toString(), resp.getOutputStream() );
             return;
