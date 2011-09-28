@@ -35,14 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +76,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.jaxen.dom.DOMXPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +91,7 @@ import org.xml.sax.SAXException;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DataTableContentProvider implements JrxmlContentProvider {
+public class DataTableContentProvider extends AbstractJrxmlContentProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( DataTableContentProvider.class );
 
@@ -125,7 +122,8 @@ public class DataTableContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescriptions,
+                                                 List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
         List<String> tableIds = new ArrayList<String>();
@@ -146,15 +144,12 @@ public class DataTableContentProvider implements JrxmlContentProvider {
         for ( String tableId : tableIds ) {
             LOG.debug( "Found table component with id " + tableId );
             ComplexInputDefinition comp = new ComplexInputDefinition();
-            comp.setTitle( getAsLanguageStringType( tableId ) );
-            comp.setIdentifier( getAsCodeType( tableId ) );
+            addInput( comp, parameterDescriptions, tableId, 1, 0 );
             ComplexFormatType format = new ComplexFormatType();
             format.setEncoding( "UTF-8" );
             format.setMimeType( MIME_TYPE );
             format.setSchema( SCHEMA );
             comp.setDefaultFormat( format );
-            comp.setMaxOccurs( BigInteger.valueOf( 1 ) );
-            comp.setMinOccurs( BigInteger.valueOf( 0 ) );
             inputs.add( new JAXBElement<ComplexInputDefinition>( new QName( "ProcessInput" ),
                                                                  ComplexInputDefinition.class, comp ) );
         }

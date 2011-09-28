@@ -593,8 +593,8 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public int queryHits( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO
-        return query( query ).toCollection().size();
+        // TODO SELECT COUNT
+        return query( query ).count();
     }
 
     @Override

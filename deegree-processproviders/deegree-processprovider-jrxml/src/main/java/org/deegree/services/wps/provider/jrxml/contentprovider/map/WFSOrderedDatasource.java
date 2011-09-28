@@ -46,11 +46,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.dom.DOMSource;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.filter.Filter;
+import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
@@ -63,6 +68,7 @@ import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
 import org.deegree.style.styling.Styling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 /**
  * TODO add class documentation here
@@ -91,52 +97,60 @@ class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
         LOG.debug( "create map image for WFS datasource '{}'", datasource.getName() );
         GetFeatureResponse<Feature> response = null;
         BufferedImage image = null;
+        XMLStreamReader reader = null;
         try {
             String capURL = datasource.getUrl() + "?service=WFS&request=GetCapabilities&version="
                             + datasource.getVersion();
             WFSClient wfsClient = new WFSClient( new URL( capURL ) );
 
+            Filter filter = null;
+            final Element filterFromRequest = datasource.getFilter();
+            if ( filterFromRequest != null ) {
+                XMLInputFactory fac = XMLInputFactory.newInstance();
+                reader = fac.createXMLStreamReader( new DOMSource( filterFromRequest ) );
+                while ( reader.getEventType() != XMLStreamReader.START_ELEMENT
+                        || ( reader.isStartElement() && !"http://www.opengis.net/ogc".equals( reader.getNamespaceURI() ) ) ) {
+                    reader.nextTag();
+                }
+                filter = Filter110XMLDecoder.parse( reader );
+            }
+
             response = wfsClient.getFeatures( new QName( datasource.getFeatureType().getValue(),
-                                                         datasource.getFeatureType().getValue() ), null );
-            try {
-                image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-                Graphics2D g = image.createGraphics();
-                Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox, bbox.getCoordinateDimension() /* pixelSize */);
+                                                         datasource.getFeatureType().getValue() ), filter );
+            image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+            Graphics2D g = image.createGraphics();
+            Java2DRenderer renderer = new Java2DRenderer( g, width, height, bbox, bbox.getCoordinateDimension() /* pixelSize */);
 
-                // TODO
-                // XMLInputFactory fac = XMLInputFactory.newInstance();
-                // XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( datasource.getFilter() ) );
-                // nextElement( reader );
-                // nextElement( reader );
-                // Filter filter = Filter110XMLDecoder.parse( reader );
-                // reader.close();
-
-                org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
-                if ( style != null && response != null ) {
-                    WFSFeatureCollection wfsFc = response.getAsWFSFeatureCollection();
-                    @SuppressWarnings("unchecked")
-                    Iterator<Feature> iter = wfsFc.getMembers();
-                    while ( iter.hasNext() ) {
-                        Feature feature = iter.next();
-                        LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate = style.evaluate( feature,
-                                                                                                             new FeatureXPathEvaluator(
-                                                                                                                                        GMLVersion.GML_32 ) );
-                        for ( Triple<Styling, LinkedList<Geometry>, String> triple : evaluate ) {
-                            for ( Geometry geom : triple.second ) {
-                                renderer.render( triple.first, geom );
-                            }
+            org.deegree.style.se.unevaluated.Style style = getStyle( datasource.getStyle() );
+            if ( style != null && response != null ) {
+                WFSFeatureCollection wfsFc = response.getAsWFSFeatureCollection();
+                @SuppressWarnings("unchecked")
+                Iterator<Feature> iter = wfsFc.getMembers();
+                while ( iter.hasNext() ) {
+                    Feature feature = iter.next();
+                    LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate = style.evaluate( feature,
+                                                                                                         new FeatureXPathEvaluator(
+                                                                                                                                    GMLVersion.GML_32 ) );
+                    for ( Triple<Styling, LinkedList<Geometry>, String> triple : evaluate ) {
+                        for ( Geometry geom : triple.second ) {
+                            renderer.render( triple.first, geom );
                         }
                     }
                 }
-                g.dispose();
-            } finally {
-                response.close();
             }
+            g.dispose();
             return image;
         } catch ( Exception e ) {
-            String msg = "could nor create image from wfs datasource " + datasource.getName() + ":  " + e.getMessage();
+            String msg = "Could nor create image from wfs datasource " + datasource.getName() + ":  " + e.getMessage();
             LOG.error( msg, e );
             throw new ProcessletException( msg );
+        } finally {
+            try {
+                reader.close();
+                response.close();
+            } catch ( Exception e ) {
+                LOG.info( "Reader/Response could not be closed: " + e.getMessage() );
+            }
         }
     }
 

@@ -47,6 +47,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 
 /**
  * Implementing classes helps to map the jrxml file to a WPS Process description and to create a report out of the
@@ -62,6 +63,8 @@ public interface JrxmlContentProvider {
     /**
      * inspects the parameters found in the xml and converts them to WPSProcess input parameters
      * 
+     * @param parameterDescriptions
+     *            description of a single parameter out of the process definition
      * @param inputs
      *            list of {@link ProcessletInputDefinition}s, never <code>null</code>, append new inputs here
      * @param jrxmlAdapter
@@ -71,7 +74,8 @@ public interface JrxmlContentProvider {
      * @param handledParameters
      *            list of parameters out of the jrxml file, which are handled already!
      */
-    void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescriptions,
+                                          List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                           XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                           List<String> handledParameters );
 

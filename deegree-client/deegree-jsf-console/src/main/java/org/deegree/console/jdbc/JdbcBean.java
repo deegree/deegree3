@@ -14,8 +14,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import lombok.Getter;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -28,28 +26,49 @@ import org.deegree.console.WorkspaceBean;
 @SessionScoped
 public class JdbcBean {
 
-    @Getter
     private String dbType = "mssql";
 
-    @Getter
     private String dbPort = "1433";
 
-    @Getter
     private String dbHost;
 
-    @Getter
     private String dbName;
 
-    @Getter
     private String dbConn;
 
-    @Getter
     private String dbUser;
 
-    @Getter
     private String dbPwd;
 
     private Config config;
+
+    public String getDbType() {
+        return dbType;
+    }
+
+    public String getDbPort() {
+        return dbPort;
+    }
+
+    public String getDbHost() {
+        return dbHost;
+    }
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public String getDbConn() {
+        return dbConn;
+    }
+
+    public String getDbUser() {
+        return dbUser;
+    }
+
+    public String getDbPwd() {
+        return dbPwd;
+    }
 
     public void setDbType( String dbType ) {
         this.dbType = dbType;

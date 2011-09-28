@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,53 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.stream;
+package org.deegree.services.wps.provider.jrxml;
 
-import java.util.Iterator;
+public class ParameterDescription {
+    private final String id;
 
-import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.Features;
+    private final String title;
 
-/**
- * {@link FeatureInputStream} that stores all features in memory.
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- */
-public class MemoryFeatureInputStream implements FeatureInputStream {
+    private final String description;
 
-    private FeatureCollection fc;
-
-    /**
-     * Creates a new {@link MemoryFeatureInputStream} that is backed by the given {@link FeatureCollection}.
-     * 
-     * @param fc
-     *            FeatureCollection to back the result set
-     */
-    public MemoryFeatureInputStream( FeatureCollection fc ) {
-        this.fc = fc;
+    public ParameterDescription( String id, String title, String description ) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
     }
 
-    @Override
-    public void close() {
-        // noting to do
+    public String getId() {
+        return id;
     }
 
-    @Override
-    public FeatureCollection toCollection() {
-        return Features.toCollection( this );
+    public String getTitle() {
+        return title;
     }
 
-    @Override
-    public Iterator<Feature> iterator() {
-        return fc.iterator();
+    public String getDescription() {
+        return description;
     }
 
-    @Override
-    public int count() {
-        return fc.size();
-    }
 }

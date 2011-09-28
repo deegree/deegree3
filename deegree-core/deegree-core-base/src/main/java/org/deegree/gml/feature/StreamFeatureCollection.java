@@ -275,4 +275,13 @@ public class StreamFeatureCollection implements FeatureInputStream {
     public FeatureCollection toCollection() {
         return Features.toCollection( this );
     }
+
+    @Override
+    public int count() {
+        int i = 0;
+        for ( Feature f : this ) {
+            i++;
+        }
+        return i;
+    }
 }

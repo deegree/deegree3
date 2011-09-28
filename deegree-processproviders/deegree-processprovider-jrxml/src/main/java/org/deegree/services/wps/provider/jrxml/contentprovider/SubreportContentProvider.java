@@ -62,6 +62,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
 import org.slf4j.Logger;
@@ -117,7 +118,8 @@ public class SubreportContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescription,
+                                                 List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
         if ( parameters.containsKey( getDirParameter() )
@@ -145,8 +147,8 @@ public class SubreportContentProvider implements JrxmlContentProvider {
 
             List<String> handledSubreportParameters = new ArrayList<String>();
             for ( JrxmlContentProvider contentProvider : getContentProviders( datasourceParam ) ) {
-                contentProvider.inspectInputParametersFromJrxml( inputs, subreportAdapter, subreportParameters,
-                                                                 handledSubreportParameters );
+                contentProvider.inspectInputParametersFromJrxml( parameterDescription, inputs, subreportAdapter,
+                                                                 subreportParameters, handledSubreportParameters );
             }
             handledParameters.add( getDirParameter() );
         }

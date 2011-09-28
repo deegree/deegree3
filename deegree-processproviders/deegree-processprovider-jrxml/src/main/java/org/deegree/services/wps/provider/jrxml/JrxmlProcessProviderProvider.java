@@ -55,6 +55,8 @@ import org.deegree.services.wps.provider.ProcessProviderProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess.Subreport;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcesses;
+import org.deegree.services.wps.provider.jrxml.jaxb.process.Metadata;
+import org.deegree.services.wps.provider.jrxml.jaxb.process.Metadata.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,17 +101,26 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
             for ( JrxmlProcess jrxmlProcess : processList ) {
                 jrxml = jrxmlProcess.getJrxml();
                 org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle = jrxmlProcess.getResourceBundle();
-
+                URL template = null;
+                String description = null;
+                Map<String, ParameterDescription> paramDescription = new HashMap<String, ParameterDescription>();
+                if ( jrxmlProcess.getMetadata() != null ) {
+                    Metadata metadata = jrxmlProcess.getMetadata();
+                    if ( metadata.getTemplate() != null ) {
+                        template = a.resolve( metadata.getTemplate() );
+                    }
+                    description = metadata.getDescription();
+                    for ( Parameter p : metadata.getParameter() ) {
+                        paramDescription.put( p.getId(),
+                                              new ParameterDescription( p.getId(), p.getTitle(), p.getDescription() ) );
+                    }
+                }
                 Map<String, URL> subreports = new HashMap<String, URL>();
                 for ( Subreport subreport : jrxmlProcess.getSubreport() ) {
                     subreports.put( subreport.getId(), a.resolve( subreport.getValue() ) );
                 }
-                if ( resourceBundle != null ) {
-                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), subreports,
-                                                                resourceBundle ) );
-                } else {
-                    processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), subreports ) );
-                }
+                processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), description,
+                                                            paramDescription, template, subreports, resourceBundle ) );
             }
 
         } catch ( JAXBException e ) {

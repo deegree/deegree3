@@ -54,18 +54,25 @@ public class JrxmlProcessDescription {
 
     private final URL url;
 
+    private final URL template;
+
     private final Map<String, URL> subreports;
 
     private final ResourceBundle resourceBundle;
 
-    public JrxmlProcessDescription( String id, URL url, Map<String, URL> subreports ) {
-        this( id, url, subreports, null );
-    }
+    private final String description;
 
-    public JrxmlProcessDescription( String id, URL url, Map<String, URL> subreports, ResourceBundle resourceBundle ) {
+    private final Map<String, ParameterDescription> parameterDescriptions;
+
+    public JrxmlProcessDescription( String id, URL url, String description,
+                                    Map<String, ParameterDescription> parameterDescriptions, URL template,
+                                    Map<String, URL> subreports, ResourceBundle resourceBundle ) {
         this.id = id;
         this.url = url;
+        this.description = description;
+        this.template = template;
         this.subreports = subreports;
+        this.parameterDescriptions = parameterDescriptions;
         this.resourceBundle = resourceBundle;
     }
 
@@ -83,6 +90,18 @@ public class JrxmlProcessDescription {
 
     public Map<String, URL> getSubreports() {
         return subreports;
+    }
+
+    public URL getTemplate() {
+        return template;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Map<String, ParameterDescription> getParameterDescriptions() {
+        return parameterDescriptions;
     }
 
 }

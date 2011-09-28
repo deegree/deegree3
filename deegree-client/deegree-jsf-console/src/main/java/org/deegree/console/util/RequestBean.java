@@ -76,9 +76,6 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.http.Header;
@@ -111,26 +108,16 @@ public class RequestBean implements Serializable {
 
     private File requestsBaseDir;
 
-    @Getter
-    @Setter
     private String targetUrl;
 
-    @Getter
-    @Setter
     private String selectedService;
 
-    @Getter
-    @Setter
     private String selectedReqProfile;
 
-    @Getter
-    @Setter
     private String selectedRequest;
 
-    @Getter
     private String mimeType;
 
-    @Getter
     private List<String> services;
 
     private List<String> requestProfiles;
@@ -139,27 +126,19 @@ public class RequestBean implements Serializable {
 
     private String request;
 
-    @Getter
-    @Setter
     private String saveRequestName;
 
-    @Getter
     private String kvpRequestSel;
 
     private TreeSet<String> originalKvpRequests = new TreeSet<String>(
                                                                        (Collection) unzipPair( (Collection) getKVPRequests() ).second );
 
-    @Getter
     private TreeSet<String> kvpRequests = new TreeSet<String>( originalKvpRequests );
 
-    @Getter
     private boolean kvpRequestIsImage = false;
 
-    @Getter
-    @Setter
     private String requestFilter;
 
-    @Getter
     private String response;
 
     // SERVICE
@@ -169,8 +148,147 @@ public class RequestBean implements Serializable {
     // --------REQUEST
     private TreeMap<String, Map<String, Map<String, List<String>>>> allRequests = new TreeMap<String, Map<String, Map<String, List<String>>>>();
 
-    @Getter
     private String responseFile;
+
+    public File getRequestsBaseDir() {
+        return requestsBaseDir;
+    }
+
+    public void setRequestsBaseDir( File requestsBaseDir ) {
+        this.requestsBaseDir = requestsBaseDir;
+    }
+
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+
+    public void setTargetUrl( String targetUrl ) {
+        this.targetUrl = targetUrl;
+    }
+
+    public String getSelectedService() {
+        return selectedService;
+    }
+
+    public void setSelectedService( String selectedService ) {
+        this.selectedService = selectedService;
+    }
+
+    public String getSelectedReqProfile() {
+        return selectedReqProfile;
+    }
+
+    public void setSelectedReqProfile( String selectedReqProfile ) {
+        this.selectedReqProfile = selectedReqProfile;
+    }
+
+    public String getSelectedRequest() {
+        return selectedRequest;
+    }
+
+    public void setSelectedRequest( String selectedRequest ) {
+        this.selectedRequest = selectedRequest;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType( String mimeType ) {
+        this.mimeType = mimeType;
+    }
+
+    public List<String> getServices() {
+        return services;
+    }
+
+    public void setServices( List<String> services ) {
+        this.services = services;
+    }
+
+    public String getSaveRequestName() {
+        return saveRequestName;
+    }
+
+    public void setSaveRequestName( String saveRequestName ) {
+        this.saveRequestName = saveRequestName;
+    }
+
+    public TreeSet<String> getOriginalKvpRequests() {
+        return originalKvpRequests;
+    }
+
+    public void setOriginalKvpRequests( TreeSet<String> originalKvpRequests ) {
+        this.originalKvpRequests = originalKvpRequests;
+    }
+
+    public TreeSet<String> getKvpRequests() {
+        return kvpRequests;
+    }
+
+    public void setKvpRequests( TreeSet<String> kvpRequests ) {
+        this.kvpRequests = kvpRequests;
+    }
+
+    public boolean isKvpRequestIsImage() {
+        return kvpRequestIsImage;
+    }
+
+    public void setKvpRequestIsImage( boolean kvpRequestIsImage ) {
+        this.kvpRequestIsImage = kvpRequestIsImage;
+    }
+
+    public String getRequestFilter() {
+        return requestFilter;
+    }
+
+    public void setRequestFilter( String requestFilter ) {
+        this.requestFilter = requestFilter;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse( String response ) {
+        this.response = response;
+    }
+
+    public TreeMap<String, Map<String, Map<String, List<String>>>> getAllRequests() {
+        return allRequests;
+    }
+
+    public void setAllRequests( TreeMap<String, Map<String, Map<String, List<String>>>> allRequests ) {
+        this.allRequests = allRequests;
+    }
+
+    public String getResponseFile() {
+        return responseFile;
+    }
+
+    public void setResponseFile( String responseFile ) {
+        this.responseFile = responseFile;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public static Logger getLog() {
+        return LOG;
+    }
+
+    public String getKvpRequestSel() {
+        return kvpRequestSel;
+    }
+
+    public void setRequestProfiles( List<String> requestProfiles ) {
+        this.requestProfiles = requestProfiles;
+    }
+
+    public void setRequests( List<SelectItem> requests ) {
+        this.requests = requests;
+    }
 
     @PostConstruct
     public void init() {

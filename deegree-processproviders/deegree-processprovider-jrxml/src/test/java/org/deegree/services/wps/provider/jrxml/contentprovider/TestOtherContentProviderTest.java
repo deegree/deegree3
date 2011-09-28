@@ -49,6 +49,7 @@ import javax.xml.bind.JAXBElement;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.LiteralInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.junit.Test;
 
 /**
@@ -74,7 +75,8 @@ public class TestOtherContentProviderTest {
         XMLAdapter adapter = new XMLAdapter(
                                              TestOtherContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        wmsContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
+        wmsContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs, adapter, parameters,
+                                                            handledParams );
 
         assertEquals( 4, parameters.size() );
 

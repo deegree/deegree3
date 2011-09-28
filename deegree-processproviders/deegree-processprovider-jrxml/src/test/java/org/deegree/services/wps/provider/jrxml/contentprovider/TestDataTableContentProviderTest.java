@@ -60,6 +60,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.junit.Test;
 
 /**
@@ -85,7 +86,8 @@ public class TestDataTableContentProviderTest {
         XMLAdapter adapter = new XMLAdapter(
                                              TestDataTableContentProviderTest.class.getResourceAsStream( "../templateWithTable.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        dataTableContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
+        dataTableContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs, adapter,
+                                                                  parameters, handledParams );
 
         assertEquals( 0, parameters.size() );
 

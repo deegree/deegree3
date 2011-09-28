@@ -392,8 +392,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     public int queryHits( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO
-        return query( query ).toCollection().size();
+        // TODO SELECT COUNT
+        return query( query ).count();
     }
 
     @Override

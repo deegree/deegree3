@@ -133,4 +133,13 @@ public class FilteredFeatureInputStream implements FeatureInputStream {
             }
         };
     }
+
+    @Override
+    public int count() {
+        int i = 0;
+        for ( Feature f : this ) {
+            i++;
+        }
+        return i;
+    }
 }

@@ -33,49 +33,42 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider.jrxml;
+package org.deegree.services.wps.provider.jrxml.contentprovider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
+import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.math.BigInteger;
 import java.util.Map;
 
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
-import org.junit.Test;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 
 /**
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class TestJrxmlParserTest {
+public abstract class AbstractJrxmlContentProvider implements JrxmlContentProvider {
 
-    /**
-     * Test method for {@link org.deegree.services.wps.provider.jrxml.JrxmlWPSProcess}.
-     */
-    @Test
-    public void testParse() {
-        XMLAdapter jrxmlAdapter = new XMLAdapter(
-                                                  TestJrxmlParserTest.class.getResourceAsStream( "testWPSreportTemplate.jrxml" ) );
-        JrxmlParser p = new JrxmlParser();
-        Pair<ProcessDefinition, Map<String, String>> parsed = p.parse( "processId", "testWPSreportTemplate",
-                                                                       "Process description", jrxmlAdapter,
-                                                                       new ArrayList<JrxmlContentProvider>(),
-                                                                       new HashMap<String, ParameterDescription>() );
-        assertNotNull( parsed );
-        ProcessDefinition pd = parsed.first;
-        assertNotNull( pd );
-        assertNotNull( pd.getIdentifier() );
-        assertEquals( "processId", pd.getIdentifier().getValue() );
-        assertEquals( "createReportByAWPSProcess", pd.getTitle().getValue() );
+    protected void addInput( ProcessletInputDefinition input, Map<String, ParameterDescription> parameterDescriptions,
+                             String id, int max, int min ) {
+        input.setIdentifier( getAsCodeType( id ) );
+        String t = id;
+        if ( parameterDescriptions.containsKey( id ) ) {
+            input.setAbstract( getAsLanguageStringType( parameterDescriptions.get( id ).getDescription() ) );
+            if ( parameterDescriptions.get( id ).getTitle() != null ) {
+                t = parameterDescriptions.get( id ).getTitle();
+            }
+        }
+        input.setTitle( getAsLanguageStringType( t ) );
+        if ( max > -1 )
+            input.setMaxOccurs( BigInteger.valueOf( max ) );
+        if ( min > -1 )
+            input.setMinOccurs( BigInteger.valueOf( min ) );
 
     }
-
 }

@@ -35,11 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.jdbc;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Workaround class to fix inability of DriverManager to accept classes not loaded with system class loader...
@@ -90,4 +94,23 @@ public class DriverWrapper implements Driver {
         return d.jdbcCompliant();
     }
 
+    public Logger getParentLogger()
+                            throws SQLFeatureNotSupportedException {
+        Logger logger = null;
+        try {
+            Method m = d.getClass().getDeclaredMethod( "getParentLogger", new Class[0] );
+            logger = (Logger) m.invoke( d, new Object[0] );
+        } catch ( NoSuchMethodException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        } catch ( SecurityException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        } catch ( IllegalAccessException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        } catch ( IllegalArgumentException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        } catch ( InvocationTargetException e ) {
+            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
+        }
+        return logger;
+    }
 }

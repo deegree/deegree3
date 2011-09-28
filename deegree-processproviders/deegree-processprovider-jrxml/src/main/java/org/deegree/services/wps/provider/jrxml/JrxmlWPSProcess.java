@@ -96,8 +96,10 @@ public class JrxmlWPSProcess implements WPSProcess {
             if ( name.contains( "/" ) )
                 name = name.substring( name.lastIndexOf( '/' ) + 1, name.length() );
 
-            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( p.getId(), name, a,
-                                                                                           contentProviders );
+            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( p.getId(), name,
+                                                                                           p.getDescription(), a,
+                                                                                           contentProviders,
+                                                                                           p.getParameterDescriptions() );
             this.description = parsed.first;
             this.processlet = new JrxmlProcesslet( p.getUrl(), contentProviders, parsed.second );
         } catch ( XMLProcessingException e ) {

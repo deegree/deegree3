@@ -41,8 +41,6 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
-import lombok.Getter;
-
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.WPService;
 
@@ -58,11 +56,17 @@ import org.deegree.services.wps.WPService;
 @RequestScoped
 public class ProcessExecutionsBean {
 
-    @Getter
     private final List<ProcessExecution> executions = new ArrayList<ProcessExecution>();
 
-    @Getter
     private final boolean hasExecutions;
+
+    public List<ProcessExecution> getExecutions() {
+        return executions;
+    }
+
+    public boolean isHasExecutions() {
+        return hasExecutions;
+    }
 
     /**
      * Creates a new {@link ProcessExecutionsBean} instance (only used by JSF).

@@ -46,6 +46,7 @@ import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,7 +99,7 @@ public class TestSubreportContentProviderTest {
         XMLAdapter jrxmlAdapter = new XMLAdapter(
                                                   TestOtherContentProviderTest.class.getResourceAsStream( "../templateWithInlineTable.jrxml" ) );
         List<String> handledParameters = new ArrayList<String>();
-        subreportContentProvider.inspectInputParametersFromJrxml( inputs, jrxmlAdapter, parameters, handledParameters );
+        subreportContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(),inputs, jrxmlAdapter, parameters, handledParameters );
 
         // includes parameters of the subreport
         assertEquals( 2, handledParameters.size() );

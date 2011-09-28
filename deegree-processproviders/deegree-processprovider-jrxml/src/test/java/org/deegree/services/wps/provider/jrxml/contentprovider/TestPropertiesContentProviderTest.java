@@ -52,6 +52,7 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.LiteralInputImpl;
 import org.deegree.services.wps.input.ProcessletInput;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,7 +104,8 @@ public class TestPropertiesContentProviderTest {
         XMLAdapter jrxmlAdapter = new XMLAdapter(
                                                   TestPropertiesContentProviderTest.class.getResourceAsStream( "../templateWithPropsFromResourceBundle.jrxml" ) );
         List<String> handledParameters = new ArrayList<String>();
-        propertiesContentProvider.inspectInputParametersFromJrxml( inputs, jrxmlAdapter, parameters, handledParameters );
+        propertiesContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs,
+                                                                   jrxmlAdapter, parameters, handledParameters );
 
         assertEquals( 4, handledParameters.size() );
         assertEquals( 1, inputs.size() );
@@ -123,12 +125,13 @@ public class TestPropertiesContentProviderTest {
         InputStream jrxml = TestDataTableContentProviderTest.class.getResourceAsStream( "../templateWithPropsFromResourceBundle.jrxml" );
         Map<String, Object> params = new HashMap<String, Object>();
         List<ProcessletInput> inputs = new ArrayList<ProcessletInput>();
-        inputs.add( new LiteralInputImpl( propertiesContentProvider.getInputDefinition(), null, null, "de", null ) );
+        inputs.add( new LiteralInputImpl(
+                                          propertiesContentProvider.getInputDefinition( new HashMap<String, ParameterDescription>() ),
+                                          null, null, "de", null ) );
         ProcessletInputs in = new ProcessletInputs( inputs );
         propertiesContentProvider.prepareJrxmlAndReadInputParameters( jrxml, params, in, processedIds, parameters );
 
         assertEquals( 1, processedIds.size() );
         assertEquals( 4, params.size() );
     }
-
 }

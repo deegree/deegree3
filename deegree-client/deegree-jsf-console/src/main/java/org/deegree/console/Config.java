@@ -52,9 +52,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceManager;
@@ -79,27 +76,20 @@ public class Config implements Comparable<Config> {
 
     private static final Logger LOG = getLogger( Config.class );
 
-    @Getter
     private File location;
 
-    @Getter
     private String id;
 
-    @Getter
     private String schemaAsText;
 
-    @Getter
     private URL template;
 
-    @Getter
-    @Setter
     private String content;
 
     private ConfigManager manager;
 
     private String resourceOutcome;
 
-    @Getter
     private URL schemaURL;
 
     private ResourceManager resourceManager;
@@ -307,5 +297,97 @@ public class Config implements Comparable<Config> {
 
     public int compareTo( Config o ) {
         return id.compareTo( o.id );
+    }
+
+    public File getLocation() {
+        return location;
+    }
+
+    public void setLocation( File location ) {
+        this.location = location;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId( String id ) {
+        this.id = id;
+    }
+
+    public String getSchemaAsText() {
+        return schemaAsText;
+    }
+
+    public void setSchemaAsText( String schemaAsText ) {
+        this.schemaAsText = schemaAsText;
+    }
+
+    public URL getTemplate() {
+        return template;
+    }
+
+    public void setTemplate( URL template ) {
+        this.template = template;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent( String content ) {
+        this.content = content;
+    }
+
+    public ConfigManager getManager() {
+        return manager;
+    }
+
+    public void setManager( ConfigManager manager ) {
+        this.manager = manager;
+    }
+
+    public String getResourceOutcome() {
+        return resourceOutcome;
+    }
+
+    public void setResourceOutcome( String resourceOutcome ) {
+        this.resourceOutcome = resourceOutcome;
+    }
+
+    public URL getSchemaURL() {
+        return schemaURL;
+    }
+
+    public void setSchemaURL( URL schemaURL ) {
+        this.schemaURL = schemaURL;
+    }
+
+    public ResourceManager getResourceManager() {
+        return resourceManager;
+    }
+
+    public void setResourceManager( ResourceManager resourceManager ) {
+        this.resourceManager = resourceManager;
+    }
+
+    public boolean isRequiresWSReload() {
+        return requiresWSReload;
+    }
+
+    public void setRequiresWSReload( boolean requiresWSReload ) {
+        this.requiresWSReload = requiresWSReload;
+    }
+
+    public boolean isAutoActivate() {
+        return autoActivate;
+    }
+
+    public void setAutoActivate( boolean autoActivate ) {
+        this.autoActivate = autoActivate;
+    }
+
+    public void setState( ResourceState<?> state ) {
+        this.state = state;
     }
 }

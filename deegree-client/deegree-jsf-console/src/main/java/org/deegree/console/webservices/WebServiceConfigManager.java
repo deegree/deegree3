@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.File;
 import java.net.URL;
 
@@ -45,13 +43,9 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import lombok.Getter;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.Config;
-import org.deegree.console.ConfigManager;
 import org.deegree.console.WorkspaceBean;
-import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -65,8 +59,6 @@ import org.slf4j.Logger;
 @SessionScoped
 public class WebServiceConfigManager {
 
-    private static final Logger LOG = getLogger( ConfigManager.class );
-
     private static final URL METADATA_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/example.xml" );
 
     private static final URL METADATA_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
@@ -75,11 +67,17 @@ public class WebServiceConfigManager {
 
     private static final URL MAIN_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
 
-    @Getter
     private final Config metadataConfig;
 
-    @Getter
     private final Config mainConfig;
+
+    public Config getMetadataConfig() {
+        return metadataConfig;
+    }
+
+    public Config getMainConfig() {
+        return mainConfig;
+    }
 
     public WebServiceConfigManager() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
