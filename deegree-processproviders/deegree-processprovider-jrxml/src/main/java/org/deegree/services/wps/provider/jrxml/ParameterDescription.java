@@ -35,73 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml;
 
-import java.net.URL;
-import java.util.Map;
-
-import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
-
-/**
- * TODO add class documentation here
- * 
- * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
- */
-public class JrxmlProcessDescription {
-
+public class ParameterDescription {
     private final String id;
 
-    private final URL url;
-
-    private final URL template;
-
-    private final Map<String, URL> subreports;
-
-    private final ResourceBundle resourceBundle;
+    private final String title;
 
     private final String description;
 
-    private final Map<String, ParameterDescription> parameterDescriptions;
-
-    public JrxmlProcessDescription( String id, URL url, String description,
-                                    Map<String, ParameterDescription> parameterDescriptions, URL template,
-                                    Map<String, URL> subreports, ResourceBundle resourceBundle ) {
+    public ParameterDescription( String id, String title, String description ) {
         this.id = id;
-        this.url = url;
+        this.title = title;
         this.description = description;
-        this.template = template;
-        this.subreports = subreports;
-        this.parameterDescriptions = parameterDescriptions;
-        this.resourceBundle = resourceBundle;
     }
 
-    String getId() {
+    public String getId() {
         return id;
     }
 
-    URL getUrl() {
-        return url;
-    }
-
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-
-    public Map<String, URL> getSubreports() {
-        return subreports;
-    }
-
-    public URL getTemplate() {
-        return template;
+    public String getTitle() {
+        return title;
     }
 
     public String getDescription() {
         return description;
-    }
-
-    public Map<String, ParameterDescription> getParameterDescriptions() {
-        return parameterDescriptions;
     }
 
 }

@@ -103,7 +103,7 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
                 org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle = jrxmlProcess.getResourceBundle();
                 URL template = null;
                 String description = null;
-                Map<String, String> paramDescription = new HashMap<String, String>();
+                Map<String, ParameterDescription> paramDescription = new HashMap<String, ParameterDescription>();
                 if ( jrxmlProcess.getMetadata() != null ) {
                     Metadata metadata = jrxmlProcess.getMetadata();
                     if ( metadata.getTemplate() != null ) {
@@ -111,7 +111,8 @@ public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
                     }
                     description = metadata.getDescription();
                     for ( Parameter p : metadata.getParameter() ) {
-                        paramDescription.put( p.getId(), p.getValue() );
+                        paramDescription.put( p.getId(),
+                                              new ParameterDescription( p.getId(), p.getTitle(), p.getDescription() ) );
                     }
                 }
                 Map<String, URL> subreports = new HashMap<String, URL>();

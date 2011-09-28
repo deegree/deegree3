@@ -56,6 +56,7 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public class PropertiesContentProvider extends AbstractJrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+    public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescriptions,
                                                  List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
@@ -96,9 +97,9 @@ public class PropertiesContentProvider extends AbstractJrxmlContentProvider {
         }
     }
 
-    LiteralInputDefinition getInputDefinition( Map<String, String> parameterDescriptions ) {
+    LiteralInputDefinition getInputDefinition( Map<String, ParameterDescription> parameterDescriptions ) {
         LiteralInputDefinition localeInput = new LiteralInputDefinition();
-        addInput( localeInput, parameterDescriptions, PROPERTYNAME, PROPERTYNAME, 1, 0 );
+        addInput( localeInput, parameterDescriptions, PROPERTYNAME, 1, 0 );
         localeInput.setDefaultValue( resourceBundle.getDefaultLocale() );
         org.deegree.process.jaxb.java.AllowedValues avs = new org.deegree.process.jaxb.java.AllowedValues();
         avs.getValueOrRange().addAll( resourceBundle.getSupportedLocale() );

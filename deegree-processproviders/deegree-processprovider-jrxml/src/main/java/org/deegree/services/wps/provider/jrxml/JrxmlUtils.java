@@ -91,6 +91,8 @@ public class JrxmlUtils {
     }
 
     public static LanguageStringType getAsLanguageStringType( String textFieldExpr ) {
+        if ( textFieldExpr == null )
+            return null;
         LanguageStringType languageStringType = new LanguageStringType();
         languageStringType.setValue( textFieldExpr );
         return languageStringType;

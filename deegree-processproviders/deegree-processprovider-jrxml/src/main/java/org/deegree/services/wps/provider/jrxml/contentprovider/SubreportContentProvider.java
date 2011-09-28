@@ -62,6 +62,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
 import org.slf4j.Logger;
@@ -117,7 +118,7 @@ public class SubreportContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescription,
+    public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescription,
                                                  List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {

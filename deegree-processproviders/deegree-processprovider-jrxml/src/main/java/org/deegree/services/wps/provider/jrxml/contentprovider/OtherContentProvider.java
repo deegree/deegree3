@@ -59,6 +59,7 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class OtherContentProvider extends AbstractJrxmlContentProvider {
     private static final Logger LOG = LoggerFactory.getLogger( OtherContentProvider.class );
 
     @Override
-    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+    public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescriptions,
                                                  List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
@@ -83,7 +84,7 @@ public class OtherContentProvider extends AbstractJrxmlContentProvider {
         for ( String parameterName : parameters.keySet() ) {
             if ( !handledParameters.contains( parameterName ) ) {
                 LiteralInputDefinition lit = new LiteralInputDefinition();
-                addInput( lit, parameterDescriptions, parameterName, parameterName, 1, 0 );
+                addInput( lit, parameterDescriptions, parameterName, 1, 0 );
                 lit.setDefaultValue( parameterName );
 
                 String parameterType = parameters.get( parameterName );

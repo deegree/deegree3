@@ -74,11 +74,11 @@
 				<element name="description" type="string" minOccurs="0" />
 				<element name="parameter" minOccurs="0" maxOccurs="unbounded">
 					<complexType>
-						<simpleContent>
-							<extension base="string">
-								<attribute name="id" type="string" use="required" />
-							</extension>
-						</simpleContent>
+						<sequence>
+							<element name="title" type="string" minOccurs="0" />
+							<element name="description" type="string" minOccurs="0" />
+						</sequence>
+						<attribute name="id" type="string" use="required" />
 					</complexType>
 				</element>
 			</sequence>

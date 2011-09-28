@@ -76,6 +76,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.jaxen.dom.DOMXPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +122,7 @@ public class DataTableContentProvider extends AbstractJrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+    public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescriptions,
                                                  List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
@@ -143,7 +144,7 @@ public class DataTableContentProvider extends AbstractJrxmlContentProvider {
         for ( String tableId : tableIds ) {
             LOG.debug( "Found table component with id " + tableId );
             ComplexInputDefinition comp = new ComplexInputDefinition();
-            addInput( comp, parameterDescriptions, tableId, tableId, 1, 0 );
+            addInput( comp, parameterDescriptions, tableId, 1, 0 );
             ComplexFormatType format = new ComplexFormatType();
             format.setEncoding( "UTF-8" );
             format.setMimeType( MIME_TYPE );

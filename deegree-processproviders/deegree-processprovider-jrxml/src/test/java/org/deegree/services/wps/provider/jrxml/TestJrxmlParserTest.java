@@ -68,7 +68,7 @@ public class TestJrxmlParserTest {
         Pair<ProcessDefinition, Map<String, String>> parsed = p.parse( "processId", "testWPSreportTemplate",
                                                                        "Process description", jrxmlAdapter,
                                                                        new ArrayList<JrxmlContentProvider>(),
-                                                                       new HashMap<String, String>() );
+                                                                       new HashMap<String, ParameterDescription>() );
         assertNotNull( parsed );
         ProcessDefinition pd = parsed.first;
         assertNotNull( pd );

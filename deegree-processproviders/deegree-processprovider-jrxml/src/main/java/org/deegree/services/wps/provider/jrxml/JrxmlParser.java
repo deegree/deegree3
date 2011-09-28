@@ -83,13 +83,13 @@ public class JrxmlParser {
      *            the adapter encapsulating the jrxml, never <code>null</code>
      * @param contentProviders
      *            a list of {@link JrxmlContentProvider}s, never <code>null</code>
-     * @param map
+     * @param parameterDescriptions
      * @return
      */
     public Pair<ProcessDefinition, Map<String, String>> parse( String processId, String name, String description,
                                                                XMLAdapter jrxmlAdapter,
                                                                List<JrxmlContentProvider> contentProviders,
-                                                               Map<String, String> parameterDescription ) {
+                                                               Map<String, ParameterDescription> parameterDescriptions ) {
 
         OMElement root = jrxmlAdapter.getRootElement();
         String processName = jrxmlAdapter.getNodeAsString( root, new XPath( "/jasper:jasperReport/@name", nsContext ),
@@ -110,7 +110,7 @@ public class JrxmlParser {
         List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParams.getProcessInput();
         List<String> handledParameters = new ArrayList<String>();
         for ( JrxmlContentProvider contentProvider : contentProviders ) {
-            contentProvider.inspectInputParametersFromJrxml(parameterDescription, processInput, jrxmlAdapter, parameters, handledParameters );
+            contentProvider.inspectInputParametersFromJrxml(parameterDescriptions, processInput, jrxmlAdapter, parameters, handledParameters );
         }
 
         OutputParameters outputParams = new OutputParameters();

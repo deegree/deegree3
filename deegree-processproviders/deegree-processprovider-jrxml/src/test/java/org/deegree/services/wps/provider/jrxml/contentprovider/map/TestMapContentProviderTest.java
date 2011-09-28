@@ -67,6 +67,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.deegree.services.wps.provider.jrxml.contentprovider.Utils;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.junit.Assume;
@@ -97,8 +98,8 @@ public class TestMapContentProviderTest {
         XMLAdapter adapter = new XMLAdapter(
                                              TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        wmsContentProvider.inspectInputParametersFromJrxml( new HashMap<String, String>(), inputs, adapter, parameters,
-                                                            handledParams );
+        wmsContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs,
+                                                            adapter, parameters, handledParams );
 
         assertEquals( 3, parameters.size() );
 

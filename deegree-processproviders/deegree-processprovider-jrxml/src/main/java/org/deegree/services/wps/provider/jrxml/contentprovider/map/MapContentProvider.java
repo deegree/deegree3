@@ -90,6 +90,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.deegree.services.wps.provider.jrxml.contentprovider.AbstractJrxmlContentProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.AbstractDatasourceType;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Center;
@@ -141,7 +142,7 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+    public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescriptions,
                                                  List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
@@ -177,7 +178,7 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
         for ( String mapId : mapIds ) {
             LOG.debug( "Found map component with id " + mapId );
             ComplexInputDefinition comp = new ComplexInputDefinition();
-            addInput( comp, parameterDescriptions, mapId, mapId, 1, 0 );
+            addInput( comp, parameterDescriptions, mapId, 1, 0 );
             ComplexFormatType format = new ComplexFormatType();
             format.setEncoding( "UTF-8" );
             format.setMimeType( MIME_TYPE );

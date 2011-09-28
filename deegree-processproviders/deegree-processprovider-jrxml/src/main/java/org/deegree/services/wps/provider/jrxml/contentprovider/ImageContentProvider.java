@@ -61,6 +61,7 @@ import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.input.ReferencedComplexInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 
 /**
  * A {@link JrxmlContentProvider} for image parameters
@@ -73,7 +74,7 @@ import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 public class ImageContentProvider extends AbstractJrxmlContentProvider {
 
     @Override
-    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+    public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescriptions,
                                                  List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
@@ -84,7 +85,7 @@ public class ImageContentProvider extends AbstractJrxmlContentProvider {
                                                               + parameterName + "}']", JrxmlUtils.nsContext ) ) != null ) {
 
                 ComplexInputDefinition comp = new ComplexInputDefinition();
-                addInput( comp, parameterDescriptions, parameterName, parameterName, 1, 0 );
+                addInput( comp, parameterDescriptions, parameterName, 1, 0 );
                 ComplexFormatType defaultFormat = new ComplexFormatType();
                 defaultFormat.setMimeType( "image/png" );
                 comp.setDefaultFormat( defaultFormat );

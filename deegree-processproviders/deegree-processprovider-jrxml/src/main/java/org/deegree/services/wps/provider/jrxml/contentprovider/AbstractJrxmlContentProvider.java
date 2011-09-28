@@ -42,6 +42,7 @@ import java.math.BigInteger;
 import java.util.Map;
 
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
+import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 
 /**
  * TODO add class documentation here
@@ -53,15 +54,21 @@ import org.deegree.process.jaxb.java.ProcessletInputDefinition;
  */
 public abstract class AbstractJrxmlContentProvider implements JrxmlContentProvider {
 
-    protected void addInput( ProcessletInputDefinition input, Map<String, String> parameterDescriptions, String id,
-                             String title, int max, int min ) {
+    protected void addInput( ProcessletInputDefinition input, Map<String, ParameterDescription> parameterDescriptions,
+                             String id, int max, int min ) {
         input.setIdentifier( getAsCodeType( id ) );
-        input.setTitle( getAsLanguageStringType( title != null ? title : id ) );
+        String t = id;
+        if ( parameterDescriptions.containsKey( id ) ) {
+            input.setAbstract( getAsLanguageStringType( parameterDescriptions.get( id ).getDescription() ) );
+            if ( parameterDescriptions.get( id ).getTitle() != null ) {
+                t = parameterDescriptions.get( id ).getTitle();
+            }
+        }
+        input.setTitle( getAsLanguageStringType( t ) );
         if ( max > -1 )
             input.setMaxOccurs( BigInteger.valueOf( max ) );
         if ( min > -1 )
             input.setMinOccurs( BigInteger.valueOf( min ) );
-        if ( parameterDescriptions.containsKey( id ) )
-            input.setAbstract( getAsLanguageStringType( parameterDescriptions.get( id ) ) );
+
     }
 }
