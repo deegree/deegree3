@@ -344,8 +344,9 @@ public class WorkspaceBean implements Serializable {
             LOG.debug( "Retrieving list of remote workspaces from {} ", url );
             in = p.getFirst();
             if ( p.second.getStatusLine().getStatusCode() != 200 ) {
-                throw new Exception( "Server responded with HTTP status code "
-                                     + p.second.getStatusLine().getStatusCode() );
+                LOG.warn( "Could not get workspace list: Server responded with HTTP status code {}.",
+                          p.second.getStatusLine().getStatusCode() );
+                return new ArrayList<String>();
             }
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
@@ -356,14 +357,11 @@ public class WorkspaceBean implements Serializable {
             }
             return res;
         } catch ( Throwable t ) {
-            t.printStackTrace();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to retrieve remote workspaces: "
-                                                                + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
+            LOG.warn( "Could not get workspace list: {}.", t.getMessage() );
+            return new ArrayList<String>();
         } finally {
             closeQuietly( in );
         }
-        return new ArrayList<String>();
     }
 
     public List<String> getRemoteWorkspaces() {
