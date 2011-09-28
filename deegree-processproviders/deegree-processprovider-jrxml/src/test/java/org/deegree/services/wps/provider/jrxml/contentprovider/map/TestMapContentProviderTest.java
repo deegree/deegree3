@@ -97,7 +97,8 @@ public class TestMapContentProviderTest {
         XMLAdapter adapter = new XMLAdapter(
                                              TestMapContentProviderTest.class.getResourceAsStream( "../../testWPSreportTemplate.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        wmsContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
+        wmsContentProvider.inspectInputParametersFromJrxml( new HashMap<String, String>(), inputs, adapter, parameters,
+                                                            handledParams );
 
         assertEquals( 3, parameters.size() );
 

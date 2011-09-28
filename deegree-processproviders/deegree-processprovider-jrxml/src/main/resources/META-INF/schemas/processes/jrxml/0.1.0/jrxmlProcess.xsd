@@ -23,7 +23,7 @@
 		<complexType>
 			<sequence>
 				<element name="jrxml" type="anyURI" minOccurs="1" />
-				<element name="template" type="anyURI" minOccurs="0" />
+				<element ref="jr:Metadata" minOccurs="0" />
 				<element ref="jr:ResourceBundle" minOccurs="0" />
 				<element name="subreport" minOccurs="0" maxOccurs="unbounded">
 					<annotation>
@@ -63,6 +63,24 @@
 				<element name="defaultLocale" type="string" minOccurs="1" />
 				<element name="supportedLocale" type="string" minOccurs="1"
 					maxOccurs="unbounded" />
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="Metadata">
+		<complexType>
+			<sequence>
+				<element name="template" type="anyURI" minOccurs="0" />
+				<element name="description" type="string" minOccurs="0" />
+				<element name="parameter" minOccurs="0" maxOccurs="unbounded">
+					<complexType>
+						<simpleContent>
+							<extension base="string">
+								<attribute name="id" type="string" use="required" />
+							</extension>
+						</simpleContent>
+					</complexType>
+				</element>
 			</sequence>
 		</complexType>
 	</element>

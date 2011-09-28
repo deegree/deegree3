@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.utils.Pair;
@@ -65,8 +66,9 @@ public class TestJrxmlParserTest {
                                                   TestJrxmlParserTest.class.getResourceAsStream( "testWPSreportTemplate.jrxml" ) );
         JrxmlParser p = new JrxmlParser();
         Pair<ProcessDefinition, Map<String, String>> parsed = p.parse( "processId", "testWPSreportTemplate",
-                                                                       jrxmlAdapter,
-                                                                       new ArrayList<JrxmlContentProvider>() );
+                                                                       "Process description", jrxmlAdapter,
+                                                                       new ArrayList<JrxmlContentProvider>(),
+                                                                       new HashMap<String, String>() );
         assertNotNull( parsed );
         ProcessDefinition pd = parsed.first;
         assertNotNull( pd );

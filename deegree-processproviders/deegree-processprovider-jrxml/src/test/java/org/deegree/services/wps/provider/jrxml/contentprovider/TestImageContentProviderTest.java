@@ -76,7 +76,8 @@ public class TestImageContentProviderTest {
         XMLAdapter adapter = new XMLAdapter(
                                              TestOtherContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        imgContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
+        imgContentProvider.inspectInputParametersFromJrxml( new HashMap<String, String>(), inputs, adapter, parameters,
+                                                            handledParams );
 
         assertEquals( 6, parameters.size() );
 

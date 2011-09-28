@@ -36,8 +36,6 @@
 package org.deegree.services.wps.provider.jrxml.contentprovider.map;
 
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.JASPERREPORTS_NS;
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
 import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.nsContext;
 import static org.deegree.services.wps.provider.jrxml.contentprovider.map.RenderUtils.adjustSpan;
 
@@ -92,7 +90,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
-import org.deegree.services.wps.provider.jrxml.contentprovider.JrxmlContentProvider;
+import org.deegree.services.wps.provider.jrxml.contentprovider.AbstractJrxmlContentProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.AbstractDatasourceType;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Center;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Detail;
@@ -113,7 +111,7 @@ import com.sun.media.jai.codec.PNGEncodeParam;
  * 
  * @version $Revision: $, $Date: $
  */
-public class MapContentProvider implements JrxmlContentProvider {
+public class MapContentProvider extends AbstractJrxmlContentProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( MapContentProvider.class );
 
@@ -124,8 +122,6 @@ public class MapContentProvider implements JrxmlContentProvider {
     private static final String PARAM_PREFIX = "map";
 
     public static final double INCH2M = 0.0254;
-
-    private List<org.deegree.process.jaxb.java.CodeType> inputIds = new ArrayList<org.deegree.process.jaxb.java.CodeType>();
 
     private enum SUFFIXES {
 
@@ -145,7 +141,8 @@ public class MapContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+                                                 List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
         // for a wms, parameters starting with 'map' are important. three different types are supported:
@@ -180,19 +177,14 @@ public class MapContentProvider implements JrxmlContentProvider {
         for ( String mapId : mapIds ) {
             LOG.debug( "Found map component with id " + mapId );
             ComplexInputDefinition comp = new ComplexInputDefinition();
-            comp.setTitle( getAsLanguageStringType( mapId ) );
-            org.deegree.process.jaxb.java.CodeType id = getAsCodeType( mapId );
-            comp.setIdentifier( id );
+            addInput( comp, parameterDescriptions, mapId, mapId, 1, 0 );
             ComplexFormatType format = new ComplexFormatType();
             format.setEncoding( "UTF-8" );
             format.setMimeType( MIME_TYPE );
             format.setSchema( SCHEMA );
             comp.setDefaultFormat( format );
-            comp.setMaxOccurs( BigInteger.valueOf( 1 ) );
-            comp.setMinOccurs( BigInteger.valueOf( 0 ) );
             inputs.add( new JAXBElement<ComplexInputDefinition>( new QName( "ProcessInput" ),
                                                                  ComplexInputDefinition.class, comp ) );
-            inputIds.add( id );
         }
 
     }

@@ -33,12 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider.jrxml;
+package org.deegree.services.wps.provider.jrxml.contentprovider;
 
-import java.net.URL;
+import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
+import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
+
+import java.math.BigInteger;
 import java.util.Map;
 
-import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
+import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 
 /**
  * TODO add class documentation here
@@ -48,59 +51,17 @@ import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
  * 
  * @version $Revision: $, $Date: $
  */
-public class JrxmlProcessDescription {
+public abstract class AbstractJrxmlContentProvider implements JrxmlContentProvider {
 
-    private final String id;
-
-    private final URL url;
-
-    private final URL template;
-
-    private final Map<String, URL> subreports;
-
-    private final ResourceBundle resourceBundle;
-
-    private final String description;
-
-    private final Map<String, String> parameterDescriptions;
-
-    public JrxmlProcessDescription( String id, URL url, String description, Map<String, String> parameterDescriptions,
-                                    URL template, Map<String, URL> subreports, ResourceBundle resourceBundle ) {
-        this.id = id;
-        this.url = url;
-        this.description = description;
-        this.template = template;
-        this.subreports = subreports;
-        this.parameterDescriptions = parameterDescriptions;
-        this.resourceBundle = resourceBundle;
+    protected void addInput( ProcessletInputDefinition input, Map<String, String> parameterDescriptions, String id,
+                             String title, int max, int min ) {
+        input.setIdentifier( getAsCodeType( id ) );
+        input.setTitle( getAsLanguageStringType( title != null ? title : id ) );
+        if ( max > -1 )
+            input.setMaxOccurs( BigInteger.valueOf( max ) );
+        if ( min > -1 )
+            input.setMinOccurs( BigInteger.valueOf( min ) );
+        if ( parameterDescriptions.containsKey( id ) )
+            input.setAbstract( getAsLanguageStringType( parameterDescriptions.get( id ) ) );
     }
-
-    String getId() {
-        return id;
-    }
-
-    URL getUrl() {
-        return url;
-    }
-
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-
-    public Map<String, URL> getSubreports() {
-        return subreports;
-    }
-
-    public URL getTemplate() {
-        return template;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Map<String, String> getParameterDescriptions() {
-        return parameterDescriptions;
-    }
-
 }

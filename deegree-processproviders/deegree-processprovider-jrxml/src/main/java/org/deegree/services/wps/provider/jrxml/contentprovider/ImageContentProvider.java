@@ -35,15 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -74,10 +70,11 @@ import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ImageContentProvider implements JrxmlContentProvider {
+public class ImageContentProvider extends AbstractJrxmlContentProvider {
 
     @Override
-    public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+                                                 List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
         OMElement root = jrxmlAdapter.getRootElement();
@@ -87,13 +84,10 @@ public class ImageContentProvider implements JrxmlContentProvider {
                                                               + parameterName + "}']", JrxmlUtils.nsContext ) ) != null ) {
 
                 ComplexInputDefinition comp = new ComplexInputDefinition();
-                comp.setTitle( getAsLanguageStringType( parameterName ) );
-                comp.setIdentifier( getAsCodeType( parameterName ) );
+                addInput( comp, parameterDescriptions, parameterName, parameterName, 1, 0 );
                 ComplexFormatType defaultFormat = new ComplexFormatType();
                 defaultFormat.setMimeType( "image/png" );
                 comp.setDefaultFormat( defaultFormat );
-                comp.setMaxOccurs( BigInteger.valueOf( 1 ) );
-                comp.setMinOccurs( BigInteger.valueOf( 0 ) );
                 inputs.add( new JAXBElement<ComplexInputDefinition>( new QName( "ProcessInput" ),
                                                                      ComplexInputDefinition.class, comp ) );
                 handledParameters.add( parameterName );
@@ -102,9 +96,11 @@ public class ImageContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
-                                                           ProcessletInputs in, List<CodeType> processedIds,
-                                                           Map<String, String> parameters )
+    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml,
+                                                                          Map<String, Object> params,
+                                                                          ProcessletInputs in,
+                                                                          List<CodeType> processedIds,
+                                                                          Map<String, String> parameters )
                             throws ProcessletException {
         for ( ProcessletInput parameter : in.getParameters() ) {
             if ( !processedIds.contains( parameter.getIdentifier() ) ) {

@@ -35,12 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
-
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -74,23 +70,21 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class OtherContentProvider implements JrxmlContentProvider {
+public class OtherContentProvider extends AbstractJrxmlContentProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( OtherContentProvider.class );
 
     @Override
-    public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+                                                 List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
 
         for ( String parameterName : parameters.keySet() ) {
             if ( !handledParameters.contains( parameterName ) ) {
                 LiteralInputDefinition lit = new LiteralInputDefinition();
-                lit.setIdentifier( getAsCodeType( parameterName ) );
-                lit.setTitle( getAsLanguageStringType( parameterName ) );
+                addInput( lit, parameterDescriptions, parameterName, parameterName, 1, 0 );
                 lit.setDefaultValue( parameterName );
-                lit.setMaxOccurs( BigInteger.valueOf( 1 ) );
-                lit.setMinOccurs( BigInteger.valueOf( 0 ) );
 
                 String parameterType = parameters.get( parameterName );
                 String dtValue = null;
@@ -162,9 +156,11 @@ public class OtherContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml, Map<String, Object> params,
-                                                           ProcessletInputs in, List<CodeType> processedIds,
-                                                           Map<String, String> parameters )
+    public Pair<InputStream, Boolean> prepareJrxmlAndReadInputParameters( InputStream jrxml,
+                                                                          Map<String, Object> params,
+                                                                          ProcessletInputs in,
+                                                                          List<CodeType> processedIds,
+                                                                          Map<String, String> parameters )
                             throws ProcessletException {
         for ( ProcessletInput parameter : in.getParameters() ) {
             if ( !processedIds.contains( parameter.getIdentifier() ) ) {
@@ -277,7 +273,7 @@ public class OtherContentProvider implements JrxmlContentProvider {
             }
         }
         // nothing to prepare here
-        return new Pair<InputStream, Boolean>(jrxml, false);
+        return new Pair<InputStream, Boolean>( jrxml, false );
     }
 
 }

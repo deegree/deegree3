@@ -98,7 +98,7 @@ public class TestSubreportContentProviderTest {
         XMLAdapter jrxmlAdapter = new XMLAdapter(
                                                   TestOtherContentProviderTest.class.getResourceAsStream( "../templateWithInlineTable.jrxml" ) );
         List<String> handledParameters = new ArrayList<String>();
-        subreportContentProvider.inspectInputParametersFromJrxml( inputs, jrxmlAdapter, parameters, handledParameters );
+        subreportContentProvider.inspectInputParametersFromJrxml( new HashMap<String, String>(),inputs, jrxmlAdapter, parameters, handledParameters );
 
         // includes parameters of the subreport
         assertEquals( 2, handledParameters.size() );

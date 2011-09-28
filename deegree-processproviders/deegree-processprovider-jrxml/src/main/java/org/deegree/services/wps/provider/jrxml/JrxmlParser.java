@@ -78,14 +78,18 @@ public class JrxmlParser {
      *            the id of the process, never <code>null</code>
      * @param name
      *            the name of the process
+     * @param string
      * @param jrxmlAdapter
      *            the adapter encapsulating the jrxml, never <code>null</code>
      * @param contentProviders
      *            a list of {@link JrxmlContentProvider}s, never <code>null</code>
+     * @param map
      * @return
      */
-    public Pair<ProcessDefinition, Map<String, String>> parse( String processId, String name, XMLAdapter jrxmlAdapter,
-                                                               List<JrxmlContentProvider> contentProviders ) {
+    public Pair<ProcessDefinition, Map<String, String>> parse( String processId, String name, String description,
+                                                               XMLAdapter jrxmlAdapter,
+                                                               List<JrxmlContentProvider> contentProviders,
+                                                               Map<String, String> parameterDescription ) {
 
         OMElement root = jrxmlAdapter.getRootElement();
         String processName = jrxmlAdapter.getNodeAsString( root, new XPath( "/jasper:jasperReport/@name", nsContext ),
@@ -106,7 +110,7 @@ public class JrxmlParser {
         List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParams.getProcessInput();
         List<String> handledParameters = new ArrayList<String>();
         for ( JrxmlContentProvider contentProvider : contentProviders ) {
-            contentProvider.inspectInputParametersFromJrxml( processInput, jrxmlAdapter, parameters, handledParameters );
+            contentProvider.inspectInputParametersFromJrxml(parameterDescription, processInput, jrxmlAdapter, parameters, handledParameters );
         }
 
         OutputParameters outputParams = new OutputParameters();
@@ -116,15 +120,14 @@ public class JrxmlParser {
         ComplexFormatType format = new ComplexFormatType();
         format.setMimeType( JrxmlUtils.OUTPUT_MIME_TYPES.PDF.getMimeType() );
         output.setDefaultFormat( format );
-        
+
         // ComplexFormatType html = new ComplexFormatType();
         // html.setMimeType( JrxmlUtils.OUTPUT_MIME_TYPES.HTML.getMimeType() );
         // output.getOtherFormats().add( html );
-        
+
         outputParams.getProcessOutput().add( new JAXBElement<ComplexOutputDefinition>( new QName( "report" ),
                                                                                        ComplexOutputDefinition.class,
                                                                                        output ) );
-
         ProcessDefinition processDefinition = new ProcessDefinition();
 
         processDefinition.setConfigVersion( "0.5.0" );
@@ -134,6 +137,8 @@ public class JrxmlParser {
 
         processDefinition.setIdentifier( getAsCodeType( processId ) );
         processDefinition.setTitle( getAsLanguageStringType( processName ) );
+        if ( description != null )
+            processDefinition.setAbstract( getAsLanguageStringType( description ) );
         processDefinition.setInputParameters( inputParams );
         processDefinition.setOutputParameters( outputParams );
         return new Pair<ProcessDefinition, Map<String, String>>( processDefinition, parameters );

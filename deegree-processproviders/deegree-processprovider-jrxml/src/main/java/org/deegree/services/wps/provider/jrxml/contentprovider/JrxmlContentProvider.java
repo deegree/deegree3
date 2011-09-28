@@ -62,6 +62,8 @@ public interface JrxmlContentProvider {
     /**
      * inspects the parameters found in the xml and converts them to WPSProcess input parameters
      * 
+     * @param parameterDescription
+     *            description of a single parameter out of the process definition
      * @param inputs
      *            list of {@link ProcessletInputDefinition}s, never <code>null</code>, append new inputs here
      * @param jrxmlAdapter
@@ -71,7 +73,8 @@ public interface JrxmlContentProvider {
      * @param handledParameters
      *            list of parameters out of the jrxml file, which are handled already!
      */
-    void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    void inspectInputParametersFromJrxml( Map<String, String> parameterDescription,
+                                          List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                           XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                           List<String> handledParameters );
 

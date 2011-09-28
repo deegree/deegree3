@@ -117,7 +117,8 @@ public class SubreportContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescription,
+                                                 List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
         if ( parameters.containsKey( getDirParameter() )
@@ -145,8 +146,8 @@ public class SubreportContentProvider implements JrxmlContentProvider {
 
             List<String> handledSubreportParameters = new ArrayList<String>();
             for ( JrxmlContentProvider contentProvider : getContentProviders( datasourceParam ) ) {
-                contentProvider.inspectInputParametersFromJrxml( inputs, subreportAdapter, subreportParameters,
-                                                                 handledSubreportParameters );
+                contentProvider.inspectInputParametersFromJrxml( parameterDescription, inputs, subreportAdapter,
+                                                                 subreportParameters, handledSubreportParameters );
             }
             handledParameters.add( getDirParameter() );
         }

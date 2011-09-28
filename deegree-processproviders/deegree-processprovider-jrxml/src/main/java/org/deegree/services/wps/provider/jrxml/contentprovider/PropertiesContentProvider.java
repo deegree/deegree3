@@ -35,11 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml.contentprovider;
 
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
-
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -71,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class PropertiesContentProvider implements JrxmlContentProvider {
+public class PropertiesContentProvider extends AbstractJrxmlContentProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( PropertiesContentProvider.class );
 
@@ -85,10 +81,11 @@ public class PropertiesContentProvider implements JrxmlContentProvider {
     }
 
     @Override
-    public void inspectInputParametersFromJrxml( List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
+    public void inspectInputParametersFromJrxml( Map<String, String> parameterDescriptions,
+                                                 List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
-        LiteralInputDefinition localeInput = getInputDefinition();
+        LiteralInputDefinition localeInput = getInputDefinition( parameterDescriptions );
 
         inputs.add( new JAXBElement<LiteralInputDefinition>( new QName( "ProcessInput" ), LiteralInputDefinition.class,
                                                              localeInput ) );
@@ -99,13 +96,10 @@ public class PropertiesContentProvider implements JrxmlContentProvider {
         }
     }
 
-    LiteralInputDefinition getInputDefinition() {
+    LiteralInputDefinition getInputDefinition( Map<String, String> parameterDescriptions ) {
         LiteralInputDefinition localeInput = new LiteralInputDefinition();
-        localeInput.setIdentifier( getAsCodeType( PROPERTYNAME ) );
-        localeInput.setTitle( getAsLanguageStringType( PROPERTYNAME ) );
+        addInput( localeInput, parameterDescriptions, PROPERTYNAME, PROPERTYNAME, 1, 0 );
         localeInput.setDefaultValue( resourceBundle.getDefaultLocale() );
-        localeInput.setMaxOccurs( BigInteger.valueOf( 1 ) );
-        localeInput.setMinOccurs( BigInteger.valueOf( 0 ) );
         org.deegree.process.jaxb.java.AllowedValues avs = new org.deegree.process.jaxb.java.AllowedValues();
         avs.getValueOrRange().addAll( resourceBundle.getSupportedLocale() );
         localeInput.setAllowedValues( avs );

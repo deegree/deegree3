@@ -85,7 +85,8 @@ public class TestDataTableContentProviderTest {
         XMLAdapter adapter = new XMLAdapter(
                                              TestDataTableContentProviderTest.class.getResourceAsStream( "../templateWithTable.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        dataTableContentProvider.inspectInputParametersFromJrxml( inputs, adapter, parameters, handledParams );
+        dataTableContentProvider.inspectInputParametersFromJrxml( new HashMap<String, String>(), inputs, adapter,
+                                                                  parameters, handledParams );
 
         assertEquals( 0, parameters.size() );
 
