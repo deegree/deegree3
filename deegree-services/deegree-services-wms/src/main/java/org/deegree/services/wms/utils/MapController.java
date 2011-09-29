@@ -128,10 +128,7 @@ public class MapController {
         envelope = envelope == null ? fac.createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 ) : envelope;
         try {
             envelope = new GeometryTransformer( crs ).transform( envelope );
-        } catch ( TransformationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( UnknownCRSException e ) {
+        } catch ( Throwable e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -251,10 +248,7 @@ public class MapController {
             originalHeight = -1;
             // TODO how to use this and also use the buffered images?
             // service.paintMap( g, gm, new LinkedList<String>() );
-        } catch ( MissingDimensionValue e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( InvalidDimensionValue e ) {
+        } catch ( Throwable e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

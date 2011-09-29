@@ -264,7 +264,8 @@ public class MapService {
     /**
      * Empty map service with an empty root layer.
      */
-    public MapService() {
+    public MapService( DeegreeWorkspace workspace ) {
+        this.registry = new StyleRegistry( workspace );
         layers = new HashMap<String, Layer>();
         root = new EmptyLayer( this, null, "Root Layer", null );
     }

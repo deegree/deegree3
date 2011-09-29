@@ -363,7 +363,6 @@ public class DeegreeWorkspace {
      * @param c
      * @return null, if no such manager was loaded
      */
-    @SuppressWarnings("unchecked")
     public <T extends ResourceManager> T getSubsystemManager( Class<T> c ) {
         return (T) managerMap.get( c );
     }
