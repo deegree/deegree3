@@ -36,6 +36,8 @@
 
 package org.deegree.feature.persistence.remotewfs;
 
+import java.net.URL;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -46,13 +48,20 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.remotewfs.jaxb.RemoteWFSFeatureStoreConfig;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
+import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
+import org.deegree.protocol.wfs.client.WFSClient;
+import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.metadata.WFSFeatureType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * {@link FeatureStore} implementation that accesses a remote WFS instance.
+ * {@link FeatureStore} implementation that is backed by a (remote) WFS instance.
  * 
  * @see FeatureStore
  * 
@@ -63,49 +72,61 @@ import org.deegree.geometry.Envelope;
  */
 public class RemoteWFSFeatureStore implements FeatureStore {
 
-    private final String url;
+    private static final Logger LOG = LoggerFactory.getLogger( RemoteWFSFeatureStore.class );
+
+    private final RemoteWFSFeatureStoreConfig config;
+
+    private WFSClient client;
+
+    private AppSchema appSchema;
 
     /**
      * Creates a new {@link RemoteWFSFeatureStore} for the given capabilities URL.
      * 
-     * @param url
-     *            WFS capabilities URL, must not be <code>null</code>
-     * @throws FeatureStoreException
+     * @param config
+     *            config, must not be <code>null</code>
      */
-    RemoteWFSFeatureStore( String url ) throws FeatureStoreException {
-        this.url = url;
+    RemoteWFSFeatureStore( RemoteWFSFeatureStoreConfig config ) {
+        this.config = config;
     }
 
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        // TODO Auto-generated method stub
-        
+        try {
+            LOG.info( "Connecting to " + config.getCapabilitiesURL() + "..." );
+            this.client = new WFSClient( new URL( config.getCapabilitiesURL() ) );
+            this.appSchema = client.getAppSchema();
+            LOG.info( "Ok." );
+        } catch ( Exception e ) {
+            LOG.info( "Error: " + e.getMessage() );
+            throw new ResourceInitException( "Error connecting to WFS: " + e.getMessage(), e );
+        }
     }
 
     @Override
     public void destroy() {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
     public boolean isAvailable() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public AppSchema getSchema() {
-        // TODO Auto-generated method stub
-        return null;
+        return appSchema;
     }
 
     @Override
     public Envelope getEnvelope( QName ftName )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        WFSFeatureType ftMetadata = client.getFeatureType( ftName );
+        if ( ftMetadata == null ) {
+            return null;
+        }
+        return ftMetadata.getWGS84BoundingBox();
     }
 
     @Override
@@ -118,22 +139,23 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     @Override
     public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
+
+        TypeName[] typeNames = query.getTypeNames();
+        Filter filter = query.getFilter();
+        int maxFeatures = query.getMaxFeatures();
         return null;
     }
 
     @Override
     public FeatureInputStream query( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public int queryHits( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new UnsupportedOperationException( "RemoteWFSFeatureStore doesn't implement #queryHits() (yet)." );
     }
 
     @Override
@@ -149,21 +171,18 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     @Override
     public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "RemoteWFSFeatureStore doesn't implement #getObjectById() (yet)." );
     }
 
     @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "RemoteWFSFeatureStore doesn't implement #acquireTransaction() (yet)." );
     }
 
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "RemoteWFSFeatureStore doesn't implement #getLockManager() (yet)." );
     }
 }

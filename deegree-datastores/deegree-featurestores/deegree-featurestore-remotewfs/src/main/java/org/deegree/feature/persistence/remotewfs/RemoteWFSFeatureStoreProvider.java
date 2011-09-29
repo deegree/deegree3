@@ -45,7 +45,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.remotewfs.jaxb.RemoteWFSFeatureStoreConfig;
 import org.slf4j.Logger;
@@ -91,13 +90,8 @@ public class RemoteWFSFeatureStoreProvider implements FeatureStoreProvider {
                                                                                            CONFIG_SCHEMA, configURL,
                                                                                            workspace );
 
-            // TODO
-            fs = new RemoteWFSFeatureStore( null );
+            fs = new RemoteWFSFeatureStore( config );
         } catch ( JAXBException e ) {
-            String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new ResourceInitException( msg, e );
-        } catch ( FeatureStoreException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
             throw new ResourceInitException( msg, e );

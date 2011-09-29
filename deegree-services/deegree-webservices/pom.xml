@@ -178,6 +178,11 @@
       <artifactId>deegree-featurestore-simplesql</artifactId>
       <version>3.1-rc2-SNAPSHOT</version>
     </dependency>
+	<dependency>
+		<groupId>org.deegree</groupId>
+		<artifactId>deegree-featurestore-remotewfs</artifactId>
+		<version>3.1-rc2-SNAPSHOT</version>
+	</dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-iso</artifactId>
