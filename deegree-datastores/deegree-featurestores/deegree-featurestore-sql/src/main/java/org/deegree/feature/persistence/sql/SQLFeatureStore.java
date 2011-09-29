@@ -697,7 +697,7 @@ public class SQLFeatureStore implements FeatureStore {
                         sql.append( " WHERE " );
                         sql.append( wb.getWhere().getSQL() );
                     }
-                    sql.append( ") AS idcolumns" );
+                    sql.append( ')' );
                 }
                 LOG.debug( "SQL: {}", sql );
                 long begin = System.currentTimeMillis();
