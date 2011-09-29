@@ -67,6 +67,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -269,19 +270,13 @@ public class ButtonListener implements ActionListener {
 
                             try {
                                 env = new GeometryTransformer( crs ).transform( env );
-                            } catch ( IllegalArgumentException e1 ) {
-                                // TODO Auto-generated catch block
-                                e1.printStackTrace();
-                            } catch ( TransformationException e1 ) {
-                                // TODO Auto-generated catch block
-                                e1.printStackTrace();
-                            } catch ( UnknownCRSException e1 ) {
+                            } catch ( Throwable e1 ) {
                                 // TODO Auto-generated catch block
                                 e1.printStackTrace();
                             }
 
                             if ( this.state.service == null ) {
-                                this.state.service = new MapService();
+                                this.state.service = new MapService( state.workspace );
                             }
                             Layer root = this.state.service.getRootLayer();
                             root.setSrs( Collections.singleton( env.getCoordinateSystem() ) );
@@ -322,7 +317,7 @@ public class ButtonListener implements ActionListener {
                 DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
                 this.state.conModel.getDialogModel().createNodes( root );
-                this.state.optionDialog = new OptionDialog( this.state.conModel.getView(), root );
+                this.state.optionDialog = new OptionDialog( this.state.conModel.getView().getParent(), root );
                 this.state.optionDialog.getButtonPanel().addListeners( new ButtonListener( this.state ) );
                 this.state.optionNavPanel = this.state.optionDialog.getNavigationPanel();
                 this.state.optionSettPanel = this.state.optionDialog.getSettingsPanel();
@@ -344,9 +339,10 @@ public class ButtonListener implements ActionListener {
                 Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                 List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                 supportedOpenFiles.add( supportedFiles );
-                FileChooser fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView(), true );
+                FileChooser fileChooser = new FileChooser( supportedOpenFiles,
+                                                           this.state.conModel.getView().getParent(), true );
                 this.state.chosenFile = fileChooser.getOpenPath();
-                fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView(), false );
+                fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView().getParent(), false );
                 File saveFile = fileChooser.getSaveFile();
                 if ( this.state.chosenFile != null && saveFile != null ) {
                     XMLStreamReader reader = null;
@@ -400,7 +396,8 @@ public class ButtonListener implements ActionListener {
                 Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                 List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                 supportedOpenFiles.add( supportedFiles );
-                FileChooser fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView(), true );
+                FileChooser fileChooser = new FileChooser( supportedOpenFiles,
+                                                           this.state.conModel.getView().getParent(), true );
                 this.state.chosenFile = fileChooser.getOpenPath();
                 if ( this.state.chosenFile != null ) {
                     this.state.initFootprintScene( this.state.chosenFile );
@@ -413,11 +410,12 @@ public class ButtonListener implements ActionListener {
                 Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                 List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                 supportedOpenFiles.add( supportedFiles );
-                FileChooser fileChooser = new FileChooser( supportedOpenFiles, this.state.conModel.getView(), true );
+                FileChooser fileChooser = new FileChooser( supportedOpenFiles,
+                                                           this.state.conModel.getView().getParent(), true );
                 String fileChoosed = fileChooser.getOpenPath();
                 if ( fileChoosed != null ) {
                     if ( this.state.service == null ) {
-                        this.state.service = new MapService();
+                        this.state.service = new MapService( state.workspace );
                     }
 
                     try {
@@ -460,7 +458,7 @@ public class ButtonListener implements ActionListener {
 
             } else if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_OPEN_WMS_LAYER" ) ) ) {
 
-                this.state.wmsStartDialog = new OpenWMS( this.state.conModel.getView() );
+                this.state.wmsStartDialog = new OpenWMS( this.state.conModel.getView().getParent() );
                 this.state.wmsStartDialog.addListeners( new ButtonListener( this.state ) );
                 this.state.wmsStartDialog.setVisible( true );
 

@@ -36,12 +36,18 @@
 
 package org.deegree.tools.crs.georeferencing;
 
+import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
+
 import java.io.IOException;
+
+import javax.swing.JFrame;
 
 import org.deegree.commons.annotations.Tool;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.application.Controller;
+import org.deegree.tools.crs.georeferencing.communication.DefaultGRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
+import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 
 /**
  * 
@@ -63,11 +69,18 @@ public class GRViewer {
                             throws IOException {
         ApplicationState state = new ApplicationState();
         state.systemExitOnClose = true;
-        GRViewerGUI gui = new GRViewerGUI( state );
+
+        JFrame frame = new JFrame( get( "WINDOW_TITLE" ) );
+        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        frame.setMinimumSize( GUIConstants.FRAME_DIMENSION );
+        frame.setPreferredSize( GUIConstants.FRAME_DIMENSION );
+        frame.pack();
+
+        GRViewerGUI gui = new DefaultGRViewerGUI( state, frame.getContentPane(), frame, frame.getRootPane(), frame );
 
         new Controller( gui, state );
 
-        gui.setVisible( true );
+        frame.setVisible( true );
 
     }
 

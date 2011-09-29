@@ -147,7 +147,6 @@ public class Controller {
             String name = method.getName();
             if ( name.startsWith( "remove" ) && name.endsWith( "Listener" ) ) {
 
-                @SuppressWarnings("unchecked")
                 Class<EventListener>[] params = (Class<EventListener>[]) method.getParameterTypes();
                 if ( params.length == 1 ) {
                     EventListener[] listeners = null;

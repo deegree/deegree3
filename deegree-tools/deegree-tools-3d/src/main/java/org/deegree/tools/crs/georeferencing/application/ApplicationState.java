@@ -49,15 +49,16 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.vecmath.Point2d;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -154,7 +155,18 @@ public class ApplicationState {
     public ActionListener transformationListener;
 
     public boolean systemExitOnClose;
-    
+
+    public DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+
+    public ApplicationState() {
+        try {
+            workspace.initAll();
+        } catch ( ResourceInitException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Removes sample points in panels and the table.
      * 
@@ -226,7 +238,7 @@ public class ApplicationState {
         this.conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
 
         this.mouseFootprint = new FootprintMouseModel();
-        List<WorldRenderableObject> rese = File3dImporter.open( this.conModel.getView(), filePath );
+        List<WorldRenderableObject> rese = File3dImporter.open( this.conModel.getView().getParent(), filePath );
         this.sourceCRS = null;
         for ( WorldRenderableObject res : rese ) {
             this.sourceCRS = res.getBbox().getCoordinateSystem();
@@ -244,9 +256,17 @@ public class ApplicationState {
                 for ( int i = 0; i < fs.length; i += 3 ) {
                     ps.add( fac.createPoint( null, fs[i], fs[i + 1], null ) );
                 }
-                MultiPoint mp = fac.createMultiPoint( null, null, ps );
-                LineString hull = (LineString) mp.getConvexHull();
-                Points pts = hull.getControlPoints();
+                Points pts = new PointsList( ps );
+
+                // whyever I put the convex hull stuff in here, that was probably nonsense
+                // MultiPoint mp = fac.createMultiPoint( null, null, ps );
+                // Geometry hull = mp.getConvexHull();
+                // Points pts;
+                // if ( hull instanceof Curve ) {
+                // pts = ( (Curve) hull ).getControlPoints();
+                // } else {
+                // pts = ( (Surface) hull ).getExteriorRingCoordinates();
+                // }
                 float[] a = new float[pts.size() * 2 + 2];
                 int idx = 0;
                 for ( Point p : pts ) {
