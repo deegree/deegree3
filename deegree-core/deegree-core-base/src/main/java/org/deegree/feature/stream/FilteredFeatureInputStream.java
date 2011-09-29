@@ -140,6 +140,7 @@ public class FilteredFeatureInputStream implements FeatureInputStream {
         for ( Feature f : this ) {
             i++;
         }
+        close();
         return i;
     }
 }

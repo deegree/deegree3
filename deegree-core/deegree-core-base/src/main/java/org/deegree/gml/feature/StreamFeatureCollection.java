@@ -282,6 +282,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
         for ( Feature f : this ) {
             i++;
         }
+        close();
         return i;
     }
 }

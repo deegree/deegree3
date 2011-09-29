@@ -80,6 +80,7 @@ public class MemoryFeatureInputStream implements FeatureInputStream {
 
     @Override
     public int count() {
+        close();
         return fc.size();
     }
 }
