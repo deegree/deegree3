@@ -161,7 +161,7 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
                                                                                                        + "}']/jasper:reportElement",
                                                                                JrxmlUtils.nsContext ) );
                     if ( imgElement != null ) {
-                        if ( isMapParameter( parameterName ) && parameterName.endsWith( SUFFIXES.MAP_SUFFIX.text ) ) {
+                        if ( parameterName.endsWith( SUFFIXES.MAP_SUFFIX.text ) ) {
 
                             if ( !mapIds.containsKey( mapId ) ) {
                                 int width = jrxmlAdapter.getRequiredNodeAsInteger( imgElement, new XPath( "@width",

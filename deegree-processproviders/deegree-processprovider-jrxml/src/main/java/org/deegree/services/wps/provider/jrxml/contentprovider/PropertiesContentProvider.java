@@ -86,15 +86,27 @@ public class PropertiesContentProvider extends AbstractJrxmlContentProvider {
                                                  List<JAXBElement<? extends ProcessletInputDefinition>> inputs,
                                                  XMLAdapter jrxmlAdapter, Map<String, String> parameters,
                                                  List<String> handledParameters ) {
-        LiteralInputDefinition localeInput = getInputDefinition( parameterDescriptions );
 
-        inputs.add( new JAXBElement<LiteralInputDefinition>( new QName( "ProcessInput" ), LiteralInputDefinition.class,
-                                                             localeInput ) );
+        if ( !containsLanguageInput( inputs ) ) {
+            LiteralInputDefinition localeInput = getInputDefinition( parameterDescriptions );
+
+            inputs.add( new JAXBElement<LiteralInputDefinition>( new QName( "ProcessInput" ),
+                                                                 LiteralInputDefinition.class, localeInput ) );
+        }
         for ( String key : parameters.keySet() ) {
             if ( key.startsWith( resourceBundle.getPrefix() ) ) {
                 handledParameters.add( key );
             }
         }
+    }
+
+    private boolean containsLanguageInput( List<JAXBElement<? extends ProcessletInputDefinition>> inputs ) {
+        for ( JAXBElement<? extends ProcessletInputDefinition> input : inputs ) {
+            if ( PROPERTYNAME.equals( input.getValue().getIdentifier().getValue() ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     LiteralInputDefinition getInputDefinition( Map<String, ParameterDescription> parameterDescriptions ) {
