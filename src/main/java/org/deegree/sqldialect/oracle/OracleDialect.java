@@ -257,4 +257,9 @@ public class OracleDialect implements SQLDialect {
         else
             return md.getColumns( null, schema, table, null );
     }
+
+    @Override
+    public boolean requiresTransactionForCursorMode() {
+        return false;
+    }
 }
