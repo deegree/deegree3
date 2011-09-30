@@ -3,7 +3,7 @@
   xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2"
   xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   version="1.1.0" service="WFS">
-  <wfs:Insert handle="insert" idgen="UseExisting" inputFormat="text/xml; subtype=gml/3.2.1">
+  <wfs:Insert handle="insert" idgen="GenerateNew" inputFormat="text/xml; subtype=gml/3.2.1">
     <gml:FeatureCollection gml:id="WFS_INSERT">
       <gml:featureMember>
         <ad:Address gml:id="NL.KAD.BAG.0532200000000003">
