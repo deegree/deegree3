@@ -147,6 +147,10 @@ public class SQLFeatureStore implements FeatureStore {
 
     private static final Logger LOG = getLogger( SQLFeatureStore.class );
 
+    private static final int DEFAULT_FETCH_SIZE = 1000;
+
+    private static final int DEFAULT_CACHE_SIZE = 10000;
+
     private final SQLFeatureStoreJAXB config;
 
     private final URL configURL;
@@ -165,22 +169,22 @@ public class SQLFeatureStore implements FeatureStore {
 
     private final Map<Mapping, ParticleConverter<?>> particeMappingToConverter = new HashMap<Mapping, ParticleConverter<?>>();
 
-    // TODO make this configurable
-    private final FeatureStoreCache cache = new SimpleFeatureStoreCache( 10000 );
+    // TODO make caching configurable
+    private final FeatureStoreCache cache = new SimpleFeatureStoreCache( DEFAULT_CACHE_SIZE );
 
     private BBoxCache bboxCache;
 
     private final FeatureStoreGMLIdResolver resolver = new FeatureStoreGMLIdResolver( this );
-
-    // cache for feature type bounding boxes
-    // private final Map<FeatureType, Envelope> ftToBBox = Collections.synchronizedMap( new HashMap<FeatureType,
-    // Envelope>() );
 
     private Map<String, String> nsContext;
 
     private DefaultLockManager lockManager;
 
     private DeegreeWorkspace workspace;
+
+    private int fetchSize;
+
+    private Boolean readAutoCommit;
 
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
@@ -194,8 +198,14 @@ public class SQLFeatureStore implements FeatureStore {
         this.config = config;
         this.configURL = configURL;
         this.dialect = dialect;
-        this.jdbcConnId = config.getJDBCConnId();
+        this.jdbcConnId = config.getJDBCConnId().getValue();
         this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
+        fetchSize = config.getJDBCConnId().getFetchSize() != null ? config.getJDBCConnId().getFetchSize().intValue()
+                                                                 : DEFAULT_FETCH_SIZE;
+        LOG.debug( "Fetch size: " + fetchSize );
+        readAutoCommit = config.getJDBCConnId().isReadAutoCommit() != null ? config.getJDBCConnId().isReadAutoCommit()
+                                                                          : false;
+        LOG.debug( "Read auto commit: " + readAutoCommit );
     }
 
     @Override
@@ -778,8 +788,6 @@ public class SQLFeatureStore implements FeatureStore {
             }
 
             begin = System.currentTimeMillis();
-
-            stmt.setFetchSize( 1 );
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             rs.next();
@@ -1082,9 +1090,11 @@ public class SQLFeatureStore implements FeatureStore {
 
     protected Connection getConnection()
                             throws SQLException {
+
         Connection conn = ConnectionManager.getConnection( getConnId() );
-        // TODO where to put this?
-        conn.setAutoCommit( false );
+        // NOTE: PostgreSQL requires autocommit=false for cursors to work:
+        // http://postgresql.1045698.n5.nabble.com/BUG-3383-Postmaster-Service-Problem-td2123537.html
+        conn.setAutoCommit( readAutoCommit );
         return conn;
     }
 
@@ -1208,9 +1218,7 @@ public class SQLFeatureStore implements FeatureStore {
             // }
 
             begin = System.currentTimeMillis();
-
-            // TODO make this configurable?
-            stmt.setFetchSize( 1 );
+            stmt.setFetchSize( fetchSize );
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
@@ -1324,9 +1332,7 @@ public class SQLFeatureStore implements FeatureStore {
             }
 
             begin = System.currentTimeMillis();
-
-            // TODO make this configurable?
-            stmt.setFetchSize( 1 );
+            stmt.setFetchSize( fetchSize );
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 

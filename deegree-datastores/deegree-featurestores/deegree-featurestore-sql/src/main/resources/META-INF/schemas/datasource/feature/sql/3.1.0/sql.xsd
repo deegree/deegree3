@@ -20,7 +20,16 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="JDBCConnId" type="string" />
+        <element name="JDBCConnId">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="fetchSize" type="nonNegativeInteger" default="1000" />
+                <attribute name="readAutoCommit" type="boolean" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
         <element name="DisablePostFiltering" minOccurs="0">
           <complexType />
         </element>
@@ -34,7 +43,8 @@
                     <attribute name="srid" type="string" use="required" />
                     <attribute name="dim" use="required">
                       <annotation>
-                        <documentation>Dimensionality of the geometry coordinates</documentation>
+                        <documentation>Dimensionality of the geometry coordinates
+                        </documentation>
                       </annotation>
                       <simpleType>
                         <restriction base="NMTOKENS">
@@ -96,7 +106,8 @@
       </attribute>
       <attribute name="table" type="string" use="required">
         <annotation>
-          <documentation>Table that the feature type is mapped to</documentation>
+          <documentation>Table that the feature type is mapped to
+          </documentation>
         </annotation>
       </attribute>
     </complexType>
@@ -104,7 +115,8 @@
   <!-- === Feature id mapping and id generators === -->
   <element name="FIDMapping">
     <annotation>
-      <documentation>Defines the mapping of the feature id</documentation>
+      <documentation>Defines the mapping of the feature id
+      </documentation>
       <appinfo>
         <jaxb:class name="FIDMappingJAXB" />
       </appinfo>
@@ -127,7 +139,6 @@
       <attribute name="prefix" type="string" use="optional" />
     </complexType>
   </element>
-
   <element name="AbstractIDGenerator" abstract="true" type="sqlfs:AbstractIDGeneratorType" />
   <complexType name="AbstractIDGeneratorType" abstract="true">
     <sequence />
@@ -159,7 +170,8 @@
   <element name="AbstractProperty" type="sqlfs:AbstractPropertyType" abstract="true" />
   <complexType name="AbstractPropertyType" abstract="true">
     <annotation>
-      <documentation>Declaration of a property of a feature type.</documentation>
+      <documentation>Declaration of a property of a feature type.
+      </documentation>
       <appinfo>
         <jaxb:class name="AbstractPropertyJAXB" />
       </appinfo>
@@ -175,7 +187,8 @@
     </attribute>
     <attribute name="mapping" type="string" use="optional">
       <annotation>
-        <documentation>Mapping of the property (currently, this can only be the name of a column)</documentation>
+        <documentation>Mapping of the property (currently, this can only be the name of a column)
+        </documentation>
       </annotation>
     </attribute>
   </complexType>
@@ -183,7 +196,8 @@
   <element name="SimpleProperty" substitutionGroup="sqlfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Declaration of a simple property of a feature type.</documentation>
+        <documentation>Declaration of a simple property of a feature type.
+        </documentation>
         <appinfo>
           <jaxb:class name="SimplePropertyJAXB" />
         </appinfo>
@@ -204,7 +218,8 @@
   <element name="GeometryProperty" substitutionGroup="sqlfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Definition of a geometry-valued property of a feature type</documentation>
+        <documentation>Definition of a geometry-valued property of a feature type
+        </documentation>
         <appinfo>
           <jaxb:class name="GeometryPropertyJAXB" />
         </appinfo>
@@ -252,27 +267,32 @@
     <restriction base="string">
       <enumeration value="string">
         <annotation>
-          <documentation>String-valued property (=xs:string)</documentation>
+          <documentation>String-valued property (=xs:string)
+          </documentation>
         </annotation>
       </enumeration>
       <enumeration value="boolean">
         <annotation>
-          <documentation>Boolean-valued property (=xs:boolean)</documentation>
+          <documentation>Boolean-valued property (=xs:boolean)
+          </documentation>
         </annotation>
       </enumeration>
       <enumeration value="decimal">
         <annotation>
-          <documentation>Decimal-valued property (=xs:decimal)</documentation>
+          <documentation>Decimal-valued property (=xs:decimal)
+          </documentation>
         </annotation>
       </enumeration>
       <enumeration value="double">
         <annotation>
-          <documentation>Double-valued property (=xs:double)</documentation>
+          <documentation>Double-valued property (=xs:double)
+          </documentation>
         </annotation>
       </enumeration>
       <enumeration value="integer">
         <annotation>
-          <documentation>Integer-valued property (=xs:integer)</documentation>
+          <documentation>Integer-valued property (=xs:integer)
+          </documentation>
         </annotation>
       </enumeration>
       <enumeration value="date">
@@ -282,7 +302,8 @@
       </enumeration>
       <enumeration value="dateTime">
         <annotation>
-          <documentation>Date-valued property (=xs:dateTime)</documentation>
+          <documentation>Date-valued property (=xs:dateTime)
+          </documentation>
         </annotation>
       </enumeration>
       <enumeration value="time">
@@ -335,7 +356,8 @@
     </complexType> </element -->
   <element name="FeatureTypeMapping">
     <annotation>
-      <documentation>Defines the mapping of the feature type from the application schema</documentation>
+      <documentation>Defines the mapping of the feature type from the application schema
+      </documentation>
       <appinfo>
         <jaxb:class name="FeatureTypeMappingJAXB" />
       </appinfo>
@@ -347,12 +369,14 @@
       </sequence>
       <attribute name="name" type="QName" use="required">
         <annotation>
-          <documentation>Qualified name of the feature type</documentation>
+          <documentation>Qualified name of the feature type
+          </documentation>
         </annotation>
       </attribute>
       <attribute name="table" type="string" use="required">
         <annotation>
-          <documentation>(Root) table that the feature type is mapped to</documentation>
+          <documentation>(Root) table that the feature type is mapped to
+          </documentation>
         </annotation>
       </attribute>
     </complexType>
@@ -360,7 +384,8 @@
   <element name="AbstractParticle" abstract="true" type="sqlfs:AbstractParticleType" />
   <complexType name="AbstractParticleType">
     <annotation>
-      <documentation>Defines the mapping for a particle of a feature type.</documentation>
+      <documentation>Defines the mapping for a particle of a feature type.
+      </documentation>
       <appinfo>
         <jaxb:class name="AbstractParticleJAXB" />
       </appinfo>
@@ -371,14 +396,16 @@
     </sequence>
     <attribute name="path" type="string" use="required">
       <annotation>
-        <documentation>(Relative) XPath targeted by this mapping.</documentation>
+        <documentation>(Relative) XPath targeted by this mapping.
+        </documentation>
       </annotation>
     </attribute>
   </complexType>
   <element name="Primitive" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a primitive-valued particle.</documentation>
+        <documentation>Defines the mapping for a primitive-valued particle.
+        </documentation>
         <appinfo>
           <jaxb:class name="PrimitiveParticleJAXB" />
         </appinfo>
@@ -397,7 +424,8 @@
   <element name="Geometry" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a geometry particle.</documentation>
+        <documentation>Defines the mapping for a geometry particle.
+        </documentation>
         <appinfo>
           <jaxb:class name="GeometryParticleJAXB" />
         </appinfo>
@@ -416,7 +444,8 @@
   <element name="Feature" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a feature particle</documentation>
+        <documentation>Defines the mapping for a feature particle
+        </documentation>
         <appinfo>
           <jaxb:class name="FeatureParticleJAXB" />
         </appinfo>
@@ -433,7 +462,8 @@
   <element name="Complex" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a complex particle</documentation>
+        <documentation>Defines the mapping for a complex particle
+        </documentation>
         <appinfo>
           <jaxb:class name="ComplexParticleJAXB" />
         </appinfo>
@@ -464,7 +494,8 @@
   <element name="Join">
     <complexType>
       <annotation>
-        <documentation>Defines a change in the table context.</documentation>
+        <documentation>Defines a change in the table context.
+        </documentation>
       </annotation>
       <attribute name="table" type="string" use="required">
         <annotation>
@@ -483,7 +514,8 @@
       </attribute>
       <attribute name="orderColumns" type="sqlfs:columnList" use="optional">
         <annotation>
-          <documentation>Columns in the target table used for sorting.</documentation>
+          <documentation>Columns in the target table used for sorting.
+          </documentation>
         </annotation>
       </attribute>
       <attribute name="numbered" type="boolean" use="optional">
@@ -498,7 +530,8 @@
   <element name="CustomConverter">
     <complexType>
       <annotation>
-        <documentation>Plugs-in a specialized DB-to-ObjectModel converter implementation</documentation>
+        <documentation>Plugs-in a specialized DB-to-ObjectModel converter implementation
+        </documentation>
         <appinfo>
           <jaxb:class name="CustomConverterJAXB" />
         </appinfo>
@@ -516,7 +549,8 @@
       </sequence>
       <attribute name="class" type="string" use="required">
         <annotation>
-          <documentation>Qualified name of the Java class</documentation>
+          <documentation>Qualified name of the Java class
+          </documentation>
         </annotation>
       </attribute>
     </complexType>

@@ -95,17 +95,17 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
             SQLFeatureStoreJAXB cfg = (SQLFeatureStoreJAXB) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
                                                                                   configURL, workspace );
             ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            Type connType = mgr.getType( cfg.getJDBCConnId() );
+            Type connType = mgr.getType( cfg.getJDBCConnId().getValue() );
             if ( connType == null ) {
                 throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId() + "' defined." );
             }
             LOG.debug( "Connection type is {}.", connType );
 
             SQLDialectManager dialectMgr = workspace.getSubsystemManager( SQLDialectManager.class );
-            if (dialectMgr == null) {
-                throw new ResourceInitException ("SQLDialectManager not found in workspace / classpath.");
+            if ( dialectMgr == null ) {
+                 throw new ResourceInitException( "SQLDialectManager not found in workspace / classpath." );
             }
-            SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId() );
+            SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId().getValue() );
             return new SQLFeatureStore( cfg, configURL, dialect );
         } catch ( JAXBException e ) {
             LOG.trace( "Stack trace: ", e );
