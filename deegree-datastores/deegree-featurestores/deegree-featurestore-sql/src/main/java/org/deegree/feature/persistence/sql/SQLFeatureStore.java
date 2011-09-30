@@ -204,7 +204,7 @@ public class SQLFeatureStore implements FeatureStore {
                                                                  : DEFAULT_FETCH_SIZE;
         LOG.debug( "Fetch size: " + fetchSize );
         readAutoCommit = config.getJDBCConnId().isReadAutoCommit() != null ? config.getJDBCConnId().isReadAutoCommit()
-                                                                          : false;
+                                                                          : !dialect.requiresTransactionForCursorMode();
         LOG.debug( "Read auto commit: " + readAutoCommit );
     }
 
@@ -1090,10 +1090,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     protected Connection getConnection()
                             throws SQLException {
-
         Connection conn = ConnectionManager.getConnection( getConnId() );
-        // NOTE: PostgreSQL requires autocommit=false for cursors to work:
-        // http://postgresql.1045698.n5.nabble.com/BUG-3383-Postmaster-Service-Problem-td2123537.html
         conn.setAutoCommit( readAutoCommit );
         return conn;
     }
