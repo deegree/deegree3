@@ -190,4 +190,10 @@ public class PointsList implements Points {
     public Object clone() {
         return new PointsList( new ArrayList<Point>( points ) );
     }
+
+    @Override
+    public String toString() {
+        return "Points list: " + points;
+    }
+
 }
