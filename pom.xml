@@ -37,11 +37,6 @@
       <id>deegree-snapshots</id>
       <url>http://artefacts.deegree.org/libs-snapshots-local</url>
     </snapshotRepository>
-    <site>
-      <id>deegree-website</id>
-      <name>deegree 3 Maven Modules Website</name>
-      <url>scp://web.lat-lon.de/var/www/apidoc.deegree.org/${project.version}/</url>
-    </site>
   </distributionManagement>
 
   <pluginRepositories>
@@ -93,7 +88,7 @@
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <version>1.11</version>
+          <version>1.10</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -237,10 +232,22 @@
           </plugin>
         </plugins>
       </build>
+      <distributionManagement>
+        <repository>
+          <id>deegree-releases</id>
+          <url>http://artefacts.deegree.org/libs-releases-local</url>
+        </repository>
+        <snapshotRepository>
+          <id>deegree-snapshots</id>
+          <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+        </snapshotRepository>
+        <site>
+          <id>deegree-website</id>
+          <name>deegree 3 Maven Modules Website</name>
+          <url>scp://web.lat-lon.de/var/www/apidoc.deegree.org/${project.version}/</url>
+        </site>
+      </distributionManagement>
     </profile>
   </profiles>
-
-  <!-- <dependencies> <dependency> <groupId>org.apache.maven.wagon</groupId>
-    <artifactId>wagon-ssh</artifactId> <version>1.0</version> </dependency> </dependencies> -->
 
 </project>
