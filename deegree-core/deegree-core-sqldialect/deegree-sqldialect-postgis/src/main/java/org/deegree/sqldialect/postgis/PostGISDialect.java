@@ -230,4 +230,12 @@ public class PostGISDialect implements SQLDialect {
         String table = qTable.getTable();
         return md.getColumns( null, schema.toLowerCase(), table.toLowerCase(), null );
     }
+
+    /**
+     * See http://postgresql.1045698.n5.nabble.com/BUG-3383-Postmaster-Service-Problem-td2123537.html.
+     */
+    @Override
+    public boolean requiresTransactionForCursorMode() {
+        return true;
+    }
 }

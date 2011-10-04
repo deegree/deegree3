@@ -132,6 +132,7 @@ public class TransactionManager {
 
         try {
             Connection conn = fs.getConnection();
+            conn.setAutoCommit( false );
             this.activeTransaction = new SQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );

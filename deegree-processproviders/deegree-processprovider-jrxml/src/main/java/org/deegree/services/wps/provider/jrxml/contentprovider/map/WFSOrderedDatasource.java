@@ -146,8 +146,10 @@ class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
             throw new ProcessletException( msg );
         } finally {
             try {
-                reader.close();
-                response.close();
+                if ( reader != null )
+                    reader.close();
+                if ( response != null )
+                    response.close();
             } catch ( Exception e ) {
                 LOG.info( "Reader/Response could not be closed: " + e.getMessage() );
             }

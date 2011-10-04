@@ -11,7 +11,7 @@
   </annotation>
   <element name="RemoteWFSFeatureStore">
     <annotation>
-      <documentation>FeatureStore that accesses a WFS instance</documentation>
+      <documentation>FeatureStore that accesses a WFS instance via HTTP</documentation>
       <appinfo>
         <jaxb:class name="RemoteWFSFeatureStoreConfig" />
       </appinfo>

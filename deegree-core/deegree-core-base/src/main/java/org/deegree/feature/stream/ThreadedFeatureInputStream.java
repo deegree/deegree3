@@ -115,6 +115,7 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
         for ( Feature f : this ) {
             i++;
         }
+        close();
         return i;
     }
 

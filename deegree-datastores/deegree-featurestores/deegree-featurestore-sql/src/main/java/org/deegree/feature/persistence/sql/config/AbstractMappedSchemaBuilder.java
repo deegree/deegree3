@@ -91,7 +91,7 @@ public class AbstractMappedSchemaBuilder {
     public static MappedAppSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect )
                             throws SQLException, FeatureStoreException {
         if ( config.getGMLSchema() == null || config.getGMLSchema().isEmpty() ) {
-            MappedSchemaBuilderTable builder = new MappedSchemaBuilderTable( config.getJDBCConnId(),
+            MappedSchemaBuilderTable builder = new MappedSchemaBuilderTable( config.getJDBCConnId().getValue(),
                                                                              config.getFeatureType(), dialect );
             return builder.getMappedSchema();
         }
@@ -108,7 +108,7 @@ public class AbstractMappedSchemaBuilder {
     protected IDGenerator buildGenerator( FIDMappingJAXB fidMappingConfig ) {
 
         AbstractIDGeneratorType config = null;
-        if ( fidMappingConfig != null && fidMappingConfig.getAbstractIDGenerator() != null) {
+        if ( fidMappingConfig != null && fidMappingConfig.getAbstractIDGenerator() != null ) {
             config = fidMappingConfig.getAbstractIDGenerator().getValue();
         }
         if ( config == null || config instanceof AutoIdGenerator ) {

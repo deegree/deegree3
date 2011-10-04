@@ -149,29 +149,35 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
         // * wmsXYZ_legend -> as imgage parameter
         // * wmsXYZ_layerList -> as frame key
         // where XYZ is a string which is the identifier of the process parameter.
-        Map<String, Pair<Integer, Integer>> mapIds = new HashMap<String, Pair<Integer,Integer>>();
+        Map<String, Pair<Integer, Integer>> mapIds = new HashMap<String, Pair<Integer, Integer>>();
         for ( String parameterName : parameters.keySet() ) {
             if ( !handledParameters.contains( parameterName ) ) {
-                OMElement imgElement = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
-                                                                new XPath(
-                                                                           ".//jasper:image[jasper:imageExpression/text()='$P{"
-                                                                                                   + parameterName
-                                                                                                   + "}']/jasper:reportElement",
-                                                                           JrxmlUtils.nsContext ) );
-                if ( imgElement != null ) {
-                    if ( parameterName.endsWith( SUFFIXES.MAP_SUFFIX.text ) && parameterName.startsWith( PARAM_PREFIX ) ) {
-                        String mapId = parameterName.substring( PARAM_PREFIX.length(),
-                                                                parameterName.length()
-                                                                                        - SUFFIXES.MAP_SUFFIX.text.length() );
-                        if ( !mapIds.containsKey( mapId ) ) {
-                            int width = jrxmlAdapter.getRequiredNodeAsInteger( imgElement, new XPath("@width", nsContext) );
-                            int height = jrxmlAdapter.getRequiredNodeAsInteger( imgElement, new XPath("@height", nsContext) );
-                            mapIds.put( mapId, new Pair<Integer, Integer>( width, height ) );
+                if ( isMapParameter( parameterName ) ) {
+                    String mapId = getIdentifierFromParameter( parameterName );
+                    OMElement imgElement = jrxmlAdapter.getElement( jrxmlAdapter.getRootElement(),
+                                                                    new XPath(
+                                                                               ".//jasper:image[jasper:imageExpression/text()='$P{"
+                                                                                                       + parameterName
+                                                                                                       + "}']/jasper:reportElement",
+                                                                               JrxmlUtils.nsContext ) );
+                    if ( imgElement != null ) {
+                        if ( parameterName.endsWith( SUFFIXES.MAP_SUFFIX.text ) ) {
+
+                            if ( !mapIds.containsKey( mapId ) ) {
+                                int width = jrxmlAdapter.getRequiredNodeAsInteger( imgElement, new XPath( "@width",
+                                                                                                          nsContext ) );
+                                int height = jrxmlAdapter.getRequiredNodeAsInteger( imgElement, new XPath( "@height",
+                                                                                                           nsContext ) );
+                                mapIds.put( mapId, new Pair<Integer, Integer>( width, height ) );
+                            }
                         }
-                        // TODO: maybe a status information would be the better way?
-                        // remove used parameter
-                        handledParameters.add( parameterName );
                     }
+                    if ( !mapIds.containsKey( mapId ) ) {
+                        mapIds.put( mapId, null );
+                    }
+                    // TODO: maybe a status information would be the better way?
+                    // remove used parameter
+                    handledParameters.add( parameterName );
                 }
             }
         }
@@ -187,15 +193,36 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
             comp.setDefaultFormat( format );
             List<Metadata> metadata = comp.getMetadata();
             Metadata meta = new Metadata();
-            metadata.add( meta  );
+            metadata.add( meta );
             inputs.add( new JAXBElement<ComplexInputDefinition>( new QName( "ProcessInput" ),
                                                                  ComplexInputDefinition.class, comp ) );
         }
 
     }
 
+    private String getIdentifierFromParameter( String parameter ) {
+        if ( isMapParameter( parameter ) ) {
+            for ( SUFFIXES suf : SUFFIXES.values() ) {
+                if ( parameter.endsWith( suf.text ) ) {
+                    parameter = parameter.substring( PARAM_PREFIX.length(), parameter.length() - suf.text.length() );
+                }
+            }
+        }
+        return parameter;
+    }
+
     private String getParameterFromIdentifier( String mapId, SUFFIXES suffix ) {
         return PARAM_PREFIX + mapId + suffix.text;
+    }
+
+    private boolean isMapParameter( String imgParameter ) {
+        boolean hasSuffix = false;
+        for ( SUFFIXES suf : SUFFIXES.values() ) {
+            if ( imgParameter.endsWith( suf.text ) ) {
+                hasSuffix = true;
+            }
+        }
+        return hasSuffix && imgParameter.startsWith( PARAM_PREFIX );
     }
 
     @Override

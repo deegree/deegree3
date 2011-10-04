@@ -150,6 +150,7 @@ public class CombinedFeatureInputStream implements FeatureInputStream {
         for ( Feature f : this ) {
             i++;
         }
+        close();
         return i;
     }
 }

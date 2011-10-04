@@ -78,13 +78,14 @@ public class IteratorFeatureInputStream implements FeatureInputStream {
     public Iterator<Feature> iterator() {
         return featureIter;
     }
-    
+
     @Override
     public int count() {
         int i = 0;
         for ( Feature f : this ) {
             i++;
         }
+        close();
         return i;
-    }    
+    }
 }

@@ -118,7 +118,7 @@ public interface SQLDialect {
      * @return statement to determine the coordinate dimension, the srid and the geometry type of a given column (in
      *         this order)
      */
-    String geometryMetadata( QTableName qTable, String column, boolean isGeographical );        
+    String geometryMetadata( QTableName qTable, String column, boolean isGeographical );
 
     /**
      * Returns an {@link AbstractWhereBuilder} instance for the given parameters.
@@ -202,4 +202,11 @@ public interface SQLDialect {
 
     public ResultSet getTableColumnMetadata( DatabaseMetaData md, QTableName table )
                             throws SQLException;
+
+    /**
+     * Returns whether a transaction context is required for cursor mode to work.
+     * 
+     * @return <code>true</code>, if a transaction context is required, <code>false</code> otherwise
+     */
+    public boolean requiresTransactionForCursorMode();
 }
