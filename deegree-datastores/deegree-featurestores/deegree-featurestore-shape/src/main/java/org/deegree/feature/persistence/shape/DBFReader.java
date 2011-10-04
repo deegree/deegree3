@@ -293,6 +293,9 @@ public class DBFReader {
         if ( encoding == null ) {
             encoding = guess( bs );
         }
+        if ( encoding == null ) {
+            encoding = Charset.forName( "UTF-8" );
+        }
         return new String( bs, encoding );
     }
 
