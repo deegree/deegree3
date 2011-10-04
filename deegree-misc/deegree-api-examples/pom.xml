@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>
-    <version>3.1-rc3-SNAPSHOT</version>
+    <version>3.1-rc2-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1-rc3-SNAPSHOT</version>
+      <version>3.1-rc2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
