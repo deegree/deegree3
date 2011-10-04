@@ -35,15 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.listeners;
 
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.List;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.Feature;
+import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
@@ -133,6 +143,24 @@ public class Scene2DMouseListener extends MouseAdapter {
                     this.state.sceneValues.setEnvelopeGeoref( this.state.mapController.getCurrentEnvelope() );
                     GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                     GeoReferencedPoint g = (GeoReferencedPoint) this.state.sceneValues.getWorldPoint( geoReferencedPoint );
+                    Property p = new GenericProperty( state.geometryType, new DefaultPoint( null, state.targetCRS,
+                                                                                            null,
+                                                                                            new double[] { g.getX(),
+                                                                                                          g.getY() } ) );
+                    Feature f = state.pointsType.newFeature( "test", Collections.singletonList( p ), null, GML_31 );
+                    try {
+                        FeatureStoreTransaction ta = state.pointsStore.acquireTransaction();
+                        GenericFeatureCollection col = new GenericFeatureCollection();
+                        col.add( f );
+                        ta.performInsert( col, GENERATE_NEW );
+                        ta.commit();
+                        state.mapController.forceRepaint();
+                        this.state.conModel.getPanel().repaint();
+                        this.state.conModel.getFootPanel().repaint();
+                    } catch ( Throwable e ) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     this.state.rc = this.state.tablePanel.setCoords( g );
                     this.state.conModel.getPanel().setLastAbstractPoint( geoReferencedPoint, g, this.state.rc );
                     if ( isFirstNumber == false ) {

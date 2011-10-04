@@ -145,11 +145,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             this.worldPolygonList = polygonRing;
             polygonListTranslated = new ArrayList<Polygon>();
             pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
-            int sizeOfPoints = 0;
-            for ( Ring p : polygonRing ) {
-                sizeOfPoints += p.getControlPoints().size();
 
-            }
             for ( Ring ring : polygonRing ) {
                 int[] x2 = new int[ring.getControlPoints().size()];
                 int[] y2 = new int[ring.getControlPoints().size()];
@@ -251,8 +247,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
             FootprintPoint pi = new FootprintPoint( x, y );
             lastAbstractPoint = new Point4Values( pi, initialValue, pi, worldCoords, rc );
-
-            System.out.println( "[BuildingFootprintPanel] " + lastAbstractPoint );
         }
     }
 

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/georef"
+  xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.deegree.org/georef" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" />
+  <element name="GeoRefPoint" substitutionGroup="gml:_Feature">
+    <complexType>
+      <complexContent>
+        <extension base="gml:AbstractFeatureType">
+          <sequence>
+            <element name="geometry" minOccurs="0" type="gml:PointPropertyType" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+</schema>

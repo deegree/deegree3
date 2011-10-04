@@ -36,9 +36,9 @@
 
 package org.deegree.tools.crs.georeferencing;
 
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.FRAME_DIMENSION;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
-
-import java.io.IOException;
 
 import javax.swing.JFrame;
 
@@ -47,7 +47,6 @@ import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.application.Controller;
 import org.deegree.tools.crs.georeferencing.communication.DefaultGRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
-import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 
 /**
  * 
@@ -63,17 +62,15 @@ public class GRViewer {
 
     /**
      * @param args
-     * @throws IOException
      */
-    public static void main( String[] args )
-                            throws IOException {
+    public static void main( String[] args ) {
         ApplicationState state = new ApplicationState();
         state.systemExitOnClose = true;
 
         JFrame frame = new JFrame( get( "WINDOW_TITLE" ) );
-        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        frame.setMinimumSize( GUIConstants.FRAME_DIMENSION );
-        frame.setPreferredSize( GUIConstants.FRAME_DIMENSION );
+        frame.setDefaultCloseOperation( EXIT_ON_CLOSE );
+        frame.setMinimumSize( FRAME_DIMENSION );
+        frame.setPreferredSize( FRAME_DIMENSION );
         frame.pack();
 
         GRViewerGUI gui = new DefaultGRViewerGUI( state, frame.getContentPane(), frame, frame.getRootPane(), frame );

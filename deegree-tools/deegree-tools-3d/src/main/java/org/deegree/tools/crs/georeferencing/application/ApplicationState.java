@@ -36,13 +36,18 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import static java.awt.Cursor.getPredefinedCursor;
+import static org.deegree.services.wms.MapService.fillInheritedInformation;
 
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -51,9 +56,14 @@ import javax.vecmath.Point2d;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -63,7 +73,11 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+import org.deegree.services.jaxb.wms.RequestableLayer;
+import org.deegree.services.jaxb.wms.ScaleDenominatorsType;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.model.layers.FeatureLayer;
+import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.utils.MapController;
 import org.deegree.tools.crs.georeferencing.application.listeners.FootprintMouseListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseListener;
@@ -158,10 +172,64 @@ public class ApplicationState {
 
     public DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
 
+    public FeatureStore pointsStore;
+
+    public FeatureType pointsType;
+
+    public PropertyType geometryType;
+
     public ApplicationState() {
         try {
             workspace.initAll();
         } catch ( ResourceInitException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void setupPointsFeatureStore() {
+        try {
+            URL schemaUrl = ApplicationState.class.getResource( "/org/deegree/tools/crs/georeferencing/pointsschema.xsd" );
+            String cfg = "<MemoryFeatureStore configVersion=\"3.0.0\" xmlns=\"http://www.deegree.org/datasource/feature/memory\">"
+                         + "  <StorageCRS>"
+                         + targetCRS.getAlias()
+                         + "</StorageCRS>"
+                         + "  <NamespaceHint namespaceURI=\"app\" prefix=\"http://www.deegree.org/georef\" />"
+                         + "  <GMLSchema version=\"GML_31\">"
+                         + schemaUrl.toExternalForm()
+                         + "</GMLSchema></MemoryFeatureStore>";
+            FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
+
+            ResourceState<FeatureStore> state = mgr.getState( "pointsstore" );
+            if ( state != null ) {
+                mgr.deactivate( "pointsstore" );
+                mgr.deleteResource( "pointsstore" );
+            }
+
+            InputStream in = new ByteArrayInputStream( cfg.getBytes( "UTF-8" ) );
+            mgr.createResource( "pointsstore", in );
+            pointsStore = mgr.activate( "pointsstore" ).getResource();
+            pointsType = pointsStore.getSchema().getFeatureTypes()[0];
+            geometryType = pointsType.getPropertyDeclarations().get( 0 );
+            if ( service != null ) {
+                RequestableLayer lcfg = new RequestableLayer();
+                lcfg.setName( "points" );
+                lcfg.setTitle( "Points Layer" );
+                lcfg.setFeatureStoreId( "pointsstore" );
+                lcfg.setScaleDenominators( new ScaleDenominatorsType() );
+                try {
+                    FeatureLayer lay = new FeatureLayer( service, lcfg, service.getRootLayer(), workspace );
+                    Layer root = service.getRootLayer();
+                    root.addOrReplace( lay );
+                    service.layers.put( "points", lay );
+                    fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
+                    mapController.setLayers( new LinkedList<Layer>( service.getRootLayer().getChildren() ) );
+                } catch ( Throwable e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        } catch ( Throwable e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -196,6 +264,27 @@ public class ApplicationState {
         this.conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener( this ) );
         this.conModel.getPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener( this ) );
         this.conModel.getPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener( this ) );
+    }
+
+    public void setupMapService() {
+        service = new MapService( workspace );
+        RequestableLayer cfg = new RequestableLayer();
+        cfg.setName( "points" );
+        cfg.setTitle( "Points Layer" );
+        cfg.setFeatureStoreId( "pointsstore" );
+        try {
+            FeatureLayer lay = new FeatureLayer( service, cfg, service.getRootLayer(), workspace );
+            Layer root = service.getRootLayer();
+            root.addOrReplace( lay );
+            service.layers.put( "points", lay );
+            MapService.fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
+            if ( mapController != null ) {
+                mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
+            }
+        } catch ( Throwable e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -361,7 +450,6 @@ public class ApplicationState {
 
         int counter = 0;
         for ( Triple<Point4Values, Point4Values, PointResidual> p : this.mappedPoints ) {
-            System.out.println( "[Controller] before: " + p );
             Point4Values f = new Point4Values( p.first.getOldValue(), p.first.getInitialValue(), p.first.getNewValue(),
                                                p.first.getWorldCoords(), new RowColumn( counter,
                                                                                         p.first.getRc().getColumnX(),
@@ -373,7 +461,6 @@ public class ApplicationState {
             if ( p.third != null ) {
 
                 PointResidual r = new PointResidual( p.third.x, p.third.y );
-                System.out.println( "\n[Controller] after: " + s );
                 temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, r ) );
             } else {
                 temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, null ) );

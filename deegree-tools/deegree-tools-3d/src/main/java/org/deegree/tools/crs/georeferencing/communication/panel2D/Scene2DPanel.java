@@ -128,13 +128,13 @@ public class Scene2DPanel extends AbstractPanel2D {
             }
         }
 
-        if ( selectedPoints != null ) {
-            for ( Point4Values point : selectedPoints ) {
-                g2.fillOval( new Double( point.getNewValue().x ).intValue() - selectedPointSize,
-                             new Double( point.getNewValue().y ).intValue() - selectedPointSize, selectedPointSize * 2,
-                             selectedPointSize * 2 );
-            }
-        }
+//        if ( selectedPoints != null ) {
+//            for ( Point4Values point : selectedPoints ) {
+//                g2.fillOval( new Double( point.getNewValue().x ).intValue() - selectedPointSize,
+//                             new Double( point.getNewValue().y ).intValue() - selectedPointSize, selectedPointSize * 2,
+//                             selectedPointSize * 2 );
+//            }
+//        }
     }
 
     public Rectangle getImageDimension() {
@@ -167,7 +167,6 @@ public class Scene2DPanel extends AbstractPanel2D {
             GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
             lastAbstractPoint = new Point4Values( pi, initialValue, pi, worldCoords, rc );
         }
-
     }
 
     @Override
@@ -186,11 +185,6 @@ public class Scene2DPanel extends AbstractPanel2D {
             this.worldPolygonList = polygonRing;
             polygonListTranslated = new ArrayList<Polygon>();
 
-            int sizeOfPoints = 0;
-            for ( Ring p : polygonRing ) {
-                sizeOfPoints += p.getControlPoints().size();
-
-            }
             for ( Ring ring : polygonRing ) {
                 int[] x2 = new int[ring.getControlPoints().size()];
                 int[] y2 = new int[ring.getControlPoints().size()];

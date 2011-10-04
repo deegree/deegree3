@@ -44,7 +44,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.ImageObserver;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -67,13 +66,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStores;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLVersion;
@@ -276,7 +274,7 @@ public class ButtonListener implements ActionListener {
                             }
 
                             if ( this.state.service == null ) {
-                                this.state.service = new MapService( state.workspace );
+                                this.state.setupMapService();
                             }
                             Layer root = this.state.service.getRootLayer();
                             root.setSrs( Collections.singleton( env.getCoordinateSystem() ) );
@@ -290,6 +288,9 @@ public class ButtonListener implements ActionListener {
                             RemoteWMSLayer layer = new RemoteWMSLayer( this.state.service, store, "wms", "wms",
                                                                        this.state.service.getRootLayer() );
                             root.addOrReplace( layer );
+                            Layer p = root.getChild( "points" );
+                            root.getChildren().remove( p );
+                            root.getChildren().addLast( p );
                             this.state.service.layers.put( "wms", layer );
                             root.setBbox( env );
                             MapService.fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
@@ -303,6 +304,9 @@ public class ButtonListener implements ActionListener {
                             this.state.targetCRS = crs;
                             this.state.initGeoReferencingScene();
                             this.state.wmsParameter.setVisible( false );
+                            if ( state.pointsStore == null ) {
+                                state.setupPointsFeatureStore();
+                            }
                         } else {
                             new ErrorDialog( this.state.wmsParameter, ImageObserver.ERROR,
                                              "There is no Envelope for this request. " );
@@ -415,7 +419,7 @@ public class ButtonListener implements ActionListener {
                 String fileChoosed = fileChooser.getOpenPath();
                 if ( fileChoosed != null ) {
                     if ( this.state.service == null ) {
-                        this.state.service = new MapService( state.workspace );
+                        state.setupMapService();
                     }
 
                     try {
@@ -425,6 +429,9 @@ public class ButtonListener implements ActionListener {
                         Layer root = this.state.service.getRootLayer();
                         FeatureLayer layer = new FeatureLayer( this.state.service, "shape", "shape", root, fileChoosed );
                         root.addOrReplace( layer );
+                        Layer p = root.getChild( "points" );
+                        root.getChildren().remove( p );
+                        root.getChildren().addLast( p );
                         this.state.service.layers.put( "shape", layer );
                         Envelope bbox = layer.getDataStore().getEnvelope( null );
                         root.setBbox( layer.getBbox() );
@@ -443,13 +450,10 @@ public class ButtonListener implements ActionListener {
 
                         this.state.targetCRS = bbox.getCoordinateSystem();
                         this.state.initGeoReferencingScene();
-                    } catch ( FileNotFoundException e1 ) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    } catch ( IOException e1 ) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    } catch ( FeatureStoreException e1 ) {
+                        if ( state.pointsStore == null ) {
+                            state.setupPointsFeatureStore();
+                        }
+                    } catch ( Throwable e1 ) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }

@@ -41,8 +41,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,26 +144,6 @@ public abstract class AbstractPanel2D extends JPanel {
 
     public void removeAllFromSelectedPoints() {
         selectedPoints = new ArrayList<Point4Values>();
-    }
-
-    protected float roundFloat( float value ) {
-        BigDecimal b = new BigDecimal( value );
-        b = b.round( new MathContext( 2 ) );
-        return b.floatValue();
-    }
-
-    protected float roundDouble( double value ) {
-        BigDecimal b = new BigDecimal( value );
-        b = b.round( new MathContext( 2 ) );
-        return b.floatValue();
-    }
-
-    protected int roundInt( double value ) {
-        BigDecimal b = new BigDecimal( value );
-        b = b.round( new MathContext( 4 ) );
-        int i = b.intValue();
-
-        return i;
     }
 
     public abstract void updatePoints( Scene2DValues sceneValues );
