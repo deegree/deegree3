@@ -50,6 +50,7 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.TempFileManager;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
 import org.deegree.filter.function.FunctionManager;
@@ -112,7 +113,8 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class, SQLDialectManager.class };
+        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class, SQLDialectManager.class,
+                            CRSManager.class };
     }
 
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {
