@@ -37,13 +37,14 @@ package org.deegree.filter.spatial;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
-import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link SpatialOperator} that checks for the intersection of the two geometry operands' envelopes.
@@ -64,6 +65,8 @@ import org.deegree.geometry.Geometry;
  * @version $Revision:$, $Date:$
  */
 public class BBOX extends SpatialOperator {
+
+    private static final Logger LOG = LoggerFactory.getLogger( BBOX.class );
 
     private final Envelope param2;
 
@@ -114,18 +117,9 @@ public class BBOX extends SpatialOperator {
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-        // handle the BBOX-specific case that the property name can be empty
-        ValueReference propName = this.getPropName();
-        if ( propName == null ) {
-            if ( obj instanceof Feature ) {
-                GeometryPropertyType pt = ( (Feature) obj ).getType().getDefaultGeometryPropertyDeclaration();
-                if ( pt != null ) {
-                    propName = new ValueReference( pt.getName() );
-                }
-            }
-        }
-        if ( propName != null ) {
-            for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
+        Expression param1 = getParam1();
+        if ( param1 != null ) {
+            for ( TypedObjectNode paramValue : param1.evaluate( obj, xpathEvaluator ) ) {
                 Geometry param1Value = checkGeometryOrNull( paramValue );
                 if ( param1Value != null ) {
                     Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, param2 );
@@ -133,12 +127,15 @@ public class BBOX extends SpatialOperator {
                 }
             }
         } else if ( obj instanceof Feature ) {
+            // handle the case where the property name can be empty
             Feature f = (Feature) obj;
             if ( f.getGMLProperties() != null && f.getGMLProperties().getBoundedBy() != null ) {
                 Envelope transformedBBox = (Envelope) getCompatibleGeometry( f.getGMLProperties().getBoundedBy(),
                                                                              param2 );
                 return transformedBBox.intersects( f.getGMLProperties().getBoundedBy() );
             }
+        } else {
+            LOG.warn( "Evaluating BBOX on non-Feature object and property name not specified." );
         }
         return false;
     }
