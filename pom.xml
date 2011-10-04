@@ -93,7 +93,7 @@
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <version>1.10</version>
+          <version>1.11</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -240,7 +240,7 @@
     </profile>
   </profiles>
 
-  <!-- <dependencies> <dependency> <groupId>org.apache.maven.wagon</groupId> 
+  <!-- <dependencies> <dependency> <groupId>org.apache.maven.wagon</groupId>
     <artifactId>wagon-ssh</artifactId> <version>1.0</version> </dependency> </dependencies> -->
 
 </project>
