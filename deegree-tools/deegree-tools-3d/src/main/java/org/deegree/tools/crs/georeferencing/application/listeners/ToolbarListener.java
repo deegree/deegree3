@@ -81,6 +81,7 @@ public class ToolbarListener implements ActionListener {
         zoomToMaxExtent.addActionListener( this );
     }
 
+    @Override
     public void actionPerformed( ActionEvent e ) {
         Object src = e.getSource();
         if ( src == zoomToCoordinate ) {

@@ -41,7 +41,6 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
@@ -72,13 +71,7 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     public final static String SCENE2D_PANEL_NAME = "Scene2DPanel";
 
-    private List<Polygon> polygonList;
-
     private Rectangle imageDimension;
-
-    private List<Ring> worldPolygonList;
-
-    private ArrayList<Polygon> polygonListTranslated;
 
     ApplicationState state;
 
@@ -115,26 +108,6 @@ public class Scene2DPanel extends AbstractPanel2D {
                 state.mapController.paintMap( g2, state.previewing );
             }
         }
-
-        if ( lastAbstractPoint != null ) {
-            g2.fillOval( new Double( lastAbstractPoint.getNewValue().x ).intValue() - selectedPointSize,
-                         new Double( lastAbstractPoint.getNewValue().y ).intValue() - selectedPointSize,
-                         selectedPointSize * 2, selectedPointSize * 2 );
-        }
-
-        if ( polygonList != null ) {
-            for ( Polygon polygon : polygonList ) {
-                g2.drawPolygon( polygon );
-            }
-        }
-
-//        if ( selectedPoints != null ) {
-//            for ( Point4Values point : selectedPoints ) {
-//                g2.fillOval( new Double( point.getNewValue().x ).intValue() - selectedPointSize,
-//                             new Double( point.getNewValue().y ).intValue() - selectedPointSize, selectedPointSize * 2,
-//                             selectedPointSize * 2 );
-//            }
-//        }
     }
 
     public Rectangle getImageDimension() {
@@ -171,46 +144,13 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     @Override
     public void updatePoints( Scene2DValues sceneValues ) {
-        if ( worldPolygonList != null ) {
-
-            setPolygonList( worldPolygonList, sceneValues );
-        }
         updateSelectedPoints( sceneValues );
 
     }
 
     @Override
     public void setPolygonList( List<Ring> polygonRing, Scene2DValues sceneValues ) {
-        if ( polygonRing != null ) {
-            this.worldPolygonList = polygonRing;
-            polygonListTranslated = new ArrayList<Polygon>();
-
-            for ( Ring ring : polygonRing ) {
-                int[] x2 = new int[ring.getControlPoints().size()];
-                int[] y2 = new int[ring.getControlPoints().size()];
-                for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
-                    double x = ring.getControlPoints().getX( i );
-                    double y = ring.getControlPoints().getY( i );
-                    int[] p = sceneValues.getPixelCoord( new GeoReferencedPoint( x, y ) );
-                    x2[i] = new Double( p[0] ).intValue();
-                    y2[i] = new Double( p[1] ).intValue();
-
-                }
-                Polygon p = new Polygon( x2, y2, ring.getControlPoints().size() );
-                polygonListTranslated.add( p );
-
-            }
-
-            this.polygonList = polygonListTranslated;
-        } else {
-            this.polygonList = null;
-            this.worldPolygonList = null;
-        }
-
-    }
-
-    public List<Ring> getWorldPolygonList() {
-        return worldPolygonList;
+        // nothing to do
     }
 
 }

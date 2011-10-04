@@ -43,7 +43,6 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -155,8 +154,7 @@ public class Helmert4Transform extends AbstractTransformation {
     private double[] passPointsN_one;
 
     public Helmert4Transform( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                              Footprint footPrint, Scene2DValues sceneValues, ICRS targetCRS, final int order )
-                            throws UnknownCRSException {
+                              Footprint footPrint, Scene2DValues sceneValues, ICRS targetCRS, final int order ) {
         super( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, order );
 
         arraySize = this.getArraySize();
@@ -321,6 +319,7 @@ public class Helmert4Transform extends AbstractTransformation {
          */
         for ( Ring ring : footPrint.getWorldCoordinateRingList() ) {
             pointList = new ArrayList<Point>();
+            Point first = null;
             for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
                 double x = ring.getControlPoints().getX( i );
                 double y = ring.getControlPoints().getY( i );
@@ -331,8 +330,11 @@ public class Helmert4Transform extends AbstractTransformation {
                 double calculatedE_one = balancedPointE + ( a * newY_two ) + ( o * newX_two );
                 double calculatedN_one = balancedPointN + ( a * newX_two ) - ( o * newY_two );
                 pointList.add( geom.createPoint( "point", calculatedN_one, calculatedE_one, null ) );
-
+                if ( first == null ) {
+                    first = pointList.get( pointList.size() - 1 );
+                }
             }
+            pointList.add( first );
             Points points = new PointsList( pointList );
             transformedRingList.add( geom.createLinearRing( "ring", null, points ) );
 

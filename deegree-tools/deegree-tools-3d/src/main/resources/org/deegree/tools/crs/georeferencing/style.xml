@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<FeatureTypeStyle xmlns:app="http://www.deegree.org/georef" xmlns="http://www.opengis.net/se"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+  <Rule>
+    <ogc:Filter>
+      <ogc:Not>
+        <ogc:PropertyIsNull>
+          <ogc:PropertyName>app:point</ogc:PropertyName>
+        </ogc:PropertyIsNull>
+      </ogc:Not>
+    </ogc:Filter>
+    <PointSymbolizer>
+      <Geometry>
+        <ogc:PropertyName>app:point</ogc:PropertyName>
+      </Geometry>
+      <Graphic>
+        <Mark>
+          <WellKnownName>circle</WellKnownName>
+        </Mark>
+        <Size>5</Size>
+      </Graphic>
+    </PointSymbolizer>
+  </Rule>
+  <Rule>
+    <ogc:Filter>
+      <ogc:Not>
+        <ogc:PropertyIsNull>
+          <ogc:PropertyName>app:building</ogc:PropertyName>
+        </ogc:PropertyIsNull>
+      </ogc:Not>
+    </ogc:Filter>
+    <PolygonSymbolizer>
+      <Geometry>
+        <ogc:PropertyName>app:building</ogc:PropertyName>
+      </Geometry>
+      <Fill>
+        <SvgParameter name="fill">#ff0000</SvgParameter>
+      </Fill>
+      <Stroke>
+        <SvgParameter name="stroke">#000000</SvgParameter>
+      </Stroke>
+    </PolygonSymbolizer>
+  </Rule>
+</FeatureTypeStyle>

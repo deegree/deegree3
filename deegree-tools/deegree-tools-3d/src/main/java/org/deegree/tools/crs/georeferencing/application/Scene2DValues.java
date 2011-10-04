@@ -226,7 +226,7 @@ public class Scene2DValues {
      *            to compute the percentage of
      * @return a Point2d which holds the percentage of the abstractGRPoint
      */
-    private Point2d computePercentWorld( Envelope env, AbstractGRPoint abstractGRPoint ) {
+    private static Point2d computePercentWorld( Envelope env, AbstractGRPoint abstractGRPoint ) {
         double spanX = env.getSpan0();
         double spanY = env.getSpan1();
         double mathX = -env.getMin().get0();
@@ -246,7 +246,7 @@ public class Scene2DValues {
      *            to compute the percentage of
      * @return a Point2d which holds the percentage of the abstractGRPoint
      */
-    private Point2d computePercentPixel( Rectangle dimension, AbstractGRPoint abstractGRPoint ) {
+    private static Point2d computePercentPixel( Rectangle dimension, AbstractGRPoint abstractGRPoint ) {
         double spanX = dimension.width;
         double spanY = dimension.height;
         return new Point2d( abstractGRPoint.x / spanX, abstractGRPoint.y / spanY );

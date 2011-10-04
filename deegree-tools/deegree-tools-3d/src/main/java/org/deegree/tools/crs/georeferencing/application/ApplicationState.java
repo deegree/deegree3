@@ -53,13 +53,15 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.vecmath.Point2d;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.types.FeatureType;
@@ -79,6 +81,8 @@ import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.utils.MapController;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.se.unevaluated.Style;
 import org.deegree.tools.crs.georeferencing.application.listeners.FootprintMouseListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseListener;
 import org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseMotionListener;
@@ -172,11 +176,11 @@ public class ApplicationState {
 
     public DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
 
-    public FeatureStore pointsStore;
+    public FeatureStore featureStore;
 
-    public FeatureType pointsType;
+    public FeatureType featureType;
 
-    public PropertyType geometryType;
+    public PropertyType pointGeometryType, buildingGeometryType;
 
     public ApplicationState() {
         try {
@@ -187,9 +191,9 @@ public class ApplicationState {
         }
     }
 
-    public void setupPointsFeatureStore() {
+    public void setupFeatureStore() {
         try {
-            URL schemaUrl = ApplicationState.class.getResource( "/org/deegree/tools/crs/georeferencing/pointsschema.xsd" );
+            URL schemaUrl = ApplicationState.class.getResource( "/org/deegree/tools/crs/georeferencing/memoryschema.xsd" );
             String cfg = "<MemoryFeatureStore configVersion=\"3.0.0\" xmlns=\"http://www.deegree.org/datasource/feature/memory\">"
                          + "  <StorageCRS>"
                          + targetCRS.getAlias()
@@ -208,9 +212,10 @@ public class ApplicationState {
 
             InputStream in = new ByteArrayInputStream( cfg.getBytes( "UTF-8" ) );
             mgr.createResource( "pointsstore", in );
-            pointsStore = mgr.activate( "pointsstore" ).getResource();
-            pointsType = pointsStore.getSchema().getFeatureTypes()[0];
-            geometryType = pointsType.getPropertyDeclarations().get( 0 );
+            featureStore = mgr.activate( "pointsstore" ).getResource();
+            featureType = featureStore.getSchema().getFeatureTypes()[0];
+            pointGeometryType = featureType.getPropertyDeclarations().get( 0 );
+            buildingGeometryType = featureType.getPropertyDeclarations().get( 1 );
             if ( service != null ) {
                 RequestableLayer lcfg = new RequestableLayer();
                 lcfg.setName( "points" );
@@ -268,11 +273,16 @@ public class ApplicationState {
 
     public void setupMapService() {
         service = new MapService( workspace );
-        RequestableLayer cfg = new RequestableLayer();
-        cfg.setName( "points" );
-        cfg.setTitle( "Points Layer" );
-        cfg.setFeatureStoreId( "pointsstore" );
         try {
+            XMLInputFactory fac = XMLInputFactory.newInstance();
+            String styleUrl = ApplicationState.class.getResource( "/org/deegree/tools/crs/georeferencing/style.xml" ).toExternalForm();
+            XMLStreamReader in = fac.createXMLStreamReader( new StreamSource( styleUrl ) );
+            Style style = SymbologyParser.INSTANCE.parse( in );
+            service.registry.putAsDefault( "points", style );
+            RequestableLayer cfg = new RequestableLayer();
+            cfg.setName( "points" );
+            cfg.setTitle( "Points Layer" );
+            cfg.setFeatureStoreId( "pointsstore" );
             FeatureLayer lay = new FeatureLayer( service, cfg, service.getRootLayer(), workspace );
             Layer root = service.getRootLayer();
             root.addOrReplace( lay );
@@ -478,32 +488,26 @@ public class ApplicationState {
      * 
      */
     public void updateResiduals( AbstractTransformation.TransformationType type ) {
+        AbstractTransformation t = this.determineTransformationType( type );
+        PointResidual[] r = t.calculateResiduals();
+        if ( r != null ) {
+            Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
+            int counter = 0;
+            for ( Triple<Point4Values, Point4Values, PointResidual> point : this.mappedPoints ) {
+                Vector<Double> element = new Vector<Double>( 6 );
+                element.add( point.second.getWorldCoords().x );
+                element.add( point.second.getWorldCoords().y );
+                element.add( point.first.getWorldCoords().x );
+                element.add( point.first.getWorldCoords().y );
+                element.add( r[counter].x );
+                element.add( r[counter].y );
+                data.add( element );
 
-        try {
-            AbstractTransformation t = this.determineTransformationType( type );
-            PointResidual[] r = t.calculateResiduals();
-            if ( r != null ) {
-                Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
-                int counter = 0;
-                for ( Triple<Point4Values, Point4Values, PointResidual> point : this.mappedPoints ) {
-                    Vector<Double> element = new Vector<Double>( 6 );
-                    element.add( point.second.getWorldCoords().x );
-                    element.add( point.second.getWorldCoords().y );
-                    element.add( point.first.getWorldCoords().x );
-                    element.add( point.first.getWorldCoords().y );
-                    element.add( r[counter].x );
-                    element.add( r[counter].y );
-                    data.add( element );
+                point.third = r[counter++];
 
-                    point.third = r[counter++];
-
-                }
-                this.tablePanel.getModel().setDataVector( data, this.tablePanel.getColumnNamesAsVector() );
-                this.tablePanel.getModel().fireTableDataChanged();
             }
-        } catch ( UnknownCRSException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            this.tablePanel.getModel().setDataVector( data, this.tablePanel.getColumnNamesAsVector() );
+            this.tablePanel.getModel().fireTableDataChanged();
         }
     }
 
@@ -516,7 +520,7 @@ public class ApplicationState {
         this.conModel.getPanel().removeAllFromSelectedPoints();
         this.conModel.getFootPanel().removeAllFromSelectedPoints();
         this.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-        this.conModel.getPanel().setPolygonList( null, null );
+//        this.conModel.getPanel().setPolygonList( null, null );
         this.conModel.getPanel().setLastAbstractPoint( null, null, null );
         this.conModel.getPanel().repaint();
         this.conModel.getFootPanel().repaint();
@@ -540,10 +544,8 @@ public class ApplicationState {
      * @param type
      *            of the transformationMethod, not <Code>null</Code>.
      * @return the transformationMethod to be used.
-     * @throws UnknownCRSException
      */
-    public AbstractTransformation determineTransformationType( AbstractTransformation.TransformationType type )
-                            throws UnknownCRSException {
+    public AbstractTransformation determineTransformationType( AbstractTransformation.TransformationType type ) {
         AbstractTransformation t = null;
         if ( this.targetCRS == null ) {
             return null;

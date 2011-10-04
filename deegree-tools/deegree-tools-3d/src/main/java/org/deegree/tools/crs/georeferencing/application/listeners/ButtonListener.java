@@ -71,7 +71,6 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.feature.persistence.FeatureStores;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLVersion;
@@ -304,8 +303,8 @@ public class ButtonListener implements ActionListener {
                             this.state.targetCRS = crs;
                             this.state.initGeoReferencingScene();
                             this.state.wmsParameter.setVisible( false );
-                            if ( state.pointsStore == null ) {
-                                state.setupPointsFeatureStore();
+                            if ( state.featureStore == null ) {
+                                state.setupFeatureStore();
                             }
                         } else {
                             new ErrorDialog( this.state.wmsParameter, ImageObserver.ERROR,
@@ -450,8 +449,8 @@ public class ButtonListener implements ActionListener {
 
                         this.state.targetCRS = bbox.getCoordinateSystem();
                         this.state.initGeoReferencingScene();
-                        if ( state.pointsStore == null ) {
-                            state.setupPointsFeatureStore();
+                        if ( state.featureStore == null ) {
+                            state.setupFeatureStore();
                         }
                     } catch ( Throwable e1 ) {
                         // TODO Auto-generated catch block

@@ -41,7 +41,6 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
@@ -84,8 +83,8 @@ public abstract class AbstractTransformation extends Transformation {
     private final int arraySize;
 
     public AbstractTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                                   Footprint footPrint, Scene2DValues sceneValues, ICRS sourceCRS,
-                                   ICRS targetCRS, final int order ) throws UnknownCRSException {
+                                   Footprint footPrint, Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS,
+                                   final int order ) {
         super( sourceCRS, targetCRS, new CRSIdentifiable( new CRSCodeType( "whatever" ) ) );
         this.mappedPoints = mappedPoints;
         this.footPrint = footPrint;
@@ -131,7 +130,7 @@ public abstract class AbstractTransformation extends Transformation {
         // // TODO Auto-generated catch block
         // e1.printStackTrace();
         // }
-//        return null;
+        // return null;
     }
 
     /**

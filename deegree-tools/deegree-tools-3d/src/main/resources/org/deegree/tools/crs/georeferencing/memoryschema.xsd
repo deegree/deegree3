@@ -8,7 +8,8 @@
       <complexContent>
         <extension base="gml:AbstractFeatureType">
           <sequence>
-            <element name="geometry" minOccurs="0" type="gml:PointPropertyType" />
+            <element name="point" minOccurs="0" type="gml:PointPropertyType" />
+            <element name="building" minOccurs="0" type="gml:PolygonPropertyType" />
           </sequence>
         </extension>
       </complexContent>

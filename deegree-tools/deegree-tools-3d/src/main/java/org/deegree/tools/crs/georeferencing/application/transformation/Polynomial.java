@@ -47,7 +47,6 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -94,7 +93,7 @@ public class Polynomial extends AbstractTransformation {
     }
 
     public Polynomial( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints, Footprint footPrint,
-                       Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS, int order ) throws UnknownCRSException {
+                       Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS, int order ) {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
         arraySize = this.getArraySize() * 2;
@@ -144,6 +143,7 @@ public class Polynomial extends AbstractTransformation {
 
             for ( Ring ring : footPrint.getWorldCoordinateRingList() ) {
                 pointList = new ArrayList<Point>();
+                Point first = null;
                 for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
                     double x = ring.getControlPoints().getX( i );
                     double y = ring.getControlPoints().getY( i );
@@ -153,8 +153,11 @@ public class Polynomial extends AbstractTransformation {
                     double ry = ( p.getY() - ryLocal );
 
                     pointList.add( geom.createPoint( "point", rx, ry, null ) );
-
+                    if ( first == null ) {
+                        first = pointList.get( pointList.size() - 1 );
+                    }
                 }
+                pointList.add( first );
                 Points points = new PointsList( pointList );
                 transformedRingList.add( geom.createLinearRing( "ring", null, points ) );
 

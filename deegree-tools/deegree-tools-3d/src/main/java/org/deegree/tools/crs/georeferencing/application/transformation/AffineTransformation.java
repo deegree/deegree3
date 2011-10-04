@@ -43,7 +43,6 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -159,7 +158,7 @@ public class AffineTransformation extends AbstractTransformation {
 
     public AffineTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
                                  Footprint footPrint, Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS,
-                                 final int order ) throws UnknownCRSException {
+                                 final int order ) {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
         this.arraySize = this.getArraySize();
@@ -347,6 +346,7 @@ public class AffineTransformation extends AbstractTransformation {
          */
         for ( Ring ring : this.footPrint.getWorldCoordinateRingList() ) {
             pointList = new ArrayList<Point>();
+            Point first = null;
             for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
                 double x = ring.getControlPoints().getX( i );
                 double y = ring.getControlPoints().getY( i );
@@ -358,8 +358,11 @@ public class AffineTransformation extends AbstractTransformation {
                 double calculatedN_one = this.balancedPointN + ( this.a11 * newX_two ) + ( this.a12 * newY_two );
                 // and pervert it back... 2/2
                 pointList.add( geom.createPoint( "point", calculatedN_one, calculatedE_one, null ) );
-
+                if ( first == null ) {
+                    first = pointList.get( pointList.size() - 1 );
+                }
             }
+            pointList.add( first );
             Points points = new PointsList( pointList );
             transformedRingList.add( geom.createLinearRing( "ring", null, points ) );
 
