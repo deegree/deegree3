@@ -93,6 +93,8 @@ public class MapController {
 
     private MapService service;
 
+    // contains a list of timestamps at which a repaint was requested
+    // once a repaint was started at a specific time, all repaint requests until that time are removed from this list
     private List<Long> repaintList = Collections.synchronizedList( new ArrayList<Long>() );
 
     private LinkedList<Layer> layers = new LinkedList<Layer>();
@@ -239,6 +241,7 @@ public class MapController {
             g.drawImage( currentImage, 0, 0, width, height, null );
         }
         GetMap gm = getCurrentQuery();
+
         try {
             currentImage = service.getMapImage( gm ).first;
             g.setPaint( white );
@@ -519,6 +522,10 @@ public class MapController {
         return !repaintList.isEmpty();
     }
 
+    public void forceRepaint() {
+        repaintList.add( currentTimeMillis() );
+    }
+
     /**
      * @param x
      * @param y
@@ -603,8 +610,8 @@ public class MapController {
             stopZoomin();
             return false;
         }
-        setEnvelope( min( zoomMinx, zoomMaxx ), min( zoomMiny, zoomMaxy ), max( zoomMinx, zoomMaxx ), max( zoomMaxy,
-                                                                                                           zoomMiny ) );
+        setEnvelope( min( zoomMinx, zoomMaxx ), min( zoomMiny, zoomMaxy ), max( zoomMinx, zoomMaxx ),
+                     max( zoomMaxy, zoomMiny ) );
         stopZoomin();
         return true;
     }

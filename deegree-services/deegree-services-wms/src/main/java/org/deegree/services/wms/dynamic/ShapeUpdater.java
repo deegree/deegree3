@@ -40,8 +40,6 @@ import static org.deegree.services.wms.MapService.fillInheritedInformation;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
 
@@ -135,10 +133,7 @@ public class ShapeUpdater extends LayerUpdater {
                                     LOG.warn( "Could not parse SLD/SE file for layer '{}'.", layName );
                                     LOG.trace( "Stack trace: ", e );
                                 }
-                            } catch ( FileNotFoundException e ) {
-                                LOG.warn( "Shape file {} could not be deployed: {}", layName, e.getLocalizedMessage() );
-                                LOG.trace( "Stack trace", e );
-                            } catch ( IOException e ) {
+                            } catch ( Throwable e ) {
                                 LOG.warn( "Shape file {} could not be deployed: {}", layName, e.getLocalizedMessage() );
                                 LOG.trace( "Stack trace", e );
                             }
