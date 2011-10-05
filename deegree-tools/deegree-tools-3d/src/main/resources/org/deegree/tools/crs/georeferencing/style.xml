@@ -34,9 +34,6 @@
       <Geometry>
         <ogc:PropertyName>app:building</ogc:PropertyName>
       </Geometry>
-      <Fill>
-        <SvgParameter name="fill">#ff0000</SvgParameter>
-      </Fill>
       <Stroke>
         <SvgParameter name="stroke">#000000</SvgParameter>
       </Stroke>
