@@ -51,11 +51,12 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
+import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_GEOMETRY;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
-import static org.deegree.gml.schema.WellKnownGMLTypes.GML311_FEATURECOLLECTION;
-import static org.deegree.gml.schema.WellKnownGMLTypes.GML321_FEATURECOLLECTION;
-import static org.deegree.gml.schema.WellKnownGMLTypes.WFS110_FEATURECOLLECTION;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -77,6 +78,7 @@ import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -422,12 +424,19 @@ public class GMLFeatureReader extends XMLAdapter {
                 LOG.debug( "- property '" + propName + "'" );
             }
 
-            if ( EXTRA_PROP_NS.equals( propName.getNamespaceURI() ) ) {
+            if ( propName.getNamespaceURI() != null && propName.getNamespaceURI().startsWith( EXTRA_PROP_NS ) ) {
                 if ( extraPropertyList == null ) {
                     extraPropertyList = new ArrayList<Property>();
                 }
                 LOG.debug( "Parsing extra property: " + propName );
-                SimplePropertyType pt = new SimplePropertyType( propName, 1, 1, STRING, null, null );
+
+                PropertyType pt = null;
+                if ( EXTRA_PROP_NS_GEOMETRY.equals( propName.getNamespaceURI() ) ) {
+                    pt = new GeometryPropertyType( propName, 1, 1, null, null, GEOMETRY, DIM_2_OR_3, INLINE );
+                } else {
+                    pt = new SimplePropertyType( propName, 1, 1, STRING, null, null );
+                }
+
                 Property prop = parseProperty( xmlStream, pt, activeCRS, 0 );
                 extraPropertyList.add( prop );
                 xmlStream.nextTag();
@@ -825,9 +834,16 @@ public class GMLFeatureReader extends XMLAdapter {
 
         QName propName = xmlStream.getName();
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        GenericXMLElement xmlEl = parseComplexXMLElement( xmlStream, propDecl.getElementDecl(), crs );
+        TypedObjectNode ton = parseComplexXMLElement( xmlStream, propDecl.getElementDecl(), crs );
+        List<TypedObjectNode> children = null;
+        XSElementDeclaration elDecl = null;
+        if ( ton instanceof ElementNode ) {
+            GenericXMLElement xmlEl = (GenericXMLElement) ton;
+            children = xmlEl.getChildren();
+            return new GenericProperty( propDecl, propName, null, attrs, children, xmlEl.getXSType() );
+        }
         // TODO should the property value actually be null?
-        return new GenericProperty( propDecl, propName, null, attrs, xmlEl.getChildren(), xmlEl.getXSType() );
+        return new GenericProperty( propDecl, propName, ton, attrs, children, elDecl );
     }
 
     /**
@@ -872,11 +888,17 @@ public class GMLFeatureReader extends XMLAdapter {
         return new GenericXMLElement( xmlStream.getName(), elDecl, null, Collections.singletonList( child ) );
     }
 
-    private GenericXMLElement parseComplexXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl,
-                                                      ICRS crs )
+    private TypedObjectNode parseComplexXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl,
+                                                    ICRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        LOG.debug( "Parsing generic XML element " + xmlStream.getName() );
+        QName elName = xmlStream.getName();
+        LOG.debug( "Parsing complex XML element " + elName );
+        if ( geomReader.isGeometryElement( xmlStream ) ) {
+            return geomReader.parse( xmlStream );
+        } else if ( schema.getFeatureType( elName ) != null ) {
+            return parseFeature( xmlStream, crs );
+        }
 
         XSComplexTypeDefinition xsdValueType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
 
