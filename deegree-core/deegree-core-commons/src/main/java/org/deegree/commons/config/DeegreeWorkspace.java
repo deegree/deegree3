@@ -331,7 +331,7 @@ public class DeegreeWorkspace {
     public static synchronized DeegreeWorkspace getInstance( String workspaceName, File fallbackDir )
                             throws IOException {
         DeegreeWorkspace ws = getInstance( workspaceName );
-        if ( !ws.getLocation().exists() ) {
+        if ( ( !ws.getLocation().exists() || workspaceName == null ) && fallbackDir != null ) {
             ws = wsRootDirToWs.get( fallbackDir.getCanonicalFile() );
             if ( ws == null ) {
                 if ( workspaceName == null ) {
