@@ -40,10 +40,14 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.deegree.commons.tom.ElementNode;
+import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
@@ -52,6 +56,7 @@ import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,5 +170,60 @@ public class Features {
             value2 = value2.toString();
         }
         return PrimitiveValue.makeComparable( value1, value2 );
+    }
+
+    /**
+     * Determines all {@link Feature} and {@link Geometry} objects contained in the given {@link TypedObjectNode} and
+     * their ids.
+     * 
+     * @param node
+     *            typed object node to be scanned, can be <code>null</code>
+     * @param geometries
+     *            found geometry objects (not {@link Reference}s), must not be <code>null</code>
+     * @param features
+     *            found feature objects (not {@link Reference}s), must not be <code>null</code>
+     * @param fids
+     *            found feature ids, must not be <code>null</code>
+     * @param gids
+     *            found geometry ids, must not be <code>null</code>
+     */
+    public static void findFeaturesAndGeometries( TypedObjectNode node, Set<Geometry> geometries,
+                                                  Set<Feature> features, Set<String> fids, Set<String> gids ) {
+
+        if ( node instanceof ElementNode ) {
+            ElementNode elNode = (ElementNode) node;
+            for ( TypedObjectNode child : elNode.getChildren() ) {
+                findFeaturesAndGeometries( child, geometries, features, fids, gids );
+            }
+        } else if ( node instanceof org.deegree.commons.tom.Object ) {
+            if ( node instanceof Reference<?> && ( (Reference<?>) node ).isResolved() ) {
+                node = ( (Reference<?>) node ).getReferencedObject();
+            }
+            if ( node instanceof Geometry ) {
+                Geometry geometry = (Geometry) node;
+                if ( geometry.getId() == null || !( gids.contains( geometry.getId() ) ) ) {
+                    geometries.add( geometry );
+                    if ( geometry.getId() != null ) {
+                        gids.add( geometry.getId() );
+                    }
+                }
+            } else if ( node instanceof Feature ) {
+                Feature feature = (Feature) node;
+                if ( feature.getId() == null || !( fids.contains( feature.getId() ) ) ) {
+                    features.add( feature );
+                    if ( feature.getId() != null ) {
+                        fids.add( feature.getId() );
+                    }
+                    for ( Property property : feature.getProperties() ) {
+                        findFeaturesAndGeometries( property, geometries, features, fids, gids );
+                    }
+                }
+            }
+        } else if ( node instanceof TypedObjectNodeArray<?> ) {
+            TypedObjectNodeArray<?> tonArray = (TypedObjectNodeArray<?>) node;
+            for ( TypedObjectNode child : tonArray.getElements() ) {
+                findFeaturesAndGeometries( child, geometries, features, fids, gids );
+            }
+        }
     }
 }

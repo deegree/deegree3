@@ -1083,7 +1083,7 @@ public class OGCFrontController extends HttpServlet {
 
     private String getWorkspaceName( String defaultName )
                             throws URISyntaxException, IOException {
-        String wsName = defaultName == null ? "default" : defaultName;
+        String wsName = defaultName == null ? null : defaultName;
         File wsNameFile = new File( resolveFileLocation( "WEB-INF/workspace_name", getServletContext() ).toURI() );
         if ( wsNameFile.exists() && defaultName == null ) {
             BufferedReader reader = null;
@@ -1099,7 +1099,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Using workspace name {} (defined in WEB-INF/workspace_name)", wsName, wsNameFile );
         } else {
             if ( defaultName == null ) {
-                LOG.info( "Using default workspace (WEB-INF/workspace_name does not exist)", wsNameFile );
+                LOG.info( "Using default workspace (WEB-INF/workspace_name does not exist)" );
             } else {
                 LOG.info( "Using workspace named {}", defaultName );
             }
