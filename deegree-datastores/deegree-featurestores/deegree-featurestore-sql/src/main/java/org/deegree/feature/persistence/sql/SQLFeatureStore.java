@@ -74,6 +74,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
+import org.deegree.feature.persistence.FeatureInspector;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
@@ -94,6 +95,7 @@ import org.deegree.feature.persistence.sql.converter.FeatureParticleConverter;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
+import org.deegree.feature.persistence.sql.jaxb.CustomInspector;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
@@ -186,6 +188,8 @@ public class SQLFeatureStore implements FeatureStore {
 
     private Boolean readAutoCommit;
 
+    private final List<FeatureInspector> inspectors = new ArrayList<FeatureInspector>();
+
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
      * 
@@ -227,7 +231,7 @@ public class SQLFeatureStore implements FeatureStore {
         this.workspace = workspace;
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
-        taManager = new TransactionManager( this, getConnId() );
+        taManager = new TransactionManager( this, getConnId(), inspectors );
         initConverters();
         try {
             // however TODO it properly on the DB
@@ -243,6 +247,22 @@ public class SQLFeatureStore implements FeatureStore {
             this.bboxCache = fsMgr.getBBoxCache();
         } else {
             LOG.warn( "Unmanaged feature store." );
+        }
+
+        if ( config.getInspectors() != null ) {
+            for ( CustomInspector inspectorConfig : config.getInspectors().getCustomInspector() ) {
+                String className = inspectorConfig.getClazz();
+                LOG.info( "Adding custom feature inspector '" + className + "' to inspector chain." );
+                try {
+                    @SuppressWarnings("unchecked")
+                    Class<FeatureInspector> inspectorClass = (Class<FeatureInspector>) workspace.getModuleClassLoader().loadClass( className );
+                    inspectors.add( inspectorClass.newInstance() );
+                } catch ( Exception e ) {
+                    String msg = "Unable to instantiate custom feature inspector '" + className + "': "
+                                 + e.getMessage();
+                    throw new ResourceInitException( msg );
+                }
+            }
         }
     }
 

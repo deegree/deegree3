@@ -37,8 +37,10 @@ package org.deegree.feature.persistence.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.persistence.FeatureInspector;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 
@@ -56,13 +58,16 @@ public class TransactionManager {
 
     private final String jdbcConnId;
 
+    private final List<FeatureInspector> inspectors;
+    
     private SQLFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
 
-    public TransactionManager( SQLFeatureStore fs, String jdbcConnId ) {
+    public TransactionManager( SQLFeatureStore fs, String jdbcConnId, List<FeatureInspector> inspectors ) {
         this.fs = fs;
         this.jdbcConnId = jdbcConnId;
+        this.inspectors = inspectors;
     }
 
     // seems not to be used?
@@ -133,7 +138,7 @@ public class TransactionManager {
         try {
             Connection conn = fs.getConnection();
             conn.setAutoCommit( false );
-            this.activeTransaction = new SQLFeatureStoreTransaction( fs, this, conn, fs.getSchema() );
+            this.activeTransaction = new SQLFeatureStoreTransaction( fs, this, conn, fs.getSchema(), inspectors );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
         }
