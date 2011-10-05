@@ -97,7 +97,7 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
             ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
             Type connType = mgr.getType( cfg.getJDBCConnId().getValue() );
             if ( connType == null ) {
-                throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId() + "' defined." );
+                throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId().getValue() + "' defined." );
             }
             LOG.debug( "Connection type is {}.", connType );
 
