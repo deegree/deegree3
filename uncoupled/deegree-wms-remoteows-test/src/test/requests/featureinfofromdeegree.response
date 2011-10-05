@@ -1,8 +1,14 @@
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/vnd.ogc.gml;charset=UTF-8
+Date: Wed, 05 Oct 2011 16:05:00 GMT
+Connection: close
+
 <?xml version='1.0' encoding='UTF-8'?>
 <FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:noNamespaceSchemaLocation="http://localhost:8080/deegree-wms-remoteows-test/services?request=GetFeatureInfoSchema&amp;layers=single" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
   <gml:boundedBy>
     <gml:Box srsName="EPSG:26912">
-      <gml:coordinates decimal="." cs="," ts=" ">328019.203,4502483.550 421737.403,4623340.550</gml:coordinates>
+      <gml:coordinates decimal="." cs="," ts=" ">345620.303,4563076.050 419122.603,4623340.550</gml:coordinates>
     </gml:Box>
   </gml:boundedBy>
   <gml:featureMember>
@@ -37,40 +43,6 @@
       <app0:POP1999>1165.00000000</app0:POP1999>
       <app0:SHAPE_AREA>1260797740.15</app0:SHAPE_AREA>
       <app0:SHAPE_LEN>329801.326323</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_27">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">328019.203,4502483.550 421737.403,4618210.050</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
-      <app0:OBJECTID>28</app0:OBJECTID>
-      <app0:ZIP></app0:ZIP>
-      <app0:PO_NAME></app0:PO_NAME>
-      <app0:STATE></app0:STATE>
-      <app0:SUMBLKPOP>0E-8</app0:SUMBLKPOP>
-      <app0:POP1999>0E-8</app0:POP1999>
-      <app0:SHAPE_AREA>4617902240.20</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>609309.158009</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_29">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">402762.003,4601991.050 416680.703,4613689.050</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
-      <app0:OBJECTID>30</app0:OBJECTID>
-      <app0:ZIP>84314</app0:ZIP>
-      <app0:PO_NAME>Honeyville</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>2184.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>2380.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>103318179.775</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>57195.9782752</app0:SHAPE_LEN>
     </app0:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
@@ -207,23 +179,6 @@
       <app0:POP1999>1165.00000000</app0:POP1999>
       <app0:SHAPE_AREA>43306.2000000</app0:SHAPE_AREA>
       <app0:SHAPE_LEN>1037.31779268</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_45">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">386344.403,4568987.050 419605.103,4589946.550</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
-      <app0:OBJECTID>46</app0:OBJECTID>
-      <app0:ZIP>84340</app0:ZIP>
-      <app0:PO_NAME>Willard</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>1908.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>2031.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>148026067.375</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>107019.471214</app0:SHAPE_LEN>
     </app0:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
