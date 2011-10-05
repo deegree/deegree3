@@ -54,6 +54,7 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.points.PointsArray;
 
@@ -206,5 +207,17 @@ public class Geometries {
             return fac.createPolygon( null, crs, exteriorRing, null );
         }
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Creates a deep copy of the given {@link Geometry} object.
+     * 
+     * @param geom
+     * @return
+     */
+    public static Geometry copyDeep( Geometry geom ) {
+        // TODO implement this without JTS
+        com.vividsolutions.jts.geom.Geometry jtsGeom = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
+        return ( (AbstractDefaultGeometry) geom ).createFromJTS( jtsGeom, geom.getCoordinateSystem() );
     }
 }

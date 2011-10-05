@@ -55,6 +55,12 @@ public class ExtraProps {
 
     public static final String EXTRA_PROP_NS = "http://www.deegree.org/extraprop";
 
+    /** Namespace for string-valued extra properties */
+    public static final String EXTRA_PROP_NS_STRING = "http://www.deegree.org/extraprop/string";
+
+    /** Namespace for geometry-valued extra properties */
+    public static final String EXTRA_PROP_NS_GEOMETRY = "http://www.deegree.org/extraprop/geometry";
+
     private final Property[] props;
 
     public ExtraProps( Property[] props ) {

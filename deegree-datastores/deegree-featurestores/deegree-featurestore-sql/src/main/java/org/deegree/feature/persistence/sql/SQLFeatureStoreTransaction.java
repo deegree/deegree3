@@ -35,15 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import static org.deegree.feature.Features.findFeaturesAndGeometries;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -62,6 +60,7 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.persistence.FeatureInspector;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -84,11 +83,10 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.ResourceId;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.FeatureReference;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -112,13 +110,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final MappedAppSchema schema;
 
-    private final GMLVersion gmlVersion;
-
     private final BlobMapping blobMapping;
 
     private final TransactionManager taManager;
 
     private final Connection conn;
+
+    private final List<FeatureInspector> inspectors;
 
     // TODO
     private ParticleConverter<Geometry> blobGeomConverter;
@@ -127,21 +125,24 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
      * Creates a new {@link SQLFeatureStoreTransaction} instance.
      * 
      * @param store
-     *            invoking feature store instance, never <code>null</code>
+     *            invoking feature store instance, must not be <code>null</code>
      * @param taManager
-     *            transaction manager, never <code>null</code>
+     *            transaction manager, must not be <code>null</code>
      * @param conn
-     *            JDBC connection associated with the transaction, never <code>null</code> and has
+     *            JDBC connection associated with the transaction, must not be <code>null</code> and have
      *            <code>autocommit</code> set to <code>false</code>
      * @param schema
-     *            application schema with mapping information, never <code>null</code>
+     *            application schema with mapping information, must not be <code>null</code>
+     * @param inspectors
+     *            feature inspectors, must not be <code>null</code>
      */
     SQLFeatureStoreTransaction( SQLFeatureStore store, TransactionManager taManager, Connection conn,
-                                MappedAppSchema schema ) {
+                                MappedAppSchema schema, List<FeatureInspector> inspectors ) {
         this.fs = store;
         this.taManager = taManager;
         this.conn = conn;
         this.schema = schema;
+        this.inspectors = inspectors;
         blobMapping = schema.getBlobMapping();
         if ( blobMapping != null ) {
             DBField bboxColumn = new DBField( blobMapping.getBBoxColumn() );
@@ -150,7 +151,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                                                                    geometryParams, null );
             blobGeomConverter = fs.getGeometryConverter( blobGeomMapping );
         }
-        this.gmlVersion = schema.getGMLSchema() == null ? GML_32 : schema.getGMLSchema().getVersion();
     }
 
     @Override
@@ -216,14 +216,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     private int performDeleteBlob( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
 
-        // TODO implement this more efficiently (using IN / temporary tables)
         int deleted = 0;
         PreparedStatement stmt = null;
         try {
             stmt = conn.prepareStatement( "DELETE FROM " + blobMapping.getTable() + " WHERE "
                                           + blobMapping.getGMLIdColumn() + "=?" );
-            for ( String id : filter.getMatchingIds() ) {
-                stmt.setString( 1, id );
+            for ( ResourceId id : filter.getSelectedIds() ) {
+                stmt.setString( 1, id.getRid() );
                 stmt.addBatch();
             }
             int[] deletes = stmt.executeBatch();
@@ -243,11 +242,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     private int performDeleteRelational( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
         int deleted = 0;
-        for ( String id : filter.getMatchingIds() ) {
-            LOG.debug( "Analyzing id: " + id );
+        for ( ResourceId id : filter.getSelectedIds() ) {
+            LOG.debug( "Analyzing id: " + id.getRid() );
             IdAnalysis analysis = null;
             try {
-                analysis = schema.analyzeId( id );
+                analysis = schema.analyzeId( id.getRid() );
                 LOG.debug( "Analysis: " + analysis );
                 FeatureTypeMapping ftMapping = schema.getFtMapping( analysis.getFeatureType().getName() );
                 FIDMapping fidMapping = ftMapping.getFidMapping();
@@ -265,8 +264,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
                     int i = 1;
                     for ( String fidKernel : analysis.getIdKernels() ) {
-                        PrimitiveValue value = new PrimitiveValue( fidKernel,
-                                                                   new PrimitiveType( fidMapping.getColumnType() ) );
+                        PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( i ).second );
+                        PrimitiveValue value = new PrimitiveValue( fidKernel, pt );
                         Object sqlValue = SQLValueMangler.internalToSQL( value );
                         stmt.setObject( i++, sqlValue );
                     }
@@ -295,9 +294,18 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         Set<Feature> features = new LinkedHashSet<Feature>();
         Set<String> fids = new LinkedHashSet<String>();
         Set<String> gids = new LinkedHashSet<String>();
-        findFeaturesAndGeometries( fc, geometries, features, fids, gids );
+        for ( Feature member : fc ) {
+            findFeaturesAndGeometries( member, geometries, features, fids, gids );
+        }
 
         LOG.debug( features.size() + " features / " + geometries.size() + " geometries" );
+
+        for ( FeatureInspector inspector : inspectors ) {
+            for ( Feature f : features ) {
+                // TODO cope with inspectors that return a different instance
+                inspector.inspect( f );
+            }
+        }
 
         long begin = System.currentTimeMillis();
 
@@ -473,54 +481,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return internalId;
     }
 
-    private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features,
-                                            Set<String> fids, Set<String> gids ) {
-
-        if ( feature instanceof FeatureCollection ) {
-            // try to keep document order
-            for ( Feature member : (FeatureCollection) feature ) {
-                if ( !( member instanceof FeatureReference ) ) {
-                    features.add( member );
-                }
-            }
-            for ( Feature member : (FeatureCollection) feature ) {
-                findFeaturesAndGeometries( member, geometries, features, fids, gids );
-            }
-        } else {
-            if ( feature.getId() == null || !( fids.contains( feature.getId() ) ) ) {
-                features.add( feature );
-                if ( feature.getId() != null ) {
-                    fids.add( feature.getId() );
-                }
-            }
-            for ( Property property : feature.getProperties() ) {
-                Object propertyValue = property.getValue();
-                if ( propertyValue instanceof Feature ) {
-                    if ( !( propertyValue instanceof FeatureReference ) ) {
-                        if ( !features.contains( propertyValue ) ) {
-                            findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
-                        }
-                    } else if ( ( (FeatureReference) propertyValue ).isResolved()
-                                && !( features.contains( ( (FeatureReference) propertyValue ).getReferencedObject() ) ) ) {
-                        findFeaturesAndGeometries( ( (FeatureReference) propertyValue ).getReferencedObject(),
-                                                   geometries, features, fids, gids );
-                    }
-                } else if ( propertyValue instanceof Geometry ) {
-                    findGeometries( (Geometry) propertyValue, geometries, gids );
-                }
-            }
-        }
-    }
-
-    private void findGeometries( Geometry geometry, Set<Geometry> geometries, Set<String> gids ) {
-        if ( geometry.getId() == null || !( gids.contains( geometry.getId() ) ) ) {
-            geometries.add( geometry );
-            if ( geometry.getId() != null ) {
-                gids.add( geometry.getId() );
-            }
-        }
-    }
-
     @Override
     public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException {
@@ -548,8 +508,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         } else {
             try {
                 updated = performUpdateRelational( ftName, replacementProps, filter );
-                for ( String id : filter.getMatchingIds() ) {
-                    fs.getCache().remove( id );
+                for ( ResourceId id : filter.getSelectedIds() ) {
+                    fs.getCache().remove( id.getRid() );
                 }
             } catch ( Exception e ) {
                 LOG.debug( e.getMessage(), e );
@@ -596,7 +556,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     if ( !( me instanceof DBField ) ) {
                         continue;
                     }
-                    column = ( (DBField) me ).getColumn();                    
+                    column = ( (DBField) me ).getColumn();
                     if ( !first ) {
                         sql.append( "," );
                     } else {
@@ -697,24 +657,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         }
         return new IdFilter( ids );
-    }
-
-    private String getAutoIncrementFID( FIDMapping fidMapping, Statement stmt )
-                            throws SQLException {
-        // TODO check for PostgreSQL >= 8.2 first
-        String fid = null;
-        ResultSet rs = null;
-        try {
-            rs = stmt.getGeneratedKeys();
-            rs.next();
-            Object idKernel = rs.getObject( fidMapping.getColumn() );
-            fid = fidMapping.getPrefix() + idKernel;
-        } finally {
-            if ( rs != null ) {
-                rs.close();
-            }
-        }
-        return fid;
     }
 
     @Override

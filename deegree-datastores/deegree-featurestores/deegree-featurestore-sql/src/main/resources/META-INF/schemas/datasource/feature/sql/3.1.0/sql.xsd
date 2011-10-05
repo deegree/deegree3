@@ -11,7 +11,8 @@
   </annotation>
   <element name="SQLFeatureStore">
     <annotation>
-      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS or Oracle
+      <documentation>FeatureStore that is backed by an SQL database with
+        spatial extension (e.g. PostGIS or Oracle
         Spatial)
       </documentation>
       <appinfo>
@@ -43,7 +44,8 @@
                     <attribute name="srid" type="string" use="required" />
                     <attribute name="dim" use="required">
                       <annotation>
-                        <documentation>Dimensionality of the geometry coordinates
+                        <documentation>Dimensionality of the geometry
+                          coordinates
                         </documentation>
                       </annotation>
                       <simpleType>
@@ -75,6 +77,13 @@
             <element ref="sqlfs:FeatureTypeMapping" minOccurs="0" maxOccurs="unbounded" />
           </sequence>
         </choice>
+        <element name="Inspectors" minOccurs="0">
+          <complexType>
+            <choice maxOccurs="unbounded">
+              <element ref="sqlfs:CustomInspector" />
+            </choice>
+          </complexType>
+        </element>
       </sequence>
       <attribute name="configVersion" use="required">
         <simpleType>
@@ -100,7 +109,8 @@
       </sequence>
       <attribute name="name" type="QName">
         <annotation>
-          <documentation>Qualified name of the feature type (if omitted, it is derived from the table name)
+          <documentation>Qualified name of the feature type (if omitted,
+            it is derived from the table name)
           </documentation>
         </annotation>
       </attribute>
@@ -181,13 +191,15 @@
     </sequence>
     <attribute name="name" type="QName">
       <annotation>
-        <documentation>Qualified name of the property (if omitted, it is derived from the mapping column)
+        <documentation>Qualified name of the property (if omitted, it is
+          derived from the mapping column)
         </documentation>
       </annotation>
     </attribute>
     <attribute name="mapping" type="string" use="optional">
       <annotation>
-        <documentation>Mapping of the property (currently, this can only be the name of a column)
+        <documentation>Mapping of the property (currently, this can only
+          be the name of a column)
         </documentation>
       </annotation>
     </attribute>
@@ -196,7 +208,8 @@
   <element name="SimpleProperty" substitutionGroup="sqlfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Declaration of a simple property of a feature type.
+        <documentation>Declaration of a simple property of a feature
+          type.
         </documentation>
         <appinfo>
           <jaxb:class name="SimplePropertyJAXB" />
@@ -206,7 +219,8 @@
         <extension base="sqlfs:AbstractPropertyType">
           <attribute name="type" type="sqlfs:PrimitiveType">
             <annotation>
-              <documentation>Primitive type of the property (if omitted, it is automatically determined from column)
+              <documentation>Primitive type of the property (if omitted,
+                it is automatically determined from column)
               </documentation>
             </annotation>
           </attribute>
@@ -218,7 +232,8 @@
   <element name="GeometryProperty" substitutionGroup="sqlfs:AbstractProperty">
     <complexType>
       <annotation>
-        <documentation>Definition of a geometry-valued property of a feature type
+        <documentation>Definition of a geometry-valued property of a
+          feature type
         </documentation>
         <appinfo>
           <jaxb:class name="GeometryPropertyJAXB" />
@@ -228,28 +243,33 @@
         <extension base="sqlfs:AbstractPropertyType">
           <attribute name="type" type="sqlfs:GeometryType">
             <annotation>
-              <documentation>Geometry type (if omitted, it is automatically determined from table geometry_columns)
+              <documentation>Geometry type (if omitted, it is
+                automatically determined from table geometry_columns)
               </documentation>
             </annotation>
           </attribute>
           <attribute name="crs" type="string">
             <annotation>
-              <documentation>deegree CRS identifier used for the geometry property, e.g. 'EPSG:4326' (if omitted, it is
+              <documentation>deegree CRS identifier used for the
+                geometry property, e.g. 'EPSG:4326' (if omitted, it is
                 automatically derived from the PostGIS srid)
               </documentation>
             </annotation>
           </attribute>
           <attribute name="srid" type="integer">
             <annotation>
-              <documentation>PostGIS SRID of the column (if omitted, it is automatically determined from table
+              <documentation>PostGIS SRID of the column (if omitted, it
+                is automatically determined from table
                 geometry_columns)
               </documentation>
             </annotation>
           </attribute>
           <attribute name="dim">
             <annotation>
-              <documentation>Dimensionality of the geometry coordinates (if omitted, it is automatically determined from
-                table geometry_columns)
+              <documentation>Dimensionality of the geometry coordinates
+                (if omitted, it is automatically determined from
+                table
+                geometry_columns)
               </documentation>
             </annotation>
             <simpleType>
@@ -356,7 +376,8 @@
     </complexType> </element -->
   <element name="FeatureTypeMapping">
     <annotation>
-      <documentation>Defines the mapping of the feature type from the application schema
+      <documentation>Defines the mapping of the feature type from the
+        application schema
       </documentation>
       <appinfo>
         <jaxb:class name="FeatureTypeMappingJAXB" />
@@ -384,7 +405,8 @@
   <element name="AbstractParticle" abstract="true" type="sqlfs:AbstractParticleType" />
   <complexType name="AbstractParticleType">
     <annotation>
-      <documentation>Defines the mapping for a particle of a feature type.
+      <documentation>Defines the mapping for a particle of a feature
+        type.
       </documentation>
       <appinfo>
         <jaxb:class name="AbstractParticleJAXB" />
@@ -404,7 +426,8 @@
   <element name="Primitive" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a primitive-valued particle.
+        <documentation>Defines the mapping for a primitive-valued
+          particle.
         </documentation>
         <appinfo>
           <jaxb:class name="PrimitiveParticleJAXB" />
@@ -480,7 +503,8 @@
   <element name="Href">
     <complexType>
       <annotation>
-        <documentation>Defines the storage for URIs that reference internal or external objects (e.g. '#FEATURE_1' or
+        <documentation>Defines the storage for URIs that reference
+          internal or external objects (e.g. '#FEATURE_1' or
           'http://www.deegree.org/features#FEATURE_1'")
         </documentation>
       </annotation>
@@ -520,7 +544,8 @@
       </attribute>
       <attribute name="numbered" type="boolean" use="optional">
         <annotation>
-          <documentation>Set to true, if orderColumns references a single column that contains natural numbers
+          <documentation>Set to true, if orderColumns references a
+            single column that contains natural numbers
             [1,2,3,...].
           </documentation>
         </annotation>
@@ -530,7 +555,8 @@
   <element name="CustomConverter">
     <complexType>
       <annotation>
-        <documentation>Plugs-in a specialized DB-to-ObjectModel converter implementation
+        <documentation>Plugs-in a specialized DB-to-ObjectModel
+          converter implementation
         </documentation>
         <appinfo>
           <jaxb:class name="CustomConverterJAXB" />
@@ -547,6 +573,17 @@
           </complexType>
         </element>
       </sequence>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>Qualified name of the Java class
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!-- === Inspectors for feature instances to be inserted === -->
+  <element name="CustomInspector">
+    <complexType>
       <attribute name="class" type="string" use="required">
         <annotation>
           <documentation>Qualified name of the Java class

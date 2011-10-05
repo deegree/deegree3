@@ -381,7 +381,8 @@ public class GMLFeatureWriter {
                 ExtraProps extraProps = feature.getExtraProperties();
                 if ( extraProps != null ) {
                     for ( Property prop : extraProps.getProperties() ) {
-                        export( prop, currentLevel, maxInlineLevels );
+                        // really export all levels in any case?
+                        export( prop, 0, -1 );
                     }
                 }
             }

@@ -142,6 +142,11 @@ public abstract class AbstractFeature implements Feature {
         for ( Property prop : this.getProperties() ) {
             featureBBox = mergeEnvelope( prop, featureBBox );
         }
+        if ( getExtraProperties() != null ) {
+            for ( Property prop : getExtraProperties().getProperties() ) {
+                featureBBox = mergeEnvelope( prop, featureBBox );
+            }
+        }
         if ( featureBBox == null ) {
             Set<Feature> visited = new HashSet<Feature>();
             try {
