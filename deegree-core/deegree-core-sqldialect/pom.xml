@@ -30,6 +30,13 @@
       <modules>
         <module>deegree-sqldialect-oracle</module>
       </modules>
+      <repositories>
+        <repository>
+          <id>deegree-restricted</id>
+          <name>deegree-restricted</name>
+          <url>http://artefacts.deegree.org/ext-libs-restricted</url>
+        </repository>
+      </repositories>
     </profile>
   </profiles>
 
