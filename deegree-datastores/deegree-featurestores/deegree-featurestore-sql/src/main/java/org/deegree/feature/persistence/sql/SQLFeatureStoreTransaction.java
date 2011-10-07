@@ -457,9 +457,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         stmt.setBytes( 3, bytes );
         LOG.debug( "Feature blob size: " + bytes.length );
         Geometry bboxGeom = null;
-        Envelope bbox = feature.getEnvelope();
-        if ( bbox != null ) {
-            bboxGeom = Geometries.getAsGeometry( bbox );
+        try {
+            Envelope bbox = feature.getEnvelope();
+            if ( bbox != null ) {
+                bboxGeom = Geometries.getAsGeometry( bbox );
+            }
+        } catch ( Exception e ) {
+            LOG.warn( "Unable to determine bbox of feature with id '" + feature.getId() + "': " + e.getMessage() );
         }
         blobGeomConverter.setParticle( stmt, bboxGeom, 4 );
         // stmt.addBatch();
