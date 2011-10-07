@@ -216,7 +216,7 @@ public class FormBean {
 
         for ( int i = 0; i < inputs.length; i++ ) {
             InputType input = inputs[i];
-            String inputId = input.getId().toString();
+            String inputId = escapeJsfId( input.getId().toString() );
             HtmlOutputLabel label = new HtmlOutputLabel();
             String labelId = getUniqueId();
             label.setId( labelId );
@@ -309,7 +309,7 @@ public class FormBean {
                                          int index ) {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlInputFile upload = new HtmlInputFile();
-        String id = input.getId().toString() + index;
+        String id = escapeJsfId( input.getId().toString() ) + index;
         upload.setId( id );
         upload.setStyleClass( INPUT_CLASS + " upload" );
         upload.setTarget( "upload" );
@@ -362,7 +362,7 @@ public class FormBean {
                                       List<String> outputFormatIds ) {
 
         HtmlFieldset fieldset = new HtmlFieldset();
-        String id = input.getId().toString() + index;
+        String id = escapeJsfId( input.getId().toString() ) + index;
         String formatId = id + "_format";
         fieldset.setId( id );
 
@@ -487,7 +487,7 @@ public class FormBean {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlInputBBox bbox = new HtmlInputBBox();
         bbox.setStyleClass( INPUT_CLASS + " bboxInput" );
-        String id = input.getId().toString() + index;
+        String id = escapeJsfId( input.getId().toString() ) + index;
         bbox.setId( id );
         String valueEL = "#{executeBean.bboxInputs['" + getMapId( input.getId(), index ) + "']}";
         ValueExpression valueVE = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(),
@@ -518,7 +518,7 @@ public class FormBean {
                                           int index ) {
         HtmlFieldset fieldset = new HtmlFieldset();
         HtmlLiteralInput literalInput = new HtmlLiteralInput();
-        String id = input.getId().toString() + index;
+        String id = escapeJsfId( input.getId().toString() ) + index;
         literalInput.setId( id );
         literalInput.setStyleClass( INPUT_CLASS + " literal" );
         String valueEL = "#{executeBean.literalInputs['" + getMapId( input.getId(), index ) + "']}";
@@ -773,7 +773,7 @@ public class FormBean {
             parent.getChildren().add( formatText );
 
             HtmlSelectFormat format = new HtmlSelectFormat();
-            String id = output.getId() + "_format";
+            String id = escapeJsfId( output.getId().toString() ) + "_format";
             outputFormatIds.add( id );
             format.setId( id );
             format.setStyleClass( INPUT_CLASS + " selectFormat" );
@@ -826,6 +826,11 @@ public class FormBean {
      */
     public HtmlForm getExecuteForm() {
         return executeForm;
+    }
+
+    public String escapeJsfId( String id ) {
+        return id.replace( ".", "_" ).replace( ":", "_" ).replace( "(", "_" ).replace( ")", "_" ).replace( "{", "_" ).replace( "}",
+                                                                                                                               "_" );
     }
 
 }
