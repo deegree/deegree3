@@ -123,7 +123,7 @@ public class JavaCheck {
         int second = Integer.parseInt( parts[1] );
         if ( second < 6 ) {
             alert();
-        } else if ( first > 6 ) {
+        } else if ( second > 6 ) {
             return;
         }
 
@@ -134,7 +134,7 @@ public class JavaCheck {
             return;
         }
 
-        if ( thirdParts.length < 1 ) {
+        if ( thirdParts.length < 2 ) {
             alert();
         }
         String update = thirdParts[1];
