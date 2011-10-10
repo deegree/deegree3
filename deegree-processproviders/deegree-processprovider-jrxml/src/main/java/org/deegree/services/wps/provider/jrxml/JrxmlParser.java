@@ -110,7 +110,8 @@ public class JrxmlParser {
         List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParams.getProcessInput();
         List<String> handledParameters = new ArrayList<String>();
         for ( JrxmlContentProvider contentProvider : contentProviders ) {
-            contentProvider.inspectInputParametersFromJrxml(parameterDescriptions, processInput, jrxmlAdapter, parameters, handledParameters );
+            contentProvider.inspectInputParametersFromJrxml( parameterDescriptions, processInput, jrxmlAdapter,
+                                                             parameters, handledParameters );
         }
 
         OutputParameters outputParams = new OutputParameters();

@@ -60,7 +60,7 @@ public class JrxmlProcessProvider implements ProcessProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( JrxmlProcessProviderProvider.class );
 
-    private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
+    private final Map<CodeType, AbstractJrxmlWPSProcess> idToProcess = new HashMap<CodeType, AbstractJrxmlWPSProcess>();
 
     public JrxmlProcessProvider( List<JrxmlProcessDescription> idToURL ) {
         Map<String, URL> idToTemplateId = new HashMap<String, URL>();
@@ -81,8 +81,8 @@ public class JrxmlProcessProvider implements ProcessProvider {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         LOG.info( "init jrxml process provider" );
-        for ( WPSProcess process : idToProcess.values() ) {
-            process.getProcesslet().init();
+        for ( AbstractJrxmlWPSProcess process : idToProcess.values() ) {
+            process.init( workspace );
         }
     }
 

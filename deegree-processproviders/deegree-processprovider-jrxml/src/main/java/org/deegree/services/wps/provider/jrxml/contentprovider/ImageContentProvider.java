@@ -48,6 +48,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -72,6 +73,10 @@ import org.deegree.services.wps.provider.jrxml.ParameterDescription;
  * @version $Revision: $, $Date: $
  */
 public class ImageContentProvider extends AbstractJrxmlContentProvider {
+
+    public ImageContentProvider( DeegreeWorkspace workspace ) {
+        super( workspace );
+    }
 
     @Override
     public void inspectInputParametersFromJrxml( Map<String, ParameterDescription> parameterDescriptions,

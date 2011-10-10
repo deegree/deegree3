@@ -89,7 +89,7 @@ public class TestMapContentProviderTest {
      */
     @Test
     public void testInspectInputParametersFromJrxml() {
-        MapContentProvider wmsContentProvider = new MapContentProvider();
+        MapContentProvider wmsContentProvider = getProvider();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put( "mapMAP_img", "java.lang.String" );
         parameters.put( "mapMAP_legend", "java.lang.String" );
@@ -123,7 +123,7 @@ public class TestMapContentProviderTest {
     @Test
     public void testPrepareJrxmlAndReadInputParameters()
                             throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError {
-        MapContentProvider wmsContentProvider = new MapContentProvider();
+        MapContentProvider wmsContentProvider = getProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
         Pair<InputStream, Boolean> jrxml = new Pair<InputStream, Boolean>(
@@ -178,7 +178,7 @@ public class TestMapContentProviderTest {
     public void testPrepareJrxmlAndReadInputParametersWFS()
                             throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
                             ProcessletException {
-        MapContentProvider wmsContentProvider = new MapContentProvider();
+        MapContentProvider wmsContentProvider = getProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
         Pair<InputStream, Boolean> jrxml = new Pair<InputStream, Boolean>(
@@ -215,7 +215,7 @@ public class TestMapContentProviderTest {
     @Test
     public void testAnaylizeRequestOrder()
                             throws JAXBException, IOException {
-        MapContentProvider wmsContentProvider = new MapContentProvider();
+        MapContentProvider wmsContentProvider = getProvider();
 
         JAXBContext jc = JAXBContext.newInstance( org.deegree.services.wps.provider.jrxml.jaxb.map.Map.class );
         Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -257,10 +257,14 @@ public class TestMapContentProviderTest {
         is.close();
     }
 
+    private MapContentProvider getProvider() {
+        return new MapContentProvider( null );
+    }
+
     @Test
     public void testAnaylizeRequestOrderSimple()
                             throws JAXBException, IOException {
-        MapContentProvider wmsContentProvider = new MapContentProvider();
+        MapContentProvider wmsContentProvider = getProvider();
 
         JAXBContext jc = JAXBContext.newInstance( org.deegree.services.wps.provider.jrxml.jaxb.map.Map.class );
         Unmarshaller unmarshaller = jc.createUnmarshaller();

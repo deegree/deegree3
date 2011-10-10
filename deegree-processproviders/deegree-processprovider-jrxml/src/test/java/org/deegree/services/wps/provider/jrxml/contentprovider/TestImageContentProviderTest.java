@@ -53,7 +53,6 @@ import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.junit.Test;
 
 /**
- * TODO add class documentation here
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -64,7 +63,7 @@ public class TestImageContentProviderTest {
 
     @Test
     public void testInspectInputParametersFromJrxml() {
-        ImageContentProvider imgContentProvider = new ImageContentProvider();
+        ImageContentProvider imgContentProvider = new ImageContentProvider( null );
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put( "DATE", "java.util.Date" );
         parameters.put( "DESCRIPTION", "java.lang.String" );
@@ -77,8 +76,8 @@ public class TestImageContentProviderTest {
         XMLAdapter adapter = new XMLAdapter(
                                              TestOtherContentProviderTest.class.getResourceAsStream( "../testWPSreportTemplate.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        imgContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs, adapter, parameters,
-                                                            handledParams );
+        imgContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs,
+                                                            adapter, parameters, handledParams );
 
         assertEquals( 6, parameters.size() );
 

@@ -33,49 +33,27 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider.jrxml.contentprovider;
-
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsCodeType;
-import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageStringType;
-
-import java.math.BigInteger;
-import java.util.Map;
+package org.deegree.services.wps.provider.jrxml;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.services.wps.provider.jrxml.ParameterDescription;
+import org.deegree.services.wps.WPSProcess;
 
 /**
- * TODO add class documentation here
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class AbstractJrxmlContentProvider implements JrxmlContentProvider {
+public abstract class AbstractJrxmlWPSProcess implements WPSProcess {
 
-    protected final DeegreeWorkspace workspace;
-
-    public AbstractJrxmlContentProvider( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
+    /**
+     * calls getProcesslet().init()
+     * 
+     * @param workspace
+     */
+    void init( DeegreeWorkspace workspace ) {
+        getProcesslet().init();
     }
 
-    protected void addInput( ProcessletInputDefinition input, Map<String, ParameterDescription> parameterDescriptions,
-                             String id, int max, int min ) {
-        input.setIdentifier( getAsCodeType( id ) );
-        String t = id;
-        if ( parameterDescriptions.containsKey( id ) ) {
-            input.setAbstract( getAsLanguageStringType( parameterDescriptions.get( id ).getDescription() ) );
-            if ( parameterDescriptions.get( id ).getTitle() != null ) {
-                t = parameterDescriptions.get( id ).getTitle();
-            }
-        }
-        input.setTitle( getAsLanguageStringType( t ) );
-        if ( max > -1 )
-            input.setMaxOccurs( BigInteger.valueOf( max ) );
-        if ( min > -1 )
-            input.setMinOccurs( BigInteger.valueOf( min ) );
-
-    }
 }

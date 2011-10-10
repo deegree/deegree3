@@ -64,7 +64,6 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.output.ComplexOutput;
@@ -73,14 +72,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * Process to get a preview about the report.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class JrxmlTemplateProcess implements WPSProcess {
+public class JrxmlTemplateProcess extends AbstractJrxmlWPSProcess {
 
     private static final Logger LOG = LoggerFactory.getLogger( JrxmlTemplateProcess.class );
 
@@ -157,7 +156,6 @@ public class JrxmlTemplateProcess implements WPSProcess {
             @Override
             public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
                                     throws ProcessletException {
-                // TODO: create template out of the jrxml file
                 ProcessletInput input = in.getParameter( parameterId );
                 if ( input != null ) {
                     LiteralInput li = (LiteralInput) input;

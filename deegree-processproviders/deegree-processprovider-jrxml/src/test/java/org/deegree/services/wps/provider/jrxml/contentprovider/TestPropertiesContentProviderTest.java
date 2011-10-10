@@ -58,8 +58,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * TODO add class documentation here
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
@@ -80,7 +78,7 @@ public class TestPropertiesContentProviderTest {
         resourceBundle.setDefaultLocale( "de" );
         resourceBundle.getSupportedLocale().add( "de" );
         resourceBundle.getSupportedLocale().add( "en" );
-        propertiesContentProvider = new PropertiesContentProvider( resourceBundle );
+        propertiesContentProvider = new PropertiesContentProvider( null, resourceBundle );
 
         parameters.put( "DATE", "java.util.Date" );
         parameters.put( "DESCRIPTION", "java.lang.String" );

@@ -73,6 +73,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -85,7 +86,6 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.process.jaxb.java.ProcessletInputDefinition.Metadata;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
@@ -137,6 +137,10 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
             this.text = text;
         }
 
+    }
+
+    public MapContentProvider( DeegreeWorkspace workspace ) {
+        super( workspace );
     }
 
     @Override
@@ -191,9 +195,36 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
             format.setMimeType( MIME_TYPE );
             format.setSchema( SCHEMA );
             comp.setDefaultFormat( format );
-            List<Metadata> metadata = comp.getMetadata();
-            Metadata meta = new Metadata();
-            metadata.add( meta );
+            // TODO: Metadata (width/height)
+            // Pair<Integer, Integer> mapDim = mapIds.get( mapId );
+            // if ( mapDim != null ) {
+            // System.out.println( mapDim.getFirst() );
+            // System.out.println( mapDim.getSecond() );
+            // try {
+            // Metadata meta = new Metadata();
+            // MapMetadata mm = new MapMetadata();
+            // mm.setWidth( BigInteger.valueOf( mapDim.getFirst().longValue() ) );
+            // mm.setHeight( BigInteger.valueOf( mapDim.getSecond().longValue() ) );
+            // JAXBContext jc = JAXBContext.newInstance( MapMetadata.class );
+            // Marshaller marshaller = jc.createMarshaller();
+            // ByteArrayOutputStream os = new ByteArrayOutputStream();
+            // XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
+            // marshaller.marshal( mm, writer );
+            // os.close();
+            // writer.close();
+            // InputStream is = new ByteArrayInputStream( os.toByteArray() );
+            // XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( is );
+            // StAXOMBuilder b = new StAXOMBuilder( reader );
+            // OMElement elem = b.getDocumentElement();
+            // System.out.println( elem );
+            // meta.setAny( elem );
+            // comp.getMetadata().add( meta );
+            // is.close();
+            // reader.close();
+            // } catch ( Exception e ) {
+            // LOG.error( "Could not create map metadata", e );
+            // }
+            // }
             inputs.add( new JAXBElement<ComplexInputDefinition>( new QName( "ProcessInput" ),
                                                                  ComplexInputDefinition.class, comp ) );
         }
