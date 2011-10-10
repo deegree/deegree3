@@ -127,12 +127,17 @@ public class BBOX extends SpatialOperator {
                 }
             }
         } else if ( obj instanceof Feature ) {
-            // handle the case where the property name can be empty
+            // handle the case where the property name is empty
             Feature f = (Feature) obj;
+            Envelope env = null;
             if ( f.getGMLProperties() != null && f.getGMLProperties().getBoundedBy() != null ) {
-                Envelope transformedBBox = (Envelope) getCompatibleGeometry( f.getGMLProperties().getBoundedBy(),
-                                                                             param2 );
-                return transformedBBox.intersects( f.getGMLProperties().getBoundedBy() );
+                env = f.getGMLProperties().getBoundedBy();
+            } else {
+                env = f.getEnvelope();
+            }
+            if ( env != null ) {
+                Envelope transformedBBox = (Envelope) getCompatibleGeometry( env, param2 );
+                return transformedBBox.intersects( env );
             }
         } else {
             LOG.warn( "Evaluating BBOX on non-Feature object and property name not specified." );

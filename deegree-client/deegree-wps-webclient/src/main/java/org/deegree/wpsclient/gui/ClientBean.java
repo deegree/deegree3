@@ -100,7 +100,7 @@ public class ClientBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        urls.add( "http://deegree3-testing.deegree.org/deegree-wps-demo/services" );
+        urls.add( "http://deegree3-testing.deegree.org/wps-workspace/services" );
         urls.add( "http://localhost:8080/deegree-wps-demo/services" );
         urls.add( "http://flexigeoweb.lat-lon.de/deegree-wps-demo/services" );
     }

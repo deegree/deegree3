@@ -98,8 +98,8 @@ public class WorkspaceBean implements Serializable {
 
     private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
 
-    // only used when no module version information is available
-    private static final String DEFAULT_VERSION = "3.1-pre13-SNAPSHOT";
+    // only used when no build (Maven) module version information is available
+    private static final String DEFAULT_VERSION = "3.1";
 
     private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
 
@@ -351,9 +351,14 @@ public class WorkspaceBean implements Serializable {
             List<String> list = readLines( in );
             List<String> res = new ArrayList<String>( list.size() );
             for ( String s : list ) {
-                String[] tokens = s.split( " ", 2 );
-                res.add( tokens[1] );
-                workspaceLocations.put( tokens[1], tokens[0] );
+                if ( !s.trim().isEmpty() ) {
+                    String[] tokens = s.split( " ", 2 );
+                    if ( tokens.length != 2 ) {
+                        LOG.warn( "Invalid workspace metadata line: '" + s + "'" );
+                    }
+                    res.add( tokens[1] );
+                    workspaceLocations.put( tokens[1], tokens[0] );
+                }
             }
             return res;
         } catch ( Throwable t ) {
