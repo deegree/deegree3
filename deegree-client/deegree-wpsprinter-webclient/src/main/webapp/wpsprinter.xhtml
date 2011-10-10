@@ -22,16 +22,18 @@
 		<h:panelGrid columns="2" columnClasses="parameter,metadata">
 			<h:form>
 				<h:outputLabel id="printTemplateLabel"
-					value="#{labels['printTemplate']}" for="printTemplateList" />
+					value="#{labels['printTemplate']}" for="printTemplateList"
+					rendered="#{!empty wpsPrinterBean.templates}" />
 				<h:selectOneMenu id="printTemplateList"
-					value="#{wpsPrinterBean.template}">
+					value="#{wpsPrinterBean.template}"
+					rendered="#{!empty wpsPrinterBean.templates}">
 					<f:selectItem itemLabel="#{labels.selectTemplate}" />
 					<f:selectItems value="#{wpsPrinterBean.templates}" />
 					<f:ajax execute="@this" render="printerMetaInfoContainer" />
 					<f:ajax execute="@this"
 						listener="#{wpsPrinterBean.updateTemplateMetadata}"
 						render=":templateMetadata" />
-					<f:ajax onevent="updateMapDimension()"/>
+					<f:ajax onevent="updateMapDimension()" />
 				</h:selectOneMenu>
 
 				<h:panelGroup id="printerMetaInfoContainer">
@@ -40,13 +42,6 @@
 						<f:event listener="#{wpsPrinterBean.renderMetaInfo}"
 							type="preRenderComponent" />
 					</h:panelGrid>
-					<!-- 
-					<ui:fragment>
-						<script>
-							updateMapDimension();
-						</script>
-					</ui:fragment>
-					 -->
 				</h:panelGroup>
 
 				<h:commandButton value="#{labels.printBt}"

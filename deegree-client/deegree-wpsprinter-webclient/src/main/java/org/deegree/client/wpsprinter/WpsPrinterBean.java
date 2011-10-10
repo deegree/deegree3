@@ -91,6 +91,8 @@ import org.slf4j.Logger;
 @ViewScoped
 public class WpsPrinterBean implements Serializable {
 
+    private static final String TEMPLATE_PROCESS_ID = "TEMPLATE";
+
     private static final long serialVersionUID = -5623716280017806019L;
 
     private static final Logger LOG = getLogger( WpsPrinterBean.class );
@@ -107,25 +109,64 @@ public class WpsPrinterBean implements Serializable {
 
     public List<SelectItem> getTemplates() {
         if ( templates == null ) {
-            WPSClient wpsClient = getWPSClient();
+            initTemplates();
+        }
+        return templates;
+    }
+
+    private void initTemplates() {
+        if ( templates == null ) {
             templates = new ArrayList<SelectItem>();
-            List<String> configuredTemplates = Configuration.getTemplates();
-            if ( configuredTemplates != null ) {
-                for ( String configuredTemplate : configuredTemplates ) {
-                    Process p = wpsClient.getProcess( configuredTemplate );
-                    addProcess( templates, p );
-                }
-            } else {
-                if ( wpsClient != null ) {
-                    Process[] processes = wpsClient.getProcesses();
-                    for ( int i = 0; i < processes.length; i++ ) {
-                        Process p = processes[i];
-                        addProcess( templates, p );
+            WPSClient wpsClient = getWPSClient();
+            if ( wpsClient != null ) {
+                List<String> configuredTemplates = Configuration.getTemplates();
+                if ( configuredTemplates != null && !configuredTemplates.isEmpty() ) {
+                    if ( configuredTemplates.size() == 1 ) {
+                        Process process = wpsClient.getProcess( configuredTemplates.get( 0 ) );
+                        if ( process != null ) {
+                            template = process.getId();
+                            updateTemplateMetadata();
+                        }
+                    } else {
+                        for ( String configuredTemplate : configuredTemplates ) {
+                            Process p = wpsClient.getProcess( configuredTemplate );
+                            if ( p != null ) {
+                                addProcess( templates, p );
+                            }
+                        }
+                    }
+                } else {
+                    if ( wpsClient != null ) {
+                        Process[] processes = wpsClient.getProcesses();
+                        if ( processes.length > 1 ) {
+                            if ( processes.length == 1 ) {
+                                CodeType id = processes[0].getId();
+                                if ( TEMPLATE_PROCESS_ID.equals( id.getCode() ) ) {
+                                    setNotTemplateMsg();
+                                } else {
+                                    template = id;
+                                    updateTemplateMetadata();
+                                }
+                            } else {
+                                for ( int i = 0; i < processes.length; i++ ) {
+                                    Process p = processes[i];
+                                    if ( !TEMPLATE_PROCESS_ID.equals( p.getId().getCode() ) ) {
+                                        addProcess( templates, p );
+                                    }
+                                }
+                            }
+                        } else {
+                            setNotTemplateMsg();
+                        }
                     }
                 }
             }
         }
-        return templates;
+    }
+
+    private void setNotTemplateMsg() {
+        FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_INFO, "WPSPrinterBean.info.noTemplates" );
+        FacesContext.getCurrentInstance().addMessage( null, fm );
     }
 
     private void addProcess( List<SelectItem> templates, Process p ) {
@@ -177,6 +218,10 @@ public class WpsPrinterBean implements Serializable {
 
     public void updateTemplateMetadata( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
+        updateTemplateMetadata();
+    }
+
+    private void updateTemplateMetadata() {
         description = null;
         overview = null;
         if ( template != null ) {
@@ -185,7 +230,7 @@ public class WpsPrinterBean implements Serializable {
                 Process templateProcess = wpsClient.getProcess( template.getCode() );
                 description = templateProcess.getAbstract() != null ? templateProcess.getAbstract().getString() : null;
 
-                Process process = wpsClient.getProcess( "TEMPLATE" );
+                Process process = wpsClient.getProcess( TEMPLATE_PROCESS_ID );
                 if ( process != null ) {
                     ProcessExecution prepareExecution = process.prepareExecution();
 
@@ -268,8 +313,7 @@ public class WpsPrinterBean implements Serializable {
                     }
                 } catch ( Exception e ) {
                     FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                    "WPSPrinterBean.error.updateParams",
-                                                                    e.getMessage() );
+                                                                    "WPSPrinterBean.error.updateParams", e.getMessage() );
                     FacesContext.getCurrentInstance().addMessage( null, fm );
                 }
 
