@@ -36,6 +36,8 @@
 
 package org.deegree.commons.utils;
 
+import org.deegree.commons.utils.CollectionUtils.Mapper;
+
 /**
  * <code>Triple</code>
  * 
@@ -125,6 +127,33 @@ public final class Triple<T, U, V> {
     @Override
     public String toString() {
         return "<" + first + ", " + second + ", " + third + ">";
+    }
+
+    public static <T, U, V> Mapper<T, Triple<T, U, V>> FIRST() {
+        return new Mapper<T, Triple<T, U, V>>() {
+            @Override
+            public T apply( Triple<T, U, V> u ) {
+                return u.first;
+            }
+        };
+    }
+
+    public static <T, U, V> Mapper<U, Triple<T, U, V>> SECOND() {
+        return new Mapper<U, Triple<T, U, V>>() {
+            @Override
+            public U apply( Triple<T, U, V> u ) {
+                return u.second;
+            }
+        };
+    }
+
+    public static <T, U, V> Mapper<V, Triple<T, U, V>> THIRD() {
+        return new Mapper<V, Triple<T, U, V>>() {
+            @Override
+            public V apply( Triple<T, U, V> u ) {
+                return u.third;
+            }
+        };
     }
 
 }
