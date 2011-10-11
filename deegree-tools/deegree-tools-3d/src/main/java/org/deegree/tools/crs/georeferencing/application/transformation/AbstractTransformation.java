@@ -37,15 +37,14 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 
 import java.util.List;
 
-import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
+import org.deegree.tools.crs.georeferencing.application.TransformationPoints;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
-import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 
 /**
@@ -59,14 +58,8 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 public abstract class AbstractTransformation extends Transformation {
 
     public static enum TransformationType {
-        Polynomial,
-
-        Helmert_4,
-
-        Affine
+        Polynomial, Helmert_4, Affine
     }
-
-    protected List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
     protected Footprint footPrint;
 
@@ -78,30 +71,17 @@ public abstract class AbstractTransformation extends Transformation {
 
     protected final int order;
 
-    private final PointResidual[] residuals;
+    protected TransformationPoints points;
 
-    private final int arraySize;
-
-    public AbstractTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                                   Footprint footPrint, Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS,
-                                   final int order ) {
+    public AbstractTransformation( TransformationPoints points, Footprint footPrint, Scene2DValues sceneValues,
+                                   ICRS sourceCRS, ICRS targetCRS, final int order ) {
         super( sourceCRS, targetCRS, new CRSIdentifiable( new CRSCodeType( "whatever" ) ) );
-        this.mappedPoints = mappedPoints;
+        this.points = points;
         this.footPrint = footPrint;
         this.sceneValues = sceneValues;
         this.sourceCRS = sourceCRS;
         this.targetCRS = targetCRS;
         this.order = order;
-        arraySize = mappedPoints.size();
-        residuals = new PointResidual[arraySize];
-    }
-
-    public PointResidual[] getResiduals() {
-        return residuals;
-    }
-
-    public int getArraySize() {
-        return arraySize;
     }
 
     public CRSIdentifiable getIdentifiable() {
@@ -112,7 +92,6 @@ public abstract class AbstractTransformation extends Transformation {
     public CRSCodeType[] getCRSCodeType() {
         CRSCodeType[] s = null;
         CRSCodeType[] t = null;
-        // try {
         s = sourceCRS.getCodes();
         t = targetCRS.getCodes();
         int size = s.length + t.length;
@@ -126,11 +105,6 @@ public abstract class AbstractTransformation extends Transformation {
             countT++;
         }
         return codeTypes;
-        // } catch ( UnknownCRSException e1 ) {
-        // // TODO Auto-generated catch block
-        // e1.printStackTrace();
-        // }
-        // return null;
     }
 
     /**

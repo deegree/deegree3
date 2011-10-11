@@ -36,20 +36,15 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import static java.awt.Cursor.getPredefinedCursor;
-import static org.deegree.services.wms.MapService.fillInheritedInformation;
 
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.vecmath.Point2d;
@@ -59,13 +54,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -76,7 +65,6 @@ import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.services.jaxb.wms.RequestableLayer;
-import org.deegree.services.jaxb.wms.ScaleDenominatorsType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
@@ -105,8 +93,6 @@ import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
-import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
-import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 import org.deegree.tools.rendering.viewer.File3dImporter;
 
 /**
@@ -133,8 +119,6 @@ public class ApplicationState {
     public FootprintMouseModel mouseFootprint;
 
     public Point2d changePoint;
-
-    public List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
     public ControllerModel conModel;
 
@@ -176,12 +160,8 @@ public class ApplicationState {
 
     public DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
 
-    public FeatureStore featureStore;
-
-    public FeatureType featureType;
-
-    public PropertyType pointGeometryType, buildingGeometryType;
-
+    public TransformationPoints points;
+    
     public ApplicationState() {
         try {
             workspace.initAll();
@@ -189,68 +169,6 @@ public class ApplicationState {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    public void setupFeatureStore() {
-        try {
-            URL schemaUrl = ApplicationState.class.getResource( "/org/deegree/tools/crs/georeferencing/memoryschema.xsd" );
-            String cfg = "<MemoryFeatureStore configVersion=\"3.0.0\" xmlns=\"http://www.deegree.org/datasource/feature/memory\">"
-                         + "  <StorageCRS>"
-                         + targetCRS.getAlias()
-                         + "</StorageCRS>"
-                         + "  <NamespaceHint namespaceURI=\"app\" prefix=\"http://www.deegree.org/georef\" />"
-                         + "  <GMLSchema version=\"GML_31\">"
-                         + schemaUrl.toExternalForm()
-                         + "</GMLSchema></MemoryFeatureStore>";
-            FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-
-            ResourceState<FeatureStore> state = mgr.getState( "pointsstore" );
-            if ( state != null ) {
-                mgr.deactivate( "pointsstore" );
-                mgr.deleteResource( "pointsstore" );
-            }
-
-            InputStream in = new ByteArrayInputStream( cfg.getBytes( "UTF-8" ) );
-            mgr.createResource( "pointsstore", in );
-            featureStore = mgr.activate( "pointsstore" ).getResource();
-            featureType = featureStore.getSchema().getFeatureTypes()[0];
-            pointGeometryType = featureType.getPropertyDeclarations().get( 0 );
-            buildingGeometryType = featureType.getPropertyDeclarations().get( 1 );
-            if ( service != null ) {
-                RequestableLayer lcfg = new RequestableLayer();
-                lcfg.setName( "points" );
-                lcfg.setTitle( "Points Layer" );
-                lcfg.setFeatureStoreId( "pointsstore" );
-                lcfg.setScaleDenominators( new ScaleDenominatorsType() );
-                try {
-                    FeatureLayer lay = new FeatureLayer( service, lcfg, service.getRootLayer(), workspace );
-                    Layer root = service.getRootLayer();
-                    root.addOrReplace( lay );
-                    service.layers.put( "points", lay );
-                    fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
-                    mapController.setLayers( new LinkedList<Layer>( service.getRootLayer().getChildren() ) );
-                } catch ( Throwable e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        } catch ( Throwable e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Removes sample points in panels and the table.
-     * 
-     * @param tableRows
-     *            that should be removed, could be <Code>null</Code>
-     */
-    public void removeFromMappedPoints( int[] tableRows ) {
-        for ( int i = tableRows.length - 1; i >= 0; i-- ) {
-            this.mappedPoints.remove( tableRows[i] );
-        }
-
     }
 
     /**
@@ -419,115 +337,6 @@ public class ApplicationState {
 
     }
 
-    public void updateResidualsWithLastAbstractPoint() {
-        if ( this.conModel.getFootPanel().getLastAbstractPoint() != null
-             && this.conModel.getPanel().getLastAbstractPoint() != null ) {
-            this.mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>(
-                                                                                          this.conModel.getFootPanel().getLastAbstractPoint(),
-                                                                                          this.conModel.getPanel().getLastAbstractPoint(),
-                                                                                          null ) );
-            this.updateMappedPoints();
-            this.updateResiduals( this.conModel.getTransformationType() );
-
-            // remove the last element...should be the before inserted value
-            this.mappedPoints.remove( this.mappedPoints.size() - 1 );
-        } else {
-            this.updateMappedPoints();
-            this.updateResiduals( this.conModel.getTransformationType() );
-        }
-    }
-
-    /**
-     * Adds the <Code>AbstractPoint</Code>s to a map, if specified.
-     * 
-     * @param mappedPointKey
-     * @param mappedPointValue
-     */
-    void addToMappedPoints( Point4Values mappedPointKey, Point4Values mappedPointValue, PointResidual residual ) {
-        if ( mappedPointKey != null && mappedPointValue != null ) {
-            this.mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>( mappedPointKey,
-                                                                                          mappedPointValue, residual ) );
-        }
-
-    }
-
-    /**
-     * Updates the rowNumber of the remained mappedPoints
-     */
-    private void updateMappedPoints() {
-
-        List<Triple<Point4Values, Point4Values, PointResidual>> temp = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
-
-        int counter = 0;
-        for ( Triple<Point4Values, Point4Values, PointResidual> p : this.mappedPoints ) {
-            Point4Values f = new Point4Values( p.first.getOldValue(), p.first.getInitialValue(), p.first.getNewValue(),
-                                               p.first.getWorldCoords(), new RowColumn( counter,
-                                                                                        p.first.getRc().getColumnX(),
-                                                                                        p.first.getRc().getColumnY() ) );
-            Point4Values s = new Point4Values( p.second.getOldValue(), p.second.getInitialValue(),
-                                               p.second.getNewValue(), p.second.getWorldCoords(),
-                                               new RowColumn( counter++, p.second.getRc().getColumnX(),
-                                                              p.second.getRc().getColumnY() ) );
-            if ( p.third != null ) {
-
-                PointResidual r = new PointResidual( p.third.x, p.third.y );
-                temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, r ) );
-            } else {
-                temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, null ) );
-            }
-        }
-        this.mappedPoints.clear();
-        this.mappedPoints.addAll( temp );
-    }
-
-    /**
-     * Updates the model of the table to show the residuals of the already stored mappedPoints. It is based on the
-     * Helmert transformation.
-     * 
-     * @param type
-     * 
-     */
-    public void updateResiduals( AbstractTransformation.TransformationType type ) {
-        AbstractTransformation t = this.determineTransformationType( type );
-        PointResidual[] r = t.calculateResiduals();
-        if ( r != null ) {
-            Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
-            int counter = 0;
-            for ( Triple<Point4Values, Point4Values, PointResidual> point : this.mappedPoints ) {
-                Vector<Double> element = new Vector<Double>( 6 );
-                element.add( point.second.getWorldCoords().x );
-                element.add( point.second.getWorldCoords().y );
-                element.add( point.first.getWorldCoords().x );
-                element.add( point.first.getWorldCoords().y );
-                element.add( r[counter].x );
-                element.add( r[counter].y );
-                data.add( element );
-
-                point.third = r[counter++];
-
-            }
-            this.tablePanel.getModel().setDataVector( data, this.tablePanel.getColumnNamesAsVector() );
-            this.tablePanel.getModel().fireTableDataChanged();
-        }
-    }
-
-    /**
-     * Removes everything after a complete deletion of the points.
-     */
-    public void removeAllFromMappedPoints() {
-        this.mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
-        this.tablePanel.removeAllRows();
-        this.conModel.getPanel().removeAllFromSelectedPoints();
-        this.conModel.getFootPanel().removeAllFromSelectedPoints();
-        this.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-//        this.conModel.getPanel().setPolygonList( null, null );
-        this.conModel.getPanel().setLastAbstractPoint( null, null, null );
-        this.conModel.getPanel().repaint();
-        this.conModel.getFootPanel().repaint();
-        this.reset();
-
-    }
-
     /**
      * Resets the focus of the panels and the startPanel.
      */
@@ -552,15 +361,15 @@ public class ApplicationState {
         }
         switch ( type ) {
         case Polynomial:
-            t = new Polynomial( this.mappedPoints, this.footPrint, this.sceneValues, this.targetCRS, this.targetCRS,
+            t = new Polynomial( this.points, this.footPrint, this.sceneValues, this.targetCRS, this.targetCRS,
                                 this.conModel.getOrder() );
             break;
         case Helmert_4:
-            t = new Helmert4Transform( this.mappedPoints, this.footPrint, this.sceneValues, this.targetCRS,
+            t = new Helmert4Transform( this.points, this.footPrint, this.sceneValues, this.targetCRS,
                                        this.conModel.getOrder() );
             break;
         case Affine:
-            t = new AffineTransformation( this.mappedPoints, this.footPrint, this.sceneValues, this.targetCRS,
+            t = new AffineTransformation( this.points, this.footPrint, this.sceneValues, this.targetCRS,
                                           this.targetCRS, this.conModel.getOrder() );
             break;
         }
@@ -573,37 +382,9 @@ public class ApplicationState {
      * drawn into the right position.
      */
     public void updateDrawingPanels() {
-        List<Point4Values> panelList = new ArrayList<Point4Values>();
-        List<Point4Values> footPanelList = new ArrayList<Point4Values>();
-        for ( Triple<Point4Values, Point4Values, PointResidual> p : this.mappedPoints ) {
-            panelList.add( p.second );
-            footPanelList.add( p.first );
-        }
-
-        this.conModel.getPanel().setSelectedPoints( panelList, this.sceneValues );
-        this.conModel.getFootPanel().setSelectedPoints( footPanelList, this.sceneValues );
-
         this.conModel.getPanel().repaint();
         this.conModel.getFootPanel().repaint();
 
     }
 
-    /**
-     * Sets values to the JTableModel.
-     */
-    public void setValues() {
-        this.conModel.getFootPanel().addToSelectedPoints( this.conModel.getFootPanel().getLastAbstractPoint() );
-        this.conModel.getPanel().addToSelectedPoints( this.conModel.getPanel().getLastAbstractPoint() );
-        if ( this.mappedPoints != null && this.mappedPoints.size() >= 1 ) {
-            this.addToMappedPoints( this.conModel.getFootPanel().getLastAbstractPoint(),
-                                    this.conModel.getPanel().getLastAbstractPoint(), null );
-            this.updateResiduals( this.conModel.getTransformationType() );
-        } else {
-            this.addToMappedPoints( this.conModel.getFootPanel().getLastAbstractPoint(),
-                                    this.conModel.getPanel().getLastAbstractPoint(), null );
-        }
-        this.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-        this.conModel.getPanel().setLastAbstractPoint( null, null, null );
-
-    }
 }

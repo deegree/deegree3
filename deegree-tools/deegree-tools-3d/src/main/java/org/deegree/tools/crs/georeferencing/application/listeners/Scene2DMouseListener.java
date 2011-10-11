@@ -35,32 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.listeners;
 
-import static java.lang.Double.isNaN;
-import static java.util.Collections.singletonList;
-import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
-
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collections;
-import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.feature.Feature;
-import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.comparison.PropertyIsNull;
-import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.logical.Not;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
@@ -108,7 +87,6 @@ public class Scene2DMouseListener extends MouseAdapter {
 
     @Override
     public void mouseReleased( MouseEvent m ) {
-        boolean isFirstNumber = false;
         if ( this.state.mapController != null ) {
             if ( this.state.isControlDown || this.state.zoomIn || this.state.zoomOut ) {
                 if ( this.state.zoomIn ) {
@@ -121,7 +99,7 @@ public class Scene2DMouseListener extends MouseAdapter {
                                                    m.getX(), m.getY() );
                 }
 
-                updateTransformation( this.state );
+                state.points.updateTransformation();
                 this.state.conModel.getPanel().updatePoints( this.state.sceneValues );
                 this.state.conModel.getPanel().repaint();
             }
@@ -136,46 +114,19 @@ public class Scene2DMouseListener extends MouseAdapter {
                     if ( this.state.conModel.getFootPanel().getLastAbstractPoint() != null
                          && this.state.conModel.getPanel().getLastAbstractPoint() != null
                          && this.state.conModel.getPanel().getFocus() == true ) {
-                        this.state.setValues();
+                        // TODO probably update something
                     }
                     if ( this.state.conModel.getFootPanel().getLastAbstractPoint() == null
                          && this.state.conModel.getPanel().getLastAbstractPoint() == null
                          && this.state.conModel.getPanel().getFocus() == true ) {
                         this.state.tablePanel.addRow();
-                        isFirstNumber = true;
                     }
 
                     double x = m.getX();
                     double y = m.getY();
                     this.state.sceneValues.setEnvelopeGeoref( this.state.mapController.getCurrentEnvelope() );
                     GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                    GeoReferencedPoint g = (GeoReferencedPoint) this.state.sceneValues.getWorldPoint( geoReferencedPoint );
-                    Property p = new GenericProperty( state.pointGeometryType,
-                                                      new DefaultPoint( null, state.targetCRS, null,
-                                                                        new double[] { g.getX(), g.getY() } ) );
-                    Feature f = state.featureType.newFeature( "test", Collections.singletonList( p ), null, GML_31 );
-                    try {
-                        FeatureStoreTransaction ta = state.featureStore.acquireTransaction();
-                        GenericFeatureCollection col = new GenericFeatureCollection();
-                        col.add( f );
-                        ta.performInsert( col, GENERATE_NEW );
-                        ta.commit();
-                        state.mapController.forceRepaint();
-                        this.state.conModel.getPanel().repaint();
-                        this.state.conModel.getFootPanel().repaint();
-                    } catch ( Throwable e ) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    this.state.rc = this.state.tablePanel.setCoords( g );
-                    this.state.conModel.getPanel().setLastAbstractPoint( geoReferencedPoint, g, this.state.rc );
-                    if ( isFirstNumber == false ) {
-                        this.state.updateResidualsWithLastAbstractPoint();
-                    }
-                    this.state.referencingLeft = false;
-
-                    updateTransformation( this.state );
-
+                    state.points.add( geoReferencedPoint, null );
                 } else if ( this.state.pan ) {
                     this.state.previewing = false;
                     this.state.mapController.endPanning();
@@ -186,62 +137,6 @@ public class Scene2DMouseListener extends MouseAdapter {
             }
 
         }
-    }
-
-    public static void updateTransformation( ApplicationState state ) {
-        // swap the tempPoints into the map now
-        if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
-             && state.conModel.getPanel().getLastAbstractPoint() != null ) {
-            state.setValues();
-        } else {
-            return;
-        }
-
-        state.conModel.setTransform( state.determineTransformationType( state.conModel.getTransformationType() ) );
-        if ( state.conModel.getTransform() == null ) {
-            return;
-        }
-        List<Ring> polygonRing = state.conModel.getTransform().computeRingList();
-
-        GeometryFactory fac = new GeometryFactory();
-
-        PropertyIsNull op = new PropertyIsNull( new ValueReference( state.buildingGeometryType.getName() ), null );
-        OperatorFilter f = new OperatorFilter( new Not( op ) );
-        try {
-            FeatureStoreTransaction ta = state.featureStore.acquireTransaction();
-            ta.performDelete( state.featureType.getName(), f, null );
-            ta.commit();
-
-            GenericFeatureCollection col = new GenericFeatureCollection();
-            int i = 0;
-            for ( Ring r : polygonRing ) {
-                if ( r.getControlPoints().size() < 4 ) {
-                    continue;
-                }
-                if ( isNaN( r.getControlPoints().get( 0 ).get0() ) ) {
-                    continue;
-                }
-                Polygon p = fac.createPolygon( null, state.targetCRS, r, null );
-                Property prop = new GenericProperty( state.buildingGeometryType, p );
-                Feature feat = state.featureType.newFeature( "test" + i++, singletonList( prop ), null, GML_31 );
-                col.add( feat );
-            }
-            ta = state.featureStore.acquireTransaction();
-            ta.performInsert( col, GENERATE_NEW );
-            ta.commit();
-        } catch ( Throwable e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        state.updateResiduals( state.conModel.getTransformationType() );
-
-        state.conModel.getPanel().repaint();
-
-        state.reset();
-
-        if ( state.transformationListener != null )
-            state.transformationListener.actionPerformed( new ActionEvent( state, 0, "transformationupdated" ) );
     }
 
 }

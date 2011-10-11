@@ -42,7 +42,6 @@ import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.EventListener;
 
 import javax.swing.JCheckBox;
@@ -99,8 +98,6 @@ public class Controller {
         state.glHandler = view.getOpenGLEventListener();
         AbstractPanel2D.selectedPointSize = state.conModel.getDialogModel().getSelectionPointSize().first;
         AbstractPanel2D.zoomValue = state.conModel.getDialogModel().getResizeValue().first;
-
-        this.state.mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
 
         view.addListeners( new ButtonListener( state ) );
         view.addHoleWindowListener( new HoleWindowListener( state ) );
@@ -203,15 +200,6 @@ public class Controller {
 
             if ( column != -1 && model.getValueAt( row, column ) != null ) {
                 Object data = model.getValueAt( row, column );
-
-                for ( Triple<Point4Values, Point4Values, PointResidual> p : Controller.this.state.mappedPoints ) {
-                    boolean changed = Controller.this.changePointLocation( p, data, row, column );
-                    if ( changed ) {
-
-                        Controller.this.state.updateDrawingPanels();
-
-                    }
-                }
 
                 if ( row == e.getLastRow() ) {
                     Triple<Point4Values, Point4Values, PointResidual> newLastPair;

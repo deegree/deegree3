@@ -145,7 +145,7 @@ public class GeneralPanel extends GenericSettingsPanel {
      * 
      * @return the tooltip of the snapping.
      */
-    private String getSnappingTooltipText() {
+    private static String getSnappingTooltipText() {
         StringBuilder sb = new StringBuilder();
         sb.append( "Snapping is activated if the checkmark is set." );
         return sb.toString();
@@ -189,7 +189,7 @@ public class GeneralPanel extends GenericSettingsPanel {
      * @param spinner
      * @return the textfield that is used by the jSpinner.
      */
-    public JFormattedTextField getTextField( JSpinner spinner ) {
+    public static JFormattedTextField getTextField( JSpinner spinner ) {
         JComponent editor = spinner.getEditor();
         if ( editor instanceof JSpinner.DefaultEditor ) {
             return ( (JSpinner.DefaultEditor) editor ).getTextField();

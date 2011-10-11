@@ -41,7 +41,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -65,8 +64,6 @@ public abstract class AbstractPanel2D extends JPanel {
     private static final long serialVersionUID = 132095136615318676L;
 
     protected boolean focus;
-
-    protected List<Point4Values> selectedPoints;
 
     protected Point4Values lastAbstractPoint;
 
@@ -115,15 +112,6 @@ public abstract class AbstractPanel2D extends JPanel {
         return focus;
     }
 
-    public List<Point4Values> getSelectedPoints() {
-        return selectedPoints;
-    }
-
-    public void setSelectedPoints( List<Point4Values> selectedPoints, Scene2DValues sceneValues ) {
-        this.selectedPoints = selectedPoints;
-        updatePoints( sceneValues );
-    }
-
     public Point4Values getLastAbstractPoint() {
         return lastAbstractPoint;
     }
@@ -134,16 +122,6 @@ public abstract class AbstractPanel2D extends JPanel {
         } else {
             this.lastAbstractPoint = null;
         }
-    }
-
-    public void addToSelectedPoints( Point4Values point ) {
-
-        selectedPoints.add( point );
-
-    }
-
-    public void removeAllFromSelectedPoints() {
-        selectedPoints = new ArrayList<Point4Values>();
     }
 
     public abstract void updatePoints( Scene2DValues sceneValues );

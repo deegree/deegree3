@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.panel2D;
 
+import static org.deegree.commons.utils.CollectionUtils.map;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -47,12 +49,14 @@ import java.util.Map;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
-import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 
 /**
  * 
@@ -65,10 +69,7 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  */
 public class BuildingFootprintPanel extends AbstractPanel2D {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5286409108040388499L;
 
     public final static String BUILDINGFOOTPRINT_PANEL_NAME = "BuildingFootprintPanel";
 
@@ -82,13 +83,14 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private ArrayList<Polygon> polygonListTranslated;
 
+    private ApplicationState state;
+
     /**
      * 
      */
-    public BuildingFootprintPanel() {
+    public BuildingFootprintPanel( ApplicationState state ) {
         this.setName( BUILDINGFOOTPRINT_PANEL_NAME );
-
-        this.selectedPoints = new ArrayList<Point4Values>();
+        this.state = state;
     }
 
     @Override
@@ -112,15 +114,15 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             g2.drawRect( x, y, width, height );
         }
 
-        if ( selectedPoints != null ) {
-            for ( Point4Values point : selectedPoints ) {
+        if ( state.points != null ) {
+            for ( Point4Values point : map( state.points.getMappedPoints(),
+                                            Triple.<Point4Values, Point4Values, PointResidual> FIRST() ) ) {
                 g2.fillOval( new Double( point.getNewValue().x ).intValue() - selectedPointSize,
                              new Double( point.getNewValue().y ).intValue() - selectedPointSize, selectedPointSize * 2,
                              selectedPointSize * 2 );
             }
         }
         if ( lastAbstractPoint != null ) {
-
             Point2d p = new Point2d( lastAbstractPoint.getNewValue().x - selectedPointSize,
                                      lastAbstractPoint.getNewValue().y - selectedPointSize );
 
@@ -215,38 +217,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     @Override
     public void updatePoints( Scene2DValues sceneValues ) {
-
         if ( worldPolygonList != null ) {
-
             setPolygonList( worldPolygonList, sceneValues );
-        }
-
-        updateSelectedPoints( sceneValues );
-
-    }
-
-    private void updateSelectedPoints( Scene2DValues sceneValues ) {
-        List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
-        for ( Point4Values p : selectedPoints ) {
-            int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
-            double x = pValues[0];
-            double y = pValues[1];
-            FootprintPoint pi = new FootprintPoint( x, y );
-            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords(),
-                                                      p.getRc() ) );
-        }
-        selectedPoints = selectedPointsTemp;
-        if ( lastAbstractPoint != null ) {
-
-            AbstractGRPoint worldCoords = lastAbstractPoint.getWorldCoords();
-            AbstractGRPoint initialValue = lastAbstractPoint.getInitialValue();
-            RowColumn rc = lastAbstractPoint.getRc();
-            int[] pValues = sceneValues.getPixelCoord( worldCoords );
-            double x = pValues[0];
-            double y = pValues[1];
-
-            FootprintPoint pi = new FootprintPoint( x, y );
-            lastAbstractPoint = new Point4Values( pi, initialValue, pi, worldCoords, rc );
         }
     }
 

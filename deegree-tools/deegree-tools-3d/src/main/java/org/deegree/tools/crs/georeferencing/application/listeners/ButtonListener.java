@@ -67,7 +67,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -84,7 +83,7 @@ import org.deegree.services.wms.model.layers.RemoteWMSLayer;
 import org.deegree.services.wms.utils.MapController;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
-import org.deegree.tools.crs.georeferencing.application.handler.FileInputHandler;
+import org.deegree.tools.crs.georeferencing.application.TransformationPoints;
 import org.deegree.tools.crs.georeferencing.application.handler.FileOutputHandler;
 import org.deegree.tools.crs.georeferencing.application.handler.JCheckboxHandler;
 import org.deegree.tools.crs.georeferencing.communication.FileChooser;
@@ -97,9 +96,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralP
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
-import org.deegree.tools.crs.georeferencing.model.datatransformer.VectorTransformer;
-import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
-import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
+import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
 import org.slf4j.Logger;
 
 /**
@@ -137,62 +134,23 @@ public class ButtonListener implements ActionListener {
             if ( source instanceof JRadioButton ) {
                 int pointSize = ( (ViewPanel) this.state.optionSettingPanel ).getTbm().getButtons().get( source );
                 this.state.conModel.getDialogModel().setSelectionPointSize( pointSize );
-
             } else if ( source instanceof JCheckBox ) {
                 JCheckBox selectedCheckbox = (JCheckBox) source;
-
                 new JCheckboxHandler( selectedCheckbox, this.state.conModel, this.state.wmsParameter );
             }
         } else if ( source instanceof JButton ) {
 
             if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                 int[] tableRows = this.state.tablePanel.getTable().getSelectedRows();
-                List<Integer> deleteableRows = new ArrayList<Integer>();
-
-                for ( int tableRow : tableRows ) {
-                    boolean contained = false;
-
-                    for ( Triple<Point4Values, Point4Values, PointResidual> p : this.state.mappedPoints ) {
-                        if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
-
-                            contained = true;
-                            deleteableRows.add( tableRow );
-
-                            break;
-                        }
-
-                    }
-                    if ( contained == false ) {
-
-                        this.state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-                        this.state.conModel.getPanel().setLastAbstractPoint( null, null, null );
-                    }
-                }
-                if ( deleteableRows.size() != 0 ) {
-                    int[] temp = new int[deleteableRows.size()];
-                    for ( int i = 0; i < temp.length; i++ ) {
-                        temp[i] = deleteableRows.get( i );
-                    }
-                    this.state.removeFromMappedPoints( temp );
-                }
-                this.state.updateResidualsWithLastAbstractPoint();
-                this.state.updateDrawingPanels();
+                state.points.delete( tableRows );
             } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
-
-                FileInputHandler in = new FileInputHandler( this.state.tablePanel );
-                if ( in.getData() != null ) {
-                    VectorTransformer vt = new VectorTransformer( in.getData(), this.state.sceneValues );
-                    this.state.mappedPoints.clear();
-                    this.state.mappedPoints.addAll( vt.getMappedPoints() );
-                    this.state.updateDrawingPanels();
-                }
-
+                state.points.load();
             } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.SAVE_POINTTABLE ) ) {
 
                 new FileOutputHandler( this.state.tablePanel );
 
             } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
-                this.state.removeAllFromMappedPoints();
+                this.state.points.removeAll();
             } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
                 if ( this.state.optionDialog != null && this.state.optionDialog.isVisible() == true ) {
                     this.state.conModel.getDialogModel().transferOldToNew();
@@ -214,7 +172,7 @@ public class ButtonListener implements ActionListener {
                     if ( this.state.optionSettingPanel != null ) {
 
                         if ( this.state.optionSettingPanel instanceof GeneralPanel ) {
-                            String p = ( (GeneralPanel) this.state.optionSettingPanel ).getTextField( ( (GeneralPanel) this.state.optionSettingPanel ).getZoomValue() ).getText();
+                            String p = GeneralPanel.getTextField( ( (GeneralPanel) this.state.optionSettingPanel ).getZoomValue() ).getText();
                             String p1 = p.replace( ',', '.' );
                             this.state.conModel.getDialogModel().setResizeValue( new Double( p1 ).doubleValue() );
                             this.exceptionThrown = false;
@@ -303,8 +261,8 @@ public class ButtonListener implements ActionListener {
                             this.state.targetCRS = crs;
                             this.state.initGeoReferencingScene();
                             this.state.wmsParameter.setVisible( false );
-                            if ( state.featureStore == null ) {
-                                state.setupFeatureStore();
+                            if ( state.points == null ) {
+                                state.points = new TransformationPoints( state );
                             }
                         } else {
                             new ErrorDialog( this.state.wmsParameter, ImageObserver.ERROR,
@@ -315,11 +273,9 @@ public class ButtonListener implements ActionListener {
                 }
             }
         } else if ( source instanceof JMenuItem ) {
-
             if ( ( (JMenuItem) source ).getText().startsWith( get( "MENUITEM_EDIT_OPTIONS" ) ) ) {
                 DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
-
-                this.state.conModel.getDialogModel().createNodes( root );
+                OptionDialogModel.createNodes( root );
                 this.state.optionDialog = new OptionDialog( this.state.conModel.getView().getParent(), root );
                 this.state.optionDialog.getButtonPanel().addListeners( new ButtonListener( this.state ) );
                 this.state.optionNavPanel = this.state.optionDialog.getNavigationPanel();
@@ -449,8 +405,8 @@ public class ButtonListener implements ActionListener {
 
                         this.state.targetCRS = bbox.getCoordinateSystem();
                         this.state.initGeoReferencingScene();
-                        if ( state.featureStore == null ) {
-                            state.setupFeatureStore();
+                        if ( state.points == null ) {
+                            state.points = new TransformationPoints( state );
                         }
                     } catch ( Throwable e1 ) {
                         // TODO Auto-generated catch block

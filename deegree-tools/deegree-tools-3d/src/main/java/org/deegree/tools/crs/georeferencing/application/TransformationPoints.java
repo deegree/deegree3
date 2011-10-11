@@ -1,0 +1,356 @@
+//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+package org.deegree.tools.crs.georeferencing.application;
+
+import static java.lang.Double.isNaN;
+import static java.util.Collections.singletonList;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
+import static org.deegree.services.wms.MapService.fillInheritedInformation;
+
+import java.awt.event.ActionEvent;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
+
+import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.utils.Triple;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.Feature;
+import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsNull;
+import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.logical.Not;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.services.jaxb.wms.RequestableLayer;
+import org.deegree.services.jaxb.wms.ScaleDenominatorsType;
+import org.deegree.services.wms.model.layers.FeatureLayer;
+import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.tools.crs.georeferencing.application.handler.FileInputHandler;
+import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation;
+import org.deegree.tools.crs.georeferencing.model.datatransformer.VectorTransformer;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
+import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
+
+/**
+ * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public class TransformationPoints {
+
+    private LinkedHashMap<Triple<Point4Values, Point4Values, PointResidual>, String> mappedPoints = new LinkedHashMap<Triple<Point4Values, Point4Values, PointResidual>, String>();
+
+    private FeatureStore featureStore;
+
+    private FeatureType featureType;
+
+    private PropertyType pointGeometryType, buildingGeometryType;
+
+    private ApplicationState state;
+
+    public TransformationPoints( ApplicationState state ) {
+        this.state = state;
+        setupFeatureStore();
+    }
+
+    private void setupFeatureStore() {
+        try {
+            URL schemaUrl = ApplicationState.class.getResource( "/org/deegree/tools/crs/georeferencing/memoryschema.xsd" );
+            String cfg = "<MemoryFeatureStore configVersion=\"3.0.0\" xmlns=\"http://www.deegree.org/datasource/feature/memory\">"
+                         + "  <StorageCRS>"
+                         + state.targetCRS.getAlias()
+                         + "</StorageCRS>"
+                         + "  <NamespaceHint namespaceURI=\"app\" prefix=\"http://www.deegree.org/georef\" />"
+                         + "  <GMLSchema version=\"GML_31\">"
+                         + schemaUrl.toExternalForm()
+                         + "</GMLSchema></MemoryFeatureStore>";
+            FeatureStoreManager mgr = state.workspace.getSubsystemManager( FeatureStoreManager.class );
+
+            ResourceState<FeatureStore> rstate = mgr.getState( "pointsstore" );
+            if ( rstate != null ) {
+                mgr.deactivate( "pointsstore" );
+                mgr.deleteResource( "pointsstore" );
+            }
+
+            InputStream in = new ByteArrayInputStream( cfg.getBytes( "UTF-8" ) );
+            mgr.createResource( "pointsstore", in );
+            featureStore = mgr.activate( "pointsstore" ).getResource();
+            featureType = featureStore.getSchema().getFeatureTypes()[0];
+            pointGeometryType = featureType.getPropertyDeclarations().get( 0 );
+            buildingGeometryType = featureType.getPropertyDeclarations().get( 1 );
+            if ( state.service != null ) {
+                RequestableLayer lcfg = new RequestableLayer();
+                lcfg.setName( "points" );
+                lcfg.setTitle( "Points Layer" );
+                lcfg.setFeatureStoreId( "pointsstore" );
+                lcfg.setScaleDenominators( new ScaleDenominatorsType() );
+                try {
+                    FeatureLayer lay = new FeatureLayer( state.service, lcfg, state.service.getRootLayer(),
+                                                         state.workspace );
+                    Layer root = state.service.getRootLayer();
+                    root.addOrReplace( lay );
+                    state.service.layers.put( "points", lay );
+                    fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
+                    state.mapController.setLayers( new LinkedList<Layer>( state.service.getRootLayer().getChildren() ) );
+                } catch ( Throwable e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        } catch ( Throwable e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void removeAll() {
+        mappedPoints.clear();
+    }
+
+    public void load() {
+        FileInputHandler in = new FileInputHandler( this.state.tablePanel );
+        if ( in.getData() != null ) {
+            VectorTransformer vt = new VectorTransformer( in.getData(), this.state.sceneValues );
+            mappedPoints.clear();
+            for ( Triple<Point4Values, Point4Values, PointResidual> t : vt.getMappedPoints() ) {
+                mappedPoints.put( t, null );
+            }
+            this.state.updateDrawingPanels();
+        }
+    }
+
+    public void save() {
+    }
+
+    public void delete( int[] indexes ) {
+        // List<Triple<Point4Values, Point4Values, PointResidual>> deleteableRows = new ArrayList<Triple<Point4Values,
+        // Point4Values, PointResidual>>();
+        //
+        // for ( int tableRow : tableRows ) {
+        // boolean contained = false;
+        //
+        // for ( Entry<Triple<Point4Values, Point4Values, PointResidual>, String> p : this.state.mappedPoints.entrySet()
+        // ) {
+        // if ( p.getKey().first.getRc().getRow() == tableRow || p.getKey().second.getRc().getRow() == tableRow ) {
+        // contained = true;
+        // deleteableRows.add( p.getKey() );
+        // break;
+        // }
+        // }
+        // if ( contained == false ) {
+        // this.state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        // this.state.conModel.getPanel().setLastAbstractPoint( null, null, null );
+        // }
+        // }
+        // if ( deleteableRows.size() != 0 ) {
+        // this.state.removeFromMappedPoints( deleteableRows );
+        // }
+        // this.state.updateResidualsWithLastAbstractPoint();
+        // this.state.updateDrawingPanels();
+    }
+
+    public void recalculate() {
+    }
+
+    public void add( AbstractGRPoint left, AbstractGRPoint right ) {
+        Point4Values leftp4 = null, rightp4 = null;
+        if ( left != null ) {
+            GeoReferencedPoint g = (GeoReferencedPoint) this.state.sceneValues.getWorldPoint( left );
+            leftp4 = new Point4Values( left, g, null );
+            Property p = new GenericProperty( pointGeometryType, new DefaultPoint( null, state.targetCRS, null,
+                                                                                   new double[] { g.getX(), g.getY() } ) );
+            Feature f = featureType.newFeature( "test", Collections.singletonList( p ), null, GML_31 );
+            try {
+                FeatureStoreTransaction ta = featureStore.acquireTransaction();
+                GenericFeatureCollection col = new GenericFeatureCollection();
+                col.add( f );
+                ta.performInsert( col, GENERATE_NEW );
+                ta.commit();
+                state.mapController.forceRepaint();
+                this.state.conModel.getPanel().repaint();
+                this.state.conModel.getFootPanel().repaint();
+            } catch ( Throwable e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            this.state.rc = this.state.tablePanel.setCoords( g );
+            this.state.conModel.getPanel().setLastAbstractPoint( left, g, this.state.rc );
+        }
+        if ( right != null ) {
+            rightp4 = new Point4Values( right, state.sceneValues.getWorldPoint( right ), null );
+        }
+        this.state.referencingLeft = false;
+
+        Triple<Point4Values, Point4Values, PointResidual> last = null;
+        if ( !mappedPoints.isEmpty() ) {
+            last = new LinkedList<Triple<Point4Values, Point4Values, PointResidual>>( mappedPoints.keySet() ).getLast();
+        }
+
+        if ( last != null && last.second == null && leftp4 != null ) {
+            last.second = leftp4;
+        } else if ( last != null && last.first == null && rightp4 != null ) {
+            last.first = rightp4;
+        } else {
+            mappedPoints.put( new Triple<Point4Values, Point4Values, PointResidual>( rightp4, leftp4, null ), null );
+        }
+
+        updateTransformation();
+    }
+
+    public void updateTransformation() {
+        // swap the tempPoints into the map now
+        if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
+             && state.conModel.getPanel().getLastAbstractPoint() != null ) {
+            // state.setValues();
+        } else {
+            return;
+        }
+
+        state.conModel.setTransform( state.determineTransformationType( state.conModel.getTransformationType() ) );
+        if ( state.conModel.getTransform() == null ) {
+            return;
+        }
+        List<Ring> polygonRing = state.conModel.getTransform().computeRingList();
+
+        GeometryFactory fac = new GeometryFactory();
+
+        PropertyIsNull op = new PropertyIsNull( new ValueReference( buildingGeometryType.getName() ), null );
+        OperatorFilter f = new OperatorFilter( new Not( op ) );
+        try {
+            FeatureStoreTransaction ta = featureStore.acquireTransaction();
+            ta.performDelete( featureType.getName(), f, null );
+            ta.commit();
+
+            GenericFeatureCollection col = new GenericFeatureCollection();
+            int i = 0;
+            for ( Ring r : polygonRing ) {
+                if ( r.getControlPoints().size() < 4 ) {
+                    continue;
+                }
+                if ( isNaN( r.getControlPoints().get( 0 ).get0() ) ) {
+                    continue;
+                }
+                Polygon p = fac.createPolygon( null, state.targetCRS, r, null );
+                Property prop = new GenericProperty( buildingGeometryType, p );
+                Feature feat = featureType.newFeature( "test" + i++, singletonList( prop ), null, GML_31 );
+                col.add( feat );
+            }
+            ta = featureStore.acquireTransaction();
+            ta.performInsert( col, GENERATE_NEW );
+            ta.commit();
+        } catch ( Throwable e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        updateResiduals( state.conModel.getTransformationType() );
+
+        state.conModel.getPanel().repaint();
+
+        state.reset();
+
+        if ( state.transformationListener != null )
+            state.transformationListener.actionPerformed( new ActionEvent( state, 0, "transformationupdated" ) );
+    }
+
+    /**
+     * Updates the model of the table to show the residuals of the already stored mappedPoints. It is based on the
+     * Helmert transformation.
+     * 
+     * @param type
+     * 
+     */
+    public void updateResiduals( AbstractTransformation.TransformationType type ) {
+        AbstractTransformation t = state.determineTransformationType( type );
+        PointResidual[] r = t.calculateResiduals();
+        if ( r != null ) {
+            Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
+            int counter = 0;
+            for ( Triple<Point4Values, Point4Values, PointResidual> point : this.mappedPoints.keySet() ) {
+                if ( point.second == null ) {
+                    continue;
+                }
+                Vector<Double> element = new Vector<Double>( 6 );
+                element.add( point.second.getWorldCoords().x );
+                element.add( point.second.getWorldCoords().y );
+                element.add( point.first.getWorldCoords().x );
+                element.add( point.first.getWorldCoords().y );
+                element.add( r[counter].x );
+                element.add( r[counter].y );
+                data.add( element );
+
+                point.third = r[counter++];
+
+            }
+            state.tablePanel.getModel().setDataVector( data, state.tablePanel.getColumnNamesAsVector() );
+            state.tablePanel.getModel().fireTableDataChanged();
+        }
+    }
+
+    public int getNumPoints() {
+        return mappedPoints.size();
+    }
+
+    public boolean isEmpty() {
+        return mappedPoints.isEmpty();
+    }
+
+    public List<Triple<Point4Values, Point4Values, PointResidual>> getMappedPoints() {
+        return new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>( mappedPoints.keySet() );
+    }
+}

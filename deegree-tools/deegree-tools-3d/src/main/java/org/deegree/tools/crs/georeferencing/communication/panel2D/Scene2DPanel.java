@@ -43,7 +43,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -52,10 +51,6 @@ import javax.swing.SwingUtilities;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.ApplicationState;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
-import org.deegree.tools.crs.georeferencing.model.RowColumn;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
-import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
-import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
  * The JPanel that should display a BufferedImage.
@@ -78,7 +73,6 @@ public class Scene2DPanel extends AbstractPanel2D {
     public Scene2DPanel( ApplicationState state ) {
         this.state = state;
         this.setName( SCENE2D_PANEL_NAME );
-        this.selectedPoints = new ArrayList<Point4Values>();
     }
 
     @Override
@@ -118,34 +112,9 @@ public class Scene2DPanel extends AbstractPanel2D {
         this.imageDimension = imageDimension;
     }
 
-    private void updateSelectedPoints( Scene2DValues sceneValues ) {
-        List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
-        for ( Point4Values p : selectedPoints ) {
-            int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
-            double x = pValues[0];
-            double y = pValues[1];
-            GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
-            selectedPointsTemp.add( new Point4Values( pi, p.getInitialValue(), pi, p.getWorldCoords(), p.getRc() ) );
-        }
-        selectedPoints.clear();
-        selectedPoints.addAll( selectedPointsTemp );
-        if ( lastAbstractPoint != null ) {
-            AbstractGRPoint worldCoords = lastAbstractPoint.getWorldCoords();
-            AbstractGRPoint initialValue = lastAbstractPoint.getInitialValue();
-            RowColumn rc = lastAbstractPoint.getRc();
-            int[] p = sceneValues.getPixelCoord( worldCoords );
-            double x = p[0];
-            double y = p[1];
-
-            GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
-            lastAbstractPoint = new Point4Values( pi, initialValue, pi, worldCoords, rc );
-        }
-    }
-
     @Override
     public void updatePoints( Scene2DValues sceneValues ) {
-        updateSelectedPoints( sceneValues );
-
+        // nothing to do
     }
 
     @Override

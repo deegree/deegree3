@@ -256,7 +256,7 @@ public class WMSParameterChooser extends AbstractGRDialog {
      *            , not <Code>null</Code>.
      * @return a typeGeneric list.
      */
-    private <E> List<E> mergeLists( Collection<? extends E> c1, Collection<? extends E> c2 ) {
+    private static <E> List<E> mergeLists( Collection<? extends E> c1, Collection<? extends E> c2 ) {
         List<E> list = new ArrayList<E>();
         for ( E e : c2 ) {
             if ( c1.contains( e ) ) {

@@ -53,6 +53,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
+import org.deegree.tools.crs.georeferencing.application.TransformationPoints;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
@@ -66,8 +67,6 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * @version $Revision$, $Date$
  */
 public class Polynomial extends AbstractTransformation {
-
-    private final int arraySize;
 
     private float[] passPointsSrc;
 
@@ -92,20 +91,20 @@ public class Polynomial extends AbstractTransformation {
         requiredPoints.put( 4, 15 );
     }
 
-    public Polynomial( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints, Footprint footPrint,
-                       Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS, int order ) {
-        super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+    public Polynomial( TransformationPoints points, Footprint footPrint, Scene2DValues sceneValues, ICRS sourceCRS,
+                       ICRS targetCRS, int order ) {
+        super( points, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
-        arraySize = this.getArraySize() * 2;
-
-        if ( arraySize > 0 ) {
-
-            passPointsSrc = new float[arraySize];
-            passPointsDst = new float[arraySize];
+        if ( !points.isEmpty() ) {
+            passPointsSrc = new float[points.getNumPoints()];
+            passPointsDst = new float[points.getNumPoints()];
             int counterSrc = 0;
             int counterDst = 0;
 
-            for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+            for ( Triple<Point4Values, Point4Values, PointResidual> p : points.getMappedPoints() ) {
+                if ( p.first == null || p.second == null ) {
+                    continue;
+                }
                 double x = p.first.getWorldCoords().x;
                 double y = p.first.getWorldCoords().y;
 
@@ -121,12 +120,11 @@ public class Polynomial extends AbstractTransformation {
 
             }
 
-            if ( mappedPoints.size() >= requiredPoints.get( order ) ) {
+            if ( points.getNumPoints() >= requiredPoints.get( order ) ) {
                 warp = WarpPolynomial.createWarp( passPointsSrc, 0, passPointsDst, 0, passPointsSrc.length, 1f, 1f, 1f,
                                                   1f, order );
             }
         }
-
     }
 
     @Override
@@ -176,6 +174,7 @@ public class Polynomial extends AbstractTransformation {
 
     @Override
     public PointResidual[] calculateResiduals() {
+        PointResidual[] residuals = new PointResidual[points.getNumPoints()];
         if ( warp != null ) {
             rxLocal = 0;
             ryLocal = 0;
@@ -184,12 +183,11 @@ public class Polynomial extends AbstractTransformation {
                 Point2D p = warp.mapDestPoint( new Point2D.Float( passPointsDst[i], passPointsDst[i + 1] ) );
                 rxLocal += ( p.getX() - passPointsSrc[i] );
                 ryLocal += ( p.getY() - passPointsSrc[i + 1] );
-                System.out.println( "[Polynomial] " + rxLocal + " " + ryLocal );
-                getResiduals()[counter++] = new PointResidual( rxLocal, ryLocal );
+                // System.out.println( "[Polynomial] " + rxLocal + " " + ryLocal );
+                residuals[counter++] = new PointResidual( rxLocal, ryLocal );
             }
-            return getResiduals();
         }
-        return null;
+        return residuals;
     }
 
     @Override

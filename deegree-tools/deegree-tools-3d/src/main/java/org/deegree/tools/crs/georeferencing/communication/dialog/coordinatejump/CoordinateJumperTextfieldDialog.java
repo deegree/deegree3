@@ -76,8 +76,7 @@ public class CoordinateJumperTextfieldDialog extends JDialog implements ActionLi
         setTitle( get( "ZOOM_COORDINATE" ) );
 
         this.setPreferredSize( DIM_COORDINATEJUMPER );
-        this.setBounds(
-                        new Double( parent.getBounds().getCenterX() - ( DIM_COORDINATEJUMPER.getWidth() / 2 ) ).intValue(),
+        this.setBounds( new Double( parent.getBounds().getCenterX() - ( DIM_COORDINATEJUMPER.getWidth() / 2 ) ).intValue(),
                         new Double( parent.getBounds().getCenterY() - ( DIM_COORDINATEJUMPER.getHeight() / 2 ) ).intValue(),
                         new Double( DIM_COORDINATEJUMPER.getWidth() ).intValue(),
                         new Double( DIM_COORDINATEJUMPER.getHeight() ).intValue() );
@@ -111,6 +110,7 @@ public class CoordinateJumperTextfieldDialog extends JDialog implements ActionLi
         coords[3] = Double.parseDouble( s4 );
     }
 
+    @Override
     public void actionPerformed( ActionEvent evt ) {
         try {
             if ( evt.getSource() == buttons.getOk() ) {

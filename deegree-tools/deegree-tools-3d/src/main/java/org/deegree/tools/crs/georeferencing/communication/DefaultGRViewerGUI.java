@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
-import static org.deegree.tools.crs.georeferencing.application.listeners.Scene2DMouseListener.updateTransformation;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.BorderLayout;
@@ -232,7 +231,7 @@ public class DefaultGRViewerGUI implements GRViewerGUI {
 
     private void setupPanelFootprint() {
         panelEast = new JPanel( new BorderLayout() );
-        footprintPanel = new BuildingFootprintPanel();
+        footprintPanel = new BuildingFootprintPanel( state );
         footprintPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         footprintPanel.setBackground( Color.white );
         footprintPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
@@ -315,7 +314,9 @@ public class DefaultGRViewerGUI implements GRViewerGUI {
         this.menuTransformation.getPopupMenu().setVisible( false );
         this.menuTransformation.setVisible( true );
         this.menuTransformation.setSelected( false );
-        updateTransformation( state );
+        if ( state.points != null ) {
+            state.points.updateTransformation();
+        }
         state.updateDrawingPanels();
         state.conModel.getPanel().updatePoints( state.sceneValues );
         state.conModel.getPanel().repaint();

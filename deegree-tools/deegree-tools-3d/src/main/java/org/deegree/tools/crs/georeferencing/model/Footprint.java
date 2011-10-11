@@ -83,10 +83,6 @@ public class Footprint {
     public void generateFootprints( List<float[]> footprintPointsList ) {
         this.worldCoordinateRingList = new ArrayList<Ring>();
         List<Point> pointList;
-        int size = 0;
-        for ( float[] f : footprintPointsList ) {
-            size += f.length / 2;
-        }
         double minX = EP10;
         double minY = EP10;
         double maxX = EPS10;

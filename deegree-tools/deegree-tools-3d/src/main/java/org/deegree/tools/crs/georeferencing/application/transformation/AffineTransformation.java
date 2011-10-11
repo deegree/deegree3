@@ -49,6 +49,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
+import org.deegree.tools.crs.georeferencing.application.TransformationPoints;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
@@ -112,7 +113,6 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  * @version $Revision$, $Date$
  */
 public class AffineTransformation extends AbstractTransformation {
-    private final int arraySize;
 
     private double[] passPointsSrcE;
 
@@ -156,19 +156,15 @@ public class AffineTransformation extends AbstractTransformation {
 
     private double[] passPointsN_one;
 
-    public AffineTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
-                                 Footprint footPrint, Scene2DValues sceneValues, ICRS sourceCRS, ICRS targetCRS,
-                                 final int order ) {
-        super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+    public AffineTransformation( TransformationPoints points, Footprint footPrint, Scene2DValues sceneValues,
+                                 ICRS sourceCRS, ICRS targetCRS, final int order ) {
+        super( points, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
-        this.arraySize = this.getArraySize();
-
-        if ( this.arraySize > 0 ) {
-
-            this.passPointsSrcE = new double[this.arraySize];
-            this.passPointsSrcN = new double[this.arraySize];
-            this.passPointsDstX = new double[this.arraySize];
-            this.passPointsDstY = new double[this.arraySize];
+        if ( !points.isEmpty() ) {
+            this.passPointsSrcE = new double[points.getNumPoints()];
+            this.passPointsSrcN = new double[points.getNumPoints()];
+            this.passPointsDstX = new double[points.getNumPoints()];
+            this.passPointsDstY = new double[points.getNumPoints()];
             double cumulatedPointsE = 0;
             double cumulatedPointsDstX = 0;
             double cumulatedPointsN = 0;
@@ -176,7 +172,10 @@ public class AffineTransformation extends AbstractTransformation {
             int counterSrc = 0;
             int counterDst = 0;
 
-            for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+            for ( Triple<Point4Values, Point4Values, PointResidual> p : points.getMappedPoints() ) {
+                if ( p.first == null || p.second == null ) {
+                    continue;
+                }
                 double x = p.first.getWorldCoords().x;
                 double y = p.first.getWorldCoords().y;
                 cumulatedPointsDstX += x;
@@ -201,10 +200,10 @@ public class AffineTransformation extends AbstractTransformation {
             /*
              * BalancePointCoordinates
              */
-            this.balancedPointE = cumulatedPointsE / this.arraySize;
-            this.balancedPointDstX = cumulatedPointsDstX / this.arraySize;
-            this.balancedPointN = cumulatedPointsN / this.arraySize;
-            this.balancedPointDstY = cumulatedPointsDstY / this.arraySize;
+            this.balancedPointE = cumulatedPointsE / points.getNumPoints();
+            this.balancedPointDstX = cumulatedPointsDstX / points.getNumPoints();
+            this.balancedPointN = cumulatedPointsN / points.getNumPoints();
+            this.balancedPointDstY = cumulatedPointsDstY / points.getNumPoints();
             System.out.println( "[AffineTransformation] BalancedCoords -->  \nE: " + this.balancedPointE + " \nN: "
                                 + this.balancedPointN + " \nY: " + this.balancedPointDstY + " \nX: "
                                 + this.balancedPointDstX );
@@ -212,12 +211,12 @@ public class AffineTransformation extends AbstractTransformation {
             /*
              * Coordinates related to balancedPoints
              */
-            this.passPointsE_two = new double[this.arraySize];
-            this.passPointsN_two = new double[this.arraySize];
-            this.passPointsDstX_two = new double[this.arraySize];
-            this.passPointsDstY_two = new double[this.arraySize];
-            this.dY = new double[this.arraySize];
-            this.dX = new double[this.arraySize];
+            this.passPointsE_two = new double[points.getNumPoints()];
+            this.passPointsN_two = new double[points.getNumPoints()];
+            this.passPointsDstX_two = new double[points.getNumPoints()];
+            this.passPointsDstY_two = new double[points.getNumPoints()];
+            this.dY = new double[points.getNumPoints()];
+            this.dX = new double[points.getNumPoints()];
 
             int counter = 0;
             for ( double point : this.passPointsSrcN ) {
@@ -319,17 +318,16 @@ public class AffineTransformation extends AbstractTransformation {
     }
 
     private void transformCoordinates() {
-        this.passPointsE_one = new double[this.arraySize];
-        this.passPointsN_one = new double[this.arraySize];
+        this.passPointsE_one = new double[points.getNumPoints()];
+        this.passPointsN_one = new double[points.getNumPoints()];
 
-        for ( int i = 0; i < this.arraySize; i++ ) {
+        for ( int i = 0; i < points.getNumPoints(); i++ ) {
             this.passPointsN_one[i] = this.balancedPointN + ( this.a11 * this.passPointsDstX_two[i] )
                                       + ( this.a12 * this.passPointsDstY_two[i] );
             this.passPointsE_one[i] = this.balancedPointE + ( this.a21 * this.passPointsDstX_two[i] )
                                       + ( this.a22 * this.passPointsDstY_two[i] );
-            System.out.println( "[AffineTransformation] Transformed Coords -->  \nN\': " + this.passPointsN_one[i] );
-            System.out.println( "[AffineTransformation] Transformed Coords -->  \nE\': " + this.passPointsE_one[i] );
-
+            // System.out.println( "[AffineTransformation] Transformed Coords -->  \nN\': " + this.passPointsN_one[i] );
+            // System.out.println( "[AffineTransformation] Transformed Coords -->  \nE\': " + this.passPointsE_one[i] );
         }
 
     }
@@ -381,19 +379,21 @@ public class AffineTransformation extends AbstractTransformation {
         /*
          * Caluculate the residuals
          */
-        double[] residualE = new double[this.arraySize];
-        double[] residualN = new double[this.arraySize];
+        double[] residualE = new double[points.getNumPoints()];
+        double[] residualN = new double[points.getNumPoints()];
         // residuals = new PointResidual[arraySize];
 
-        for ( int i = 0; i < this.arraySize; i++ ) {
+        PointResidual[] residuals = new PointResidual[points.getNumPoints()];
+
+        for ( int i = 0; i < points.getNumPoints(); i++ ) {
             residualE[i] = this.passPointsSrcE[i] - this.passPointsE_one[i];
-            System.out.println( "[AffineTransformation] residualE -->  \nv(E): " + residualE[i] );
+            // System.out.println( "[AffineTransformation] residualE -->  \nv(E): " + residualE[i] );
             residualN[i] = this.passPointsSrcN[i] - this.passPointsN_one[i];
-            System.out.println( "[AffineTransformation] residualN -->  \nv(N): " + residualN[i] );
-            this.getResiduals()[i] = new PointResidual( residualE[i], residualN[i] );
+            // System.out.println( "[AffineTransformation] residualN -->  \nv(N): " + residualN[i] );
+            residuals[i] = new PointResidual( residualE[i], residualN[i] );
 
         }
-        return this.getResiduals();
+        return residuals;
     }
 
     @Override

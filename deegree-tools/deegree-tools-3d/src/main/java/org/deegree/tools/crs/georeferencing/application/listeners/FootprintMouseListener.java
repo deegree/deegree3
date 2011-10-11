@@ -129,7 +129,6 @@ public class FootprintMouseListener extends MouseAdapter {
 
         } else {
             if ( state.referencing && !state.referencingLeft ) {
-
                 if ( state.start == false ) {
                     state.start = true;
                     state.conModel.getFootPanel().setFocus( true );
@@ -138,7 +137,7 @@ public class FootprintMouseListener extends MouseAdapter {
                 if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
                      && state.conModel.getPanel().getLastAbstractPoint() != null
                      && state.conModel.getFootPanel().getFocus() == true ) {
-                    state.setValues();
+                    // TODO probably update something
                 }
                 if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
                      && state.conModel.getPanel().getLastAbstractPoint() == null
@@ -158,11 +157,12 @@ public class FootprintMouseListener extends MouseAdapter {
                                                                                                                                              x,
                                                                                                                                              y ) ) );
                 }
+                state.points.add( null, point.first );
                 state.rc = state.tablePanel.setCoords( point.second );
                 state.conModel.getFootPanel().setLastAbstractPoint( point.first, point.second, state.rc );
                 state.referencingLeft = true;
                 if ( isFirstNumber == false ) {
-                    state.updateResidualsWithLastAbstractPoint();
+                    state.points.recalculate();
                 }
 
             } else if ( state.pan ) {

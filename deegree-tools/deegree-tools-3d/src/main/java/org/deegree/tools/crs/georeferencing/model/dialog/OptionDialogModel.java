@@ -87,7 +87,7 @@ public class OptionDialogModel {
      * @param root
      *            the rootNode, not <Code>null</Code>.
      */
-    public void createNodes( DefaultMutableTreeNode root ) {
+    public static void createNodes( DefaultMutableTreeNode root ) {
         DefaultMutableTreeNode general = null;
         DefaultMutableTreeNode view = null;
 
