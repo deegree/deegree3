@@ -118,9 +118,11 @@ public class Point4Values {
         sb.append( ", " ).append( initialValue );
         sb.append( ", " ).append( newValue );
         sb.append( ", " ).append( worldCoords );
-        sb.append( ", " ).append( rc.getRow() );
-        sb.append( ", " ).append( rc.getColumnX() );
-        sb.append( ", " ).append( rc.getColumnY() );
+        if ( rc != null ) {
+            sb.append( ", " ).append( rc.getRow() );
+            sb.append( ", " ).append( rc.getColumnX() );
+            sb.append( ", " ).append( rc.getColumnY() );
+        }
         sb.append( ">" );
         return sb.toString();
     }

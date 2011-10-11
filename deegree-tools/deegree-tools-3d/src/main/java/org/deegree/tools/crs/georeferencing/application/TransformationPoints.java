@@ -47,7 +47,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -64,6 +64,7 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.ValueReference;
@@ -93,7 +94,9 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
  */
 public class TransformationPoints {
 
-    private LinkedHashMap<Triple<Point4Values, Point4Values, PointResidual>, String> mappedPoints = new LinkedHashMap<Triple<Point4Values, Point4Values, PointResidual>, String>();
+    private ArrayList<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
+
+    private HashMap<Triple<Point4Values, Point4Values, PointResidual>, String> featureIds = new HashMap<Triple<Point4Values, Point4Values, PointResidual>, String>();
 
     private FeatureStore featureStore;
 
@@ -159,7 +162,22 @@ public class TransformationPoints {
     }
 
     public void removeAll() {
-        mappedPoints.clear();
+        try {
+            FeatureStoreTransaction ta = featureStore.acquireTransaction();
+            ta.performDelete( new IdFilter( featureIds.values() ), null );
+            ta.commit();
+            mappedPoints.clear();
+            featureIds.clear();
+            updateTransformation();
+            state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+            state.updateDrawingPanels();
+            state.mapController.forceRepaint();
+            this.state.conModel.getPanel().repaint();
+            this.state.conModel.getFootPanel().repaint();
+        } catch ( Throwable e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public void load() {
@@ -167,9 +185,11 @@ public class TransformationPoints {
         if ( in.getData() != null ) {
             VectorTransformer vt = new VectorTransformer( in.getData(), this.state.sceneValues );
             mappedPoints.clear();
-            for ( Triple<Point4Values, Point4Values, PointResidual> t : vt.getMappedPoints() ) {
-                mappedPoints.put( t, null );
-            }
+            mappedPoints.addAll( vt.getMappedPoints() );
+            // TODO
+            // for ( Triple<Point4Values, Point4Values, PointResidual> t : vt.getMappedPoints() ) {
+            // mappedPoints.put( t, null );
+            // }
             this.state.updateDrawingPanels();
         }
     }
@@ -209,6 +229,7 @@ public class TransformationPoints {
 
     public void add( AbstractGRPoint left, AbstractGRPoint right ) {
         Point4Values leftp4 = null, rightp4 = null;
+        String fid = null;
         if ( left != null ) {
             GeoReferencedPoint g = (GeoReferencedPoint) this.state.sceneValues.getWorldPoint( left );
             leftp4 = new Point4Values( left, g, null );
@@ -219,7 +240,7 @@ public class TransformationPoints {
                 FeatureStoreTransaction ta = featureStore.acquireTransaction();
                 GenericFeatureCollection col = new GenericFeatureCollection();
                 col.add( f );
-                ta.performInsert( col, GENERATE_NEW );
+                fid = ta.performInsert( col, GENERATE_NEW ).get( 0 );
                 ta.commit();
                 state.mapController.forceRepaint();
                 this.state.conModel.getPanel().repaint();
@@ -238,26 +259,32 @@ public class TransformationPoints {
 
         Triple<Point4Values, Point4Values, PointResidual> last = null;
         if ( !mappedPoints.isEmpty() ) {
-            last = new LinkedList<Triple<Point4Values, Point4Values, PointResidual>>( mappedPoints.keySet() ).getLast();
+            last = mappedPoints.get( mappedPoints.size() - 1 );
         }
 
         if ( last != null && last.second == null && leftp4 != null ) {
             last.second = leftp4;
+            if ( fid != null ) {
+                featureIds.put( last, fid );
+            }
         } else if ( last != null && last.first == null && rightp4 != null ) {
             last.first = rightp4;
+            if ( fid != null ) {
+                featureIds.put( last, fid );
+            }
         } else {
-            mappedPoints.put( new Triple<Point4Values, Point4Values, PointResidual>( rightp4, leftp4, null ), null );
+            Triple<Point4Values, Point4Values, PointResidual> t;
+            t = new Triple<Point4Values, Point4Values, PointResidual>( rightp4, leftp4, null );
+            mappedPoints.add( t );
+            featureIds.put( t, fid );
         }
 
         updateTransformation();
     }
 
     public void updateTransformation() {
-        // swap the tempPoints into the map now
-        if ( state.conModel.getFootPanel().getLastAbstractPoint() != null
-             && state.conModel.getPanel().getLastAbstractPoint() != null ) {
-            // state.setValues();
-        } else {
+        if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
+             || state.conModel.getPanel().getLastAbstractPoint() == null ) {
             return;
         }
 
@@ -321,7 +348,9 @@ public class TransformationPoints {
         if ( r != null ) {
             Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
             int counter = 0;
-            for ( Triple<Point4Values, Point4Values, PointResidual> point : this.mappedPoints.keySet() ) {
+            for ( Triple<Point4Values, Point4Values, PointResidual> point : this.mappedPoints ) {
+                // hashcode of triple will change if values are changed
+                String id = featureIds.remove( point );
                 if ( point.second == null ) {
                     continue;
                 }
@@ -333,9 +362,8 @@ public class TransformationPoints {
                 element.add( r[counter].x );
                 element.add( r[counter].y );
                 data.add( element );
-
                 point.third = r[counter++];
-
+                featureIds.put( point, id );
             }
             state.tablePanel.getModel().setDataVector( data, state.tablePanel.getColumnNamesAsVector() );
             state.tablePanel.getModel().fireTableDataChanged();
@@ -351,6 +379,7 @@ public class TransformationPoints {
     }
 
     public List<Triple<Point4Values, Point4Values, PointResidual>> getMappedPoints() {
-        return new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>( mappedPoints.keySet() );
+        return new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>( mappedPoints );
     }
+
 }
