@@ -36,6 +36,7 @@
 package org.deegree.filter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -74,7 +75,7 @@ public class IdFilter implements Filter {
      * @param ids
      *            ids of the resources that the filter will selects, must not be <code>null</code>
      */
-    public IdFilter( Set<String> selectedIds ) {
+    public IdFilter( Collection<String> selectedIds ) {
         this.selectedIds = new ArrayList<ResourceId>( selectedIds.size() );
         for ( String id : selectedIds ) {
             this.selectedIds.add( new ResourceId( id, null, null, null, null ) );
