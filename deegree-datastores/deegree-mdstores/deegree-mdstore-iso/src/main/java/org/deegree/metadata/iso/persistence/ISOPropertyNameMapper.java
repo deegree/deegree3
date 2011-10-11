@@ -55,7 +55,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
@@ -65,12 +64,11 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.mssql.MSSQLGeometryConverter;
-import org.deegree.sqldialect.postgis.PostGISGeometryConverter;
 import org.slf4j.Logger;
 
 /**
@@ -258,13 +256,14 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
         idxtb_main, idxtb_constraint, idxtb_crs, idxtb_keyword, idxtb_operatesondata
     }
 
-    private final boolean useLegacyPredicates;
+    // private final boolean useLegacyPredicates;
+    //
+    // private final Type connectionType;
 
-    private final Type connectionType;
+    private final SQLDialect dialect;
 
-    public ISOPropertyNameMapper( Type connectionType, boolean useLegacyPredicates ) {
-        this.connectionType = connectionType;
-        this.useLegacyPredicates = useLegacyPredicates;
+    public ISOPropertyNameMapper( SQLDialect dialect ) {
+        this.dialect = dialect;
     }
 
     @Override
@@ -298,17 +297,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
                 }
                 ParticleConverter<?> converter = null;
                 if ( tableColumn.third == null ) {
-                    switch ( connectionType ) {
-                    case PostgreSQL:
-                        converter = new PostGISGeometryConverter( tableColumn.first.second, EPSG_4326, "-1",
-                                                                  useLegacyPredicates );
-                        break;
-                    case MSSQL:
-                        converter = new MSSQLGeometryConverter( tableColumn.first.second, EPSG_4326, "0", true );
-                        break;
-                    default:
-                        throw new IllegalArgumentException();
-                    }
+                    dialect.getGeometryConverter( tableColumn.first.second, EPSG_4326, dialect.getUndefinedSrid(), true );
                 } else {
                     converter = new DefaultPrimitiveConverter( new PrimitiveType( tableColumn.third ),
                                                                tableColumn.first.second, tableColumn.second );

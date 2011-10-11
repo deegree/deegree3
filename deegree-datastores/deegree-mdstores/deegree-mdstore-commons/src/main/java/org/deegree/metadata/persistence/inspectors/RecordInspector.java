@@ -37,10 +37,10 @@ package org.deegree.metadata.persistence.inspectors;
 
 import java.sql.Connection;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.SQLDialect;
 
 /**
  * Implementations perform validity checks and / or modifications of {@link MetadataRecord} instances.
@@ -63,6 +63,6 @@ public interface RecordInspector<T extends MetadataRecord> {
      * @throws MetadataStoreException
      *             if the record is considered invalid
      */
-    public T inspect( T record, Connection conn, Type connectionType )
+    public T inspect( T record, Connection conn, SQLDialect dialect )
                             throws MetadataInspectorException;
 }

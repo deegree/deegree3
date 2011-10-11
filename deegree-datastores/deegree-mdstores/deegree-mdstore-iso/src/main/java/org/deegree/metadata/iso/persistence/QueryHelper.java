@@ -45,7 +45,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.FilterEvaluationException;
@@ -54,11 +53,10 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
-import org.deegree.sqldialect.filter.mssql.MSSQLWhereBuilder;
-import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
 import org.slf4j.Logger;
 
 /**
@@ -76,8 +74,8 @@ class QueryHelper extends SqlHelper {
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
     public static final int DEFAULT_FETCH_SIZE = 100;
 
-    QueryHelper( Type connectionType ) {
-        super( connectionType );
+    QueryHelper( SQLDialect dialect ) {
+        super( dialect );
     }
 
     ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
@@ -89,7 +87,8 @@ class QueryHelper extends SqlHelper {
 
             StringBuilder idSelect = getPreparedStatementDatasetIDs( builder );
 
-            if ( query != null && query.getStartPosition() != 1 && connectionType == MSSQL ) {
+            // TODO: use SQLDialect
+            if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == MSSQL ) {
                 String oldHeader = idSelect.toString();
                 idSelect = idSelect.append( " from (" ).append( oldHeader );
                 idSelect.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
@@ -100,15 +99,15 @@ class QueryHelper extends SqlHelper {
                 idSelect.append( " ORDER BY " );
                 idSelect.append( builder.getOrderBy().getSQL() );
             }
-            if ( query != null && query.getStartPosition() != 1 && connectionType == PostgreSQL ) {
+            if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == PostgreSQL ) {
                 idSelect.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
-            if ( query != null && query.getStartPosition() != 1 && connectionType == MSSQL ) {
+            if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == MSSQL ) {
                 idSelect.append( ") as X1 where X1.rownum > " );
                 idSelect.append( query.getStartPosition() - 1 );
             }
             // take a look in the wiki before changing this!
-            if ( connectionType == PostgreSQL && query != null && query.getMaxRecords() > -1 ) {
+            if ( dialect.getDBType() == PostgreSQL && query != null && query.getMaxRecords() > -1 ) {
                 idSelect.append( " LIMIT " ).append( query.getMaxRecords() );
             }
 
@@ -251,17 +250,7 @@ class QueryHelper extends SqlHelper {
 
     private AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
                             throws FilterEvaluationException, UnmappableException {
-        if ( connectionType == PostgreSQL ) {
-            // TODO only do this once, it's expensive!
-            boolean useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
-            ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, useLegacyPredicates );
-            return new PostGISWhereBuilder( null, mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
-                                            false, useLegacyPredicates );
-        }
-        if ( connectionType == Type.MSSQL ) {
-            ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, false );
-            return new MSSQLWhereBuilder( null, mapping, (OperatorFilter) query.getFilter(), query.getSorting(), false );
-        }
-        return null;
+        return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect ), (OperatorFilter) query.getFilter(),
+                                        query.getSorting(), false );
     }
 }

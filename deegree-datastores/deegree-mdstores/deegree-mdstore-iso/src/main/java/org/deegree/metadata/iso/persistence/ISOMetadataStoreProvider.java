@@ -59,6 +59,8 @@ import org.deegree.filter.function.FunctionManager;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SQLDialectManager;
 import org.slf4j.Logger;
 
 /**
@@ -140,10 +142,8 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
         return stmts;
     }
 
-    private ISOMetadataStoreConfig getConfig( URL configURL )
+    public ISOMetadataStore create( URL configURL )
                             throws ResourceInitException {
-
-        ISOMetadataStoreConfig config = null;
         if ( configURL == null ) {
             LOG.warn( Messages.getMessage( "WARN_NO_CONFIG" ) );
         } else {
@@ -156,20 +156,30 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
                                                   workspace.getModuleClassLoader() );
                 }
                 Unmarshaller u = jc.createUnmarshaller();
-                config = (ISOMetadataStoreConfig) u.unmarshal( configURL );
+
+                ISOMetadataStoreConfig cfg = (ISOMetadataStoreConfig) u.unmarshal( configURL );
+
+                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+                Type connType = mgr.getType( cfg.getJDBCConnId() );
+                if ( connType == null ) {
+                    throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId()
+                                                     + "' defined." );
+                }
+                LOG.debug( "Connection type is {}.", connType );
+
+                SQLDialectManager dialectMgr = workspace.getSubsystemManager( SQLDialectManager.class );
+                if ( dialectMgr == null ) {
+                    throw new ResourceInitException( "SQLDialectManager not found in workspace / classpath." );
+                }
+                SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId() );
+                return new ISOMetadataStore( cfg, dialect );
             } catch ( JAXBException e ) {
                 String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", configURL, e.getMessage() );
                 LOG.error( msg );
                 throw new ResourceInitException( msg, e );
             }
         }
-        return config;
-
-    }
-
-    public ISOMetadataStore create( URL configUrl )
-                            throws ResourceInitException {
-        return new ISOMetadataStore( getConfig( configUrl ) );
+        return null;
     }
 
     @SuppressWarnings("unchecked")

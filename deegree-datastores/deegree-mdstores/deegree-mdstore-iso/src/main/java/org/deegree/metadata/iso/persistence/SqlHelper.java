@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.PropertyNameMapping;
@@ -58,8 +58,6 @@ abstract class SqlHelper {
 
     protected String fk_main;
 
-    protected Type connectionType;
-
     protected String mainTable;
 
     protected String crsTable;
@@ -70,8 +68,10 @@ abstract class SqlHelper {
 
     protected String opOnTable;
 
-    SqlHelper( Type connectionType ) {
-        this.connectionType = connectionType;
+    protected final SQLDialect dialect;
+
+    SqlHelper( SQLDialect dialect ) {
+        this.dialect = dialect;
         idColumn = ISOPropertyNameMapper.CommonColumnNames.id.name();
         fk_main = ISOPropertyNameMapper.CommonColumnNames.fk_main.name();
         recordColumn = ISOPropertyNameMapper.CommonColumnNames.recordfull.name();

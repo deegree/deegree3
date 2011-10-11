@@ -39,10 +39,5 @@
       <artifactId>deegree-mdstore-commons</artifactId>
       <version>3.2-pre1-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-sqldialect-postgis</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 </project>

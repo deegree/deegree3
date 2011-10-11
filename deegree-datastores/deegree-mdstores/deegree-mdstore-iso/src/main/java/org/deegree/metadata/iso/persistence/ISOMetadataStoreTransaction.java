@@ -1,7 +1,5 @@
 package org.deegree.metadata.iso.persistence;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,9 +8,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.MetadataRecord;
@@ -29,10 +25,8 @@ import org.deegree.metadata.persistence.transaction.MetadataProperty;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
-import org.deegree.sqldialect.filter.UnmappableException;
-import org.deegree.sqldialect.filter.mssql.MSSQLWhereBuilder;
-import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,23 +42,20 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private static final Logger LOG = LoggerFactory.getLogger( ISOMetadataStoreTransaction.class );
 
-    private final Connection conn;
-
     private final List<RecordInspector<ISORecord>> inspectors;
 
     private final AnyText anyTextConfig;
 
-    private final boolean useLegacyPredicates;
+    private final SQLDialect dialect;
 
-    private final Type connectionType;
+    private final Connection conn;
 
-    ISOMetadataStoreTransaction( Connection conn, List<RecordInspector<ISORecord>> inspectors, AnyText anyText,
-                                 boolean useLegacyPredicates, Type connectionType ) throws SQLException {
+    ISOMetadataStoreTransaction( Connection conn, SQLDialect dialect, List<RecordInspector<ISORecord>> inspectors,
+                                 AnyText anyText ) throws SQLException {
         this.conn = conn;
+        this.dialect = dialect;
         this.anyTextConfig = anyText;
         this.inspectors = inspectors;
-        this.useLegacyPredicates = useLegacyPredicates;
-        this.connectionType = connectionType;
     }
 
     @Override
@@ -82,26 +73,17 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         }
     }
 
-    private AbstractWhereBuilder getWhereBuilder( OperatorFilter filter )
-                            throws FilterEvaluationException, UnmappableException {
-        ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( connectionType, useLegacyPredicates );
-        if ( connectionType == PostgreSQL ) {
-            return new PostGISWhereBuilder( null, mapping, filter, null, false, useLegacyPredicates );
-        }
-        if ( connectionType == Type.MSSQL ) {
-            return new MSSQLWhereBuilder( null, mapping, filter, null, false );
-        }
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public int performDelete( DeleteOperation delete )
                             throws MetadataStoreException {
 
         try {
-            AbstractWhereBuilder builder = getWhereBuilder( (OperatorFilter) delete.getConstraint() );
+            // TODO: mapping!
+            ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( dialect );
+            AbstractWhereBuilder builder = dialect.getWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(),
+                                                                    null, false );
 
-            TransactionHelper transactionHelper = new TransactionHelper( connectionType, anyTextConfig );
+            TransactionHelper transactionHelper = new TransactionHelper( dialect, anyTextConfig );
             return transactionHelper.executeDelete( conn, builder );
 
         } catch ( Exception e ) {
@@ -117,11 +99,11 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
         for ( MetadataRecord record : insert.getRecords() ) {
             try {
                 for ( RecordInspector<ISORecord> r : inspectors ) {
-                    record = r.inspect( (ISORecord) record, conn, connectionType );
+                    record = r.inspect( (ISORecord) record, conn, dialect );
                 }
                 if ( record != null ) {
                     ISORecord rec = new ISORecord( record.getAsOMElement() );
-                    TransactionHelper transactionHelper = new TransactionHelper( connectionType, anyTextConfig );
+                    TransactionHelper transactionHelper = new TransactionHelper( dialect, anyTextConfig );
                     transactionHelper.executeInsert( conn, rec );
                     identifierList.add( rec.getIdentifier() );
                 }
@@ -135,21 +117,21 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException {
-        TransactionHelper generateQP = new TransactionHelper( connectionType, anyTextConfig );
+        TransactionHelper generateQP = new TransactionHelper( dialect, anyTextConfig );
         int result = 0;
 
         if ( update.getRecord() != null && update.getConstraint() == null ) {
             LOG.warn( "Update with complete metadatset and without constraint is deprecated. Updating is forwarded, the fileIdentifer is used to find the record to update." );
             ISORecord record = (ISORecord) update.getRecord();
             for ( RecordInspector<ISORecord> r : inspectors ) {
-                record = r.inspect( record, conn, connectionType );
+                record = r.inspect( record, conn, dialect );
             }
             ISORecord rec = new ISORecord( record.getAsOMElement() );
             generateQP.executeUpdate( conn, rec, null );
             return 1;
         }
 
-        QueryHelper qh = new QueryHelper( connectionType );
+        QueryHelper qh = new QueryHelper( dialect );
         try {
             MetadataQuery query = new MetadataQuery( null, null, (OperatorFilter) update.getConstraint(), null, 1,
                                                      Integer.MIN_VALUE );
@@ -163,7 +145,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 if ( update.getRecord() != null ) {
                     ISORecord record = (ISORecord) update.getRecord();
                     for ( RecordInspector<ISORecord> r : inspectors ) {
-                        record = r.inspect( record, conn, connectionType );
+                        record = r.inspect( record, conn, dialect );
                     }
                     rec = new ISORecord( record.getAsOMElement() );
                     updated = true;
@@ -197,7 +179,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     }
                     // inspect element if it is still valid
                     for ( RecordInspector<ISORecord> inspector : inspectors ) {
-                        rec = inspector.inspect( rec, conn, connectionType );
+                        rec = inspector.inspect( rec, conn, dialect );
                     }
                 }
                 if ( rec != null ) {

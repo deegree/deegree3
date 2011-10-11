@@ -43,7 +43,6 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -51,6 +50,7 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +75,7 @@ public class HierarchyLevelInspector implements RecordInspector<ISORecord> {
     }
 
     @Override
-    public ISORecord inspect( ISORecord record, Connection conn, Type connectionType )
+    public ISORecord inspect( ISORecord record, Connection conn, SQLDialect dialect )
                             throws MetadataInspectorException {
 
         XMLAdapter a = new XMLAdapter( record.getAsOMElement() );

@@ -46,12 +46,12 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +96,7 @@ public class MetadataSchemaValidationInspector<T extends MetadataRecord> impleme
     }
 
     @Override
-    public T inspect( T record, Connection conn, Type connectionType )
+    public T inspect( T record, Connection conn, SQLDialect dialect )
                             throws MetadataInspectorException {
         List<String> errors = validate( record.getAsOMElement() );
         if ( errors.isEmpty() ) {

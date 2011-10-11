@@ -48,7 +48,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -59,6 +58,7 @@ import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
@@ -91,14 +91,14 @@ public class CoupledDataInspector implements RecordInspector<ISORecord> {
      * @param operatesOnStringUuIdAttribute
      * @return true if there is a coupling with a data-metadata, otherwise false.
      */
-    private boolean determineCoupling( Connection conn, List<String> operatesOnStringUuIdAttribute, Type connectionType )
+    private boolean determineCoupling( Connection conn, List<String> operatesOnStringUuIdAttribute, SQLDialect dialect )
                             throws MetadataInspectorException {
         // consistencyCheck( operatesOnStringUuIdAttribute );
         boolean isCoupled = false;
 
         for ( String a : operatesOnStringUuIdAttribute ) {
             // isCoupled = getCoupledDataMetadatasets( a.trim(), connectionType );
-            isCoupled = getCoupledDataMetadatasets( conn, a.trim(), connectionType );
+            isCoupled = getCoupledDataMetadatasets( conn, a.trim(), dialect );
         }
 
         return isCoupled;
@@ -126,7 +126,7 @@ public class CoupledDataInspector implements RecordInspector<ISORecord> {
      * If there is a data metadata record available for the service metadata record.
      * 
      */
-    private boolean getCoupledDataMetadatasets( Connection conn, String resourceIdentifier, Type connectionType )
+    private boolean getCoupledDataMetadatasets( Connection conn, String resourceIdentifier, SQLDialect dialect )
                             throws MetadataInspectorException {
 
         String resourceIdCol = ISOPropertyNameMapper.CommonColumnNames.resourceid.name();
@@ -152,7 +152,7 @@ public class CoupledDataInspector implements RecordInspector<ISORecord> {
     }
 
     @Override
-    public ISORecord inspect( ISORecord record, Connection conn, Type connectionType )
+    public ISORecord inspect( ISORecord record, Connection conn, SQLDialect dialect )
                             throws MetadataInspectorException {
 
         XMLAdapter a = new XMLAdapter( record.getAsOMElement() );
@@ -210,7 +210,7 @@ public class CoupledDataInspector implements RecordInspector<ISORecord> {
 
             } else {
                 LOG.debug( "coupling: tight/mixed..." );
-                boolean throwException = determineCoupling( conn, operatesOnUuidList, connectionType )
+                boolean throwException = determineCoupling( conn, operatesOnUuidList, dialect )
                                          && !checkConsistency( operatesOnUuidList, resourceIDs );
                 if ( throwException && config.isThrowConsistencyError() ) {
                     String msg = Messages.getMessage( "ERROR_COUPLING" );

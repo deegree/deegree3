@@ -60,7 +60,7 @@ import org.deegree.cs.CRSUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.io.WKBWriter;
+import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.parsing.QueryableProperties;
@@ -72,11 +72,10 @@ import org.deegree.metadata.iso.types.Keyword;
 import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.slf4j.Logger;
-
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Here are all the queryable properties encapsulated which have to put into the backend. Here is the functionality of
@@ -93,8 +92,8 @@ class TransactionHelper extends SqlHelper {
 
     private AnyText anyTextConfig;
 
-    TransactionHelper( Type connectionType, AnyText anyTextConfig ) {
-        super( connectionType );
+    TransactionHelper( SQLDialect dialect, AnyText anyTextConfig ) {
+        super( dialect );
         this.anyTextConfig = anyTextConfig;
 
     }
@@ -338,27 +337,31 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
 
         Geometry geom = calculateMainBBox( qp.getBoundingBox() );
-        byte[] wkb;
-        try {
-            wkb = WKBWriter.write( geom );
-            StringBuilder sb = new StringBuilder();
-            if ( connectionType == Type.MSSQL ) {
-                sb.append( "geometry::STGeomFromWKB(?, 0)" );
-            } else {
-                if ( JDBCUtils.useLegayPostGISPredicates( conn, LOG ) ) {
-                    sb.append( "SetSRID(GeomFromWKB(?)," );
-                } else {
-                    sb.append( "SetSRID(ST_GeomFromWKB(?)," );
-                }
-                sb.append( "-1)" );
-            }
-            tr.addPreparedArgument( "bbox", wkb, sb.toString() );
+        // byte[] wkb;
+        // try {
+        // wkb = WKBWriter.write( geom );
+        // StringBuilder sb = new StringBuilder();
+        String bboxColumn = "bbox";
+        GeometryParticleConverter converter = dialect.getGeometryConverter( bboxColumn, null, null, true );
+        tr.addPreparedArgument( bboxColumn, converter.getSetSnippet( geom ) );
 
-        } catch ( ParseException e ) {
-            String msg = "Could not write as WKB " + geom + ": " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new IllegalArgumentException();
-        }
+        // if ( connectionType == Type.MSSQL ) {
+        // sb.append( "geometry::STGeomFromWKB(?, 0)" );
+        // } else {
+        // if ( JDBCUtils.useLegayPostGISPredicates( conn, LOG ) ) {
+        // sb.append( "SetSRID(GeomFromWKB(?)," );
+        // } else {
+        // sb.append( "SetSRID(ST_GeomFromWKB(?)," );
+        // }
+        // sb.append( "-1)" );
+        // }
+        // tr.addPreparedArgument( "bbox", wkb, sb.toString() );
+
+        // } catch ( ParseException e ) {
+        // String msg = "Could not write as WKB " + geom + ": " + e.getMessage();
+        // LOG.debug( msg, e );
+        // throw new IllegalArgumentException();
+        // }
     }
 
     private String getFormats( List<Format> list ) {
@@ -547,10 +550,11 @@ class TransactionHelper extends SqlHelper {
                             throws SQLException {
         int result = 0;
         String selectIDRows = null;
-        if ( connectionType == Type.PostgreSQL ) {
+        // TODO: use SQLDialect
+        if ( dialect.getDBType() == Type.PostgreSQL ) {
             selectIDRows = "SELECT " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn + " DESC LIMIT 1";
         }
-        if ( connectionType == Type.MSSQL ) {
+        if ( dialect.getDBType() == Type.MSSQL ) {
             selectIDRows = "SELECT TOP 1 " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn + " DESC";
         }
         ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );

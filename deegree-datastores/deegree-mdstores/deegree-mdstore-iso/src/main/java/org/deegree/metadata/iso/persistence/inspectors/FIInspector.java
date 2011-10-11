@@ -47,7 +47,6 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -56,6 +55,7 @@ import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
@@ -95,7 +95,7 @@ public class FIInspector implements RecordInspector<ISORecord> {
      * @return the new fileIdentifier.
      */
     private List<String> determineFileIdentifier( Connection conn, String[] fi, List<String> rsList, String id,
-                                                  String uuid, Type connectionType )
+                                                  String uuid, SQLDialect dialect )
                             throws MetadataInspectorException {
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
@@ -108,7 +108,7 @@ public class FIInspector implements RecordInspector<ISORecord> {
         if ( config != null && !config.isRejectEmpty() ) {
             if ( rsList.size() == 0 && id == null && uuid == null ) {
                 LOG.debug( Messages.getMessage( "INFO_FI_GENERATE_NEW" ) );
-                idList.add( new IdUtils( conn, connectionType ).generateUUID() );
+                idList.add( new IdUtils( conn, dialect ).generateUUID() );
                 LOG.debug( Messages.getMessage( "INFO_FI_NEW", idList ) );
             } else {
                 if ( rsList.size() == 0 && id != null ) {
@@ -136,7 +136,7 @@ public class FIInspector implements RecordInspector<ISORecord> {
     }
 
     @Override
-    public ISORecord inspect( ISORecord record, Connection conn, Type connectionType )
+    public ISORecord inspect( ISORecord record, Connection conn, SQLDialect dialect )
                             throws MetadataInspectorException {
 
         XMLAdapter a = new XMLAdapter( record.getAsOMElement() );
@@ -167,7 +167,7 @@ public class FIInspector implements RecordInspector<ISORecord> {
         }
 
         List<String> idList = determineFileIdentifier( conn, fileIdentifierString, resourceIdentifierList,
-                                                       dataIdentificationId, dataIdentificationUuId, connectionType );
+                                                       dataIdentificationId, dataIdentificationUuId, dialect );
         if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
             for ( String id : idList ) {
                 OMElement firstElement = rootEl.getFirstElement();

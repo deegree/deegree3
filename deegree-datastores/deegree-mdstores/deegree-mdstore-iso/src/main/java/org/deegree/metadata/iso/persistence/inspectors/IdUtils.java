@@ -42,18 +42,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
@@ -70,15 +68,12 @@ class IdUtils {
 
     private final Connection conn;
 
-    private List<String> idList;
-
     private String mainTable;
 
     private String fileIdColumn;
 
-    IdUtils( Connection conn, Type connectionType ) {
+    IdUtils( Connection conn, SQLDialect dialect ) {
         this.conn = conn;
-        idList = Collections.synchronizedList( new ArrayList<String>() );
         mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
         fileIdColumn = ISOPropertyNameMapper.CommonColumnNames.fileidentifier.name();
     }

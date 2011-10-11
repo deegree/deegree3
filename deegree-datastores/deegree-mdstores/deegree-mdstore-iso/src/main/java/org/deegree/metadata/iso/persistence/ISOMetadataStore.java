@@ -49,7 +49,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
@@ -70,6 +69,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
@@ -87,9 +87,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
 
     private final String connectionId;
 
-    // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
-    private boolean useLegacyPredicates;
-
     private ISOMetadataStoreConfig config;
 
     private Type connectionType;
@@ -99,13 +96,17 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
     public static final int DEFAULT_FETCH_SIZE = 100;
 
+    private final SQLDialect dialect;
+
     /**
      * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
      * 
      * @param config
+     * @param dialect
      * @throws ResourceInitException
      */
-    public ISOMetadataStore( ISOMetadataStoreConfig config ) throws ResourceInitException {
+    public ISOMetadataStore( ISOMetadataStoreConfig config, SQLDialect dialect ) throws ResourceInitException {
+        this.dialect = dialect;
         this.connectionId = config.getJDBCConnId();
         this.config = config;
 
@@ -179,7 +180,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             Connection conn = null;
             try {
                 conn = getConnection();
-                useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
             } catch ( Throwable e ) {
                 LOG.debug( e.getMessage(), e );
                 throw new ResourceInitException( e.getMessage(), e );
@@ -195,7 +195,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
 
-        QueryHelper exe = new QueryHelper( getDBType() );
+        QueryHelper exe = new QueryHelper( dialect );
         return exe.execute( query, getConnection() );
     }
 
@@ -209,7 +209,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String resultTypeName = "hits";
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         try {
-            return new QueryHelper( getDBType() ).executeCounting( query, getConnection() );
+            return new QueryHelper( dialect ).executeCounting( query, getConnection() );
         } catch ( Throwable t ) {
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
@@ -221,7 +221,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        QueryHelper qh = new QueryHelper( getDBType() );
+        QueryHelper qh = new QueryHelper( dialect );
         return qh.executeGetRecordById( idList, getConnection() );
     }
 
@@ -231,8 +231,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         ISOMetadataStoreTransaction ta = null;
         Connection conn = getConnection();
         try {
-            ta = new ISOMetadataStoreTransaction( conn, inspectorChain, config.getAnyText(), useLegacyPredicates,
-                                                  getDBType() );
+            ta = new ISOMetadataStoreTransaction( conn, dialect, inspectorChain, config.getAnyText() );
         } catch ( Throwable e ) {
             LOG.error( "error " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );
