@@ -43,6 +43,8 @@ import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
 import static org.deegree.cs.CRSCodeType.getUndefined;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -389,10 +391,18 @@ public class FeatureLayer extends Layer {
         }
         LinkedList<Operator> list = new LinkedList<Operator>();
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            if ( pt instanceof GeometryPropertyType ) {
+            if ( pt instanceof GeometryPropertyType
+                 && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
                 list.add( new And( new BBOX( new ValueReference( pt.getName() ), clickBox ),
                                    new Intersects( new ValueReference( pt.getName() ), clickBox ) ) );
             }
+        }
+        if ( list.size() > 1 ) {
+            Or or = new Or( list.toArray( new Operator[list.size()] ) );
+            if ( operator == null ) {
+                return new OperatorFilter( or );
+            }
+            return new OperatorFilter( new And( or, operator ) );
         }
         if ( list.isEmpty() ) {
             // obnoxious case where feature has no geometry properties (but features may have extra geometry props)
