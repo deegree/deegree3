@@ -292,7 +292,8 @@ public class GetMap {
                     styles.add( registry.get( l.getName(), null ) );
                 } else {
                     if ( !registry.hasStyle( l.getName(), styls[i] ) ) {
-                        throw new OWSException( get( "WMS.UNDEFINED_STYLE", styls[i], l.getName() ), OWSException.STYLE_NOT_DEFINED );
+                        throw new OWSException( get( "WMS.UNDEFINED_STYLE", styls[i], l.getName() ),
+                                                OWSException.STYLE_NOT_DEFINED );
                     }
                     styles.add( registry.get( l.getName(), styls[i] ) );
                 }
@@ -736,16 +737,10 @@ public class GetMap {
         dimensions.put( name, values );
     }
 
-    /**
-     * @param name
-     * @param filter
-     * @param style
-     * @return a new filter for the layer, fulfilling the filter parameter as well
-     */
-    public Filter getFilterForLayer( String name, Filter filter, Style style ) {
-        Filter sldFilter = null;
+    public static OperatorFilter getStyleFilters( Style style, double scale ) {
+        OperatorFilter sldFilter = null;
         outer: if ( style != null ) {
-            LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.filter( getScale() ).getRules();
+            LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.filter( scale ).getRules();
             for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : rules ) {
                 if ( p.first == null ) {
                     sldFilter = null;
@@ -762,15 +757,27 @@ public class GetMap {
                         break outer;
                     }
                     if ( sldFilter == null ) {
-                        sldFilter = contn.filter;
+                        sldFilter = (OperatorFilter) contn.filter;
                     } else {
-                        Operator op1 = ( (OperatorFilter) sldFilter ).getOperator();
+                        Operator op1 = sldFilter.getOperator();
                         Operator op2 = ( (OperatorFilter) contn.filter ).getOperator();
                         sldFilter = new OperatorFilter( new Or( op1, op2 ) );
                     }
                 }
             }
         }
+
+        return sldFilter;
+    }
+
+    /**
+     * @param name
+     * @param filter
+     * @param style
+     * @return a new filter for the layer, fulfilling the filter parameter as well
+     */
+    public Filter getFilterForLayer( String name, Filter filter, Style style ) {
+        Filter sldFilter = getStyleFilters( style, getScale() );
 
         Filter extra = filters.get( name );
         if ( extra == null ) {

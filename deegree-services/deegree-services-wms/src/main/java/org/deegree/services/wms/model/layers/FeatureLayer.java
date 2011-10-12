@@ -50,9 +50,6 @@ import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,7 +65,6 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -100,6 +96,7 @@ import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
+import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.dims.DimensionInterval;
@@ -132,13 +129,8 @@ public class FeatureLayer extends Layer {
     /**
      * @param layer
      * @param parent
-     * @param adapter
-     * @throws IOException
-     * @throws MalformedURLException
-     * @throws FileNotFoundException
      */
-    public FeatureLayer( MapService service, AbstractLayerType layer, Layer parent, XMLAdapter adapter,
-                         DeegreeWorkspace workspace ) throws FileNotFoundException, MalformedURLException, IOException {
+    public FeatureLayer( MapService service, AbstractLayerType layer, Layer parent, DeegreeWorkspace workspace ) {
         super( service, layer, parent );
         FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
         datastore = mgr.get( layer.getFeatureStoreId() );
@@ -160,11 +152,8 @@ public class FeatureLayer extends Layer {
      * @param title
      * @param parent
      * @param file
-     * @throws IOException
-     * @throws FileNotFoundException
      */
-    public FeatureLayer( MapService service, String name, String title, Layer parent, String file )
-                            throws FileNotFoundException, IOException {
+    public FeatureLayer( MapService service, String name, String title, Layer parent, String file ) {
         super( service, name, title, parent );
         // TODO what about the charset here?
         datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null, null );
@@ -287,6 +276,7 @@ public class FeatureLayer extends Layer {
         if ( featureType == null && datastore != null ) {
             queries.addAll( map( datastore.getSchema().getFeatureTypes( null, false, false ),
                                  new Mapper<Query, FeatureType>() {
+                                     @Override
                                      public Query apply( FeatureType u ) {
                                          return new Query( u.getName(), Filters.addBBoxConstraint( bbox, filter,
                                                                                                    geomProp ),
@@ -414,7 +404,7 @@ public class FeatureLayer extends Layer {
         return new OperatorFilter( new And( list.get( 0 ), operator ) );
     }
 
-    private FeatureCollection clearDuplicates( FeatureInputStream rs ) {
+    private static FeatureCollection clearDuplicates( FeatureInputStream rs ) {
         FeatureCollection col = null;
         try {
             col = new GenericFeatureCollection();
@@ -435,8 +425,22 @@ public class FeatureLayer extends Layer {
 
         try {
             final Pair<Filter, LinkedList<String>> dimFilter = getDimensionFilter( fi.getDimensions() );
-            // TODO need the style here for filters, scale constraints etc.
+
             final Envelope clickBox = fi.getClickBox();
+            OperatorFilter filter = dimFilter == null ? null : (OperatorFilter) dimFilter.first;
+            if ( filter == null ) {
+                double scale = Utils.calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
+                                                      fi.getCoordinateSystem() );
+                filter = GetMap.getStyleFilters( style, scale );
+            } else {
+                double scale = Utils.calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
+                                                      fi.getCoordinateSystem() );
+                OperatorFilter f = GetMap.getStyleFilters( style, scale );
+                if ( f != null ) {
+                    filter = new OperatorFilter( new And( filter.getOperator(), f.getOperator() ) );
+                }
+            }
+
             final Operator operator = dimFilter == null ? null : ( (OperatorFilter) dimFilter.first ).getOperator();
 
             QName featureType = style == null ? null : style.getFeatureType();
@@ -447,6 +451,7 @@ public class FeatureLayer extends Layer {
             if ( featureType == null ) {
                 List<Query> queries = map( datastore.getSchema().getFeatureTypes( null, false, false ),
                                            new Mapper<Query, FeatureType>() {
+                                               @Override
                                                public Query apply( FeatureType u ) {
                                                    return new Query( u.getName(), buildFilter( operator, u, clickBox ),
                                                                      -1, fi.getFeatureCount(), -1 );

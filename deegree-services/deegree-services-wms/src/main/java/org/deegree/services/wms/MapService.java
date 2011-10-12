@@ -69,8 +69,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -407,21 +405,7 @@ public class MapService {
             AbstractLayerType aLayer = (AbstractLayerType) layer;
 
             if ( aLayer.getFeatureStoreId() != null ) {
-                try {
-                    res = new FeatureLayer( this, aLayer, parent, adapter, workspace );
-                } catch ( FileNotFoundException e ) {
-                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
-                                                                                              : aLayer.getName(),
-                              e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace", e );
-                    return null;
-                } catch ( IOException e ) {
-                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
-                                                                                              : aLayer.getName(),
-                              e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace", e );
-                    return null;
-                }
+                res = new FeatureLayer( this, aLayer, parent, workspace );
             } else if ( aLayer.getCoverageStoreId() != null ) {
                 res = new RasterLayer( this, aLayer, parent );
             } else if ( aLayer.getRemoteWMSStoreId() != null ) {
