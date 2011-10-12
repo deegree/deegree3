@@ -48,6 +48,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -183,51 +184,58 @@ public class TransformationPoints {
     public void load() {
         FileInputHandler in = new FileInputHandler( this.state.tablePanel );
         if ( in.getData() != null ) {
+            removeAll();
+
+            state.init();
             VectorTransformer vt = new VectorTransformer( in.getData(), this.state.sceneValues );
-            mappedPoints.clear();
-            mappedPoints.addAll( vt.getMappedPoints() );
-            // TODO
-            // for ( Triple<Point4Values, Point4Values, PointResidual> t : vt.getMappedPoints() ) {
-            // mappedPoints.put( t, null );
-            // }
+//            this.state.sceneValues.setEnvelopeGeoref( this.state.mapController.getCurrentEnvelope() );
+
+            for ( Triple<Point4Values, Point4Values, PointResidual> t : vt.getMappedPoints() ) {
+                add( null, t.first.getInitialValue() );
+                updateTransformation();
+                add( t.second.getInitialValue(), null );
+                updateTransformation();
+            }
+
+            updateTransformation();
             this.state.updateDrawingPanels();
+            state.mapController.forceRepaint();
+            this.state.conModel.getPanel().repaint();
+            this.state.conModel.getFootPanel().repaint();
         }
     }
 
-    public void save() {
-    }
-
     public void delete( int[] indexes ) {
-        // List<Triple<Point4Values, Point4Values, PointResidual>> deleteableRows = new ArrayList<Triple<Point4Values,
-        // Point4Values, PointResidual>>();
-        //
-        // for ( int tableRow : tableRows ) {
-        // boolean contained = false;
-        //
-        // for ( Entry<Triple<Point4Values, Point4Values, PointResidual>, String> p : this.state.mappedPoints.entrySet()
-        // ) {
-        // if ( p.getKey().first.getRc().getRow() == tableRow || p.getKey().second.getRc().getRow() == tableRow ) {
-        // contained = true;
-        // deleteableRows.add( p.getKey() );
-        // break;
-        // }
-        // }
-        // if ( contained == false ) {
-        // this.state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
-        // this.state.conModel.getPanel().setLastAbstractPoint( null, null, null );
-        // }
-        // }
-        // if ( deleteableRows.size() != 0 ) {
-        // this.state.removeFromMappedPoints( deleteableRows );
-        // }
-        // this.state.updateResidualsWithLastAbstractPoint();
-        // this.state.updateDrawingPanels();
-    }
+        state.tablePanel.removeRow( indexes );
+        HashSet<String> ids = new HashSet<String>();
+        HashSet<Triple<Point4Values, Point4Values, PointResidual>> pts = new HashSet<Triple<Point4Values, Point4Values, PointResidual>>();
+        for ( int i : indexes ) {
+            Triple<Point4Values, Point4Values, PointResidual> t = mappedPoints.get( i );
+            pts.add( t );
+            ids.add( featureIds.get( t ) );
+            featureIds.remove( t );
+        }
+        mappedPoints.removeAll( pts );
 
-    public void recalculate() {
+        try {
+            FeatureStoreTransaction ta = featureStore.acquireTransaction();
+            ta.performDelete( new IdFilter( ids ), null );
+            ta.commit();
+
+            this.state.conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+            this.state.conModel.getPanel().setLastAbstractPoint( null, null, null );
+            updateTransformation();
+            this.state.updateDrawingPanels();
+            state.mapController.forceRepaint();
+            this.state.conModel.getPanel().repaint();
+            this.state.conModel.getFootPanel().repaint();
+        } catch ( Throwable t ) {
+            t.printStackTrace();
+        }
     }
 
     public void add( AbstractGRPoint left, AbstractGRPoint right ) {
+        this.state.sceneValues.setEnvelopeGeoref( this.state.mapController.getCurrentEnvelope() );
         Point4Values leftp4 = null, rightp4 = null;
         String fid = null;
         if ( left != null ) {
@@ -283,10 +291,10 @@ public class TransformationPoints {
     }
 
     public void updateTransformation() {
-        if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
-             || state.conModel.getPanel().getLastAbstractPoint() == null ) {
-            return;
-        }
+//        if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
+//             || state.conModel.getPanel().getLastAbstractPoint() == null ) {
+//            return;
+//        }
 
         state.conModel.setTransform( state.determineTransformationType( state.conModel.getTransformationType() ) );
         if ( state.conModel.getTransform() == null ) {

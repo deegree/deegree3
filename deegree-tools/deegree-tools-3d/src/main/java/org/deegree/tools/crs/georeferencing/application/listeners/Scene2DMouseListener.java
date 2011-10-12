@@ -124,7 +124,6 @@ public class Scene2DMouseListener extends MouseAdapter {
 
                     double x = m.getX();
                     double y = m.getY();
-                    this.state.sceneValues.setEnvelopeGeoref( this.state.mapController.getCurrentEnvelope() );
                     GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                     state.points.add( geoReferencedPoint, null );
                 } else if ( this.state.pan ) {

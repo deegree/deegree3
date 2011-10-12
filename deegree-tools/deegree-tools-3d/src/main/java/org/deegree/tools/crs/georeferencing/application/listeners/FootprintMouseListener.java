@@ -90,7 +90,6 @@ public class FootprintMouseListener extends MouseAdapter {
 
     @Override
     public void mouseReleased( MouseEvent m ) {
-        boolean isFirstNumber = false;
         if ( state.isControlDown || state.zoomIn || state.zoomOut ) {
             Point2d pointPressed = new Point2d( state.mouseFootprint.getPointMousePressed().x,
                                                 state.mouseFootprint.getPointMousePressed().y );
@@ -143,7 +142,6 @@ public class FootprintMouseListener extends MouseAdapter {
                      && state.conModel.getPanel().getLastAbstractPoint() == null
                      && state.conModel.getFootPanel().getFocus() == true ) {
                     state.tablePanel.addRow();
-                    isFirstNumber = true;
                 }
                 double x = m.getX();
                 double y = m.getY();
@@ -161,9 +159,6 @@ public class FootprintMouseListener extends MouseAdapter {
                 state.rc = state.tablePanel.setCoords( point.second );
                 state.conModel.getFootPanel().setLastAbstractPoint( point.first, point.second, state.rc );
                 state.referencingLeft = true;
-                if ( isFirstNumber == false ) {
-                    state.points.recalculate();
-                }
 
             } else if ( state.pan ) {
                 state.mouseFootprint.setMouseChanging( new FootprintPoint(
