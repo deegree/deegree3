@@ -80,8 +80,10 @@ import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.tools.crs.georeferencing.application.handler.FileInputHandler;
 import org.deegree.tools.crs.georeferencing.application.transformation.AbstractTransformation;
+import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.datatransformer.VectorTransformer;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
@@ -291,10 +293,10 @@ public class TransformationPoints {
     }
 
     public void updateTransformation() {
-//        if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
-//             || state.conModel.getPanel().getLastAbstractPoint() == null ) {
-//            return;
-//        }
+        // if ( state.conModel.getFootPanel().getLastAbstractPoint() == null
+        // || state.conModel.getPanel().getLastAbstractPoint() == null ) {
+        // return;
+        // }
 
         state.conModel.setTransform( state.determineTransformationType( state.conModel.getTransformationType() ) );
         if ( state.conModel.getTransform() == null ) {
@@ -388,6 +390,32 @@ public class TransformationPoints {
 
     public List<Triple<Point4Values, Point4Values, PointResidual>> getMappedPoints() {
         return new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>( mappedPoints );
+    }
+
+    public void updateFootprintPoints( Scene2DValues sceneValues ) {
+
+        for ( Triple<Point4Values, Point4Values, PointResidual> t : mappedPoints ) {
+            String id = featureIds.remove( t );
+            Point4Values p = t.first;
+            int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
+            double x = pValues[0];
+            double y = pValues[1];
+            FootprintPoint pi = new FootprintPoint( x, y );
+            t.first = new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords(), p.getRc() );
+            featureIds.put( t, id );
+        }
+
+        Point4Values lastAbstractPoint = state.conModel.getFootPanel().getLastAbstractPoint();
+        if ( lastAbstractPoint != null ) {
+            AbstractGRPoint worldCoords = lastAbstractPoint.getWorldCoords();
+            RowColumn rc = lastAbstractPoint.getRc();
+            int[] pValues = sceneValues.getPixelCoord( worldCoords );
+            double x = pValues[0];
+            double y = pValues[1];
+
+            FootprintPoint pi = new FootprintPoint( x, y );
+            state.conModel.getFootPanel().setLastAbstractPoint( pi, worldCoords, rc );
+        }
     }
 
 }
