@@ -76,7 +76,9 @@ public class PropertiesContentProvider extends AbstractJrxmlContentProvider {
 
     private final org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle;
 
-    public PropertiesContentProvider( org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle ) {
+    public PropertiesContentProvider( DeegreeWorkspace workspace,
+                                      org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle ) {
+        super( workspace );
         this.resourceBundle = resourceBundle;
 
     }
@@ -146,11 +148,13 @@ public class PropertiesContentProvider extends AbstractJrxmlContentProvider {
         try {
             rb = ResourceBundle.getBundle( resourceBundle.getName(), l );
         } catch ( Exception e ) {
-            LOG.debug( "Try to find resource bundle in deegrees module class loader" );
-            ClassLoader moduleClassLoader = DeegreeWorkspace.getInstance().getModuleClassLoader();
-            LOG.debug( "Found module class loader {}", moduleClassLoader );
-            if ( moduleClassLoader != null )
-                rb = ResourceBundle.getBundle( resourceBundle.getName(), l, moduleClassLoader );
+            if ( workspace != null ) {
+                LOG.debug( "Try to find resource bundle in deegrees module class loader" );
+                ClassLoader moduleClassLoader = workspace.getModuleClassLoader();
+                LOG.debug( "Found module class loader {}", moduleClassLoader );
+                if ( moduleClassLoader != null )
+                    rb = ResourceBundle.getBundle( resourceBundle.getName(), l, moduleClassLoader );
+            }
         }
         if ( rb != null ) {
             LOG.debug( "Found resource bundle for name '{}' and language '{}' ", resourceBundle.getName(),

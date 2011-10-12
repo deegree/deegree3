@@ -96,6 +96,7 @@ import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
+import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.dims.DimensionInterval;
@@ -128,7 +129,6 @@ public class FeatureLayer extends Layer {
     /**
      * @param layer
      * @param parent
-     * @param adapter
      */
     public FeatureLayer( MapService service, AbstractLayerType layer, Layer parent, DeegreeWorkspace workspace ) {
         super( service, layer, parent );
@@ -373,15 +373,15 @@ public class FeatureLayer extends Layer {
         return datastore != null && datastore.isAvailable();
     }
 
-    static OperatorFilter buildFilter( Operator operator, FeatureType u, Envelope clickBox ) {
-        if ( u == null ) {
+    static OperatorFilter buildFilter( Operator operator, FeatureType ft, Envelope clickBox ) {
+        if ( ft == null ) {
             if ( operator == null ) {
                 return null;
             }
             return new OperatorFilter( operator );
         }
         LinkedList<Operator> list = new LinkedList<Operator>();
-        for ( PropertyType pt : u.getPropertyDeclarations() ) {
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             if ( pt instanceof GeometryPropertyType
                  && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
                 list.add( new And( new BBOX( new ValueReference( pt.getName() ), clickBox ),
@@ -395,16 +395,14 @@ public class FeatureLayer extends Layer {
             }
             return new OperatorFilter( new And( or, operator ) );
         }
-        if ( !list.isEmpty() ) {
-            if ( operator == null ) {
-                return new OperatorFilter( list.get( 0 ) );
-            }
-            return new OperatorFilter( new And( list.get( 0 ), operator ) );
+        if ( list.isEmpty() ) {
+            // obnoxious case where feature has no geometry properties (but features may have extra geometry props)
+            list.add( new And( new BBOX( null, clickBox ), new Intersects( null, clickBox ) ) );
         }
         if ( operator == null ) {
-            return null;
+            return new OperatorFilter( list.get( 0 ) );
         }
-        return new OperatorFilter( operator );
+        return new OperatorFilter( new And( list.get( 0 ), operator ) );
     }
 
     private static FeatureCollection clearDuplicates( FeatureInputStream rs ) {
@@ -428,8 +426,22 @@ public class FeatureLayer extends Layer {
 
         try {
             final Pair<Filter, LinkedList<String>> dimFilter = getDimensionFilter( fi.getDimensions() );
-            // TODO need the style here for filters, scale constraints etc.
+
             final Envelope clickBox = fi.getClickBox();
+            OperatorFilter filter = dimFilter == null ? null : (OperatorFilter) dimFilter.first;
+            if ( filter == null ) {
+                double scale = Utils.calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
+                                                      fi.getCoordinateSystem() );
+                filter = GetMap.getStyleFilters( style, scale );
+            } else {
+                double scale = Utils.calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
+                                                      fi.getCoordinateSystem() );
+                OperatorFilter f = GetMap.getStyleFilters( style, scale );
+                if ( f != null ) {
+                    filter = new OperatorFilter( new And( filter.getOperator(), f.getOperator() ) );
+                }
+            }
+
             final Operator operator = dimFilter == null ? null : ( (OperatorFilter) dimFilter.first ).getOperator();
 
             QName featureType = style == null ? null : style.getFeatureType();
@@ -442,9 +454,6 @@ public class FeatureLayer extends Layer {
                                            new Mapper<Query, FeatureType>() {
                                                @Override
                                                public Query apply( FeatureType u ) {
-                                                   if ( u.getDefaultGeometryPropertyDeclaration() == null ) {
-                                                       return null;
-                                                   }
                                                    return new Query( u.getName(), buildFilter( operator, u, clickBox ),
                                                                      -1, fi.getFeatureCount(), -1 );
                                                }
@@ -453,10 +462,6 @@ public class FeatureLayer extends Layer {
                 col = clearDuplicates( datastore.query( queries.toArray( new Query[queries.size()] ) ) );
             } else {
                 FeatureType ft = datastore.getSchema().getFeatureType( featureType );
-                if ( ft.getDefaultGeometryPropertyDeclaration() == null ) {
-                    return new Pair<FeatureCollection, LinkedList<String>>( new GenericFeatureCollection(),
-                                                                            new LinkedList<String>() );
-                }
                 Query query = new Query( featureType, buildFilter( operator, ft, clickBox ), -1, fi.getFeatureCount(),
                                          -1 );
                 col = clearDuplicates( datastore.query( query ) );

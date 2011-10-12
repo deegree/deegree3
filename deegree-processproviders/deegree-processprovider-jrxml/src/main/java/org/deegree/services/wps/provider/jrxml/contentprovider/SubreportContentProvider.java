@@ -55,6 +55,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -69,14 +70,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * Manages subreports with XMLDatasources
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class SubreportContentProvider implements JrxmlContentProvider {
+public class SubreportContentProvider extends AbstractJrxmlContentProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( SubreportContentProvider.class );
 
@@ -97,7 +98,9 @@ public class SubreportContentProvider implements JrxmlContentProvider {
      * @param url
      * @param processDescription
      */
-    public SubreportContentProvider( String parameterName, URL url, ResourceBundle resourceBundle ) {
+    public SubreportContentProvider( DeegreeWorkspace workspace, String parameterName, URL url,
+                                     ResourceBundle resourceBundle ) {
+        super( workspace );
         this.parameterPrefix = parameterName;
         this.subreportJrxml = url;
         this.resourceBundle = resourceBundle;
@@ -106,13 +109,13 @@ public class SubreportContentProvider implements JrxmlContentProvider {
     private List<JrxmlContentProvider> getContentProviders( String datasourceParameter ) {
         if ( contentProviders == null ) {
             contentProviders = new ArrayList<JrxmlContentProvider>();
-            contentProviders.add( new DataTableContentProvider( getDatasourceParameter() ) );
-            contentProviders.add( new MapContentProvider() );
-            contentProviders.add( new ImageContentProvider() );
+            contentProviders.add( new DataTableContentProvider( workspace, getDatasourceParameter() ) );
+            contentProviders.add( new MapContentProvider( workspace ) );
+            contentProviders.add( new ImageContentProvider( workspace ) );
             if ( resourceBundle != null ) {
-                contentProviders.add( new PropertiesContentProvider( resourceBundle ) );
+                contentProviders.add( new PropertiesContentProvider( workspace, resourceBundle ) );
             }
-            contentProviders.add( new OtherContentProvider() );
+            contentProviders.add( new OtherContentProvider( workspace ) );
         }
         return contentProviders;
     }

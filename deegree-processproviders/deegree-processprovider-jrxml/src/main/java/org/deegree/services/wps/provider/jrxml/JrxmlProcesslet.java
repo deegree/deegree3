@@ -103,16 +103,18 @@ public class JrxmlProcesslet implements Processlet {
             Pair<InputStream, Boolean> is = new Pair<InputStream, Boolean>( jrxml.openStream(), false );
             Map<String, Object> params = new HashMap<String, Object>();
             List<CodeType> processedIds = new ArrayList<CodeType>();
+            boolean isDatasourceInserted = false;
             for ( JrxmlContentProvider contentProvider : contentProviders ) {
                 LOG.debug( "ContentProvider: " + contentProvider.getClass().getName() );
                 is = contentProvider.prepareJrxmlAndReadInputParameters( is.first, params, in, processedIds, parameters );
+                isDatasourceInserted = isDatasourceInserted || is.second;
             }
 
             JasperPrint fillReport;
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "a datasource was" + ( is.second ? " " : " not " ) + "inserted" );
+                LOG.debug( "a datasource was" + ( isDatasourceInserted ? " " : " not " ) + "inserted" );
             }
-            if ( is.second ) {
+            if ( isDatasourceInserted ) {
                 fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is.first ), params );
             } else {
                 fillReport = JasperFillManager.fillReport( JasperCompileManager.compileReport( is.first ), params,

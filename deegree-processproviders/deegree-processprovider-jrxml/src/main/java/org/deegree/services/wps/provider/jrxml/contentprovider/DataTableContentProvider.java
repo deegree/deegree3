@@ -61,6 +61,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
@@ -84,7 +85,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * TODO add class documentation here
+ * Handles XML Datasources, fields must have a prefix 'xml' and suffix 'DetailEntry' and/or 'HeaderEntry'
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -113,10 +114,12 @@ public class DataTableContentProvider extends AbstractJrxmlContentProvider {
         nsContext = JrxmlUtils.nsContext.addNamespace( "tbl", SCHEMA );
     }
 
-    public DataTableContentProvider() {
+    public DataTableContentProvider( DeegreeWorkspace workspace ) {
+        super( workspace );
     }
 
-    public DataTableContentProvider( String datasourceParameterName ) {
+    public DataTableContentProvider( DeegreeWorkspace workspace, String datasourceParameterName ) {
+        super( workspace );
         if ( datasourceParameterName != null )
             this.datasourceParameterName = datasourceParameterName;
     }

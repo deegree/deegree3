@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -66,42 +67,54 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class JrxmlWPSProcess implements WPSProcess {
+public class JrxmlWPSProcess extends AbstractJrxmlWPSProcess {
 
     private static final Logger LOG = LoggerFactory.getLogger( JrxmlWPSProcess.class );
 
-    private final Processlet processlet;
+    private Processlet processlet;
 
-    private final ProcessDefinition description;
+    private ProcessDefinition description;
 
     private final List<JrxmlContentProvider> contentProviders = new ArrayList<JrxmlContentProvider>();
 
-    public JrxmlWPSProcess( JrxmlProcessDescription p ) {
-        contentProviders.add( new DataTableContentProvider() );
-        contentProviders.add( new MapContentProvider() );
-        contentProviders.add( new ImageContentProvider() );
-        if ( p.getResourceBundle() != null ) {
-            contentProviders.add( new PropertiesContentProvider( p.getResourceBundle() ) );
+    private final JrxmlProcessDescription processDescription;
+
+    public JrxmlWPSProcess( JrxmlProcessDescription processDescription ) {
+        this.processDescription = processDescription;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        contentProviders.add( new DataTableContentProvider( workspace ) );
+        contentProviders.add( new MapContentProvider( workspace ) );
+        contentProviders.add( new ImageContentProvider( workspace ) );
+        if ( processDescription.getResourceBundle() != null ) {
+            contentProviders.add( new PropertiesContentProvider( workspace, processDescription.getResourceBundle() ) );
         }
-        for ( String parameterName : p.getSubreports().keySet() ) {
-            contentProviders.add( new SubreportContentProvider( parameterName, p.getSubreports().get( parameterName ),
-                                                                p.getResourceBundle() ) );
+        for ( String parameterName : processDescription.getSubreports().keySet() ) {
+            contentProviders.add( new SubreportContentProvider(
+                                                                workspace,
+                                                                parameterName,
+                                                                processDescription.getSubreports().get( parameterName ),
+                                                                processDescription.getResourceBundle() ) );
         }
-        contentProviders.add( new OtherContentProvider() );
+        contentProviders.add( new OtherContentProvider( workspace ) );
         try {
-            XMLAdapter a = new XMLAdapter( p.getUrl().openStream() );
-            String name = p.getUrl().getFile();
+            XMLAdapter a = new XMLAdapter( processDescription.getUrl().openStream() );
+            String name = processDescription.getUrl().getFile();
             if ( name.contains( "." ) )
                 name = name.substring( 0, name.lastIndexOf( '.' ) );
             if ( name.contains( "/" ) )
                 name = name.substring( name.lastIndexOf( '/' ) + 1, name.length() );
 
-            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( p.getId(), name,
-                                                                                           p.getDescription(), a,
+            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( processDescription.getId(),
+                                                                                           name,
+                                                                                           processDescription.getDescription(),
+                                                                                           a,
                                                                                            contentProviders,
-                                                                                           p.getParameterDescriptions() );
+                                                                                           processDescription.getParameterDescriptions() );
             this.description = parsed.first;
-            this.processlet = new JrxmlProcesslet( p.getUrl(), contentProviders, parsed.second );
+            this.processlet = new JrxmlProcesslet( processDescription.getUrl(), contentProviders, parsed.second );
         } catch ( XMLProcessingException e ) {
             String msg = "could not parse jrxml file: " + e.getMessage();
             LOG.error( msg, e );
@@ -111,6 +124,7 @@ public class JrxmlWPSProcess implements WPSProcess {
             LOG.error( msg, e );
             throw new IllegalArgumentException( msg );
         }
+        getProcesslet().init();
     }
 
     @Override

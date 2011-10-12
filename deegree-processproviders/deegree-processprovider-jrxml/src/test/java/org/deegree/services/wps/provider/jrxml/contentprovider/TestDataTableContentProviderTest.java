@@ -80,14 +80,14 @@ public class TestDataTableContentProviderTest {
      */
     @Test
     public void testInspectInputParametersFromJrxml() {
-        DataTableContentProvider dataTableContentProvider = new DataTableContentProvider();
+        DataTableContentProvider dataTableContentProvider = getProvider();
         Map<String, String> parameters = new HashMap<String, String>();
         List<JAXBElement<? extends ProcessletInputDefinition>> inputs = new ArrayList<JAXBElement<? extends ProcessletInputDefinition>>();
         XMLAdapter adapter = new XMLAdapter(
                                              TestDataTableContentProviderTest.class.getResourceAsStream( "../templateWithTable.jrxml" ) );
         List<String> handledParams = new ArrayList<String>();
-        dataTableContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs, adapter,
-                                                                  parameters, handledParams );
+        dataTableContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs,
+                                                                  adapter, parameters, handledParams );
 
         assertEquals( 0, parameters.size() );
 
@@ -95,6 +95,10 @@ public class TestDataTableContentProviderTest {
         assertEquals( 0, handledParams.size() );
         assertEquals( 1, inputs.size() );
         assertEquals( "REPORT", inputs.get( 0 ).getValue().getIdentifier().getValue() );
+    }
+
+    private DataTableContentProvider getProvider() {
+        return new DataTableContentProvider( null );
     }
 
     /**
@@ -112,7 +116,7 @@ public class TestDataTableContentProviderTest {
     public void testPrepareJrxmlAndReadInputParameters()
                             throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
                             ProcessletException {
-        DataTableContentProvider tableContentProvider = new DataTableContentProvider();
+        DataTableContentProvider tableContentProvider = getProvider();
 
         List<CodeType> processedIds = new ArrayList<CodeType>();
         Pair<InputStream, Boolean> jrxml = new Pair<InputStream, Boolean>(

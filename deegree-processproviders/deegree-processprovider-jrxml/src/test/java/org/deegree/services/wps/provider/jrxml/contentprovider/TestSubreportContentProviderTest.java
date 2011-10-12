@@ -52,8 +52,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * TODO add class documentation here
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
@@ -67,7 +65,7 @@ public class TestSubreportContentProviderTest {
     public void createSubreportContentProvider()
                             throws Exception {
         List<JrxmlContentProvider> contentProviders = new ArrayList<JrxmlContentProvider>();
-        contentProviders.add( new DataTableContentProvider() );
+        contentProviders.add( new DataTableContentProvider( null ) );
 
         ResourceBundle resourceBundle = new ResourceBundle();
         resourceBundle.setName( "org.deegree.services.wps.provider.jrxml.contentprovider.testlabels" );
@@ -75,10 +73,11 @@ public class TestSubreportContentProviderTest {
         resourceBundle.setDefaultLocale( "de" );
         resourceBundle.getSupportedLocale().add( "de" );
         resourceBundle.getSupportedLocale().add( "en" );
-        contentProviders.add( new PropertiesContentProvider( resourceBundle ) );
-        contentProviders.add( new OtherContentProvider() );
+        contentProviders.add( new PropertiesContentProvider( null, resourceBundle ) );
+        contentProviders.add( new OtherContentProvider( null ) );
 
         subreportContentProvider = new SubreportContentProvider(
+                                                                 null,
                                                                  "SUBREPORT",
                                                                  TestOtherContentProviderTest.class.getResource( "../templateWithInlineTable_subreport1.jrxml" ),
                                                                  null );
@@ -99,7 +98,8 @@ public class TestSubreportContentProviderTest {
         XMLAdapter jrxmlAdapter = new XMLAdapter(
                                                   TestOtherContentProviderTest.class.getResourceAsStream( "../templateWithInlineTable.jrxml" ) );
         List<String> handledParameters = new ArrayList<String>();
-        subreportContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(),inputs, jrxmlAdapter, parameters, handledParameters );
+        subreportContentProvider.inspectInputParametersFromJrxml( new HashMap<String, ParameterDescription>(), inputs,
+                                                                  jrxmlAdapter, parameters, handledParameters );
 
         // includes parameters of the subreport
         assertEquals( 2, handledParameters.size() );
