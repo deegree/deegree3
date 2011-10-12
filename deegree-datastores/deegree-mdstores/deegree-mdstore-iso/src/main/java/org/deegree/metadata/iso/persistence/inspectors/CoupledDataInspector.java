@@ -135,7 +135,7 @@ public class CoupledDataInspector implements RecordInspector<ISORecord> {
         ResultSet rs = null;
         PreparedStatement stm = null;
         LOG.warn( "Check table / column names." );
-        String s = "SELECT " + resourceIdCol + " FROM " + mainTable + " WHERE " + resourceIdCol + " = ?;";
+        String s = "SELECT " + resourceIdCol + " FROM " + mainTable + " WHERE " + resourceIdCol + " = ?";
         try {
             stm = conn.prepareStatement( s );
             stm.setString( 1, resourceIdentifier );

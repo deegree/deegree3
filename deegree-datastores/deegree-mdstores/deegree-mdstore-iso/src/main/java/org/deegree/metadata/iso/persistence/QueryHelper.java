@@ -36,6 +36,7 @@
 package org.deegree.metadata.iso.persistence;
 
 import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -93,12 +94,23 @@ class QueryHelper extends SqlHelper {
                 idSelect = idSelect.append( " from (" ).append( oldHeader );
                 idSelect.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
             }
+            if ( query != null && ( query.getStartPosition() != 1 || query.getMaxRecords() > -1 )
+                 && dialect.getDBType() == Oracle ) {
+                String oldHeader = idSelect.toString();
+                idSelect = new StringBuilder();
+                idSelect.append( "select * from ( " );
+                if ( query.getStartPosition() != 1 ) {
+                    idSelect.append( "select a.*, ROWNUM rnum from (" );
+                }
+                idSelect.append( oldHeader );
+            }
 
             getPSBody( builder, idSelect );
             if ( builder.getOrderBy() != null ) {
                 idSelect.append( " ORDER BY " );
                 idSelect.append( builder.getOrderBy().getSQL() );
             }
+
             if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == PostgreSQL ) {
                 idSelect.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
@@ -109,6 +121,24 @@ class QueryHelper extends SqlHelper {
             // take a look in the wiki before changing this!
             if ( dialect.getDBType() == PostgreSQL && query != null && query.getMaxRecords() > -1 ) {
                 idSelect.append( " LIMIT " ).append( query.getMaxRecords() );
+            }
+            if ( query != null && ( query.getStartPosition() != 1 || query.getMaxRecords() > -1 )
+                 && dialect.getDBType() == Oracle ) {
+                idSelect.append( " ) " );
+                if ( query.getStartPosition() != 1 ) {
+                    idSelect.append( " a " );
+                }
+                if ( query.getMaxRecords() > -1 ) {
+                    int max = query.getMaxRecords() - 1;
+                    if ( query.getStartPosition() != -1 ) {
+                        max += query.getStartPosition();
+                    }
+                    idSelect.append( " WHERE ROWNUM <= " ).append( max );
+                }
+                if ( query.getStartPosition() != 1 ) {
+                    int min = query.getStartPosition();
+                    idSelect.append( " ) WHERE rnum >= " ).append( min );
+                }
             }
 
             StringBuilder outerSelect = new StringBuilder( "SELECT " );

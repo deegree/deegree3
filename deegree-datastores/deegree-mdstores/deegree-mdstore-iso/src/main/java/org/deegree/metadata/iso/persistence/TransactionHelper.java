@@ -232,7 +232,6 @@ class TransactionHelper extends SqlHelper {
             stm = conn.prepareStatement( s.toString() );
             stm.setObject( 1, idToUpdate );
             rs = stm.executeQuery();
-            s = new StringWriter( 500 );
 
             while ( rs.next() ) {
                 requestedId = rs.getInt( 1 );
@@ -337,31 +336,15 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
 
         Geometry geom = calculateMainBBox( qp.getBoundingBox() );
-        // byte[] wkb;
-        // try {
-        // wkb = WKBWriter.write( geom );
-        // StringBuilder sb = new StringBuilder();
         String bboxColumn = "bbox";
-        GeometryParticleConverter converter = dialect.getGeometryConverter( bboxColumn, null, null, true );
-        tr.addPreparedArgument( bboxColumn, converter.getSetSnippet( geom ) );
+        String srid = null;
+        // TODO: srid
+        if ( dialect.getDBType() == Type.Oracle ) {
+            srid = "4326";
+        }
+        GeometryParticleConverter converter = dialect.getGeometryConverter( bboxColumn, null, srid, true );
 
-        // if ( connectionType == Type.MSSQL ) {
-        // sb.append( "geometry::STGeomFromWKB(?, 0)" );
-        // } else {
-        // if ( JDBCUtils.useLegayPostGISPredicates( conn, LOG ) ) {
-        // sb.append( "SetSRID(GeomFromWKB(?)," );
-        // } else {
-        // sb.append( "SetSRID(ST_GeomFromWKB(?)," );
-        // }
-        // sb.append( "-1)" );
-        // }
-        // tr.addPreparedArgument( "bbox", wkb, sb.toString() );
-
-        // } catch ( ParseException e ) {
-        // String msg = "Could not write as WKB " + geom + ": " + e.getMessage();
-        // LOG.debug( msg, e );
-        // throw new IllegalArgumentException();
-        // }
+        tr.addPreparedArgument( bboxColumn, geom, converter );
     }
 
     private String getFormats( List<Format> list ) {
@@ -521,7 +504,7 @@ class TransactionHelper extends SqlHelper {
             localId = getLastDatasetId( connection, databaseTable );
             localId++;
             if ( isUpdate == true ) {
-                sqlStatement.append( "DELETE FROM " + databaseTable + " WHERE " + fk_main + " = ?;" );
+                sqlStatement.append( "DELETE FROM " + databaseTable + " WHERE " + fk_main + " = ?" );
                 stm = connection.prepareStatement( sqlStatement.toString() );
                 stm.setInt( 1, operatesOnId );
                 LOG.debug( stm.toString() );
@@ -556,6 +539,10 @@ class TransactionHelper extends SqlHelper {
         }
         if ( dialect.getDBType() == Type.MSSQL ) {
             selectIDRows = "SELECT TOP 1 " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn + " DESC";
+        }
+        if ( dialect.getDBType() == Type.Oracle ) {
+            String inner = "SELECT " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn + " DESC";
+            selectIDRows = "SELECT * FROM (" + inner + ") WHERE rownum = 1";
         }
         ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
 

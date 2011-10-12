@@ -184,7 +184,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class };
+        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class, SQLDialectManager.class };
     }
 
     public void init( DeegreeWorkspace workspace ) {
