@@ -42,6 +42,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map.Entry;
 
+import org.deegree.commons.tom.sql.ParticleConversion;
 import org.slf4j.Logger;
 
 /**
@@ -115,10 +116,16 @@ public class UpdateRow extends TransactionRow {
             if ( entry.getValue() != null ) {
                 LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
                            + entry.getValue().getClass() + ")" );
+                if ( entry.getValue() instanceof ParticleConversion<?> ) {
+                    ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
+                    conversion.setParticle( stmt, columnId++ );
+                } else {
+                    stmt.setObject( columnId++, entry.getValue() );
+                }
             } else {
                 LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
+                stmt.setObject( columnId++, null );
             }
-            stmt.setObject( columnId++, entry.getValue() );
         }
         stmt.execute();
         stmt.close();
