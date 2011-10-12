@@ -405,7 +405,12 @@ public class MapService {
             AbstractLayerType aLayer = (AbstractLayerType) layer;
 
             if ( aLayer.getFeatureStoreId() != null ) {
-                res = new FeatureLayer( this, aLayer, parent, workspace );
+                try {
+                    res = new FeatureLayer( this, aLayer, parent, workspace );
+                } catch ( Throwable e ) {
+                    LOG.warn( "Layer {} could not be loaded, since the feature store was not available.",
+                              aLayer.getName() );
+                }
             } else if ( aLayer.getCoverageStoreId() != null ) {
                 res = new RasterLayer( this, aLayer, parent );
             } else if ( aLayer.getRemoteWMSStoreId() != null ) {
