@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-processproviders</artifactId>
-    <version>3.1-rc3-SNAPSHOT</version>
+    <version>3.1-rc3</version>
   </parent>
 
   <repositories>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wps</artifactId>
-      <version>3.1-rc3-SNAPSHOT</version>
+      <version>3.1-rc3</version>
     </dependency>
   </dependencies>
 
