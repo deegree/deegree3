@@ -186,9 +186,9 @@ public class TransformationPoints {
         if ( in.getData() != null ) {
             removeAll();
 
+            this.state.sceneValues.setEnvelopeGeoref( this.state.mapController.getCurrentEnvelope() );
             state.init();
             VectorTransformer vt = new VectorTransformer( in.getData(), this.state.sceneValues );
-//            this.state.sceneValues.setEnvelopeGeoref( this.state.mapController.getCurrentEnvelope() );
 
             for ( Triple<Point4Values, Point4Values, PointResidual> t : vt.getMappedPoints() ) {
                 add( null, t.first.getInitialValue() );
