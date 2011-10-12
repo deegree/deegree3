@@ -36,10 +36,14 @@
 package org.deegree.filter.spatial;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.Feature;
+import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
@@ -51,10 +55,14 @@ import org.deegree.geometry.Geometry;
  */
 public class Intersects extends SpatialOperator {
 
+    private static final Logger LOG = LoggerFactory.getLogger( Intersects.class );
+
     private final Geometry geometry;
 
     /**
      * @param propName
+     *            may actually be <code>null</code> (deegree extension to cope with features that have only hidden
+     *            geometry props)
      * @param geometry
      */
     public Intersects( Expression propName, Geometry geometry ) {
@@ -65,12 +73,39 @@ public class Intersects extends SpatialOperator {
     @Override
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
-            Geometry geom = checkGeometryOrNull( paramValue );
-            if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
-                return geom.intersects( transformedLiteral );
+
+        Expression param1 = getParam1();
+        if ( param1 != null ) {
+            for ( TypedObjectNode paramValue : param1.evaluate( obj, xpathEvaluator ) ) {
+                Geometry param1Value = checkGeometryOrNull( paramValue );
+                if ( param1Value != null ) {
+                    Geometry transformedGeom = getCompatibleGeometry( param1Value, geometry );
+                    return transformedGeom.intersects( param1Value );
+                }
             }
+        } else if ( obj instanceof Feature ) {
+            // handle the case where the property name is empty
+            Feature f = (Feature) obj;
+            for ( Property prop : f.getProperties() ) {
+                if ( prop.getValue() instanceof Geometry ) {
+                    Geometry geom = (Geometry) prop.getValue();
+                    Geometry transformedGeom = getCompatibleGeometry( geometry, geom );
+                    if ( transformedGeom.intersects( geometry ) ) {
+                        return true;
+                    }
+                }
+            }
+            for ( Property prop : f.getExtraProperties().getProperties() ) {
+                if ( prop.getValue() instanceof Geometry ) {
+                    Geometry geom = (Geometry) prop.getValue();
+                    Geometry transformedGeom = getCompatibleGeometry( geometry, geom );
+                    if ( transformedGeom.intersects( geometry ) ) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            LOG.warn( "Evaluating Intersects on non-Feature object and property name not specified." );
         }
         return false;
     }
