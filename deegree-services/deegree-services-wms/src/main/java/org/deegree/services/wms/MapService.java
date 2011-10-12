@@ -408,8 +408,11 @@ public class MapService {
                 try {
                     res = new FeatureLayer( this, aLayer, parent, workspace );
                 } catch ( Throwable e ) {
-                    LOG.warn( "Layer {} could not be loaded, since the feature store was not available.",
-                              aLayer.getName() );
+                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
+                                                                                              : aLayer.getName(),
+                              e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace", e );
+                    return null;
                 }
             } else if ( aLayer.getCoverageStoreId() != null ) {
                 res = new RasterLayer( this, aLayer, parent );
