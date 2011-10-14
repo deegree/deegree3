@@ -36,7 +36,6 @@
 package org.deegree.protocol.ows.client;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -52,8 +51,11 @@ import org.apache.axiom.om.OMElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
@@ -255,8 +257,8 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
     /**
      * Performs an HTTP-GET request to the service.
      * <p>
-     * NOTE: The caller <b>must</b> call {@link OWSResponse#close()} on the returned object eventually, otherwise underlying
-     * resources (connections) may not be freed.
+     * NOTE: The caller <b>must</b> call {@link OWSResponse#close()} on the returned object eventually, otherwise
+     * underlying resources (connections) may not be freed.
      * </p>
      * 
      * @param endPoint
@@ -311,14 +313,29 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
      * </p>
      * 
      * @param endPoint
+     * @param contentType
      * @param body
      * @param headers
      * @return
      * @throws IOException
      */
-    protected OWSResponse doPost( URL endPoint, InputStream body, Map<String, String> headers )
+    protected OWSResponse doPost( URL endPoint, String contentType, StreamBufferStore body, Map<String, String> headers )
                             throws IOException {
-        // TODO
-        return null;
+
+        OWSResponse response = null;
+        try {
+            HttpPost httpPost = new HttpPost( endPoint.toURI() );
+            LOG.debug( "Performing POST request on " + endPoint );
+            LOG.debug( "post size: " + body.size() );
+            InputStreamEntity entity = new InputStreamEntity( body.getInputStream(), (long) body.size() );
+            entity.setContentType( contentType );
+            httpPost.setEntity( entity );
+            HttpResponse httpResponse = httpClient.execute( httpPost );
+            response = new OWSResponse( endPoint.toURI(), httpResponse );
+        } catch ( Throwable e ) {
+            String msg = "Error performing POST request on '" + endPoint + "': " + e.getMessage();
+            throw new IOException( msg );
+        }
+        return response;
     }
 }

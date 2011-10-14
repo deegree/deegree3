@@ -196,7 +196,7 @@ public class WFSFeatureCollection<T> {
             String numberOfFeaturesAttr = xmlStream.getAttributeValue( null, "numberOfFeatures" );
             if ( numberOfFeaturesAttr != null ) {
                 try {
-                    numberReturned = new BigInteger( numberOfFeaturesAttr );
+                    numberMatched = new BigInteger( numberOfFeaturesAttr );
                 } catch ( NumberFormatException e ) {
                     LOG.warn( "Unable to parse value of 'numberOfFeatures' attribute (='" + numberOfFeaturesAttr
                               + "'). Not an integer value." );

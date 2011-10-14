@@ -36,9 +36,9 @@
 package org.deegree.commons.xml;
 
 /**
- * Definitions for OGC related namespace bindings.
- * <p>
- * NOTE: Don't put project specific bindings here -- subclass it and override {@link #getNamespaceContext()} instead.
+ * Common XML/OGC namespace bindings.
+ * 
+ * TODO refactor into Enum with method for retrieving the common namespace prefix
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -48,86 +48,80 @@ package org.deegree.commons.xml;
  */
 public class CommonNamespaces {
 
-    // namespaces
-    /**
-     * The XMLNS namespace is currently bound to: "http://www.w3.org/2000/xmlns/"
-     */
+    /** <code>http://www.w3.org/2000/xmlns/</code> */
     public static final String XMLNS = "http://www.w3.org/2000/xmlns/";
 
+    /** <code>http://www.w3.org/XML/1998/namespace</code> */
+    public static final String XMLNSNS = "http://www.w3.org/XML/1998/namespace";
+
+    /** <code>http://www.w3.org/2001/XMLSchema</code> */
+    public static final String XSNS = "http://www.w3.org/2001/XMLSchema";
+
+    /** <code>http://www.w3.org/2001/XMLSchema-instance</code> */
+    public static final String XSINS = "http://www.w3.org/2001/XMLSchema-instance";
+
+    /** <code>http://www.w3.org/1999/xlink</code> */
+    public static final String XLNNS = "http://www.w3.org/1999/xlink";
+
     /**
-     * The FES_20_NS namespace is currently bound to: "http://www.opengis.net/fes/2.0"
+     * The FES_20_NS namespace is bound to: "http://www.opengis.net/fes/2.0"
      */
     public static final String FES_20_NS = "http://www.opengis.net/fes/2.0";
 
     public static final String FES_PREFIX = "fes";
 
     /**
-     * The GMLNS namespace is currently bound to: "http://www.opengis.net/gml"
+     * The GMLNS namespace is bound to: "http://www.opengis.net/gml"
      */
     public static final String GMLNS = "http://www.opengis.net/gml";
 
     /**
-     * The OGCNS namespace is currently bound to: "http://www.opengis.net/ogc"
+     * The OGCNS namespace is bound to: "http://www.opengis.net/ogc"
      */
     public static final String OGCNS = "http://www.opengis.net/ogc";
 
     /**
-     * The OWS_NS namespace is currently bound to: "http://www.opengis.net/ows"
+     * The OWS_NS namespace is bound to: "http://www.opengis.net/ows"
      */
     public static final String OWS_NS = "http://www.opengis.net/ows";
 
     /**
-     * The OWS_11_NS namespace is currently bound to: "http://www.opengis.net/ows/1.1"
+     * The OWS_11_NS namespace is bound to: "http://www.opengis.net/ows/1.1"
      */
     public static final String OWS_11_NS = "http://www.opengis.net/ows/1.1";
 
     /**
-     * The XLNNS namespace is currently bound to: "http://www.w3.org/1999/xlink"
-     */
-    public static final String XLNNS = "http://www.w3.org/1999/xlink";
-
-    /**
-     * The ISO19115NS namespace is currently bound to: "http://schemas.opengis.net/iso19115full"
+     * The ISO19115NS namespace is bound to: "http://schemas.opengis.net/iso19115full"
      */
     public static final String ISO19115NS = "http://schemas.opengis.net/iso19115full";
 
     /**
-     * The ISO19115BRIEFNS namespace is currently bound to: "http://schemas.opengis.net/iso19115brief"
+     * The ISO19115BRIEFNS namespace is bound to: "http://schemas.opengis.net/iso19115brief"
      */
     public static final String ISO19115BRIEFNS = "http://schemas.opengis.net/iso19115brief";
 
     /**
-     * The ISO19119NS namespace is currently bound to: "http://schemas.opengis.net/iso19119"
+     * The ISO19119NS namespace is bound to: "http://schemas.opengis.net/iso19119"
      */
     public static final String ISO19119NS = "http://schemas.opengis.net/iso19119";
 
     /**
-     * The DCNS namespace is currently bound to: "http://purl.org/dc/elements/1.1/"
+     * The DCNS namespace is bound to: "http://purl.org/dc/elements/1.1/"
      */
     public static final String DCNS = "http://purl.org/dc/elements/1.1/";
 
     /**
-     * The XSNS namespace is currently bound to: "http://www.w3.org/2001/XMLSchema"
-     */
-    public static final String XSNS = "http://www.w3.org/2001/XMLSchema";
-
-    /**
-     * The XSINS namespace is currently bound to: "http://www.w3.org/2001/XMLSchema-instance"
-     */
-    public static final String XSINS = "http://www.w3.org/2001/XMLSchema-instance";
-
-    /**
-     * The SMXMLNS namespace is currently bound to: "http://metadata.dgiwg.org/smXML"
+     * The SMXMLNS namespace is bound to: "http://metadata.dgiwg.org/smXML"
      */
     public static final String SMXMLNS = "http://metadata.dgiwg.org/smXML";
 
     /**
-     * The ISOAP10GMDNS namespace is currently bound to: "http://www.isotc211.org/2005/gmd"
+     * The ISOAP10GMDNS namespace is bound to: "http://www.isotc211.org/2005/gmd"
      */
     public static final String ISOAP10GMDNS = "http://www.isotc211.org/2005/gmd";
 
     /**
-     * The ISOAP10GCONS namespace is currently bound to: "http://www.isotc211.org/2005/gco"
+     * The ISOAP10GCONS namespace is bound to: "http://www.isotc211.org/2005/gco"
      */
     public static final String ISOAP10GCONS = "http://www.isotc211.org/2005/gco";
 
@@ -140,32 +134,32 @@ public class CommonNamespaces {
     public static final String ISO_2005_GTS_NS = "http://www.isotc211.org/2005/gts";
 
     /**
-     * The APISO namespace is currently bound to: "http://www.opengis.net/cat/csw/apiso/1.0"
+     * The APISO namespace is bound to: "http://www.opengis.net/cat/csw/apiso/1.0"
      */
     public static final String APISO = "http://www.opengis.net/cat/csw/apiso/1.0";
 
     /**
-     * The GML3_2_NS namespace is currently bound to: "http://www.opengis.net/gml/3.2"
+     * The GML3_2_NS namespace is bound to: "http://www.opengis.net/gml/3.2"
      */
     public static final String GML3_2_NS = "http://www.opengis.net/gml/3.2";
 
     /**
-     * The CRSNS namespace --used for the crs package-- is currently bound to: "http://www.deegree.org/crs"
+     * The CRSNS namespace --used for the crs package-- is bound to: "http://www.deegree.org/crs"
      */
     public static final String CRSNS = "http://www.deegree.org/crs";
 
     /**
-     * The SE namespace --used for the 2d rendering-- is currently bound to: "http://www.opengis.net/se"
+     * The SE namespace --used for the 2d rendering-- is bound to: "http://www.opengis.net/se"
      */
     public static final String SENS = "http://www.opengis.net/se";
 
     /**
-     * The SLD namespace is currently bound to "http://www.opengis.net/sld"
+     * The SLD namespace is bound to "http://www.opengis.net/sld"
      */
     public static final String SLDNS = "http://www.opengis.net/sld";
 
     /**
-     * The WMS namespace is currently bound to: "http://www.opengis.net/wms"
+     * The WMS namespace is bound to: "http://www.opengis.net/wms"
      */
     public static final String WMSNS = "http://www.opengis.net/wms";
 
@@ -309,7 +303,7 @@ public class CommonNamespaces {
             return true;
         } else if ( GML3_2_NS.equals( ns ) ) {
             return true;
-        } else if ( "http://www.w3.org/XML/1998/namespace".equals( ns ) ) {
+        } else if ( XMLNSNS.equals( ns ) ) {
             return true;
         } else if ( XSNS.equals( ns ) ) {
             return true;

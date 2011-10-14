@@ -39,9 +39,15 @@ import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.domain.AllowedValues;
 import org.deegree.protocol.ows.metadata.domain.Domain;
@@ -67,6 +73,8 @@ import org.deegree.protocol.ows.metadata.operation.Operation;
  * @version $Revision$, $Date$
  */
 public class OWSCommon100CapabilitiesAdapter extends AbstractOWSCommonCapabilitiesAdapter {
+
+    private final static GeometryFactory geomFac = new GeometryFactory();
 
     /**
      * Creates a new {@link OWSCommon100CapabilitiesAdapter} instance.
@@ -184,5 +192,50 @@ public class OWSCommon100CapabilitiesAdapter extends AbstractOWSCommonCapabiliti
         List<OMElement> metadataEls = getElements( domainEl, new XPath( "ows:Metadata", nsContext ) );
 
         return new Domain( name, possibleValues, null, null, null, null, null, metadataEls );
+    }
+
+    /**
+     * 
+     * @param bboxEl
+     * @return
+     */
+    public Envelope parseWGS84BoundingBox( OMElement bboxEl ) {
+
+        // <element name="LowerCorner" type="ows:PositionType2D">
+        double[] lowerCorner = parseDoubleList( getRequiredElement( bboxEl, new XPath( "ows:LowerCorner", nsContext ) ) );
+
+        // <element name="UpperCorner" type="ows:PositionType2D">
+        double[] upperCorner = parseDoubleList( getRequiredElement( bboxEl, new XPath( "ows:UpperCorner", nsContext ) ) );
+
+        // <attribute name="crs" type="anyURI" use="optional" fixed="urn:ogc:def:crs:OGC:2:84">
+        // TODO
+        String crsName = "EPSG:4326";
+        CRSRef crsRef = CRSManager.getCRSRef( crsName );
+
+        // "dimensions" attribute (optional)
+        // int dimensions = getNodeAsInt( boundingBoxDataElement, new XPath( "@dimensions", nsContext ), -1 );
+
+        return geomFac.createEnvelope( lowerCorner, upperCorner, crsRef );
+    }
+
+    private double[] parseDoubleList( OMElement positionElement )
+                            throws XMLParsingException {
+        String s = positionElement.getText();
+        // don't use String.split(regex) here (speed)
+        StringTokenizer st = new StringTokenizer( s );
+        List<String> tokens = new ArrayList<String>();
+        while ( st.hasMoreTokens() ) {
+            tokens.add( st.nextToken() );
+        }
+        double[] doubles = new double[tokens.size()];
+        for ( int i = 0; i < doubles.length; i++ ) {
+            try {
+                doubles[i] = Double.parseDouble( tokens.get( i ) );
+            } catch ( NumberFormatException e ) {
+                String msg = "Value '" + tokens.get( i ) + "' cannot be parsed as a double.";
+                throw new XMLParsingException( this, positionElement, msg );
+            }
+        }
+        return doubles;
     }
 }
