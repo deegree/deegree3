@@ -85,7 +85,7 @@ public class GetFeature110XMLEncoder {
      *            the {@link GetFeature}-object to be serialized, must not be <code>null</code>
      * @param namespaceBindings
      *            possible way to insert all additional namespaces for property-name usage within this
-     *            GetFeature-request directly in the xml-documents start-element, can be <code>null</code>
+     *            GetFeature-request directly in the root element, can be <code>null</code>
      * @param writer
      *            target of the xml stream, must not be <code>null</code>
      * @throws XMLStreamException
@@ -280,7 +280,7 @@ public class GetFeature110XMLEncoder {
         }
 
         SortProperty[] sortProperties = query.getSortBy();
-        if ( sortProperties != null ) {
+        if ( sortProperties.length != 0 ) {
 
             writer.writeStartElement( OGC_PREFIX, "SortBy", OGCNS );
             writer.writeNamespace( OGC_PREFIX, OGCNS );

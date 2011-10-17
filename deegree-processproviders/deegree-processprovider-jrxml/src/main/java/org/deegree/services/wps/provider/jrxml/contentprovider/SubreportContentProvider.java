@@ -93,6 +93,8 @@ public class SubreportContentProvider extends AbstractJrxmlContentProvider {
 
     private final ResourceBundle resourceBundle;
 
+    private Map<String, String> subreportParameters = new HashMap<String, String>();
+
     /**
      * @param parameterName
      * @param url
@@ -133,7 +135,7 @@ public class SubreportContentProvider extends AbstractJrxmlContentProvider {
             LOG.debug( "Found subreport for '{}'", parameterPrefix );
             XMLAdapter subreportAdapter = new XMLAdapter( subreportJrxml );
 
-            Map<String, String> subreportParameters = new HashMap<String, String>();
+            // Map<String, String> subreportParameters = new HashMap<String, String>();
             List<OMElement> paramElements = subreportAdapter.getElements( subreportAdapter.getRootElement(),
                                                                           new XPath(
                                                                                      "/jasper:jasperReport/jasper:parameter",
@@ -145,8 +147,10 @@ public class SubreportContentProvider extends AbstractJrxmlContentProvider {
                 subreportParameters.put( paramName, paramType );
             }
             String datasourceParam = parameters.get( getDatasourceParameter() );
-            if ( datasourceParam != null )
+            if ( datasourceParam != null ) {
                 handledParameters.add( getDatasourceParameter() );
+                subreportParameters.put( getDatasourceParameter(), datasourceParam );
+            }
 
             List<String> handledSubreportParameters = new ArrayList<String>();
             for ( JrxmlContentProvider contentProvider : getContentProviders( datasourceParam ) ) {
@@ -178,7 +182,7 @@ public class SubreportContentProvider extends AbstractJrxmlContentProvider {
                 for ( JrxmlContentProvider contentProvider : getContentProviders( getDatasourceParameter() ) ) {
                     LOG.debug( "ContentProvider in subreport: " + contentProvider.getClass().getName() );
                     is = contentProvider.prepareJrxmlAndReadInputParameters( is.first, params, in, processedIds,
-                                                                             parameters );
+                                                                             subreportParameters );
                 }
                 String subreport = File.createTempFile( "subreport", ".jasper" ).toString();
                 JasperDesign jasperDesign = JRXmlLoader.load( is.first );

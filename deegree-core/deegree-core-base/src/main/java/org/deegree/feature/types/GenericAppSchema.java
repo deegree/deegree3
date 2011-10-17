@@ -57,6 +57,7 @@ import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
@@ -187,12 +188,12 @@ public class GenericAppSchema implements AppSchema {
             }
         }
 
-        // add namespaces of other element declarations / type definitions
+        // add namespaces of other element declarations / type definitions (excluding core schemas)
         if ( xsModel != null ) {
             XSNamespaceItemList nsItems = xsModel.getNamespaces();
             for ( int i = 0; i < nsItems.getLength(); i++ ) {
                 String ns = nsItems.item( i ).getSchemaNamespace();
-                if ( !( NULL_NS_URI.equals( ns ) ) ) {
+                if ( !NULL_NS_URI.equals( ns ) && !( CommonNamespaces.isCoreNamespace( ns ) ) ) {
                     if ( !this.prefixToNs.values().contains( ns ) && this.prefixToNs != null ) {
                         String prefix = nsToPrefix.get( ns );
                         if ( prefix == null ) {

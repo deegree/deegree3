@@ -110,6 +110,10 @@ public class DataTableContentProvider extends AbstractJrxmlContentProvider {
 
     private String datasourceParameterName = JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT;
 
+    // TODO: multiple datasources/xmlDaraTables!
+    // datasource - xmldataTable report parameter must be asigned
+    private String tableId;
+
     static {
         nsContext = JrxmlUtils.nsContext.addNamespace( "tbl", SCHEMA );
     }
@@ -155,6 +159,7 @@ public class DataTableContentProvider extends AbstractJrxmlContentProvider {
             comp.setDefaultFormat( format );
             inputs.add( new JAXBElement<ComplexInputDefinition>( new QName( "ProcessInput" ),
                                                                  ComplexInputDefinition.class, comp ) );
+            this.tableId = tableId;
         }
 
     }
@@ -177,120 +182,130 @@ public class DataTableContentProvider extends AbstractJrxmlContentProvider {
                             throws ProcessletException {
         boolean hasDatasourceInserted = false;
         for ( ProcessletInput input : in.getParameters() ) {
-            if ( !processedIds.contains( input ) && input instanceof ComplexInput ) {
+            if ( !processedIds.contains( input.getIdentifier() ) && input instanceof ComplexInput ) {
                 ComplexInput complexIn = (ComplexInput) input;
                 if ( SCHEMA.equals( complexIn.getSchema() ) && MIME_TYPE.equals( complexIn.getMimeType() ) ) {
 
                     String tableId = complexIn.getIdentifier().getCode();
-                    LOG.debug( "Found input parameter " + tableId + " representing a xml datasource!" );
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    try {
-                        XMLStreamReader tableAsStream = complexIn.getValueAsXMLStream();
-                        Document document = XMLStreamUtils.getAsDocument( tableAsStream );
+                    if ( tableId.equals( this.tableId ) ) {
+                        LOG.debug( "Found input parameter " + tableId + " representing a xml datasource!" );
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        try {
 
-                        DOMXPath xpath = new DOMXPath( "tbl:Header/tbl:HeaderEntry" );
-                        xpath.addNamespace( "tbl", SCHEMA );
-                        int numberOfEntries = xpath.selectNodes( document.getDocumentElement() ).size();
-                        if ( numberOfEntries > 1 ) {
                             XMLAdapter jrxmlAdapter = new XMLAdapter( jrxml );
                             OMElement root = jrxmlAdapter.getRootElement();
-                            List<OMElement> fieldElements = jrxmlAdapter.getElements( root,
-                                                                                      new XPath(
-                                                                                                 "/jasper:jasperReport/jasper:field",
-                                                                                                 nsContext ) );
 
-                            OMFactory factory = OMAbstractFactory.getOMFactory();
-                            for ( OMElement fieldElement : fieldElements ) {
-                                String fieldName = fieldElement.getAttributeValue( new QName( "name" ) );
-                                if ( isTableParameter( fieldName )
-                                     && tableId.equals( getIdentifierFromParameter( fieldName ) ) ) {
+                            String query = jrxmlAdapter.getNodeAsString( root,
+                                                                         new XPath(
+                                                                                    "/jasper:jasperReport/jasper:queryString",
+                                                                                    nsContext ), "." ).trim();
 
-                                    OMElement textFieldElement = jrxmlAdapter.getElement( root,
+                            XMLStreamReader tableAsStream = complexIn.getValueAsXMLStream();
+                            Document document = XMLStreamUtils.getAsDocument( tableAsStream );
+
+                            DOMXPath xpath = new DOMXPath( "tbl:Header/tbl:HeaderEntry" );
+                            xpath.addNamespace( "tbl", SCHEMA );
+                            int numberOfEntries = xpath.selectNodes( document.getDocumentElement() ).size();
+                            if ( numberOfEntries > 1 ) {
+                                List<OMElement> fieldElements = jrxmlAdapter.getElements( root,
                                                                                           new XPath(
-                                                                                                     ".//jasper:textField[jasper:textFieldExpression/text()='$F{"
-                                                                                                                             + fieldName
-                                                                                                                             + "}']",
+                                                                                                     "/jasper:jasperReport/jasper:field",
                                                                                                      nsContext ) );
-                                    for ( int i = 2; i < numberOfEntries + 1; i++ ) {
-                                        OMElement newFieldElement = fieldElement.cloneOMElement();
-                                        String newFieldName = fieldName.substring( 0, fieldName.length() - 1 ) + i;
-                                        newFieldElement.addAttribute( "name", newFieldName, null );
-                                        OMElement fieldDesc = jrxmlAdapter.getElement( newFieldElement,
-                                                                                       new XPath(
-                                                                                                  "jasper:fieldDescription",
-                                                                                                  nsContext ) );
-                                        String text = fieldDesc.getText();
-                                        text = text.replace( "[1]", "[" + i + "]" );
-                                        setText( factory, fieldDesc, text );
-                                        fieldElement.insertSiblingAfter( newFieldElement );
 
-                                        // reference
+                                OMFactory factory = OMAbstractFactory.getOMFactory();
+                                for ( OMElement fieldElement : fieldElements ) {
+                                    String fieldName = fieldElement.getAttributeValue( new QName( "name" ) );
+                                    if ( isTableParameter( fieldName )
+                                         && tableId.equals( getIdentifierFromParameter( fieldName ) ) ) {
 
-                                        if ( textFieldElement != null ) {
-                                            int width = jrxmlAdapter.getRequiredNodeAsInteger( textFieldElement,
-                                                                                               new XPath(
-                                                                                                          "jasper:reportElement/@width",
-                                                                                                          nsContext ) );
-                                            int x = jrxmlAdapter.getRequiredNodeAsInteger( textFieldElement,
+                                        OMElement textFieldElement = jrxmlAdapter.getElement( root,
+                                                                                              new XPath(
+                                                                                                         ".//jasper:textField[jasper:textFieldExpression/text()='$F{"
+                                                                                                                                 + fieldName
+                                                                                                                                 + "}']",
+                                                                                                         nsContext ) );
+                                        for ( int i = 2; i < numberOfEntries + 1; i++ ) {
+                                            OMElement newFieldElement = fieldElement.cloneOMElement();
+                                            String newFieldName = fieldName.substring( 0, fieldName.length() - 1 ) + i;
+                                            newFieldElement.addAttribute( "name", newFieldName, null );
+                                            OMElement fieldDesc = jrxmlAdapter.getElement( newFieldElement,
                                                                                            new XPath(
-                                                                                                      "jasper:reportElement/@x",
+                                                                                                      "jasper:fieldDescription",
                                                                                                       nsContext ) );
-                                            OMElement newDetailTextField = textFieldElement.cloneOMElement();
-                                            jrxmlAdapter.getElement( newDetailTextField,
-                                                                     new XPath( "jasper:reportElement", nsContext ) ).addAttribute( "x",
-                                                                                                                                    Integer.toString( x
-                                                                                                                                                      + width
-                                                                                                                                                      * ( i - 1 ) ),
-                                                                                                                                    null );
-                                            OMElement newTextFieldExpr = jrxmlAdapter.getElement( newDetailTextField,
-                                                                                                  new XPath(
-                                                                                                             "jasper:textFieldExpression",
-                                                                                                             nsContext ) );
-                                            setText( factory, newTextFieldExpr, "$F{" + newFieldName + "}" );
-                                            textFieldElement.insertSiblingAfter( newDetailTextField );
-                                        }
-                                    }
+                                            String text = fieldDesc.getText();
+                                            text = text.replace( "[1]", "[" + i + "]" );
+                                            setText( factory, fieldDesc, text );
+                                            fieldElement.insertSiblingAfter( newFieldElement );
 
+                                            // reference
+
+                                            if ( textFieldElement != null ) {
+                                                int width = jrxmlAdapter.getRequiredNodeAsInteger( textFieldElement,
+                                                                                                   new XPath(
+                                                                                                              "jasper:reportElement/@width",
+                                                                                                              nsContext ) );
+                                                int x = jrxmlAdapter.getRequiredNodeAsInteger( textFieldElement,
+                                                                                               new XPath(
+                                                                                                          "jasper:reportElement/@x",
+                                                                                                          nsContext ) );
+                                                OMElement newDetailTextField = textFieldElement.cloneOMElement();
+                                                jrxmlAdapter.getElement( newDetailTextField,
+                                                                         new XPath( "jasper:reportElement", nsContext ) ).addAttribute( "x",
+                                                                                                                                        Integer.toString( x
+                                                                                                                                                          + width
+                                                                                                                                                          * ( i - 1 ) ),
+                                                                                                                                        null );
+                                                OMElement newTextFieldExpr = jrxmlAdapter.getElement( newDetailTextField,
+                                                                                                      new XPath(
+                                                                                                                 "jasper:textFieldExpression",
+                                                                                                                 nsContext ) );
+                                                setText( factory, newTextFieldExpr, "$F{" + newFieldName + "}" );
+                                                textFieldElement.insertSiblingAfter( newDetailTextField );
+                                            }
+                                        }
+
+                                    }
+                                }
+                                if ( LOG.isTraceEnabled() ) {
+                                    LOG.trace( "Adjusted jrxml: " + root );
                                 }
                             }
-                            if ( LOG.isTraceEnabled() ) {
-                                LOG.trace( "Adjusted jrxml: " + root );
-                            }
+
                             // reset xml
                             root.serialize( bos );
                             jrxml = new ByteArrayInputStream( bos.toByteArray() );
+
+                            // // add complete input xml
+                            // OMNodeEx e ;
+                            // OMElement document = tableAdapter.getRootElement();
+                            // DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                            // Document doc = builder.parse( tableAdapter.getRootElement() );
+                            // TODO: reload should not be required!
+                            if ( parameters.containsKey( datasourceParameterName )
+                                 && "net.sf.jasperreports.engine.JRDataSource".equals( parameters.get( datasourceParameterName ) ) ) {
+                                InputStream is = getAsInputStream( complexIn.getValueAsXMLStream() );
+                                params.put( datasourceParameterName, new JRXmlDataSource( is, query ) );
+                            } else {
+                                Document doc = getAsDocument( complexIn.getValueAsXMLStream() );
+                                params.put( datasourceParameterName, doc );
+                            }
+                            hasDatasourceInserted = true;
+                        } catch ( Exception e ) {
+                            String msg = "Could not process data table content: " + e.getMessage();
+                            LOG.error( msg, e );
+                            throw new ProcessletException( msg );
+                        } finally {
+                            IOUtils.closeQuietly( bos );
                         }
-                        // // add complete input xml
-                        // OMNodeEx e ;
-                        // OMElement document = tableAdapter.getRootElement();
-                        // DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                        // Document doc = builder.parse( tableAdapter.getRootElement() );
-                        // TODO: reload should not be required!
-                        if ( parameters.containsKey( datasourceParameterName )
-                             && "net.sf.jasperreports.engine.JRDataSource".equals( parameters.get( datasourceParameterName ) ) ) {
-                            Document doc = getAsDocument1( complexIn.getValueAsXMLStream() );
-                            params.put( datasourceParameterName, new JRXmlDataSource( doc ) );
-                        } else {
-                            Document doc = getAsDocument1( complexIn.getValueAsXMLStream() );
-                            params.put( datasourceParameterName, doc );
-                        }
-                        hasDatasourceInserted = true;
-                    } catch ( Exception e ) {
-                        String msg = "Could not process data table content: " + e.getMessage();
-                        LOG.error( msg, e );
-                        throw new ProcessletException( msg );
-                    } finally {
-                        IOUtils.closeQuietly( bos );
+                        processedIds.add( complexIn.getIdentifier() );
                     }
-                    processedIds.add( complexIn.getIdentifier() );
                 }
             }
         }
-
         return new Pair<InputStream, Boolean>( jrxml, hasDatasourceInserted );
     }
 
-    public static Document getAsDocument1( XMLStreamReader xmlStreamReader )
+    private static Document getAsDocument( XMLStreamReader xmlStreamReader )
                             throws XMLStreamException, FactoryConfigurationError, ParserConfigurationException,
                             SAXException, IOException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -311,6 +326,30 @@ public class DataTableContentProvider extends AbstractJrxmlContentProvider {
         Document doc = builder.parse( store.getInputStream() );
         store.close();
         return doc;
+    }
+
+    private static InputStream getAsInputStream( XMLStreamReader xmlStreamReader )
+                            throws XMLStreamException, FactoryConfigurationError, ParserConfigurationException,
+                            SAXException, IOException {
+        StreamBufferStore store = new StreamBufferStore();
+        XMLStreamWriter xmlWriter = null;
+        try {
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( store );
+            XMLAdapter.writeElement( xmlWriter, xmlStreamReader );
+        } finally {
+            if ( xmlWriter != null ) {
+                try {
+                    xmlWriter.close();
+                } catch ( XMLStreamException e ) {
+                    LOG.error( "Unable to close xmlwriter." );
+                }
+            }
+        }
+        return store.getInputStream();
+    }
+
+    void setTableId( String tableId ) {
+        this.tableId = tableId;
     }
 
     private void setText( OMFactory factory, OMElement txtElement, String text ) {

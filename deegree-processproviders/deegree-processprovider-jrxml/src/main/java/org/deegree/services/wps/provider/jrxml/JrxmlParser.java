@@ -73,6 +73,18 @@ public class JrxmlParser {
 
     private static final Logger LOG = LoggerFactory.getLogger( JrxmlParser.class );
 
+    private List<String> globalParameters = new ArrayList<String>();
+
+    JrxmlParser() {
+    }
+
+    /**
+     * @param globalParameters
+     */
+    JrxmlParser( List<String> globalParameters ) {
+        this.globalParameters = globalParameters;
+    }
+
     /**
      * @param processId
      *            the id of the process, never <code>null</code>
@@ -109,6 +121,7 @@ public class JrxmlParser {
         InputParameters inputParams = new InputParameters();
         List<JAXBElement<? extends ProcessletInputDefinition>> processInput = inputParams.getProcessInput();
         List<String> handledParameters = new ArrayList<String>();
+        handledParameters.addAll( globalParameters );
         for ( JrxmlContentProvider contentProvider : contentProviders ) {
             contentProvider.inspectInputParametersFromJrxml( parameterDescriptions, processInput, jrxmlAdapter,
                                                              parameters, handledParameters );

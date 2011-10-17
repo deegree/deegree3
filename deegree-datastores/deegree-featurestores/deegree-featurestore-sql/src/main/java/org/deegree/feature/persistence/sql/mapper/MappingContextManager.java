@@ -44,6 +44,14 @@ import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Keeps track of {@link MappingContext}s generated during a pass of the {@link AppSchemaMapper}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 class MappingContextManager {
 
     private static Logger LOG = LoggerFactory.getLogger( MappingContextManager.class );
@@ -51,6 +59,8 @@ class MappingContextManager {
     private int maxLength;
 
     private int id = 0;
+
+    private int count = 0;
 
     private final Map<String, String> nsToPrefix;
 
@@ -63,21 +73,29 @@ class MappingContextManager {
     }
 
     MappingContext newContext( QName name, String idColumn ) {
+        count++;
         return new MappingContext( getSQLIdentifier( "", toString( name ) ), idColumn );
     }
 
     MappingContext mapOneToOneElement( MappingContext mc, QName childElement ) {
+        count++;
         String newColumn = getSQLIdentifier( mc.getColumn(), toString( childElement ) );
         return new MappingContext( mc.getTable(), mc.getIdColumn(), newColumn );
     }
 
     MappingContext mapOneToOneAttribute( MappingContext mc, QName attribute ) {
+        count++;
         String newColumn = getSQLIdentifier( mc.getColumn(), "attr_" + toString( attribute ) );
         return new MappingContext( mc.getTable(), mc.getIdColumn(), newColumn );
     }
 
     MappingContext mapOneToManyElements( MappingContext mc, QName childElement ) {
-        String newTable = getSQLIdentifier( mc.getTable(), toString( childElement ) );
+        count++;
+        String prefix = mc.getTable();
+        if ( mc.getColumn() != null && !mc.getColumn().isEmpty() ) {
+            prefix += "_" + mc.getColumn();
+        }
+        String newTable = getSQLIdentifier( prefix, toString( childElement ) );
         return new MappingContext( newTable, "id", mc.getColumn() );
     }
 
@@ -114,5 +132,9 @@ class MappingContextManager {
         String sql = identifier.toLowerCase();
         sql = sql.replace( "-", "_" );
         return sql;
+    }
+
+    public int getContextCount() {
+        return count;
     }
 }

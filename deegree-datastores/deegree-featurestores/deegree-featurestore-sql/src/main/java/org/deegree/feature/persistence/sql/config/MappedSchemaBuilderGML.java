@@ -92,8 +92,10 @@ import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
@@ -180,8 +182,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             prefixToNs.put( prefix, nsBindings.getNamespaceURI( prefix ) );
         }
         GMLSchemaInfoSet xsModel = gmlSchema.getGMLSchema();
-        return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping,
-                                            blobMapping, geometryParams );
+        return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping, blobMapping,
+                                    geometryParams );
     }
 
     private AppSchema buildGMLSchema( String configURL, List<String> gmlSchemas )
@@ -304,9 +306,14 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                   PrimitiveParticleJAXB config ) {
 
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
-        Pair<PrimitiveType, Boolean> pt = schemaWalker.getTargetType( elDecl, path );
-        MappingExpression me = parseMappingExpression( config.getMapping() );
+        Pair<PrimitiveType, Boolean> pt = null;
+        try {
+            pt = schemaWalker.getTargetType( elDecl, path );
+        } catch ( RuntimeException e ) {
+            throw new RuntimeException( "Error in mapping of table '" + currentTable + "': " + e );
+        }
 
+        MappingExpression me = parseMappingExpression( config.getMapping() );
         if ( me instanceof DBField ) {
             List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
             LOG.debug( "Targeted primitive type: " + pt );
@@ -326,8 +333,16 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
         MappingExpression me = parseMappingExpression( config.getMapping() );
         elDecl = schemaWalker.getTargetElement( elDecl, path );
-        LOG.warn( "Determining geometry type from element decls is not implemented." );
-        GeometryType type = GeometryType.GEOMETRY;
+        QName ptName = new QName( elDecl.first.getNamespace(), elDecl.getFirst().getName() );
+        ObjectPropertyType pt = gmlSchema.getGMLSchema().getGMLPropertyDecl( elDecl.first, ptName, 1, 1, null );
+        GeometryType type = ( (GeometryPropertyType) pt ).getGeometryType();
+        if ( !( pt instanceof GeometryPropertyType ) ) {
+            String msg = "Mapping '" + path + "' (in context of table '" + currentTable
+                         + "') does not target the container element of a GML geometry element.";
+            LOG.warn( msg );
+        } else {
+            type = ( (GeometryPropertyType) pt ).getGeometryType();
+        }
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new GeometryMapping( path, elDecl.second, me, type, geometryParams, joinedTable );
     }
@@ -363,5 +378,4 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new CompoundMapping( path, elDecl.second, particles, joinedTable, elDecl.first );
     }
-
 }

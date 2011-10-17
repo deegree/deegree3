@@ -127,9 +127,9 @@ public class TestDataTableContentProviderTest {
                                                DataTableContentProvider.MIME_TYPE,
                                                DataTableContentProvider.SCHEMA,
                                                TestDataTableContentProviderTest.class.getResourceAsStream( "complexInputTABLE" ) );
+        tableContentProvider.setTableId( "REPORT" );
         jrxml = tableContentProvider.prepareJrxmlAndReadInputParameters( jrxml.first, params, in, processedIds,
                                                                          new HashMap<String, String>() );
-
         assertEquals( 1, params.size() );
         assertEquals( 1, processedIds.size() );
         XMLAdapter a = new XMLAdapter( jrxml.first );

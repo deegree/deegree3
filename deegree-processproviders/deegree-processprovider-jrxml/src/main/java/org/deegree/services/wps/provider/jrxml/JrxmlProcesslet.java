@@ -109,6 +109,11 @@ public class JrxmlProcesslet implements Processlet {
                 is = contentProvider.prepareJrxmlAndReadInputParameters( is.first, params, in, processedIds, parameters );
                 isDatasourceInserted = isDatasourceInserted || is.second;
             }
+            String tempLoc = jrxml.getPath().substring( 0, jrxml.getPath().lastIndexOf( "/" ) );
+            params.put( JrxmlWPSProcess.JRXML_LOCATION_PARAM, tempLoc );
+            
+            for(String p : params.keySet())
+                System.out.println(p + " + " + params.get(p));
 
             JasperPrint fillReport;
             if ( LOG.isDebugEnabled() ) {

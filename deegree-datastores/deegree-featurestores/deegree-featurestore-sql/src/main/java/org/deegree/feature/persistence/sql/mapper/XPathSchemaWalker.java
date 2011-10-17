@@ -47,6 +47,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
@@ -261,11 +262,18 @@ public class XPathSchemaWalker {
     private Pair<XSElementDeclaration, Boolean> getTargetElementTerm( Pair<XSTerm, Boolean> term, QName elName, int num ) {
         if ( term.first instanceof XSElementDeclaration ) {
             XSElementDeclaration elDecl = (XSElementDeclaration) term.first;
-            for ( XSElementDeclaration substitution : appSchema.getGMLSchema().getSubstitutions( elDecl, null, true,
-                                                                                                 false ) ) {
-                QName elDeclName = getQName( substitution );
+            if ( elDecl.getScope() == XSConstants.SCOPE_GLOBAL ) {
+                for ( XSElementDeclaration substitution : appSchema.getGMLSchema().getSubstitutions( elDecl, null,
+                                                                                                     true, false ) ) {
+                    QName elDeclName = getQName( substitution );
+                    if ( elName.equals( elDeclName ) ) {
+                        return new Pair<XSElementDeclaration, Boolean>( substitution, term.second );
+                    }
+                }
+            } else {
+                QName elDeclName = getQName( elDecl );
                 if ( elName.equals( elDeclName ) ) {
-                    return new Pair<XSElementDeclaration, Boolean>( substitution, term.second );
+                    return new Pair<XSElementDeclaration, Boolean>( elDecl, term.second );
                 }
             }
         } else if ( term.first instanceof XSModelGroup ) {

@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
@@ -74,6 +75,8 @@ import org.deegree.protocol.wfs.capabilities.WFS100CapabilitiesAdapter;
 import org.deegree.protocol.wfs.capabilities.WFS110CapabilitiesAdapter;
 import org.deegree.protocol.wfs.capabilities.WFS200CapabilitiesAdapter;
 import org.deegree.protocol.wfs.capabilities.WFSCapabilitiesAdapter;
+import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.protocol.wfs.getfeature.GetFeature110XMLEncoder;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 import org.slf4j.Logger;
@@ -124,6 +127,8 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
 
     private final List<WFSFeatureType> wfsFts;
 
+    private final Map<QName, WFSFeatureType> ftNameTowfsFt = new LinkedHashMap<QName, WFSFeatureType>();
+
     private AppSchema schema;
 
     /**
@@ -141,6 +146,9 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
     public WFSClient( URL capaUrl ) throws OWSExceptionReport, XMLStreamException, IOException {
         super( capaUrl );
         wfsFts = capaDoc.parseFeatureTypeList();
+        for ( WFSFeatureType wfsFt : wfsFts ) {
+            ftNameTowfsFt.put( wfsFt.getName(), wfsFt );
+        }
     }
 
     /**
@@ -187,8 +195,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      * @return metadata of the feature type, or <code>null</code> if no such feature type exists
      */
     public WFSFeatureType getFeatureType( QName ftName ) {
-        // TODO
-        return null;
+        return ftNameTowfsFt.get( ftName );
     }
 
     /**
@@ -277,30 +284,36 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
         return new GetFeatureResponse<Feature>( response, getAppSchema(), gmlVersion );
     }
 
-    // /**
-    // * Performs the given {@link GetFeature} request.
-    // *
-    // * @return stream feature collection, never <code>null</code>
-    // * @throws OWSExceptionReport
-    // * if the server responded with a service exception report
-    // * @throws IOException
-    // * @throws XMLStreamException
-    // */
-    // public GetFeatureResponse<Feature> getFeatures( GetFeature request )
-    // throws OWSExceptionReport, XMLStreamException, IOException {
-    //
-    // URL endPoint = getGetUrl( GetFeature.name() );
-    // LinkedHashMap<String, String> kvp = new LinkedHashMap<String, String>();
-    // kvp.put( "service", "WFS" );
-    // kvp.put( "version", request.getVersion().toString() );
-    // kvp.put( "request", "GetFeature" );
-    // kvp.put( "typeName", ftName.getLocalPart() );
-    //
-    // OWSResponse response = doGet( endPoint, kvp, null );
-    //
-    // GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
-    // return new GetFeatureResponse<Feature>( response, getAppSchema(), gmlVersion );
-    // }
+    /**
+     * Performs the given {@link GetFeature} request.
+     * 
+     * @return WFS response, never <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server responded with a service exception report
+     * @throws XMLStreamException
+     * @throws IOException
+     */
+    public GetFeatureResponse<Feature> doGetFeature( GetFeature request )
+                            throws OWSExceptionReport, XMLStreamException, IOException {
+
+        URL endPoint = getPostUrl( GetFeature.name() );
+
+        StreamBufferStore requestSink = new StreamBufferStore();
+        try {
+            XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( requestSink );
+            // TODO handle other WFS versions
+            GetFeature110XMLEncoder.export( request, null, xmlWriter );
+            xmlWriter.close();
+            requestSink.close();
+        } catch ( Throwable t ) {
+            throw new RuntimeException( "Error creating XML request: " + request );
+        }
+
+        OWSResponse response = doPost( endPoint, "text/xml", requestSink, null );
+
+        GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
+        return new GetFeatureResponse<Feature>( response, getAppSchema(), gmlVersion );
+    }
 
     public GMLObject getGMLObject( GetGmlObject request ) {
         return null;
