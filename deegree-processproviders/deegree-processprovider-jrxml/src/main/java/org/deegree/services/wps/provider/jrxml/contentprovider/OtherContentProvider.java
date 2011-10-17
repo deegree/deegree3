@@ -87,7 +87,7 @@ public class OtherContentProvider extends AbstractJrxmlContentProvider {
                                                  List<String> handledParameters ) {
 
         for ( String parameterName : parameters.keySet() ) {
-            if ( !handledParameters.contains( parameterName ) ) {
+            if ( parameters.containsKey( parameterName ) && !handledParameters.contains( parameterName ) ) {
                 LiteralInputDefinition lit = new LiteralInputDefinition();
                 addInput( lit, parameterDescriptions, parameterName, 1, 0 );
                 lit.setDefaultValue( parameterName );
@@ -144,8 +144,8 @@ public class OtherContentProvider extends AbstractJrxmlContentProvider {
                     allowedValues.getValueOrRange().add( range );
                     lit.setAllowedValues( allowedValues );
                 } else {
-                    throw new IllegalArgumentException( "Invalid datatype of parameter '" + parameterName + "': "
-                                                        + parameterType );
+                    LOG.info( "Unknown datatype of parameter '" + parameterName + "': " + parameterType );
+                    return;
                 }
                 if ( dtValue != null ) {
                     DataType dataType = new DataType();
@@ -169,7 +169,8 @@ public class OtherContentProvider extends AbstractJrxmlContentProvider {
                                                                           Map<String, String> parameters )
                             throws ProcessletException {
         for ( ProcessletInput parameter : in.getParameters() ) {
-            if ( !processedIds.contains( parameter.getIdentifier() ) ) {
+            if ( parameters.containsKey( parameter.getIdentifier().getCode() )
+                 && !processedIds.contains( parameter.getIdentifier() ) ) {
                 if ( parameter instanceof LiteralInput ) {
                     LiteralInput litIn = (LiteralInput) parameter;
                     String litValue = litIn.getValue();

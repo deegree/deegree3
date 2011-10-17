@@ -79,15 +79,19 @@ public class JrxmlWPSProcess extends AbstractJrxmlWPSProcess {
 
     private final JrxmlProcessDescription processDescription;
 
+    private final static List<String> globalParameters = new ArrayList<String>();
+
+    static String JRXML_LOCATION_PARAM = "TEMPLATE_LOCATION";
+
     public JrxmlWPSProcess( JrxmlProcessDescription processDescription ) {
         this.processDescription = processDescription;
+        globalParameters.add( JRXML_LOCATION_PARAM );
     }
 
     @Override
     public void init( DeegreeWorkspace workspace ) {
         contentProviders.add( new DataTableContentProvider( workspace ) );
         contentProviders.add( new MapContentProvider( workspace ) );
-        contentProviders.add( new ImageContentProvider( workspace ) );
         if ( processDescription.getResourceBundle() != null ) {
             contentProviders.add( new PropertiesContentProvider( workspace, processDescription.getResourceBundle() ) );
         }
@@ -98,6 +102,7 @@ public class JrxmlWPSProcess extends AbstractJrxmlWPSProcess {
                                                                 processDescription.getSubreports().get( parameterName ),
                                                                 processDescription.getResourceBundle() ) );
         }
+        contentProviders.add( new ImageContentProvider( workspace ) );
         contentProviders.add( new OtherContentProvider( workspace ) );
         try {
             XMLAdapter a = new XMLAdapter( processDescription.getUrl().openStream() );
@@ -107,12 +112,12 @@ public class JrxmlWPSProcess extends AbstractJrxmlWPSProcess {
             if ( name.contains( "/" ) )
                 name = name.substring( name.lastIndexOf( '/' ) + 1, name.length() );
 
-            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser().parse( processDescription.getId(),
-                                                                                           name,
-                                                                                           processDescription.getDescription(),
-                                                                                           a,
-                                                                                           contentProviders,
-                                                                                           processDescription.getParameterDescriptions() );
+            Pair<ProcessDefinition, Map<String, String>> parsed = new JrxmlParser( globalParameters ).parse( processDescription.getId(),
+                                                                                                             name,
+                                                                                                             processDescription.getDescription(),
+                                                                                                             a,
+                                                                                                             contentProviders,
+                                                                                                             processDescription.getParameterDescriptions() );
             this.description = parsed.first;
             this.processlet = new JrxmlProcesslet( processDescription.getUrl(), contentProviders, parsed.second );
         } catch ( XMLProcessingException e ) {
