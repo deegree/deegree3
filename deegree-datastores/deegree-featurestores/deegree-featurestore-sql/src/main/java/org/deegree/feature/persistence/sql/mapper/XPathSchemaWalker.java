@@ -109,20 +109,20 @@ public class XPathSchemaWalker {
                     int num = getNumber( step );
                     currentEl = getTargetElement( currentEl, qName, num );
                     if ( currentEl == null ) {
-                        throw new IllegalArgumentException( "Unable to match XPath '" + propName
+                        throw new IllegalArgumentException( "Unable to match XPath '" + propName.getAsText()
                                                             + "' to application schema. Step '" + qName
                                                             + "' cannot be resolved." );
                     }
                 } else {
                     throw new IllegalArgumentException(
                                                         "Unable to match XPath '"
-                                                                                + propName
+                                                                                + propName.getAsText()
                                                                                 + "'to application schema. Only child element steps are supported." );
                 }
             } else if ( o instanceof AllNodeStep ) {
                 // self()
             } else {
-                throw new IllegalArgumentException( "Unable to infer type for XPath '" + propName
+                throw new IllegalArgumentException( "Unable to infer type for XPath '" + propName.getAsText()
                                                     + "'. Expression may only contain name steps." );
             }
         }
