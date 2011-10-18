@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wfs:Transaction version="1.1.0" service="WFS" xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0" xmlns:ogc="http://www.opengis.net/ogc"
-  xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AD="urn:x-inspire:specification:gmlas:Addresses:3.0">
+<wfs:Transaction version="1.1.0" service="WFS" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AD="urn:x-inspire:specification:gmlas:Addresses:3.0">
   <wfs:Delete handle="delete1" typeName="AD:Address">
     <ogc:Filter>
       <ogc:Or>
@@ -52,5 +52,5 @@
         </ogc:PropertyIsNull>
       </ogc:Or>
     </ogc:Filter>
-  </wfs:Delete>  
+  </wfs:Delete>
 </wfs:Transaction>
