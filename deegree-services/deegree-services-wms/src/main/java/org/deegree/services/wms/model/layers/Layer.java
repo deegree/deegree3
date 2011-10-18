@@ -304,13 +304,19 @@ public abstract class Layer {
             for ( int i = 0; i < max.length; ++i ) {
                 max[i] = points[i];
             }
-            bbox = new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
+            ICRS crs;
+            if ( box.getCrs() != null ) {
+                crs = CRSManager.getCRSRef( box.getCrs() );
+            } else {
+                crs = CRSManager.getCRSRef( WGS84 );
+            }
+            bbox = new GeometryFactory().createEnvelope( min, max, crs );
         }
 
         return bbox;
     }
 
-    private LinkedList<ICRS> parseCoordinateSystems( String crs ) {
+    private static LinkedList<ICRS> parseCoordinateSystems( String crs ) {
         LinkedList<ICRS> list = new LinkedList<ICRS>();
         if ( crs == null ) {
             return list;
