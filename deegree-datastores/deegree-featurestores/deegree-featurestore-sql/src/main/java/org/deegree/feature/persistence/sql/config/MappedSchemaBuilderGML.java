@@ -36,10 +36,13 @@
 package org.deegree.feature.persistence.sql.config;
 
 import static java.lang.Boolean.TRUE;
+import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,8 +50,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.jdbc.QTableName;
@@ -124,7 +130,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private final AppSchema gmlSchema;
 
-    private final NamespaceBindings nsBindings;
+    private final NamespaceBindings nsBindings = new NamespaceBindings();
 
     private BlobMapping blobMapping;
 
@@ -150,7 +156,10 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( storageCRS.getValue() ),
                                                     storageCRS.getSrid(), dim );
-        nsBindings = buildNSBindings( gmlSchema.getNamespaceBindings(), nsHints );
+
+        // add namespace bindings
+        addNamespaceBindings( configURL, gmlSchema, nsHints );
+
         schemaWalker = new XPathSchemaWalker( gmlSchema, nsBindings );
         if ( blobConf != null ) {
             Pair<BlobMapping, BBoxTableMapping> pair = buildBlobMapping( blobConf,
@@ -162,6 +171,81 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             for ( FeatureTypeMappingJAXB ftMappingConf : ftMappingConfs ) {
                 org.deegree.feature.persistence.sql.FeatureTypeMapping ftMapping = buildFtMapping( ftMappingConf );
                 ftNameToMapping.put( ftMapping.getFeatureType(), ftMapping );
+            }
+        }
+    }
+
+    private void addNamespaceBindings( String componentLocation, AppSchema gmlSchema, List<NamespaceHint> userHints ) {
+
+        // explicit namespace hints
+        for ( NamespaceHint userHint : userHints ) {
+            String nsUri = userHint.getNamespaceURI();
+            String prefix = userHint.getPrefix();
+            String oldPrefix = nsBindings.getPrefix( nsUri );
+            if ( oldPrefix != null && !oldPrefix.equals( prefix ) ) {
+                LOG.warn( "Multiple prefices for namespace '" + nsUri + "': " + prefix + " / " + oldPrefix );
+            } else {
+                nsBindings.addNamespace( prefix, nsUri );
+            }
+        }
+        
+        // Namespace bindings from config file
+        InputStream is = null;
+        try {
+            LOG.debug( "Scanning config file '" + componentLocation + "' for namespace bindings" );
+            is = new URL( componentLocation ).openStream();
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+            while ( xmlStream.next() != END_DOCUMENT ) {
+                if ( xmlStream.isStartElement() ) {
+                    for ( int i = 0; i < xmlStream.getNamespaceCount(); i++ ) {
+                        String prefix = xmlStream.getNamespacePrefix( i );
+                        if ( prefix != null && !prefix.equals( XMLConstants.DEFAULT_NS_PREFIX ) ) {
+                            String nsUri = xmlStream.getNamespaceURI( i );
+                            String oldPrefix = nsBindings.getPrefix( nsUri );
+                            if ( oldPrefix != null && !oldPrefix.equals( prefix ) ) {
+                                LOG.debug( "Multiple prefices for namespace '" + nsUri + "': " + prefix + " / "
+                                           + oldPrefix );
+                            } else {
+                                nsBindings.addNamespace( prefix, nsUri );
+                            }
+                        }
+                    }
+                }
+            }
+        } catch ( Exception e ) {
+            LOG.error( "Error determining namespaces from config file '" + componentLocation + "': " + e.getMessage() );
+        } finally {
+            if ( is != null ) {
+                try {
+                    is.close();
+                } catch ( IOException e ) {
+                    LOG.error( e.getMessage(), e );
+                }
+            }
+        }
+
+        // app namespaces from GML schema
+        Map<String, String> schemaNSBindings = gmlSchema.getNamespaceBindings();
+        for ( String prefix : schemaNSBindings.keySet() ) {
+            String nsUri = schemaNSBindings.get( prefix );
+            String oldPrefix = nsBindings.getPrefix( nsUri );
+            if ( oldPrefix != null && !oldPrefix.equals( prefix ) ) {
+                LOG.warn( "Multiple prefices for namespace '" + nsUri + "': " + prefix + " / " + oldPrefix );
+            } else {
+                nsBindings.addNamespace( prefix, nsUri );
+            }
+        }
+        nsBindings.addNamespace( "xsi", XSINS );
+        
+        // general namespace bindings used in XML schema
+        schemaNSBindings = gmlSchema.getGMLSchema().getNamespacePrefixes();
+        for ( String prefix : schemaNSBindings.keySet() ) {
+            String nsUri = schemaNSBindings.get( prefix );
+            String oldPrefix = nsBindings.getPrefix( nsUri );
+            if ( oldPrefix != null && !oldPrefix.equals( prefix ) ) {
+                LOG.warn( "Multiple prefices for namespace '" + nsUri + "': " + prefix + " / " + oldPrefix );
+            } else {
+                nsBindings.addNamespace( prefix, nsUri );
             }
         }
     }
@@ -215,18 +299,6 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         LOG.debug( "GML version: " + appSchema.getGMLSchema().getVersion() );
         return appSchema;
-    }
-
-    private NamespaceBindings buildNSBindings( Map<String, String> schemaNSBindings, List<NamespaceHint> userHints ) {
-        NamespaceBindings nsBindings = new NamespaceBindings();
-        for ( String prefix : schemaNSBindings.keySet() ) {
-            nsBindings.addNamespace( prefix, schemaNSBindings.get( prefix ) );
-        }
-        nsBindings.addNamespace( "xsi", XSINS );
-        for ( NamespaceHint userHint : userHints ) {
-            nsBindings.addNamespace( userHint.getPrefix(), userHint.getNamespaceURI() );
-        }
-        return nsBindings;
     }
 
     private Pair<BlobMapping, BBoxTableMapping> buildBlobMapping( BLOBMapping blobMappingConf, GMLVersion gmlVersion ) {
