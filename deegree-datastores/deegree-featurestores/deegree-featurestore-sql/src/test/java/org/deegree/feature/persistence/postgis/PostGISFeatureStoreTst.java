@@ -200,8 +200,14 @@ public class PostGISFeatureStoreTst {
             return;
         }
 
-        ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
-                                         "testconn", null );
+        String jdbcURL = TestProperties.getProperty( "testdb.postgis.url" );
+        String jdbcUser = TestProperties.getProperty( "testdb.postgis.user" );
+        String jdbcPass = TestProperties.getProperty( "testdb.postgis.pass" );
+        if ( jdbcURL == null ) {
+            return;
+        }
+
+        ConnectionManager.addConnection( "inspire-au", jdbcURL, jdbcUser, jdbcPass, 1, 10 );
         SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
         FeatureStore fs = provider.create( new URL(
                                                     "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );
@@ -249,9 +255,14 @@ public class PostGISFeatureStoreTst {
             return;
         }
 
-        ConnectionManager.addConnection( new URL(
-                                                  "file:/home/schneider/.deegree/deegree-inspire-node-1.1/jdbc/testconn.xml" ),
-                                         "testconn", null );
+        String jdbcURL = TestProperties.getProperty( "testdb.postgis.url" );
+        String jdbcUser = TestProperties.getProperty( "testdb.postgis.user" );
+        String jdbcPass = TestProperties.getProperty( "testdb.postgis.pass" );
+        if ( jdbcURL == null ) {
+            return;
+        }
+
+        ConnectionManager.addConnection( "testconn", jdbcURL, jdbcUser, jdbcPass, 1, 10 );
         SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
         FeatureStore fs = provider.create( new URL(
                                                     "file:/home/schneider/.deegree/deegree-inspire-node-1.1/datasources/feature/inspire-au.xml" ) );
@@ -278,8 +289,14 @@ public class PostGISFeatureStoreTst {
             return;
         }
 
-        ConnectionManager.addConnection( new URL( "file:/home/schneider/.deegree/inspire-test/jdbc/testconn.xml" ),
-                                         "testconn", null );
+        String jdbcURL = TestProperties.getProperty( "testdb.postgis.url" );
+        String jdbcUser = TestProperties.getProperty( "testdb.postgis.user" );
+        String jdbcPass = TestProperties.getProperty( "testdb.postgis.pass" );
+        if ( jdbcURL == null ) {
+            return;
+        }
+
+        ConnectionManager.addConnection( "testconn", jdbcURL, jdbcUser, jdbcPass, 1, 10 );
         SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
         FeatureStore fs = provider.create( new URL(
                                                     "file:/home/schneider/.deegree/inspire-test/datasources/feature/inspire-au.xml" ) );

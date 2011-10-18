@@ -79,8 +79,9 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
      * Called when a new {@link Resource} has been successfully initialized.
      * 
      * @param resource
+     * @throws ResourceInitException 
      */
-    protected void add( T resource ) {
+    protected void add( T resource ) throws ResourceInitException {
         // nothing to do
     }
 

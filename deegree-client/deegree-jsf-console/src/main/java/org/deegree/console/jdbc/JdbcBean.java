@@ -6,6 +6,9 @@ import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -17,6 +20,7 @@ import javax.faces.context.FacesContext;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.console.Config;
 import org.deegree.console.ConfigManager;
 import org.deegree.console.ResourceManagerMetadata2;
@@ -153,28 +157,35 @@ public class JdbcBean {
     }
 
     public void testConnection() {
-        create();
+
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
         Map<String, Object> sMap = ctx.getSessionMap();
         String newId = (String) sMap.get( "newConfigId" );
+
+        Connection conn = null;
         try {
-            mgr.get( newId ).close();
+            conn = DriverManager.getConnection( dbConn, dbUser, dbPwd );
             FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + newId + "' ok", null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
-        } catch ( Throwable t ) {
+        } catch ( SQLException e ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Connection '" + newId + "' unavailable: "
-                                                                + t.getMessage(), null );
+                                                                + e.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
+        } finally {
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    // nothing to do
+                }
+            }
         }
-        mgr.deleteResource( newId );
     }
 
     public void cancel() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        JDBCParamsManager mgr = ws.getSubsystemManager( JDBCParamsManager.class );
         Map<String, Object> sMap = ctx.getSessionMap();
         String newId = (String) sMap.get( "newConfigId" );
         mgr.deleteResource( newId );
@@ -200,15 +211,15 @@ public class JdbcBean {
     private void create() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        JDBCParamsManager mgr = ws.getSubsystemManager( JDBCParamsManager.class );
         StringBuffer sb = new StringBuffer();
-        sb.append( "<?xml version='1.0' encoding='UTF-8'?>" );
-        sb.append( "<JDBCConnection configVersion='3.0.0'  xmlns='http://www.deegree.org/jdbc' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd'>" );
-        sb.append( "<Url>" + dbConn + "</Url>" );
-        sb.append( "<User>" + dbUser + "</User>" );
-        sb.append( "<Password>" + dbPwd + "</Password>" );
-        sb.append( "<ReadOnly>false</ReadOnly>" );
-        sb.append( "</JDBCConnection>" );
+        sb.append( "<?xml version='1.0' encoding='UTF-8'?>\n" );
+        sb.append( "<JDBCConnection configVersion='3.0.0'  xmlns='http://www.deegree.org/jdbc' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd'>\n" );
+        sb.append( "  <Url>" + dbConn + "</Url>\n" );
+        sb.append( "  <User>" + dbUser + "</User>\n" );
+        sb.append( "  <Password>" + dbPwd + "</Password>\n" );
+        sb.append( "  <ReadOnly>false</ReadOnly>\n" );
+        sb.append( "</JDBCConnection>\n" );
         ResourceState rs = null;
         InputStream is = null;
         try {
@@ -220,6 +231,9 @@ public class JdbcBean {
             ResourceManagerMetadata2 rsMetadata = (ResourceManagerMetadata2) sMap.get( "resourceManagerMetadata" );
             this.config = new Config( rs, (ConfigManager) sMap.get( "configManager" ), mgr, rsMetadata.getStartView(),
                                       true );
+            ConnectionManager poolMgr = ws.getSubsystemManager( ConnectionManager.class );
+            poolMgr.shutdown();
+            poolMgr.startup( ws );
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );

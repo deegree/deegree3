@@ -39,7 +39,6 @@ package org.deegree.commons.jdbc;
 import static java.sql.DriverManager.deregisterDriver;
 import static java.sql.DriverManager.getDrivers;
 import static java.sql.DriverManager.registerDriver;
-import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.deegree.commons.config.ResourceState.StateType.init_error;
 import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
@@ -48,7 +47,6 @@ import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -72,17 +70,16 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.i18n.Messages;
-import org.deegree.commons.jdbc.jaxb.JDBCConnection;
+import org.deegree.commons.jdbc.param.JDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for accessing JDBC connections in deegree that are defined in JDBC configuration files.
+ * Manages the {@link ConnectionPools} of a {@link DeegreeWorkspace}.
  * <p>
- * Configuration of JDBC connections used in deegree is based on simple string identifiers: each configured JDBC
- * connection has a unique identifier. This class allows the retrieval of connections based on their identifier.
+ * TODO complete separation of JDBC parameter definition ({@link JDBCParams}) and connection pooling
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -111,38 +108,30 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
      * 
      * @param jdbcDir
      */
+    @SuppressWarnings("unchecked")
     public void init( File jdbcDir, DeegreeWorkspace workspace ) {
-        if ( !jdbcDir.exists() ) {
-            LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
+
+        JDBCParamsManager paramsMgr = workspace.getSubsystemManager( JDBCParamsManager.class );
+        if ( paramsMgr.getStates().length == 0 ) {
+            LOG.info( "No 'jdbc' connections defined -- skipping initialization of JDBC connection pools." );
             return;
         }
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Setting up JDBC connection pools." );
         LOG.info( "--------------------------------------------------------------------------------" );
-        File[] fsConfigFiles = jdbcDir.listFiles( new FilenameFilter() {
-            @Override
-            public boolean accept( File dir, String name ) {
-                return name.toLowerCase().endsWith( ".xml" ) || name.toLowerCase().endsWith( ".ignore" );
-            }
-        } );
-        for ( File fsConfigFile : fsConfigFiles ) {
-            String fileName = fsConfigFile.getName();
-            if ( fileName.toLowerCase().endsWith( ".ignore" ) ) {
-                // 7 is the length of ".ignore"
-                String connId = fileName.substring( 0, fileName.length() - 7 );
-                LOG.info( "Found deactivated JDBC connection '" + connId + "', file '" + fileName + "'..." + "" );
-                idToState.put( connId, new ResourceState( connId, fsConfigFile, this, deactivated, null, null ) );
-            } else {
-                // 4 is the length of ".xml"
-                String connId = fileName.substring( 0, fileName.length() - 4 );
-                LOG.info( "Setting up JDBC connection '" + connId + "' from file '" + fileName + "'..." + "" );
+        for ( ResourceState<JDBCParams> state : paramsMgr.getStates() ) {
+            if ( state.getType() == init_ok ) {
+                String connId = state.getId();
+                LOG.info( "Setting up JDBC connection pool for connection id '" + connId + "'..." + "" );
                 try {
-                    addConnection( fsConfigFile.toURI().toURL(), connId, workspace );
+                    addPool( connId, state.getResource(), workspace );
                     getConnection( connId ).close();
-                    idToState.put( connId, new ResourceState( connId, fsConfigFile, this, init_ok, null, null ) );
+                    idToState.put( connId, new ResourceState( connId, state.getConfigLocation(), this, init_ok, null,
+                                                              null ) );
                 } catch ( Throwable t ) {
                     ResourceInitException e = new ResourceInitException( t.getMessage(), t );
-                    idToState.put( connId, new ResourceState( connId, fsConfigFile, this, init_error, null, e ) );
+                    idToState.put( connId, new ResourceState( connId, state.getConfigLocation(), this, init_error,
+                                                              null, e ) );
                     LOG.error( "Error initializing JDBC connection pool: " + t.getMessage(), t );
                 }
             }
@@ -226,18 +215,34 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     /**
      * Adds the connection pool defined in the given file.
      * 
-     * @param jdbcConfigUrl
      * @param connId
+     * @param params
      * @param workspace
      *            can be <code>null</code>
      * @throws JAXBException
      */
-    public static void addConnection( URL jdbcConfigUrl, String connId, DeegreeWorkspace workspace )
-                            throws JAXBException {
+    public void addPool( String connId, JDBCParams params, DeegreeWorkspace workspace ) {
+
         synchronized ( ConnectionManager.class ) {
-            JDBCConnection pc = (JDBCConnection) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                       jdbcConfigUrl, workspace );
-            addConnection( pc, connId );
+            String url = params.getUrl();
+            checkType( url, connId );
+
+            String user = params.getUser();
+            String password = params.getPassword();
+            boolean readOnly = params.isReadOnly();
+
+            // TODO move this params
+            int poolMinSize = 5;
+            int poolMaxSize = 25;
+
+            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
+                                            poolMaxSize ) );
+            if ( idToPools.containsKey( connId ) ) {
+                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
+            }
+
+            ConnectionPool pool = new ConnectionPool( connId, url, user, password, readOnly, poolMinSize, poolMaxSize );
+            idToPools.put( connId, pool );
         }
     }
 
@@ -253,36 +258,6 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         }
         if ( url.startsWith( "jdbc:sqlserver:" ) ) {
             idToType.put( connId, MSSQL );
-        }
-    }
-
-    /**
-     * Adds a connection pool from the given pool definition.
-     * 
-     * @param jaxbConn
-     * @param connId
-     */
-    public static void addConnection( JDBCConnection jaxbConn, String connId ) {
-        synchronized ( ConnectionManager.class ) {
-            String url = jaxbConn.getUrl();
-
-            checkType( url, connId );
-
-            String user = jaxbConn.getUser();
-            String password = jaxbConn.getPassword();
-            // TODO move this params
-            int poolMinSize = 5;
-            int poolMaxSize = 25;
-            boolean readOnly = jaxbConn.isReadOnly() != null ? jaxbConn.isReadOnly() : false;
-
-            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
-                                            poolMaxSize ) );
-            if ( idToPools.containsKey( connId ) ) {
-                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
-            }
-
-            ConnectionPool pool = new ConnectionPool( connId, url, user, password, readOnly, poolMinSize, poolMaxSize );
-            idToPools.put( connId, pool );
         }
     }
 
@@ -360,7 +335,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
+        return new Class[] { ProxyUtils.class, JDBCParamsManager.class };
     }
 
     class ConnectionManagerMetadata implements ResourceManagerMetadata {
@@ -396,17 +371,8 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     @Override
     public ResourceState deleteResource( String id ) {
-        ResourceState state = getState( id );
-        if ( state != null ) {
-            idToPools.remove( id );
-            idToType.remove( id );
-            idToState.remove( id );
-            deactivate( id );
-            if ( state.getConfigLocation().delete() ) {
-                LOG.info( "Deleted " + state.getConfigLocation() + "'" );
-            }
-        }
-        return getState( id );
+        throw new UnsupportedOperationException(
+                                                 "Deleting of connection pools not supported. Deleted JDBCParams resource instead." );
     }
 
     @Override
@@ -418,47 +384,14 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     @Override
     public ResourceState activate( String id ) {
-        ResourceState state = getState( id );
-        if ( state != null && state.getType() == deactivated ) {
-            File oldFile = state.getConfigLocation();
-            File newFile = new File( dir, id + ".xml" );
-            oldFile.renameTo( newFile );
-
-            LOG.info( "Setting up JDBC connection '" + id + "' from file '" + newFile + "'..." + "" );
-            try {
-                addConnection( newFile.toURI().toURL(), id, workspace );
-                getConnection( id ).close();
-                idToState.put( id, new ResourceState( id, newFile, this, init_ok, null, null ) );
-            } catch ( Throwable t ) {
-                ResourceInitException e = new ResourceInitException( t.getMessage(), t );
-                idToState.put( id, new ResourceState( id, newFile, this, init_error, null, e ) );
-                LOG.error( "Error initializing JDBC connection pool: " + t.getMessage(), t );
-            }
-        }
-        return getState( id );
+        throw new UnsupportedOperationException(
+                                                 "Activating of connection pools not supported. Activate JDBCParams resource instead." );
     }
 
     @Override
     public ResourceState deactivate( String id ) {
-        ResourceState state = getState( id );
-        if ( state != null && state.getType() != deactivated ) {
-            File newFile = null;
-            if ( state.getConfigLocation() != null ) {
-                File oldFile = state.getConfigLocation();
-                newFile = new File( dir, id + ".ignore" );
-                oldFile.renameTo( newFile );
-            }
-
-            ConnectionPool pool = idToPools.get( id );
-            idToPools.remove( id );
-            try {
-                pool.destroy();
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-            idToState.put( id, new ResourceState( id, newFile, this, deactivated, null, null ) );
-        }
-        return getState( id );
+        throw new UnsupportedOperationException(
+                                                 "Deactivating of connection pools not supported. Deactivate JDBCParams resource instead." );
     }
 
     @Override
