@@ -298,7 +298,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         GMLVersion gmlVersion = GML_32;
         Set<String> namespaces = xmlSchemaInfoSet.getSchemaNamespaces();
         if ( namespaces.contains( GML_32_NS ) ) {
-            LOG.warn( "Schema must be GML 3.2 (found GML 3.2 namespace)" );
+            LOG.info( "Schema must be GML 3.2 (found GML 3.2 namespace)" );
         } else if ( !namespaces.contains( GMLNS ) ) {
             String msg = "Cannot interpret XML schema as GML schema. "
                          + "Neither GML core schema components in GML 3.2 namespace (" + GML3_2_NS + "), nor in "
@@ -306,7 +306,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             throw new IllegalArgumentException( msg );
         } else {
             gmlVersion = GML_31;
-            LOG.warn( "Automatic differentiation between GML 3.1, 3.0 and 2 is not implemented." );
+            LOG.warn( "Automatic differentiation between GML 3.1, 3.0 and 2 is not implemented (same namespace URLs)." );
         }
         return gmlVersion;
     }
