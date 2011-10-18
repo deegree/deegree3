@@ -177,7 +177,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
         List<TableJoin> jc = mapping.getJoinedTable();
         if ( jc != null && initial ) {
-            if ( initial ) {
+            if ( mapping instanceof FeatureMapping ) {
+                ParticleConverter<?> particleConverter = fs.getConverter( mapping );
+                if ( particleConverter != null ) {
+                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
+                } else {
+                    LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
+                }
+            } else {
                 for ( String column : jc.get( 0 ).getFromColumns() ) {
                     addColumn( colToRsIdx, tableAlias + "." + column );
                 }

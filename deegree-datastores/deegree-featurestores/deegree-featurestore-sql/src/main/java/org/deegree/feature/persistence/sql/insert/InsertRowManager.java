@@ -308,6 +308,9 @@ public class InsertRowManager {
                 }
 
                 if ( subFid != null ) {
+                    if ( subFid.getNewId() != null ) {
+                        href = "#" + subFid.getNewId();
+                    }
                     if ( jc.isEmpty() ) {
                         LOG.debug( "Skipping feature mapping (fk). Not mapped to database column." );
                     } else {
@@ -324,6 +327,7 @@ public class InsertRowManager {
                                                                        Collections.EMPTY_LIST, false );
                                 InsertRowReference ref = new InsertRowReference( inverseJoin, parentRow );
                                 currentRow.addParent( ref );
+                                ref.addHrefingRow( currentRow );
 
                                 List<ChildInsertRow> deps = rowToChildRows.get( parentRow );
                                 if ( deps == null ) {
@@ -418,7 +422,7 @@ public class InsertRowManager {
             if ( delayedRows != null ) {
                 for ( ChildInsertRow childRow : delayedRows ) {
                     LOG.debug( "Child row: " + childRow );
-                    childRow.removeParent( row );
+                    childRow.removeParent( row, fid );
                     insertRow( childRow );
                 }
             }
