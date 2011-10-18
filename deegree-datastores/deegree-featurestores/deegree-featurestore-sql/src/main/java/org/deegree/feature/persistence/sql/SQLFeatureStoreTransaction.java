@@ -264,15 +264,15 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
                     int i = 1;
                     for ( String fidKernel : analysis.getIdKernels() ) {
-                        PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( i ).second );
+                        PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( i - 1 ).second );
                         PrimitiveValue value = new PrimitiveValue( fidKernel, pt );
                         Object sqlValue = SQLValueMangler.internalToSQL( value );
                         stmt.setObject( i++, sqlValue );
                     }
                     LOG.debug( "Executing: " + stmt );
                     deleted += stmt.executeUpdate();
-                } catch ( SQLException e ) {
-                    LOG.debug( e.getMessage(), e );
+                } catch ( Throwable e ) {
+                    LOG.error( e.getMessage(), e );
                     throw new FeatureStoreException( e.getMessage(), e );
                 } finally {
                     JDBCUtils.close( stmt );
