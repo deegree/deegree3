@@ -67,7 +67,6 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.console.Config;
 import org.deegree.console.ConfigManager;
 import org.deegree.console.WorkspaceBean;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -113,7 +112,7 @@ public class MappingWizardSQL {
 
     private MappedAppSchema mappedSchema;
 
-    private String storageCrs = "urn:ogc:def:crs:EPSG::4326";
+    private String storageCrs = "EPSG:4326";
 
     // TODO
     private String storageSrid = "-1";
@@ -360,9 +359,11 @@ public class MappingWizardSQL {
     public String activateFS() {
         try {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+            WorkspaceBean workspaceBean = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
+            DeegreeWorkspace ws = workspaceBean.getActiveWorkspace();
             FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
             fsMgr.activate( getFeatureStoreId() );
+            workspaceBean.setModified();
         } catch ( Throwable t ) {
             t.printStackTrace();
             String msg = "Error activating new feature store";
