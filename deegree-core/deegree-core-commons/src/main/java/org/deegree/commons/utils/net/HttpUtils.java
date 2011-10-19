@@ -78,10 +78,12 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -138,6 +140,7 @@ public class HttpUtils {
      * Directly returns the stream.
      */
     public static final Worker<InputStream> STREAM = new Worker<InputStream>() {
+        @Override
         public InputStream work( InputStream in ) {
             return in;
         }
@@ -147,6 +150,7 @@ public class HttpUtils {
      * Returns streaming XMLAdapter.
      */
     public static final Worker<XMLAdapter> XML = new Worker<XMLAdapter>() {
+        @Override
         public XMLAdapter work( InputStream in ) {
             return new XMLAdapter( in );
         }
@@ -156,6 +160,7 @@ public class HttpUtils {
      * Returns streaming XMLAdapter.
      */
     public static final Worker<XMLStreamReaderWrapper> XML_STREAM = new Worker<XMLStreamReaderWrapper>() {
+        @Override
         public XMLStreamReaderWrapper work( InputStream in )
                                 throws IOException {
             try {
@@ -183,6 +188,7 @@ public class HttpUtils {
      * Returns a BufferedImage.
      */
     public static final Worker<BufferedImage> IMAGE = new Worker<BufferedImage>() {
+        @Override
         public BufferedImage work( InputStream in )
                                 throws IOException {
             return read( in );
@@ -195,6 +201,7 @@ public class HttpUtils {
      */
     public static Worker<String> getStringWorker( final String encoding ) {
         return new Worker<String>() {
+            @Override
             public String work( InputStream in )
                                     throws IOException {
                 BufferedReader bin = new BufferedReader( new InputStreamReader( in, encoding ) );
@@ -294,12 +301,21 @@ public class HttpUtils {
      * @throws IOException
      */
     public static <T> T post( Worker<T> worker, String url, Map<String, String> params, Map<String, String> headers,
-                              int readTimeout )
+                              final int readTimeout )
                             throws IOException {
         DURL u = new DURL( url );
         LOG.debug( "Sending HTTP POST against {}", url );
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
-        HttpConnectionParams.setSoTimeout( client.getParams(), readTimeout );
+        client.setKeepAliveStrategy( new DefaultConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration( HttpResponse response, HttpContext context ) {
+                long keepAlive = super.getKeepAliveDuration( response, context );
+                if ( keepAlive == -1 ) {
+                    keepAlive = readTimeout * 1000;
+                }
+                return keepAlive;
+            }
+        } );
         HttpPost post = new HttpPost( url );
         List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>( params.size() );
         for ( Entry<String, String> e : params.entrySet() ) {
@@ -328,12 +344,21 @@ public class HttpUtils {
      * @throws IOException
      */
     public static <T> Pair<T, HttpResponse> postFullResponse( Worker<T> worker, String url, Map<String, String> params,
-                                                              Map<String, String> headers, int readTimeout )
+                                                              Map<String, String> headers, final int readTimeout )
                             throws IOException {
         DURL u = new DURL( url );
         LOG.debug( "Sending HTTP POST against {}", url );
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
-        HttpConnectionParams.setSoTimeout( client.getParams(), readTimeout );
+        client.setKeepAliveStrategy( new DefaultConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration( HttpResponse response, HttpContext context ) {
+                long keepAlive = super.getKeepAliveDuration( response, context );
+                if ( keepAlive == -1 ) {
+                    keepAlive = readTimeout * 1000;
+                }
+                return keepAlive;
+            }
+        } );
         HttpPost post = new HttpPost( url );
         List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>( params.size() );
         for ( Entry<String, String> e : params.entrySet() ) {
@@ -541,14 +566,23 @@ public class HttpUtils {
     }
 
     public static <T> Pair<T, HttpResponse> getFullResponse( Worker<T> worker, String url, Map<String, String> headers,
-                                                             String user, String pass, int readTimeout )
+                                                             String user, String pass, final int readTimeout )
                             throws IOException {
         DURL u = new DURL( url );
         if ( !u.valid() ) {
             return null;
         }
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
-        HttpConnectionParams.setSoTimeout( client.getParams(), readTimeout * 1000 );
+        client.setKeepAliveStrategy( new DefaultConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration( HttpResponse response, HttpContext context ) {
+                long keepAlive = super.getKeepAliveDuration( response, context );
+                if ( keepAlive == -1 ) {
+                    keepAlive = readTimeout * 1000;
+                }
+                return keepAlive;
+            }
+        } );
         if ( user != null && pass != null ) {
             authenticate( client, user, pass, u );
         }
@@ -573,7 +607,16 @@ public class HttpUtils {
      */
     public static DefaultHttpClient enableProxyUsage( DefaultHttpClient client, DURL url ) {
         HttpConnectionParams.setConnectionTimeout( client.getParams(), DEFAULT_CONN_TIMEOUT );
-        HttpConnectionParams.setSoTimeout( client.getParams(), DEFAULT_SOCKET_TIMEOUT );
+        client.setKeepAliveStrategy( new DefaultConnectionKeepAliveStrategy() {
+            @Override
+            public long getKeepAliveDuration( HttpResponse response, HttpContext context ) {
+                long keepAlive = super.getKeepAliveDuration( response, context );
+                if ( keepAlive == -1 ) {
+                    keepAlive = DEFAULT_SOCKET_TIMEOUT;
+                }
+                return keepAlive;
+            }
+        } );
         String host = url.getURL().getHost();
         String protocol = url.getURL().getProtocol().toLowerCase();
         handleProxies( protocol, client, host );
