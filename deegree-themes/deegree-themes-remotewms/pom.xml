@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-themes-remotewms</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-rc4-SNAPSHOT</version>
+  <version>3.1-rc4</version>
   <name>deegree-themes-remotewms</name>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-themes</artifactId>
-    <version>3.1-rc4-SNAPSHOT</version>
+    <version>3.1-rc4</version>
   </parent>
 
   <repositories>
@@ -38,12 +38,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-theme</artifactId>
-      <version>3.1-rc4-SNAPSHOT</version>
+      <version>3.1-rc4</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-remoteows-wms</artifactId>
-      <version>3.1-rc4-SNAPSHOT</version>
+      <version>3.1-rc4</version>
     </dependency>
   </dependencies>
 
