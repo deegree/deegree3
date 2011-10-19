@@ -172,8 +172,29 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.service = service;
         this.version = version;
         this.writer = xmlWriter;
-        this.serviceId = serviceId;
-        this.serviceProvider = serviceProvider;
+        if ( serviceId == null ) {
+            this.serviceId = new ServiceIdentificationType();
+        } else {
+            this.serviceId = serviceId;
+        }
+        if ( this.serviceId.getTitle().isEmpty() ) {
+            this.serviceId.getTitle().add( "deegree 3 WFS" );
+        }
+        if ( this.serviceId.getAbstract().isEmpty() ) {
+            this.serviceId.getAbstract().add( "deegree 3 WFS" );
+        }
+        if ( serviceProvider == null ) {
+            this.serviceProvider = new ServiceProviderType();
+        } else {
+            this.serviceProvider = serviceProvider;
+        }
+        if ( serviceProvider.getProviderName() == null ) {
+            serviceProvider.setProviderName( "deegree organization" );
+        }
+        if ( serviceProvider.getProviderSite() == null ) {
+            serviceProvider.setProviderSite( "http://www.deegree.org" );
+        }
+
         this.servedFts = servedFts;
         this.metadataUrlTemplate = metadataUrlTemplate;
         this.ftNameToFtMetadata = ftNameToFtMetadata;
@@ -808,8 +829,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
             // version
             globalParams.add( new Domain( "version", offeredVersionStrings ) );
-            
-            
+
             // srsName
             List<String> srsNames = new ArrayList<String>();
             for ( ICRS crs : querySRS ) {
