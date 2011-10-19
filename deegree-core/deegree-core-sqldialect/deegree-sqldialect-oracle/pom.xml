@@ -24,17 +24,32 @@
     </repository>
   </repositories>
 
+  <profiles>
+    <profile>
+      <id>oracle</id>
+      <repositories>
+        <repository>
+          <id>deegree-restricted</id>
+          <name>deegree-restricted</name>
+          <url>http://artefacts.deegree.org/ext-libs-restricted</url>
+        </repository>
+      </repositories>
+      <dependencies>
+        <!-- This module can be build with one of the following dependencies -->
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc6</artifactId>
+          <version>[11.1,11.2]</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-commons</artifactId>
       <version>3.2-pre1-SNAPSHOT</version>
-    </dependency>
-    <!-- This module can be build with one of the following dependencies -->
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
-      <version>[11.1,11.2]</version>
     </dependency>
   </dependencies>
 </project>
