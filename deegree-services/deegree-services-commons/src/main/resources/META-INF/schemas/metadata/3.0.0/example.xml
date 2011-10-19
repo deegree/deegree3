@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeServicesMetadata configVersion="3.0.0" xmlns="http://www.deegree.org/services/metadata"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/services/metadata/3.0.0/metadata.xsd">
-  <!--
-    General service information for all services. Used in the GetCapabilities
-    responses.
-  -->
 
   <ServiceIdentification>
-    <Title>deegree 3 Utah Demo</Title>
-    <Abstract>WMS and WFS demonstration with Utah data</Abstract>
+    <Title>deegree 3</Title>
+    <Abstract>deegree 3 web services</Abstract>
   </ServiceIdentification>
 
   <ServiceProvider>
