@@ -265,7 +265,7 @@ public class WorkspaceBean implements Serializable {
         InputStream in = null;
         try {
             URL url = new URL( location );
-            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, location, null, null, null, 3600 );
+            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, location, null, null, null, 10 );
             File root = new File( getWorkspaceRoot() );
             in = p.getFirst();
             if ( p.second.getStatusLine().getStatusCode() != 200 ) {
@@ -340,7 +340,7 @@ public class WorkspaceBean implements Serializable {
     public List<String> downloadWorkspaceList( String url ) {
         InputStream in = null;
         try {
-            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, url, null, null, null, 3600 );
+            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, url, null, null, null, 10 );
             LOG.debug( "Retrieving list of remote workspaces from {} ", url );
             in = p.getFirst();
             if ( p.second.getStatusLine().getStatusCode() != 200 ) {
