@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-mdstores</artifactId>
-    <version>3.1-rc4</version>
+    <version>3.1-rc5-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-metadata</artifactId>
-      <version>3.1-rc4</version>
+      <version>3.1-rc5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

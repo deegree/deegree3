@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.1-rc4</version>
+    <version>3.1-rc5-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -44,13 +44,13 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-base</artifactId>
-      <version>3.1-rc4</version>
+      <version>3.1-rc5-SNAPSHOT</version>
       <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-processprovider-sextante</artifactId>
-      <version>3.1-rc4</version>
+      <version>3.1-rc5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -180,7 +180,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wps</artifactId>
-      <version>3.1-rc4</version>
+      <version>3.1-rc5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
