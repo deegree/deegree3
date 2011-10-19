@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-sqldialect</artifactId>
-    <version>3.1-rc4</version>
+    <version>3.1-rc5-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -49,13 +49,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-commons</artifactId>
-      <version>3.1-rc4</version>
+      <version>3.1-rc5-SNAPSHOT</version>
     </dependency>
   </dependencies>
-
-  <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/tags/deegree-sqldialect-oracle-3.1-rc4</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/deegree-sqldialect-oracle-3.1-rc4</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/tags/deegree-sqldialect-oracle-3.1-rc4</url>
-  </scm>
 </project>
