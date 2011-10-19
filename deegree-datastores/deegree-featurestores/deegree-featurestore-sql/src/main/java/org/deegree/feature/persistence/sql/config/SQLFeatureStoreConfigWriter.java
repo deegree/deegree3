@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.sql.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.util.List;
@@ -66,6 +67,7 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.gml.GMLVersion;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
@@ -124,6 +126,10 @@ public class SQLFeatureStoreConfigWriter {
                 writer.writeNamespace( "app" + ( i++ ), ns );
             }
         }
+
+        writer.writeNamespace( "xlink", XLNNS );        
+        GMLVersion version = schema.getGMLSchema().getVersion();
+        writer.writeNamespace( "gml", version.getNamespace() );
 
         // writer.writeStartElement( CONFIG_NS, "StorageCRS" );
         // writer.writeCharacters( storageCrs );

@@ -35,17 +35,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 
 class InsertRowReference {
 
     private final TableJoin join;
-    
+
     private final ChildInsertRow ref;
+
+    private final Set<ChildInsertRow> hrefingRows = new HashSet<ChildInsertRow>();
 
     InsertRowReference( TableJoin join, ChildInsertRow ref ) {
         this.join = join;
         this.ref = ref;
+    }
+
+    public void addHrefingRow( ChildInsertRow row ) {
+        hrefingRows.add( row );
     }
 
     public TableJoin getJoin() {
@@ -54,5 +63,9 @@ class InsertRowReference {
 
     public ChildInsertRow getRef() {
         return ref;
+    }
+
+    public boolean isHrefed( ChildInsertRow childInsertRow ) {
+        return hrefingRows.contains( childInsertRow );
     }
 }

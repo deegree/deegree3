@@ -37,6 +37,7 @@ package org.deegree.console.featurestore;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
 import static org.deegree.protocol.wfs.transaction.IDGenMode.USE_EXISTING;
 
@@ -72,16 +73,19 @@ public class FeatureStoreLoader implements Serializable {
 
     private static final long serialVersionUID = 5091506903775758089L;
 
-    private FeatureStore fs;
+    private final FeatureStore fs;
 
-    private GMLVersion gmlVersion = GMLVersion.GML_32;
+    private GMLVersion gmlVersion = GML_32;
 
-    private IDGenMode idGenMode = IDGenMode.USE_EXISTING;
+    private IDGenMode idGenMode = GENERATE_NEW;
 
     private String url = "";
 
     FeatureStoreLoader( FeatureStore fs ) {
         this.fs = fs;
+        if ( fs.getSchema().getGMLSchema() != null ) {
+            gmlVersion = fs.getSchema().getGMLSchema().getVersion();
+        }
     }
 
     public String getGmlVersion() {

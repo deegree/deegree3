@@ -59,7 +59,6 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
 
     private final String fkColumn;
 
-    // TODO handle the HrefMapping
     private final String hrefColumn;
 
     private final GMLReferenceResolver resolver;
@@ -77,7 +76,7 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
         this.resolver = resolver;
         this.valueFt = valueFt;
         this.schema = schema;
-        
+
         if ( valueFt != null && schema.getSubtypes( valueFt ).length == 0
              && schema.getFtMapping( valueFt.getName() ) != null ) {
             fidPrefix = schema.getFtMapping( valueFt.getName() ).getFidMapping().getPrefix();
@@ -88,6 +87,9 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
 
     @Override
     public String getSelectSnippet( String tableAlias ) {
+        if ( hrefColumn != null ) {
+            return tableAlias + "." + hrefColumn;
+        }
         return tableAlias + "." + fkColumn;
     }
 
@@ -96,25 +98,16 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
                             throws SQLException {
 
         Object value = rs.getObject( colIndex );
-        if ( value != null ) {
-            if ( fidPrefix != null ) {
-                return new FeatureReference( resolver, "#" + fidPrefix + value, null );
-            }
-            // TODO
-            String ref;
-            if ( value.toString().startsWith( "http" ) ) {
-                ref = value.toString();
-            } else {
-                ref = "#" + value;
-            }
-            return new FeatureReference( resolver, ref, null );
+        if ( value == null ) {
+            return null;
         }
-
-        // value = rs.getObject( colIndex + 1);
-        // if ( value != null ) {
-        // return new FeatureReference( resolver, value.toString(), null );
-        // }
-        return null;
+        if ( hrefColumn != null ) {
+            return new FeatureReference( resolver, "" + value, null );
+        }
+        if ( fidPrefix != null ) {
+            return new FeatureReference( resolver, "#" + fidPrefix + value, null );
+        }
+        return new FeatureReference( resolver, "#" + value, null );
     }
 
     @Override
@@ -125,7 +118,6 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
     @Override
     public void setParticle( PreparedStatement stmt, Feature particle, int paramIndex )
                             throws SQLException {
-        // TODO Auto-generated method stub
-
+        // TODO currently hardcoded in InsertRowManager and related classes
     }
 }

@@ -69,20 +69,27 @@ class ChildInsertRow extends InsertRow {
         parentToRef.put( ref.getRef(), ref );
     }
 
-    public void removeParent( ChildInsertRow parent ) {
-        
+    public void removeParent( ChildInsertRow parent, InsertFID fid ) {
+
         InsertRowReference row = parentToRef.get( parent );
-        
+
         // propagate keys
         for ( int i = 0; i < row.getJoin().getFromColumns().size(); i++ ) {
             String fromColumn = row.getJoin().getFromColumns().get( i );
             String toColumn = row.getJoin().getToColumns().get( i );
             Object key = parent.get( fromColumn );
             if ( key == null ) {
-                throw new IllegalArgumentException( "Unable to resolve foreign key relation. Encountered NULL value for key column '" + fromColumn + "'.");
+                throw new IllegalArgumentException(
+                                                    "Unable to resolve foreign key relation. Encountered NULL value for key column '"
+                                                                            + fromColumn + "'." );
             }
             addPreparedArgument( toColumn, key );
         }
+
+        if ( row.isHrefed( this ) && fid != null ) {
+            addPreparedArgument( "href", "#" + fid.getNewId() );
+        }
+
         parentToRef.remove( parent );
     }
 

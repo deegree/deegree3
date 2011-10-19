@@ -198,6 +198,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
         addStringProp( APISO_NS, "SpecificationTitle", DatabaseTables.idxtb_main, "spectitle", true );
         addStringProp( APISO_NS, "SpecificationDateType", DatabaseTables.idxtb_main, "specdatetype", false );
         addDateProp( APISO_NS, "SpecificationDate", DatabaseTables.idxtb_main, "specdate" );
+        addStringProp( APISO_NS, "ResponsiblePartyRole", DatabaseTables.idxtb_main, "resppartyrole", false );
 
         // ----------------------</additional queryable properties for INSPIRE>-------------------------
         // ----------------------------------------------------------------------------------------
