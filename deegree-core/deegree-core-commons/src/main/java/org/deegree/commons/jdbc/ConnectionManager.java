@@ -38,7 +38,6 @@ package org.deegree.commons.jdbc;
 
 import static java.sql.DriverManager.deregisterDriver;
 import static java.sql.DriverManager.getDrivers;
-import static java.sql.DriverManager.registerDriver;
 import static org.deegree.commons.config.ResourceState.StateType.init_error;
 import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
@@ -56,7 +55,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -320,14 +318,6 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     @Override
     public void startup( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
-        try {
-            for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
-                registerDriver( new DriverWrapper( d ) );
-                LOG.info( "Found and loaded {}", d.getClass().getName() );
-            }
-        } catch ( SQLException e ) {
-            LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
-        }
         dir = new File( workspace.getLocation(), "jdbc" );
         init( dir, workspace );
     }

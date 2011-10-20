@@ -35,9 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.jdbc.param;
 
+import static java.sql.DriverManager.registerDriver;
+
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ServiceLoader;
 
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -45,6 +49,9 @@ import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.commons.jdbc.DriverWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages the {@link JDBCParams} resources in a {@link DeegreeWorkspace}.
@@ -57,7 +64,23 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 @SuppressWarnings("unchecked")
 public class JDBCParamsManager extends AbstractResourceManager<JDBCParams> {
 
+    private static Logger LOG = LoggerFactory.getLogger( JDBCParamsManager.class );
+
     private JDBCParamsManagerMetadata metadata;
+
+    @Override
+    public void startup( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        try {
+            for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
+                registerDriver( new DriverWrapper( d ) );
+                LOG.info( "Found and loaded {}", d.getClass().getName() );
+            }
+        } catch ( SQLException e ) {
+            LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
+        }
+        super.startup( workspace );
+    }
 
     @Override
     public void initMetadata( DeegreeWorkspace workspace ) {
