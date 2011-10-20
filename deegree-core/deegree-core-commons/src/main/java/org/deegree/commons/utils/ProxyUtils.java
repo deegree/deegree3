@@ -117,11 +117,20 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
     @Override
     public void startup( DeegreeWorkspace workspace )
                             throws IllegalArgumentException {
+
+        File globalProxy = new File( DeegreeWorkspace.getWorkspaceRoot(), "proxy.xml" );
+
         File proxyConfigFile = new File( workspace.getLocation(), "proxy.xml" );
-        if ( !proxyConfigFile.exists() ) {
+        if ( proxyConfigFile.exists() ) {
+            LOG.info( "Using 'proxy.xml' from workspace." );
+        } else if ( globalProxy.exists() ) {
+            LOG.info( "Using global 'proxy.xml'." );
+            proxyConfigFile = globalProxy;
+        } else {
             LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
             return;
         }
+
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Proxy configuration." );
         LOG.info( "--------------------------------------------------------------------------------" );
