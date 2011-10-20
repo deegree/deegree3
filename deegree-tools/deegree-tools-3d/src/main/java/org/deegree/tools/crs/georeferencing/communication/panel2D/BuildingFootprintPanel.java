@@ -220,7 +220,9 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         if ( worldPolygonList != null ) {
             setPolygonList( worldPolygonList, sceneValues );
         }
-        state.points.updateFootprintPoints( sceneValues );
+        if ( state.points != null ) {
+            state.points.updateFootprintPoints( sceneValues );
+        }
     }
 
 }
