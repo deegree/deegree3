@@ -47,6 +47,7 @@ import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
+import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.geometry.Envelope;
@@ -135,7 +136,8 @@ public class Filters {
      * 
      * @param filter
      *            filter to be traversed, must not be <code>null</code>
-     * @return {@link ValueReference}s found on any nodes of the {@link Filter}, can be empty, but never <code>null</code>
+     * @return {@link ValueReference}s found on any nodes of the {@link Filter}, can be empty, but never
+     *         <code>null</code>
      */
     public static ValueReference[] getPropertyNames( Filter filter ) {
 
@@ -234,6 +236,26 @@ public class Filters {
             // nothing to do
             break;
         }
+    }
+
+    private static OperatorFilter combine( boolean and, OperatorFilter f1, OperatorFilter f2 ) {
+        if ( f1 == null || f2 == null ) {
+            return f1 == null ? f2 : f1;
+        }
+        Operator o1 = f1.getOperator();
+        Operator o2 = f2.getOperator();
+        if ( and ) {
+            return new OperatorFilter( new And( o1, o2 ) );
+        }
+        return new OperatorFilter( new Or( o1, o2 ) );
+    }
+
+    public static OperatorFilter and( OperatorFilter f1, OperatorFilter f2 ) {
+        return combine( true, f1, f2 );
+    }
+
+    public static OperatorFilter or( OperatorFilter f1, OperatorFilter f2 ) {
+        return combine( false, f1, f2 );
     }
 
     /**
