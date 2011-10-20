@@ -14,6 +14,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -50,10 +51,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final Connection conn;
 
+    private final List<Queryable> queryables;
+
     ISOMetadataStoreTransaction( Connection conn, SQLDialect dialect, List<RecordInspector<ISORecord>> inspectors,
-                                 AnyText anyText ) throws SQLException {
+                                 List<Queryable> queryables, AnyText anyText ) throws SQLException {
         this.conn = conn;
         this.dialect = dialect;
+        this.queryables = queryables;
         this.anyTextConfig = anyText;
         this.inspectors = inspectors;
     }
@@ -79,11 +83,11 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
         try {
             // TODO: mapping!
-            ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( dialect );
+            ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( dialect, queryables );
             AbstractWhereBuilder builder = dialect.getWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(),
                                                                     null, false );
 
-            TransactionHelper transactionHelper = new TransactionHelper( dialect, anyTextConfig );
+            TransactionHelper transactionHelper = new TransactionHelper( dialect, queryables, anyTextConfig );
             return transactionHelper.executeDelete( conn, builder );
 
         } catch ( Exception e ) {
@@ -103,7 +107,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 }
                 if ( record != null ) {
                     ISORecord rec = new ISORecord( record.getAsOMElement() );
-                    TransactionHelper transactionHelper = new TransactionHelper( dialect, anyTextConfig );
+                    TransactionHelper transactionHelper = new TransactionHelper( dialect, queryables, anyTextConfig );
                     transactionHelper.executeInsert( conn, rec );
                     identifierList.add( rec.getIdentifier() );
                 }
@@ -117,7 +121,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException {
-        TransactionHelper generateQP = new TransactionHelper( dialect, anyTextConfig );
+        TransactionHelper generateQP = new TransactionHelper( dialect, queryables, anyTextConfig );
         int result = 0;
 
         if ( update.getRecord() != null && update.getConstraint() == null ) {
@@ -131,7 +135,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             return 1;
         }
 
-        QueryHelper qh = new QueryHelper( dialect );
+        QueryHelper qh = new QueryHelper( dialect, queryables );
         try {
             MetadataQuery query = new MetadataQuery( null, null, (OperatorFilter) update.getConstraint(), null, 1,
                                                      Integer.MIN_VALUE );

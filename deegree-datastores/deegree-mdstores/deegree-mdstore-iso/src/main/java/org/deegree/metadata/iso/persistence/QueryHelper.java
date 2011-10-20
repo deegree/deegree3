@@ -51,6 +51,7 @@ import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -75,8 +76,8 @@ class QueryHelper extends SqlHelper {
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
     public static final int DEFAULT_FETCH_SIZE = 100;
 
-    QueryHelper( SQLDialect dialect ) {
-        super( dialect );
+    QueryHelper( SQLDialect dialect, List<Queryable> queryables ) {
+        super( dialect, queryables );
     }
 
     ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
@@ -280,7 +281,7 @@ class QueryHelper extends SqlHelper {
 
     private AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
                             throws FilterEvaluationException, UnmappableException {
-        return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect ), (OperatorFilter) query.getFilter(),
-                                        query.getSorting(), false );
+        return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect, queryables ),
+                                        (OperatorFilter) query.getFilter(), query.getSorting(), false );
     }
 }

@@ -468,6 +468,11 @@ public class ISORecord implements MetadataRecord {
     public OMElement getNodeFromXPath( XPath xpath ) {
         return new XMLAdapter().getElement( root, xpath );
     }
+    
+
+    public String[] getStringsFromXPath( XPath xpath ) {
+        return new XMLAdapter().getNodesAsStrings( root, xpath );
+    }
 
     private void toISOSummary( XMLStreamWriter writer, XMLStreamReader xmlStream )
                             throws XMLStreamException {

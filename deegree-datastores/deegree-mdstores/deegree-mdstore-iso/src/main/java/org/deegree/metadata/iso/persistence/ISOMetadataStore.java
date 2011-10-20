@@ -49,12 +49,16 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
 import org.deegree.metadata.iso.persistence.inspectors.FIInspector;
 import org.deegree.metadata.iso.persistence.inspectors.HierarchyLevelInspector;
 import org.deegree.metadata.iso.persistence.inspectors.InspireComplianceInspector;
+import org.deegree.metadata.iso.persistence.queryable.Queryable;
+import org.deegree.metadata.iso.persistence.queryable.QueryableConverter;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -65,7 +69,10 @@ import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.QueryableProperties;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.QueryableProperty;
+import org.deegree.metadata.persistence.iso19115.jaxb.QueryableProperty.Name;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -97,6 +104,8 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public static final int DEFAULT_FETCH_SIZE = 100;
 
     private final SQLDialect dialect;
+
+    private final List<Queryable> queryables = new ArrayList<Queryable>();
 
     /**
      * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
@@ -135,6 +144,36 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         }
         // hard coded because there is no configuration planned
         inspectorChain.add( new HierarchyLevelInspector() );
+
+        QueryableProperties queryableProperties = config.getQueryableProperties();
+        if ( queryableProperties != null ) {
+            for ( QueryableProperty qp : queryableProperties.getQueryableProperty() ) {
+                QueryableConverter converter = null;
+                if ( qp.getConverterClass() != null ) {
+                    String converterClass = qp.getConverterClass();
+                    Object cc;
+                    try {
+                        cc = Class.forName( converterClass ).newInstance();
+                        if ( !( cc instanceof QueryableConverter ) ) {
+                            throw new ResourceInitException( "QuerableConverter class " + converterClass
+                                                             + " is not a subtype of "
+                                                             + QueryableConverter.class.getCanonicalName() );
+                        }
+                        converter = (QueryableConverter) cc;
+                    } catch ( Exception e ) {
+                        throw new ResourceInitException( "Could not create QueraybleConverter class " + converterClass,
+                                                         e );
+                    }
+                }
+                XPath xpath = new XPath( qp.getXpath(), CommonNamespaces.getNamespaceContext() );
+                List<Name> name = qp.getName();
+                List<QName> names = new ArrayList<QName>();
+                for ( Name n : name ) {
+                    names.add( new QName( n.getNamespace(), n.getValue() ) );
+                }
+                queryables.add( new Queryable( xpath, names, qp.isIsMultiple(), qp.getColumn(), converter ) );
+            }
+        }
     }
 
     /**
@@ -195,7 +234,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
 
-        QueryHelper exe = new QueryHelper( dialect );
+        QueryHelper exe = new QueryHelper( dialect, queryables );
         return exe.execute( query, getConnection() );
     }
 
@@ -209,7 +248,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String resultTypeName = "hits";
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         try {
-            return new QueryHelper( dialect ).executeCounting( query, getConnection() );
+            return new QueryHelper( dialect, queryables ).executeCounting( query, getConnection() );
         } catch ( Throwable t ) {
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
@@ -221,7 +260,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        QueryHelper qh = new QueryHelper( dialect );
+        QueryHelper qh = new QueryHelper( dialect, queryables );
         return qh.executeGetRecordById( idList, getConnection() );
     }
 
@@ -231,7 +270,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         ISOMetadataStoreTransaction ta = null;
         Connection conn = getConnection();
         try {
-            ta = new ISOMetadataStoreTransaction( conn, dialect, inspectorChain, config.getAnyText() );
+            ta = new ISOMetadataStoreTransaction( conn, dialect, inspectorChain, queryables, config.getAnyText() );
         } catch ( Throwable e ) {
             LOG.error( "error " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );

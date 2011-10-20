@@ -64,6 +64,7 @@ import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.parsing.QueryableProperties;
+import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.iso.types.BoundingBox;
 import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Constraint;
@@ -92,8 +93,8 @@ class TransactionHelper extends SqlHelper {
 
     private AnyText anyTextConfig;
 
-    TransactionHelper( SQLDialect dialect, AnyText anyTextConfig ) {
-        super( dialect );
+    TransactionHelper( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
+        super( dialect, queryables );
         this.anyTextConfig = anyTextConfig;
 
     }
@@ -345,6 +346,16 @@ class TransactionHelper extends SqlHelper {
         GeometryParticleConverter converter = dialect.getGeometryConverter( bboxColumn, null, srid, true );
 
         tr.addPreparedArgument( bboxColumn, geom, converter );
+
+        for ( Queryable queryable : queryables ) {
+            String value;
+            if ( queryable.isMultiple() ) {
+                value = concatenate( queryable.getConvertedValues( rec ) );
+            } else {
+                value = queryable.getConvertedValue( rec );
+            }
+            tr.addPreparedArgument( queryable.getColumn(), value );
+        }
     }
 
     private String getFormats( List<Format> list ) {

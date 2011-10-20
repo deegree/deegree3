@@ -65,6 +65,7 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
@@ -76,7 +77,6 @@ import org.slf4j.Logger;
  * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change
  * in the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well.
  * <p>
- * TODO denominator, distanceUOM, distanceValue put a type in
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: mschneider $
@@ -264,8 +264,11 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
 
     private final SQLDialect dialect;
 
-    public ISOPropertyNameMapper( SQLDialect dialect ) {
+    private final List<Queryable> queryables;
+
+    public ISOPropertyNameMapper( SQLDialect dialect, List<Queryable> queryables ) {
         this.dialect = dialect;
+        this.queryables = queryables;
     }
 
     @Override
@@ -311,12 +314,30 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
                 }
                 mapping = new PropertyNameMapping( converter, joins, tableColumn.first.second, tableAlias );
             } else {
-                String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
-                LOG.debug( msg );
-                throw new FilterEvaluationException( msg );
+                Queryable queryable = getQueryable( qName );
+                if ( queryable != null ) {
+                    DefaultPrimitiveConverter converter = new DefaultPrimitiveConverter( new PrimitiveType( STRING ),
+                                                                                         queryable.getColumn(),
+                                                                                         queryable.isMultiple() );
+                    mapping = new PropertyNameMapping( converter, new ArrayList<Join>(), queryable.getColumn(),
+                                                       tableAlias );
+                } else {
+                    String msg = Messages.getMessage( "ERROR_PROPNAME_MAPPING", qName );
+                    LOG.debug( msg );
+                    throw new FilterEvaluationException( msg );
+                }
             }
         }
         return mapping;
+    }
+
+    private Queryable getQueryable( QName qName ) {
+        for ( Queryable q : queryables ) {
+            if ( q.getNames().contains( qName ) ) {
+                return q;
+            }
+        }
+        return null;
     }
 
     private static void addBooleanProp( String propNs, String propName, DatabaseTables table, String column ) {

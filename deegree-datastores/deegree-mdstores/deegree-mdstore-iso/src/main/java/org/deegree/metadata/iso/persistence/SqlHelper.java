@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
+import java.util.List;
+
+import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.Join;
@@ -70,8 +73,11 @@ abstract class SqlHelper {
 
     protected final SQLDialect dialect;
 
-    SqlHelper( SQLDialect dialect ) {
+    protected final List<Queryable> queryables;
+
+    SqlHelper( SQLDialect dialect, List<Queryable> queryables ) {
         this.dialect = dialect;
+        this.queryables = queryables;
         idColumn = ISOPropertyNameMapper.CommonColumnNames.id.name();
         fk_main = ISOPropertyNameMapper.CommonColumnNames.fk_main.name();
         recordColumn = ISOPropertyNameMapper.CommonColumnNames.recordfull.name();
