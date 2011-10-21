@@ -736,9 +736,9 @@ public class GMLFormat implements Format {
                                              responseFeatureMemberEl.getLocalPart(),
                                              responseFeatureMemberEl.getNamespaceURI() );
             } else if ( GML_32 == gmlVersion ) {
-                xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
+                xmlStream.writeEmptyElement( "wfs", "member", GML3_2_NS );
             } else {
-                xmlStream.writeEmptyElement( "gml", "featureMember", GMLNS );
+                xmlStream.writeEmptyElement( "gml", "featureMember", WFS_NS );
             }
             xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
         } else {
@@ -749,7 +749,7 @@ public class GMLFormat implements Format {
                                              responseFeatureMemberEl.getLocalPart(),
                                              responseFeatureMemberEl.getNamespaceURI() );
             } else if ( GML_32 == gmlVersion ) {
-                xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
+                xmlStream.writeStartElement( "wfs", "member", WFS_NS );
             } else {
                 xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
             }
