@@ -81,6 +81,8 @@
                 </schemaIncludes>
                 <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
                 <episode>true</episode>
+                <catalog>target/deegree.xmlcatalog</catalog>
+                <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
               </configuration>
             </execution>
           </executions>
@@ -144,8 +146,16 @@
         <artifactId>deegree-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>buildinfo</id>
             <goals>
               <goal>generate-buildinfo</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jaxbcatalog</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate-jaxb-catalog</goal>
             </goals>
           </execution>
         </executions>
