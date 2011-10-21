@@ -119,6 +119,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@Deprecated
 public class OldWMSClient111 {
 
     private static final NamespaceBindings nsContext = getNamespaceContext();
