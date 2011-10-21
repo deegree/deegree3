@@ -72,6 +72,11 @@ public class LayerRef {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     public static final Mapper<LayerRef, String> FROM_NAMES = new Mapper<LayerRef, String>() {
         @Override
         public LayerRef apply( String u ) {
