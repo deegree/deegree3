@@ -65,7 +65,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.party.Address;

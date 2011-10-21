@@ -44,7 +44,7 @@ import java.util.List;
 
 import org.deegree.commons.config.Resource;
 import org.deegree.layer.Layer;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
+import org.deegree.layer.metadata.LayerMetadata;
 
 public interface Theme extends Resource {
 

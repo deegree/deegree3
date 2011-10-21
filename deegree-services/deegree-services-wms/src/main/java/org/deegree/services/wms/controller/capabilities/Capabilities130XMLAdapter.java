@@ -73,7 +73,7 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.party.Address;
