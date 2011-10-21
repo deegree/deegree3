@@ -112,14 +112,6 @@ public class GetMap {
 
     private LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
-    private Map<String, Interpolation> interpolation = new HashMap<String, Interpolation>();
-
-    private Map<String, Antialias> antialias = new HashMap<String, Antialias>();
-
-    private Map<String, Quality> quality = new HashMap<String, Quality>();
-
-    private Map<String, Integer> maxFeatures = new HashMap<String, Integer>();
-
     private HashMap<String, Filter> filters = new HashMap<String, Filter>();
 
     private String format;
@@ -137,6 +129,8 @@ public class GetMap {
     private double pixelSize = 0.28;
 
     private double resolution;
+
+    private GetMapExtensions extensions;
 
     private Map<String, String> parameterMap = new HashMap<String, String>();
 
@@ -354,10 +348,13 @@ public class GetMap {
         if ( defaults == null ) {
             defaults = new GetMapExtensions();
         }
-        handleEnumVSP( Quality.class, quality, Quality.NORMAL, map.get( "QUALITY" ), defaults.getQualities() );
-        handleEnumVSP( Interpolation.class, interpolation, Interpolation.NEARESTNEIGHBOR, map.get( "INTERPOLATION" ),
-                       defaults.getInterpolations() );
-        handleEnumVSP( Antialias.class, antialias, Antialias.BOTH, map.get( "ANTIALIAS" ), defaults.getAntialiases() );
+        extensions = new GetMapExtensions();
+        handleEnumVSP( Quality.class, extensions.getQualities(), Quality.NORMAL, map.get( "QUALITY" ),
+                       defaults.getQualities() );
+        handleEnumVSP( Interpolation.class, extensions.getInterpolations(), Interpolation.NEARESTNEIGHBOR,
+                       map.get( "INTERPOLATION" ), defaults.getInterpolations() );
+        handleEnumVSP( Antialias.class, extensions.getAntialiases(), Antialias.BOTH, map.get( "ANTIALIAS" ),
+                       defaults.getAntialiases() );
         String maxFeatures = map.get( "MAX_FEATURES" );
         if ( maxFeatures == null ) {
             for ( String l : this.layers ) {
@@ -366,7 +363,7 @@ public class GetMap {
                     max = 10000;
                     LOG.debug( "Using global max features setting of {}.", max );
                 }
-                this.maxFeatures.put( l, max );
+                extensions.getMaxFeatures().put( l, max );
             }
         } else {
             String[] mfs = maxFeatures.split( "," );
@@ -377,10 +374,10 @@ public class GetMap {
                     Integer def = mfdefaults.get( cur );
                     try {
                         Integer val = Integer.valueOf( mfs[i] );
-                        this.maxFeatures.put( cur, def == null ? val : min( def, val ) );
+                        extensions.getMaxFeatures().put( cur, def == null ? val : min( def, val ) );
                     } catch ( NumberFormatException e ) {
                         LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                        this.maxFeatures.put( cur, def == null ? 10000 : def );
+                        extensions.getMaxFeatures().put( cur, def == null ? 10000 : def );
                     }
                 }
             } else {
@@ -390,13 +387,13 @@ public class GetMap {
                     if ( mfs.length <= i ) {
                         try {
                             Integer val = Integer.valueOf( mfs[i] );
-                            this.maxFeatures.put( cur, def == null ? val : min( def, val ) );
+                            extensions.getMaxFeatures().put( cur, def == null ? val : min( def, val ) );
                         } catch ( NumberFormatException e ) {
                             LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                            this.maxFeatures.put( cur, def == null ? 10000 : def );
+                            extensions.getMaxFeatures().put( cur, def == null ? 10000 : def );
                         }
                     } else {
-                        this.maxFeatures.put( cur, def == null ? 10000 : def );
+                        extensions.getMaxFeatures().put( cur, def == null ? 10000 : def );
                     }
                 }
             }
@@ -723,27 +720,6 @@ public class GetMap {
     }
 
     /**
-     * @return the quality settings for the layers
-     */
-    public Map<String, Quality> getQuality() {
-        return quality;
-    }
-
-    /**
-     * @return the interpolation settings for the layers
-     */
-    public Map<String, Interpolation> getInterpolation() {
-        return interpolation;
-    }
-
-    /**
-     * @return the antialias settings for the layers
-     */
-    public Map<String, Antialias> getAntialias() {
-        return antialias;
-    }
-
-    /**
      * @return the value of the pixel size parameter (default is 0.28 mm).
      */
     public double getPixelSize() {
@@ -758,10 +734,10 @@ public class GetMap {
     }
 
     /**
-     * @return the max features settings for the layers
+     * @return the get map extensions for the layers
      */
-    public Map<String, Integer> getMaxFeatures() {
-        return maxFeatures;
+    public GetMapExtensions getExtensions() {
+        return extensions;
     }
 
     /**
