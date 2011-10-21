@@ -49,7 +49,7 @@ import org.deegree.commons.struct.Tree;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreManager;
-import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.oldwms.metadata.LayerMetadata;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wms.RemoteWMS;

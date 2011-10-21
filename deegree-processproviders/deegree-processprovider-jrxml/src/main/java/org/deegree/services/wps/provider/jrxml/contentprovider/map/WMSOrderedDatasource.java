@@ -56,7 +56,7 @@ import javax.media.jai.RenderedOp;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.protocol.oldwms.ops.GetMap;
 import org.deegree.remoteows.wms.WMSClient111;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;

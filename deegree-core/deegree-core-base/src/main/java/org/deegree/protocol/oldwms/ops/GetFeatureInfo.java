@@ -34,16 +34,16 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wms.ops;
+package org.deegree.protocol.oldwms.ops;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.protocol.oldwms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.oldwms.WMSConstants.VERSION_130;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_POINT;
 import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
@@ -57,6 +57,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.oldwms.ops.GetFeatureInfo;
+import org.deegree.protocol.oldwms.ops.GetMap;
 import org.slf4j.Logger;
 
 /**

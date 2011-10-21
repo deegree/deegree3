@@ -52,8 +52,8 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.protocol.wms.client.WMSClient111;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

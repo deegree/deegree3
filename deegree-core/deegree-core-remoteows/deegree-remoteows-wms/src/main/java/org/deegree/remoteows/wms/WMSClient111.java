@@ -58,9 +58,9 @@ import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.i18n.Messages.get;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInfo;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
+import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.GetCapabilities;
+import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.GetFeatureInfo;
+import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -116,12 +116,12 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.protocol.oldwms.Utils;
+import org.deegree.protocol.oldwms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.oldwms.metadata.LayerMetadata;
+import org.deegree.protocol.oldwms.ops.GetFeatureInfo;
+import org.deegree.protocol.oldwms.ops.GetMap;
 import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.protocol.wms.Utils;
-import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.protocol.wms.metadata.LayerMetadata;
-import org.deegree.protocol.wms.ops.GetFeatureInfo;
-import org.deegree.protocol.wms.ops.GetMap;
 import org.slf4j.Logger;
 
 /**

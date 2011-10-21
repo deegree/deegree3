@@ -4,9 +4,13 @@
 // Fri Oct 09 13:13:23 CEST 2009
 //----------------------------------------------------
 
-package org.deegree.protocol.wms.dims;
+package org.deegree.protocol.oldwms.dims;
 
 import java.util.LinkedList;
+
+import org.deegree.protocol.oldwms.dims.CUP$parser$actions;
+import org.deegree.protocol.oldwms.dims.DimensionInterval;
+import org.deegree.protocol.oldwms.dims.parser;
 
 /** CUP v0.10k generated parser.
   * @version Fri Oct 09 13:13:23 CEST 2009

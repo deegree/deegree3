@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller;
 
-import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.deegree.protocol.oldwms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.oldwms.WMSConstants.VERSION_130;
 
 import java.net.URL;
 
@@ -46,7 +46,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreManager;
-import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.oldwms.WMSConstants.WMSRequestType;
 import org.deegree.remoteows.RemoteOWSStoreManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;

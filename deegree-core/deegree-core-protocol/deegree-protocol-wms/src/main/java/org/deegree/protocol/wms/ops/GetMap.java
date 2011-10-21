@@ -42,10 +42,12 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.protocol.wms.dims.Dimension.parseTyped;
+import static org.deegree.protocol.wms.ops.LayerRef.FROM_NAMES;
 import static org.deegree.protocol.wms.ops.SLDParser.parse;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -188,6 +190,17 @@ public class GetMap {
             LOG.trace( "Stack trace:", e );
             LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
         }
+    }
+
+    public GetMap( List<String> layers, int width, int height, Envelope envelope, ICRS crs, String format,
+                   boolean transparent ) {
+        this.layers = map( layers, FROM_NAMES );
+        this.width = width;
+        this.height = height;
+        this.bbox = envelope;
+        this.bbox.setCoordinateSystem( crs );
+        this.format = format;
+        this.transparent = transparent;
     }
 
     private void parse111( Map<String, String> map, GetMapExtensions exts )

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.dialog.menuitem;
 
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
+import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.GetMap;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
 import java.awt.Component;

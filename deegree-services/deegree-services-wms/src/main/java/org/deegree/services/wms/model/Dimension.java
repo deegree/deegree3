@@ -51,7 +51,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.time.Duration;
-import org.deegree.protocol.wms.dims.DimensionInterval;
+import org.deegree.protocol.oldwms.dims.DimensionInterval;
 
 /**
  * <code>Dimension</code>

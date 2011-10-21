@@ -4,7 +4,7 @@
 // Fri Oct 09 13:13:23 CEST 2009
 //----------------------------------------------------
 
-package org.deegree.protocol.wms.dims;
+package org.deegree.protocol.oldwms.dims;
 
 /** CUP generated class containing symbol constants. */
 public class sym {

@@ -47,7 +47,7 @@ import java.util.List;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.layer.Layer;
-import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.oldwms.metadata.LayerMetadata;
 import org.deegree.theme.Theme;
 
 /**

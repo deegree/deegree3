@@ -86,7 +86,7 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.protocol.wms.Utils;
+import org.deegree.protocol.oldwms.Utils;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;

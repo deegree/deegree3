@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wms;
+package org.deegree.protocol.oldwms;
 
 import org.deegree.commons.tom.ows.Version;
 

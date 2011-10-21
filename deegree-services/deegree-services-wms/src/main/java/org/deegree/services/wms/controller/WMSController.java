@@ -45,9 +45,9 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.protocol.oldwms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.oldwms.WMSConstants.VERSION_130;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
@@ -115,13 +115,13 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.protocol.oldwms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
+import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
-import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
-import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
@@ -569,7 +569,7 @@ public class WMSController extends AbstractOWS {
         ICRS crs;
         Map<String, String> nsBindings = new HashMap<String, String>();
         if ( service.isNewStyle() ) {
-            org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map,
+            org.deegree.protocol.oldwms.ops.GetFeatureInfo fi = new org.deegree.protocol.oldwms.ops.GetFeatureInfo( map,
                                                                                                               version );
             crs = fi.getCoordinateSystem();
             geometries = fi.returnGeometries();
@@ -733,7 +733,7 @@ public class WMSController extends AbstractOWS {
                             org.deegree.protocol.ows.exception.OWSException {
 
         if ( service.isNewStyle() ) {
-            org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version );
+            org.deegree.protocol.oldwms.ops.GetMap gm2 = new org.deegree.protocol.oldwms.ops.GetMap( map, version );
 
             RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(),
                                                     gm2.getTransparent(), gm2.getBgColor(), gm2.getBoundingBox(),

@@ -50,9 +50,9 @@ import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.i18n.Messages.get;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInfo;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
+import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.GetCapabilities;
+import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.GetFeatureInfo;
+import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -106,7 +106,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.oldwms.WMSConstants.WMSRequestType;
 import org.slf4j.Logger;
 
 /**

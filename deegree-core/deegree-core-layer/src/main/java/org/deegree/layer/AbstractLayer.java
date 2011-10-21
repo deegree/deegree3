@@ -46,9 +46,9 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
-import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
-import org.deegree.protocol.wms.metadata.LayerMetadata;
+import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
+import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
+import org.deegree.protocol.oldwms.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
 

@@ -58,8 +58,8 @@ import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.utils.RasterFactory;
@@ -70,7 +70,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.remoteows.wms.OldWMSClient111;
+import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.protocol.wms.client.WMSClient111;
 import org.slf4j.Logger;
 
 /**
@@ -126,7 +127,7 @@ public class WMSReader implements RasterReader {
         WMS_111;
     }
 
-    private OldWMSClient111 client;
+    private WMSClient111 client;
 
     private RasterGeoReference geoRef;
 
@@ -228,7 +229,7 @@ public class WMSReader implements RasterReader {
         capabilities.setSystemId( sysId );
 
         try {
-            this.client = new OldWMSClient111( capabilities );
+            this.client = new WMSClient111( capabilities );
         } catch ( Exception e ) {
             throw new IOException( "The given stream with system id( " + sysId
                                    + ") does not access a WMS Capabilities document." );
@@ -336,10 +337,9 @@ public class WMSReader implements RasterReader {
         SimpleRaster result = cache.createFromCache( this, this.dataLocationId );
         if ( result == null ) {
             Envelope env = this.geoRef.getEnvelope( new RasterRect( 1, 1, 2, 2 ), null );
-            Pair<BufferedImage, String> imageResponse = this.client.getMap( layers, maxWidth < 0 ? 1 : maxWidth,
-                                                                            maxHeight < 0 ? 1 : maxHeight, env, crs,
-                                                                            format, transparent, true, timeout, false,
-                                                                            null );
+            GetMap gm = new GetMap( layers, maxWidth < 0 ? 1 : maxWidth, maxHeight < 0 ? 1 : maxHeight, env, crs,
+                                    format, transparent );
+            Pair<BufferedImage, String> imageResponse = this.client.getMap( gm, null, timeout, true );
             if ( imageResponse.first != null ) {
                 BufferedImage img = imageResponse.first;
                 try {
@@ -478,8 +478,8 @@ public class WMSReader implements RasterReader {
     public BufferResult read( RasterRect rect, ByteBuffer result )
                             throws IOException {
         Envelope env = this.geoRef.getEnvelope( rect, null );
-        Pair<BufferedImage, String> imageResponse = this.client.getMap( layers, rect.width, rect.height, env, this.crs,
-                                                                        format, transparent, true, timeout, false, null );
+        GetMap gm = new GetMap( layers, rect.width, rect.height, env, crs, format, transparent );
+        Pair<BufferedImage, String> imageResponse = this.client.getMap( gm, null, timeout, true );
         BufferResult res = null;
         if ( imageResponse.first != null ) {
             BufferedImage img = imageResponse.first;
@@ -497,7 +497,7 @@ public class WMSReader implements RasterReader {
     /**
      * @return the wms client
      */
-    public OldWMSClient111 getClient() {
+    public WMSClient111 getClient() {
         return client;
     }
 

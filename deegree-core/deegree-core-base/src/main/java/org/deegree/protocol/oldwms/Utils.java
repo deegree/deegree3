@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wms;
+package org.deegree.protocol.oldwms;
 
 import static java.lang.Math.floor;
 import static java.lang.Math.max;
@@ -51,6 +51,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.protocol.oldwms.Utils;
 import org.slf4j.Logger;
 
 /**

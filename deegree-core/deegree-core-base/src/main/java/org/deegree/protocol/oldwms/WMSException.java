@@ -34,44 +34,69 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wms.dims;
+package org.deegree.protocol.oldwms;
+
+import org.deegree.protocol.oldwms.WMSException;
 
 /**
- * <code>DimensionInterval</code>
+ * <code>WMSException</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * @param <T>
- * @param <U>
- * @param <V>
  */
-public class DimensionInterval<T, U, V> {
-
-    /***/
-    public T min;
-
-    /***/
-    public U max;
-
-    /***/
-    public V res;
+public class WMSException extends Exception {
+    private static final long serialVersionUID = -2768366974222236855L;
 
     /**
-     * @param min
-     * @param max
-     * @param res
+     * <code>MissingDimensionValue</code>
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
      */
-    public DimensionInterval( T min, U max, V res ) {
-        this.min = min;
-        this.max = max;
-        this.res = res;
+    public static class MissingDimensionValue extends WMSException {
+        private static final long serialVersionUID = -837719651798847810L;
+
+        /***/
+        public String name;
+
+        /**
+         * @param name
+         *            of the dimension
+         */
+        public MissingDimensionValue( String name ) {
+            this.name = name;
+        }
     }
 
-    @Override
-    public String toString() {
-        return min + "/" + max + "/" + res;
+    /**
+     * <code>InvalidDimensionValue</code>
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static class InvalidDimensionValue extends WMSException {
+        private static final long serialVersionUID = 7140638649730642200L;
+
+        /***/
+        public String name;
+
+        /***/
+        public String value;
+
+        /**
+         * @param name
+         * @param value
+         */
+        public InvalidDimensionValue( String name, String value ) {
+            this.name = name;
+            this.value = value;
+        }
     }
 
 }
