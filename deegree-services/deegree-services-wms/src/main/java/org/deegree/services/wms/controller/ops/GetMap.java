@@ -48,10 +48,10 @@ import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.deegree.protocol.wms.ops.GetMapExtensions.Antialias.BOTH;
+import static org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.protocol.wms.ops.GetMapExtensions.Quality.NORMAL;
 import static org.deegree.services.i18n.Messages.get;
-import static org.deegree.services.wms.controller.ops.GetMap.Antialias.BOTH;
-import static org.deegree.services.wms.controller.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.services.wms.controller.ops.GetMap.Quality.NORMAL;
 import static org.deegree.services.wms.controller.sld.SLDParser.parse;
 import static org.deegree.style.se.parser.SymbologyParser.ELSEFILTER;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -94,6 +94,10 @@ import org.deegree.layer.dims.DimensionLexer;
 import org.deegree.layer.dims.parser;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.Utils;
+import org.deegree.protocol.wms.ops.GetMapExtensions;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.StyleRegistry;
 import org.deegree.services.wms.controller.WMSController111;
@@ -129,13 +133,7 @@ public class GetMap {
 
     private LinkedList<Style> styles = new LinkedList<Style>();
 
-    private Map<Layer, Interpolation> interpolation = new HashMap<Layer, Interpolation>();
-
-    private Map<Layer, Antialias> antialias = new HashMap<Layer, Antialias>();
-
-    private Map<Layer, Quality> quality = new HashMap<Layer, Quality>();
-
-    private Map<Layer, Integer> maxFeatures = new HashMap<Layer, Integer>();
+    private GetMapExtensions extensions = new GetMapExtensions();
 
     private HashMap<String, Filter> filters = new HashMap<String, Filter>();
 
@@ -383,33 +381,35 @@ public class GetMap {
     }
 
     private void handleVSPs( MapService service, Map<String, String> map ) {
-        handleEnumVSP( Quality.class, quality, NORMAL, map.get( "QUALITY" ), service.getDefaultQualities() );
-        handleEnumVSP( Interpolation.class, interpolation, NEARESTNEIGHBOR, map.get( "INTERPOLATION" ),
-                       service.getDefaultInterpolations() );
-        handleEnumVSP( Antialias.class, antialias, BOTH, map.get( "ANTIALIAS" ), service.getDefaultAntialiases() );
+        handleEnumVSP( Quality.class, extensions.getQualities(), NORMAL, map.get( "QUALITY" ),
+                       service.getExtensions().getQualities() );
+        handleEnumVSP( Interpolation.class, extensions.getInterpolations(), NEARESTNEIGHBOR,
+                       map.get( "INTERPOLATION" ), service.getExtensions().getInterpolations() );
+        handleEnumVSP( Antialias.class, extensions.getAntialiases(), BOTH, map.get( "ANTIALIAS" ),
+                       service.getExtensions().getAntialiases() );
         String maxFeatures = map.get( "MAX_FEATURES" );
         if ( maxFeatures == null ) {
             for ( Layer l : this.layers ) {
-                Integer max = service.getDefaultMaxFeatures().get( l );
+                Integer max = service.getExtensions().getMaxFeatures( l.getName() );
                 if ( max == null ) {
                     max = service.getGlobalMaxFeatures();
                     LOG.debug( "Using global max features setting of {}.", max );
                 }
-                this.maxFeatures.put( l, max );
+                extensions.getMaxFeatures().put( l.getName(), max );
             }
         } else {
             String[] mfs = maxFeatures.split( "," );
-            Map<Layer, Integer> defaults = service.getDefaultMaxFeatures();
+            Map<String, Integer> defaults = service.getExtensions().getMaxFeatures();
             if ( mfs.length == this.layers.size() ) {
                 for ( int i = 0; i < mfs.length; ++i ) {
                     Layer cur = this.layers.get( i );
                     Integer def = defaults.get( cur );
                     try {
                         Integer val = Integer.valueOf( mfs[i] );
-                        this.maxFeatures.put( cur, def == null ? val : min( def, val ) );
+                        extensions.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
                     } catch ( NumberFormatException e ) {
                         LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                        this.maxFeatures.put( cur, def == null ? 10000 : def );
+                        extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                     }
                 }
             } else {
@@ -419,25 +419,25 @@ public class GetMap {
                     if ( mfs.length <= i ) {
                         try {
                             Integer val = Integer.valueOf( mfs[i] );
-                            this.maxFeatures.put( cur, def == null ? val : min( def, val ) );
+                            extensions.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
                         } catch ( NumberFormatException e ) {
                             LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                            this.maxFeatures.put( cur, def == null ? 10000 : def );
+                            extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                         }
                     } else {
-                        this.maxFeatures.put( cur, def == null ? 10000 : def );
+                        extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                     }
                 }
             }
         }
     }
 
-    private <T extends Enum<T>> void handleEnumVSP( Class<T> enumType, Map<Layer, T> map, T defaultVal, String vals,
-                                                    Map<Layer, T> defaults ) {
+    private <T extends Enum<T>> void handleEnumVSP( Class<T> enumType, Map<String, T> map, T defaultVal, String vals,
+                                                    Map<String, T> defaults ) {
         if ( vals == null ) {
             for ( Layer l : layers ) {
                 T val = defaults.get( l );
-                map.put( l, val == null ? defaultVal : val );
+                map.put( l.getName(), val == null ? defaultVal : val );
             }
         } else {
             String[] ss = vals.split( "," );
@@ -445,9 +445,9 @@ public class GetMap {
                 for ( int i = 0; i < ss.length; ++i ) {
                     T val = defaults.get( layers.get( i ) );
                     try {
-                        map.put( layers.get( i ), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
+                        map.put( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
                     } catch ( IllegalArgumentException e ) {
-                        map.put( layers.get( i ), val == null ? defaultVal : val );
+                        map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
                         LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
                                   new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
                     }
@@ -456,12 +456,12 @@ public class GetMap {
                 for ( int i = 0; i < layers.size(); ++i ) {
                     T val = defaults.get( layers.get( i ) );
                     if ( ss.length <= i ) {
-                        map.put( layers.get( i ), val == null ? defaultVal : val );
+                        map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
                     } else {
                         try {
-                            map.put( layers.get( i ), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
+                            map.put( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
                         } catch ( IllegalArgumentException e ) {
-                            map.put( layers.get( i ), val == null ? defaultVal : val );
+                            map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
                             LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
                                       new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
                         }
@@ -808,27 +808,6 @@ public class GetMap {
     }
 
     /**
-     * @return the quality settings for the layers
-     */
-    public Map<Layer, Quality> getQuality() {
-        return quality;
-    }
-
-    /**
-     * @return the interpolation settings for the layers
-     */
-    public Map<Layer, Interpolation> getInterpolation() {
-        return interpolation;
-    }
-
-    /**
-     * @return the antialias settings for the layers
-     */
-    public Map<Layer, Antialias> getAntialias() {
-        return antialias;
-    }
-
-    /**
      * @return the value of the pixel size parameter (default is 0.28 mm).
      */
     public double getPixelSize() {
@@ -843,10 +822,10 @@ public class GetMap {
     }
 
     /**
-     * @return the max features settings for the layers
+     * @return the extension parameter values for this request
      */
-    public Map<Layer, Integer> getMaxFeatures() {
-        return maxFeatures;
+    public GetMapExtensions getExtensions() {
+        return extensions;
     }
 
     /**
@@ -855,53 +834,6 @@ public class GetMap {
      */
     public Map<String, String> getParameterMap() {
         return parameterMap;
-    }
-
-    /**
-     * <code>Quality</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public static enum Quality {
-        /***/
-        LOW, /***/
-        NORMAL, /***/
-        HIGH
-    }
-
-    /**
-     * <code>Interpolation</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public static enum Interpolation {
-        /***/
-        NEARESTNEIGHBOR, /***/
-        NEARESTNEIGHBOUR, /***/
-        BILINEAR, /***/
-        BICUBIC
-    }
-
-    /**
-     * <code>Antialias</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public static enum Antialias {
-        /***/
-        IMAGE, /***/
-        TEXT, /***/
-        BOTH, /***/
-        NONE
     }
 
 }

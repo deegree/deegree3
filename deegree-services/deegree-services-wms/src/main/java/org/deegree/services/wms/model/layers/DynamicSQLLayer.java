@@ -171,7 +171,7 @@ public class DynamicSQLLayer extends Layer {
             defStyles.add( styles.getStyle( code ) );
         }
 
-        Integer maxFeats = gm.getMaxFeatures().get( this );
+        Integer maxFeats = gm.getExtensions().getMaxFeatures().get( getName() );
         int maxFeatures = maxFeats == null ? -1 : maxFeats;
         FeatureInputStream rs = null;
         final double resolution = gm.getResolution();

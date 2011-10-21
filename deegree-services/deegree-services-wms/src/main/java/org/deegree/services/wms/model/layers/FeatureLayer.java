@@ -271,7 +271,7 @@ public class FeatureLayer extends Layer {
         }
 
         QName featureType = style == null ? null : style.getFeatureType();
-        Integer maxFeats = gm.getMaxFeatures().get( this );
+        Integer maxFeats = gm.getExtensions().getMaxFeatures().get( getName() );
         final int maxFeatures = maxFeats == null ? -1 : maxFeats;
         if ( featureType == null && datastore != null ) {
             queries.addAll( map( datastore.getSchema().getFeatureTypes( null, false, false ),
@@ -314,7 +314,7 @@ public class FeatureLayer extends Layer {
             rs = datastore.query( queries.toArray( new Query[queries.size()] ) );
             // TODO Should this always be done on this level? What about min and maxFill values?
             rs = new ThreadedFeatureInputStream( rs, 100, 20 );
-            Integer maxFeats = gm.getMaxFeatures().get( this );
+            Integer maxFeats = gm.getExtensions().getMaxFeatures().get( getName() );
             int max = maxFeats == null ? -1 : maxFeats;
             int cnt = 0;
             double resolution = gm.getResolution();

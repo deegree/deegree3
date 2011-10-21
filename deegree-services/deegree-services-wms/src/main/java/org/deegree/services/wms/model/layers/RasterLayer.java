@@ -99,7 +99,7 @@ import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
-import org.deegree.services.wms.controller.ops.GetMap.Interpolation;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.RasterStyling;
 import org.deegree.style.styling.Styling;
@@ -257,7 +257,7 @@ public class RasterLayer extends Layer {
             Interpolation fromRequest = null;
             Layer parent = this;
             while ( fromRequest == null ) {
-                fromRequest = gm.getInterpolation().get( parent );
+                fromRequest = gm.getExtensions().getInterpolations().get( parent.getName() );
                 parent = getParent();
             }
             switch ( fromRequest ) {

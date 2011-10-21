@@ -58,9 +58,9 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.services.wms.controller.ops.GetMap.Antialias.BOTH;
-import static org.deegree.services.wms.controller.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.services.wms.controller.ops.GetMap.Quality.NORMAL;
+import static org.deegree.protocol.wms.ops.GetMapExtensions.Antialias.BOTH;
+import static org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.protocol.wms.ops.GetMapExtensions.Quality.NORMAL;
 import static org.deegree.services.wms.model.layers.Layer.render;
 import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -104,6 +104,11 @@ import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.protocol.wms.ops.GetMapExtensions;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
+import org.deegree.protocol.wms.ops.LayerRef;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.context.RenderContext;
@@ -119,9 +124,6 @@ import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetFeatureInfoSchema;
 import org.deegree.services.wms.controller.ops.GetLegendGraphic;
 import org.deegree.services.wms.controller.ops.GetMap;
-import org.deegree.services.wms.controller.ops.GetMap.Antialias;
-import org.deegree.services.wms.controller.ops.GetMap.Interpolation;
-import org.deegree.services.wms.controller.ops.GetMap.Quality;
 import org.deegree.services.wms.dynamic.LayerUpdater;
 import org.deegree.services.wms.dynamic.PostGISUpdater;
 import org.deegree.services.wms.dynamic.ShapeUpdater;
@@ -166,13 +168,7 @@ public class MapService {
 
     private HashMap<Style, HashMap<String, BufferedImage>> legends = new HashMap<Style, HashMap<String, BufferedImage>>();
 
-    private HashMap<Layer, Antialias> defaultAntialiases = new HashMap<Layer, Antialias>();
-
-    private HashMap<Layer, Quality> defaultQualities = new HashMap<Layer, Quality>();
-
-    private HashMap<Layer, Interpolation> defaultInterpolations = new HashMap<Layer, Interpolation>();
-
-    private HashMap<Layer, Integer> defaultMaxFeatures = new HashMap<Layer, Integer>();
+    private GetMapExtensions extensions = new GetMapExtensions();
 
     private HashMap<Layer, Integer> defaultFeatureInfoRadius = new HashMap<Layer, Integer>();
 
@@ -457,15 +453,15 @@ public class MapService {
                 quality = handleDefaultValue( sf.getRenderingQuality(), Quality.class, quality );
                 interpol = handleDefaultValue( sf.getInterpolation(), Interpolation.class, interpol );
                 if ( sf.getMaxFeatures() != null ) {
-                    defaultMaxFeatures.put( res, sf.getMaxFeatures() );
+                    extensions.getMaxFeatures().put( res.getName(), sf.getMaxFeatures() );
                 }
                 if ( sf.getFeatureInfoRadius() != null ) {
                     defaultFeatureInfoRadius.put( res, sf.getFeatureInfoRadius() );
                 }
             }
-            defaultAntialiases.put( res, alias );
-            defaultQualities.put( res, quality );
-            defaultInterpolations.put( res, interpol );
+            extensions.getAntialiases().put( res.getName(), alias );
+            extensions.getQualities().put( res.getName(), quality );
+            extensions.getInterpolations().put( res.getName(), interpol );
 
             addChildren( res, aLayer.getAbstractLayer(), adapter, alias, interpol, quality );
         } else if ( layer instanceof StatisticsLayer ) {
@@ -556,9 +552,9 @@ public class MapService {
         return ImageUtils.prepareImage( format, width, height, transparent, bgcolor );
     }
 
-    protected static void applyHints( final Layer l, final Map<Layer, Quality> qualities,
-                                      final Map<Layer, Interpolation> interpolations,
-                                      final Map<Layer, Antialias> antialiases, final Graphics2D g ) {
+    protected static void applyHints( final String l, final Map<String, Quality> qualities,
+                                      final Map<String, Interpolation> interpolations,
+                                      final Map<String, Antialias> antialiases, final Graphics2D g ) {
         switch ( qualities.get( l ) ) {
         case HIGH:
             g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
@@ -676,9 +672,9 @@ public class MapService {
                             throws MissingDimensionValue, InvalidDimensionValue {
         Iterator<Layer> layers = gm.getLayers().iterator();
         Iterator<Style> styles = gm.getStyles().iterator();
-        Map<Layer, Quality> qualities = gm.getQuality();
-        Map<Layer, Interpolation> interpolations = gm.getInterpolation();
-        Map<Layer, Antialias> antialiases = gm.getAntialias();
+        Map<String, Quality> qualities = gm.getExtensions().getQualities();
+        Map<String, Interpolation> interpolations = gm.getExtensions().getInterpolations();
+        Map<String, Antialias> antialiases = gm.getExtensions().getAntialiases();
 
         if ( reduce( true, map( gm.getLayers(), CollectionUtils.<Layer> getInstanceofMapper( FeatureLayer.class ) ),
                      AND ) ) {
@@ -732,7 +728,7 @@ public class MapService {
                             QName name = f.getType().getName();
                             FeatureLayer l = ftToLayer.get( name );
 
-                            applyHints( l, qualities, interpolations, antialiases, g );
+                            applyHints( l.getName(), qualities, interpolations, antialiases, g );
                             render( f, evaluator, ftToStyle.get( name ), renderer, textRenderer, gm.getScale(),
                                     gm.getResolution() );
                         }
@@ -764,7 +760,7 @@ public class MapService {
             Layer l = layers.next();
             Style s = styles.next();
 
-            applyHints( l, qualities, interpolations, antialiases, g );
+            applyHints( l.getName(), qualities, interpolations, antialiases, g );
 
             warnings.addAll( paintLayer( l, s, g, gm ) );
         }
@@ -785,9 +781,9 @@ public class MapService {
         return col;
     }
 
-    public void getMapImage( RenderContext ctx, RenderingInfo info, List<String> themes ) {
-        for ( String n : themes ) {
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
+    public void getMapImage( RenderContext ctx, RenderingInfo info, List<LayerRef> themes ) {
+        for ( LayerRef n : themes ) {
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
                 l.paintMap( ctx, info, null );
             }
         }
@@ -975,31 +971,10 @@ public class MapService {
     }
 
     /**
-     * @return the map w/ default settings
+     * @return the extensions object with default extension parameter settings
      */
-    public HashMap<Layer, Antialias> getDefaultAntialiases() {
-        return defaultAntialiases;
-    }
-
-    /**
-     * @return the map w/ default settings
-     */
-    public HashMap<Layer, Interpolation> getDefaultInterpolations() {
-        return defaultInterpolations;
-    }
-
-    /**
-     * @return the map w/ default settings
-     */
-    public HashMap<Layer, Quality> getDefaultQualities() {
-        return defaultQualities;
-    }
-
-    /**
-     * @return the map w/ default settings
-     */
-    public HashMap<Layer, Integer> getDefaultMaxFeatures() {
-        return defaultMaxFeatures;
+    public GetMapExtensions getExtensions() {
+        return extensions;
     }
 
     /**
