@@ -1,3 +1,2 @@
 org.deegree.filter.function.FunctionManager
-org.deegree.coverage.persistence.CoverageBuilderManager
 org.deegree.remoteows.RemoteOWSStoreManager
