@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-jsf-console</artifactId>
   <packaging>jar</packaging>
@@ -94,7 +95,12 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-featurestore-remotewfs</artifactId>
+      <artifactId>deegree-featurestore-shape</artifactId>
+      <version>3.1-rc5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-simplesql</artifactId>
       <version>3.1-rc5-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -109,14 +115,14 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-base</artifactId>
+      <artifactId>deegree-themes-remotewms</artifactId>
       <version>3.1-rc5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-observation</artifactId>
+      <artifactId>deegree-layers-remotewms</artifactId>
       <version>3.1-rc5-SNAPSHOT</version>
-    </dependency>
+    </dependency>    
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-core</artifactId>
