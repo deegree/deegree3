@@ -39,7 +39,7 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.protocol.wms.dims.Dimension.parseTyped;
-import static org.deegree.protocol.wms.ops.GetMap2.parseDimensionValues;
+import static org.deegree.protocol.wms.ops.GetMap.parseDimensionValues;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.ParseException;
@@ -81,7 +81,7 @@ public class SLDParser {
      * @throws OWSException
      * @throws ParseException
      */
-    public static Pair<LinkedList<String>, LinkedList<Pair<String, Style>>> parse( XMLStreamReader in, GetMap2 gm )
+    public static Pair<LinkedList<String>, LinkedList<Pair<String, Style>>> parse( XMLStreamReader in, GetMap gm )
                             throws XMLStreamException, OWSException, ParseException {
         while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {

@@ -96,9 +96,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetMap2 {
+public class GetMap {
 
-    private static final Logger LOG = getLogger( GetMap2.class );
+    private static final Logger LOG = getLogger( GetMap.class );
 
     private static GeometryFactory fac = new GeometryFactory();
 
@@ -144,7 +144,7 @@ public class GetMap2 {
      * @param service
      * @throws OWSException
      */
-    public GetMap2( Map<String, String> map, Version version ) throws OWSException {
+    public GetMap( Map<String, String> map, Version version ) throws OWSException {
         if ( version.equals( VERSION_111 ) ) {
             parse111( map );
         }
@@ -171,7 +171,7 @@ public class GetMap2 {
      * @param height
      * @param boundingBox
      */
-    public GetMap2( Collection<String> layers, Collection<String> styles, int width, int height, Envelope boundingBox ) {
+    public GetMap( Collection<String> layers, Collection<String> styles, int width, int height, Envelope boundingBox ) {
         this.layers.addAll( layers );
         this.styles.addAll( styles );
         this.width = width;
