@@ -39,8 +39,6 @@ package org.deegree.layer;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
-import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
@@ -67,8 +65,6 @@ public interface Layer {
      * @param info
      * @param style
      * @return a list of warning headers (currently only used for dimension warnings)
-     * @throws MissingDimensionValue
-     * @throws InvalidDimensionValue
      */
     void paintMap( RenderContext context, RenderingInfo info, Style style );
 
@@ -77,8 +73,6 @@ public interface Layer {
      * @param style
      * @return a collection of matching features and a list of warning headers (currently only used for dimension
      *         warnings). Return an empty collection if feature info is not supported
-     * @throws MissingDimensionValue
-     * @throws InvalidDimensionValue
      */
     FeatureCollection getFeatures( RenderingInfo info, Style style );
 

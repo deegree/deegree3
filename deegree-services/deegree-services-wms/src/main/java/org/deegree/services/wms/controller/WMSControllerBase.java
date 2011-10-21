@@ -57,7 +57,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.xml.stream.XMLOutputFactory;
 
-import org.deegree.protocol.oldwms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
@@ -189,7 +189,8 @@ public abstract class WMSControllerBase implements Controller {
                     throw new OWSException( get( "WMS.CURRENT_UPDATE_SEQUENCE" ), OWSException.CURRENT_UPDATE_SEQUENCE );
                 }
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ), OWSException.INVALID_UPDATE_SEQUENCE );
+                throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ),
+                                        OWSException.INVALID_UPDATE_SEQUENCE );
             }
         }
 
