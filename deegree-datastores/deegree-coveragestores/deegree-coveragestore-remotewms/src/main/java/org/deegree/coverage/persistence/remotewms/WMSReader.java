@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wms.raster;
+package org.deegree.coverage.persistence.remotewms;
 
 import static org.deegree.commons.utils.StringUtils.isSet;
 import static org.slf4j.LoggerFactory.getLogger;

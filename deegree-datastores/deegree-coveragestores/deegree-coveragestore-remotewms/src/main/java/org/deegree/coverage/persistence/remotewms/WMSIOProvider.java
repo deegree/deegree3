@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wms.raster;
+package org.deegree.coverage.persistence.remotewms;
 
 import java.util.HashSet;
 import java.util.Set;
