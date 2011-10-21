@@ -41,6 +41,7 @@ import static org.deegree.services.controller.OGCFrontController.getServiceWorks
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +70,9 @@ import org.slf4j.Logger;
  */
 @ManagedBean
 @SessionScoped
-public class ConfigManager {
+public class ConfigManager implements Serializable {
+
+    private static final long serialVersionUID = -8669393203479413121L;
 
     private static final Logger LOG = getLogger( ConfigManager.class );
 
