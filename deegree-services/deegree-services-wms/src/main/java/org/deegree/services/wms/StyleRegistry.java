@@ -36,7 +36,7 @@
 package org.deegree.services.wms;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.services.wms.controller.sld.SLDParser.getStyles;
+import static org.deegree.protocol.wms.ops.SLDParser.getStyles;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -63,6 +63,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.Filter;
+import org.deegree.protocol.wms.ops.StyleRef;
 import org.deegree.services.jaxb.wms.DirectStyleType;
 import org.deegree.services.jaxb.wms.SLDStyleType;
 import org.deegree.services.jaxb.wms.SLDStyleType.LegendGraphicFile;
@@ -467,16 +468,20 @@ public class StyleRegistry extends TimerTask {
                 XMLInputFactory fac = XMLInputFactory.newInstance();
                 is = new FileInputStream( file );
                 XMLStreamReader in = fac.createXMLStreamReader( file.toURI().toURL().toString(), is );
-                Pair<LinkedList<Filter>, LinkedList<Style>> parsedStyles = getStyles( in, namedLayer, map );
-                for ( Style s : parsedStyles.second ) {
-                    put( layerName, s, false );
+                Pair<LinkedList<Filter>, LinkedList<StyleRef>> parsedStyles = getStyles( in, namedLayer, map );
+                for ( StyleRef s : parsedStyles.second ) {
+                    if ( !s.isResolved() ) {
+                        continue;
+                    }
+                    put( layerName, s.getStyle(), false );
                     Pair<File, URL> p = legends.get( s.getName() );
                     if ( p != null && p.first != null ) {
-                        s.setLegendFile( p.first );
+                        s.getStyle().setLegendFile( p.first );
                     } else if ( p != null ) {
-                        s.setLegendURL( p.second );
+                        s.getStyle().setLegendURL( p.second );
                     }
-                    s.setPrefersGetLegendGraphicUrl( glgUrls.get( s.getName() ) != null && glgUrls.get( s.getName() ) );
+                    s.getStyle().setPrefersGetLegendGraphicUrl( glgUrls.get( s.getStyle().getName() ) != null
+                                                                                        && glgUrls.get( s.getStyle().getName() ) );
                 }
             } catch ( MalformedURLException e ) {
                 LOG.trace( "Stack trace", e );
