@@ -96,10 +96,10 @@ import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.oldwms.Utils;
 import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
-import org.deegree.protocol.oldwms.dims.DimensionInterval;
+import org.deegree.protocol.wms.Utils;
+import org.deegree.protocol.wms.dims.DimensionInterval;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
@@ -278,10 +278,9 @@ public class FeatureLayer extends Layer {
                                  new Mapper<Query, FeatureType>() {
                                      @Override
                                      public Query apply( FeatureType u ) {
-                                         Filter fil = Filters.addBBoxConstraint( bbox, filter,
-                                                                                                   geomProp );
-                                        return new Query( u.getName(), fil,
-                                                           round( gm.getScale() ), maxFeatures, gm.getResolution() );
+                                         Filter fil = Filters.addBBoxConstraint( bbox, filter, geomProp );
+                                         return new Query( u.getName(), fil, round( gm.getScale() ), maxFeatures,
+                                                           gm.getResolution() );
                                      }
                                  } ) );
         } else {

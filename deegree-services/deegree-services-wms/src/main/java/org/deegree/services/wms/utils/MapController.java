@@ -43,7 +43,7 @@ import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singleton;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.protocol.oldwms.Utils.calcResolution;
+import static org.deegree.protocol.wms.Utils.calcResolution;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -65,7 +65,7 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.oldwms.Utils;
+import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.MapService;
