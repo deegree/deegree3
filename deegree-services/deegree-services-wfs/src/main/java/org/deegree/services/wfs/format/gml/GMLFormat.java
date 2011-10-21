@@ -619,8 +619,8 @@ public class GMLFormat implements Format {
 
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "unknown" );
-            xmlStream.writeAttribute( "numberReturned", "unknown" );
-            xmlStream.writeComment( "NOTE: numberReturned=\"unknown\" does not validate according to the current version of the WFS 2.0 schema. However, there's a change request (CR 144) being worked on that should allow it soon (https://portal.opengeospatial.org/files?artifact_id=43925)." );
+            xmlStream.writeAttribute( "numberReturned", "0" );
+            xmlStream.writeComment( "NOTE: numberReturned attribute should be 'unknown', but this would not validate against the current version of the WFS 2.0 schema (change upcoming). See change request (CR 144): https://portal.opengeospatial.org/files?artifact_id=43925." );
         }
 
         if ( outputFormat == GML_2 ) {
