@@ -36,18 +36,24 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.remoteows.wms.OldWMSClient111;
+import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +71,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
     private static GeometryFactory fac = new GeometryFactory();
 
-    private final OldWMSClient111 client;
+    private final WMSClient111 client;
 
     private final List<String> layers;
 
@@ -102,13 +108,35 @@ public class WMSTextureTileProvider implements TextureTileProvider {
     public WMSTextureTileProvider( URL capabilitiesURL, String[] requestedLayers, ICRS requestCRS,
                                    String requestFormat, boolean transparent, double res, int maxWidth, int maxHeight,
                                    int requestTimeout ) {
-        this.client = new OldWMSClient111( capabilitiesURL );
+        this.client = new WMSClient111( capabilitiesURL );
         this.client.setMaxMapDimensions( maxWidth, maxHeight );
         this.layers = Arrays.asList( requestedLayers );
         this.requestedFormat = requestFormat;
         this.requestedCRS = requestCRS;
         this.res = res;
         this.requestTimeout = requestTimeout;
+    }
+
+    private static Pair<SimpleRaster, String> getMapAsSimpleRaster( WMSClient111 client, List<String> layers,
+                                                                    int width, int height, Envelope bbox, ICRS srs,
+                                                                    String format, boolean transparent,
+                                                                    boolean errorsInImage, int timeout )
+                            throws IOException {
+
+        GetMap gm = new GetMap( layers, width, height, bbox, srs, format, transparent );
+        Pair<BufferedImage, String> imageResponse = client.getMap( gm, null, timeout, errorsInImage );
+        Pair<SimpleRaster, String> response = new Pair<SimpleRaster, String>();
+        if ( imageResponse.first != null ) {
+            BufferedImage img = imageResponse.first;
+            RasterData rasterData = RasterFactory.rasterDataFromImage( img );
+            RasterGeoReference rasterEnv = RasterGeoReference.create( OriginLocation.OUTER, bbox, img.getWidth(),
+                                                                      img.getHeight() );
+            SimpleRaster raster = new SimpleRaster( rasterData, bbox, rasterEnv );
+            response.first = raster;
+        } else {
+            response.second = imageResponse.second;
+        }
+        return response;
     }
 
     private TextureTile getTextureTile( double minX, double minY, double maxX, double maxY ) {
@@ -122,8 +150,8 @@ public class WMSTextureTileProvider implements TextureTileProvider {
         SimpleRaster raster = null;
         try {
 
-            raster = client.getMapAsSimpleRaster( layers, width, height, bbox, requestedCRS, requestedFormat, true,
-                                                  true, requestTimeout, false, new ArrayList<String>() ).first;
+            raster = getMapAsSimpleRaster( client, layers, width, height, bbox, requestedCRS, requestedFormat, true,
+                                           true, requestTimeout ).first;
             LOG.debug( "Success" );
         } catch ( IOException e ) {
             LOG.debug( "Failed: " + e.getMessage(), e );
