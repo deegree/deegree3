@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wms.client;
+package org.deegree.remoteows.wms;
 
 import static java.util.Arrays.asList;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
@@ -119,12 +119,12 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class WMSClient111 {
+public class OldWMSClient111 {
 
     private static final NamespaceBindings nsContext = getNamespaceContext();
 
     // needed in the worker
-    static final Logger LOG = getLogger( WMSClient111.class );
+    static final Logger LOG = getLogger( OldWMSClient111.class );
 
     // needed in the worker
     int maxMapWidth = -1;
@@ -154,7 +154,7 @@ public class WMSClient111 {
      * @param pass
      *            http basic password
      */
-    public WMSClient111( URL url, int connectionTimeout, int requestTimeout, String user, String pass ) {
+    public OldWMSClient111( URL url, int connectionTimeout, int requestTimeout, String user, String pass ) {
         this.connectionTimeout = connectionTimeout;
         this.requestTimeout = requestTimeout;
         this.httpBasicUser = user;
@@ -181,7 +181,7 @@ public class WMSClient111 {
      * @param requestTimeout
      *            default is 60 seconds
      */
-    public WMSClient111( URL url, int connectionTimeout, int requestTimeout ) {
+    public OldWMSClient111( URL url, int connectionTimeout, int requestTimeout ) {
         this( url );
         this.connectionTimeout = connectionTimeout;
         this.requestTimeout = requestTimeout;
@@ -190,7 +190,7 @@ public class WMSClient111 {
     /**
      * @param url
      */
-    public WMSClient111( URL url ) {
+    public OldWMSClient111( URL url ) {
         try {
             capabilities = new XMLAdapter( url );
         } catch ( Exception e ) {
@@ -204,7 +204,7 @@ public class WMSClient111 {
     /**
      * @param capabilities
      */
-    public WMSClient111( XMLAdapter capabilities ) {
+    public OldWMSClient111( XMLAdapter capabilities ) {
         checkCapabilities( capabilities );
         this.capabilities = capabilities;
     }

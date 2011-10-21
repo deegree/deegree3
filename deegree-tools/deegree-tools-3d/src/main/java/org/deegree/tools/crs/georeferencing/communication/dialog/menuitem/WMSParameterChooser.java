@@ -55,7 +55,7 @@ import javax.swing.JLabel;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.remoteows.wms.OldWMSClient111;
 import org.deegree.tools.crs.georeferencing.communication.dialog.AbstractGRDialog;
 
 /**
@@ -86,7 +86,7 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
     private List<List<String>> listOfSrsList;
 
-    private WMSClient111 wmsClient;
+    private OldWMSClient111 wmsClient;
 
     private URL url;
 
@@ -99,7 +99,7 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
         url = new URL( urlString );
 
-        wmsClient = new WMSClient111( url );
+        wmsClient = new OldWMSClient111( url );
 
         groupFormat = new ButtonGroup();
         groupSRS = new ButtonGroup();
@@ -303,7 +303,7 @@ public class WMSParameterChooser extends AbstractGRDialog {
         }
     }
 
-    public WMSClient111 getWmsClient() {
+    public OldWMSClient111 getWmsClient() {
         return wmsClient;
     }
 

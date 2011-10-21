@@ -51,7 +51,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.remoteows.RemoteOWSStoreProvider;
 import org.deegree.remoteows.RemoteOWSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
@@ -163,7 +162,7 @@ public class RemoteWMSStoreProvider implements RemoteOWSStoreProvider {
             int connTimeout = cfg.getConnectionTimeout() == null ? 5 : cfg.getConnectionTimeout();
             int reqTimeout = cfg.getRequestTimeout() == null ? 60 : cfg.getRequestTimeout();
 
-            WMSClient111 client;
+            OldWMSClient111 client;
 
             AuthenticationType type = cfg.getAuthentication() == null ? null : cfg.getAuthentication().getValue();
             String user = null;
@@ -173,7 +172,7 @@ public class RemoteWMSStoreProvider implements RemoteOWSStoreProvider {
                 user = basic.getUsername();
                 pass = basic.getPassword();
             }
-            client = new WMSClient111( capas, connTimeout, reqTimeout, user, pass );
+            client = new OldWMSClient111( capas, connTimeout, reqTimeout, user, pass );
 
             Map<String, LayerOptions> layers = new HashMap<String, LayerOptions>();
             List<String> layerOrder = new LinkedList<String>();

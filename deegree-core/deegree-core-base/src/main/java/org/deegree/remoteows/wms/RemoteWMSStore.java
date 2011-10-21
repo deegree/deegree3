@@ -70,7 +70,6 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.Utils;
-import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.remoteows.RemoteOWSStore;
 import org.slf4j.Logger;
 
@@ -86,7 +85,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
     private static final Logger LOG = getLogger( RemoteWMSStore.class );
 
-    private WMSClient111 client;
+    private OldWMSClient111 client;
 
     private Map<String, LayerOptions> layers;
 
@@ -100,7 +99,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
      * @param client
      * @param layers
      */
-    public RemoteWMSStore( WMSClient111 client, List<String> layers, LayerOptions options ) {
+    public RemoteWMSStore( OldWMSClient111 client, List<String> layers, LayerOptions options ) {
         this.client = client;
         this.layerOrder = layers;
         this.options = options;
@@ -119,7 +118,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
      * @param client
      * @param layers
      */
-    public RemoteWMSStore( WMSClient111 client, Map<String, LayerOptions> layers, List<String> layerOrder ) {
+    public RemoteWMSStore( OldWMSClient111 client, Map<String, LayerOptions> layers, List<String> layerOrder ) {
         this.client = client;
         this.layers = layers;
         this.layerOrder = layerOrder;
