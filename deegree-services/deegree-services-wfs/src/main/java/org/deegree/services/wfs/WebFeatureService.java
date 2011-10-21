@@ -661,19 +661,15 @@ public class WebFeatureService extends AbstractOWS {
                 sendServiceException110( e, response );
             }
         } catch ( XMLParsingException e ) {
-            LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), response );
         } catch ( MissingParameterException e ) {
-            LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
-            LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( Throwable e ) {
-            LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }
