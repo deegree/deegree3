@@ -256,7 +256,7 @@ class DescribeFeatureTypeHandler {
     private void writeWFSSchema( XMLStreamWriter writer, Version version, GMLVersion gmlVersion )
                             throws XMLStreamException {
 
-        writer.writeStartElement( XSNS, "schema" );
+        writer.writeStartElement( XS_PREFIX, "schema", XSNS  );
         writer.writeAttribute( "attributeFormDefault", "unqualified" );
         writer.writeAttribute( "elementFormDefault", "qualified" );
 
@@ -268,7 +268,6 @@ class DescribeFeatureTypeHandler {
             writer.writeNamespace( WFS_PREFIX, WFSConstants.WFS_200_NS );
         }
 
-        writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlVersion.getNamespace() );
 
         // import GML core schema
