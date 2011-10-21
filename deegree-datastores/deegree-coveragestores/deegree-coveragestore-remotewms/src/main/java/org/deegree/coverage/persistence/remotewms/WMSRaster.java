@@ -39,7 +39,6 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -131,12 +130,5 @@ public class WMSRaster extends SimpleRaster {
     // do a normal lookup
     // return null;
     // }
-
-    /**
-     * @return null
-     */
-    public FeatureType getFeatureType() {
-        return null;
-    }
 
 }

@@ -374,7 +374,7 @@ public class WMSReader implements RasterReader {
     /**
      * @param opts
      */
-    private boolean enableTransparency( RasterIOOptions opts ) {
+    private static boolean enableTransparency( RasterIOOptions opts ) {
         return opts.get( RIO_WMS_ENABLE_TRANSPARENT ) != null;
     }
 
@@ -420,11 +420,11 @@ public class WMSReader implements RasterReader {
         return format;
     }
 
-    private boolean hasFormat( String simpleImage, String defFormat ) {
+    private static boolean hasFormat( String simpleImage, String defFormat ) {
         return simpleImage.equalsIgnoreCase( defFormat ) || ( "image/" + simpleImage ).equalsIgnoreCase( defFormat );
     }
 
-    private int getInt( String val, String key ) {
+    private static int getInt( String val, String key ) {
         if ( isSet( val ) ) {
             try {
                 return Integer.parseInt( val );
@@ -438,7 +438,7 @@ public class WMSReader implements RasterReader {
     /**
      * @param options
      */
-    private double getScale( RasterIOOptions options ) {
+    private static double getScale( RasterIOOptions options ) {
         String scale = options.get( RIO_WMS_MAX_SCALE );
         if ( !StringUtils.isSet( scale ) ) {
             throw new IllegalArgumentException(

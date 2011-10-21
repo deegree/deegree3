@@ -35,15 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence.remotewms;
 
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_DEFAULT_FORMAT;
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_ENABLE_TRANSPARENT;
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_LAYERS;
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_MAX_HEIGHT;
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_MAX_SCALE;
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_MAX_WIDTH;
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_REFRESH_TIME;
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_SYS_ID;
-import static org.deegree.protocol.wms.raster.WMSReader.RIO_WMS_TIMEOUT;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_DEFAULT_FORMAT;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_ENABLE_TRANSPARENT;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_LAYERS;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_MAX_HEIGHT;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_MAX_SCALE;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_MAX_WIDTH;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_REFRESH_TIME;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_SYS_ID;
+import static org.deegree.coverage.persistence.remotewms.WMSReader.RIO_WMS_TIMEOUT;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -55,7 +55,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageBuilder;
@@ -103,7 +102,7 @@ public class WMSBuilder implements CoverageBuilder {
      * @param adapter
      * @return a corresponding raster
      */
-    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter ) {
+    private static MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig ) {
         if ( mrrConfig != null ) {
             String defCRS = mrrConfig.getDefaultSRS();
             // String defCRS = null;
@@ -121,7 +120,7 @@ public class WMSBuilder implements CoverageBuilder {
                     try {
                         options.add( RIO_WMS_MAX_SCALE, resolution.getRes() == null ? null
                                                                                    : resolution.getRes().toString() );
-                        rasterLevel = fromJAXB( resolution, adapter, options );
+                        rasterLevel = fromJAXB( resolution, options );
                     } catch ( IOException e ) {
                         if ( LOG.isDebugEnabled() ) {
                             LOG.debug( "(Stack) Exception occurred while creating a resolution wms datasource: "
@@ -141,7 +140,7 @@ public class WMSBuilder implements CoverageBuilder {
         throw new NullPointerException( "The configured multi resolution raster may not be null." );
     }
 
-    private RasterIOOptions getOptions( MultiResolutionRasterConfig config ) {
+    private static RasterIOOptions getOptions( MultiResolutionRasterConfig config ) {
         RasterIOOptions options = new RasterIOOptions();
         if ( config.getDefaultSRS() != null ) {
             options.add( RasterIOOptions.CRS, config.getDefaultSRS() );
@@ -151,11 +150,10 @@ public class WMSBuilder implements CoverageBuilder {
 
     /**
      * @param config
-     * @param adapter
      * @return a corresponding raster, null if files could not be fund
      * @throws IOException
      */
-    private AbstractRaster fromJAXB( WMSDataSourceType config, XMLAdapter adapter, RasterIOOptions opts )
+    private static AbstractRaster fromJAXB( WMSDataSourceType config, RasterIOOptions opts )
                             throws IOException {
         if ( config != null ) {
 
@@ -239,15 +237,11 @@ public class WMSBuilder implements CoverageBuilder {
                             throws ResourceInitException {
         try {
             Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configUrl, workspace );
-
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configUrl.toString() );
-
             if ( config instanceof MultiResolutionRasterConfig ) {
-                return fromJAXB( (MultiResolutionRasterConfig) config, resolver );
+                return fromJAXB( (MultiResolutionRasterConfig) config );
             }
             if ( config instanceof WMSDataSourceType ) {
-                return fromJAXB( (WMSDataSourceType) config, resolver, null );
+                return fromJAXB( (WMSDataSourceType) config, null );
             }
             throw new ResourceInitException( "An unknown object came out of JAXB parsing. This is probably a bug." );
         } catch ( Throwable e ) {
