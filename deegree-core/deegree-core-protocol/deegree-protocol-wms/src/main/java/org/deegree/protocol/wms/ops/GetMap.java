@@ -89,7 +89,6 @@ import org.deegree.protocol.wms.dims.parser;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
-import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -111,7 +110,7 @@ public class GetMap {
 
     private LinkedList<String> layers = new LinkedList<String>();
 
-    private LinkedList<String> styles = new LinkedList<String>();
+    private LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
     private Map<String, Interpolation> interpolation = new HashMap<String, Interpolation>();
 
@@ -174,7 +173,7 @@ public class GetMap {
      * @param height
      * @param boundingBox
      */
-    public GetMap( Collection<String> layers, Collection<String> styles, int width, int height, Envelope boundingBox,
+    public GetMap( Collection<String> layers, Collection<StyleRef> styles, int width, int height, Envelope boundingBox,
                    GetMapExtensions exts ) {
         this.layers.addAll( layers );
         this.styles.addAll( styles );
@@ -237,14 +236,14 @@ public class GetMap {
         handleCommon( map, exts );
     }
 
-    static LinkedList<String> handleKVPStyles( String ss, int numLayers )
+    static LinkedList<StyleRef> handleKVPStyles( String ss, int numLayers )
                             throws OWSException {
-        LinkedList<String> styles = new LinkedList<String>();
+        LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
         // result is a list with 'default' where default styles were requested
         if ( ss.trim().isEmpty() ) {
             for ( int i = 0; i < numLayers; ++i ) {
-                styles.add( "default" );
+                styles.add( new StyleRef( "default" ) );
             }
         } else {
             // to work around #split limitations
@@ -262,9 +261,9 @@ public class GetMap {
 
             for ( int i = 0; i < numLayers; ++i ) {
                 if ( styls[i].isEmpty() || styls[i].equals( "default" ) ) {
-                    styles.add( "default" );
+                    styles.add( new StyleRef( "default" ) );
                 } else {
-                    styles.add( styls[i] );
+                    styles.add( new StyleRef( styls[i] ) );
                 }
             }
         }
@@ -446,7 +445,7 @@ public class GetMap {
     private void handleSLD( String sld, String sldBody, LinkedList<String> layers )
                             throws OWSException {
         XMLInputFactory xmlfac = XMLInputFactory.newInstance();
-        Pair<LinkedList<String>, LinkedList<Pair<String, Style>>> pair = null;
+        Pair<LinkedList<String>, LinkedList<StyleRef>> pair = null;
         if ( sld != null ) {
             try {
                 pair = parse( xmlfac.createXMLStreamReader( sld, new URL( sld ).openStream() ), this );
@@ -493,44 +492,43 @@ public class GetMap {
         // if layers are referenced, clear the other layers out, else leave all in
         if ( pair != null && !layers.isEmpty() ) {
             // it might be in SLD that a layer has multiple styles, so we need to map to a list here
-            HashMap<String, LinkedList<Pair<String, String>>> lays = new HashMap<String, LinkedList<Pair<String, String>>>();
+            HashMap<String, LinkedList<Pair<String, StyleRef>>> lays = new HashMap<String, LinkedList<Pair<String, StyleRef>>>();
 
             ListIterator<String> it = pair.first.listIterator();
-            ListIterator<Pair<String, Style>> st = pair.second.listIterator();
+            ListIterator<StyleRef> st = pair.second.listIterator();
             while ( it.hasNext() ) {
                 String l = it.next();
-                Pair<String, Style> s = st.next();
+                StyleRef s = st.next();
                 String name = l;
                 if ( !layers.contains( name ) ) {
                     it.remove();
                     st.remove();
                 } else {
-                    LinkedList<Pair<String, String>> list = lays.get( name );
+                    LinkedList<Pair<String, StyleRef>> list = lays.get( name );
                     if ( list == null ) {
-                        list = new LinkedList<Pair<String, String>>();
+                        list = new LinkedList<Pair<String, StyleRef>>();
                         lays.put( name, list );
                     }
-                    // TODO fix this
-                    // list.add( new Pair<String, String>( l, s ) );
+
+                    list.add( new Pair<String, StyleRef>( l, s ) );
                 }
             }
 
             // to get the order right, in case it's different from the SLD order
             for ( String name : layers ) {
-                LinkedList<Pair<String, String>> l = lays.get( name );
+                LinkedList<Pair<String, StyleRef>> l = lays.get( name );
                 if ( l == null ) {
                     throw new OWSException( "The SLD NamedLayer " + name + " is invalid.", "InvalidParameterValue",
                                             "layers" );
                 }
-                Pair<ArrayList<String>, ArrayList<String>> p = unzipPair( l );
+                Pair<ArrayList<String>, ArrayList<StyleRef>> p = unzipPair( l );
                 this.layers.addAll( p.first );
                 styles.addAll( p.second );
             }
         } else {
             if ( pair != null ) {
                 this.layers = pair.first;
-                // TODO fix this
-                // styles = pair.second;
+                styles = pair.second;
             }
         }
     }
@@ -641,8 +639,8 @@ public class GetMap {
     /**
      * @return a copy of the styles list
      */
-    public LinkedList<String> getStyles() {
-        return new LinkedList<String>( styles );
+    public LinkedList<StyleRef> getStyles() {
+        return new LinkedList<StyleRef>( styles );
     }
 
     /**

@@ -81,7 +81,7 @@ public class SLDParser {
      * @throws OWSException
      * @throws ParseException
      */
-    public static Pair<LinkedList<String>, LinkedList<Pair<String, Style>>> parse( XMLStreamReader in, GetMap gm )
+    public static Pair<LinkedList<String>, LinkedList<StyleRef>> parse( XMLStreamReader in, GetMap gm )
                             throws XMLStreamException, OWSException, ParseException {
         while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
@@ -89,7 +89,7 @@ public class SLDParser {
         }
 
         LinkedList<String> layers = new LinkedList<String>();
-        LinkedList<Pair<String, Style>> styles = new LinkedList<Pair<String, Style>>();
+        LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
         while ( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) {
             if ( in.getLocalName().equals( "NamedLayer" ) ) {
@@ -157,7 +157,7 @@ public class SLDParser {
                     in.nextTag();
                     String name = in.getElementText();
                     layers.add( layerName );
-                    styles.add( new Pair<String, Style>( name, null ) );
+                    styles.add( new StyleRef( name ) );
 
                     in.nextTag(); // out of name
                     in.nextTag(); // out of named style
@@ -198,7 +198,7 @@ public class SLDParser {
                              || in.getLocalName().equals( "OnlineResource" ) ) {
                             Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
                             layers.add( layerName );
-                            styles.add( new Pair<String, Style>( null, style ) );
+                            styles.add( new StyleRef( style ) );
                         }
                     }
 
@@ -210,7 +210,7 @@ public class SLDParser {
             }
         }
 
-        return new Pair<LinkedList<String>, LinkedList<Pair<String, Style>>>( layers, styles );
+        return new Pair<LinkedList<String>, LinkedList<StyleRef>>( layers, styles );
     }
 
     /**
@@ -220,15 +220,15 @@ public class SLDParser {
      * @return the filters defined for the NamedLayer, and the matching styles
      * @throws XMLStreamException
      */
-    public static Pair<LinkedList<Filter>, LinkedList<Style>> getStyles( XMLStreamReader in, String layerName,
-                                                                         Map<String, String> styleNames )
+    public static Pair<LinkedList<Filter>, LinkedList<StyleRef>> getStyles( XMLStreamReader in, String layerName,
+                                                                            Map<String, String> styleNames )
                             throws XMLStreamException {
         while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
             in.nextTag();
         }
 
-        LinkedList<Style> styles = new LinkedList<Style>();
+        LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
         LinkedList<Filter> filters = new LinkedList<Filter>();
 
         while ( in.hasNext() && ( in.getLocalName().equals( "NamedLayer" ) && !in.isEndElement() )
@@ -331,7 +331,7 @@ public class SLDParser {
                             if ( styleNames.get( styleName ) != null ) {
                                 style.setName( styleNames.get( styleName ) );
                             }
-                            styles.add( style );
+                            styles.add( new StyleRef( style ) );
                         }
 
                     }
@@ -342,7 +342,7 @@ public class SLDParser {
             }
         }
 
-        return new Pair<LinkedList<Filter>, LinkedList<Style>>( filters, styles );
+        return new Pair<LinkedList<Filter>, LinkedList<StyleRef>>( filters, styles );
     }
 
 }
