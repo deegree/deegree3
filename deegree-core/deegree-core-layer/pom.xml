@@ -42,6 +42,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>net.sf.squirrel-sql.thirdparty.non-maven</groupId>
+      <artifactId>java-cup</artifactId>
+      <version>0.11a</version>
+    </dependency>
+    <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-rendering-2d</artifactId>
       <version>3.2-pre1-SNAPSHOT</version>

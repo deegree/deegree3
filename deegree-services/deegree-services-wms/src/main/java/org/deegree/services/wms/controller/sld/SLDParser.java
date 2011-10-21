@@ -38,9 +38,9 @@ package org.deegree.services.wms.controller.sld;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.ops.GetMap.parseDimensionValues;
-import static org.deegree.services.wms.model.Dimension.parseTyped;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.ParseException;
@@ -106,7 +106,8 @@ public class SLDParser {
                 in.nextTag();
 
                 if ( layer == null ) {
-                    throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layerName ), OWSException.INVALID_PARAMETER_VALUE, "layer" );
+                    throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layerName ),
+                                            OWSException.INVALID_PARAMETER_VALUE, "layer" );
                 }
 
                 LOG.debug( "Extracted layer '{}' from SLD.", layerName );
@@ -167,8 +168,8 @@ public class SLDParser {
                     String name = in.getElementText();
                     Style style = service.getStyles().get( layer.getName(), name );
                     if ( style == null ) {
-                        throw new OWSException( get( "WMS.UNDEFINED_STYLE", name, layerName ), OWSException.INVALID_PARAMETER_VALUE,
-                                                "styles" );
+                        throw new OWSException( get( "WMS.UNDEFINED_STYLE", name, layerName ),
+                                                OWSException.INVALID_PARAMETER_VALUE, "styles" );
                     }
                     layers.add( layer );
                     styles.add( style );

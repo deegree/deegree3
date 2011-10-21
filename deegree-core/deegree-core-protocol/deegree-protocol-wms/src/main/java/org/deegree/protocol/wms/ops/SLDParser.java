@@ -38,7 +38,7 @@ package org.deegree.protocol.wms.ops;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.protocol.wms.dims.Dimension.parseTyped;
+import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.ops.GetMap.parseDimensionValues;
 import static org.slf4j.LoggerFactory.getLogger;
 

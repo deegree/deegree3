@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wms.dims;
+package org.deegree.layer.dims;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,8 +45,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.deegree.protocol.oldwms.dims.DimensionLexer;
-import org.deegree.protocol.oldwms.dims.parser;
 import org.junit.Test;
 import org.slf4j.Logger;
 

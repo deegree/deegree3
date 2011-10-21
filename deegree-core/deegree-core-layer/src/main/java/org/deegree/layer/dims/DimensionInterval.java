@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/protocol/oldwms/dims/DimensionInterval.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -34,15 +34,15 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wms.dims;
+package org.deegree.layer.dims;
 
 /**
  * <code>DimensionInterval</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: aschmitz $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 32241 $, $Date: 2011-10-21 15:06:29 +0200 (Fri, 21 Oct 2011) $
  * @param <T>
  * @param <U>
  * @param <V>

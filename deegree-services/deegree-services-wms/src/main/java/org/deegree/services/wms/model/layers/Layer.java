@@ -37,8 +37,8 @@
 package org.deegree.services.wms.model.layers;
 
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
+import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.services.wms.MapService.prepareImage;
-import static org.deegree.services.wms.model.Dimension.parseTyped;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -73,6 +73,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.layer.dims.Dimension;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.dims.DimensionLexer;
@@ -87,7 +88,6 @@ import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
-import org.deegree.services.wms.model.Dimension;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.Styling;
 import org.deegree.style.styling.TextStyling;

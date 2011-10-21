@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.config;
 
-import static org.deegree.layer.Dimension.parseTyped;
+import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.StringReader;
@@ -49,13 +49,13 @@ import java_cup.runtime.Symbol;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
-import org.deegree.layer.Dimension;
+import org.deegree.layer.dims.Dimension;
+import org.deegree.layer.dims.DimensionLexer;
+import org.deegree.layer.dims.parser;
 import org.deegree.layer.persistence.base.jaxb.DimensionType;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType.Style.LegendGraphic;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType.Style.LegendStyle;
-import org.deegree.protocol.oldwms.dims.DimensionLexer;
-import org.deegree.protocol.oldwms.dims.parser;
 import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.unevaluated.Style;

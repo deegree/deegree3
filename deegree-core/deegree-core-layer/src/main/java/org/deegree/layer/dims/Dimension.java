@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-services/deegree-services-wms/src/main/java/org/deegree/services/wms/model/Dimension.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wms.dims;
+package org.deegree.layer.dims;
 
 import static java.lang.Math.abs;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
@@ -51,15 +51,14 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.time.Duration;
-import org.deegree.protocol.wms.dims.DimensionInterval;
 
 /**
  * <code>Dimension</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 24761 $, $Date: 2010-06-08 15:36:32 +0200 (Tue, 08 Jun 2010) $
+ * @version $Revision$, $Date$
  * @param <T>
  */
 public class Dimension<T> {

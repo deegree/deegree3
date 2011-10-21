@@ -41,6 +41,7 @@
     <module>deegree-core-sqldialect</module>
     <module>deegree-core-style</module>
     <module>deegree-core-theme</module>
+    <module>deegree-core-protocol</module>
   </modules>
 
 </project>
