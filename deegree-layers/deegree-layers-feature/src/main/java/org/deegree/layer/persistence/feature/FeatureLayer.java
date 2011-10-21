@@ -40,7 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import java.util.LinkedList;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -48,9 +47,7 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
 import org.deegree.layer.AbstractLayer;
-import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
-import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
@@ -79,10 +76,7 @@ public class FeatureLayer extends AbstractLayer {
     }
 
     @Override
-    public LinkedList<String> paintMap( RenderContext context, RenderingInfo info, Style style )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-
-        return null;
+    public void paintMap( RenderContext context, RenderingInfo info, Style style ) {
     }
 
 }

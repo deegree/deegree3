@@ -48,6 +48,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSProvider;
 import org.deegree.remoteows.wms_new.jaxb.AuthenticationType;

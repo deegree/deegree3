@@ -14,19 +14,19 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.SpatialMetadataConverter;
 import org.deegree.layer.Layer;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.remotewms.jaxb.LayerType;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.DescriptionConverter;
+import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wms.RemoteWMS;
-import org.deegree.remoteows.wms.WMSClient;
 
 public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
 

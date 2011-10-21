@@ -116,10 +116,10 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.protocol.wms.ops.LayerRef;
@@ -726,9 +726,9 @@ public class WMSClient111 implements WMSClient {
                            validationErrors );
         }
 
-        private Pair<BufferedImage, String> getMap( List<LayerRef> layers, List<StyleRef> styles, int width, int height,
-                                                    Envelope bbox, ICRS srs, String format, boolean transparent,
-                                                    boolean errorsInImage, boolean validate,
+        private Pair<BufferedImage, String> getMap( List<LayerRef> layers, List<StyleRef> styles, int width,
+                                                    int height, Envelope bbox, ICRS srs, String format,
+                                                    boolean transparent, boolean errorsInImage, boolean validate,
                                                     List<String> validationErrors )
                                 throws IOException {
             if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
@@ -959,8 +959,8 @@ public class WMSClient111 implements WMSClient {
             return response;
         }
 
-        private void getAndSetSubImage( BufferedImage targetImage, List<LayerRef> layers, int xMin, int width, int yMin,
-                                        int height, RasterGeoReference rasterEnv, ICRS crs, String format,
+        private void getAndSetSubImage( BufferedImage targetImage, List<LayerRef> layers, int xMin, int width,
+                                        int yMin, int height, RasterGeoReference rasterEnv, ICRS crs, String format,
                                         boolean transparent, boolean errorsInImage )
                                 throws IOException {
 

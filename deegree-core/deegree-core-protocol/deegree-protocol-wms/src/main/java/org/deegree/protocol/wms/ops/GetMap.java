@@ -203,6 +203,30 @@ public class GetMap {
         this.transparent = transparent;
     }
 
+    public GetMap( List<Pair<String, String>> layers, int width, int height, Envelope boundingBox, String format,
+                   boolean transparent ) {
+        for ( Pair<String, String> layer : layers ) {
+            this.layers.add( new LayerRef( layer.first ) );
+            this.styles.add( new StyleRef( layer.second ) );
+        }
+        this.width = width;
+        this.height = height;
+        this.bbox = boundingBox;
+        this.crs = boundingBox.getCoordinateSystem();
+        this.bgcolor = white;
+        this.format = format;
+        this.transparent = transparent;
+        try {
+            scale = Utils.calcScaleWMS130( width, height, bbox, crs );
+            LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
+            resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
+            LOG.debug( "Resolution per pixel is {}.", resolution );
+        } catch ( ReferenceResolvingException e ) {
+            LOG.trace( "Stack trace:", e );
+            LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
+        }
+    }
+
     private void parse111( Map<String, String> map, GetMapExtensions exts )
                             throws OWSException {
         String c = map.get( "SRS" );

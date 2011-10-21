@@ -38,17 +38,13 @@ package org.deegree.layer;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
-import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
-import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
 
@@ -93,10 +89,8 @@ public abstract class AbstractLayer implements Layer {
     }
 
     @Override
-    public Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, Style style )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        return new Pair<FeatureCollection, LinkedList<String>>( new GenericFeatureCollection(),
-                                                                new LinkedList<String>() );
+    public FeatureCollection getFeatures( RenderingInfo info, Style style ) {
+        return new GenericFeatureCollection();
     }
 
     @Override

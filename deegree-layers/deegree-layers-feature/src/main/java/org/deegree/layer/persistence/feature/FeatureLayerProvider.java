@@ -63,12 +63,12 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.SingleLayerStore;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayer;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
 import org.deegree.protocol.ows.metadata.Description;
 
 /**

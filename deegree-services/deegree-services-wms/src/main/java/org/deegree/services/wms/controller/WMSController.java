@@ -569,8 +569,9 @@ public class WMSController extends AbstractOWS {
         ICRS crs;
         Map<String, String> nsBindings = new HashMap<String, String>();
         if ( service.isNewStyle() ) {
-            org.deegree.protocol.oldwms.ops.GetFeatureInfo fi = new org.deegree.protocol.oldwms.ops.GetFeatureInfo( map,
-                                                                                                              version );
+            org.deegree.protocol.oldwms.ops.GetFeatureInfo fi = new org.deegree.protocol.oldwms.ops.GetFeatureInfo(
+                                                                                                                    map,
+                                                                                                                    version );
             crs = fi.getCoordinateSystem();
             geometries = fi.returnGeometries();
             queryLayers = fi.getQueryLayers();
@@ -581,7 +582,8 @@ public class WMSController extends AbstractOWS {
             info.setFeatureCount( fi.getFeatureCount() );
             info.setX( fi.getX() );
             info.setY( fi.getY() );
-            pair = service.getFeatures( info, fi.getQueryLayers() );
+            pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( info, fi.getQueryLayers() ),
+                                                                    new LinkedList<String>() );
         } else {
             GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
                                                        : securityManager.preprocess( new GetFeatureInfo( map, version,

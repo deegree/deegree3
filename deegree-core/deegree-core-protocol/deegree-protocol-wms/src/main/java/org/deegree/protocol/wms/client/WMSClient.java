@@ -45,8 +45,8 @@ import org.deegree.commons.struct.Tree;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.protocol.wms.metadata.LayerMetadata;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 

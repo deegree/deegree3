@@ -770,25 +770,22 @@ public class MapService {
         }
     }
 
-    public Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, List<String> themes )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        Pair<FeatureCollection, LinkedList<String>> p = null;
+    public FeatureCollection getFeatures( RenderingInfo info, List<String> themes ) {
+        FeatureCollection col = null;
         for ( String n : themes ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
-                Pair<FeatureCollection, LinkedList<String>> p2 = l.getFeatures( info, null );
-                if ( p == null ) {
-                    p = p2;
+                FeatureCollection p2 = l.getFeatures( info, null );
+                if ( col == null ) {
+                    col = p2;
                 } else {
-                    p.first.addAll( p2.first );
-                    p.second.addAll( p2.second );
+                    col.addAll( p2 );
                 }
             }
         }
-        return p;
+        return col;
     }
 
-    public void getMapImage( RenderContext ctx, RenderingInfo info, List<String> themes )
-                            throws MissingDimensionValue, InvalidDimensionValue {
+    public void getMapImage( RenderContext ctx, RenderingInfo info, List<String> themes ) {
         for ( String n : themes ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
                 l.paintMap( ctx, info, null );

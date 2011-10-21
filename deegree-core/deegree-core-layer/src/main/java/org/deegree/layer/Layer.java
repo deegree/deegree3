@@ -36,14 +36,11 @@
 
 package org.deegree.layer;
 
-import java.util.LinkedList;
-
-import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
@@ -73,8 +70,7 @@ public interface Layer {
      * @throws MissingDimensionValue
      * @throws InvalidDimensionValue
      */
-    LinkedList<String> paintMap( RenderContext context, RenderingInfo info, Style style )
-                            throws MissingDimensionValue, InvalidDimensionValue;
+    void paintMap( RenderContext context, RenderingInfo info, Style style );
 
     /**
      * @param info
@@ -84,8 +80,7 @@ public interface Layer {
      * @throws MissingDimensionValue
      * @throws InvalidDimensionValue
      */
-    Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, Style style )
-                            throws MissingDimensionValue, InvalidDimensionValue;
+    FeatureCollection getFeatures( RenderingInfo info, Style style );
 
     /**
      * @return the feature type, may be null if feature info is not supported

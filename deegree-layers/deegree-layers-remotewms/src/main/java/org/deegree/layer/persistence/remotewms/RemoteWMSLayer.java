@@ -1,7 +1,7 @@
 package org.deegree.layer.persistence.remotewms;
 
 import static java.util.Collections.singletonList;
-import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.GetMap;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
@@ -17,17 +17,15 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.layer.AbstractLayer;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.remotewms.jaxb.ParameterScopeType;
 import org.deegree.layer.persistence.remotewms.jaxb.ParameterUseType;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.DefaultCRS;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.Parameter;
-import org.deegree.protocol.oldwms.WMSException.InvalidDimensionValue;
-import org.deegree.protocol.oldwms.WMSException.MissingDimensionValue;
-import org.deegree.protocol.oldwms.metadata.LayerMetadata;
-import org.deegree.protocol.oldwms.ops.GetFeatureInfo;
-import org.deegree.protocol.oldwms.ops.GetMap;
-import org.deegree.remoteows.wms.WMSClient;
+import org.deegree.protocol.wms.client.WMSClient;
+import org.deegree.protocol.wms.ops.GetFeatureInfo;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
@@ -146,8 +144,7 @@ public class RemoteWMSLayer extends AbstractLayer {
     }
 
     @Override
-    public LinkedList<String> paintMap( RenderContext context, RenderingInfo info, Style style )
-                            throws MissingDimensionValue, InvalidDimensionValue {
+    public void paintMap( RenderContext context, RenderingInfo info, Style style ) {
         try {
             Map<String, String> extraParams = new HashMap<String, String>();
             handleParameters( extraParams, info.getParameterMap(), defaultParametersGetMap, hardParametersGetMap );
@@ -169,12 +166,10 @@ public class RemoteWMSLayer extends AbstractLayer {
             LOG.warn( "Error when retrieving remote map: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
-        return new LinkedList<String>();
     }
 
     @Override
-    public Pair<FeatureCollection, LinkedList<String>> getFeatures( RenderingInfo info, Style style )
-                            throws MissingDimensionValue, InvalidDimensionValue {
+    public FeatureCollection getFeatures( RenderingInfo info, Style style ) {
         Map<String, String> extraParams = new HashMap<String, String>();
         handleParameters( extraParams, info.getParameterMap(), defaultParametersGetFeatureInfo,
                           hardParametersGetFeatureInfo );
@@ -184,12 +179,12 @@ public class RemoteWMSLayer extends AbstractLayer {
                                                  info.getEnvelope().getCoordinateSystem(), info.getFeatureCount() );
         try {
             FeatureCollection col = client.getFeatureInfo( gfi, extraParams );
-            return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
+            return col;
         } catch ( IOException e ) {
             LOG.warn( "Error when retrieving remote feature info: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
-        return new Pair<FeatureCollection, LinkedList<String>>( null, new LinkedList<String>() );
+        return null;
     }
 
 }
