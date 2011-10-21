@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JFrame;
 import javax.vecmath.Point2d;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -161,10 +160,10 @@ public class ApplicationState {
     public DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
 
     public TransformationPoints points;
-    
+
     public ApplicationState() {
         try {
-            workspace.initAll();
+            this.workspace.initAll();
         } catch ( ResourceInitException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -190,24 +189,24 @@ public class ApplicationState {
     }
 
     public void setupMapService() {
-        service = new MapService( workspace );
+        this.service = new MapService( this.workspace );
         try {
             XMLInputFactory fac = XMLInputFactory.newInstance();
             String styleUrl = ApplicationState.class.getResource( "/org/deegree/tools/crs/georeferencing/style.xml" ).toExternalForm();
             XMLStreamReader in = fac.createXMLStreamReader( new StreamSource( styleUrl ) );
             Style style = SymbologyParser.INSTANCE.parse( in );
-            service.registry.putAsDefault( "points", style );
+            this.service.registry.putAsDefault( "points", style );
             RequestableLayer cfg = new RequestableLayer();
             cfg.setName( "points" );
             cfg.setTitle( "Points Layer" );
             cfg.setFeatureStoreId( "pointsstore" );
-            FeatureLayer lay = new FeatureLayer( service, cfg, service.getRootLayer(), workspace );
-            Layer root = service.getRootLayer();
+            FeatureLayer lay = new FeatureLayer( this.service, cfg, this.service.getRootLayer(), this.workspace );
+            Layer root = this.service.getRootLayer();
             root.addOrReplace( lay );
-            service.layers.put( "points", lay );
+            this.service.layers.put( "points", lay );
             MapService.fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
-            if ( mapController != null ) {
-                mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
+            if ( this.mapController != null ) {
+                this.mapController.setLayers( new LinkedList<Layer>( root.getChildren() ) );
             }
         } catch ( Throwable e ) {
             // TODO Auto-generated catch block
@@ -224,7 +223,7 @@ public class ApplicationState {
                                                                 this.conModel.getPanel().getHeight() ) );
             this.conModel.getPanel().setImageDimension( this.sceneValues.getGeorefDimension() );
             this.conModel.getPanel().updatePoints( this.sceneValues );
-            Component glassPane = ( (JFrame) this.conModel.getPanel().getTopLevelAncestor() ).getGlassPane();
+            Component glassPane = this.conModel.getPanel().getRootPane().getGlassPane();
             MouseAdapter mouseAdapter = new MouseAdapter() {
                 // else the wait cursor will not appear
             };

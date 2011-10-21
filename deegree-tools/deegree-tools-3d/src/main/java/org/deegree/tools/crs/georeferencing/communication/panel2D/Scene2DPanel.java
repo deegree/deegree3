@@ -45,7 +45,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.util.List;
 
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.deegree.geometry.primitive.Ring;
@@ -75,37 +75,47 @@ public class Scene2DPanel extends AbstractPanel2D {
         this.setName( SCENE2D_PANEL_NAME );
     }
 
+    /**
+     * Paint over the GlassPane by calling the draw method inside the {@link JPanel} and not inside a {@link Thread}.<br>
+     * The glassPane access can go over getRootPane.
+     * 
+     * @param g2
+     */
+    private void paintOverGlassPane( Graphics2D g2 ) {
+        Component glassPane = this.getRootPane().getGlassPane();
+        MouseAdapter mouseAdapter = new MouseAdapter() {
+            // else the wait cursor will not appear
+        };
+        glassPane.addMouseListener( mouseAdapter );
+        glassPane.setCursor( getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+        glassPane.setVisible( true );
+        this.state.mapController.paintMap( g2, this.state.previewing );
+        glassPane.removeMouseListener( mouseAdapter );
+        glassPane.setCursor( getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
+        glassPane.setVisible( false );
+    }
+
     @Override
     public void paintComponent( Graphics g ) {
         super.paintComponent( g );
         final Graphics2D g2 = (Graphics2D) g;
-        if ( state.mapController != null ) {
-            if ( state.mapController.needsRepaint() && !state.previewing ) {
+        if ( this.state.mapController != null ) {
+            if ( this.state.mapController.needsRepaint() && !this.state.previewing ) {
                 SwingUtilities.invokeLater( new Runnable() {
 
                     @Override
                     public void run() {
-                        Component glassPane = ( (JFrame) getTopLevelAncestor() ).getGlassPane();
-                        MouseAdapter mouseAdapter = new MouseAdapter() {
-                            // else the wait cursor will not appear
-                        };
-                        glassPane.addMouseListener( mouseAdapter );
-                        glassPane.setCursor( getPredefinedCursor( Cursor.WAIT_CURSOR ) );
-                        glassPane.setVisible( true );
-                        state.mapController.paintMap( g2, state.previewing );
-                        glassPane.removeMouseListener( mouseAdapter );
-                        glassPane.setCursor( getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
-                        glassPane.setVisible( false );
+                        Scene2DPanel.this.paintOverGlassPane( g2 );
                     }
                 } );
             } else {
-                state.mapController.paintMap( g2, state.previewing );
+                this.state.mapController.paintMap( g2, this.state.previewing );
             }
         }
     }
 
     public Rectangle getImageDimension() {
-        return imageDimension;
+        return this.imageDimension;
     }
 
     public void setImageDimension( Rectangle imageDimension ) {
