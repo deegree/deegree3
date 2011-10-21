@@ -86,6 +86,9 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.dims.DimensionLexer;
 import org.deegree.protocol.wms.dims.parser;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
+import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
 import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
@@ -144,12 +147,12 @@ public class GetMap {
      * @param service
      * @throws OWSException
      */
-    public GetMap( Map<String, String> map, Version version ) throws OWSException {
+    public GetMap( Map<String, String> map, Version version, GetMapExtensions exts ) throws OWSException {
         if ( version.equals( VERSION_111 ) ) {
-            parse111( map );
+            parse111( map, exts );
         }
         if ( version.equals( VERSION_130 ) ) {
-            parse130( map );
+            parse130( map, exts );
         }
         parameterMap.putAll( map );
         try {
@@ -171,7 +174,8 @@ public class GetMap {
      * @param height
      * @param boundingBox
      */
-    public GetMap( Collection<String> layers, Collection<String> styles, int width, int height, Envelope boundingBox ) {
+    public GetMap( Collection<String> layers, Collection<String> styles, int width, int height, Envelope boundingBox,
+                   GetMapExtensions exts ) {
         this.layers.addAll( layers );
         this.styles.addAll( styles );
         this.width = width;
@@ -181,8 +185,7 @@ public class GetMap {
         this.bgcolor = white;
         format = "image/png";
         transparent = false;
-        // TODO handle/obtain default value maps
-        // handleVSPs( new HashMap<String, String>() );
+        handleVSPs( new HashMap<String, String>(), exts );
         try {
             scale = Utils.calcScaleWMS130( width, height, bbox, crs );
             LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
@@ -194,7 +197,7 @@ public class GetMap {
         }
     }
 
-    private void parse111( Map<String, String> map )
+    private void parse111( Map<String, String> map, GetMapExtensions exts )
                             throws OWSException {
         String c = map.get( "SRS" );
         if ( c == null || c.trim().isEmpty() ) {
@@ -231,7 +234,7 @@ public class GetMap {
 
         bbox = fac.createEnvelope( new double[] { vals[0], vals[1] }, new double[] { vals[2], vals[3] }, crs );
 
-        handleCommon( map );
+        handleCommon( map, exts );
     }
 
     static LinkedList<String> handleKVPStyles( String ss, int numLayers )
@@ -269,7 +272,7 @@ public class GetMap {
         return styles;
     }
 
-    private void handleCommon( Map<String, String> map )
+    private void handleCommon( Map<String, String> map, GetMapExtensions exts )
                             throws OWSException {
         String ls = map.get( "LAYERS" );
         String sld = map.get( "SLD" );
@@ -345,21 +348,21 @@ public class GetMap {
 
         dimensions = parseDimensionValues( map );
 
-        // TODO obtain default values
-        // handleVSPs( map );
+        handleVSPs( map, exts );
     }
 
-    private void handleVSPs( Map<String, String> map, Map<String, Quality> defaultQualities,
-                             Map<String, Interpolation> defaultInterpolations,
-                             Map<String, Antialias> defaultAntialiases, Map<String, Integer> defaultMaxFeatures ) {
-        handleEnumVSP( Quality.class, quality, Quality.NORMAL, map.get( "QUALITY" ), defaultQualities );
+    private void handleVSPs( Map<String, String> map, GetMapExtensions defaults ) {
+        if ( defaults == null ) {
+            defaults = new GetMapExtensions();
+        }
+        handleEnumVSP( Quality.class, quality, Quality.NORMAL, map.get( "QUALITY" ), defaults.getQualities() );
         handleEnumVSP( Interpolation.class, interpolation, Interpolation.NEARESTNEIGHBOR, map.get( "INTERPOLATION" ),
-                       defaultInterpolations );
-        handleEnumVSP( Antialias.class, antialias, Antialias.BOTH, map.get( "ANTIALIAS" ), defaultAntialiases );
+                       defaults.getInterpolations() );
+        handleEnumVSP( Antialias.class, antialias, Antialias.BOTH, map.get( "ANTIALIAS" ), defaults.getAntialiases() );
         String maxFeatures = map.get( "MAX_FEATURES" );
         if ( maxFeatures == null ) {
             for ( String l : this.layers ) {
-                Integer max = defaultMaxFeatures.get( l );
+                Integer max = defaults.getMaxFeatures( l );
                 if ( max == null ) {
                     max = 10000;
                     LOG.debug( "Using global max features setting of {}.", max );
@@ -368,11 +371,11 @@ public class GetMap {
             }
         } else {
             String[] mfs = maxFeatures.split( "," );
-            Map<String, Integer> defaults = defaultMaxFeatures;
+            Map<String, Integer> mfdefaults = defaults.getMaxFeatures();
             if ( mfs.length == this.layers.size() ) {
                 for ( int i = 0; i < mfs.length; ++i ) {
                     String cur = this.layers.get( i );
-                    Integer def = defaults.get( cur );
+                    Integer def = mfdefaults.get( cur );
                     try {
                         Integer val = Integer.valueOf( mfs[i] );
                         this.maxFeatures.put( cur, def == null ? val : min( def, val ) );
@@ -384,7 +387,7 @@ public class GetMap {
             } else {
                 for ( int i = 0; i < mfs.length; ++i ) {
                     String cur = this.layers.get( i );
-                    Integer def = defaults.get( cur );
+                    Integer def = mfdefaults.get( cur );
                     if ( mfs.length <= i ) {
                         try {
                             Integer val = Integer.valueOf( mfs[i] );
@@ -581,7 +584,7 @@ public class GetMap {
         }
     }
 
-    private void parse130( Map<String, String> map )
+    private void parse130( Map<String, String> map, GetMapExtensions exts )
                             throws OWSException {
         String c = map.get( "CRS" );
         if ( c == null || c.trim().isEmpty() ) {
@@ -611,7 +614,7 @@ public class GetMap {
         bbox = getCRSAndEnvelope130( c, vals );
         crs = bbox.getCoordinateSystem();
 
-        handleCommon( map );
+        handleCommon( map, exts );
     }
 
     /**
@@ -769,53 +772,6 @@ public class GetMap {
      */
     public Map<String, String> getParameterMap() {
         return parameterMap;
-    }
-
-    /**
-     * <code>Quality</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Quality {
-        /***/
-        LOW, /***/
-        NORMAL, /***/
-        HIGH
-    }
-
-    /**
-     * <code>Interpolation</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Interpolation {
-        /***/
-        NEARESTNEIGHBOR, /***/
-        NEARESTNEIGHBOUR, /***/
-        BILINEAR, /***/
-        BICUBIC
-    }
-
-    /**
-     * <code>Antialias</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Antialias {
-        /***/
-        IMAGE, /***/
-        TEXT, /***/
-        BOTH, /***/
-        NONE
     }
 
     /**
