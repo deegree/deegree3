@@ -29,6 +29,13 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-core-geometry</artifactId>
+            <version>3.2-pre1-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

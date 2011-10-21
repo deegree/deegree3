@@ -30,6 +30,13 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-core-commons</artifactId>
+            <version>3.2-pre1-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -46,46 +53,5 @@
       <version>3.2-pre1-SNAPSHOT</version>
     </dependency>
   </dependencies>
-
-  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
-  <profiles>
-    <profile>
-      <id>activate-dependency-plugin</id>
-      <activation>
-        <property>
-          <name>!deactivateDependencyPlugin</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.3</version>
-            <executions>
-              <execution>
-                <id>unpack-description</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>unpack</goal>
-                </goals>
-                <configuration>
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>org.deegree</groupId>
-                      <artifactId>deegree-core-commons</artifactId>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>${project.basedir}/target/schemas</outputDirectory>
-                      <includes>META-INF/schemas/description/3.1.0/description.xsd</includes>
-                    </artifactItem>
-                  </artifactItems>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>
