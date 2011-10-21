@@ -81,14 +81,14 @@ public class SLDParser {
      * @throws OWSException
      * @throws ParseException
      */
-    public static Pair<LinkedList<String>, LinkedList<StyleRef>> parse( XMLStreamReader in, GetMap gm )
+    public static Pair<LinkedList<LayerRef>, LinkedList<StyleRef>> parse( XMLStreamReader in, GetMap gm )
                             throws XMLStreamException, OWSException, ParseException {
         while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
             in.nextTag();
         }
 
-        LinkedList<String> layers = new LinkedList<String>();
+        LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
         LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
         while ( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) {
@@ -156,7 +156,7 @@ public class SLDParser {
                 if ( in.getLocalName().equals( "NamedStyle" ) ) {
                     in.nextTag();
                     String name = in.getElementText();
-                    layers.add( layerName );
+                    layers.add( new LayerRef( layerName ) );
                     styles.add( new StyleRef( name ) );
 
                     in.nextTag(); // out of name
@@ -197,7 +197,7 @@ public class SLDParser {
                              || in.getLocalName().equals( "CoverageStyle" )
                              || in.getLocalName().equals( "OnlineResource" ) ) {
                             Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
-                            layers.add( layerName );
+                            layers.add( new LayerRef( layerName ) );
                             styles.add( new StyleRef( style ) );
                         }
                     }
@@ -210,7 +210,7 @@ public class SLDParser {
             }
         }
 
-        return new Pair<LinkedList<String>, LinkedList<StyleRef>>( layers, styles );
+        return new Pair<LinkedList<LayerRef>, LinkedList<StyleRef>>( layers, styles );
     }
 
     /**

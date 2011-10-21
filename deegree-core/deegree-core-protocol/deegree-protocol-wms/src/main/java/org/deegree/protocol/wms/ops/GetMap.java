@@ -41,7 +41,6 @@ import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
@@ -72,6 +71,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -108,7 +108,7 @@ public class GetMap {
 
     private Envelope bbox;
 
-    private LinkedList<String> layers = new LinkedList<String>();
+    private LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
 
     private LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
@@ -167,8 +167,8 @@ public class GetMap {
      * @param height
      * @param boundingBox
      */
-    public GetMap( Collection<String> layers, Collection<StyleRef> styles, int width, int height, Envelope boundingBox,
-                   GetMapExtensions exts ) {
+    public GetMap( Collection<LayerRef> layers, Collection<StyleRef> styles, int width, int height,
+                   Envelope boundingBox, GetMapExtensions exts ) {
         this.layers.addAll( layers );
         this.styles.addAll( styles );
         this.width = width;
@@ -274,9 +274,9 @@ public class GetMap {
         if ( ( ls == null || ls.trim().isEmpty() ) && sld == null && sldBody == null ) {
             throw new OWSException( "The LAYERS parameter is missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
-        layers = ls == null ? new LinkedList<String>() : new LinkedList<String>( asList( ls.split( "," ) ) );
+        layers = ls == null ? new LinkedList<LayerRef>() : CollectionUtils.map( ls.split( "," ), LayerRef.FROM_NAMES );
 
-        if ( layers.size() == 1 && layers.get( 0 ).isEmpty() ) {
+        if ( layers.size() == 1 && layers.get( 0 ).getName().isEmpty() ) {
             layers.clear();
         }
 
@@ -357,43 +357,43 @@ public class GetMap {
                        defaults.getAntialiases() );
         String maxFeatures = map.get( "MAX_FEATURES" );
         if ( maxFeatures == null ) {
-            for ( String l : this.layers ) {
-                Integer max = defaults.getMaxFeatures( l );
+            for ( LayerRef l : this.layers ) {
+                Integer max = defaults.getMaxFeatures( l.getName() );
                 if ( max == null ) {
                     max = 10000;
                     LOG.debug( "Using global max features setting of {}.", max );
                 }
-                extensions.getMaxFeatures().put( l, max );
+                extensions.getMaxFeatures().put( l.getName(), max );
             }
         } else {
             String[] mfs = maxFeatures.split( "," );
             Map<String, Integer> mfdefaults = defaults.getMaxFeatures();
             if ( mfs.length == this.layers.size() ) {
                 for ( int i = 0; i < mfs.length; ++i ) {
-                    String cur = this.layers.get( i );
+                    LayerRef cur = this.layers.get( i );
                     Integer def = mfdefaults.get( cur );
                     try {
                         Integer val = Integer.valueOf( mfs[i] );
-                        extensions.getMaxFeatures().put( cur, def == null ? val : min( def, val ) );
+                        extensions.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
                     } catch ( NumberFormatException e ) {
                         LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                        extensions.getMaxFeatures().put( cur, def == null ? 10000 : def );
+                        extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                     }
                 }
             } else {
                 for ( int i = 0; i < mfs.length; ++i ) {
-                    String cur = this.layers.get( i );
+                    LayerRef cur = this.layers.get( i );
                     Integer def = mfdefaults.get( cur );
                     if ( mfs.length <= i ) {
                         try {
                             Integer val = Integer.valueOf( mfs[i] );
-                            extensions.getMaxFeatures().put( cur, def == null ? val : min( def, val ) );
+                            extensions.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
                         } catch ( NumberFormatException e ) {
                             LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                            extensions.getMaxFeatures().put( cur, def == null ? 10000 : def );
+                            extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                         }
                     } else {
-                        extensions.getMaxFeatures().put( cur, def == null ? 10000 : def );
+                        extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                     }
                 }
             }
@@ -403,9 +403,9 @@ public class GetMap {
     private <T extends Enum<T>> void handleEnumVSP( Class<T> enumType, Map<String, T> map, T defaultVal, String vals,
                                                     Map<String, T> defaults ) {
         if ( vals == null ) {
-            for ( String l : layers ) {
+            for ( LayerRef l : layers ) {
                 T val = defaults.get( l );
-                map.put( l, val == null ? defaultVal : val );
+                map.put( l.getName(), val == null ? defaultVal : val );
             }
         } else {
             String[] ss = vals.split( "," );
@@ -413,9 +413,9 @@ public class GetMap {
                 for ( int i = 0; i < ss.length; ++i ) {
                     T val = defaults.get( layers.get( i ) );
                     try {
-                        map.put( layers.get( i ), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
+                        map.put( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
                     } catch ( IllegalArgumentException e ) {
-                        map.put( layers.get( i ), val == null ? defaultVal : val );
+                        map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
                         LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
                                   new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
                     }
@@ -424,12 +424,12 @@ public class GetMap {
                 for ( int i = 0; i < layers.size(); ++i ) {
                     T val = defaults.get( layers.get( i ) );
                     if ( ss.length <= i ) {
-                        map.put( layers.get( i ), val == null ? defaultVal : val );
+                        map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
                     } else {
                         try {
-                            map.put( layers.get( i ), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
+                            map.put( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
                         } catch ( IllegalArgumentException e ) {
-                            map.put( layers.get( i ), val == null ? defaultVal : val );
+                            map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
                             LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
                                       new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
                         }
@@ -439,10 +439,10 @@ public class GetMap {
         }
     }
 
-    private void handleSLD( String sld, String sldBody, LinkedList<String> layers )
+    private void handleSLD( String sld, String sldBody, LinkedList<LayerRef> layers )
                             throws OWSException {
         XMLInputFactory xmlfac = XMLInputFactory.newInstance();
-        Pair<LinkedList<String>, LinkedList<StyleRef>> pair = null;
+        Pair<LinkedList<LayerRef>, LinkedList<StyleRef>> pair = null;
         if ( sld != null ) {
             try {
                 pair = parse( xmlfac.createXMLStreamReader( sld, new URL( sld ).openStream() ), this );
@@ -489,36 +489,36 @@ public class GetMap {
         // if layers are referenced, clear the other layers out, else leave all in
         if ( pair != null && !layers.isEmpty() ) {
             // it might be in SLD that a layer has multiple styles, so we need to map to a list here
-            HashMap<String, LinkedList<Pair<String, StyleRef>>> lays = new HashMap<String, LinkedList<Pair<String, StyleRef>>>();
+            HashMap<String, LinkedList<Pair<LayerRef, StyleRef>>> lays = new HashMap<String, LinkedList<Pair<LayerRef, StyleRef>>>();
 
-            ListIterator<String> it = pair.first.listIterator();
+            ListIterator<LayerRef> it = pair.first.listIterator();
             ListIterator<StyleRef> st = pair.second.listIterator();
             while ( it.hasNext() ) {
-                String l = it.next();
+                LayerRef l = it.next();
                 StyleRef s = st.next();
-                String name = l;
+                String name = l.getName();
                 if ( !layers.contains( name ) ) {
                     it.remove();
                     st.remove();
                 } else {
-                    LinkedList<Pair<String, StyleRef>> list = lays.get( name );
+                    LinkedList<Pair<LayerRef, StyleRef>> list = lays.get( name );
                     if ( list == null ) {
-                        list = new LinkedList<Pair<String, StyleRef>>();
+                        list = new LinkedList<Pair<LayerRef, StyleRef>>();
                         lays.put( name, list );
                     }
 
-                    list.add( new Pair<String, StyleRef>( l, s ) );
+                    list.add( new Pair<LayerRef, StyleRef>( l, s ) );
                 }
             }
 
             // to get the order right, in case it's different from the SLD order
-            for ( String name : layers ) {
-                LinkedList<Pair<String, StyleRef>> l = lays.get( name );
+            for ( LayerRef name : layers ) {
+                LinkedList<Pair<LayerRef, StyleRef>> l = lays.get( name );
                 if ( l == null ) {
                     throw new OWSException( "The SLD NamedLayer " + name + " is invalid.", "InvalidParameterValue",
                                             "layers" );
                 }
-                Pair<ArrayList<String>, ArrayList<StyleRef>> p = unzipPair( l );
+                Pair<ArrayList<LayerRef>, ArrayList<StyleRef>> p = unzipPair( l );
                 this.layers.addAll( p.first );
                 styles.addAll( p.second );
             }
@@ -629,8 +629,8 @@ public class GetMap {
     /**
      * @return a copy of the layers list
      */
-    public LinkedList<String> getLayers() {
-        return new LinkedList<String>( layers );
+    public LinkedList<LayerRef> getLayers() {
+        return new LinkedList<LayerRef>( layers );
     }
 
     /**
