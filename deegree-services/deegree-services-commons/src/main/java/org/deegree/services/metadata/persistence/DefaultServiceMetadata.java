@@ -38,7 +38,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.metadata;
+package org.deegree.services.metadata.persistence;
 
 import java.net.URL;
 import java.util.List;
@@ -46,9 +46,11 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.Resource;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.services.metadata.ServiceMetadata;
 import org.w3c.dom.Element;
 
 /**
@@ -59,14 +61,53 @@ import org.w3c.dom.Element;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public interface ServiceMetadata extends Resource {
+public class DefaultServiceMetadata implements ServiceMetadata {
 
-    ServiceIdentification getServiceIdentification();
+    private ServiceIdentification serviceIdentification;
 
-    ServiceProvider getServiceProvider();
+    private ServiceProvider serviceProvider;
 
-    Map<String, List<Element>> getExtendedCapabilities();
+    private Map<String, List<Element>> extendedCapabilities;
 
-    URL getDataMetadataUrl( QName name );
+    private final Map<QName, URL> dataMetadataUrls;
+
+    public DefaultServiceMetadata( ServiceIdentification si, ServiceProvider sp,
+                                   Map<String, List<Element>> extendedCapabilities, Map<QName, URL> dataMetadataUrls ) {
+        this.serviceIdentification = si;
+        this.serviceProvider = sp;
+        this.extendedCapabilities = extendedCapabilities;
+        this.dataMetadataUrls = dataMetadataUrls;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to init
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to release
+    }
+
+    @Override
+    public ServiceIdentification getServiceIdentification() {
+        return serviceIdentification;
+    }
+
+    @Override
+    public ServiceProvider getServiceProvider() {
+        return serviceProvider;
+    }
+
+    @Override
+    public Map<String, List<Element>> getExtendedCapabilities() {
+        return extendedCapabilities;
+    }
+
+    @Override
+    public URL getDataMetadataUrl( QName name ) {
+        return dataMetadataUrls.get( name );
+    }
 
 }

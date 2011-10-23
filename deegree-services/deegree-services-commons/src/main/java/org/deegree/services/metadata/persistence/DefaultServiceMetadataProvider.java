@@ -97,7 +97,7 @@ public class DefaultServiceMetadataProvider implements ServiceMetadataProvider {
     }
 
     @Override
-    public ServiceMetadata create( URL configUrl )
+    public DefaultServiceMetadata create( URL configUrl )
                             throws ResourceInitException {
         try {
             JAXBElement<DeegreeServicesMetadataType> md;
@@ -119,7 +119,7 @@ public class DefaultServiceMetadataProvider implements ServiceMetadataProvider {
                     list.add( ex.getAny() );
                 }
             }
-            return new ServiceMetadata( smd.first, smd.second, extendedCapabilities, new HashMap<QName, URL>() );
+            return new DefaultServiceMetadata( smd.first, smd.second, extendedCapabilities, new HashMap<QName, URL>() );
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( "Unable to read service metadata config.", e );
