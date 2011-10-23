@@ -40,8 +40,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.Resource;
@@ -66,11 +69,14 @@ public class ServiceMetadata implements Resource {
 
     private Map<String, List<Element>> extendedCapabilities;
 
+    private final Map<QName, URL> dataMetadataUrls;
+
     public ServiceMetadata( ServiceIdentification si, ServiceProvider sp,
-                            Map<String, List<Element>> extendedCapabilities ) {
+                            Map<String, List<Element>> extendedCapabilities, Map<QName, URL> dataMetadataUrls ) {
         this.serviceIdentification = si;
         this.serviceProvider = sp;
         this.extendedCapabilities = extendedCapabilities;
+        this.dataMetadataUrls = dataMetadataUrls;
     }
 
     @Override
@@ -94,6 +100,10 @@ public class ServiceMetadata implements Resource {
 
     public Map<String, List<Element>> getExtendedCapabilities() {
         return extendedCapabilities;
+    }
+
+    public URL getDataMetadataUrl( QName name ) {
+        return dataMetadataUrls.get( name );
     }
 
 }

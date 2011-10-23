@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -118,7 +119,7 @@ public class DefaultServiceMetadataProvider implements ServiceMetadataProvider {
                     list.add( ex.getAny() );
                 }
             }
-            return new ServiceMetadata( smd.first, smd.second, extendedCapabilities );
+            return new ServiceMetadata( smd.first, smd.second, extendedCapabilities, new HashMap<QName, URL>() );
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( "Unable to read service metadata config.", e );
