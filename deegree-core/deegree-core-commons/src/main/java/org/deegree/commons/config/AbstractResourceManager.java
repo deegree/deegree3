@@ -79,9 +79,10 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
      * Called when a new {@link Resource} has been successfully initialized.
      * 
      * @param resource
-     * @throws ResourceInitException 
+     * @throws ResourceInitException
      */
-    protected void add( T resource ) throws ResourceInitException {
+    protected void add( T resource )
+                            throws ResourceInitException {
         // nothing to do
     }
 
@@ -94,6 +95,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         // nothing to do
     }
 
+    @Override
     public T create( String id, URL configUrl )
                             throws ResourceInitException {
 
@@ -120,6 +122,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         return resource;
     }
 
+    @Override
     public T get( String id ) {
         ResourceState<T> state = getState( id );
         if ( state != null ) {
@@ -128,6 +131,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         return null;
     }
 
+    @Override
     public void shutdown() {
         for ( ResourceState<T> state : getStates() ) {
             try {
@@ -144,6 +148,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         nsToProvider.clear();
     }
 
+    @Override
     public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
 
@@ -170,13 +175,25 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
             for ( File configFile : files ) {
                 try {
                     ResourceState<T> state = processResourceConfig( configFile );
+                    if ( state == null ) {
+                        continue;
+                    }
                     idToState.put( state.getId(), state );
                 } catch ( Throwable t ) {
-                    LOG.error( t.getMessage(), t );
+                    LOG.error( "Could not create resource: {}", t.getLocalizedMessage() );
+                    if ( t.getCause() != null ) {
+                        LOG.error( "Cause was: {}", t.getCause().getLocalizedMessage() );
+                    }
+                    LOG.trace( "Stack trace:", t );
                 }
             }
             LOG.info( "" );
         }
+    }
+
+    @Override
+    public ResourceState<T> getState( String id ) {
+        return super.getState( id );
     }
 
     @Override
@@ -213,7 +230,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
      * 
      * @param configFile
      *            configuration file, must not be <code>null</code>
-     * @return resource state, never <code>null</code>
+     * @return resource state, can be null if resource manager does not want to handle the config
      * @throws IOException
      *             if the resource filename is invalid / could not be processed
      */
@@ -244,12 +261,18 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                     state = new ResourceState<T>( id, configFile, provider, init_ok, resource, null );
                     add( resource );
                 } catch ( ResourceInitException e ) {
-                    LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
-                    LOG.error( "Stack trace: ", e );
+                    LOG.error( "Could not create resource {}: {}", name, e.getLocalizedMessage() );
+                    if ( e.getCause() != null ) {
+                        LOG.error( "Cause was: {}", e.getCause().getLocalizedMessage() );
+                    }
+                    LOG.trace( "Stack trace:", e );
                     state = new ResourceState<T>( id, configFile, provider, init_error, null, e );
                 } catch ( Throwable t ) {
-                    LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
-                    LOG.error( "Stack trace: ", t );
+                    LOG.error( "Could not create resource {}: {}", name, t.getLocalizedMessage() );
+                    if ( t.getCause() != null ) {
+                        LOG.error( "Cause was: {}", t.getCause().getLocalizedMessage() );
+                    }
+                    LOG.trace( "Stack trace:", t );
                     state = new ResourceState<T>( id, configFile, provider, init_error, null,
                                                   new ResourceInitException( t.getMessage(), t ) );
                 }

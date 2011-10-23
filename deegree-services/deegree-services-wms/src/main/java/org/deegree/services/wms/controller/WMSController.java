@@ -68,6 +68,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -140,6 +141,8 @@ import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
+import org.deegree.services.metadata.ServiceMetadata;
+import org.deegree.services.metadata.persistence.ServiceMetadataManager;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetFeatureInfoSchema;
@@ -192,12 +195,20 @@ public class WMSController extends AbstractOWS {
 
     private Version highestVersion;
 
-    private List<Element> extendedCaps;
+    private Map<String, List<Element>> extendedCaps;
 
     private String metadataURLTemplate;
 
+    private String configId;
+
     public WMSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         super( configURL, serviceInfo );
+        try {
+            File f = new File( configURL.toURI() );
+            this.configId = f.getName().substring( 0, f.getName().length() - 4 );
+        } catch ( URISyntaxException e ) {
+            // then no configId will be available
+        }
     }
 
     /**
@@ -292,9 +303,11 @@ public class WMSController extends AbstractOWS {
         DeegreeWMS conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
         if ( conf.getExtendedCapabilities() != null ) {
-            this.extendedCaps = new ArrayList<Element>( conf.getExtendedCapabilities().size() );
+            this.extendedCaps = new HashMap<String, List<Element>>();
+            List<Element> caps = new ArrayList<Element>( conf.getExtendedCapabilities().size() );
+            extendedCaps.put( "default", caps );
             for ( ExtendedCapabilities extendedCapsConf : conf.getExtendedCapabilities() ) {
-                extendedCaps.add( extendedCapsConf.getAny() );
+                caps.add( extendedCapsConf.getAny() );
             }
         }
 
@@ -805,6 +818,17 @@ public class WMSController extends AbstractOWS {
         String getUrl = OGCFrontController.getHttpGetURL();
         String postUrl = OGCFrontController.getHttpPostURL();
 
+        // override service metadata if available from manager
+        if ( configId != null ) {
+            ServiceMetadataManager mgr = workspace.getSubsystemManager( ServiceMetadataManager.class );
+            ServiceMetadata md = mgr.getState( configId ).getResource();
+            if ( md != null ) {
+                identification = md.getServiceIdentification();
+                provider = md.getServiceProvider();
+                extendedCaps = md.getExtendedCapabilities();
+            }
+        }
+
         if ( service.getDynamics().isEmpty() ) {
             controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
                                                           identification, provider, map, this );
@@ -868,8 +892,12 @@ public class WMSController extends AbstractOWS {
         return new Pair<XMLExceptionSerializer<OWSException>, String>( controller.EXCEPTIONS, controller.EXCEPTION_MIME );
     }
 
-    public List<Element> getExtendedCapabilities() {
-        return extendedCaps;
+    public List<Element> getExtendedCapabilities( String version ) {
+        List<Element> list = extendedCaps.get( version );
+        if ( list == null ) {
+            list = extendedCaps.get( "default" );
+        }
+        return list;
     }
 
     public String getMetadataURLTemplate() {

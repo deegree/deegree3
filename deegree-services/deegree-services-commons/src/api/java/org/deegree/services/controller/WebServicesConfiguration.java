@@ -66,6 +66,7 @@ import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.metadata.persistence.ServiceMetadataManager;
 import org.slf4j.Logger;
 
 /**
@@ -195,7 +196,8 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
             for ( File configFile : files ) {
                 String fileName = configFile.getName();
-                if ( !fileName.equals( "metadata.xml" ) && !fileName.equals( "main.xml" ) ) {
+                if ( !fileName.endsWith( "_metadata.xml" ) && !fileName.equals( "metadata.xml" )
+                     && !fileName.equals( "main.xml" ) ) {
                     try {
                         ResourceState<OWS> state = processResourceConfig( configFile );
                         idToState.put( state.getId(), state );
@@ -377,7 +379,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
+        return new Class[] { ServiceMetadataManager.class };
     }
 
     public DeegreeWorkspace getWorkspace() {

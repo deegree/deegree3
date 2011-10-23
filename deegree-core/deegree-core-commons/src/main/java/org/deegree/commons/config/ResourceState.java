@@ -154,4 +154,10 @@ public class ResourceState<T extends Resource> {
     public ResourceInitException getLastException() {
         return lastException;
     }
+
+    @Override
+    public String toString() {
+        return "ResourceState: " + id + " (" + type + ")";
+    }
+
 }

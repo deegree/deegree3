@@ -164,7 +164,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
     }
 
     private void writeExtendedCapabilities( XMLStreamWriter writer ) {
-        List<Element> caps = controller.getExtendedCapabilities();
+        List<Element> caps = controller.getExtendedCapabilities( "1.3.0" );
         if ( caps != null ) {
             XMLInputFactory fac = XMLInputFactory.newInstance();
             for ( Element c : caps ) {

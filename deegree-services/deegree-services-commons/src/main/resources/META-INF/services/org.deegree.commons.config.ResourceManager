@@ -1,2 +1,3 @@
 org.deegree.services.controller.WebServicesConfiguration
 org.deegree.services.controller.security.SecurityConfiguration
+org.deegree.services.metadata.persistence.ServiceMetadataManager
