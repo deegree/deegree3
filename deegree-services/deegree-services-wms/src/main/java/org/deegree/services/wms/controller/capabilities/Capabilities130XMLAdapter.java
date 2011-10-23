@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -80,6 +81,7 @@ import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.deegree.services.jaxb.wms.LanguageStringType;
+import org.deegree.services.metadata.ServiceMetadata;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.controller.WMSController130;
@@ -114,6 +116,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
     private final WMSController controller;
 
+    private ServiceMetadata metadata;
+
     /**
      * @param identification
      * @param provider
@@ -122,10 +126,12 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
      * @param service
      * @param controller
      */
-    public Capabilities130XMLAdapter( ServiceIdentification identification, ServiceProvider provider, String getUrl,
-                                      String postUrl, MapService service, WMSController controller ) {
+    public Capabilities130XMLAdapter( ServiceIdentification identification, ServiceProvider provider,
+                                      ServiceMetadata metadata, String getUrl, String postUrl, MapService service,
+                                      WMSController controller ) {
         this.identification = identification;
         this.provider = provider;
+        this.metadata = metadata;
         this.getUrl = getUrl;
         this.postUrl = postUrl;
         this.service = service;
@@ -430,7 +436,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        mdlabel: if ( controller.getMetadataURLTemplate() != null ) {
+        String mdUrl = metadata.getDataMetadataUrl( new QName( layer.getName() ) );
+
+        mdlabel: if ( mdUrl == null && controller.getMetadataURLTemplate() != null ) {
             String id = layer.getDataMetadataSetId();
             if ( id == null ) {
                 break mdlabel;
@@ -444,8 +452,10 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
             }
 
-            String mdUrl = StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id );
+            mdUrl = StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id );
+        }
 
+        if ( mdUrl != null ) {
             writer.writeStartElement( WMSNS, "MetadataURL" );
             writer.writeAttribute( "type", "ISO19115:2003" );
             writeElement( writer, WMSNS, "Format", "application/xml" );

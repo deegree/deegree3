@@ -45,9 +45,9 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
@@ -68,7 +68,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -116,13 +115,13 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
-import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
+import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
@@ -747,7 +746,8 @@ public class WMSController extends AbstractOWS {
                             org.deegree.protocol.ows.exception.OWSException {
 
         if ( service.isNewStyle() ) {
-            org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version, service.getExtensions() );
+            org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
+                                                                                               service.getExtensions() );
 
             RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(),
                                                     gm2.getTransparent(), gm2.getBgColor(), gm2.getBoundingBox(),
@@ -819,26 +819,27 @@ public class WMSController extends AbstractOWS {
         String postUrl = OGCFrontController.getHttpPostURL();
 
         // override service metadata if available from manager
+        ServiceMetadata metadata = null;
         if ( configId != null ) {
             ServiceMetadataManager mgr = workspace.getSubsystemManager( ServiceMetadataManager.class );
-            ServiceMetadata md = mgr.getState( configId ).getResource();
-            if ( md != null ) {
-                identification = md.getServiceIdentification();
-                provider = md.getServiceProvider();
-                extendedCaps = md.getExtendedCapabilities();
+            metadata = mgr.getState( configId ).getResource();
+            if ( metadata != null ) {
+                identification = metadata.getServiceIdentification();
+                provider = metadata.getServiceProvider();
+                extendedCaps = metadata.getExtendedCapabilities();
             }
         }
 
         if ( service.getDynamics().isEmpty() ) {
             controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                          identification, provider, map, this );
+                                                          identification, provider, map, this, metadata );
         } else {
             // need to synchronize here as well, else the layer list may be updating right now (the service.update()
             // does not strictly need to be synchronized for this use case, but it sure is a Good Thing to do it anyway)
             synchronized ( this ) {
                 service.update();
                 controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                              identification, provider, map, this );
+                                                              identification, provider, map, this, metadata );
             }
         }
 
@@ -964,7 +965,8 @@ public class WMSController extends AbstractOWS {
          */
         void getCapabilities( String getUrl, String postUrl, String updateSequence, MapService service,
                               HttpResponseBuffer response, ServiceIdentification identification,
-                              ServiceProvider provider, Map<String, String> customParameters, WMSController controller )
+                              ServiceProvider provider, Map<String, String> customParameters, WMSController controller,
+                              ServiceMetadata metadata )
                                 throws OWSException, IOException;
 
         /**

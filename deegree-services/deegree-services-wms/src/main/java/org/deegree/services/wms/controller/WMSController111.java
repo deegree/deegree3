@@ -54,6 +54,7 @@ import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.metadata.ServiceMetadata;
 import org.deegree.services.ows.NamespacelessOWSExceptionXMLAdapter;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities111XMLAdapter;
@@ -114,7 +115,8 @@ public class WMSController111 extends WMSControllerBase {
 
     @Override
     protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
-                                ServiceIdentification identification, ServiceProvider provider, WMSController controller )
+                                ServiceIdentification identification, ServiceProvider provider,
+                                WMSController controller, ServiceMetadata metadata )
                             throws IOException {
         response.setContentType( "application/vnd.ogc.wms_xml" );
         try {

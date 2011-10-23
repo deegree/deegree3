@@ -67,6 +67,6 @@ public interface ServiceMetadata extends Resource {
 
     Map<String, List<Element>> getExtendedCapabilities();
 
-    URL getDataMetadataUrl( QName name );
+    String getDataMetadataUrl( QName name );
 
 }

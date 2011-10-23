@@ -57,13 +57,14 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.xml.stream.XMLOutputFactory;
 
-import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.metadata.ServiceMetadata;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController.Controller;
 
@@ -174,7 +175,7 @@ public abstract class WMSControllerBase implements Controller {
     public void getCapabilities( String getUrl, String postUrl, String updateSequence, MapService service,
                                  HttpResponseBuffer response, ServiceIdentification identification,
                                  ServiceProvider provider, Map<String, String> customParameters,
-                                 WMSController controller )
+                                 WMSController controller, ServiceMetadata metadata )
                             throws OWSException, IOException {
         getUrl = getUrl.substring( 0, getUrl.length() - 1 );
         postUrl = postUrl.substring( 0, getUrl.length() - 1 );
@@ -196,12 +197,12 @@ public abstract class WMSControllerBase implements Controller {
 
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( IS_REPAIRING_NAMESPACES, true );
-        exportCapas( getUrl, postUrl, service, response, identification, provider, controller );
+        exportCapas( getUrl, postUrl, service, response, identification, provider, controller, metadata );
     }
 
     protected abstract void exportCapas( String getUrl, String postUrl, MapService service,
                                          HttpResponseBuffer response, ServiceIdentification identification,
-                                         ServiceProvider provider, WMSController controller )
+                                         ServiceProvider provider, WMSController controller, ServiceMetadata metadata )
                             throws IOException;
 
 }

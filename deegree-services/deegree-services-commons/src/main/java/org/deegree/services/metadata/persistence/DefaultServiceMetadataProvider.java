@@ -119,7 +119,7 @@ public class DefaultServiceMetadataProvider implements ServiceMetadataProvider {
                     list.add( ex.getAny() );
                 }
             }
-            return new DefaultServiceMetadata( smd.first, smd.second, extendedCapabilities, new HashMap<QName, URL>() );
+            return new DefaultServiceMetadata( smd.first, smd.second, extendedCapabilities, new HashMap<QName, String>() );
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( "Unable to read service metadata config.", e );

@@ -55,6 +55,7 @@ import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.metadata.ServiceMetadata;
 import org.deegree.services.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter;
@@ -122,12 +123,13 @@ public class WMSController130 extends WMSControllerBase {
 
     @Override
     protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
-                                ServiceIdentification identification, ServiceProvider provider, WMSController controller )
+                                ServiceIdentification identification, ServiceProvider provider,
+                                WMSController controller, ServiceMetadata metadata )
                             throws IOException {
         response.setContentType( "text/xml" );
         try {
             XMLStreamWriter xmlWriter = response.getXMLWriter();
-            new Capabilities130XMLAdapter( identification, provider, getUrl, postUrl, service, controller ).export( xmlWriter );
+            new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
         } catch ( XMLStreamException e ) {
             throw new IOException( e );
         }

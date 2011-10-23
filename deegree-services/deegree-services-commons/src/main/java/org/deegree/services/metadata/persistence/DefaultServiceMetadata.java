@@ -69,10 +69,10 @@ public class DefaultServiceMetadata implements ServiceMetadata {
 
     private Map<String, List<Element>> extendedCapabilities;
 
-    private final Map<QName, URL> dataMetadataUrls;
+    private final Map<QName, String> dataMetadataUrls;
 
     public DefaultServiceMetadata( ServiceIdentification si, ServiceProvider sp,
-                                   Map<String, List<Element>> extendedCapabilities, Map<QName, URL> dataMetadataUrls ) {
+                                   Map<String, List<Element>> extendedCapabilities, Map<QName, String> dataMetadataUrls ) {
         this.serviceIdentification = si;
         this.serviceProvider = sp;
         this.extendedCapabilities = extendedCapabilities;
@@ -106,7 +106,7 @@ public class DefaultServiceMetadata implements ServiceMetadata {
     }
 
     @Override
-    public URL getDataMetadataUrl( QName name ) {
+    public String getDataMetadataUrl( QName name ) {
         return dataMetadataUrls.get( name );
     }
 
