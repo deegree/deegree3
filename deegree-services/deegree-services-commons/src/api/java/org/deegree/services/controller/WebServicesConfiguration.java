@@ -87,7 +87,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 
-    private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.0.0/metadata.xsd" );
+    private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.1.0/metadata.xsd" );
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to OWS instances
     private final Map<String, List<OWS>> ogcNameToService = new HashMap<String, List<OWS>>();
