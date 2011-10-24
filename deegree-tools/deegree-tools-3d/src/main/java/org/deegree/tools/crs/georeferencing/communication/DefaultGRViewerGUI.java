@@ -35,15 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
+import static java.awt.GridBagConstraints.CENTER;
 import static org.deegree.tools.crs.georeferencing.i18n.Messages.get;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
@@ -61,6 +60,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
@@ -108,6 +108,8 @@ public class DefaultGRViewerGUI implements GRViewerGUI {
 
     private final Component resizeComponent;
 
+    private final JSplitPane splitPane;
+
     /**
      * @param state
      *            the application state
@@ -127,6 +129,8 @@ public class DefaultGRViewerGUI implements GRViewerGUI {
         this.contentPane = contentPane;
         this.rootPane = rootPane;
         this.resizeComponent = resizeComponent;
+        this.splitPane = new JSplitPane();
+        splitPane.setResizeWeight( .7 );
         contentPane.setLayout( new GridBagLayout() );
 
         setupMenubar();
@@ -219,27 +223,27 @@ public class DefaultGRViewerGUI implements GRViewerGUI {
     }
 
     private void setup2DScene() {
-        panelWest = new JPanel( new BorderLayout() );
+        panelWest = new JPanel( new GridBagLayout() );
         scenePanel2D = new Scene2DPanel( state );
         scenePanel2D.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         scenePanel2D.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        panelWest.add( scenePanel2D, BorderLayout.CENTER );
+        GridBagLayoutHelper.addComponent( panelWest, scenePanel2D, 0, 0, 0, 0, 1.0, 1.0 );
+        panelWest.setMinimumSize( new Dimension( 0, 0 ) );
+        splitPane.setLeftComponent( panelWest );
 
-        GridBagLayoutHelper.addComponent( contentPane, panelWest, 0, 1, 2, 2, 1.0, 1.0 );
+        GridBagLayoutHelper.addComponent( contentPane, splitPane, 0, 1, 3, 2, 1.0, 1.0 );
     }
 
     private void setupPanelFootprint() {
-        panelEast = new JPanel( new BorderLayout() );
+        panelEast = new JPanel( new GridBagLayout() );
         footprintPanel = new BuildingFootprintPanel( state );
         footprintPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         footprintPanel.setBackground( Color.white );
         footprintPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        panelEast.add( footprintPanel, BorderLayout.CENTER );
-
-        GridBagLayoutHelper.addComponent( contentPane, panelEast, 2, 1, 1, 1, footprintPanel.getInsets(),
-                                          GridBagConstraints.LINE_END, .5, 1 );
+        panelEast.setMinimumSize( new Dimension( 0, 0 ) );
+        GridBagLayoutHelper.addComponent( panelEast, footprintPanel, 0, 0, 1, 1, new Insets( 1, 1, 1, 1 ), CENTER, 1, 1 );
     }
 
     private void setupOpenGL( boolean testSphere ) {
@@ -258,8 +262,8 @@ public class DefaultGRViewerGUI implements GRViewerGUI {
         canvas.addMouseMotionListener( openGLEventListener.getTrackBall() );
         canvas.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( contentPane, canvas, 2, 2, 1, 1, new Insets( 0, 10, 0, 0 ),
-                                          GridBagConstraints.LINE_END, .5, 1 );
+        GridBagLayoutHelper.addComponent( panelEast, canvas, 0, 1, 1, 1, new Insets( 1, 1, 1, 1 ), CENTER, 1, 1 );
+        splitPane.setRightComponent( panelEast );
     }
 
     /**
@@ -294,7 +298,10 @@ public class DefaultGRViewerGUI implements GRViewerGUI {
     @Override
     public void addHoleWindowListener( ComponentListener c ) {
         resizeComponent.addComponentListener( c );
-
+        panelEast.addComponentListener( c );
+        panelWest.addComponentListener( c );
+        scenePanel2D.addComponentListener( c );
+        splitPane.addComponentListener( c );
     }
 
     @Override
