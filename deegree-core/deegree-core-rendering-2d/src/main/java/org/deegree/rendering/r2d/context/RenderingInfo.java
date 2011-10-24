@@ -67,12 +67,12 @@ public class RenderingInfo {
     // for GetFeatureInfo
     private int x, y, featureCount;
 
-    private OperatorFilter extraFilter;
+    private Map<String, OperatorFilter> extraFilters;
 
     private Map<String, String> parameters;
 
     public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
-                          double pixelSize, OperatorFilter extraFilter, Map<String, String> parameters ) {
+                          double pixelSize, Map<String, OperatorFilter> extraFilters, Map<String, String> parameters ) {
         this.format = format;
         this.width = width;
         this.height = height;
@@ -80,7 +80,7 @@ public class RenderingInfo {
         this.bgcolor = bgcolor;
         this.envelope = envelope;
         this.pixelSize = pixelSize;
-        this.extraFilter = extraFilter;
+        this.extraFilters = extraFilters;
         this.parameters = parameters;
     }
 
@@ -168,8 +168,8 @@ public class RenderingInfo {
         return parameters;
     }
 
-    public OperatorFilter getExtraFilter() {
-        return extraFilter;
+    public OperatorFilter getExtraFilter( String name ) {
+        return extraFilters.get( name );
     }
 
     public double getScale() {

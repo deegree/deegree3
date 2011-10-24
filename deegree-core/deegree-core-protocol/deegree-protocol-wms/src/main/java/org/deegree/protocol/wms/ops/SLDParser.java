@@ -53,6 +53,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Filter;
+import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.style.se.parser.SymbologyParser;
@@ -123,7 +124,7 @@ public class SLDParser {
                             }
 
                             if ( in.getLocalName().equals( "Filter" ) ) {
-                                Filter filter = Filter110XMLDecoder.parse( in );
+                                OperatorFilter filter = (OperatorFilter) Filter110XMLDecoder.parse( in );
                                 gm.addFilter( layerName, filter );
                             }
 

@@ -76,6 +76,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
+import org.deegree.filter.Filters;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.logical.And;
@@ -113,7 +114,7 @@ public class GetMap {
 
     private LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
-    private HashMap<String, Filter> filters = new HashMap<String, Filter>();
+    private HashMap<String, OperatorFilter> filters = new HashMap<String, OperatorFilter>();
 
     private String format;
 
@@ -717,14 +718,8 @@ public class GetMap {
      * @param layer
      * @param filter
      */
-    public void addFilter( String layer, Filter filter ) {
-        if ( filters.get( layer ) != null ) {
-            Operator oldop = ( (OperatorFilter) filters.get( layer ) ).getOperator();
-            Operator snd = ( (OperatorFilter) filter ).getOperator();
-            filters.put( layer, new OperatorFilter( new And( oldop, snd ) ) );
-        } else {
-            filters.put( layer, filter );
-        }
+    public void addFilter( String layer, OperatorFilter filter ) {
+        filters.put( layer, Filters.and( filter, filters.get( layer ) ) );
     }
 
     /**
@@ -837,6 +832,10 @@ public class GetMap {
             return filter;
         }
         return extra;
+    }
+
+    public Map<String, OperatorFilter> getFilters() {
+        return filters;
     }
 
 }
