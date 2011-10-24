@@ -62,6 +62,7 @@ public class Styles {
     public static OperatorFilter getStyleFilters( Style style, double scale ) {
         OperatorFilter sldFilter = null;
         outer: if ( style != null ) {
+            // the full use of generics here will defeat the compiler
             LinkedList<Pair> rules = (LinkedList) style.filter( scale ).getRules();
             for ( Pair p : rules ) {
                 if ( p.first == null ) {
