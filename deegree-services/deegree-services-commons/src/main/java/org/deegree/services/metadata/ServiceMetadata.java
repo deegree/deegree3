@@ -60,12 +60,27 @@ import org.w3c.dom.Element;
  */
 public interface ServiceMetadata extends Resource {
 
+    /**
+     * @return the service identification bean, possibly null
+     */
     ServiceIdentification getServiceIdentification();
 
+    /**
+     * @return the service provider bean, possibly null
+     */
     ServiceProvider getServiceProvider();
 
+    /**
+     * @return a mapping from version string (may be "default") to a list of extended capabilities (represented as DOM
+     *         tree), possibly null
+     */
     Map<String, List<Element>> getExtendedCapabilities();
 
+    /**
+     * @param name
+     *            for layers, a qname with only a local name is used, for feature types its qname
+     * @return the metadata url, possibly null
+     */
     String getDataMetadataUrl( QName name );
 
 }
