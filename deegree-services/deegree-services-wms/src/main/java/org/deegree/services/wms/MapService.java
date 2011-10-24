@@ -102,6 +102,8 @@ import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.layer.LayerData;
+import org.deegree.layer.LayerQuery;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.ops.GetMapExtensions;
@@ -111,8 +113,6 @@ import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
 import org.deegree.protocol.wms.ops.LayerRef;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
-import org.deegree.rendering.r2d.context.RenderContext;
-import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
@@ -766,27 +766,36 @@ public class MapService {
         }
     }
 
-    public FeatureCollection getFeatures( RenderingInfo info, List<String> themes ) {
-        FeatureCollection col = null;
+    public List<LayerData> query( org.deegree.protocol.wms.ops.GetMap gm ) {
+        List<LayerData> list = new ArrayList<LayerData>();
+        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), gm.getParameterMap() );
+        for ( LayerRef lr : gm.getLayers() ) {
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                list.add( l.mapQuery( query ) );
+            }
+        }
+        return list;
+    }
+
+    public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> themes ) {
+        List<LayerData> list = new ArrayList<LayerData>();
+        LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
+                                           gfi.getFeatureCount(), gfi.getParameterMap() );
         for ( String n : themes ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
-                FeatureCollection p2 = l.getFeatures( info, null );
-                if ( col == null ) {
-                    col = p2;
-                } else {
-                    col.addAll( p2 );
-                }
+                list.add( l.infoQuery( query ) );
+            }
+        }
+
+        FeatureCollection col = null;
+        for ( LayerData d : list ) {
+            if ( col == null ) {
+                col = d.info();
+            } else {
+                col.addAll( d.info() );
             }
         }
         return col;
-    }
-
-    public void getMapImage( RenderContext ctx, RenderingInfo info, List<LayerRef> themes ) {
-        for ( LayerRef n : themes ) {
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
-                l.paintMap( ctx, info, null );
-            }
-        }
     }
 
     /**

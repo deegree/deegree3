@@ -1,10 +1,10 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2011 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,25 +33,23 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.layer;
 
-import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.rendering.r2d.context.RenderContext;
 
 /**
- * <code>Layer</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: stranger $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public interface Layer {
+public interface LayerData {
 
-    LayerMetadata getMetadata();
+    void render( RenderContext context );
 
-    LayerData mapQuery( LayerQuery query );
-
-    LayerData infoQuery( LayerQuery query );
+    // think about using a infocontext or something here
+    FeatureCollection info();
 
 }

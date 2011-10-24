@@ -41,13 +41,8 @@ import java.util.HashMap;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
-import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.types.FeatureType;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.rendering.r2d.context.RenderingInfo;
-import org.deegree.style.se.unevaluated.Style;
 
 /**
  * <code>Layer</code>
@@ -87,16 +82,6 @@ public abstract class AbstractLayer implements Layer {
     @Override
     public LayerMetadata getMetadata() {
         return metadata;
-    }
-
-    @Override
-    public FeatureCollection getFeatures( RenderingInfo info, Style style ) {
-        return new GenericFeatureCollection();
-    }
-
-    @Override
-    public FeatureType getFeatureType() {
-        return null;
     }
 
 }

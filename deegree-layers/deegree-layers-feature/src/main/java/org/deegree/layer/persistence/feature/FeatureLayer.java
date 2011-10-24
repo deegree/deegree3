@@ -40,50 +40,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static java.lang.System.currentTimeMillis;
-import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
-import static org.deegree.layer.dims.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.filter.Expression;
-import org.deegree.filter.Filter;
-import org.deegree.filter.Filters;
-import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.comparison.PropertyIsBetween;
-import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.logical.And;
-import org.deegree.filter.logical.Or;
-import org.deegree.geometry.Envelope;
 import org.deegree.layer.AbstractLayer;
-import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.dims.DimensionInterval;
+import org.deegree.layer.LayerData;
+import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.rendering.r2d.context.RenderContext;
-import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.style.se.unevaluated.Style;
-import org.deegree.style.utils.Styles;
 import org.slf4j.Logger;
 
 /**
@@ -112,10 +81,16 @@ public class FeatureLayer extends AbstractLayer {
     }
 
     @Override
-    public void paintMap( RenderContext context, RenderingInfo info, Style style ) {
+    public LayerData mapQuery( LayerQuery query ) {
         OperatorFilter filter = this.filter;
-        filter = Filters.and( filter, Styles.getStyleFilters( style, info.getScale() ) );
-        filter = Filters.and( filter, info.getExtraFilter( getMetadata().getName() ) );
+        return null;
+        // filter = Filters.and( filter, Styles.getStyleFilters( style, info.getScale() ) );
+        // filter = Filters.and( filter, info.getExtraFilter( getMetadata().getName() ) );
+    }
+
+    @Override
+    public LayerData infoQuery( LayerQuery query ) {
+        return null;
     }
 
     /**

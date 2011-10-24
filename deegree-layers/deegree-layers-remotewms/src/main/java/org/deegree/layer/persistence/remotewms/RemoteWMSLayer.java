@@ -4,19 +4,16 @@ import static java.util.Collections.singletonList;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.feature.FeatureCollection;
 import org.deegree.layer.AbstractLayer;
+import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.remotewms.jaxb.ParameterScopeType;
 import org.deegree.layer.persistence.remotewms.jaxb.ParameterUseType;
@@ -26,9 +23,6 @@ import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.Parameter
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
-import org.deegree.rendering.r2d.context.RenderContext;
-import org.deegree.rendering.r2d.context.RenderingInfo;
-import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 public class RemoteWMSLayer extends AbstractLayer {
@@ -144,47 +138,38 @@ public class RemoteWMSLayer extends AbstractLayer {
     }
 
     @Override
-    public void paintMap( RenderContext context, RenderingInfo info, Style style ) {
+    public RemoteWMSLayerData mapQuery( LayerQuery query ) {
         try {
             Map<String, String> extraParams = new HashMap<String, String>();
-            handleParameters( extraParams, info.getParameterMap(), defaultParametersGetMap, hardParametersGetMap );
+            handleParameters( extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap );
             ICRS crs = this.crs;
             if ( !alwaysUseDefaultCrs ) {
-                ICRS envCrs = info.getEnvelope().getCoordinateSystem();
+                ICRS envCrs = query.getEnvelope().getCoordinateSystem();
                 if ( client.getCoordinateSystems( originalName ).contains( envCrs.getAlias() ) ) {
                     crs = envCrs;
                 }
             }
 
-            GetMap gm = new GetMap( singletonList( originalName ), info.getWidth(), info.getHeight(),
-                                    info.getEnvelope(), crs, format, transparent );
-            Pair<BufferedImage, String> map = client.getMap( gm, extraParams, 60 );
-            if ( map.first != null ) {
-                context.paintImage( map.first );
-            }
+            GetMap gm = new GetMap( singletonList( originalName ), query.getWidth(), query.getHeight(),
+                                    query.getEnvelope(), crs, format, transparent );
+            return new RemoteWMSLayerData( client, gm, extraParams );
         } catch ( Throwable e ) {
             LOG.warn( "Error when retrieving remote map: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
+        return null;
     }
 
     @Override
-    public FeatureCollection getFeatures( RenderingInfo info, Style style ) {
+    public RemoteWMSLayerData infoQuery( LayerQuery query ) {
         Map<String, String> extraParams = new HashMap<String, String>();
-        handleParameters( extraParams, info.getParameterMap(), defaultParametersGetFeatureInfo,
+        handleParameters( extraParams, query.getParameters(), defaultParametersGetFeatureInfo,
                           hardParametersGetFeatureInfo );
 
-        GetFeatureInfo gfi = new GetFeatureInfo( Collections.singletonList( originalName ), info.getWidth(),
-                                                 info.getHeight(), info.getX(), info.getY(), info.getEnvelope(),
-                                                 info.getEnvelope().getCoordinateSystem(), info.getFeatureCount() );
-        try {
-            FeatureCollection col = client.getFeatureInfo( gfi, extraParams );
-            return col;
-        } catch ( IOException e ) {
-            LOG.warn( "Error when retrieving remote feature info: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
+        GetFeatureInfo gfi = new GetFeatureInfo( Collections.singletonList( originalName ), query.getWidth(),
+                                                 query.getHeight(), query.getX(), query.getY(), query.getEnvelope(),
+                                                 query.getEnvelope().getCoordinateSystem(), query.getFeatureCount() );
+        return new RemoteWMSLayerData( client, gfi, extraParams );
     }
 
 }

@@ -111,6 +111,7 @@ import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
+import org.deegree.layer.LayerData;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -587,6 +588,7 @@ public class WMSController extends AbstractOWS {
             crs = fi.getCoordinateSystem();
             geometries = fi.returnGeometries();
             queryLayers = fi.getQueryLayers();
+
             RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
                                                     fi.getEnvelope(), 0.28, null, map );
             format = fi.getInfoFormat();
@@ -594,7 +596,7 @@ public class WMSController extends AbstractOWS {
             info.setFeatureCount( fi.getFeatureCount() );
             info.setX( fi.getX() );
             info.setY( fi.getY() );
-            pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( info, fi.getQueryLayers() ),
+            pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, fi.getQueryLayers() ),
                                                                     new LinkedList<String>() );
         } else {
             GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
@@ -755,7 +757,10 @@ public class WMSController extends AbstractOWS {
                                                     gm2.getPixelSize(), gm2.getFilters(), map );
             RenderContext ctx = new DefaultRenderContext( info );
             ctx.setOutput( response.getOutputStream() );
-            service.getMapImage( ctx, info, gm2.getLayers() );
+            List<LayerData> list = service.query( gm2 );
+            for ( LayerData d : list ) {
+                d.render( ctx );
+            }
             ctx.close();
         } else {
             GetMap gm = new GetMap( map, version, service );
