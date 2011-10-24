@@ -199,6 +199,7 @@ public class GetMap {
         this.height = height;
         this.bbox = envelope;
         this.bbox.setCoordinateSystem( crs );
+        this.crs = crs;
         this.format = format;
         this.transparent = transparent;
     }
