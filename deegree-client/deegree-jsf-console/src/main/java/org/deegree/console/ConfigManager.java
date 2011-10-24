@@ -197,20 +197,14 @@ public class ConfigManager {
                             
         String nextView = "/console/jsf/wizard";
         
-        System.out.println ("HUHU: " + nextView);
-        
         ResourceProvider provider = currentResourceManager.getProvider( newConfigType );
         if ( provider == null ) {
             provider = currentResourceManager.getProviders().get( 0 );
         }
         
-        System.out.println ("provider: " + provider.getClass());
-        
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         nextView = md.getConfigWizardView();
         
-        System.out.println ("HUHA: " + nextView);
-
         Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         map.put( "newConfigId", newConfigId );
         map.put( "configManager", this );
