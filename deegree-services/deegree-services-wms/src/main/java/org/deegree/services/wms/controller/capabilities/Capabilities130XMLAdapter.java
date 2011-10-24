@@ -436,7 +436,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        String mdUrl = layer.getName() == null ? null : metadata.getDataMetadataUrl( new QName( layer.getName() ) );
+        String mdUrl = layer.getName() == null || metadata == null ? null
+                                                                  : metadata.getDataMetadataUrl( new QName(
+                                                                                                            layer.getName() ) );
 
         mdlabel: if ( mdUrl == null && controller.getMetadataURLTemplate() != null ) {
             String id = layer.getDataMetadataSetId();
