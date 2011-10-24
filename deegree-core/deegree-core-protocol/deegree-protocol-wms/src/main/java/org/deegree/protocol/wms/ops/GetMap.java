@@ -49,12 +49,11 @@ import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.protocol.wms.ops.LayerRef.FROM_NAMES;
 import static org.deegree.protocol.wms.ops.SLDParser.parse;
+import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -69,13 +68,11 @@ import java.util.Map.Entry;
 import java_cup.runtime.Symbol;
 
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
@@ -91,6 +88,7 @@ import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -483,43 +481,27 @@ public class GetMap {
         if ( sld != null ) {
             try {
                 pair = parse( xmlfac.createXMLStreamReader( sld, new URL( sld ).openStream() ), this );
-            } catch ( MalformedURLException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "Error when parsing the SLD parameter: " + e.getMessage(),
-                                        "InvalidParameterValue", "sld" );
-            } catch ( XMLStreamException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "Error when parsing the SLD parameter: " + e.getMessage(),
-                                        "InvalidParameterValue", "sld" );
-            } catch ( XMLParsingException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "Error when parsing the SLD parameter: " + e.getMessage(),
-                                        "InvalidParameterValue", "sld" );
             } catch ( ParseException e ) {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( "The embedded dimension value in the SLD parameter value was invalid: "
                                         + e.getMessage(), "InvalidDimensionValue", "sld" );
-            } catch ( IOException e ) {
+            } catch ( Throwable e ) {
                 LOG.trace( "Stack trace:", e );
-                throw new OWSException( "Error when parsing the SLD parameter:" + e.getMessage(),
+                throw new OWSException( "Error when parsing the SLD parameter: " + e.getMessage(),
                                         "InvalidParameterValue", "sld" );
             }
         }
         if ( sldBody != null ) {
             try {
                 pair = parse( xmlfac.createXMLStreamReader( new StringReader( sldBody ) ), this );
-            } catch ( XMLParsingException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "Error when parsing the SLD_BODY parameter: " + e.getMessage(),
-                                        "InvalidParameterValue", "sld_body" );
-            } catch ( XMLStreamException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "Error when parsing the SLD_BODY parameter: " + e.getMessage(),
-                                        "InvalidParameterValue", "sld_body" );
             } catch ( ParseException e ) {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( "The embedded dimension value in the SLD_BODY parameter value was invalid: "
                                         + e.getMessage(), "InvalidDimensionValue", "sld_body" );
+            } catch ( Throwable e ) {
+                LOG.trace( "Stack trace:", e );
+                throw new OWSException( "Error when parsing the SLD_BODY parameter: " + e.getMessage(),
+                                        "InvalidParameterValue", "sld_body" );
             }
         }
 
@@ -821,6 +803,36 @@ public class GetMap {
                                                          factor * bbox[3], Utils.getAutoCRS( id, lon0, lat0 ) );
         }
         return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], CRSManager.getCRSRef( crs ) );
+    }
+
+    /**
+     * @param name
+     * @param filter
+     * @param style
+     * @return a new filter for the layer, fulfilling the filter parameter as well
+     */
+    public Filter getFilterForLayer( String name, Filter filter, Style style ) {
+        Filter sldFilter = getStyleFilters( style, getScale() );
+
+        Filter extra = filters.get( name );
+        if ( extra == null ) {
+            extra = sldFilter;
+        } else {
+            if ( sldFilter != null ) {
+                Operator op1 = ( (OperatorFilter) sldFilter ).getOperator();
+                Operator op2 = ( (OperatorFilter) extra ).getOperator();
+                extra = new OperatorFilter( new And( op1, op2 ) );
+            }
+        }
+        if ( filter != null ) {
+            if ( extra != null ) {
+                Operator op = ( (OperatorFilter) extra ).getOperator();
+                Operator op2 = ( (OperatorFilter) filter ).getOperator();
+                return new OperatorFilter( new And( op, op2 ) );
+            }
+            return filter;
+        }
+        return extra;
     }
 
 }

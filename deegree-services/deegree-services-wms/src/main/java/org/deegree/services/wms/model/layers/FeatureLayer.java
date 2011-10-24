@@ -550,7 +550,7 @@ public class FeatureLayer extends Layer {
                 }
                 try {
                     ops.add( new Or( os ) );
-                } catch ( Exception e ) {
+                } catch ( Throwable e ) {
                     // will not happen, look at the if condition
                 }
             } else {

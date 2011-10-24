@@ -76,6 +76,7 @@ public class SLDParser {
      * @param in
      * @param service
      * @param gm
+     *            filters will be added to this GetMap instance
      * @return a list of layers parsed from SLD
      * @throws XMLStreamException
      * @throws OWSException
