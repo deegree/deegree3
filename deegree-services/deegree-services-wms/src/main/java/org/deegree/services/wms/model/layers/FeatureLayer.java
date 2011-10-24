@@ -47,6 +47,7 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.layer.dims.Dimension.formatDimensionValueList;
+import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -431,11 +432,11 @@ public class FeatureLayer extends Layer {
             if ( filter == null ) {
                 double scale = Utils.calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
                                                       fi.getCoordinateSystem() );
-                filter = GetMap.getStyleFilters( style, scale );
+                filter = getStyleFilters( style, scale );
             } else {
                 double scale = Utils.calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
                                                       fi.getCoordinateSystem() );
-                OperatorFilter f = GetMap.getStyleFilters( style, scale );
+                OperatorFilter f = getStyleFilters( style, scale );
                 if ( f != null ) {
                     filter = new OperatorFilter( new And( filter.getOperator(), f.getOperator() ) );
                 }

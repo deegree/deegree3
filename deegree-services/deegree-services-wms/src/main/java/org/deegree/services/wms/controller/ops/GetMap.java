@@ -53,7 +53,7 @@ import static org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation.NEARES
 import static org.deegree.protocol.wms.ops.GetMapExtensions.Quality.NORMAL;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.sld.SLDParser.parse;
-import static org.deegree.style.se.parser.SymbologyParser.ELSEFILTER;
+import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -79,7 +79,6 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -87,7 +86,6 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.logical.And;
-import org.deegree.filter.logical.Or;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.dims.DimensionLexer;
@@ -103,10 +101,7 @@ import org.deegree.services.wms.StyleRegistry;
 import org.deegree.services.wms.controller.WMSController111;
 import org.deegree.services.wms.controller.WMSController130;
 import org.deegree.services.wms.model.layers.Layer;
-import org.deegree.style.se.parser.SymbologyParser.FilterContinuation;
-import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Style;
-import org.deegree.style.se.unevaluated.Symbolizer;
 import org.slf4j.Logger;
 
 /**
@@ -735,39 +730,6 @@ public class GetMap {
      */
     public void addDimensionValue( String name, List<?> values ) {
         dimensions.put( name, values );
-    }
-
-    public static OperatorFilter getStyleFilters( Style style, double scale ) {
-        OperatorFilter sldFilter = null;
-        outer: if ( style != null ) {
-            LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.filter( scale ).getRules();
-            for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : rules ) {
-                if ( p.first == null ) {
-                    sldFilter = null;
-                    break outer;
-                }
-                if ( p.first instanceof FilterContinuation ) {
-                    FilterContinuation contn = (FilterContinuation) p.first;
-                    if ( contn.filter == ELSEFILTER ) {
-                        sldFilter = null;
-                        break outer;
-                    }
-                    if ( contn.filter == null ) {
-                        sldFilter = null;
-                        break outer;
-                    }
-                    if ( sldFilter == null ) {
-                        sldFilter = (OperatorFilter) contn.filter;
-                    } else {
-                        Operator op1 = sldFilter.getOperator();
-                        Operator op2 = ( (OperatorFilter) contn.filter ).getOperator();
-                        sldFilter = new OperatorFilter( new Or( op1, op2 ) );
-                    }
-                }
-            }
-        }
-
-        return sldFilter;
     }
 
     /**

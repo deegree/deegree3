@@ -35,13 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.utils;
 
+import static org.deegree.style.se.parser.SymbologyParser.ELSEFILTER;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.logical.Or;
 import org.deegree.style.se.parser.SymbologyParser.FilterContinuation;
+import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.se.unevaluated.Symbolizer;
 
@@ -53,6 +60,39 @@ import org.deegree.style.se.unevaluated.Symbolizer;
  * @version $Revision: 31075 $, $Date: 2011-06-17 14:51:51 +0200 (Fri, 17 Jun 2011) $
  */
 public class Styles {
+
+    public static OperatorFilter getStyleFilters( Style style, double scale ) {
+        OperatorFilter sldFilter = null;
+        outer: if ( style != null ) {
+            LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.filter( scale ).getRules();
+            for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : rules ) {
+                if ( p.first == null ) {
+                    sldFilter = null;
+                    break outer;
+                }
+                if ( p.first instanceof FilterContinuation ) {
+                    FilterContinuation contn = (FilterContinuation) p.first;
+                    if ( contn.filter == ELSEFILTER ) {
+                        sldFilter = null;
+                        break outer;
+                    }
+                    if ( contn.filter == null ) {
+                        sldFilter = null;
+                        break outer;
+                    }
+                    if ( sldFilter == null ) {
+                        sldFilter = (OperatorFilter) contn.filter;
+                    } else {
+                        Operator op1 = sldFilter.getOperator();
+                        Operator op2 = ( (OperatorFilter) contn.filter ).getOperator();
+                        sldFilter = new OperatorFilter( new Or( op1, op2 ) );
+                    }
+                }
+            }
+        }
+
+        return sldFilter;
+    }
 
     public static List<Expression> getGeometryExpressions( Style style ) {
         List<Expression> list = new ArrayList<Expression>();
