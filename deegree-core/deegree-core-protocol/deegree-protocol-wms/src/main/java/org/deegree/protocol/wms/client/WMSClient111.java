@@ -91,7 +91,6 @@ import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.NamespaceBindings;

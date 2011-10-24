@@ -85,7 +85,7 @@ public class RemoteWMSLayerData implements LayerData {
     @Override
     public void render( RenderContext context ) {
         try {
-            Pair<BufferedImage, String> map = client.getMap( gm, extraParams, 10 );
+            Pair<BufferedImage, String> map = client.getMap( gm, extraParams, 30 );
             if ( map.first != null ) {
                 context.paintImage( map.first );
             }

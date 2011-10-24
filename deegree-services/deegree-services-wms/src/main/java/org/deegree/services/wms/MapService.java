@@ -111,6 +111,7 @@ import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
 import org.deegree.protocol.wms.ops.LayerRef;
+import org.deegree.protocol.wms.ops.StyleRef;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.legends.Legends;
@@ -767,8 +768,17 @@ public class MapService {
     }
 
     public List<LayerData> query( org.deegree.protocol.wms.ops.GetMap gm ) {
+        Map<String, Style> styles = new HashMap<String, Style>();
+        Iterator<StyleRef> iter = gm.getStyles().iterator();
+        for ( LayerRef lr : gm.getLayers() ) {
+            String styleName = iter.next().getName();
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                styles.put( l.getMetadata().getName(), registry.get( l.getMetadata().getName(), styleName ) );
+            }
+        }
         List<LayerData> list = new ArrayList<LayerData>();
-        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), gm.getParameterMap() );
+        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, gm.getFilters(),
+                                           gm.getParameterMap(), gm.getPixelSize() );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
                 list.add( l.mapQuery( query ) );
@@ -780,7 +790,7 @@ public class MapService {
     public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> themes ) {
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
-                                           gfi.getFeatureCount(), gfi.getParameterMap() );
+                                           gfi.getFeatureCount(), null, null, gfi.getParameterMap() );
         for ( String n : themes ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
                 list.add( l.infoQuery( query ) );

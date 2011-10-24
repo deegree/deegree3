@@ -47,12 +47,14 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.filter.Filters;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.utils.Styles;
 import org.slf4j.Logger;
 
 /**
@@ -69,11 +71,8 @@ public class FeatureLayer extends AbstractLayer {
 
     private final QName featureType;
 
-    /**
-     * @param md
-     */
-    protected FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
-                            Map<String, Style> styles, Map<String, Style> legendStyles ) {
+    public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
+                         Map<String, Style> styles, Map<String, Style> legendStyles ) {
         super( md );
         this.featureStore = featureStore;
         this.featureType = featureType;
@@ -83,9 +82,10 @@ public class FeatureLayer extends AbstractLayer {
     @Override
     public LayerData mapQuery( LayerQuery query ) {
         OperatorFilter filter = this.filter;
+        filter = Filters.and( filter,
+                              Styles.getStyleFilters( query.getStyle( getMetadata().getName() ), query.getScale() ) );
+        filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
         return null;
-        // filter = Filters.and( filter, Styles.getStyleFilters( style, info.getScale() ) );
-        // filter = Filters.and( filter, info.getExtraFilter( getMetadata().getName() ) );
     }
 
     @Override

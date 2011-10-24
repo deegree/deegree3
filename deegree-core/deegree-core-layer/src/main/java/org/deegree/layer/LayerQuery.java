@@ -35,9 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer;
 
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
+
 import java.util.Map;
 
+import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
+import org.deegree.rendering.r2d.RenderHelper;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
  * 
@@ -56,22 +61,36 @@ public class LayerQuery {
 
     private int x, y, featureCount;
 
-    public LayerQuery( Envelope envelope, int width, int height, Map<String, String> parameters ) {
+    private final Map<String, Style> styles;
+
+    private final Map<String, OperatorFilter> filters;
+
+    private double scale;
+
+    public LayerQuery( Envelope envelope, int width, int height, Map<String, Style> styles,
+                       Map<String, OperatorFilter> filters, Map<String, String> parameters, double pixelSize ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
+        this.styles = styles;
+        this.filters = filters;
         this.parameters = parameters;
+        this.scale = RenderHelper.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(), pixelSize );
     }
 
     public LayerQuery( Envelope envelope, int width, int height, int x, int y, int featureCount,
-                       Map<String, String> parameters ) {
+                       Map<String, OperatorFilter> filters, Map<String, Style> styles, Map<String, String> parameters ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
         this.x = x;
         this.y = y;
         this.featureCount = featureCount;
+        this.filters = filters;
+        this.styles = styles;
         this.parameters = parameters;
+        this.scale = RenderHelper.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(),
+                                                   DEFAULT_PIXEL_SIZE );
     }
 
     public Envelope getEnvelope() {
@@ -98,8 +117,20 @@ public class LayerQuery {
         return y;
     }
 
+    public OperatorFilter getFilter( String name ) {
+        return filters.get( name );
+    }
+
+    public Style getStyle( String name ) {
+        return styles.get( name );
+    }
+
     public int getFeatureCount() {
         return featureCount;
+    }
+
+    public double getScale() {
+        return scale;
     }
 
 }
