@@ -158,8 +158,9 @@ public abstract class DDLCreator {
             ddls.addAll( process( sql, ftMapping.getFtTable(), mapping ) );
         }
         sql.append( ",\n    CONSTRAINT " );
-        sql.append( ftMapping.getFtTable() );
-        sql.append( "_pkey PRIMARY KEY (" );
+        String pkConstraint = getPkConstraintName( ftMapping.getFtTable() );
+        sql.append( pkConstraint );
+        sql.append( " PRIMARY KEY (" );
         boolean first = true;
         for ( String pkColumn : pkColumns ) {
             if ( !first ) {
@@ -170,6 +171,17 @@ public abstract class DDLCreator {
         }
         sql.append( ")\n)" );
         return ddls;
+    }
+
+    private String getPkConstraintName( QTableName ftTable ) {
+        String s = null;
+        String table = ftTable.getTable();
+        if ( table.endsWith( "\"" ) ) {
+            s = table.substring( 0, table.length() - 1) + "_pkey\""; 
+        } else {
+            s = table + "_pkey";
+        }
+        return s;
     }
 
     protected abstract void primitiveMappingSnippet( StringBuffer sql, PrimitiveMapping mapping );
