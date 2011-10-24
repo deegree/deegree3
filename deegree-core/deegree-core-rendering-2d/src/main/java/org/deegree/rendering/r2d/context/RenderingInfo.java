@@ -42,6 +42,7 @@ import java.util.Map;
 
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
+import org.deegree.rendering.r2d.RenderHelper;
 
 /**
  * 
@@ -70,7 +71,7 @@ public class RenderingInfo {
     private Map<String, OperatorFilter> extraFilters;
 
     private Map<String, String> parameters;
-
+    
     public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
                           double pixelSize, Map<String, OperatorFilter> extraFilters, Map<String, String> parameters ) {
         this.format = format;
@@ -174,6 +175,10 @@ public class RenderingInfo {
 
     public double getScale() {
         return calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(), pixelSize );
+    }
+
+    public double getResolution() {
+        return RenderHelper.calcResolution( envelope, width, height );
     }
 
 }

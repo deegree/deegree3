@@ -36,6 +36,7 @@
 
 package org.deegree.rendering.r2d;
 
+import static java.lang.Math.max;
 import static java.lang.Math.sqrt;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
@@ -202,6 +203,16 @@ public class RenderHelper {
         }
 
         return scale;
+    }
+
+    /**
+     * @param env
+     * @param width
+     * @param height
+     * @return max(resx, resy)
+     */
+    public static double calcResolution( Envelope env, int width, int height ) {
+        return max( env.getSpan0() / width, env.getSpan1() / height );
     }
 
 }

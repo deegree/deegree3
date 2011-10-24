@@ -44,7 +44,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singleton;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.protocol.wms.Utils.calcResolution;
+import static org.deegree.rendering.r2d.RenderHelper.calcResolution;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

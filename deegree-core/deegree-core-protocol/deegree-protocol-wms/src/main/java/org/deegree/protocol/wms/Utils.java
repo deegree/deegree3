@@ -36,7 +36,6 @@
 package org.deegree.protocol.wms;
 
 import static java.lang.Math.floor;
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,7 +44,6 @@ import java.io.IOException;
 import org.deegree.cs.configuration.wkt.WKTParser;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
 /**
@@ -199,16 +197,6 @@ public class Utils {
         }
 
         return null;
-    }
-
-    /**
-     * @param env
-     * @param width
-     * @param height
-     * @return max(resx, resy)
-     */
-    public static double calcResolution( Envelope env, int width, int height ) {
-        return max( env.getSpan0() / width, env.getSpan1() / height );
     }
 
 }
