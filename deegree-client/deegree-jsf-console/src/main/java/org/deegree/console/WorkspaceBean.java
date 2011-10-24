@@ -96,7 +96,7 @@ public class WorkspaceBean implements Serializable {
 
     private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
 
-    private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
+    private static final String[] WS_DOWNLOAD_URLS = {};
 
     // only used when no build (Maven) module version information is available
     private static final String DEFAULT_VERSION = "3.1";
