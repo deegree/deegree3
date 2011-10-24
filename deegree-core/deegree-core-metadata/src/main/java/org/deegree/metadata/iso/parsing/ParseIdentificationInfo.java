@@ -369,11 +369,12 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     // TODO put here the constraint that there can a denominator be available iff distanceValue and
                     // distanceUOM are not set and vice versa!!
                     float distanceValue = getNodeAsFloat( spatialResolutionElem,
-                                                          new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance", nsContextParseII ),
-                                                          -1 );
+                                                          new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance",
+                                                                     nsContextParseII ), -1 );
                     qp.setDistanceValue( distanceValue );
                     String distanceUOM = getNodeAsString( spatialResolutionElem,
-                                                          new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance/@uom",
+                                                          new XPath(
+                                                                     "./gmd:MD_Resolution/gmd:distance/gco:Distance/@uom",
                                                                      nsContextParseII ), null );
                     qp.setDistanceUOM( distanceUOM );
                 }
@@ -547,9 +548,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
             List<OMElement> extent = ( extent_md_dataIdent.size() != 0 ? extent_md_dataIdent : extent_service );
             Date tempBeg = null;
             Date tempEnd = null;
-            String geographicDescriptionCode_service = null;
-            String[] geographicDescriptionCode_serviceOtherLang = null;
+            // String geographicDescriptionCode_service = null;
+            // String[] geographicDescriptionCode_serviceOtherLang = null;
             List<BoundingBox> bboxList = new LinkedList<BoundingBox>();
+            List<String> geographicDescCode = new ArrayList<String>();
             if ( extent != null ) {
                 for ( OMElement extentElem : extent ) {
                     String temporalExtentBegin = getNodeAsString( extentElem,
@@ -611,25 +613,14 @@ public class ParseIdentificationInfo extends XMLAdapter {
                             throw new IllegalArgumentException( "Could not parse EX_GeographicBoundingBox, cause: "
                                                                 + e.getMessage() );
                         }
-                        if ( geographicDescriptionCode_service == null ) {
-                            OMElement geographicDescriptionCode_serviceElem = getElement( geographicElem,
-                                                                                          new XPath(
-                                                                                                     "./gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
-                                                                                                     nsContextParseII ) );
-                            if ( geographicDescriptionCode_serviceElem == null ) {
-                                geographicDescriptionCode_serviceElem = getElement( geographicElem,
-                                                                                    new XPath(
-                                                                                               "./gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:RS_Identifier/gmd:code",
-                                                                                               nsContextParseII ) );
-                            }
-                            geographicDescriptionCode_service = getNodeAsString( geographicDescriptionCode_serviceElem,
-                                                                                 new XPath( "./gco:CharacterString",
-                                                                                            nsContextParseII ), null );
-                            geographicDescriptionCode_serviceOtherLang = getNodesAsStrings( geographicDescriptionCode_serviceElem,
-                                                                                            new XPath(
-                                                                                                       "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
-                                                                                                       nsContextParseII ) );
-                        }
+                        String[] geographicDescriptionCodes = getNodesAsStrings( geographicElem,
+                                                                                 new XPath(
+                                                                                            "./gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code/gco:CharacterString | "
+                                                                                                                    + "./gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString | "
+                                                                                                                    + "./gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString | "
+                                                                                                                    + "./gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:RS_Identifier/gmd:code/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                                                            nsContextParseII ) );
+                        geographicDescCode.addAll( Arrays.asList( geographicDescriptionCodes ) );
                         if ( bbox != null ) {
                             bboxList.add( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
                                                            boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
@@ -640,14 +631,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 qp.setTemporalExtentEnd( tempEnd );
                 qp.setBoundingBox( bboxList );
             }
-            List<String> geographicDescCode_serviceList = new ArrayList<String>();
-            if ( geographicDescriptionCode_service != null ) {
-                geographicDescCode_serviceList.add( geographicDescriptionCode_service );
-            }
-            if ( geographicDescriptionCode_serviceOtherLang != null ) {
-                geographicDescCode_serviceList.addAll( Arrays.asList( geographicDescriptionCode_serviceOtherLang ) );
-            }
-            qp.setGeographicDescriptionCode_service( geographicDescCode_serviceList );
+            qp.setGeographicDescriptionCode_service( geographicDescCode );
 
             /*---------------------------------------------------------------
              * SV_ServiceIdentification and IdentificationInfo

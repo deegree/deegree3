@@ -70,7 +70,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -297,12 +296,9 @@ public class WebFeatureService extends AbstractOWS {
             versions = supportedVersions.getVersion();
         }
         if ( versions == null || versions.isEmpty() ) {
-            LOG.info( "No protocol versions configured. Using all implemented versions." );
+            LOG.info( "No protocol versions specified. Activating all implemented versions." );
             versions = new ArrayList<String>( serviceInfo.getImplementedVersions().size() );
             for ( Version version : serviceInfo.getImplementedVersions() ) {
-                if ( version.toString().equals( "2.0.0" ) ) {
-                    LOG.info( "Deactivating 2.0.0 support (not stable yet). Activate manually in WFS config." );
-                }
                 versions.add( version.toString() );
             }
         }
@@ -665,19 +661,15 @@ public class WebFeatureService extends AbstractOWS {
                 sendServiceException110( e, response );
             }
         } catch ( XMLParsingException e ) {
-            LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), response );
         } catch ( MissingParameterException e ) {
-            LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
-            LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e ), response );
         } catch ( Throwable e ) {
-            LOG.error( e.getMessage() );
             LOG.trace( "Stack trace:", e );
             sendServiceException110( new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }

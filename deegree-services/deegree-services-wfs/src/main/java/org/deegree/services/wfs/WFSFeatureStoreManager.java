@@ -177,7 +177,7 @@ public class WFSFeatureStoreManager {
         if ( ft == null ) {
             QName match = QNameUtils.findBestMatch( ftName, ftNameToFt.keySet() );
             if ( match != null && ( !match.equals( ftName ) ) ) {
-                LOG.warn( "Repairing unqualified FeatureType name: " + QNameUtils.toString( ftName ) + " -> "
+                LOG.debug( "Repairing unqualified FeatureType name: " + QNameUtils.toString( ftName ) + " -> "
                           + QNameUtils.toString( match ) );
                 ft = ftNameToFt.get( match );
             }

@@ -38,6 +38,7 @@ package org.deegree.sqldialect.filter.islike;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.comparison.PropertyIsLike;
 
 /**
@@ -66,10 +67,20 @@ public class IsLikeString {
      * 
      * @param encodedString
      * @param wildCard
+     *            must be exacly one character
      * @param singleChar
+     *            must be exacly one character
      * @param escape
+     *            must be exacly one character
+     * @throws FilterEvaluationException
+     *             if wildCard, singleChar or escapeChar are not exactly one character
      */
-    public IsLikeString( String encodedString, String wildCard, String singleChar, String escape ) {
+    public IsLikeString( String encodedString, String wildCard, String singleChar, String escape )
+                            throws FilterEvaluationException {
+        if ( wildCard.length() != 1 || singleChar.length() != 1 || escape.length() != 1 ) {
+            String msg = "At the moment, wildCard, singleChar and escapeChar must each be exactly one character.";
+            throw new FilterEvaluationException( msg );
+        }
         this.wildCard = wildCard;
         this.singleChar = singleChar;
         this.escape = escape;
