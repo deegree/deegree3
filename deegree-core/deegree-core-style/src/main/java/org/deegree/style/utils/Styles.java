@@ -41,14 +41,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.logical.Or;
 import org.deegree.style.se.parser.SymbologyParser.FilterContinuation;
-import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.se.unevaluated.Symbolizer;
 
@@ -64,8 +62,8 @@ public class Styles {
     public static OperatorFilter getStyleFilters( Style style, double scale ) {
         OperatorFilter sldFilter = null;
         outer: if ( style != null ) {
-            LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.filter( scale ).getRules();
-            for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : rules ) {
+            LinkedList<Pair> rules = (LinkedList) style.filter( scale ).getRules();
+            for ( Pair p : rules ) {
                 if ( p.first == null ) {
                     sldFilter = null;
                     break outer;
