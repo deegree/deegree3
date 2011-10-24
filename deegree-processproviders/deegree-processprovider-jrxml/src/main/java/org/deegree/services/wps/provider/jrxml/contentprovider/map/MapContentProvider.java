@@ -75,6 +75,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -86,7 +87,7 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.protocol.wms.Utils;
+import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.ComplexInput;
@@ -311,7 +312,7 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
                                         prepareMap( datasources, parameters.get( mapKey ), originalWidth,
                                                     originalHeight, width, height, bbox, resolution ) );
                             // SCALE
-                            double scale = Utils.calcScaleWMS130( width, height, bbox, bbox.getCoordinateSystem() );
+                            double scale = RenderHelper.calcScaleWMS130( width, height, bbox, bbox.getCoordinateSystem(), MapUtils.DEFAULT_PIXEL_SIZE );
                             String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX );
                             if ( parameters.containsKey( scaleKey ) ) {
                                 params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );

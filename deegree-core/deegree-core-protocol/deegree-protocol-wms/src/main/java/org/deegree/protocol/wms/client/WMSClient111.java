@@ -91,6 +91,7 @@ import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -118,12 +119,12 @@ import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.protocol.wms.ops.LayerRef;
 import org.deegree.protocol.wms.ops.StyleRef;
+import org.deegree.rendering.r2d.RenderHelper;
 import org.slf4j.Logger;
 
 /**
@@ -757,8 +758,8 @@ public class WMSClient111 implements WMSClient {
                     LOG.debug( "Transforming bbox {} to {}.", bbox, srs );
                     reqEnv = new GeometryTransformer( srs ).transform( bbox );
 
-                    double scale = Utils.calcScaleWMS111( width, height, bbox, bbox.getCoordinateSystem() );
-                    double newScale = Utils.calcScaleWMS111( width, height, reqEnv, CRSManager.getCRSRef( srs ) );
+                    double scale = RenderHelper.calcScaleWMS111( width, height, bbox, bbox.getCoordinateSystem() );
+                    double newScale = RenderHelper.calcScaleWMS111( width, height, reqEnv, CRSManager.getCRSRef( srs ) );
                     double ratio = scale / newScale;
 
                     reqWidth = abs( round( ratio * width ) );

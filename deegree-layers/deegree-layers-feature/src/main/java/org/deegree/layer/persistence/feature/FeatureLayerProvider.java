@@ -59,7 +59,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.filter.Filter;
+import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
@@ -99,7 +99,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( lay.getFilter() ) );
             nextElement( reader );
             nextElement( reader );
-            Filter filter = Filter110XMLDecoder.parse( reader );
+            OperatorFilter filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
             reader.close();
 
             FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );

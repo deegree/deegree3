@@ -45,7 +45,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.filter.Filter;
+import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.RenderContext;
@@ -60,14 +60,14 @@ public class FeatureLayer extends AbstractLayer {
 
     private FeatureStore featureStore;
 
-    private Filter filter;
+    private OperatorFilter filter;
 
     private final QName featureType;
 
     /**
      * @param md
      */
-    protected FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, Filter filter,
+    protected FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
                             Map<String, Style> styles, Map<String, Style> legendStyles ) {
         super( md );
         this.featureStore = featureStore;

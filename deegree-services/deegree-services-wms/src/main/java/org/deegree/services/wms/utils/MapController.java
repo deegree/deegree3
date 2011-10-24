@@ -42,6 +42,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singleton;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.protocol.wms.Utils.calcResolution;
 
@@ -65,9 +66,9 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
@@ -562,7 +563,8 @@ public class MapController {
      * @return the current scale (0.28 mm pixelsize)
      */
     public double getCurrentScale() {
-        return Utils.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem() );
+        return RenderHelper.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(),
+                                             DEFAULT_PIXEL_SIZE );
     }
 
     /**

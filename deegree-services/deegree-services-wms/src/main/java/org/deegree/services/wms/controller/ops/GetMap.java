@@ -91,11 +91,11 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.dims.DimensionLexer;
 import org.deegree.layer.dims.parser;
 import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.ops.GetMapExtensions;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
 import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
+import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.StyleRegistry;
 import org.deegree.services.wms.controller.WMSController111;
@@ -165,8 +165,9 @@ public class GetMap {
         }
         parameterMap.putAll( map );
         try {
-            scale = Utils.calcScaleWMS130( width, height, bbox, crs );
-            LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
+            scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
+            LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}' (adapted to pixel size of {}).", scale,
+                       pixelSize );
             resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
             LOG.debug( "Resolution per pixel is {}.", resolution );
         } catch ( ReferenceResolvingException e ) {
@@ -196,8 +197,9 @@ public class GetMap {
         transparent = false;
         handleVSPs( service, new HashMap<String, String>() );
         try {
-            scale = Utils.calcScaleWMS130( width, height, bbox, crs );
-            LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
+            scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
+            LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}' (adapted to pixel size of {}).", scale,
+                       pixelSize );
             resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
             LOG.debug( "Resolution per pixel is {}.", resolution );
         } catch ( ReferenceResolvingException e ) {

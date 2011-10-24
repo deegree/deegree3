@@ -39,6 +39,7 @@ package org.deegree.services.wms.model.layers;
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.commons.utils.CollectionUtils.clearNulls;
 import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
@@ -47,6 +48,7 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.layer.dims.Dimension.formatDimensionValueList;
+import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -99,7 +101,6 @@ import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.dims.DimensionInterval;
-import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.Java2DRenderer;
@@ -430,12 +431,12 @@ public class FeatureLayer extends Layer {
             final Envelope clickBox = fi.getClickBox();
             OperatorFilter filter = dimFilter == null ? null : (OperatorFilter) dimFilter.first;
             if ( filter == null ) {
-                double scale = Utils.calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
-                                                      fi.getCoordinateSystem() );
+                double scale = calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
+                                                fi.getCoordinateSystem(), DEFAULT_PIXEL_SIZE );
                 filter = getStyleFilters( style, scale );
             } else {
-                double scale = Utils.calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
-                                                      fi.getCoordinateSystem() );
+                double scale = calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(),
+                                                fi.getCoordinateSystem(), DEFAULT_PIXEL_SIZE );
                 OperatorFilter f = getStyleFilters( style, scale );
                 if ( f != null ) {
                     filter = new OperatorFilter( new And( filter.getOperator(), f.getOperator() ) );

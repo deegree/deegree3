@@ -198,11 +198,7 @@ public class Java2DRenderer implements Renderer {
                 LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
                 LOG.debug( "Stack trace:", e );
                 res = bbox.getSpan0() / width; // use x for resolution
-            } catch ( IllegalArgumentException e ) {
-                LOG.warn( "Could not transform bbox, assuming it's in meter..." );
-                LOG.debug( "Stack trace:", e );
-                res = bbox.getSpan0() / width; // use x for resolution
-            } catch ( TransformationException e ) {
+            } catch ( Throwable e ) {
                 LOG.warn( "Could not transform bbox, assuming it's in meter..." );
                 LOG.debug( "Stack trace:", e );
                 res = bbox.getSpan0() / width; // use x for resolution
@@ -216,14 +212,9 @@ public class Java2DRenderer implements Renderer {
                 if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" ) ) ) {
                     transformer = new GeometryTransformer( bbox.getCoordinateSystem() );
                 }
-            } catch ( IllegalArgumentException e ) {
+            } catch ( Throwable e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
-                // } catch ( UnknownCRSException e ) {
-                // LOG.debug( "Stack trace:", e );
-                // LOG.warn(
-                // "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems."
-                // );
             }
 
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
@@ -373,7 +364,7 @@ public class Java2DRenderer implements Renderer {
             }
             float dashoffset = (float) considerUOM( stroke.dashoffset, uom );
             float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
-            if ( stroke.dasharray != null ) {
+            if ( dasharray != null ) {
                 for ( int i = 0; i < stroke.dasharray.length; ++i ) {
                     dasharray[i] = (float) considerUOM( stroke.dasharray[i], uom );
                 }
@@ -522,6 +513,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
+    @Override
     public void render( PointStyling styling, Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
@@ -610,6 +602,7 @@ public class Java2DRenderer implements Renderer {
         return line;
     }
 
+    @Override
     public void render( LineStyling styling, Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
@@ -680,6 +673,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
+    @Override
     public void render( PolygonStyling styling, Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
@@ -708,6 +702,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
+    @Override
     public void render( Styling styling, Geometry geom ) {
         if ( geom instanceof GeometryReference<?> ) {
             render( styling, ( (GeometryReference<?>) geom ).getReferencedObject() );
@@ -723,6 +718,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
+    @Override
     public void render( Styling styling, Collection<Geometry> geoms ) {
         for ( Geometry geom : geoms ) {
             if ( geom instanceof GeometryReference<?> ) {

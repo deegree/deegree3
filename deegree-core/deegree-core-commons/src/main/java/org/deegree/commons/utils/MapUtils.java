@@ -37,9 +37,6 @@
 package org.deegree.commons.utils;
 
 import static java.lang.Math.sqrt;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import org.slf4j.Logger;
 
 /**
  * <code>MapUtils</code>
@@ -52,8 +49,6 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 public class MapUtils {
-
-    private static final Logger LOG = getLogger( MapUtils.class );
 
     /** The value of sqrt(2) */
     public static final double SQRT2 = sqrt( 2 );

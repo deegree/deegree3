@@ -36,11 +36,18 @@
 
 package org.deegree.rendering.r2d;
 
+import static java.lang.Math.sqrt;
+import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;
 
+import org.deegree.commons.utils.MapUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.UOM;
 import org.slf4j.Logger;
@@ -86,6 +93,115 @@ public class RenderHelper {
         if ( mark.stroke != null ) {
             renderer.applyStroke( mark.stroke, uom, shape, 0, null );
         }
+    }
+
+    /**
+     * @param mapWidth
+     * @param mapHeight
+     * @param bbox
+     * @param crs
+     * @return the WMS 1.1.1 scale (size of the diagonal pixel)
+     */
+    public static double calcScaleWMS111( int mapWidth, int mapHeight, Envelope bbox, ICRS crs ) {
+        if ( mapWidth == 0 || mapHeight == 0 ) {
+            return 0;
+        }
+        double scale = 0;
+
+        if ( crs == null ) {
+            throw new RuntimeException( "Invalid null crs." );
+        }
+
+        if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
+            /*
+             * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
+             * maps having a projected reference system. Direct calculation of scale avoids uncertainties
+             */
+            double dx = bbox.getSpan0() / mapWidth;
+            double dy = bbox.getSpan1() / mapHeight;
+            scale = sqrt( dx * dx + dy * dy );
+        } else {
+
+            if ( !crs.equals( WGS84 ) ) {
+                // transform the bounding box of the request to EPSG:4326
+                GeometryTransformer trans = new GeometryTransformer( WGS84 );
+                try {
+                    bbox = trans.transform( bbox, crs );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.error( "Unknown error", e );
+                } catch ( TransformationException e ) {
+                    LOG.error( "Unknown error", e );
+                }
+            }
+            double dx = bbox.getSpan0() / mapWidth;
+            double dy = bbox.getSpan1() / mapHeight;
+            double minx = bbox.getMin().get0() + dx * ( mapWidth / 2d - 1 );
+            double miny = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
+            double maxx = bbox.getMin().get0() + dx * ( mapWidth / 2d );
+            double maxy = bbox.getMin().get1() + dy * ( mapHeight / 2d );
+
+            double distance = MapUtils.calcDistance( minx, miny, maxx, maxy );
+
+            scale = distance / MapUtils.SQRT2;
+
+        }
+
+        return scale;
+    }
+
+    /**
+     * @param mapWidth
+     * @param mapHeight
+     * @param bbox
+     * @param crs
+     * @return the WMS 1.3.0 scale (horizontal size of the pixel, pixel size == 0.28mm)
+     */
+    public static double calcScaleWMS130( int mapWidth, int mapHeight, Envelope bbox, ICRS crs, double pixelSize ) {
+        if ( mapWidth == 0 || mapHeight == 0 ) {
+            return 0;
+        }
+
+        double scale = 0;
+
+        if ( crs == null ) {
+            throw new RuntimeException( "Invalid crs: " + crs );
+        }
+
+        if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
+            /*
+             * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
+             * maps having a projected reference system. Direct calculation of scale avoids uncertainties
+             */
+            double dx = bbox.getSpan0() / mapWidth;
+            scale = dx / pixelSize;
+        } else {
+
+            if ( !crs.equals( WGS84 ) ) {
+                // transform the bounding box of the request to EPSG:4326
+                GeometryTransformer trans = new GeometryTransformer( WGS84 );
+                try {
+                    bbox = trans.transform( bbox, crs );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.error( "Unknown error", e );
+                } catch ( TransformationException e ) {
+                    LOG.error( "Unknown error", e );
+                }
+            }
+            double dx = bbox.getSpan0() / mapWidth;
+            double dy = bbox.getSpan1() / mapHeight;
+
+            double minx = bbox.getMin().get0() + dx * ( mapWidth / 2d - 1 );
+            double miny = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
+            double maxx = bbox.getMin().get0() + dx * ( mapWidth / 2d );
+            double maxy = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
+
+            double distance = MapUtils.calcDistance( minx, miny, maxx, maxy );
+
+            scale = distance / MapUtils.SQRT2 / pixelSize;
+
+        }
+
+        return scale;
     }
 
 }

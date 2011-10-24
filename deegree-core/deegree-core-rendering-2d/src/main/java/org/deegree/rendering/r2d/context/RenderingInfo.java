@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.context;
 
+import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
+
 import java.awt.Color;
 import java.util.Map;
 
+import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -64,10 +67,12 @@ public class RenderingInfo {
     // for GetFeatureInfo
     private int x, y, featureCount;
 
+    private OperatorFilter extraFilter;
+
     private Map<String, String> parameters;
 
     public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
-                          double pixelSize, Map<String, String> parameters ) {
+                          double pixelSize, OperatorFilter extraFilter, Map<String, String> parameters ) {
         this.format = format;
         this.width = width;
         this.height = height;
@@ -75,6 +80,7 @@ public class RenderingInfo {
         this.bgcolor = bgcolor;
         this.envelope = envelope;
         this.pixelSize = pixelSize;
+        this.extraFilter = extraFilter;
         this.parameters = parameters;
     }
 
@@ -160,6 +166,14 @@ public class RenderingInfo {
      */
     public Map<String, String> getParameterMap() {
         return parameters;
+    }
+
+    public OperatorFilter getExtraFilter() {
+        return extraFilter;
+    }
+
+    public double getScale() {
+        return calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(), pixelSize );
     }
 
 }
