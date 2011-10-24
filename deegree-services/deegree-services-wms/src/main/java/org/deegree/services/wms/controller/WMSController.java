@@ -89,6 +89,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
@@ -822,11 +823,14 @@ public class WMSController extends AbstractOWS {
         ServiceMetadata metadata = null;
         if ( configId != null ) {
             ServiceMetadataManager mgr = workspace.getSubsystemManager( ServiceMetadataManager.class );
-            metadata = mgr.getState( configId ).getResource();
-            if ( metadata != null ) {
-                identification = metadata.getServiceIdentification();
-                provider = metadata.getServiceProvider();
-                extendedCaps = metadata.getExtendedCapabilities();
+            ResourceState<ServiceMetadata> state = mgr.getState( configId );
+            if ( state != null ) {
+                metadata = state.getResource();
+                if ( metadata != null ) {
+                    identification = metadata.getServiceIdentification();
+                    provider = metadata.getServiceProvider();
+                    extendedCaps = metadata.getExtendedCapabilities();
+                }
             }
         }
 
