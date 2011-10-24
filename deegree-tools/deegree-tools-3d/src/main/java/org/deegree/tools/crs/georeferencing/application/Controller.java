@@ -347,8 +347,10 @@ public class Controller {
             if ( source instanceof JFrame ) {
                 if ( this.state.mapController != null ) {
                     if ( this.state.sceneValues != null ) {
-                        this.state.mapController.setSize( this.state.conModel.getFootPanel().getBounds().width,
-                                                          this.state.conModel.getFootPanel().getBounds().height );
+                        this.state.mapController.setSize( this.state.conModel.getPanel().getBounds().width,
+                                                          this.state.conModel.getPanel().getBounds().height );
+                        this.state.sceneValues.setEnvelopeGeoref( state.mapController.getCurrentEnvelope() );
+                        state.sceneValues.setGeorefDimension( state.conModel.getPanel().getBounds() );
                         this.state.conModel.getFootPanel().updatePoints( this.state.sceneValues );
                         this.state.conModel.getFootPanel().repaint();
                     }
