@@ -52,6 +52,19 @@ public class QTableName {
     /**
      * Creates a new {@link QTableName} instance.
      * 
+     * @param table
+     *            database table identifier, never <code>null</code>
+     * @param schema
+     *            database schema identifier, can be <code>null</code>
+     */
+    public QTableName( String table, String schema ) {
+        this.schema = schema;
+        this.table = table;
+    }
+
+    /**
+     * Creates a new {@link QTableName} instance.
+     * 
      * @param identifier
      *            table identifier (with optional schema), must not be <code>null</code>
      */
@@ -82,19 +95,6 @@ public class QTableName {
      */
     public String getSchema() {
         return schema;
-    }
-
-    /**
-     * Creates a new {@link QTableName} instance.
-     * 
-     * @param table
-     *            database table identifier, never <code>null</code>
-     * @param schema
-     *            database schema identifier, can be <code>null</code>
-     */
-    public QTableName( String table, String schema ) {
-        this.schema = schema;
-        this.table = table;
     }
 
     @Override

@@ -297,7 +297,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         QTableName valueTable = table;
         if ( joinConfig != null ) {
             jc = buildJoinTable( table, joinConfig );
-            DBField dbField = new DBField( jc.get( 0 ).getToTable().getTable(), jc.get( 0 ).getToColumns().get( 0 ) );
+            DBField dbField = new DBField( jc.get( 0 ).getToTable().toString(), jc.get( 0 ).getToColumns().get( 0 ) );
             valueTable = new QTableName( dbField.getTable(), dbField.getSchema() );
         }
         int maxOccurs = joinConfig != null ? -1 : 1;

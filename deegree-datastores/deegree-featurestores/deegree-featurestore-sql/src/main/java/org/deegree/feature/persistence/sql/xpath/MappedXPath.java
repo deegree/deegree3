@@ -131,7 +131,7 @@ public class MappedXPath {
             steps.subList( 1, steps.size() );
         }
 
-        currentTable = ftMapping.getFtTable().getTable();
+        currentTable = ftMapping.getFtTable().toString();
         currentTableAlias = aliasManager.getRootTableAlias();
         map( ftMapping.getMappings(), steps );
     }
@@ -232,7 +232,7 @@ public class MappedXPath {
         String fromTableAlias = currentTableAlias;
         // TODO
         String fromColumn = mapping.getJoinedTable().get( 0 ).getFromColumns().get( 0 );
-        String toTable = ftMapping.getFtTable().getTable();
+        String toTable = ftMapping.getFtTable().toString();
         String toTableAlias = aliasManager.generateNew();
 
         String toColumn = ftMapping.getFidMapping().getColumn();
@@ -250,7 +250,7 @@ public class MappedXPath {
             for ( TableJoin joinedTable : joinedTables ) {
                 String fromTable = currentTable;
                 String fromTableAlias = currentTableAlias;
-                String toTable = joinedTable.getToTable().getTable();
+                String toTable = joinedTable.getToTable().toString();
                 String toTableAlias = aliasManager.generateNew();
                 Join appliedJoin = new Join( fromTable, fromTableAlias, joinedTable.getFromColumns(), toTable,
                                              toTableAlias, joinedTable.getToColumns() );

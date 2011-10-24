@@ -131,14 +131,14 @@ public class OracleDDLCreator extends DDLCreator {
         double[] dom = mapping.getCRS().getValidDomain();
         StringBuffer sql = new StringBuffer();
         sql.append( "INSERT INTO user_sdo_geom_metadata(TABLE_NAME,COLUMN_NAME,DIMINFO,SRID) VALUES (" + "'"
-                    + table.getTable().toUpperCase() + "','" + column.toUpperCase() + "',SDO_DIM_ARRAY("
+                    + table.toString().toUpperCase() + "','" + column.toUpperCase() + "',SDO_DIM_ARRAY("
                     + "SDO_DIM_ELEMENT('X', " + dom[0] + ", " + dom[2] + ", 0.00000005), SDO_DIM_ELEMENT('Y', "
                     + dom[1] + ", " + dom[3] + ", 0.00000005)), null)" );
         ddls.add( sql );
 
         sql = new StringBuffer();
         sql.append( "CREATE INDEX " + table.getTable().toUpperCase() + "_" + column.toUpperCase() + " ON "
-                    + table.getTable().toUpperCase() + "(" + column.toUpperCase()
+                    + table.toString().toUpperCase() + "(" + column.toUpperCase()
                     + ") INDEXTYPE IS MDSYS.SPATIAL_INDEX" );
         ddls.add( sql );
         return ddls;
