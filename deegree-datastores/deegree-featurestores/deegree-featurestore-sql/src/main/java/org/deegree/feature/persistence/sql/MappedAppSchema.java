@@ -214,8 +214,10 @@ public class MappedAppSchema extends GenericAppSchema {
      * @return the name of the lookup table, can be <code>null</code> (no global lookup table, only per feature type)
      */
     public String getIdLookupTable() {
-        // TODO
-        return "GML_OBJECTS";
+        if ( blobMapping == null ) {
+            return null;
+        }
+        return blobMapping.getTable().toString();
     }
 
     /**
