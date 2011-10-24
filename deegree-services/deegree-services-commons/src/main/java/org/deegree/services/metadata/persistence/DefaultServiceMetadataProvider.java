@@ -61,7 +61,6 @@ import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ExtendedCapabilitiesType;
-import org.deegree.services.metadata.ServiceMetadata;
 import org.slf4j.Logger;
 import org.w3c.dom.Element;
 

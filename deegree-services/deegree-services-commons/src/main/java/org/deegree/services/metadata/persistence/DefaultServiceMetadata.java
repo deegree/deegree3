@@ -40,7 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata.persistence;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
