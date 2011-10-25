@@ -81,7 +81,7 @@ import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.deegree.services.jaxb.wms.LanguageStringType;
-import org.deegree.services.metadata.ServiceMetadata;
+import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.controller.WMSController130;
@@ -116,7 +116,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
     private final WMSController controller;
 
-    private ServiceMetadata metadata;
+    private OWSMetadataProvider metadata;
 
     /**
      * @param identification
@@ -127,7 +127,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
      * @param controller
      */
     public Capabilities130XMLAdapter( ServiceIdentification identification, ServiceProvider provider,
-                                      ServiceMetadata metadata, String getUrl, String postUrl, MapService service,
+                                      OWSMetadataProvider metadata, String getUrl, String postUrl, MapService service,
                                       WMSController controller ) {
         this.identification = identification;
         this.provider = provider;

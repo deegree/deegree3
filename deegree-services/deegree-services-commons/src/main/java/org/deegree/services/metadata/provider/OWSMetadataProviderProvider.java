@@ -38,49 +38,21 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.metadata;
+package org.deegree.services.metadata.provider;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
-import org.deegree.commons.config.Resource;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
-import org.w3c.dom.Element;
+import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.services.metadata.OWSMetadataProvider;
 
 /**
- * <code>ServiceMetadata</code>
+ * {@link ExtendedResourceProvider} for {@link OWSMetadataProvider}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public interface ServiceMetadata extends Resource {
+public interface OWSMetadataProviderProvider extends ExtendedResourceProvider<OWSMetadataProvider> {
 
-    /**
-     * @return the service identification bean, possibly null
-     */
-    ServiceIdentification getServiceIdentification();
-
-    /**
-     * @return the service provider bean, possibly null
-     */
-    ServiceProvider getServiceProvider();
-
-    /**
-     * @return a mapping from version string (may be "default") to a list of extended capabilities (represented as DOM
-     *         tree), possibly null
-     */
-    Map<String, List<Element>> getExtendedCapabilities();
-
-    /**
-     * @param name
-     *            for layers, a qname with only a local name is used, for feature types its qname
-     * @return the metadata url, possibly null
-     */
-    String getDataMetadataUrl( QName name );
+    // specifies type parameter
 
 }

@@ -142,8 +142,8 @@ import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
-import org.deegree.services.metadata.ServiceMetadata;
-import org.deegree.services.metadata.persistence.ServiceMetadataManager;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetFeatureInfoSchema;
@@ -825,10 +825,10 @@ public class WMSController extends AbstractOWS {
         String postUrl = OGCFrontController.getHttpPostURL();
 
         // override service metadata if available from manager
-        ServiceMetadata metadata = null;
+        OWSMetadataProvider metadata = null;
         if ( configId != null ) {
-            ServiceMetadataManager mgr = workspace.getSubsystemManager( ServiceMetadataManager.class );
-            ResourceState<ServiceMetadata> state = mgr.getState( configId );
+            OWSMetadataProviderManager mgr = workspace.getSubsystemManager( OWSMetadataProviderManager.class );
+            ResourceState<OWSMetadataProvider> state = mgr.getState( configId );
             if ( state != null ) {
                 metadata = state.getResource();
                 if ( metadata != null ) {
@@ -975,7 +975,7 @@ public class WMSController extends AbstractOWS {
         void getCapabilities( String getUrl, String postUrl, String updateSequence, MapService service,
                               HttpResponseBuffer response, ServiceIdentification identification,
                               ServiceProvider provider, Map<String, String> customParameters, WMSController controller,
-                              ServiceMetadata metadata )
+                              OWSMetadataProvider metadata )
                                 throws OWSException, IOException;
 
         /**

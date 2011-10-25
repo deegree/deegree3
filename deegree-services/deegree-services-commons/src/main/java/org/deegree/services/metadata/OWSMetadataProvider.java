@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -38,75 +38,58 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.metadata.persistence;
+package org.deegree.services.metadata;
 
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.Resource;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
-import org.deegree.services.metadata.ServiceMetadata;
+import org.deegree.services.OWS;
 import org.w3c.dom.Element;
 
 /**
- * <code>ServiceMetadata</code>
+ * Implementations provide metadata that {@link OWS} instances can use in their <code>GetCapabilities</code> responses.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class DefaultServiceMetadata implements ServiceMetadata {
+public interface OWSMetadataProvider extends Resource {
 
-    private ServiceIdentification serviceIdentification;
+    /**
+     * Returns the {@link ServiceIdentification} metadata.
+     * 
+     * @return service identification bean, possibly <code>null</code>
+     */
+    ServiceIdentification getServiceIdentification();
 
-    private ServiceProvider serviceProvider;
+    /**
+     * Returns the {@link ServiceProvider} metadata.
+     * 
+     * @return service provider bean, possibly <code>null</code>
+     */
+    ServiceProvider getServiceProvider();
 
-    private Map<String, List<Element>> extendedCapabilities;
+    /**
+     * Returns the <code>ExtendedCapabilities</code> sections.
+     * 
+     * @return mapping from protocol version string (may be "default") to a list of extended capabilities (represented
+     *         as DOM tree), possibly <code>null</code>
+     */
+    Map<String, List<Element>> getExtendedCapabilities();
 
-    private final Map<QName, String> dataMetadataUrls;
-
-    public DefaultServiceMetadata( ServiceIdentification si, ServiceProvider sp,
-                                   Map<String, List<Element>> extendedCapabilities, Map<QName, String> dataMetadataUrls ) {
-        this.serviceIdentification = si;
-        this.serviceProvider = sp;
-        this.extendedCapabilities = extendedCapabilities;
-        this.dataMetadataUrls = dataMetadataUrls;
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        // nothing to init
-    }
-
-    @Override
-    public void destroy() {
-        // nothing to release
-    }
-
-    @Override
-    public ServiceIdentification getServiceIdentification() {
-        return serviceIdentification;
-    }
-
-    @Override
-    public ServiceProvider getServiceProvider() {
-        return serviceProvider;
-    }
-
-    @Override
-    public Map<String, List<Element>> getExtendedCapabilities() {
-        return extendedCapabilities;
-    }
-
-    @Override
-    public String getDataMetadataUrl( QName name ) {
-        return dataMetadataUrls.get( name );
-    }
-
+    /**
+     * Returns the metadata URL for the specified dataset.
+     * 
+     * @param name
+     *            for layers, a qname with only a local name is used, for feature types its qname
+     * @return metadata url, possibly <code>null</code>
+     */
+    String getDataMetadataUrl( QName name );
 }

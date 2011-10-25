@@ -66,7 +66,7 @@ import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.metadata.persistence.ServiceMetadataManager;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.slf4j.Logger;
 
 /**
@@ -379,7 +379,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ServiceMetadataManager.class };
+        return new Class[] { OWSMetadataProviderManager.class };
     }
 
     public DeegreeWorkspace getWorkspace() {

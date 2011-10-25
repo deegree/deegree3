@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -38,7 +38,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.metadata.persistence;
+package org.deegree.services.metadata.provider;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
@@ -65,18 +65,18 @@ import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
 /**
- * <code>DefaultServiceMetadataProvider</code>
+ * {@link OWSMetadataProviderProvider} implementation that retrieves the provided metadata from XML files.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class DefaultServiceMetadataProvider implements ServiceMetadataProvider {
+public class DefaultOWSMetadataProviderProvider implements OWSMetadataProviderProvider {
 
-    private static final Logger LOG = getLogger( DefaultServiceMetadataProvider.class );
+    private static final Logger LOG = getLogger( DefaultOWSMetadataProviderProvider.class );
 
-    private static final URL CONFIG_SCHEMA = DefaultServiceMetadataProvider.class.getResource( "/META-INF/schemas/metadata/3.1.0/metadata.xsd" );
+    private static final URL CONFIG_SCHEMA = DefaultOWSMetadataProviderProvider.class.getResource( "/META-INF/schemas/metadata/3.1.0/metadata.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -96,7 +96,7 @@ public class DefaultServiceMetadataProvider implements ServiceMetadataProvider {
     }
 
     @Override
-    public DefaultServiceMetadata create( URL configUrl )
+    public DefaultOWSMetadataProvider create( URL configUrl )
                             throws ResourceInitException {
         try {
             JAXBElement<DeegreeServicesMetadataType> md;
@@ -118,7 +118,8 @@ public class DefaultServiceMetadataProvider implements ServiceMetadataProvider {
                     list.add( ex.getAny() );
                 }
             }
-            return new DefaultServiceMetadata( smd.first, smd.second, extendedCapabilities, new HashMap<QName, String>() );
+            return new DefaultOWSMetadataProvider( smd.first, smd.second, extendedCapabilities,
+                                                   new HashMap<QName, String>() );
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( "Unable to read service metadata config.", e );

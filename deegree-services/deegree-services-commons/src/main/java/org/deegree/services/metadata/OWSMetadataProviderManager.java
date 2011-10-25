@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -38,7 +38,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.metadata.persistence;
+package org.deegree.services.metadata;
 
 import static org.deegree.commons.config.ResourceState.StateType.created;
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
@@ -61,27 +61,28 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.services.metadata.ServiceMetadata;
+import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.slf4j.Logger;
 
 /**
- * <code>ServiceMetadataManager</code>
+ * {@link ResourceManager} for {@link OWSMetadataProvider}s.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class ServiceMetadataManager extends AbstractResourceManager<ServiceMetadata> {
+@SuppressWarnings("unchecked")
+public class OWSMetadataProviderManager extends AbstractResourceManager<OWSMetadataProvider> {
 
-    private static final Logger LOG = getLogger( ServiceMetadataManager.class );
+    private static final Logger LOG = getLogger( OWSMetadataProviderManager.class );
 
     private ServiceMetadataManagerMetadata metadata;
 
     private static final Pattern filenamePattern = Pattern.compile( "(.*)_metadata\\.(xml|ignored)" );
 
     @Override
-    protected ExtendedResourceProvider<ServiceMetadata> getProvider( File file ) {
+    protected ExtendedResourceProvider<OWSMetadataProvider> getProvider( File file ) {
         Matcher m = filenamePattern.matcher( file.getName() );
         if ( m.find() ) {
             return super.getProvider( file );
@@ -95,7 +96,7 @@ public class ServiceMetadataManager extends AbstractResourceManager<ServiceMetad
     }
 
     @Override
-    public ResourceManagerMetadata<ServiceMetadata> getMetadata() {
+    public ResourceManagerMetadata<OWSMetadataProvider> getMetadata() {
         return metadata;
     }
 
@@ -105,12 +106,12 @@ public class ServiceMetadataManager extends AbstractResourceManager<ServiceMetad
     }
 
     @Override
-    protected ResourceState<ServiceMetadata> processResourceConfig( File configFile )
+    protected ResourceState<OWSMetadataProvider> processResourceConfig( File configFile )
                             throws IOException {
 
         LOG.debug( "Processing file '{}'", configFile );
 
-        ResourceState<ServiceMetadata> state = null;
+        ResourceState<OWSMetadataProvider> state = null;
 
         String dirName = dir.getCanonicalPath();
         String fileName = configFile.getCanonicalPath().substring( dirName.length() );
@@ -127,38 +128,38 @@ public class ServiceMetadataManager extends AbstractResourceManager<ServiceMetad
             LOG.info( "Setting up {} '{}' from file '{}'...", new Object[] { name, id, fileName } );
             if ( provider != null ) {
                 try {
-                    ServiceMetadata resource = create( id, configFile.toURI().toURL() );
-                    state = new ResourceState<ServiceMetadata>( id, configFile, provider, created, resource, null );
+                    OWSMetadataProvider resource = create( id, configFile.toURI().toURL() );
+                    state = new ResourceState<OWSMetadataProvider>( id, configFile, provider, created, resource, null );
                     resource.init( workspace );
-                    state = new ResourceState<ServiceMetadata>( id, configFile, provider, init_ok, resource, null );
+                    state = new ResourceState<OWSMetadataProvider>( id, configFile, provider, init_ok, resource, null );
                     add( resource );
                 } catch ( ResourceInitException e ) {
                     LOG.error( "Error creating {}: {}", new Object[] { name, e.getMessage(), e } );
                     LOG.error( "Stack trace: ", e );
-                    state = new ResourceState<ServiceMetadata>( id, configFile, provider, init_error, null, e );
+                    state = new ResourceState<OWSMetadataProvider>( id, configFile, provider, init_error, null, e );
                 } catch ( Throwable t ) {
                     LOG.error( "Error creating {}: {}", new Object[] { name, t.getMessage(), t } );
                     LOG.error( "Stack trace: ", t );
-                    state = new ResourceState<ServiceMetadata>( id, configFile, provider, init_error, null,
-                                                                new ResourceInitException( t.getMessage(), t ) );
+                    state = new ResourceState<OWSMetadataProvider>( id, configFile, provider, init_error, null,
+                                                                    new ResourceInitException( t.getMessage(), t ) );
                 }
             } else {
                 String msg = "No suitable resource provider available.";
                 ResourceInitException e = new ResourceInitException( msg );
-                state = new ResourceState<ServiceMetadata>( id, configFile, provider, init_error, null, e );
+                state = new ResourceState<OWSMetadataProvider>( id, configFile, provider, init_error, null, e );
             }
         } else if ( matched ) {
             // 7 is the length of ".ignore"
             String id = fileName.substring( 0, fileName.length() - 7 );
             System.out.println( "failed " + id + "from /" + fileName + "/" );
-            state = new ResourceState<ServiceMetadata>( id, configFile, provider, deactivated, null, null );
+            state = new ResourceState<OWSMetadataProvider>( id, configFile, provider, deactivated, null, null );
         }
         return state;
     }
 
-    static class ServiceMetadataManagerMetadata extends DefaultResourceManagerMetadata<ServiceMetadata> {
+    static class ServiceMetadataManagerMetadata extends DefaultResourceManagerMetadata<OWSMetadataProvider> {
         ServiceMetadataManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "service metadata", "services/", ServiceMetadataProvider.class, workspace );
+            super( "service metadata", "services/", OWSMetadataProviderProvider.class, workspace );
         }
     }
 
