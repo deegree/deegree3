@@ -7,9 +7,9 @@
   <NamespaceHint prefix="message" namespaceURI="http://www.aixm.aero/schema/5.1/message" />
 
   <!-- GML schema files / directory to be used (1...n) -->
-  <GMLSchema version="GML_32">schemas/aixm/message/AIXM_BasicMessage.xsd</GMLSchema>
+  <GMLSchema version="GML_32">../../appschemas/aixm/message/AIXM_BasicMessage.xsd</GMLSchema>
 
   <!-- GML datasets to load on startup (0...n) -->
-  <!-- GMLFeatureCollection version="GML_32">datasets/baseline.xml</GMLFeatureCollection-->
+  <!-- GMLFeatureCollection version="GML_32">../../datasets/baseline.xml</GMLFeatureCollection-->
 
 </MemoryFeatureStore>
