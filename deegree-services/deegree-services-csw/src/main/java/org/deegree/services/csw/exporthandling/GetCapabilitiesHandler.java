@@ -255,7 +255,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements
 
         // ows:ServiceProvider
         if ( sections.isEmpty() || sections.contains( Sections.ServiceProvider ) ) {
-            exportServiceProvider100( writer, mainControllerConf.getServiceProvider() );
+            exportServiceProvider100Old( writer, mainControllerConf.getServiceProvider() );
         }
 
         // ows:OperationsMetadata

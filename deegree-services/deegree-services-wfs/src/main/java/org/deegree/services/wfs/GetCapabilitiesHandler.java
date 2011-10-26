@@ -78,7 +78,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -93,15 +92,14 @@ import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.metadata.DatasetMetadata;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.domain.Domain;
 import org.deegree.protocol.ows.metadata.operation.DCP;
 import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
-import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
+import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,13 +138,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final XMLStreamWriter writer;
 
-    private final ServiceIdentificationType serviceId;
-
-    private final ServiceProviderType serviceProvider;
-
     private final Collection<FeatureType> servedFts;
-
-    private final Map<QName, FeatureTypeMetadata> ftNameToFtMetadata;
 
     private final Set<String> sections;
 
@@ -158,50 +150,20 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final WebFeatureService master;
 
-    private final OMElement extendedCapabilities;
-
-    private final String metadataUrlTemplate;
+    private final OWSMetadataProvider mdProvider;
 
     GetCapabilitiesHandler( WebFeatureService master, WFSFeatureStoreManager service, Version version,
-                            XMLStreamWriter xmlWriter, ServiceIdentificationType serviceId,
-                            ServiceProviderType serviceProvider, Collection<FeatureType> servedFts,
-                            String metadataUrlTemplate, Map<QName, FeatureTypeMetadata> ftNameToFtMetadata,
-                            Set<String> sections, boolean enableTransactions, List<ICRS> querySRS,
-                            OMElement extendedCapabilities ) {
+                            XMLStreamWriter xmlWriter, Collection<FeatureType> servedFts, Set<String> sections,
+                            boolean enableTransactions, List<ICRS> querySRS, OWSMetadataProvider mdProvider ) {
         this.master = master;
         this.service = service;
         this.version = version;
         this.writer = xmlWriter;
-        if ( serviceId == null ) {
-            this.serviceId = new ServiceIdentificationType();
-        } else {
-            this.serviceId = serviceId;
-        }
-        if ( this.serviceId.getTitle().isEmpty() ) {
-            this.serviceId.getTitle().add( "deegree 3 WFS" );
-        }
-        if ( this.serviceId.getAbstract().isEmpty() ) {
-            this.serviceId.getAbstract().add( "deegree 3 WFS" );
-        }
-        if ( serviceProvider == null ) {
-            this.serviceProvider = new ServiceProviderType();
-        } else {
-            this.serviceProvider = serviceProvider;
-        }
-        if ( serviceProvider.getProviderName() == null ) {
-            serviceProvider.setProviderName( "deegree organization" );
-        }
-        if ( serviceProvider.getProviderSite() == null ) {
-            serviceProvider.setProviderSite( "http://www.deegree.org" );
-        }
-
         this.servedFts = servedFts;
-        this.metadataUrlTemplate = metadataUrlTemplate;
-        this.ftNameToFtMetadata = ftNameToFtMetadata;
         this.sections = sections;
         this.enableTransactions = enableTransactions;
         this.querySRS = querySRS;
-        this.extendedCapabilities = extendedCapabilities;
+        this.mdProvider = mdProvider;
 
         List<String> offeredVersions = master.getOfferedVersions();
         for ( int i = offeredVersions.size() - 1; i >= 0; i-- ) {
@@ -267,7 +229,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // wfs:Name
             writer.writeStartElement( WFS_NS, "Name" );
             QName ftName = ft.getName();
-            FeatureTypeMetadata ftMd = ftNameToFtMetadata.get( ftName );
+            DatasetMetadata ftMd = mdProvider.getDatasetMetadata( ftName );
 
             String prefix = null;
             if ( ftName.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
@@ -285,8 +247,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
             // wfs:Title (minOccurs=0, maxOccurs=1)
             writer.writeStartElement( WFS_NS, "Title" );
-            if ( ftMd != null && ftMd.getTitle() != null ) {
-                writer.writeCharacters( ftMd.getTitle() );
+            if ( ftMd != null && ftMd.getTitle( null ) != null ) {
+                writer.writeCharacters( ftMd.getTitle( null ).getString() );
             } else {
                 if ( prefix != null ) {
                     writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
@@ -297,9 +259,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             writer.writeEndElement();
 
             // wfs:Abstract (minOccurs=0, maxOccurs=1)
-            if ( ftMd != null && ftMd.getAbstract() != null ) {
+            if ( ftMd != null && ftMd.getAbstract( null ) != null ) {
                 writer.writeStartElement( WFS_NS, "Abstract" );
-                writer.writeCharacters( ftMd.getAbstract() );
+                writer.writeCharacters( ftMd.getAbstract( null ).getString() );
                 writer.writeEndElement();
             }
 
@@ -347,7 +309,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
 
             // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-            String metadataUrl = getMetadataURL( ftMd );
+            String metadataUrl = ftMd != null ? ftMd.getUrl() : null;
             if ( metadataUrl != null ) {
                 writer.writeStartElement( WFS_NS, "MetadataURL" );
                 writer.writeAttribute( "type", "TC211" );
@@ -365,13 +327,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeEndElement();
         writer.writeEndDocument();
-    }
-
-    private String getMetadataURL( FeatureTypeMetadata ftMd ) {
-        if ( metadataUrlTemplate == null || ftMd == null || ftMd.getMetadataSetId() == null ) {
-            return null;
-        }
-        return StringUtils.replaceAll( metadataUrlTemplate, "${metadataSetId}", ftMd.getMetadataSetId() );
     }
 
     private void exportCapability100()
@@ -442,29 +397,34 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeStartElement( WFS_NS, "Service" );
 
-        if ( serviceId != null && serviceId.getTitle() != null && !serviceId.getTitle().isEmpty() ) {
+        if ( mdProvider.getServiceIdentification() != null
+             && mdProvider.getServiceIdentification().getTitle( null ) != null ) {
             // wfs:Name (type="string")
-            writeElement( writer, WFS_NS, "Name", serviceId.getTitle().get( 0 ) );
+            writeElement( writer, WFS_NS, "Name", mdProvider.getServiceIdentification().getTitle( null ).getString() );
             // wfs:Title (type="string)
-            writeElement( writer, WFS_NS, "Title", serviceId.getTitle().get( 0 ) );
+            writeElement( writer, WFS_NS, "Title", mdProvider.getServiceIdentification().getTitle( null ).getString() );
         } else {
             writeElement( writer, WFS_NS, "Name", "" );
             writeElement( writer, WFS_NS, "Title", "" );
         }
 
-        if ( serviceId != null && serviceId.getAbstract() != null && !serviceId.getAbstract().isEmpty() ) {
+        if ( mdProvider.getServiceIdentification() != null
+             && mdProvider.getServiceIdentification().getAbstract( null ) != null ) {
             // wfs:Abstract
-            writeElement( writer, WFS_NS, "Abstract", serviceId.getAbstract().get( 0 ) );
+            writeElement( writer, WFS_NS, "Abstract",
+                          mdProvider.getServiceIdentification().getAbstract( null ).getString() );
         }
 
         // wfs:Keywords
 
         // wfs:OnlineResource (type=???)
-        writeElement( writer, WFS_NS, "OnlineResource", serviceProvider.getServiceContact().getOnlineResource() );
+        if ( mdProvider.getServiceProvider() != null && mdProvider.getServiceProvider().getProviderSite() != null ) {
+            writeElement( writer, WFS_NS, "OnlineResource", mdProvider.getServiceProvider().getProviderSite() );
+        }
 
         // wfs:Fees
-        if ( serviceId != null && serviceId.getFees() != null ) {
-            writeElement( writer, WFS_NS, "Fees", serviceId.getFees() );
+        if ( mdProvider.getServiceIdentification() != null && mdProvider.getServiceIdentification().getFees() != null ) {
+            writeElement( writer, WFS_NS, "Fees", mdProvider.getServiceIdentification().getFees() );
         }
 
         // wfs:AccessConstraints
@@ -540,12 +500,12 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // ows:ServiceIdentification
         if ( sections == null || sections.contains( "SERVICEIDENTIFICATION" ) ) {
-            exportServiceIdentification100( writer, serviceId, "WFS", offeredVersions );
+            exportServiceIdentification100( writer, mdProvider.getServiceIdentification(), "WFS", offeredVersions );
         }
 
         // ows:ServiceProvider
         if ( sections == null || sections.contains( "SERVICEPROVIDER" ) ) {
-            exportServiceProvider100( writer, serviceProvider );
+            exportServiceProvider100( writer, mdProvider.getServiceProvider() );
         }
 
         // ows:OperationsMetadata
@@ -611,7 +571,10 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 params.add( new Domain( "releaseAction", Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
                 operations.add( new Operation( WFSRequestType.Transaction.name(), dcps, params, null, null ) );
             }
-            exportOperationsMetadata100( writer, new OperationsMetadata( operations, null, null, extendedCapabilities ) );
+            Map<String, List<OMElement>> versionToExtendedCaps = mdProvider.getExtendedCapabilities();
+            exportOperationsMetadata100( writer,
+                                         new OperationsMetadata( operations, null, null,
+                                                                 versionToExtendedCaps.get( "1.1.0" ) ) );
         }
 
         // wfs:FeatureTypeList
@@ -619,7 +582,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             writer.writeStartElement( WFS_NS, "FeatureTypeList" );
             for ( FeatureType ft : servedFts ) {
                 QName ftName = ft.getName();
-                FeatureTypeMetadata ftMd = ftNameToFtMetadata.get( ftName );
+                DatasetMetadata ftMd = mdProvider.getDatasetMetadata( ftName );
                 writer.writeStartElement( WFS_NS, "FeatureType" );
                 // wfs:Name
                 writer.writeStartElement( WFS_NS, "Name" );
@@ -639,17 +602,17 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // wfs:Title
                 writer.writeStartElement( WFS_NS, "Title" );
-                if ( ftMd != null && ftMd.getTitle() != null ) {
-                    writer.writeCharacters( ftMd.getTitle() );
+                if ( ftMd != null && ftMd.getTitle( null ) != null ) {
+                    writer.writeCharacters( ftMd.getTitle( null ).getString() );
                 } else {
                     writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
                 }
                 writer.writeEndElement();
 
                 // wfs:Abstract (minOccurs=0, maxOccurs=1)
-                if ( ftMd != null && ftMd.getAbstract() != null ) {
+                if ( ftMd != null && ftMd.getAbstract( null ) != null ) {
                     writer.writeStartElement( WFS_NS, "Abstract" );
-                    writer.writeCharacters( ftMd.getAbstract() );
+                    writer.writeCharacters( ftMd.getAbstract( null ).getString() );
                     writer.writeEndElement();
                 }
 
@@ -719,7 +682,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 // TODO Operations
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                String metadataUrl = getMetadataURL( ftMd );
+                String metadataUrl = ftMd != null ? ftMd.getUrl() : null;
                 if ( metadataUrl != null ) {
                     writer.writeStartElement( WFS_NS, "MetadataURL" );
                     writer.writeAttribute( "type", "19139" );
@@ -784,12 +747,12 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // ows:ServiceIdentification
         if ( sections == null || sections.contains( "ServiceIdentification" ) ) {
-            exportServiceIdentification110( writer, serviceId, "WFS", offeredVersions );
+            exportServiceIdentification110New( writer, mdProvider.getServiceIdentification(), "WFS", offeredVersions );
         }
 
         // ows:ServiceProvider
         if ( sections == null || sections.contains( "ServiceProvider" ) ) {
-            exportServiceProvider110( writer, serviceProvider );
+            exportServiceProvider110New( writer, mdProvider.getServiceProvider() );
         }
 
         // ows:OperationsMetadata
@@ -878,8 +841,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             queryExprs.add( "wfs:StoredQuery" );
             constraints.add( new Domain( "QueryExpressions", queryExprs ) );
 
-            OperationsMetadata operationsMd = new OperationsMetadata( operations, globalParams, constraints,
-                                                                      extendedCapabilities );
+            OperationsMetadata operationsMd = new OperationsMetadata(
+                                                                      operations,
+                                                                      globalParams,
+                                                                      constraints,
+                                                                      mdProvider.getExtendedCapabilities().get( "2.0.0" ) );
             exportOperationsMetadata110( writer, operationsMd );
         }
 
@@ -893,7 +859,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             writer.writeStartElement( WFS_200_NS, "FeatureTypeList" );
             for ( FeatureType ft : servedFts ) {
                 QName ftName = ft.getName();
-                FeatureTypeMetadata ftMd = ftNameToFtMetadata.get( ftName );
+                DatasetMetadata ftMd = mdProvider.getDatasetMetadata( ftName );
                 writer.writeStartElement( WFS_200_NS, "FeatureType" );
                 // wfs:Name
                 writer.writeStartElement( WFS_200_NS, "Name" );
@@ -913,17 +879,17 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // wfs:Title
                 writer.writeStartElement( WFS_200_NS, "Title" );
-                if ( ftMd != null && ftMd.getTitle() != null ) {
-                    writer.writeCharacters( ftMd.getTitle() );
+                if ( ftMd != null && ftMd.getTitle( null ) != null ) {
+                    writer.writeCharacters( ftMd.getTitle( null ).getString() );
                 } else {
                     writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
                 }
                 writer.writeEndElement();
 
                 // wfs:Abstract (minOccurs=0, maxOccurs=1)
-                if ( ftMd != null && ftMd.getAbstract() != null ) {
+                if ( ftMd != null && ftMd.getAbstract( null ) != null ) {
                     writer.writeStartElement( WFS_200_NS, "Abstract" );
-                    writer.writeCharacters( ftMd.getAbstract() );
+                    writer.writeCharacters( ftMd.getAbstract( null ).getString() );
                     writer.writeEndElement();
                 }
 
@@ -991,7 +957,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeEndElement();
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                String metadataUrl = getMetadataURL( ftMd );
+                String metadataUrl = ftMd != null ? ftMd.getUrl() : null;
                 if ( metadataUrl != null ) {
                     writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
                     writer.writeAttribute( XLN_NS, "href", metadataUrl );

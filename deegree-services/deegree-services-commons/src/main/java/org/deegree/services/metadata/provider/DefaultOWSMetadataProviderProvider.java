@@ -51,18 +51,21 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.dom.DOMSource;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ExtendedCapabilitiesType;
 import org.slf4j.Logger;
-import org.w3c.dom.Element;
 
 /**
  * {@link OWSMetadataProviderProvider} implementation that retrieves the provided metadata from XML files.
@@ -103,23 +106,29 @@ public class DefaultOWSMetadataProviderProvider implements OWSMetadataProviderPr
             md = (JAXBElement<DeegreeServicesMetadataType>) unmarshall( "org.deegree.services.jaxb.metadata",
                                                                         CONFIG_SCHEMA, configUrl, workspace );
             Pair<ServiceIdentification, ServiceProvider> smd = convertFromJAXB( md.getValue() );
-            Map<String, List<Element>> extendedCapabilities = new HashMap<String, List<Element>>();
+            Map<String, List<OMElement>> extendedCapabilities = new HashMap<String, List<OMElement>>();
             if ( md.getValue().getExtendedCapabilities() != null ) {
                 for ( ExtendedCapabilitiesType ex : md.getValue().getExtendedCapabilities() ) {
                     String version = ex.getProtocolVersions();
                     if ( version == null ) {
                         version = "default";
                     }
-                    List<Element> list = extendedCapabilities.get( version );
+                    List<OMElement> list = extendedCapabilities.get( version );
                     if ( list == null ) {
-                        list = new ArrayList<Element>();
+                        list = new ArrayList<OMElement>();
                         extendedCapabilities.put( version, list );
                     }
-                    list.add( ex.getAny() );
+                    DOMSource domSource = new DOMSource( ex.getAny() );
+                    XMLStreamReader xmlStream;
+                    try {
+                        xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
+                    } catch ( Throwable t ) {
+                        throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(), t );
+                    }
+                    list.add( new XMLAdapter( xmlStream ).getRootElement() );
                 }
             }
-            return new DefaultOWSMetadataProvider( smd.first, smd.second, extendedCapabilities,
-                                                   new HashMap<QName, String>() );
+            return new DefaultOWSMetadataProvider( smd.first, smd.second, extendedCapabilities, null );
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( "Unable to read service metadata config.", e );
@@ -130,5 +139,4 @@ public class DefaultOWSMetadataProviderProvider implements OWSMetadataProviderPr
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};
     }
-
 }

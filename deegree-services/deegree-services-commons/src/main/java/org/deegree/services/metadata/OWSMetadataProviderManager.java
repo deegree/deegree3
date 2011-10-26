@@ -162,5 +162,4 @@ public class OWSMetadataProviderManager extends AbstractResourceManager<OWSMetad
             super( "service metadata", "services/", OWSMetadataProviderProvider.class, workspace );
         }
     }
-
 }

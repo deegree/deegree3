@@ -45,10 +45,13 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.domain.AllowedValues;
 import org.deegree.protocol.ows.metadata.domain.AnyValue;
 import org.deegree.protocol.ows.metadata.domain.Domain;
@@ -60,6 +63,9 @@ import org.deegree.protocol.ows.metadata.domain.Values;
 import org.deegree.protocol.ows.metadata.domain.ValuesReference;
 import org.deegree.protocol.ows.metadata.operation.DCP;
 import org.deegree.protocol.ows.metadata.operation.Operation;
+import org.deegree.protocol.ows.metadata.party.Address;
+import org.deegree.protocol.ows.metadata.party.ContactInfo;
+import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.CodeType;
@@ -88,6 +94,58 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      * 
      * @param writer
      *            used to append the XML, must not be <code>null</code>
+     * @param serviceIdentification
+     *            configuration object that provides most of the required metadata, must not be <code>null</code>
+     * @param serviceName
+     *            OGC-style abbreviation of the service, e.g. WFS, must not be <code>null</code>
+     * @param serviceVersions
+     *            supported protocol versions, must not be <code>null</code> and contain at least one entry
+     * @throws XMLStreamException
+     *             if writing the XML fails
+     */
+    public static void exportServiceIdentification100( XMLStreamWriter writer,
+                                                       ServiceIdentification serviceIdentification,
+                                                       final String serviceName, final List<Version> serviceVersions )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( OWS_PREFIX, "ServiceIdentification", OWS_NS );
+        if ( serviceIdentification.getTitle( null ) != null ) {
+            // schema has maxOccurs=1, so only export the first entry
+            writeElement( writer, OWS_NS, "Title", serviceIdentification.getTitle( null ).getString() );
+        }
+        if ( serviceIdentification.getAbstract( null ) != null ) {
+            // schema has maxOccurs=1, so only export the first entry
+            writeElement( writer, OWS_NS, "Abstract", serviceIdentification.getAbstract( null ).getString() );
+        }
+        if ( serviceIdentification.getKeywords() != null ) {
+            for ( Pair<List<LanguageString>, org.deegree.commons.tom.ows.CodeType> keywords : serviceIdentification.getKeywords() ) {
+                writer.writeStartElement( OWS_PREFIX, "Keywords", OWS_NS );
+                for ( LanguageString keyword : keywords.first ) {
+                    writeElement( writer, OWS_NS, "Keyword", keyword.getString() );
+                }
+                if ( keywords.second != null ) {
+                    exportCodeTypeNew( writer, keywords.second, "Type", OWS_NS );
+                }
+                writer.writeEndElement();
+            }
+        }
+
+        writeElement( writer, OWS_NS, "ServiceType", serviceName );
+        exportVersions( writer, serviceVersions, OWS_NS, "ServiceTypeVersion" );
+
+        if ( serviceIdentification.getFees() != null ) {
+            writeElement( writer, OWS_NS, "Fees", serviceIdentification.getFees() );
+        }
+
+        exportSimpleStrings( writer, serviceIdentification.getAccessConstraints(), OWS_NS, "AccessConstraints" );
+        writer.writeEndElement();
+    }
+
+    /**
+     * Exports the given {@link ServiceIdentificationType} as an OWS 1.1.0 <code>ServiceIdentification</code> element.
+     * 
+     * @param writer
+     *            used to append the XML, must not be <code>null</code>
      * @param serviceID
      *            configuration object that provides most of the required metadata, must not be <code>null</code>
      * @param serviceName
@@ -97,40 +155,43 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      * @throws XMLStreamException
      *             if writing the XML fails
      */
-    public static void exportServiceIdentification100( XMLStreamWriter writer, ServiceIdentificationType serviceID,
-                                                       final String serviceName, final List<Version> serviceVersions )
+    public static void exportServiceIdentification110New( XMLStreamWriter writer, ServiceIdentification serviceID,
+                                                          final String serviceName, final List<Version> serviceVersions )
                             throws XMLStreamException {
 
-        writer.writeStartElement( OWS_PREFIX, "ServiceIdentification", OWS_NS );
-        if ( !serviceID.getTitle().isEmpty() ) {
+        writer.writeStartElement( OWS110_NS, "ServiceIdentification" );
+        if ( serviceID.getTitle( null ) != null ) {
             // schema has maxOccurs=1, so only export the first entry
-            writeElement( writer, OWS_NS, "Title", serviceID.getTitle().get( 0 ) );
+            writeElement( writer, OWS110_NS, "Title", serviceID.getTitle( null ).getString() );
         }
-        if ( !serviceID.getAbstract().isEmpty() ) {
+        if ( serviceID.getAbstract( null ) != null ) {
             // schema has maxOccurs=1, so only export the first entry
-            writeElement( writer, OWS_NS, "Abstract", serviceID.getAbstract().get( 0 ) );
+            writeElement( writer, OWS110_NS, "Abstract", serviceID.getAbstract( null ).getString() );
+        }
+        exportKeyWords110New( writer, serviceID.getKeywords() );
+
+        String srvn = serviceName;
+        if ( serviceName == null || "".equals( serviceName ) ) {
+            LOG.warn( "Service name may not be null, wrong call to exportServiceIdentification110, setting to unknown" );
+            srvn = "unknown";
+        }
+        writeElement( writer, OWS110_NS, "ServiceType", srvn );
+        List<Version> versions = serviceVersions;
+        if ( serviceVersions == null || serviceVersions.isEmpty() ) {
+            LOG.warn( "Service versions name may not be null, wrong call to exportServiceIdentification110, setting to unknown" );
+            versions = new ArrayList<Version>();
+            versions.add( new Version( 1, 0, 0 ) );
         }
 
-        for ( KeywordsType keywords : serviceID.getKeywords() ) {
-            writer.writeStartElement( OWS_PREFIX, "Keywords", OWS_NS );
-            for ( LanguageStringType keyword : keywords.getKeyword() ) {
-                writeElement( writer, OWS_NS, "Keyword", keyword.getValue() );
-            }
-            if ( keywords.getType() != null ) {
-                exportCodeType( writer, keywords.getType(), "Type", OWS_NS );
-            }
-            writer.writeEndElement();
+        exportVersions( writer, versions, OWS110_NS, "ServiceTypeVersion" );
+
+        // No support for profiles ???
+        if ( serviceID.getFees() != null && !"".equals( serviceID.getFees() ) ) {
+            writeElement( writer, OWS110_NS, "Fees", serviceID.getFees() );
         }
 
-        writeElement( writer, OWS_NS, "ServiceType", serviceName );
-        exportVersions( writer, serviceVersions, OWS_NS, "ServiceTypeVersion" );
-
-        if ( serviceID.getFees() != null ) {
-            writeElement( writer, OWS_NS, "Fees", serviceID.getFees() );
-        }
-
-        exportSimpleStrings( writer, serviceID.getAccessConstraints(), OWS_NS, "AccessConstraints" );
-        writer.writeEndElement();
+        exportSimpleStrings( writer, serviceID.getAccessConstraints(), OWS110_NS, "AccessConstraints" );
+        writer.writeEndElement();// OWS110_NS, ServiceIdentification
     }
 
     /**
@@ -184,6 +245,30 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      * Exports the given (commons) keywords to ows 1.1.0 format
      * 
      * @param writer
+     * @param list
+     * @throws XMLStreamException
+     */
+    public static void exportKeyWords110New( XMLStreamWriter writer,
+                                             List<Pair<List<LanguageString>, org.deegree.commons.tom.ows.CodeType>> list )
+                            throws XMLStreamException {
+        if ( list != null && list.size() > 0 ) {
+            for ( Pair<List<LanguageString>, org.deegree.commons.tom.ows.CodeType> keywords : list ) {
+                writer.writeStartElement( OWS_PREFIX, "Keywords", OWS110_NS );
+                for ( LanguageString keyword : keywords.first ) {
+                    writeElement( writer, OWS110_NS, "Keyword", keyword.getString() );
+                }
+                if ( keywords.second != null ) {
+                    exportCodeTypeNew( writer, keywords.second, "Type", OWS110_NS );
+                }
+                writer.writeEndElement();
+            }
+        }
+    }
+
+    /**
+     * Exports the given (commons) keywords to ows 1.1.0 format
+     * 
+     * @param writer
      * @param keywords
      * @throws XMLStreamException
      */
@@ -203,9 +288,116 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            <code>ServiceProviderType</code> to export
      * @throws XMLStreamException
      */
-    public static void exportServiceProvider100( XMLStreamWriter writer, ServiceProviderType serviceProvider )
+    public static void exportServiceProvider100( XMLStreamWriter writer, ServiceProvider serviceProvider )
                             throws XMLStreamException {
         exportServiceProvider( writer, serviceProvider, OWS_NS );
+    }
+
+    /**
+     * Exports a {@link ServiceProviderType} as an OWS 1.1.0 <code>ServiceProvider</code> element.
+     * 
+     * @param writer
+     *            writer to append the xml
+     * @param serviceProvider
+     *            <code>ServiceProviderType</code> to export
+     * @throws XMLStreamException
+     */
+    public static void exportServiceProvider110New( XMLStreamWriter writer, ServiceProvider serviceProvider )
+                            throws XMLStreamException {
+        exportServiceProvider( writer, serviceProvider, OWS110_NS );
+    }
+
+    /**
+     * Exports a {@link ServiceProviderType} as an OWS 1.0.0 <code>ServiceProvider</code> element.
+     * 
+     * @param writer
+     *            writer to append the xml
+     * @param serviceProvider
+     *            <code>ServiceProviderType</code> to export
+     * @throws XMLStreamException
+     */
+    public static void exportServiceProvider100Old( XMLStreamWriter writer, ServiceProviderType serviceProvider )
+                            throws XMLStreamException {
+        String owsNS = OWS_NS;
+        writer.writeStartElement( OWS_PREFIX, "ServiceProvider", owsNS );
+
+        // ows:ProviderName (type="string")
+        writer.writeStartElement( owsNS, "ProviderName" );
+        writer.writeCharacters( serviceProvider.getProviderName() );
+        writer.writeEndElement();
+
+        if ( serviceProvider.getProviderSite() != null && !"".equals( serviceProvider.getProviderSite().trim() ) ) {
+            // ows:ProviderSite (type="ows:OnlineResourceType")
+            writer.writeStartElement( owsNS, "ProviderSite" );
+            writer.writeAttribute( XLN_NS, "href", serviceProvider.getProviderSite() );
+            writer.writeEndElement();
+        }
+
+        // ows:ProviderSite (type="ows:ResponsiblePartySubsetType")
+        ServiceContactType serviceContact = serviceProvider.getServiceContact();
+        writer.writeStartElement( owsNS, "ServiceContact" );
+
+        if ( serviceContact.getIndividualName() != null && !"".equals( serviceContact.getIndividualName().trim() ) ) {
+            // ows:IndividualName (type="string")
+            writeElement( writer, owsNS, "IndividualName", serviceContact.getIndividualName() );
+        }
+
+        if ( serviceContact.getPositionName() != null && !"".equals( serviceContact.getPositionName().trim() ) ) {
+            // ows:PositionName (type="string")
+            writeElement( writer, owsNS, "PositionName", serviceContact.getPositionName() );
+        }
+
+        // ows:ContactInfo
+        if ( serviceContact.getPhone() != null || serviceContact.getFacsimile() != null
+             || serviceContact.getAddress() != null || serviceContact.getElectronicMailAddress() != null
+             || serviceContact.getOnlineResource() != null || serviceContact.getHoursOfService() != null
+             || serviceContact.getContactInstructions() != null ) {
+            writer.writeStartElement( owsNS, "ContactInfo" );
+
+            // ows:Phone (type="ows:PhoneType")
+            if ( serviceContact.getPhone() != null || serviceContact.getFacsimile() != null ) {
+                writer.writeStartElement( owsNS, "Phone" );
+                // ows:Voice (type="string")
+                writeOptionalElement( writer, owsNS, "Voice", serviceContact.getPhone() );
+                // ows:Facsimile (type="string")
+                writeOptionalElement( writer, owsNS, "Facsimile", serviceContact.getFacsimile() );
+                writer.writeEndElement();
+            }
+
+            // ows:Address (type="ows:AddressType")
+            AddressType address = serviceContact.getAddress();
+            if ( address != null ) {
+                writer.writeStartElement( owsNS, "Address" );
+                exportSimpleStrings( writer, address.getDeliveryPoint(), owsNS, "DeliveryPoint" );
+                writeOptionalElement( writer, owsNS, "City", address.getCity() );
+                writeOptionalElement( writer, owsNS, "AdministrativeArea", address.getAdministrativeArea() );
+                writeOptionalElement( writer, owsNS, "PostalCode", address.getPostalCode() );
+                writeOptionalElement( writer, owsNS, "Country", address.getCountry() );
+                exportSimpleStrings( writer, serviceContact.getElectronicMailAddress(), owsNS, "ElectronicMailAddress" );
+                writer.writeEndElement();
+            }
+
+            if ( serviceContact.getOnlineResource() != null && !"".equals( serviceContact.getOnlineResource().trim() ) ) {
+                // ows:OnlineResource (type="ows:OnlineResourceType")
+                writer.writeStartElement( owsNS, "OnlineResource" );
+                writer.writeAttribute( XLN_NS, "href", serviceContact.getOnlineResource() );
+                writer.writeEndElement();
+            }
+
+            // ows:HoursOfService (type="string")
+            writeOptionalElement( writer, owsNS, "HoursOfService", serviceContact.getHoursOfService() );
+            // ows:ContactInstructions (type="string")
+            writeOptionalElement( writer, owsNS, "ContactInstructions", serviceContact.getContactInstructions() );
+
+            writer.writeEndElement(); // ContactInfo
+        }
+
+        // ows:Role (type="ows:CodeType)
+        writeElement( writer, owsNS, "Role", serviceContact.getRole() );
+
+        writer.writeEndElement();
+
+        writer.writeEndElement(); // ServiceProvider
     }
 
     /**
@@ -220,7 +412,86 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      */
     public static void exportServiceProvider110( XMLStreamWriter writer, ServiceProviderType serviceProvider )
                             throws XMLStreamException {
-        exportServiceProvider( writer, serviceProvider, OWS110_NS );
+        String owsNS = OWS110_NS;
+        writer.writeStartElement( OWS_PREFIX, "ServiceProvider", owsNS );
+
+        // ows:ProviderName (type="string")
+        writer.writeStartElement( owsNS, "ProviderName" );
+        writer.writeCharacters( serviceProvider.getProviderName() );
+        writer.writeEndElement();
+
+        if ( serviceProvider.getProviderSite() != null && !"".equals( serviceProvider.getProviderSite().trim() ) ) {
+            // ows:ProviderSite (type="ows:OnlineResourceType")
+            writer.writeStartElement( owsNS, "ProviderSite" );
+            writer.writeAttribute( XLN_NS, "href", serviceProvider.getProviderSite() );
+            writer.writeEndElement();
+        }
+
+        // ows:ProviderSite (type="ows:ResponsiblePartySubsetType")
+        ServiceContactType serviceContact = serviceProvider.getServiceContact();
+        writer.writeStartElement( owsNS, "ServiceContact" );
+
+        if ( serviceContact.getIndividualName() != null && !"".equals( serviceContact.getIndividualName().trim() ) ) {
+            // ows:IndividualName (type="string")
+            writeElement( writer, owsNS, "IndividualName", serviceContact.getIndividualName() );
+        }
+
+        if ( serviceContact.getPositionName() != null && !"".equals( serviceContact.getPositionName().trim() ) ) {
+            // ows:PositionName (type="string")
+            writeElement( writer, owsNS, "PositionName", serviceContact.getPositionName() );
+        }
+
+        // ows:ContactInfo
+        if ( serviceContact.getPhone() != null || serviceContact.getFacsimile() != null
+             || serviceContact.getAddress() != null || serviceContact.getElectronicMailAddress() != null
+             || serviceContact.getOnlineResource() != null || serviceContact.getHoursOfService() != null
+             || serviceContact.getContactInstructions() != null ) {
+            writer.writeStartElement( owsNS, "ContactInfo" );
+
+            // ows:Phone (type="ows:PhoneType")
+            if ( serviceContact.getPhone() != null || serviceContact.getFacsimile() != null ) {
+                writer.writeStartElement( owsNS, "Phone" );
+                // ows:Voice (type="string")
+                writeOptionalElement( writer, owsNS, "Voice", serviceContact.getPhone() );
+                // ows:Facsimile (type="string")
+                writeOptionalElement( writer, owsNS, "Facsimile", serviceContact.getFacsimile() );
+                writer.writeEndElement();
+            }
+
+            // ows:Address (type="ows:AddressType")
+            AddressType address = serviceContact.getAddress();
+            if ( address != null ) {
+                writer.writeStartElement( owsNS, "Address" );
+                exportSimpleStrings( writer, address.getDeliveryPoint(), owsNS, "DeliveryPoint" );
+                writeOptionalElement( writer, owsNS, "City", address.getCity() );
+                writeOptionalElement( writer, owsNS, "AdministrativeArea", address.getAdministrativeArea() );
+                writeOptionalElement( writer, owsNS, "PostalCode", address.getPostalCode() );
+                writeOptionalElement( writer, owsNS, "Country", address.getCountry() );
+                exportSimpleStrings( writer, serviceContact.getElectronicMailAddress(), owsNS, "ElectronicMailAddress" );
+                writer.writeEndElement();
+            }
+
+            if ( serviceContact.getOnlineResource() != null && !"".equals( serviceContact.getOnlineResource().trim() ) ) {
+                // ows:OnlineResource (type="ows:OnlineResourceType")
+                writer.writeStartElement( owsNS, "OnlineResource" );
+                writer.writeAttribute( XLN_NS, "href", serviceContact.getOnlineResource() );
+                writer.writeEndElement();
+            }
+
+            // ows:HoursOfService (type="string")
+            writeOptionalElement( writer, owsNS, "HoursOfService", serviceContact.getHoursOfService() );
+            // ows:ContactInstructions (type="string")
+            writeOptionalElement( writer, owsNS, "ContactInstructions", serviceContact.getContactInstructions() );
+
+            writer.writeEndElement(); // ContactInfo
+        }
+
+        // ows:Role (type="ows:CodeType)
+        writeElement( writer, owsNS, "Role", serviceContact.getRole() );
+
+        writer.writeEndElement();
+
+        writer.writeEndElement(); // ServiceProvider
     }
 
     /**
@@ -287,8 +558,8 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         }
 
         // <element ref="ows:ExtendedCapabilities" minOccurs="0"/>
-        if ( operationsMd.getExtendedCapabilities() != null ) {
-            copy( writer, operationsMd.getExtendedCapabilities().getXMLStreamReader() );
+        if ( !operationsMd.getExtendedCapabilities().isEmpty() ) {
+            copy( writer, operationsMd.getExtendedCapabilities().get( 0 ).getXMLStreamReader() );
         }
 
         writer.writeEndElement();
@@ -356,15 +627,15 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         }
 
         // <element ref="ows:ExtendedCapabilities" minOccurs="0"/>
-        if ( operationsMd.getExtendedCapabilities() != null ) {
-            copy( writer, operationsMd.getExtendedCapabilities().getXMLStreamReader() );
+        if ( !operationsMd.getExtendedCapabilities().isEmpty() ) {
+            copy( writer, operationsMd.getExtendedCapabilities().get( 0 ).getXMLStreamReader() );
         }
 
         writer.writeEndElement();
     }
 
     /**
-     * Exports a {@link ServiceProviderType} as an OWS <code>ServiceProvider</code> element.
+     * Exports a {@link ServiceProvider} as an OWS <code>ServiceProvider</code> element.
      * <p>
      * The namespace of the produced elements is given as a parameter so it is usable for different OWS versions. It has
      * been checked that this method produces the correct output for the following OWS versions/namespaces:
@@ -387,20 +658,21 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      * @param writer
      *            writer to append the xml
      * @param serviceProvider
-     *            <code>ServiceProviderType</code> to export
+     *            metadata to export
      * @param owsNS
      *            namespace for the generated elements
      * @throws XMLStreamException
      */
-    private static void exportServiceProvider( XMLStreamWriter writer, ServiceProviderType serviceProvider, String owsNS )
+    private static void exportServiceProvider( XMLStreamWriter writer, ServiceProvider serviceProvider, String owsNS )
                             throws XMLStreamException {
-
         writer.writeStartElement( OWS_PREFIX, "ServiceProvider", owsNS );
 
         // ows:ProviderName (type="string")
-        writer.writeStartElement( owsNS, "ProviderName" );
-        writer.writeCharacters( serviceProvider.getProviderName() );
-        writer.writeEndElement();
+        if ( serviceProvider.getProviderName() != null ) {
+            writer.writeStartElement( owsNS, "ProviderName" );
+            writer.writeCharacters( serviceProvider.getProviderName() );
+            writer.writeEndElement();
+        }
 
         if ( serviceProvider.getProviderSite() != null && !"".equals( serviceProvider.getProviderSite().trim() ) ) {
             // ows:ProviderSite (type="ows:OnlineResourceType")
@@ -410,7 +682,9 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         }
 
         // ows:ProviderSite (type="ows:ResponsiblePartySubsetType")
-        exportServiceContact( writer, serviceProvider.getServiceContact(), owsNS );
+        if ( serviceProvider.getServiceContact() != null ) {
+            exportServiceContact( writer, serviceProvider.getServiceContact(), owsNS );
+        }
 
         writer.writeEndElement(); // ServiceProvider
     }
@@ -433,7 +707,7 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
     }
 
     /**
-     * Exports a {@link ServiceContactType} as an OWS <code>ServiceContact</code> element.
+     * Exports a {@link ResponsibleParty} as an OWS <code>ServiceContact</code> element.
      * <p>
      * The namespace of the produced elements is given as a parameter so it is usable for different OWS versions. It has
      * been checked that this method produces the correct output for the following OWS versions/namespaces:
@@ -461,7 +735,7 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            namespace for the generated elements
      * @throws XMLStreamException
      */
-    private static void exportServiceContact( XMLStreamWriter writer, ServiceContactType serviceContact, String owsNS )
+    private static void exportServiceContact( XMLStreamWriter writer, ResponsibleParty serviceContact, String owsNS )
                             throws XMLStreamException {
         writer.writeStartElement( owsNS, "ServiceContact" );
 
@@ -479,7 +753,9 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         exportContactInfo( writer, serviceContact, owsNS );
 
         // ows:Role (type="ows:CodeType)
-        writeElement( writer, owsNS, "Role", serviceContact.getRole() );
+        if ( serviceContact.getRole() != null ) {
+            writeElement( writer, owsNS, "Role", serviceContact.getRole().getCode() );
+        }
 
         writer.writeEndElement();
     }
@@ -513,28 +789,29 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      *            namespace for the generated elements
      * @throws XMLStreamException
      */
-    private static void exportContactInfo( XMLStreamWriter writer, ServiceContactType serviceContact, String owsNS )
+    private static void exportContactInfo( XMLStreamWriter writer, ResponsibleParty party, String owsNS )
                             throws XMLStreamException {
 
-        // check if one of the given is set.
-        if ( serviceContact.getPhone() != null || serviceContact.getFacsimile() != null
-             || serviceContact.getAddress() != null || serviceContact.getElectronicMailAddress() != null
-             || serviceContact.getOnlineResource() != null || serviceContact.getHoursOfService() != null
-             || serviceContact.getContactInstructions() != null ) {
+        ContactInfo serviceContact = party.getContactInfo();
+        if ( serviceContact != null ) {
             writer.writeStartElement( owsNS, "ContactInfo" );
 
             // ows:Phone (type="ows:PhoneType")
-            if ( serviceContact.getPhone() != null || serviceContact.getFacsimile() != null ) {
+            if ( serviceContact.getPhone() != null ) {
                 writer.writeStartElement( owsNS, "Phone" );
-                // ows:Voice (type="string")
-                writeOptionalElement( writer, owsNS, "Voice", serviceContact.getPhone() );
-                // ows:Facsimile (type="string")
-                writeOptionalElement( writer, owsNS, "Facsimile", serviceContact.getFacsimile() );
+                if ( !serviceContact.getPhone().getVoice().isEmpty() ) {
+                    // ows:Voice (type="string")
+                    writeOptionalElement( writer, owsNS, "Voice", serviceContact.getPhone().getVoice().get( 0 ) );
+                }
+                if ( !serviceContact.getPhone().getFacsimile().isEmpty() ) {
+                    // ows:Facsimile (type="string")
+                    writeOptionalElement( writer, owsNS, "Facsimile", serviceContact.getPhone().getFacsimile().get( 0 ) );
+                }
                 writer.writeEndElement();
             }
 
             // ows:Address (type="ows:AddressType")
-            AddressType address = serviceContact.getAddress();
+            Address address = serviceContact.getAddress();
             if ( address != null ) {
                 writer.writeStartElement( owsNS, "Address" );
                 exportSimpleStrings( writer, address.getDeliveryPoint(), owsNS, "DeliveryPoint" );
@@ -542,21 +819,22 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
                 writeOptionalElement( writer, owsNS, "AdministrativeArea", address.getAdministrativeArea() );
                 writeOptionalElement( writer, owsNS, "PostalCode", address.getPostalCode() );
                 writeOptionalElement( writer, owsNS, "Country", address.getCountry() );
-                exportSimpleStrings( writer, serviceContact.getElectronicMailAddress(), owsNS, "ElectronicMailAddress" );
+                exportSimpleStrings( writer, address.getElectronicMailAddress(), owsNS, "ElectronicMailAddress" );
                 writer.writeEndElement();
             }
 
-            if ( serviceContact.getOnlineResource() != null && !"".equals( serviceContact.getOnlineResource().trim() ) ) {
+            if ( serviceContact.getOnlineResource() != null
+                 && !"".equals( serviceContact.getOnlineResource().toString().trim() ) ) {
                 // ows:OnlineResource (type="ows:OnlineResourceType")
                 writer.writeStartElement( owsNS, "OnlineResource" );
-                writer.writeAttribute( XLN_NS, "href", serviceContact.getOnlineResource() );
+                writer.writeAttribute( XLN_NS, "href", serviceContact.getOnlineResource().toString().trim() );
                 writer.writeEndElement();
             }
 
             // ows:HoursOfService (type="string")
             writeOptionalElement( writer, owsNS, "HoursOfService", serviceContact.getHoursOfService() );
             // ows:ContactInstructions (type="string")
-            writeOptionalElement( writer, owsNS, "ContactInstructions", serviceContact.getContactInstructions() );
+            writeOptionalElement( writer, owsNS, "ContactInstructions", serviceContact.getContactInstruction() );
 
             writer.writeEndElement(); // ContactInfo
         }
@@ -648,6 +926,20 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
             }
         }
         writer.writeEndElement(); // Keywords
+    }
+
+    private static void exportCodeTypeNew( XMLStreamWriter writer, org.deegree.commons.tom.ows.CodeType codeType,
+                                           String localName, String owsNS )
+                            throws XMLStreamException {
+        if ( codeType != null ) {
+            writer.writeStartElement( owsNS, localName );
+            if ( codeType.getCodeSpace() != null && !"".equals( codeType.getCodeSpace() ) ) {
+                writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
+            }
+            writer.writeCharacters( codeType.getCode() );
+            writer.writeEndElement(); // localName
+        }
+
     }
 
     /**

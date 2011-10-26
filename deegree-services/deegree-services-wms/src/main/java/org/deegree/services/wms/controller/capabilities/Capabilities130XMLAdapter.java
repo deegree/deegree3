@@ -53,12 +53,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.dom.DOMSource;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
@@ -76,6 +75,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.protocol.ows.metadata.DatasetMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.party.Address;
@@ -89,7 +89,6 @@ import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.slf4j.Logger;
-import org.w3c.dom.Element;
 
 /**
  * <code>Capabilities130XMLAdapter</code>
@@ -170,12 +169,11 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
     }
 
     private void writeExtendedCapabilities( XMLStreamWriter writer ) {
-        List<Element> caps = controller.getExtendedCapabilities( "1.3.0" );
+        List<OMElement> caps = controller.getExtendedCapabilities( "1.3.0" );
         if ( caps != null ) {
-            XMLInputFactory fac = XMLInputFactory.newInstance();
-            for ( Element c : caps ) {
+            for ( OMElement c : caps ) {
                 try {
-                    XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( c ) );
+                    XMLStreamReader reader = c.getXMLStreamReader();
                     XMLStreamUtils.skipStartDocument( reader );
                     XMLAdapter.writeElement( writer, reader );
                 } catch ( Throwable e ) {
@@ -436,9 +434,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
 
-        String mdUrl = layer.getName() == null || metadata == null ? null
-                                                                  : metadata.getDataMetadataUrl( new QName(
-                                                                                                            layer.getName() ) );
+        String mdUrl = null;
+        if ( layer.getName() != null && metadata != null ) {
+            DatasetMetadata dsMd = metadata.getDatasetMetadata( new QName( layer.getName() ) );
+            if ( dsMd != null ) {
+                mdUrl = dsMd.getUrl();
+            }
+        }
 
         mdlabel: if ( mdUrl == null && controller.getMetadataURLTemplate() != null ) {
             String id = layer.getDataMetadataSetId();

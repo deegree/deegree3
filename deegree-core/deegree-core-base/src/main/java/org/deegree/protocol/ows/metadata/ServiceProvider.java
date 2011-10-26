@@ -55,9 +55,9 @@ import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
  */
 public class ServiceProvider {
 
-    private final String providerName;
+    private String providerName;
 
-    private final String providerSite;
+    private String providerSite;
 
     private final ResponsibleParty serviceContact;
 
@@ -86,6 +86,10 @@ public class ServiceProvider {
         return providerName;
     }
 
+    public void setProviderName( String providerName ) {
+        this.providerName = providerName;
+    }
+
     /**
      * Returns the URL of the provider site.
      * <p>
@@ -96,6 +100,10 @@ public class ServiceProvider {
      */
     public String getProviderSite() {
         return providerSite;
+    }
+
+    public void setProviderSite( String string ) {
+        this.providerSite = providerSite;
     }
 
     /**

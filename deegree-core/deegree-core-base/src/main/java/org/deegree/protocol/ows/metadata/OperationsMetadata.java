@@ -75,10 +75,10 @@ public class OperationsMetadata {
 
     private final List<Domain> constraints;
 
-    private OMElement extendedCapabilities;
+    private final List<OMElement> extendedCapabilities;
 
     public OperationsMetadata( List<Operation> operations, List<Domain> parameters, List<Domain> constraints,
-                               OMElement extendedCapabilities ) {
+                               List<OMElement> extendedCapabilities ) {
         for ( Operation operation : operations ) {
             operationNameToMD.put( operation.getName(), operation );
         }
@@ -92,7 +92,11 @@ public class OperationsMetadata {
         } else {
             this.constraints = new ArrayList<Domain>();
         }
-        this.extendedCapabilities = extendedCapabilities;
+        if ( extendedCapabilities != null ) {
+            this.extendedCapabilities = extendedCapabilities;
+        } else {
+            this.extendedCapabilities = new ArrayList<OMElement>();
+        }
     }
 
     /**
@@ -181,9 +185,9 @@ public class OperationsMetadata {
      * any additional server abilities.</cite>
      * </p>
      * 
-     * return extended capabilities, may be <code>null</code>
+     * return extended capabilities, may be empty, but never <code>null</code>
      */
-    public OMElement getExtendedCapabilities() {
+    public List<OMElement> getExtendedCapabilities() {
         return extendedCapabilities;
     }
 }

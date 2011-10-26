@@ -56,6 +56,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,6 +80,9 @@ import javax.xml.transform.dom.DOMSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
@@ -98,6 +102,9 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
+import org.deegree.protocol.ows.metadata.DatasetMetadata;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.protocol.wfs.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
@@ -142,8 +149,6 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.AbstractFormatType;
 import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
@@ -151,6 +156,10 @@ import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.metadata.MetadataUtils;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
+import org.deegree.services.metadata.provider.DefaultOWSMetadataProvider;
 import org.deegree.services.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.ows.OWSException100XMLAdapter;
 import org.deegree.services.ows.OWSException110XMLAdapter;
@@ -203,23 +212,15 @@ public class WebFeatureService extends AbstractOWS {
 
     private List<ICRS> queryCRS = new ArrayList<ICRS>();
 
-    private String metadataUrlTemplate;
-
     private final Map<String, Format> mimeTypeToFormat = new LinkedHashMap<String, Format>();
-
-    private final Map<QName, FeatureTypeMetadata> ftNameToFtMetadata = new HashMap<QName, FeatureTypeMetadata>();
-
-    private ServiceIdentificationType serviceId;
-
-    private ServiceProviderType serviceProvider;
 
     private int maxFeatures;
 
     private boolean checkAreaOfUse;
 
-    private final Map<Version, OMElement> wfsVersionToExtendedCaps = new HashMap<Version, OMElement>();
+    private OWSMetadataProvider mdProvider;
 
-    public WebFeatureService( URL configURL, ImplementationMetadata serviceInfo ) {
+    public WebFeatureService( URL configURL, @SuppressWarnings("rawtypes") ImplementationMetadata serviceInfo ) {
         super( configURL, serviceInfo );
     }
 
@@ -231,10 +232,6 @@ public class WebFeatureService extends AbstractOWS {
         LOG.info( "Initializing WFS." );
         super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
-        // TODO merge with WFS configuration
-        serviceId = serviceMetadata.getServiceIdentification();
-        serviceProvider = serviceMetadata.getServiceProvider();
-
         DeegreeWFS jaxbConfig = (DeegreeWFS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
 
@@ -244,35 +241,6 @@ public class WebFeatureService extends AbstractOWS {
         maxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
                                                               : jaxbConfig.getQueryMaxFeatures().intValue();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
-
-        List<ExtendedCapabilities> extendedCapConfigs = jaxbConfig.getExtendedCapabilities();
-        if ( extendedCapConfigs != null ) {
-            for ( ExtendedCapabilities extendedCapConfig : extendedCapConfigs ) {
-                Element extendedCaps = extendedCapConfig.getAny();
-                DOMSource domSource = new DOMSource( extendedCaps );
-                XMLStreamReader xmlStream;
-                try {
-                    xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
-                } catch ( Throwable t ) {
-                    throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(), t );
-                }
-                OMElement omEl = new XMLAdapter( xmlStream ).getRootElement();
-                for ( String wfsVersion : extendedCapConfig.getWfsVersions() ) {
-                    Version version = Version.parseVersion( wfsVersion );
-                    if ( wfsVersionToExtendedCaps.containsKey( version ) ) {
-                        String msg = "Multiple ExtendedCapabilities sections for WFS version: " + version + ".";
-                        throw new ResourceInitException( msg );
-                    }
-                    wfsVersionToExtendedCaps.put( version, omEl );
-                }
-            }
-        }
-
-        metadataUrlTemplate = jaxbConfig.getMetadataURLTemplate();
-        // fill metadata map
-        for ( FeatureTypeMetadata ftMd : jaxbConfig.getFeatureTypeMetadata() ) {
-            ftNameToFtMetadata.put( ftMd.getName(), ftMd );
-        }
 
         service = new WFSFeatureStoreManager();
         try {
@@ -286,6 +254,14 @@ public class WebFeatureService extends AbstractOWS {
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
+        mdProvider = initMetadataProvider( serviceMetadata, jaxbConfig );
+    }
+
+    private String getMetadataURL( String metadataUrlTemplate, FeatureTypeMetadata ftMd ) {
+        if ( metadataUrlTemplate == null || ftMd == null || ftMd.getMetadataSetId() == null ) {
+            return null;
+        }
+        return StringUtils.replaceAll( metadataUrlTemplate, "${metadataSetId}", ftMd.getMetadataSetId() );
     }
 
     private void initOfferedVersions( SupportedVersions supportedVersions )
@@ -380,6 +356,101 @@ public class WebFeatureService extends AbstractOWS {
                 }
             }
         }
+    }
+
+    private OWSMetadataProvider initMetadataProvider( DeegreeServicesMetadataType serviceMetadata, DeegreeWFS jaxbConfig )
+                            throws ResourceInitException {
+        OWSMetadataProvider provider = null;
+        if ( getId() != null ) {
+            OWSMetadataProviderManager mgr = workspace.getSubsystemManager( OWSMetadataProviderManager.class );
+            ResourceState<OWSMetadataProvider> state = mgr.getState( getId() );
+            if ( state != null ) {
+                provider = state.getResource();
+            }
+        }
+        if ( provider == null ) {
+            ServiceIdentification serviceId = MetadataUtils.convertFromJAXB( serviceMetadata.getServiceIdentification() );
+            if ( serviceId.getTitles().isEmpty() ) {
+                serviceId.setTitles( Collections.singletonList( new LanguageString( "deegree 3 WFS", null ) ) );
+            }
+            if ( serviceId.getAbstracts().isEmpty() ) {
+                serviceId.setAbstracts( Collections.singletonList( new LanguageString( "deegree 3 WFS", null ) ) );
+            }
+            ServiceProvider serviceProvider = MetadataUtils.convertFromJAXB( serviceMetadata.getServiceProvider() );
+
+            if ( serviceProvider.getProviderName() == null ) {
+                serviceProvider.setProviderName( "deegree organization" );
+            }
+            if ( serviceProvider.getProviderSite() == null ) {
+                serviceProvider.setProviderSite( "http://www.deegree.org" );
+            }
+
+            List<DatasetMetadata> ftMetadata = new ArrayList<DatasetMetadata>();
+            String metadataUrlTemplate = jaxbConfig.getMetadataURLTemplate();
+            if ( metadataUrlTemplate == null ) {
+                // use local CSW (if running)
+                WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+                Map<String, List<OWS>> ctrls = mgr.getAll();
+                for ( List<OWS> lists : ctrls.values() ) {
+                    for ( OWS o : lists ) {
+                        @SuppressWarnings("deprecation")
+                        ImplementationMetadata<?> md = o.getImplementationMetadata();
+                        for ( String s : md.getImplementedServiceName() ) {
+                            if ( s.equalsIgnoreCase( "csw" ) ) {
+                                metadataUrlTemplate = OGCFrontController.getHttpGetURL();
+                                if ( !metadataUrlTemplate.endsWith( "?" ) ) {
+                                    metadataUrlTemplate = metadataUrlTemplate + "?";
+                                }
+                                metadataUrlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+                            }
+                        }
+                    }
+                }
+            }
+
+            for ( FeatureTypeMetadata ftMd : jaxbConfig.getFeatureTypeMetadata() ) {
+                // TODO
+                List<LanguageString> titles = null;
+                // TODO
+                List<LanguageString> abstracts = null;
+                // TODO
+                List<Pair<List<LanguageString>, CodeType>> keywords = null;
+                String url = getMetadataURL( metadataUrlTemplate, ftMd );
+                try {
+                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords, url );
+                    ftMetadata.add( dsMd );
+                } catch ( Throwable t ) {
+                    t.printStackTrace();
+                }
+
+            }
+
+            Map<String, List<OMElement>> wfsVersionToExtendedCaps = new HashMap<String, List<OMElement>>();
+            List<ExtendedCapabilities> extendedCapConfigs = jaxbConfig.getExtendedCapabilities();
+            if ( extendedCapConfigs != null ) {
+                for ( ExtendedCapabilities extendedCapConfig : extendedCapConfigs ) {
+                    Element extendedCaps = extendedCapConfig.getAny();
+                    DOMSource domSource = new DOMSource( extendedCaps );
+                    XMLStreamReader xmlStream;
+                    try {
+                        xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
+                    } catch ( Throwable t ) {
+                        throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(), t );
+                    }
+                    OMElement omEl = new XMLAdapter( xmlStream ).getRootElement();
+                    for ( String wfsVersion : extendedCapConfig.getWfsVersions() ) {
+                        Version version = Version.parseVersion( wfsVersion );
+                        if ( wfsVersionToExtendedCaps.containsKey( version ) ) {
+                            String msg = "Multiple ExtendedCapabilities sections for WFS version: " + version + ".";
+                            throw new ResourceInitException( msg );
+                        }
+                        wfsVersionToExtendedCaps.put( version.toString(), Collections.singletonList( omEl ) );
+                    }
+                }
+            }
+            provider = new DefaultOWSMetadataProvider( serviceId, serviceProvider, wfsVersionToExtendedCaps, ftMetadata );
+        }
+        return provider;
     }
 
     @Override
@@ -800,34 +871,10 @@ public class WebFeatureService extends AbstractOWS {
             }
         }
 
-        String metadataUrlTemplate = this.metadataUrlTemplate;
-        if ( this.metadataUrlTemplate == null ) {
-            // use local CSW (if running)
-            WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
-            Map<String, List<OWS>> ctrls = mgr.getAll();
-            for ( List<OWS> lists : ctrls.values() ) {
-                for ( OWS o : lists ) {
-                    ImplementationMetadata<?> md = o.getImplementationMetadata();
-                    for ( String s : md.getImplementedServiceName() ) {
-                        if ( s.equalsIgnoreCase( "csw" ) ) {
-                            metadataUrlTemplate = OGCFrontController.getHttpGetURL();
-                            if ( !metadataUrlTemplate.endsWith( "?" ) ) {
-                                metadataUrlTemplate = metadataUrlTemplate + "?";
-                            }
-                            metadataUrlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
-                        }
-                    }
-                }
-            }
-        }
-
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
-        OMElement extendedCapabilities = wfsVersionToExtendedCaps.get( negotiatedVersion );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
-                                                                     serviceId, serviceProvider, sortedFts,
-                                                                     metadataUrlTemplate, ftNameToFtMetadata,
-                                                                     sectionsUC, enableTransactions, queryCRS,
-                                                                     extendedCapabilities );
+                                                                     sortedFts, sectionsUC, enableTransactions,
+                                                                     queryCRS, mdProvider );
         adapter.export();
         xmlWriter.flush();
     }

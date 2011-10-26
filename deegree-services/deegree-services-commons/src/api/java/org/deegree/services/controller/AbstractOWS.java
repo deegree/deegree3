@@ -38,6 +38,7 @@ package org.deegree.services.controller;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,9 +134,17 @@ public abstract class AbstractOWS implements OWS {
 
     protected ImplementationMetadata<?> serviceInfo;
 
+    private String configId;
+
     protected AbstractOWS( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         this.configURL = configURL;
         this.serviceInfo = serviceInfo;
+        try {
+            File f = new File( configURL.toURI() );
+            this.configId = f.getName().substring( 0, f.getName().length() - 4 );
+        } catch ( URISyntaxException e ) {
+            // then no configId will be available
+        }
     }
 
     private static List<SerializerProvider> exceptionSerializers = new ArrayList<SerializerProvider>();
@@ -172,6 +181,10 @@ public abstract class AbstractOWS implements OWS {
 
     public ImplementationMetadata<?> getImplementationMetadata() {
         return serviceInfo;
+    }
+
+    public String getId() {
+        return configId;
     }
 
     /**

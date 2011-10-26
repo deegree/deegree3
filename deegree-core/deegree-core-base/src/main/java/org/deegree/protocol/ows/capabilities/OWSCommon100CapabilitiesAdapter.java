@@ -121,10 +121,14 @@ public class OWSCommon100CapabilitiesAdapter extends AbstractOWSCommonCapabiliti
             }
         }
 
+        List<OMElement> extendedCaps = new ArrayList<OMElement>();
         xpath = new XPath( "ows:ExtendedCapabilities", nsContext );
         OMElement extededCapab = getElement( opMetadataEl, xpath );
+        if ( extededCapab != null ) {
+            extendedCaps.add( extededCapab );
+        }
 
-        return new OperationsMetadata( operations, params, constraints, extededCapab );
+        return new OperationsMetadata( operations, params, constraints, extendedCaps );
     }
 
     /**

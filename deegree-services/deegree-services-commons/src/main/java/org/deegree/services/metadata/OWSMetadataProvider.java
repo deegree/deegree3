@@ -45,7 +45,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.config.Resource;
+import org.deegree.protocol.ows.metadata.DatasetMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.services.OWS;
@@ -82,14 +84,21 @@ public interface OWSMetadataProvider extends Resource {
      * @return mapping from protocol version string (may be "default") to a list of extended capabilities (represented
      *         as DOM tree), possibly <code>null</code>
      */
-    Map<String, List<Element>> getExtendedCapabilities();
+    Map<String, List<OMElement>> getExtendedCapabilities();
 
     /**
-     * Returns the metadata URL for the specified dataset.
+     * Returns {@link DatasetMetadata} for all datasets.
+     * 
+     * @return list of dataset metadata, possibly <code>null</code>
+     */
+    List<DatasetMetadata> getDatasetMetadata();
+
+    /**
+     * Returns data metadata for the specified dataset.
      * 
      * @param name
      *            for layers, a qname with only a local name is used, for feature types its qname
-     * @return metadata url, possibly <code>null</code>
+     * @return metadata, possibly <code>null</code> (no metadata available)
      */
-    String getDataMetadataUrl( QName name );
+    DatasetMetadata getDatasetMetadata( QName name );
 }

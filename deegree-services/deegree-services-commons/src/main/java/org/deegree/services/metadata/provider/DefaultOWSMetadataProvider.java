@@ -40,20 +40,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata.provider;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.protocol.ows.metadata.DatasetMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.services.metadata.OWSMetadataProvider;
-import org.w3c.dom.Element;
 
 /**
- * {@link OWSMetadataProvider} implementation that is a simple bean that stores the metadata.
+ * {@link OWSMetadataProvider} implementation that is a simple bean providing the metadata.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -62,21 +65,30 @@ import org.w3c.dom.Element;
  */
 public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
 
-    private ServiceIdentification serviceIdentification;
+    private final ServiceIdentification serviceIdentification;
 
-    private ServiceProvider serviceProvider;
+    private final ServiceProvider serviceProvider;
 
-    private Map<String, List<Element>> extendedCapabilities;
+    private final List<DatasetMetadata> datasetMetadata;
 
-    private final Map<QName, String> dataMetadataUrls;
+    private final Map<QName, DatasetMetadata> datasetNameToMetadata = new HashMap<QName, DatasetMetadata>();
+
+    private final Map<String, List<OMElement>> extendedCapabilities;
 
     public DefaultOWSMetadataProvider( ServiceIdentification si, ServiceProvider sp,
-                                       Map<String, List<Element>> extendedCapabilities,
-                                       Map<QName, String> dataMetadataUrls ) {
+                                       Map<String, List<OMElement>> extendedCapabilities,
+                                       List<DatasetMetadata> datasetMetadata ) {
         this.serviceIdentification = si;
         this.serviceProvider = sp;
         this.extendedCapabilities = extendedCapabilities;
-        this.dataMetadataUrls = dataMetadataUrls;
+        if ( datasetMetadata != null ) {
+            this.datasetMetadata = datasetMetadata;
+        } else {
+            this.datasetMetadata = Collections.emptyList();
+        }
+        for ( DatasetMetadata dsMd : this.datasetMetadata ) {
+            this.datasetNameToMetadata.put( dsMd.getQName(), dsMd );
+        }
     }
 
     @Override
@@ -101,13 +113,17 @@ public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
     }
 
     @Override
-    public Map<String, List<Element>> getExtendedCapabilities() {
+    public Map<String, List<OMElement>> getExtendedCapabilities() {
         return extendedCapabilities;
     }
 
     @Override
-    public String getDataMetadataUrl( QName name ) {
-        return dataMetadataUrls.get( name );
+    public List<DatasetMetadata> getDatasetMetadata() {
+        return datasetMetadata;
     }
 
+    @Override
+    public DatasetMetadata getDatasetMetadata( QName name ) {
+        return datasetNameToMetadata.get( name );
+    }
 }

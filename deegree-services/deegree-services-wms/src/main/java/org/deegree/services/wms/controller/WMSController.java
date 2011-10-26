@@ -82,10 +82,13 @@ import java_cup.runtime.Symbol;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
 
+import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.ResourceInitException;
@@ -155,7 +158,6 @@ import org.deegree.services.wms.controller.plugins.XSLTFeatureInfoSerializer;
 import org.deegree.services.wms.controller.security.WMSSecurityManager;
 import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;
-import org.w3c.dom.Element;
 
 /**
  * <code>WMSController</code> handles the protocol and map service globally.
@@ -196,7 +198,7 @@ public class WMSController extends AbstractOWS {
 
     private Version highestVersion;
 
-    private Map<String, List<Element>> extendedCaps;
+    private Map<String, List<OMElement>> extendedCaps;
 
     private String metadataURLTemplate;
 
@@ -304,11 +306,18 @@ public class WMSController extends AbstractOWS {
         DeegreeWMS conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
         if ( conf.getExtendedCapabilities() != null ) {
-            this.extendedCaps = new HashMap<String, List<Element>>();
-            List<Element> caps = new ArrayList<Element>( conf.getExtendedCapabilities().size() );
+            this.extendedCaps = new HashMap<String, List<OMElement>>();
+            List<OMElement> caps = new ArrayList<OMElement>( conf.getExtendedCapabilities().size() );
             extendedCaps.put( "default", caps );
             for ( ExtendedCapabilities extendedCapsConf : conf.getExtendedCapabilities() ) {
-                caps.add( extendedCapsConf.getAny() );
+                DOMSource domSource = new DOMSource( extendedCapsConf.getAny() );
+                XMLStreamReader xmlStream;
+                try {
+                    xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
+                } catch ( Throwable t ) {
+                    throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(), t );
+                }
+                caps.add( new XMLAdapter( xmlStream ).getRootElement() );
             }
         }
 
@@ -902,8 +911,8 @@ public class WMSController extends AbstractOWS {
         return new Pair<XMLExceptionSerializer<OWSException>, String>( controller.EXCEPTIONS, controller.EXCEPTION_MIME );
     }
 
-    public List<Element> getExtendedCapabilities( String version ) {
-        List<Element> list = extendedCaps.get( version );
+    public List<OMElement> getExtendedCapabilities( String version ) {
+        List<OMElement> list = extendedCaps.get( version );
         if ( list == null ) {
             list = extendedCaps.get( "default" );
         }

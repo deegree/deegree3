@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
 public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements CapabilitiesHandler {
 
     private static Logger LOG = LoggerFactory.getLogger( EbrimGetCapabilitiesHandler.class );
-    
+
     private static final String WRS_NS = "http://www.opengis.net/cat/wrs/1.0";
 
     private static final String WRS_PREFIX = "wrs";
@@ -100,7 +100,7 @@ public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter imple
     private final ServiceIdentificationType identification;
 
     private final Version version;
-    
+
     @SuppressWarnings("unused")
     private final boolean isTransactionEnabled;
 
@@ -151,7 +151,7 @@ public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter imple
         }
         // ows:ServiceProvider
         if ( sections.isEmpty() || sections.contains( Sections.ServiceProvider ) ) {
-            exportServiceProvider100( writer, provider );
+            exportServiceProvider100Old( writer, provider );
         }
         // ows:OperationsMetadata
         if ( sections.isEmpty() || sections.contains( Sections.OperationsMetadata ) ) {
