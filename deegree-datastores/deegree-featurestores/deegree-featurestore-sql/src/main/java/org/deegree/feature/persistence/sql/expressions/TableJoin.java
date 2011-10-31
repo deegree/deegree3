@@ -35,9 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.expressions;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
@@ -50,45 +52,80 @@ import org.deegree.sqldialect.filter.MappingExpression;
  */
 public class TableJoin implements MappingExpression {
 
-    private final QTableName fromTable;
+    private final TableName fromTable;
 
-    private final QTableName toTable;
+    private final TableName toTable;
 
-    private final List<String> fromColumns;
+    private final List<SQLIdentifier> fromColumns;
 
-    private final List<String> toColumns;
+    private final List<SQLIdentifier> toColumns;
 
-    private final List<String> orderColumns;
+    private final List<SQLIdentifier> orderColumns;
 
     private final boolean numberedOrder;
 
-    public TableJoin( QTableName fromTable, QTableName toTable, List<String> fromColumns, List<String> toColumns,
+    public TableJoin( TableName fromTable, TableName toTable, List<String> fromColumns, List<String> toColumns,
                       List<String> orderColumns, boolean numberedOrder ) {
         this.fromTable = fromTable;
         this.toTable = toTable;
-        this.fromColumns = fromColumns;
-        this.toColumns = toColumns;
-        this.orderColumns = orderColumns;
+        if ( fromColumns != null ) {
+            this.fromColumns = new ArrayList<SQLIdentifier>( fromColumns.size() );
+            for ( String fromColumn : fromColumns ) {
+                this.fromColumns.add( new SQLIdentifier( fromColumn ) );
+            }
+        } else {
+            this.fromColumns = null;
+        }
+        if ( toColumns != null ) {
+            this.toColumns = new ArrayList<SQLIdentifier>( toColumns.size() );
+            for ( String toColumn : toColumns ) {
+                this.toColumns.add( new SQLIdentifier( toColumn ) );
+            }
+        } else {
+            this.toColumns = null;
+        }
+        if ( orderColumns != null ) {
+            this.orderColumns = new ArrayList<SQLIdentifier>( orderColumns.size() );
+            for ( String orderColumn : orderColumns ) {
+                this.orderColumns.add( new SQLIdentifier( orderColumn ) );
+            }
+        } else {
+            this.orderColumns = null;
+        }
         this.numberedOrder = numberedOrder;
     }
 
-    public QTableName getFromTable() {
+    public TableJoin( boolean numberedOrder, TableName fromTable, TableName toTable, List<SQLIdentifier> fromColumns,
+                      List<SQLIdentifier> toColumns, List<SQLIdentifier> orderColumns ) {
+        System.out.println ("***********************************************");
+        System.out.println ( fromTable + "." + fromColumns.get( 0 ));
+        System.out.println ( "-> " + toTable + "." + toColumns.get( 0 ));
+        System.out.println ("***********************************************");
+        this.numberedOrder = numberedOrder;
+        this.fromTable = fromTable;
+        this.toTable = toTable;
+        this.toColumns = toColumns;
+        this.fromColumns = fromColumns;
+        this.orderColumns = orderColumns;
+    }
+
+    public TableName getFromTable() {
         return fromTable;
     }
 
-    public QTableName getToTable() {
+    public TableName getToTable() {
         return toTable;
     }
 
-    public List<String> getFromColumns() {
+    public List<SQLIdentifier> getFromColumns() {
         return fromColumns;
     }
 
-    public List<String> getToColumns() {
+    public List<SQLIdentifier> getToColumns() {
         return toColumns;
     }
 
-    public List<String> getOrderColumns() {
+    public List<SQLIdentifier> getOrderColumns() {
         return orderColumns;
     }
 

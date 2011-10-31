@@ -35,25 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
+import static java.util.Collections.EMPTY_LIST;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.deegree.commons.jdbc.InsertRow;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -65,6 +69,7 @@ import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -78,6 +83,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
@@ -88,7 +94,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The strategy aims for:
  * <ul>
- * <li>Streaming / low memory footprint</li>
+ * <li>Streaming/low memory footprint</li>
  * <li>Feature references must not be resolved</li>
  * <li>Usability for complex structures / mappings</li>
  * <li>Auto-generated columns (feature ids)</li>
@@ -109,6 +115,8 @@ public class InsertRowManager {
 
     private final SQLFeatureStore fs;
 
+    private final SQLDialect dialect;
+
     private final Connection conn;
 
     private final GMLVersion gmlVersion;
@@ -123,6 +131,7 @@ public class InsertRowManager {
 
     public InsertRowManager( SQLFeatureStore fs, Connection conn ) {
         this.fs = fs;
+        this.dialect = fs.getDialect();
         this.conn = conn;
         this.gmlVersion = fs.getSchema().getGMLSchema() == null ? GML_32 : fs.getSchema().getGMLSchema().getVersion();
     }
@@ -176,15 +185,33 @@ public class InsertRowManager {
 
         IDGenerator gen = fidMapping.getIdGenerator();
         if ( gen instanceof AutoIDGenerator ) {
-            featureRow.setAutoGenColumn( fidMapping.getColumn() );
+            featureRow.setAutoGenColumn( new SQLIdentifier( fidMapping.getColumn() ) );
         } else if ( gen instanceof UUIDGenerator ) {
             String uuid = UUID.randomUUID().toString();
             featureRow.addPreparedArgument( fidMapping.getColumn(), uuid );
             fid.assign( featureRow );
         } else {
-            throw new FeatureStoreException( "Cannot generate new feature id for feature of type '"
-                                             + feature.getType().getName()
-                                             + "': currently, only UUIDGenerator and AutoIDGenerator is supported." );
+            String sql = dialect.getSelectSequenceNextVal( ( (SequenceIDGenerator) gen ).getSequence() );
+            Statement stmt = null;
+            ResultSet rs = null;
+            try {
+                stmt = conn.createStatement();
+                LOG.debug( "Determing feature ID from db sequence: " + sql );
+                rs = stmt.executeQuery( sql );
+                if ( rs.next() ) {
+                    int idKernel = rs.getInt( 1 );
+                    featureRow.addPreparedArgument( fidMapping.getColumn(), idKernel );
+                    fid.assign( featureRow );
+                } else {
+                    String msg = "Error determining ID from db sequence. No value returned for: " + sql;
+                    throw new FeatureStoreException( msg );
+                }
+            } catch ( SQLException e ) {
+                String msg = "Error determining ID from db sequence. No value returned for: " + sql;
+                throw new FeatureStoreException( msg, e );
+            } finally {
+                JDBCUtils.close( rs, stmt, null, LOG );
+            }
         }
     }
 
@@ -213,7 +240,7 @@ public class InsertRowManager {
             throw new FeatureStoreException( msg );
         }
         for ( int i = 0; i < fidMapping.getColumns().size(); i++ ) {
-            Pair<String, BaseType> idColumn = fidMapping.getColumns().get( i );
+            Pair<SQLIdentifier, BaseType> idColumn = fidMapping.getColumns().get( i );
             // TODO mapping to non-string columns
             Object value = idKernels[i];
             featureRow.addPreparedArgument( idColumn.getFirst(), value );
@@ -267,9 +294,9 @@ public class InsertRowManager {
             ChildInsertRow currentRow = row;
             if ( jc != null && !( mapping instanceof FeatureMapping ) ) {
                 TableJoin join = jc.get( 0 );
-                QTableName table = join.getToTable();
+                TableName table = join.getToTable();
                 // TODO make this configurable
-                String autoGenColumn = "id";
+                SQLIdentifier autoGenColumn = new SQLIdentifier( "id" );
                 currentRow = addChildRow( currentRow, table, autoGenColumn, join );
             }
             if ( mapping instanceof PrimitiveMapping ) {
@@ -318,13 +345,13 @@ public class InsertRowManager {
                         TableJoin join = jc.get( 0 );
                         for ( int i = 0; i < join.getFromColumns().size(); i++ ) {
                             // invert join (the logical parent is the sub feature row)
-                            String fromColumn = join.getToColumns().get( i );
-                            String toColumn = join.getFromColumns().get( i );
+                            SQLIdentifier fromColumn = join.getToColumns().get( i );
+                            SQLIdentifier toColumn = join.getFromColumns().get( i );                           
                             Object key = parentRow.get( fromColumn );
                             if ( key == null ) {
-                                TableJoin inverseJoin = new TableJoin( join.getToTable(), join.getFromTable(),
+                                TableJoin inverseJoin = new TableJoin( false, join.getToTable(), join.getFromTable(),
                                                                        join.getToColumns(), join.getFromColumns(),
-                                                                       Collections.EMPTY_LIST, false );
+                                                                       EMPTY_LIST );
                                 InsertRowReference ref = new InsertRowReference( inverseJoin, parentRow );
                                 currentRow.addParent( ref );
                                 ref.addHrefingRow( currentRow );
@@ -362,7 +389,7 @@ public class InsertRowManager {
 
             if ( jc != null ) {
                 // add index column value
-                for ( String col : jc.get( 0 ).getOrderColumns() ) {
+                for ( SQLIdentifier col : jc.get( 0 ).getOrderColumns() ) {
                     if ( currentRow.get( col ) == null ) {
                         // TODO do this properly
                         currentRow.addLiteralValue( col, "" + childIdx++ );
@@ -372,7 +399,8 @@ public class InsertRowManager {
         }
     }
 
-    private ChildInsertRow addChildRow( ChildInsertRow parent, QTableName table, String autoGenColumn, TableJoin join ) {
+    private ChildInsertRow addChildRow( ChildInsertRow parent, TableName table, SQLIdentifier autoGenColumn,
+                                        TableJoin join ) {
 
         ChildInsertRow newRow = new ChildInsertRow( table, autoGenColumn );
         InsertRowReference ref = new InsertRowReference( join, parent );

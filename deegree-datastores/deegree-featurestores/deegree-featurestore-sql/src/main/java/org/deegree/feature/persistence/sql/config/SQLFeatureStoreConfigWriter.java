@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
@@ -127,7 +128,7 @@ public class SQLFeatureStoreConfigWriter {
             }
         }
 
-        writer.writeNamespace( "xlink", XLNNS );        
+        writer.writeNamespace( "xlink", XLNNS );
         GMLVersion version = schema.getGMLSchema().getVersion();
         writer.writeNamespace( "gml", version.getNamespace() );
 
@@ -194,9 +195,9 @@ public class SQLFeatureStoreConfigWriter {
         if ( fidMapping.getPrefix() != null && !fidMapping.getPrefix().isEmpty() ) {
             writer.writeAttribute( "prefix", fidMapping.getPrefix() );
         }
-        for ( Pair<String, BaseType> column : fidMapping.getColumns() ) {
+        for ( Pair<SQLIdentifier, BaseType> column : fidMapping.getColumns() ) {
             writer.writeStartElement( CONFIG_NS, "Column" );
-            writer.writeAttribute( "name", column.getFirst() );
+            writer.writeAttribute( "name", column.getFirst().toString() );
             writer.writeAttribute( "type", column.getSecond().getXSTypeName() );
             writer.writeEndElement();
         }

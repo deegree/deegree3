@@ -52,24 +52,24 @@ import org.deegree.commons.tom.sql.ParticleConverter;
  */
 public abstract class TransactionRow {
 
-    protected QTableName table;
+    protected TableName table;
 
-    protected final LinkedHashMap<String, String> columnToLiteral = new LinkedHashMap<String, String>();
+    protected final LinkedHashMap<SQLIdentifier, String> columnToLiteral = new LinkedHashMap<SQLIdentifier, String>();
 
-    protected final LinkedHashMap<String, Object> columnToObject = new LinkedHashMap<String, Object>();
+    protected final LinkedHashMap<SQLIdentifier, Object> columnToObject = new LinkedHashMap<SQLIdentifier, Object>();
 
     /**
      * @param table
      *            table targeted by the transaction, must not be <code>null</code>
      */
-    public TransactionRow( QTableName table ) {
+    public TransactionRow( TableName table ) {
         this.table = table;
     }
 
     /**
      * @return the table targeted for the transaction
      */
-    public QTableName getTable() {
+    public TableName getTable() {
         return table;
     }
 
@@ -80,8 +80,8 @@ public abstract class TransactionRow {
      * @param literal
      *            a string literal to add as value
      */
-    public void addLiteralValue( String column, String literal ) {
-        columnToLiteral.put( column.toLowerCase(), literal );
+    public void addLiteralValue( SQLIdentifier column, String literal ) {
+        columnToLiteral.put( column, literal );
     }
 
     /**
@@ -91,8 +91,12 @@ public abstract class TransactionRow {
      * @param value
      *            the value to append, can be <code>null</code>
      */
-    public void addPreparedArgument( String column, Object value ) {
+    public void addPreparedArgument( SQLIdentifier column, Object value ) {
         addPreparedArgument( column, value, "?" );
+    }
+
+    public void addPreparedArgument( String column, Object value ) {
+        addPreparedArgument( new SQLIdentifier( column ), value, "?" );
     }
 
     /**
@@ -106,21 +110,33 @@ public abstract class TransactionRow {
      * @param literal
      *            the string literal to append to the list of values, must not be <code>null</code>
      */
+    public void addPreparedArgument( SQLIdentifier column, Object value, String literal ) {
+        columnToLiteral.put( column, literal );
+        columnToObject.put( column, value );
+    }
+
     public void addPreparedArgument( String column, Object value, String literal ) {
-        columnToLiteral.put( column.toLowerCase(), literal );
-        columnToObject.put( column.toLowerCase(), value );
+        addPreparedArgument( new SQLIdentifier( column ), value, literal );
     }
 
-    public <T extends TypedObjectNode> void addPreparedArgument( String column, T particle,
+    public <T extends TypedObjectNode> void addPreparedArgument( SQLIdentifier column, T particle,
                                                                  ParticleConverter<T> converter ) {
-        columnToLiteral.put( column.toLowerCase(), converter.getSetSnippet( particle ) );
-        columnToObject.put( column.toLowerCase(), new ParticleConversion<T>( converter, particle ) );
+        columnToLiteral.put( column, converter.getSetSnippet( particle ) );
+        columnToObject.put( column, new ParticleConversion<T>( converter, particle ) );
     }
 
+    public <T extends TypedObjectNode> void addPreparedArgument( String columnName, T particle,
+                                                                 ParticleConverter<T> converter ) {
+        SQLIdentifier column = new SQLIdentifier( columnName );
+        columnToLiteral.put( column, converter.getSetSnippet( particle ) );
+        columnToObject.put( column, new ParticleConversion<T>( converter, particle ) );
+    }
+
+    
     /**
-     * @return all columns considered by this tranaction
+     * @return all columns considered by this transaction
      */
-    public Collection<String> getColumns() {
+    public Collection<SQLIdentifier> getColumns() {
         return columnToLiteral.keySet();
     }
 
@@ -129,8 +145,8 @@ public abstract class TransactionRow {
      *            the name of the column, must not be <code>null</code>
      * @return the value assigned to the column with the given name, null if there is not value assigned
      */
-    public Object get( String column ) {
-        return columnToObject.get( column.toLowerCase() );
+    public Object get( SQLIdentifier column ) {
+        return columnToObject.get( column );
     }
 
     /**

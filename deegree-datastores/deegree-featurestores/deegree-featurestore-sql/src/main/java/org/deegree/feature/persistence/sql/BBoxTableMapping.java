@@ -3,7 +3,7 @@
  */
 package org.deegree.feature.persistence.sql;
 
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
@@ -12,16 +12,16 @@ import org.deegree.cs.coordinatesystems.ICRS;
  */
 public class BBoxTableMapping {
 
-    private final QTableName ftTable;
+    private final TableName ftTable;
 
     private final ICRS crs;
 
     public BBoxTableMapping( String ftTable, ICRS crs ) {
-        this.ftTable = new QTableName( ftTable );
+        this.ftTable = new TableName( ftTable );
         this.crs = crs;
     }
 
-    public QTableName getTable() {
+    public TableName getTable() {
         return ftTable;
     }
 

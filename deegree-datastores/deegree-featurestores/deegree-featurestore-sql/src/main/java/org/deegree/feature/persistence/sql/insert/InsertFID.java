@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.sql.insert;
 import java.util.List;
 
 import org.deegree.commons.jdbc.InsertRow;
+import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
@@ -46,7 +47,10 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 
 /**
- * The id of a {@link Feature} that's part of an insert operation of a {@link FeatureStoreTransaction}.
+ * The id of a {@link Feature} during an insert operation of a {@link FeatureStoreTransaction}.
+ * <p>
+ * The final value of the inserted id is not necessarily known from the beginning.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -61,8 +65,8 @@ public class InsertFID {
 
     private FIDMapping fidMapping;
 
-    InsertFID( String orginalId ) {
-        this.originalId = orginalId;
+    InsertFID( String originalId ) {
+        this.originalId = originalId;
     }
 
     void setFIDMapping( FIDMapping fidMapping ) {
@@ -90,14 +94,14 @@ public class InsertFID {
     void assign( InsertRow featureRow )
                             throws FeatureStoreException {
         newId = fidMapping.getPrefix();
-        List<Pair<String, BaseType>> fidColumns = fidMapping.getColumns();
+        List<Pair<SQLIdentifier, BaseType>> fidColumns = fidMapping.getColumns();
         newId += checkFIDParticle( featureRow, fidColumns.get( 0 ).first );
         for ( int i = 1; i < fidColumns.size(); i++ ) {
             newId += fidMapping.getDelimiter() + checkFIDParticle( featureRow, fidColumns.get( i ).first );
         }
     }
 
-    private Object checkFIDParticle( InsertRow featureRow, String column )
+    private Object checkFIDParticle( InsertRow featureRow, SQLIdentifier column )
                             throws FeatureStoreException {
         Object value = featureRow.get( column );
         if ( value == null ) {

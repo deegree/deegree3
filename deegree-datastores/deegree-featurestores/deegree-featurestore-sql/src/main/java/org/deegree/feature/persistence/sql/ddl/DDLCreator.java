@@ -40,7 +40,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -75,7 +76,7 @@ public abstract class DDLCreator {
 
     private final SQLDialect dialect;
 
-    protected QTableName currentFtTable;
+    protected TableName currentFtTable;
 
     /**
      * Creates a new {@link DDLCreator} instance for the given {@link MappedAppSchema}.
@@ -132,20 +133,20 @@ public abstract class DDLCreator {
         ddls.add( sql );
         sql.append( currentFtTable );
         sql.append( " (" );
-        List<String> pkColumns = new ArrayList<String>();
+        List<SQLIdentifier> pkColumns = new ArrayList<SQLIdentifier>();
         if ( hasBlobTable ) {
             sql.append( "\n    id " ).append( getDBType( BaseType.INTEGER ) ).append( " REFERENCES gml_objects" );
-            pkColumns.add( "id" );
+            pkColumns.add( new SQLIdentifier( "id" ) );
         } else {
             FIDMapping fidMapping = ftMapping.getFidMapping();
             if ( fidMapping.getIdGenerator() instanceof AutoIDGenerator ) {
-                for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
+                for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
                     sql.append( "\n    " );
-                    dialect.createAutoColumn( sql, ddls, fidColumn.first, currentFtTable.toString() );
+                    dialect.createAutoColumn( sql, ddls, fidColumn.first, currentFtTable );
                     pkColumns.add( fidColumn.first );
                 }
             } else {
-                for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
+                for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
                     sql.append( "\n    " );
                     sql.append( fidColumn.first );
                     sql.append( " " );
@@ -162,7 +163,7 @@ public abstract class DDLCreator {
         sql.append( pkConstraint );
         sql.append( " PRIMARY KEY (" );
         boolean first = true;
-        for ( String pkColumn : pkColumns ) {
+        for ( SQLIdentifier pkColumn : pkColumns ) {
             if ( !first ) {
                 sql.append( "," );
             }
@@ -173,11 +174,11 @@ public abstract class DDLCreator {
         return ddls;
     }
 
-    private String getPkConstraintName( QTableName ftTable ) {
+    private String getPkConstraintName( TableName ftTable ) {
         String s = null;
         String table = ftTable.getTable();
         if ( table.endsWith( "\"" ) ) {
-            s = table.substring( 0, table.length() - 1) + "_pkey\""; 
+            s = table.substring( 0, table.length() - 1 ) + "_pkey\"";
         } else {
             s = table + "_pkey";
         }
@@ -187,13 +188,13 @@ public abstract class DDLCreator {
     protected abstract void primitiveMappingSnippet( StringBuffer sql, PrimitiveMapping mapping );
 
     protected abstract void geometryMappingSnippet( StringBuffer sql, GeometryMapping mapping, List<StringBuffer> ddls,
-                                                    QTableName table );
+                                                    TableName table );
 
     protected abstract void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping );
 
-    protected abstract StringBuffer createJoinedTable( QTableName fromTable, TableJoin jc, List<StringBuffer> ddls );
+    protected abstract StringBuffer createJoinedTable( TableName fromTable, TableJoin jc, List<StringBuffer> ddls );
 
-    private List<StringBuffer> process( StringBuffer sql, QTableName table, Mapping mapping ) {
+    private List<StringBuffer> process( StringBuffer sql, TableName table, Mapping mapping ) {
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
         if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {

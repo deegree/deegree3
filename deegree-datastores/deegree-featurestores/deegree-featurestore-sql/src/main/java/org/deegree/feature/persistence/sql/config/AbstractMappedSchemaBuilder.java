@@ -51,7 +51,7 @@ import java.util.List;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
@@ -182,9 +182,9 @@ public class AbstractMappedSchemaBuilder {
         return mapping;
     }
 
-    protected List<TableJoin> buildJoinTable( QTableName from, org.deegree.feature.persistence.sql.jaxb.Join join ) {
+    protected List<TableJoin> buildJoinTable( TableName from, org.deegree.feature.persistence.sql.jaxb.Join join ) {
         if ( join != null ) {
-            QTableName target = new QTableName( join.getTable() );
+            TableName target = new TableName( join.getTable() );
             if ( join.getFromColumns().size() != join.getToColumns().size() ) {
                 throw new UnsupportedOperationException( "Joins must use same number of from and to columns." );
             }

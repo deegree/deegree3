@@ -36,47 +36,35 @@
 package org.deegree.commons.jdbc;
 
 /**
- * Table name with optional schema qualifier.
+ * Table name with optional schema qualifier and optional quoting.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
  * 
  * @version $Revision: $, $Date: $
  */
-public class QTableName {
-
-    private final String schema;
-
-    private final String table;
+public class TableName extends SQLIdentifier {
 
     /**
-     * Creates a new {@link QTableName} instance.
+     * Creates a new {@link TableName} instance.
+     * 
+     * @param identifier
+     *            table identifier (with optional schema and quoting), must not be <code>null</code>
+     */
+    public TableName( String identifier ) {
+        super( identifier );
+    }
+
+    /**
+     * Creates a new {@link TableName} instance.
      * 
      * @param table
      *            database table identifier, never <code>null</code>
      * @param schema
      *            database schema identifier, can be <code>null</code>
      */
-    public QTableName( String table, String schema ) {
-        this.schema = schema;
-        this.table = table;
-    }
-
-    /**
-     * Creates a new {@link QTableName} instance.
-     * 
-     * @param identifier
-     *            table identifier (with optional schema), must not be <code>null</code>
-     */
-    public QTableName( String identifier ) {
-        int delimPos = identifier.indexOf( '.' );
-        if ( delimPos == -1 ) {
-            schema = null;
-            table = identifier;
-        } else {
-            schema = identifier.substring( 0, delimPos );
-            table = identifier.substring( delimPos + 1, identifier.length() );
-        }
+    public TableName( String table, String schema) {
+        super( table, schema);
     }
 
     /**
@@ -85,7 +73,7 @@ public class QTableName {
      * @return the name of the table, never <code>null</code>
      */
     public String getTable() {
-        return table;
+        return getName();
     }
 
     /**
@@ -94,14 +82,6 @@ public class QTableName {
      * @return the name of the schema, can be <code>null</code> (default schema)
      */
     public String getSchema() {
-        return schema;
-    }
-
-    @Override
-    public String toString() {
-        if ( schema == null ) {
-            return table;
-        }
-        return schema + "." + table;
+        return getQualifier();
     }
 }

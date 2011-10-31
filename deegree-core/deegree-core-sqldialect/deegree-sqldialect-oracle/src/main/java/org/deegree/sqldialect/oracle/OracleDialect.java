@@ -52,7 +52,8 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.JDBCUtils;
@@ -142,7 +143,7 @@ public class OracleDialect implements SQLDialect {
     }
 
     @Override
-    public String geometryMetadata( QTableName qTable, String column, boolean isGeography ) {
+    public String geometryMetadata( TableName qTable, String column, boolean isGeography ) {
         // return "SELECT 2, -1, 'GEOMETRY' FROM DUAL";
 
         StringBuilder sb = new StringBuilder();
@@ -236,8 +237,8 @@ public class OracleDialect implements SQLDialect {
     }
 
     @Override
-    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, String column,
-                                  String table ) {
+    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
+                                  SQLIdentifier table ) {
         currentStmt.append( column );
         currentStmt.append( " integer not null" );
         // TODO Markus!!!!!!!!!
@@ -247,7 +248,7 @@ public class OracleDialect implements SQLDialect {
     }
 
     @Override
-    public ResultSet getTableColumnMetadata( DatabaseMetaData md, QTableName qTable )
+    public ResultSet getTableColumnMetadata( DatabaseMetaData md, TableName qTable )
                             throws SQLException {
         String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
         String table = qTable.getTable();
@@ -261,5 +262,10 @@ public class OracleDialect implements SQLDialect {
     @Override
     public boolean requiresTransactionForCursorMode() {
         return false;
+    }
+
+    @Override
+    public String getSelectSequenceNextVal( String sequence ) {
+        return "SELECT " + sequence + ".NEXTVAL from DUAL";
     }
 }

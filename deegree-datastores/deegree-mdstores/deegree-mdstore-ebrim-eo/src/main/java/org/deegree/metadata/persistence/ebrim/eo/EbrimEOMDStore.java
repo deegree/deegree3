@@ -67,7 +67,8 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.InsertRow;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -240,14 +241,14 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                     stmt = conn.prepareStatement( sql );
                     stmt.execute();
 
-                    InsertRow ir = new InsertRow( new QTableName( "management" ), null );
-                    ir.addPreparedArgument( "key", "REGISTRYPACKAGE_ID" );
-                    ir.addPreparedArgument( "value", insertedId );
+                    InsertRow ir = new InsertRow( new TableName( "management" ), null );
+                    ir.addPreparedArgument( new SQLIdentifier( "key" ), "REGISTRYPACKAGE_ID" );
+                    ir.addPreparedArgument( new SQLIdentifier( "value" ), insertedId );
                     ir.performInsert( conn );
 
-                    ir = new InsertRow( new QTableName( "management" ), null );
-                    ir.addPreparedArgument( "key", "LAST_INSERTED" );
-                    ir.addPreparedArgument( "value", DateUtils.formatISO8601Date( new Date() ) );
+                    ir = new InsertRow( new TableName( "management" ), null );
+                    ir.addPreparedArgument( new SQLIdentifier( "key" ), "LAST_INSERTED" );
+                    ir.addPreparedArgument( new SQLIdentifier( "value" ), DateUtils.formatISO8601Date( new Date() ) );
                     ir.performInsert( conn );
 
                     conn.commit();

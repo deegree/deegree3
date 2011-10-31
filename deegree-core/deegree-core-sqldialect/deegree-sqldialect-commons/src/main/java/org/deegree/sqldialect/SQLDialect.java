@@ -42,7 +42,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -118,7 +119,7 @@ public interface SQLDialect {
      * @return statement to determine the coordinate dimension, the srid and the geometry type of a given column (in
      *         this order)
      */
-    String geometryMetadata( QTableName qTable, String column, boolean isGeographical );
+    String geometryMetadata( TableName qTable, String column, boolean isGeographical );
 
     /**
      * Returns an {@link AbstractWhereBuilder} instance for the given parameters.
@@ -197,10 +198,10 @@ public interface SQLDialect {
     public void dropDB( Connection adminConn, String dbName )
                             throws SQLException;
 
-    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, String column,
-                                  String table );
+    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
+                                  SQLIdentifier table );
 
-    public ResultSet getTableColumnMetadata( DatabaseMetaData md, QTableName table )
+    public ResultSet getTableColumnMetadata( DatabaseMetaData md, TableName table )
                             throws SQLException;
 
     /**
@@ -209,4 +210,13 @@ public interface SQLDialect {
      * @return <code>true</code>, if a transaction context is required, <code>false</code> otherwise
      */
     public boolean requiresTransactionForCursorMode();
+
+    /**
+     * Returns a <code>SELECT</code> statement for retrieving the next value in the specified DB sequence.
+     * 
+     * @param sequence
+     *            name of the database sequence, must not be <code>null</code>
+     * @return SQL <code>SELECT</code> statement, never <code>null</code>
+     */
+    String getSelectSequenceNextVal( String sequence );
 }

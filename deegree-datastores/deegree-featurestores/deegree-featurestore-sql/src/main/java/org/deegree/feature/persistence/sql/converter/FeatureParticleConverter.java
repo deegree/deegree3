@@ -40,6 +40,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.Feature;
@@ -57,9 +58,9 @@ import org.deegree.gml.feature.FeatureReference;
  */
 public class FeatureParticleConverter implements ParticleConverter<Feature> {
 
-    private final String fkColumn;
+    private final SQLIdentifier fkColumn;
 
-    private final String hrefColumn;
+    private final SQLIdentifier hrefColumn;
 
     private final GMLReferenceResolver resolver;
 
@@ -69,7 +70,7 @@ public class FeatureParticleConverter implements ParticleConverter<Feature> {
 
     private final String fidPrefix;
 
-    public FeatureParticleConverter( String fkColumn, String hrefColumn, GMLReferenceResolver resolver,
+    public FeatureParticleConverter( SQLIdentifier fkColumn, SQLIdentifier hrefColumn, GMLReferenceResolver resolver,
                                      FeatureType valueFt, MappedAppSchema schema ) {
         this.fkColumn = fkColumn;
         this.hrefColumn = hrefColumn;

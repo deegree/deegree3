@@ -57,7 +57,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -188,7 +189,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 nsBindings.addNamespace( prefix, nsUri );
             }
         }
-        
+
         // Namespace bindings from config file
         InputStream is = null;
         try {
@@ -236,7 +237,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
         nsBindings.addNamespace( "xsi", XSINS );
-        
+
         // general namespace bindings used in XML schema
         schemaNSBindings = gmlSchema.getGMLSchema().getNamespacePrefixes();
         for ( String prefix : schemaNSBindings.keySet() ) {
@@ -314,7 +315,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                             throws FeatureStoreException {
 
         QName ftName = ftMappingConf.getName();
-        QTableName ftTable = new QTableName( ftMappingConf.getTable() );
+        TableName ftTable = new TableName( ftMappingConf.getTable() );
         FIDMapping fidMapping = buildFIDMapping( ftTable, ftName, ftMappingConf.getFIDMapping() );
         List<Mapping> particleMappings = new ArrayList<Mapping>();
         XSElementDeclaration elDecl = gmlSchema.getGMLSchema().getElementDecl( ftName );
@@ -325,7 +326,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         return new FeatureTypeMapping( ftName, ftTable, fidMapping, particleMappings );
     }
 
-    private FIDMapping buildFIDMapping( QTableName table, QName ftName, FIDMappingJAXB config )
+    private FIDMapping buildFIDMapping( TableName table, QName ftName, FIDMappingJAXB config )
                             throws FeatureStoreException {
 
         String prefix = config != null ? config.getPrefix() : null;
@@ -333,7 +334,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             prefix = ftName.getPrefix().toUpperCase() + "_" + ftName.getLocalPart().toUpperCase() + "_";
         }
 
-        List<Pair<String, BaseType>> columns = new ArrayList<Pair<String, BaseType>>();
+        List<Pair<SQLIdentifier, BaseType>> columns = new ArrayList<Pair<SQLIdentifier, BaseType>>();
         if ( config != null && config.getColumn() != null ) {
             for ( ColumnJAXB configColumn : config.getColumn() ) {
                 String column = configColumn.getName();
@@ -341,7 +342,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 if ( configColumn.getType() != null ) {
                     pt = getPrimitiveType( configColumn.getType() );
                 }
-                columns.add( new Pair<String, BaseType>( column, pt ) );
+                columns.add( new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( column ), pt ) );
             }
         }
 
@@ -355,7 +356,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         return new FIDMapping( prefix, "_", columns, generator );
     }
 
-    private Mapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
+    private Mapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                   AbstractParticleJAXB value ) {
         LOG.debug( "Building mapping for path '{}' on element '{}'", value.getPath(), elDecl );
         if ( value instanceof PrimitiveParticleJAXB ) {
@@ -374,7 +375,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                     + value.getClass().getName() + "'." );
     }
 
-    private Mapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
+    private Mapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                   PrimitiveParticleJAXB config ) {
 
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
@@ -400,7 +401,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                             + "' are not supported yet." );
     }
 
-    private GeometryMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
+    private GeometryMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                           GeometryParticleJAXB config ) {
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
         MappingExpression me = parseMappingExpression( config.getMapping() );
@@ -419,7 +420,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         return new GeometryMapping( path, elDecl.second, me, type, geometryParams, joinedTable );
     }
 
-    private FeatureMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
+    private FeatureMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                          FeatureParticleJAXB config ) {
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
         MappingExpression hrefMe = null;
@@ -435,7 +436,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         return new FeatureMapping( path, elDecl.second, hrefMe, pt.getFTName(), joinedTable );
     }
 
-    private CompoundMapping buildMapping( QTableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
+    private CompoundMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                           ComplexParticleJAXB config ) {
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
         elDecl = schemaWalker.getTargetElement( elDecl, path );

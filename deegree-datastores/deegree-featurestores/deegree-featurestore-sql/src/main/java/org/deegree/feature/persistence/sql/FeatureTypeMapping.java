@@ -42,7 +42,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.types.FeatureType;
@@ -59,7 +59,7 @@ public class FeatureTypeMapping {
 
     private final QName ftName;
 
-    private final QTableName table;
+    private final TableName table;
 
     private final FIDMapping fidMapping;
 
@@ -79,7 +79,7 @@ public class FeatureTypeMapping {
      * @param particleMappings
      *            particle mappings for the feature type, must not be <code>null</code>
      */
-    public FeatureTypeMapping( QName ftName, QTableName table, FIDMapping fidMapping, List<Mapping> particleMappings ) {
+    public FeatureTypeMapping( QName ftName, TableName table, FIDMapping fidMapping, List<Mapping> particleMappings ) {
         this.ftName = ftName;
         this.table = table;
         this.fidMapping = fidMapping;
@@ -111,7 +111,7 @@ public class FeatureTypeMapping {
      * 
      * @return identifier of the table, never <code>null</code>
      */
-    public QTableName getFtTable() {
+    public TableName getFtTable() {
         return table;
     }
 

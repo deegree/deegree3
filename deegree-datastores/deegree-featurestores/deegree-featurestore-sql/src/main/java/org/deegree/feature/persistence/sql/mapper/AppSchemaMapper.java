@@ -66,7 +66,8 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
@@ -216,18 +217,22 @@ public class AppSchemaMapper {
         MappingContext mc = mcManager.newContext( ft.getName(), "attr_gml_id" );
 
         // TODO
-        QTableName table = new QTableName( mc.getTable() );
+        TableName table = new TableName( mc.getTable() );
         // TODO
 
         FIDMapping fidMapping = null;
         String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
         if ( mapGMLProps ) {
             IDGenerator generator = new UUIDGenerator();
-            Pair<String, BaseType> fidColumn = new Pair<String, BaseType>( "attr_gml_id", STRING );
+            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>(
+                                                                                         new SQLIdentifier(
+                                                                                                            "attr_gml_id" ),
+                                                                                         STRING );
             fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
         } else {
             IDGenerator generator = new AutoIDGenerator();
-            Pair<String, BaseType> fidColumn = new Pair<String, BaseType>( "gid", INTEGER );
+            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( "gid" ),
+                                                                                         INTEGER );
             fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
         }
 
@@ -306,7 +311,7 @@ public class AppSchemaMapper {
                 return mappings;
             }
 
-            if ( pt instanceof SimplePropertyType ) { 
+            if ( pt instanceof SimplePropertyType ) {
                 mappings.add( generatePropMapping( (SimplePropertyType) pt, mc ) );
             } else if ( pt instanceof GeometryPropertyType ) {
                 mappings.add( generatePropMapping( (GeometryPropertyType) pt, mc ) );
@@ -467,8 +472,8 @@ public class AppSchemaMapper {
     }
 
     private List<TableJoin> generateJoinChain( MappingContext from, MappingContext to ) {
-        QTableName fromTable = new QTableName( from.getTable() );
-        QTableName toTable = new QTableName( to.getTable() );
+        TableName fromTable = new TableName( from.getTable() );
+        TableName toTable = new TableName( to.getTable() );
         List<String> fromColumns = Collections.singletonList( from.getIdColumn() );
         List<String> toColumns = Collections.singletonList( "parentfk" );
         List<String> orderColumns = Collections.singletonList( "num" );
@@ -481,8 +486,8 @@ public class AppSchemaMapper {
         if ( valueFt != null && valueFt.getSchema().getSubtypes( valueFt ).length == 1 ) {
             LOG.warn( "Ambigous feature join." );
         }
-        QTableName fromTable = new QTableName( from.getTable() );
-        QTableName toTable = new QTableName( "?" );
+        TableName fromTable = new TableName( from.getTable() );
+        TableName toTable = new TableName( "?" );
         List<String> fromColumns = Collections.singletonList( from.getColumn() );
         List<String> toColumns = Collections.singletonList( "attr_gml_id" );
         ftJoin = new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false );

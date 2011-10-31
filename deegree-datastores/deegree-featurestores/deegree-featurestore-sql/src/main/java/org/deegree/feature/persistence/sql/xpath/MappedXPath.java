@@ -42,6 +42,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
@@ -214,7 +215,7 @@ public class MappedXPath {
 
     private void map( FeatureMapping mapping, List<MappableStep> remaining )
                             throws UnmappableException {
-//        followJoins( mapping.getJoinedTable() );
+        // followJoins( mapping.getJoinedTable() );
         if ( remaining.size() < 2 ) {
             throw new UnmappableException( "Not enough steps." );
         }
@@ -231,7 +232,7 @@ public class MappedXPath {
         String fromTable = currentTable;
         String fromTableAlias = currentTableAlias;
         // TODO
-        String fromColumn = mapping.getJoinedTable().get( 0 ).getFromColumns().get( 0 );
+        String fromColumn = mapping.getJoinedTable().get( 0 ).getFromColumns().get( 0 ).toString();
         String toTable = ftMapping.getFtTable().toString();
         String toTableAlias = aliasManager.generateNew();
 
@@ -252,8 +253,18 @@ public class MappedXPath {
                 String fromTableAlias = currentTableAlias;
                 String toTable = joinedTable.getToTable().toString();
                 String toTableAlias = aliasManager.generateNew();
-                Join appliedJoin = new Join( fromTable, fromTableAlias, joinedTable.getFromColumns(), toTable,
-                                             toTableAlias, joinedTable.getToColumns() );
+
+                List<String> fromColumns = new ArrayList<String>( joinedTable.getFromColumns().size() );
+                for ( SQLIdentifier fromColumn : joinedTable.getFromColumns() ) {
+                    fromColumns.add( fromColumn.toString() );
+                }
+
+                List<String> toColumns = new ArrayList<String>( joinedTable.getToColumns().size() );
+                for ( SQLIdentifier toColumn : joinedTable.getToColumns() ) {
+                    fromColumns.add( toColumn.toString() );
+                }
+
+                Join appliedJoin = new Join( fromTable, fromTableAlias, fromColumns, toTable, toTableAlias, toColumns );
                 joins.add( appliedJoin );
                 currentTable = toTable;
                 currentTableAlias = toTableAlias;

@@ -59,7 +59,7 @@ public class UpdateRow extends TransactionRow {
 
     private String whereClause;
 
-    public UpdateRow( QTableName table ) {
+    public UpdateRow( TableName table ) {
         super( table );
     }
 
@@ -82,7 +82,7 @@ public class UpdateRow extends TransactionRow {
     public String getSql() {
         StringBuilder sql = new StringBuilder( "UPDATE " + table + " SET " );
         boolean first = true;
-        for ( String column : columnToLiteral.keySet() ) {
+        for ( SQLIdentifier column : columnToLiteral.keySet() ) {
             if ( !first ) {
                 sql.append( ',' );
             } else {
@@ -112,7 +112,7 @@ public class UpdateRow extends TransactionRow {
         stmt = conn.prepareStatement( sql );
 
         int columnId = 1;
-        for ( Entry<String, Object> entry : columnToObject.entrySet() ) {
+        for ( Entry<SQLIdentifier, Object> entry : columnToObject.entrySet() ) {
             if ( entry.getValue() != null ) {
                 LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
                            + entry.getValue().getClass() + ")" );

@@ -57,6 +57,7 @@ import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSObjectList;
+import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -151,8 +152,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     @Override
     public List<String> getInitialSelectColumns() {
-        for ( Pair<String, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
-            addColumn( colToRsIdx, tableAlias + "." + fidColumn.first );
+        for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
+            addColumn( colToRsIdx, tableAlias + "." + fidColumn.first.getName() );
         }
         for ( Mapping mapping : ftMapping.getMappings() ) {
             addSelectColumns( mapping, colToRsIdx, true );
@@ -185,7 +186,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else {
-                for ( String column : jc.get( 0 ).getFromColumns() ) {
+                for ( SQLIdentifier column : jc.get( 0 ).getFromColumns() ) {
                     addColumn( colToRsIdx, tableAlias + "." + column );
                 }
             }
@@ -229,7 +230,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         Feature feature = null;
         try {
             String gmlId = ftMapping.getFidMapping().getPrefix();
-            List<Pair<String, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
+            List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
             gmlId += rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
             for ( int i = 1; i < fidColumns.size(); i++ ) {
                 gmlId += ftMapping.getFidMapping().getDelimiter()
@@ -583,7 +584,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         sql.append( tableAlias );
         sql.append( " WHERE " );
         first = true;
-        for ( String keyColumn : jc.getToColumns() ) {
+        for ( SQLIdentifier keyColumn : jc.getToColumns() ) {
             if ( !first ) {
                 sql.append( " AND " );
             }
@@ -594,12 +595,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         if ( jc.getOrderColumns() != null && !jc.getOrderColumns().isEmpty() ) {
             sql.append( " ORDER BY " );
             first = true;
-            for ( String orderColumn : jc.getOrderColumns() ) {
+            for ( SQLIdentifier orderColumn : jc.getOrderColumns() ) {
                 if ( !first ) {
                     sql.append( "," );
                 }
-                if ( orderColumn.endsWith( "-" ) ) {
-                    sql.append( orderColumn.substring( 0, orderColumn.length() - 1 ) );
+                if ( orderColumn.toString().endsWith( "-" ) ) {
+                    sql.append( orderColumn.toString().substring( 0, orderColumn.toString().length() - 1 ) );
                     sql.append( " DESC" );
                 } else {
                     sql.append( orderColumn );
@@ -617,7 +618,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
             LOG.debug( "Preparing subsequent SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             int i = 1;
-            for ( String keyColumn : jc.getFromColumns() ) {
+            for ( SQLIdentifier keyColumn : jc.getFromColumns() ) {
                 Object key = rs.getObject( colToRsIdx.get( tableAlias + "." + keyColumn ) );
                 LOG.debug( "? = '{}' ({})", key, keyColumn );
                 stmt.setObject( i++, key );

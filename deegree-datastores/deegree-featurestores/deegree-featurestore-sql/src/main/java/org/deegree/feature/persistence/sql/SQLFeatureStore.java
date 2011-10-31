@@ -61,6 +61,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
@@ -294,14 +295,14 @@ public class SQLFeatureStore implements FeatureStore {
             particeMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) particleMapping;
-            String fkColumn = null;
+            SQLIdentifier fkColumn = null;
             if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
                 // TODO more complex joins
                 fkColumn = fm.getJoinedTable().get( fm.getJoinedTable().size() - 1 ).getFromColumns().get( 0 );
             }
-            String hrefColumn = null;
+            SQLIdentifier hrefColumn = null;
             if ( fm.getHrefMapping() != null ) {
-                hrefColumn = fm.getHrefMapping().toString();
+                hrefColumn = new SQLIdentifier( fm.getHrefMapping().toString() );
             }
             FeatureType valueFt = null;
             if ( fm.getValueFtName() != null ) {
@@ -691,9 +692,9 @@ public class SQLFeatureStore implements FeatureStore {
                     sql.append( "COUNT(*) FROM (SELECT DISTINCT " );
 
                     FIDMapping fidMapping = ftMapping.getFidMapping();
-                    List<Pair<String, BaseType>> fidCols = fidMapping.getColumns();
+                    List<Pair<SQLIdentifier, BaseType>> fidCols = fidMapping.getColumns();
                     boolean first = true;
-                    for ( Pair<String, BaseType> fidCol : fidCols ) {
+                    for ( Pair<SQLIdentifier, BaseType> fidCol : fidCols ) {
                         if ( !first ) {
                             sql.append( "," );
                         } else {
@@ -1069,7 +1070,7 @@ public class SQLFeatureStore implements FeatureStore {
                 }
                 sql.append( "(" );
                 boolean firstCol = true;
-                for ( Pair<String, BaseType> fidColumn : fidMapping.getColumns() ) {
+                for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
                     if ( !firstCol ) {
                         sql.append( " AND " );
                     }

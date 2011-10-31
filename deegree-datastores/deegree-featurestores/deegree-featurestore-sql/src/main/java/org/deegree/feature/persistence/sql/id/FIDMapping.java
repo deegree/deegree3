@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.sql.id;
 
 import java.util.List;
 
+import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -57,7 +58,7 @@ public class FIDMapping {
 
     private final String delimiter;
 
-    private final List<Pair<String, BaseType>> columns;
+    private final List<Pair<SQLIdentifier, BaseType>> columns;
 
     private final IDGenerator generator;
 
@@ -75,7 +76,7 @@ public class FIDMapping {
      * @param generator
      *            generator for determining new ids, can be <code>null</code> (in this case, no inserts are possible)
      */
-    public FIDMapping( String prefix, String delimiter, List<Pair<String, BaseType>> columns, IDGenerator generator ) {
+    public FIDMapping( String prefix, String delimiter, List<Pair<SQLIdentifier, BaseType>> columns, IDGenerator generator ) {
         this.prefix = prefix;
         this.delimiter = delimiter;
         this.columns = columns;
@@ -90,7 +91,7 @@ public class FIDMapping {
         return delimiter;
     }
 
-    public List<Pair<String, BaseType>> getColumns() {
+    public List<Pair<SQLIdentifier, BaseType>> getColumns() {
         return columns;
     }
 
@@ -103,7 +104,7 @@ public class FIDMapping {
         if ( columns.size() != 1 ) {
             throw new IllegalArgumentException();
         }
-        return columns.get( 0 ).first;
+        return columns.get( 0 ).first.toString();
     }
 
     @Deprecated

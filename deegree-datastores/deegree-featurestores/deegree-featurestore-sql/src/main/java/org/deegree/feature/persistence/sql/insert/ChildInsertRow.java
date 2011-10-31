@@ -39,7 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.jdbc.InsertRow;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 
 /**
  * An {@link InsertRow} that can not be inserted until the values for the foreign keys are known.
@@ -53,15 +54,15 @@ class ChildInsertRow extends InsertRow {
 
     private Map<ChildInsertRow, InsertRowReference> parentToRef = new HashMap<ChildInsertRow, InsertRowReference>();
 
-    ChildInsertRow( QTableName table, String autoGenColumn ) {
+    ChildInsertRow( TableName table, SQLIdentifier autoGenColumn ) {
         super( table, autoGenColumn );
     }
 
-    void setTable( QTableName table ) {
+    void setTable( TableName table ) {
         this.table = table;
     }
 
-    void setAutoGenColumn( String autoGenColumn ) {
+    void setAutoGenColumn( SQLIdentifier autoGenColumn ) {
         this.autogenColumn = autoGenColumn;
     }
 
@@ -75,8 +76,8 @@ class ChildInsertRow extends InsertRow {
 
         // propagate keys
         for ( int i = 0; i < row.getJoin().getFromColumns().size(); i++ ) {
-            String fromColumn = row.getJoin().getFromColumns().get( i );
-            String toColumn = row.getJoin().getToColumns().get( i );
+            SQLIdentifier fromColumn = row.getJoin().getFromColumns().get( i );
+            SQLIdentifier toColumn = row.getJoin().getToColumns().get( i );
             Object key = parent.get( fromColumn );
             if ( key == null ) {
                 throw new IllegalArgumentException(

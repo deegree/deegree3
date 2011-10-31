@@ -308,7 +308,7 @@ public class StringUtils {
         return result;
     }
 
-    public static String concat( List<String> parts, String separator ) {
+    public static String concat( List<? extends Object> parts, String separator ) {
         StringBuilder sb = new StringBuilder();
         if ( !parts.isEmpty() ) {
             sb.append( parts.get( 0 ) );

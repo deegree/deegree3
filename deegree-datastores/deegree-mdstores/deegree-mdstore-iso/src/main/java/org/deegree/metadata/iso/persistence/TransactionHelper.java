@@ -52,7 +52,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.InsertRow;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.jdbc.TransactionRow;
 import org.deegree.commons.jdbc.UpdateRow;
 import org.deegree.commons.utils.JDBCUtils;
@@ -116,7 +116,7 @@ class TransactionHelper extends SqlHelper {
     int executeInsert( Connection conn, ISORecord rec )
                             throws MetadataStoreException, XMLStreamException {
         int internalId = 0;
-        InsertRow ir = new InsertRow( new QTableName( mainTable ), null );
+        InsertRow ir = new InsertRow( new TableName( mainTable ), null );
         try {
             internalId = getLastDatasetId( conn, mainTable );
             internalId++;
@@ -240,7 +240,7 @@ class TransactionHelper extends SqlHelper {
             }
 
             if ( requestedId > -1 ) {
-                UpdateRow ur = new UpdateRow( new QTableName( mainTable ) );
+                UpdateRow ur = new UpdateRow( new TableName( mainTable ) );
                 ur.addPreparedArgument( "version", null );
                 ur.addPreparedArgument( "status", null );
                 ur.addPreparedArgument( recordColumn, rec.getAsByteArray() );
@@ -428,7 +428,7 @@ class TransactionHelper extends SqlHelper {
         List<CRS> crss = qp.getCrs();
         if ( crss != null && crss.size() > 0 ) {
             for ( CRS crs : crss ) {
-                InsertRow ir = new InsertRow( new QTableName( crsTable ), null );
+                InsertRow ir = new InsertRow( new TableName( crsTable ), null );
                 try {
                     int localId = updateTable( isUpdate, conn, operatesOnId, crsTable );
                     ir.addPreparedArgument( idColumn, localId );
@@ -457,7 +457,7 @@ class TransactionHelper extends SqlHelper {
         List<Keyword> keywords = qp.getKeywords();
         if ( keywords != null && keywords.size() > 0 ) {
             for ( Keyword keyword : keywords ) {
-                InsertRow ir = new InsertRow( new QTableName( keywordTable ), null );
+                InsertRow ir = new InsertRow( new TableName( keywordTable ), null );
                 try {
                     int localId = updateTable( isUpdate, conn, operatesOnId, keywordTable );
                     ir.addPreparedArgument( idColumn, localId );
@@ -479,7 +479,7 @@ class TransactionHelper extends SqlHelper {
         List<OperatesOnData> opOns = qp.getOperatesOnData();
         if ( opOns != null && opOns.size() > 0 ) {
             for ( OperatesOnData opOn : opOns ) {
-                InsertRow ir = new InsertRow( new QTableName( opOnTable ), null );
+                InsertRow ir = new InsertRow( new TableName( opOnTable ), null );
                 try {
                     int localId = updateTable( isUpdate, conn, operatesOnId, opOnTable );
                     ir.addPreparedArgument( idColumn, localId );

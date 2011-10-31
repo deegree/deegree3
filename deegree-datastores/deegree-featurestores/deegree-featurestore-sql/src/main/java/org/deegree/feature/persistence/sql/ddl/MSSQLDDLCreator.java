@@ -40,11 +40,11 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
-import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -79,7 +79,7 @@ public class MSSQLDDLCreator extends DDLCreator {
         super( schema, dialect );
     }
 
-    private List<StringBuffer> getGeometryCreate( GeometryMapping mapping, DBField dbField, QTableName table ) {
+    private List<StringBuffer> getGeometryCreate( GeometryMapping mapping, DBField dbField, TableName table ) {
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
         // StringBuffer sql = new StringBuffer();
         // String schema = table.getSchema() == null ? "" : table.getSchema();
@@ -100,7 +100,7 @@ public class MSSQLDDLCreator extends DDLCreator {
         List<String> ddl = new ArrayList<String>();
 
         // create feature_type table
-        QTableName ftTable = schema.getBBoxMapping().getTable();
+        TableName ftTable = schema.getBBoxMapping().getTable();
         ddl.add( "CREATE TABLE " + ftTable + " (id integer PRIMARY KEY, qname text NOT NULL, bbox GEOMETRY)" );
 
         // populate feature_type table
@@ -110,7 +110,7 @@ public class MSSQLDDLCreator extends DDLCreator {
         }
 
         // create gml_objects table
-        QTableName blobTable = schema.getBlobMapping().getTable();
+        TableName blobTable = schema.getBlobMapping().getTable();
         ddl.add( "CREATE TABLE " + blobTable + " (id integer IDENTITY(1,1) PRIMARY KEY, "
                  + "gml_id varchar(2000) NOT NULL, ft_type integer REFERENCES " + ftTable
                  + " , binary_object varbinary(max), gml_bounded_by GEOMETRY)" );
@@ -143,7 +143,7 @@ public class MSSQLDDLCreator extends DDLCreator {
 
     @Override
     protected void geometryMappingSnippet( StringBuffer sql, GeometryMapping mapping, List<StringBuffer> ddls,
-                                           QTableName table ) {
+                                           TableName table ) {
         MappingExpression me = mapping.getMapping();
         if ( me instanceof DBField ) {
             DBField dbField = (DBField) me;
@@ -158,7 +158,7 @@ public class MSSQLDDLCreator extends DDLCreator {
 
     @Override
     protected void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping ) {
-        String col = mapping.getJoinedTable().get( mapping.getJoinedTable().size() -1 ).getFromColumns().get( 0 );
+        SQLIdentifier col = mapping.getJoinedTable().get( mapping.getJoinedTable().size() - 1 ).getFromColumns().get( 0 );
         if ( col != null ) {
             sql.append( ",\n    " );
             sql.append( col );
@@ -173,7 +173,7 @@ public class MSSQLDDLCreator extends DDLCreator {
     }
 
     @Override
-    protected StringBuffer createJoinedTable( QTableName fromTable, TableJoin jc, List<StringBuffer> ddls ) {
+    protected StringBuffer createJoinedTable( TableName fromTable, TableJoin jc, List<StringBuffer> ddls ) {
         StringBuffer sb = new StringBuffer( "CREATE TABLE " );
         sb.append( jc.getToTable() );
         sb.append( " (\n    " );
@@ -187,7 +187,7 @@ public class MSSQLDDLCreator extends DDLCreator {
         }
         sb.append( " " );
         sb.append( fromTable );
-        for ( String col : jc.getOrderColumns() ) {
+        for ( SQLIdentifier col : jc.getOrderColumns() ) {
             sb.append( ",\n    " ).append( col ).append( " integer not null" );
         }
         return sb;

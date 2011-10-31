@@ -50,4 +50,8 @@ public class SequenceIDGenerator implements IDGenerator {
     public SequenceIDGenerator( String sequence ) {
         this.sequence = sequence;
     }
+
+    public String getSequence() {
+        return sequence;
+    }
 }

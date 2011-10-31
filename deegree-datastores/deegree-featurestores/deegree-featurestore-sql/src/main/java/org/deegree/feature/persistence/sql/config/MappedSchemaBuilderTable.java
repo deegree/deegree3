@@ -59,7 +59,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
@@ -120,7 +121,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     private DatabaseMetaData md;
 
     // caches the column information
-    private Map<String, LinkedHashMap<String, ColumnMetadata>> tableNameToColumns = new HashMap<String, LinkedHashMap<String, ColumnMetadata>>();
+    private Map<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadata>> tableNameToColumns = new HashMap<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadata>>();
 
     private final SQLDialect dialect;
 
@@ -173,7 +174,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             throw new FeatureStoreException( msg );
         }
 
-        QTableName table = new QTableName( ftDecl.getTable() );
+        TableName table = new TableName( ftDecl.getTable() );
         LOG.debug( "Processing feature type mapping for table '" + table + "'." );
         if ( getColumns( table ).isEmpty() ) {
             throw new FeatureStoreException( "No table with name '" + table + "' exists (or no columns defined)." );
@@ -197,7 +198,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         }
     }
 
-    private void process( QTableName table, QName ftName, FIDMapping fidMapping )
+    private void process( TableName table, QName ftName, FIDMapping fidMapping )
                             throws SQLException {
 
         LOG.debug( "Deriving properties and mapping for feature type '" + ftName + "' from table '" + table + "'" );
@@ -205,9 +206,9 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         List<PropertyType> pts = new ArrayList<PropertyType>();
         List<Mapping> mappings = new ArrayList<Mapping>();
 
-        Set<String> fidColumnNames = new HashSet<String>();
-        for ( Pair<String, BaseType> column : fidMapping.getColumns() ) {
-            fidColumnNames.add( column.first.toLowerCase() );
+        Set<SQLIdentifier> fidColumnNames = new HashSet<SQLIdentifier>();
+        for ( Pair<SQLIdentifier, BaseType> column : fidMapping.getColumns() ) {
+            fidColumnNames.add( column.first );
         }
 
         for ( ColumnMetadata md : getColumns( table ).values() ) {
@@ -250,7 +251,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private void process( QTableName table, QName ftName, FIDMapping fidMapping,
+    private void process( TableName table, QName ftName, FIDMapping fidMapping,
                           List<JAXBElement<? extends AbstractPropertyJAXB>> propDecls )
                             throws FeatureStoreException, SQLException {
 
@@ -271,7 +272,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private Pair<PropertyType, Mapping> process( QTableName table, AbstractPropertyJAXB propDecl )
+    private Pair<PropertyType, Mapping> process( TableName table, AbstractPropertyJAXB propDecl )
                             throws FeatureStoreException, SQLException {
 
         PropertyType pt = null;
@@ -294,16 +295,17 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
         Join joinConfig = propDecl.getJoin();
         List<TableJoin> jc = null;
-        QTableName valueTable = table;
+        TableName valueTable = table;
         if ( joinConfig != null ) {
             jc = buildJoinTable( table, joinConfig );
-            DBField dbField = new DBField( jc.get( 0 ).getToTable().toString(), jc.get( 0 ).getToColumns().get( 0 ) );
-            valueTable = new QTableName( dbField.getTable(), dbField.getSchema() );
+            DBField dbField = new DBField( jc.get( 0 ).getToTable().toString(),
+                                           jc.get( 0 ).getToColumns().get( 0 ).toString() );
+            valueTable = new TableName( dbField.getTable(), dbField.getSchema() );
         }
         int maxOccurs = joinConfig != null ? -1 : 1;
 
         ValueReference path = new ValueReference( propName );
-        ColumnMetadata md = getColumn( valueTable, columnName.toLowerCase() );
+        ColumnMetadata md = getColumn( valueTable, new SQLIdentifier( columnName ) );
         int minOccurs = joinConfig != null ? 0 : md.isNullable ? 0 : 1;
 
         Mapping m = null;
@@ -354,7 +356,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         return new Pair<PropertyType, Mapping>( pt, m );
     }
 
-    private FIDMapping buildFIDMapping( QTableName table, QName ftName, FIDMappingJAXB config )
+    private FIDMapping buildFIDMapping( TableName table, QName ftName, FIDMappingJAXB config )
                             throws FeatureStoreException, SQLException {
 
         String prefix = config != null ? config.getPrefix() : null;
@@ -363,17 +365,17 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         }
 
         // build FID columns / types from configuration
-        List<Pair<String, BaseType>> columns = new ArrayList<Pair<String, BaseType>>();
+        List<Pair<SQLIdentifier, BaseType>> columns = new ArrayList<Pair<SQLIdentifier, BaseType>>();
         if ( config != null && config.getColumn() != null ) {
             for ( ColumnJAXB configColumn : config.getColumn() ) {
-                String columnName = configColumn.getName();
+                SQLIdentifier columnName = new SQLIdentifier( configColumn.getName() );
                 BaseType columnType = configColumn.getType() != null ? getPrimitiveType( configColumn.getType() )
                                                                     : null;
                 if ( columnType == null ) {
-                    ColumnMetadata md = getColumn( table, columnName.toLowerCase() );
+                    ColumnMetadata md = getColumn( table, columnName );
                     columnType = BaseType.valueOf( md.sqlType );
                 }
-                columns.add( new Pair<String, BaseType>( columnName, columnType ) );
+                columns.add( new Pair<SQLIdentifier, BaseType>( columnName, columnType ) );
             }
         }
 
@@ -384,7 +386,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 for ( ColumnMetadata md : getColumns( table ).values() ) {
                     if ( md.isAutoincrement ) {
                         BaseType columnType = BaseType.valueOf( md.sqlType );
-                        columns.add( new Pair<String, BaseType>( md.column, columnType ) );
+                        columns.add( new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( md.column ), columnType ) );
                         break;
                     }
                 }
@@ -425,9 +427,9 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         return md;
     }
 
-    private ColumnMetadata getColumn( QTableName qTable, String columnName )
+    private ColumnMetadata getColumn( TableName qTable, SQLIdentifier columnName )
                             throws SQLException, FeatureStoreException {
-        ColumnMetadata md = getColumns( qTable ).get( columnName.toLowerCase() );
+        ColumnMetadata md = getColumns( qTable ).get( columnName );
         if ( md == null ) {
             throw new FeatureStoreException( "Table '" + qTable + "' does not have a column with name '" + columnName
                                              + "'" );
@@ -435,14 +437,14 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         return md;
     }
 
-    private LinkedHashMap<String, ColumnMetadata> getColumns( QTableName qTable )
+    private LinkedHashMap<SQLIdentifier, ColumnMetadata> getColumns( TableName qTable )
                             throws SQLException {
 
-        LinkedHashMap<String, ColumnMetadata> columnNameToMD = tableNameToColumns.get( qTable.toString().toLowerCase() );
+        LinkedHashMap<SQLIdentifier, ColumnMetadata> columnNameToMD = tableNameToColumns.get( qTable );
 
         if ( columnNameToMD == null ) {
             DatabaseMetaData md = getDBMetadata();
-            columnNameToMD = new LinkedHashMap<String, ColumnMetadata>();
+            columnNameToMD = new LinkedHashMap<SQLIdentifier, ColumnMetadata>();
             ResultSet rs = null;
             try {
                 LOG.info( "Analyzing metadata for table {}", qTable );
@@ -498,7 +500,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                         }
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
                                                                       geomType, dim, crs, srid );
-                        columnNameToMD.put( column.toLowerCase(), columnMd );
+                        columnNameToMD.put( new SQLIdentifier( column ), columnMd );
                     } else if ( sqlTypeName.toLowerCase().contains( "geography" ) ) {
 
                         LOG.warn( "Detected geography column. This is not fully supported yet. Expect bugs." );
@@ -538,14 +540,14 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
                                                                       geomType, dim, crs, srid );
-                        columnNameToMD.put( column.toLowerCase(), columnMd );
+                        columnNameToMD.put( new SQLIdentifier( column.toLowerCase() ), columnMd );
                     } else {
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
                                                                       isAutoincrement );
-                        columnNameToMD.put( column.toLowerCase(), columnMd );
+                        columnNameToMD.put( new SQLIdentifier( column.toLowerCase() ), columnMd );
                     }
                 }
-                tableNameToColumns.put( qTable.toString().toLowerCase(), columnNameToMD );
+                tableNameToColumns.put( new TableName( qTable.toString().toLowerCase() ), columnNameToMD );
             } finally {
                 JDBCUtils.close( rs );
             }

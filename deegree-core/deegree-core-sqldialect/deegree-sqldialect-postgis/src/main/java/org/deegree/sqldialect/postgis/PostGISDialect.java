@@ -43,7 +43,8 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
@@ -115,7 +116,7 @@ public class PostGISDialect implements SQLDialect {
     }
 
     @Override
-    public String geometryMetadata( QTableName qTable, String column, boolean isGeographical ) {
+    public String geometryMetadata( TableName qTable, String column, boolean isGeographical ) {
         String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
         String table = qTable.getTable();
         if ( !isGeographical ) {
@@ -217,14 +218,14 @@ public class PostGISDialect implements SQLDialect {
     }
 
     @Override
-    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, String column,
-                                  String table ) {
+    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
+                                  SQLIdentifier table ) {
         currentStmt.append( column );
         currentStmt.append( " serial" );
     }
 
     @Override
-    public ResultSet getTableColumnMetadata( DatabaseMetaData md, QTableName qTable )
+    public ResultSet getTableColumnMetadata( DatabaseMetaData md, TableName qTable )
                             throws SQLException {
         String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
         String table = qTable.getTable();
@@ -237,5 +238,10 @@ public class PostGISDialect implements SQLDialect {
     @Override
     public boolean requiresTransactionForCursorMode() {
         return true;
+    }
+
+    @Override
+    public String getSelectSequenceNextVal( String sequence ) {
+        return "SELECT nextval('" + sequence + "')";
     }
 }

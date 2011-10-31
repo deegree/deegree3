@@ -59,7 +59,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.jdbc.InsertRow;
-import org.deegree.commons.jdbc.QTableName;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.Filter;
@@ -233,15 +234,15 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
     private void insert( RegistryPackage registryPackage )
                             throws MetadataStoreException {
         // TODO: use autogencolumn!
-        InsertRow ir = new InsertRow( new QTableName( Table.idxtb_registrypackage.name() ), null );
+        InsertRow ir = new InsertRow( new TableName( Table.idxtb_registrypackage.name() ), null );
         try {
             int id = getNewId( conn );
-            ir.addPreparedArgument( "internalId", id );
-            ir.addPreparedArgument( "id", registryPackage.getId() );
-            ir.addPreparedArgument( "externalId", registryPackage.getExtId() );
-            ir.addPreparedArgument( "name", registryPackage.getName() );
-            ir.addPreparedArgument( "description", registryPackage.getDesc() );
-            ir.addPreparedArgument( "data", getAsByteArray( registryPackage.getElement() ) );
+            ir.addPreparedArgument( new SQLIdentifier( "internalId" ), id );
+            ir.addPreparedArgument( new SQLIdentifier( "id" ), registryPackage.getId() );
+            ir.addPreparedArgument( new SQLIdentifier( "externalId" ), registryPackage.getExtId() );
+            ir.addPreparedArgument( new SQLIdentifier( "name" ), registryPackage.getName() );
+            ir.addPreparedArgument( new SQLIdentifier( "description" ), registryPackage.getDesc() );
+            ir.addPreparedArgument( new SQLIdentifier( "data" ), getAsByteArray( registryPackage.getElement() ) );
 
             LOG.debug( "Execute statement " + ir.getSql() );
 
@@ -294,7 +295,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
                         sb.append( "SetSRID(ST_GeomFromWKB(?)," );
                     }
                     sb.append( "-1)" );
-                    ir.addPreparedArgument( slot.getColumn(), wkt, sb.toString() );
+                    ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ), wkt, sb.toString() );
                 } catch ( ParseException e ) {
                     String msg = "Could not write as WKB " + geom + ": " + e.getMessage();
                     LOG.debug( msg, e );
@@ -305,14 +306,14 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
         }
         if ( SlotType._multiple.equals( slot.getType() ) ) {
             String[] slotValue = extrinsicObject.getSlotValueList( SLOTURN + slot.getName() );
-            ir.addPreparedArgument( slot.getColumn(), concatenate( slotValue ) );
+            ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ), concatenate( slotValue ) );
         }
         String slotValue = extrinsicObject.getSlotValue( SLOTURN + slot.getName() );
         if ( slotValue != null ) {
             switch ( slot.getType() ) {
             case _date:
                 try {
-                    ir.addPreparedArgument( slot.getColumn(),
+                    ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ),
                                             new Timestamp( ( DateUtils.parseISO8601Date( slotValue ).getTime() ) ) );
                 } catch ( java.text.ParseException e ) {
                     String msg = "Could not parse as Date:" + slotValue;
@@ -323,7 +324,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
                 break;
             case _double:
                 try {
-                    ir.addPreparedArgument( slot.getColumn(), Double.parseDouble( slotValue ) );
+                    ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ), Double.parseDouble( slotValue ) );
                 } catch ( NumberFormatException e ) {
                     String msg = "Could not parse as double:" + slotValue;
                     LOG.debug( msg, e );
@@ -332,7 +333,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
                 break;
             case _int:
                 try {
-                    ir.addPreparedArgument( slot.getColumn(), Integer.parseInt( slotValue ) );
+                    ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ), Integer.parseInt( slotValue ) );
                 } catch ( NumberFormatException e ) {
                     String msg = "Could not parse as integer:" + slotValue;
                     LOG.debug( msg, e );
@@ -340,7 +341,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
                 }
                 break;
             default:
-                ir.addPreparedArgument( slot.getColumn(), slotValue );
+                ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ), slotValue );
                 break;
             }
         }
@@ -363,34 +364,34 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
 
     private void insertExtrinsicObject( ExtrinsicObject eo, int regPackId, Connection conn )
                             throws SQLException {
-        InsertRow ir = new InsertRow( new QTableName( Table.idxtb_extrinsicobject.name() ), null );
+        InsertRow ir = new InsertRow( new TableName( Table.idxtb_extrinsicobject.name() ), null );
         addRegistryObject( ir, eo );
 
-        ir.addPreparedArgument( "resource", eo.getResource() );
-        ir.addPreparedArgument( "isopaque", eo.isOpaque() );
-        ir.addPreparedArgument( "data", getAsByteArray( eo.getElement() ) );
+        ir.addPreparedArgument( new SQLIdentifier( "resource" ), eo.getResource() );
+        ir.addPreparedArgument( new SQLIdentifier( "isopaque" ), eo.isOpaque() );
+        ir.addPreparedArgument( new SQLIdentifier( "data" ), getAsByteArray( eo.getElement() ) );
 
-        ir.addPreparedArgument( "fk_registrypackage", regPackId );
+        ir.addPreparedArgument( new SQLIdentifier( "fk_registrypackage" ), regPackId );
 
         List<SlotMapping> slots = null;
         if ( PRODUCT.getType().equals( eo.getObjectType() ) ) {
             slots = PRODUCT.getSlots();
         } else if ( ACQUPLATFORM.getType().equals( eo.getObjectType() ) ) {
-            ir.addPreparedArgument( "ap_shortName", eo.getName() );
+            ir.addPreparedArgument( new SQLIdentifier( "ap_shortName" ), eo.getName() );
             slots = ACQUPLATFORM.getSlots();
         } else if ( MASKINFO.getType().equals( eo.getObjectType() ) ) {
-            ir.addPreparedArgument( "mi_type", eo.getName() );
+            ir.addPreparedArgument( new SQLIdentifier( "mi_type" ), eo.getName() );
             slots = MASKINFO.getSlots();
         } else if ( ARCHIVINGINFO.getType().equals( eo.getObjectType() ) ) {
-            ir.addPreparedArgument( "ai_archivingCenter", eo.getName() );
+            ir.addPreparedArgument( new SQLIdentifier( "ai_archivingCenter" ), eo.getName() );
             slots = ARCHIVINGINFO.getSlots();
         } else if ( PRODUCTINFO.getType().equals( eo.getObjectType() ) ) {
             slots = PRODUCTINFO.getSlots();
         } else if ( DATALAYER.getType().equals( eo.getObjectType() ) ) {
-            ir.addPreparedArgument( "dl_specy", eo.getName() );
+            ir.addPreparedArgument( new SQLIdentifier( "dl_specy" ), eo.getName() );
             slots = DATALAYER.getSlots();
         } else if ( BROWSEINFO.getType().equals( eo.getObjectType() ) ) {
-            ir.addPreparedArgument( "bi_type", eo.getName() );
+            ir.addPreparedArgument( new SQLIdentifier( "bi_type" ), eo.getName() );
             slots = BROWSEINFO.getSlots();
         }
         if ( slots != null ) {
@@ -403,50 +404,50 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
 
     private void insertAssociation( Association association, int regPackId, Connection conn )
                             throws SQLException {
-        InsertRow ir = new InsertRow( new QTableName( Table.idxtb_association.name() ), null );
+        InsertRow ir = new InsertRow( new TableName( Table.idxtb_association.name() ), null );
         addRegistryObject( ir, association );
-        ir.addPreparedArgument( "sourceObject", association.getSourceObject() );
-        ir.addPreparedArgument( "targetObject", association.getTargetObject() );
-        ir.addPreparedArgument( "associationType", association.getAssociationType() );
-        ir.addPreparedArgument( "data", getAsByteArray( association.getElement() ) );
-        ir.addPreparedArgument( "fk_registrypackage", regPackId );
+        ir.addPreparedArgument( new SQLIdentifier("sourceObject"), association.getSourceObject() );
+        ir.addPreparedArgument( new SQLIdentifier("targetObject"), association.getTargetObject() );
+        ir.addPreparedArgument( new SQLIdentifier("associationType"), association.getAssociationType() );
+        ir.addPreparedArgument( new SQLIdentifier("data"), getAsByteArray( association.getElement() ) );
+        ir.addPreparedArgument( new SQLIdentifier("fk_registrypackage"), regPackId );
         ir.performInsert( conn );
     }
 
     private void insertClassification( Classification classification, int regPackId, Connection conn )
                             throws SQLException {
-        InsertRow ir = new InsertRow( new QTableName( Table.idxtb_classification.name() ), null );
+        InsertRow ir = new InsertRow( new TableName( Table.idxtb_classification.name() ), null );
         addRegistryObject( ir, classification );
-        ir.addPreparedArgument( "classificationNode", classification.getClassificationNode() );
-        ir.addPreparedArgument( "classifiedObject", classification.getClassifiedObject() );
-        ir.addPreparedArgument( "classificationScheme", classification.getClassificationScheme() );
-        ir.addPreparedArgument( "data", getAsByteArray( classification.getElement() ) );
-        ir.addPreparedArgument( "fk_registrypackage", regPackId );
+        ir.addPreparedArgument( new SQLIdentifier("classificationNode"), classification.getClassificationNode() );
+        ir.addPreparedArgument( new SQLIdentifier("classifiedObject"), classification.getClassifiedObject() );
+        ir.addPreparedArgument( new SQLIdentifier("classificationScheme"), classification.getClassificationScheme() );
+        ir.addPreparedArgument( new SQLIdentifier("data"), getAsByteArray( classification.getElement() ) );
+        ir.addPreparedArgument( new SQLIdentifier("fk_registrypackage"), regPackId );
         ir.performInsert( conn );
     }
 
     private void insertClassificationNode( ClassificationNode classificationNode, int regPackId, Connection conn )
                             throws SQLException {
-        InsertRow ir = new InsertRow( new QTableName( Table.idxtb_classificationNode.name() ), null );
+        InsertRow ir = new InsertRow( new TableName( Table.idxtb_classificationNode.name() ), null );
         addRegistryObject( ir, classificationNode );
-        ir.addPreparedArgument( "parent", classificationNode.getParent() );
-        ir.addPreparedArgument( "code", classificationNode.getCode() );
-        ir.addPreparedArgument( "path", classificationNode.getPath() );
-        ir.addPreparedArgument( "data", getAsByteArray( classificationNode.getElement() ) );
-        ir.addPreparedArgument( "fk_registrypackage", regPackId );
+        ir.addPreparedArgument( new SQLIdentifier("parent"), classificationNode.getParent() );
+        ir.addPreparedArgument( new SQLIdentifier("code"), classificationNode.getCode() );
+        ir.addPreparedArgument( new SQLIdentifier("path"), classificationNode.getPath() );
+        ir.addPreparedArgument( new SQLIdentifier("data"), getAsByteArray( classificationNode.getElement() ) );
+        ir.addPreparedArgument( new SQLIdentifier("fk_registrypackage"), regPackId );
         ir.performInsert( conn );
     }
 
     private void addRegistryObject( InsertRow ir, RegistryObject ro ) {
-        ir.addPreparedArgument( "id", ro.getId() );
-        ir.addPreparedArgument( "objectType", ro.getObjectType() );
-        ir.addPreparedArgument( "home", ro.getHome() );
-        ir.addPreparedArgument( "lid", ro.getLid() );
-        ir.addPreparedArgument( "status", ro.getStatus() );
-        ir.addPreparedArgument( "externalId", ro.getExtId() );
-        ir.addPreparedArgument( "name", ro.getName() );
-        ir.addPreparedArgument( "description", ro.getDesc() );
-        ir.addPreparedArgument( "versionInfo", ro.getVersionInfo() );
+        ir.addPreparedArgument( new SQLIdentifier("id"), ro.getId() );
+        ir.addPreparedArgument( new SQLIdentifier("objectType"), ro.getObjectType() );
+        ir.addPreparedArgument( new SQLIdentifier("home"), ro.getHome() );
+        ir.addPreparedArgument( new SQLIdentifier("lid"), ro.getLid() );
+        ir.addPreparedArgument( new SQLIdentifier("status"), ro.getStatus() );
+        ir.addPreparedArgument( new SQLIdentifier("externalId"), ro.getExtId() );
+        ir.addPreparedArgument( new SQLIdentifier("name"), ro.getName() );
+        ir.addPreparedArgument( new SQLIdentifier("description"), ro.getDesc() );
+        ir.addPreparedArgument( new SQLIdentifier("versionInfo"), ro.getVersionInfo() );
     }
 
     private String concatenate( String[] slotValue ) {
