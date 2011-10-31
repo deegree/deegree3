@@ -295,9 +295,7 @@ public class InsertRowManager {
             if ( jc != null && !( mapping instanceof FeatureMapping ) ) {
                 TableJoin join = jc.get( 0 );
                 TableName table = join.getToTable();
-                // TODO make this configurable
-                SQLIdentifier autoGenColumn = new SQLIdentifier( "id" );
-                currentRow = addChildRow( currentRow, table, autoGenColumn, join );
+                currentRow = addChildRow( currentRow, table, join );
             }
             if ( mapping instanceof PrimitiveMapping ) {
                 MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
@@ -346,12 +344,13 @@ public class InsertRowManager {
                         for ( int i = 0; i < join.getFromColumns().size(); i++ ) {
                             // invert join (the logical parent is the sub feature row)
                             SQLIdentifier fromColumn = join.getToColumns().get( i );
-                            SQLIdentifier toColumn = join.getFromColumns().get( i );                           
+                            SQLIdentifier toColumn = join.getFromColumns().get( i );
                             Object key = parentRow.get( fromColumn );
                             if ( key == null ) {
+                                // TODO what about the id generator?
                                 TableJoin inverseJoin = new TableJoin( false, join.getToTable(), join.getFromTable(),
                                                                        join.getToColumns(), join.getFromColumns(),
-                                                                       EMPTY_LIST );
+                                                                       EMPTY_LIST, join.getPkColumn(), null );
                                 InsertRowReference ref = new InsertRowReference( inverseJoin, parentRow );
                                 currentRow.addParent( ref );
                                 ref.addHrefingRow( currentRow );
@@ -399,10 +398,9 @@ public class InsertRowManager {
         }
     }
 
-    private ChildInsertRow addChildRow( ChildInsertRow parent, TableName table, SQLIdentifier autoGenColumn,
-                                        TableJoin join ) {
+    private ChildInsertRow addChildRow( ChildInsertRow parent, TableName table, TableJoin join ) {
 
-        ChildInsertRow newRow = new ChildInsertRow( table, autoGenColumn );
+        ChildInsertRow newRow = new ChildInsertRow( table, join.getPkColumn() );
         InsertRowReference ref = new InsertRowReference( join, parent );
         newRow.addParent( ref );
 

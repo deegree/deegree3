@@ -346,7 +346,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
 
-        IDGenerator generator = buildGenerator( config );
+        IDGenerator generator = buildGenerator( config.getAbstractIDGenerator() );
         if ( !( generator instanceof AutoIDGenerator ) ) {
             if ( columns.isEmpty() ) {
                 throw new FeatureStoreException( "No FIDMapping column for table '" + table

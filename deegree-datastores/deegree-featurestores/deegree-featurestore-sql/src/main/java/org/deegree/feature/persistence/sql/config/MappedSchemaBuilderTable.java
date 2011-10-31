@@ -379,7 +379,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             }
         }
 
-        IDGenerator generator = buildGenerator( config );
+        IDGenerator generator = buildGenerator( config.getAbstractIDGenerator() );
         if ( generator instanceof AutoIDGenerator ) {
             if ( columns.isEmpty() ) {
                 // determine autoincrement column automatically

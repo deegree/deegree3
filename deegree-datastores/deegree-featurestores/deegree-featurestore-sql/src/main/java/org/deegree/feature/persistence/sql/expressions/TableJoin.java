@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
+import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
@@ -64,8 +65,12 @@ public class TableJoin implements MappingExpression {
 
     private final boolean numberedOrder;
 
+    private final SQLIdentifier pkColumn;
+
+    private final IDGenerator idGenerator;
+
     public TableJoin( TableName fromTable, TableName toTable, List<String> fromColumns, List<String> toColumns,
-                      List<String> orderColumns, boolean numberedOrder ) {
+                      List<String> orderColumns, boolean numberedOrder, String pkColumn, IDGenerator idGenerator ) {
         this.fromTable = fromTable;
         this.toTable = toTable;
         if ( fromColumns != null ) {
@@ -93,20 +98,21 @@ public class TableJoin implements MappingExpression {
             this.orderColumns = null;
         }
         this.numberedOrder = numberedOrder;
+        this.pkColumn = new SQLIdentifier( pkColumn );
+        this.idGenerator = idGenerator;
     }
 
     public TableJoin( boolean numberedOrder, TableName fromTable, TableName toTable, List<SQLIdentifier> fromColumns,
-                      List<SQLIdentifier> toColumns, List<SQLIdentifier> orderColumns ) {
-        System.out.println ("***********************************************");
-        System.out.println ( fromTable + "." + fromColumns.get( 0 ));
-        System.out.println ( "-> " + toTable + "." + toColumns.get( 0 ));
-        System.out.println ("***********************************************");
+                      List<SQLIdentifier> toColumns, List<SQLIdentifier> orderColumns, SQLIdentifier pkColumn,
+                      IDGenerator idGenerator ) {
         this.numberedOrder = numberedOrder;
         this.fromTable = fromTable;
         this.toTable = toTable;
         this.toColumns = toColumns;
         this.fromColumns = fromColumns;
         this.orderColumns = orderColumns;
+        this.pkColumn = pkColumn;
+        this.idGenerator = idGenerator;
     }
 
     public TableName getFromTable() {
@@ -131,5 +137,13 @@ public class TableJoin implements MappingExpression {
 
     public boolean isNumberedOrder() {
         return numberedOrder;
+    }
+
+    public SQLIdentifier getPkColumn() {
+        return pkColumn;
+    }
+
+    public IDGenerator getIdGenerator() {
+        return idGenerator;
     }
 }

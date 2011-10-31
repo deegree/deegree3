@@ -73,7 +73,7 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
 
     static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.sql.jaxb";
 
-    static final URL CONFIG_SCHEMA = SQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/sql/3.1.0/sql.xsd" );
+    static final URL CONFIG_SCHEMA = SQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/sql/3.2.0/sql.xsd" );
 
     private DeegreeWorkspace workspace;
 
