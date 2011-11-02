@@ -39,13 +39,17 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
 import org.deegree.layer.LayerData;
 import org.deegree.rendering.r2d.Renderer;
@@ -67,16 +71,19 @@ public class FeatureLayerData implements LayerData {
 
     private static final Logger LOG = getLogger( FeatureLayerData.class );
 
-    private FeatureInputStream features;
-
     private int maxFeatures;
 
     private final Style style;
 
     private FeatureXPathEvaluator evaluator;
 
-    public FeatureLayerData( FeatureInputStream features, int maxFeatures, Style style ) {
-        this.features = features;
+    private final List<Query> queries;
+
+    private final FeatureStore featureStore;
+
+    public FeatureLayerData( List<Query> queries, FeatureStore featureStore, int maxFeatures, Style style ) {
+        this.queries = queries;
+        this.featureStore = featureStore;
         this.maxFeatures = maxFeatures;
         this.style = style;
         evaluator = new FeatureXPathEvaluator( GML_31 );
@@ -84,8 +91,10 @@ public class FeatureLayerData implements LayerData {
 
     @Override
     public void render( RenderContext context ) {
+        FeatureInputStream features = null;
         try {
             // TODO Should this always be done on this level? What about min and maxFill values?
+            features = featureStore.query( queries.toArray( new Query[queries.size()] ) );
             features = new ThreadedFeatureInputStream( features, 100, 20 );
             int cnt = 0;
 
@@ -112,6 +121,12 @@ public class FeatureLayerData implements LayerData {
                     break;
                 }
             }
+        } catch ( FilterEvaluationException e ) {
+            LOG.warn( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } catch ( Throwable e ) {
+            LOG.warn( "Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         } finally {
             if ( features != null ) {
                 features.close();

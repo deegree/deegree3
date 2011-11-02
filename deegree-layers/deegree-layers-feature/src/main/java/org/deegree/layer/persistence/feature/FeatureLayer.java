@@ -61,11 +61,9 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
-import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
@@ -176,17 +174,7 @@ public class FeatureLayer extends AbstractLayer {
             return null;
         }
 
-        try {
-            FeatureInputStream features = featureStore.query( queries.toArray( new Query[queries.size()] ) );
-            return new FeatureLayerData( features, maxFeatures, style );
-        } catch ( FilterEvaluationException e ) {
-            LOG.warn( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( Throwable e ) {
-            LOG.warn( "Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
+        return new FeatureLayerData( queries, featureStore, maxFeatures, style );
     }
 
     @Override
