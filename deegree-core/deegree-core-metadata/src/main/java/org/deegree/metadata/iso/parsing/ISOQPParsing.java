@@ -212,7 +212,12 @@ public final class ISOQPParsing extends XMLAdapter {
                                                             nsContextISOParsing ) );
         try {
             if ( dateString != null ) {
-                qp.setModified( new Date( dateString[0] ) );
+                for ( String ds : dateString ) {
+                    if ( ds != null && ds.length() > 0 ) {
+                        qp.setModified( new Date( ds ) );
+                        break;
+                    }
+                }
             }
         } catch ( ParseException e ) {
             String msg = Messages.getMessage( "ERROR_PARSING", dateString[0], e.getMessage() );
