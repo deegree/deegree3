@@ -295,7 +295,14 @@ public class OGCFrontController extends HttpServlet {
                 if ( queryString == null ) {
                     OWSException ex = new OWSException( "The request did not contain any parameters.",
                                                         "MissingParameterValue" );
-                    sendException( determineOWSByPathQuirk( request, response ), ex, response, null );
+                    OWS ows = null;
+                    try {
+                        ows = determineOWSByPathQuirk( request, response );
+                    } catch ( OWSException e ) {
+                        sendException( null, e, response, null );
+                        return;
+                    }
+                    sendException( ows, ex, response, null );
                     return;
                 }
 
@@ -489,7 +496,7 @@ public class OGCFrontController extends HttpServlet {
     }
 
     private OWS determineOWSByPath( HttpServletRequest request, HttpServletResponse response )
-                            throws ServletException {
+                            throws OWSException {
         OWS ows = null;
         String pathInfo = request.getPathInfo();
         if ( pathInfo != null ) {
@@ -499,14 +506,14 @@ public class OGCFrontController extends HttpServlet {
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
                 OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
-                sendException( null, e, response, null );
+                throw e;
             }
         }
         return ows;
     }
 
     private OWS determineOWSByPathQuirk( HttpServletRequest request, HttpServletResponse response )
-                            throws ServletException {
+                            throws OWSException {
         OWS ows = null;
         String pathInfo = request.getPathInfo();
         if ( pathInfo != null ) {
@@ -527,7 +534,8 @@ public class OGCFrontController extends HttpServlet {
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
                 OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
-                sendException( null, e, response, null );
+                // sendException( null, e, response, null );
+                throw e;
             }
         }
         return ows;
@@ -612,7 +620,13 @@ public class OGCFrontController extends HttpServlet {
                                      HttpServletResponse response, List<FileItem> multiParts, long entryTime )
                             throws ServletException, IOException {
 
-        OWS ows = determineOWSByPath( requestWrapper, response );
+        OWS ows = null;
+        try {
+            ows = determineOWSByPath( requestWrapper, response );
+        } catch ( OWSException e ) {
+            sendException( null, e, response, null );
+            return;
+        }
 
         LoggingHttpResponseWrapper logging = null;
 
@@ -770,7 +784,13 @@ public class OGCFrontController extends HttpServlet {
                                      HttpServletResponse response, List<FileItem> multiParts )
                             throws ServletException, IOException {
 
-        OWS ows = determineOWSByPath( requestWrapper, response );
+        OWS ows = null;
+        try {
+            ows = determineOWSByPath( requestWrapper, response );
+        } catch ( OWSException e ) {
+            sendException( null, e, response, null );
+            return;
+        }
 
         CredentialsProvider credentialsProvider = securityConfiguration == null ? null
                                                                                : securityConfiguration.getCredentialsProvider();
@@ -851,7 +871,13 @@ public class OGCFrontController extends HttpServlet {
                                       HttpServletResponse response, List<FileItem> multiParts )
                             throws ServletException, IOException {
 
-        OWS ows = determineOWSByPath( requestWrapper, response );
+        OWS ows = null;
+        try {
+            ows = determineOWSByPath( requestWrapper, response );
+        } catch ( OWSException e ) {
+            sendException( null, e, response, null );
+            return;
+        }
 
         // TODO integrate authentication handling (CredentialsProvider)
         LOG.debug( "Handling SOAP request." );
