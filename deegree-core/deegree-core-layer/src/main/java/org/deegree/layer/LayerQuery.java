@@ -76,6 +76,18 @@ public class LayerQuery {
 
     private final RenderingOptions options;
 
+    /**
+     * @param envelope
+     * @param width
+     * @param height
+     * @param styles
+     * @param filters
+     * @param parameters
+     * @param dimensions
+     * @param pixelSize
+     *            must be in meter, not mm
+     * @param options
+     */
     public LayerQuery( Envelope envelope, int width, int height, Map<String, StyleRef> styles,
                        Map<String, OperatorFilter> filters, Map<String, String> parameters,
                        Map<String, List<?>> dimensions, double pixelSize, RenderingOptions options ) {

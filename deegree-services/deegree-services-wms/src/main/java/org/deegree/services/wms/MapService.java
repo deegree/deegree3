@@ -781,7 +781,7 @@ public class MapService {
         }
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, gm.getFilters(),
-                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(),
+                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize() / 1000,
                                            gm.getRenderingOptions() );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {

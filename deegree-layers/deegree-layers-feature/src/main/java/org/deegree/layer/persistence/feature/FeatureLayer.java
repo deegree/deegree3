@@ -104,25 +104,38 @@ public class FeatureLayer extends AbstractLayer {
 
     private final QName featureType;
 
-    public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter ) {
+    private final Map<String, Style> styles;
+
+    private final Map<String, Style> legendStyles;
+
+    public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
+                         Map<String, Style> styles, Map<String, Style> legendStyles ) {
         super( md );
         this.featureStore = featureStore;
         this.featureType = featureType;
         this.filter = filter;
+        this.styles = styles;
+        this.legendStyles = legendStyles;
     }
 
     @Override
     public FeatureLayerData mapQuery( final LayerQuery query, List<String> headers )
                             throws OWSException {
+        StyleRef ref = query.getStyle( getMetadata().getName() );
+        if ( !ref.isResolved() ) {
+            ref.resolve( styles.get( ref.getName() ) );
+        }
+        Style style = ref.getStyle();
+
         OperatorFilter filter = this.filter;
-        StyleRef style = query.getStyle( getMetadata().getName() );
-        filter = Filters.and( filter, Styles.getStyleFilters( style.getStyle(), query.getScale() ) );
+        style = style.filter( query.getScale() );
+        filter = Filters.and( filter, Styles.getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
         filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
 
         final Envelope bbox = query.getEnvelope();
 
-        Set<Expression> exprs = new HashSet<Expression>( Styles.getGeometryExpressions( style.getStyle() ) );
+        Set<Expression> exprs = new HashSet<Expression>( Styles.getGeometryExpressions( style ) );
 
         final ValueReference geomProp;
 
@@ -132,7 +145,7 @@ public class FeatureLayer extends AbstractLayer {
             geomProp = null;
         }
 
-        QName ftName = featureType == null ? style.getStyle().getFeatureType() : featureType;
+        QName ftName = featureType == null ? style.getFeatureType() : featureType;
         if ( ftName != null && featureStore.getSchema().getFeatureType( ftName ) == null ) {
             LOG.warn( "FeatureType '" + ftName + "' is not known to the FeatureStore." );
             return null;
@@ -164,9 +177,8 @@ public class FeatureLayer extends AbstractLayer {
         }
 
         try {
-            Style s = style.getStyle().filter( query.getScale() );
             FeatureInputStream features = featureStore.query( queries.toArray( new Query[queries.size()] ) );
-            return new FeatureLayerData( features, maxFeatures, s );
+            return new FeatureLayerData( features, maxFeatures, style );
         } catch ( FilterEvaluationException e ) {
             LOG.warn( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

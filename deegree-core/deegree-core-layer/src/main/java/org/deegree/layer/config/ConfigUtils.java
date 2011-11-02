@@ -79,6 +79,8 @@ public class ConfigUtils {
         Map<String, Style> styleMap = new LinkedHashMap<String, Style>();
         Map<String, Style> legendStyleMap = new LinkedHashMap<String, Style>();
 
+        Style defaultStyle = null, defaultLegendStyle = null;
+
         StyleStoreManager mgr = workspace.getSubsystemManager( StyleStoreManager.class );
         for ( StyleRefType srt : styles ) {
             String id = srt.getStyleStoreId();
@@ -89,6 +91,10 @@ public class ConfigUtils {
             }
             if ( srt.getStyle() == null || srt.getStyle().isEmpty() ) {
                 for ( Style s : store.getAll( layerName ) ) {
+                    if ( defaultStyle == null ) {
+                        defaultStyle = s;
+                        defaultLegendStyle = s;
+                    }
                     styleMap.put( s.getName(), s );
                     legendStyleMap.put( s.getName(), s );
                 }
@@ -105,6 +111,9 @@ public class ConfigUtils {
                               new Object[] { layerRef, nameRef, id } );
                     continue;
                 }
+                if ( defaultStyle == null ) {
+                    defaultStyle = st;
+                }
                 styleMap.put( name, st );
                 if ( s.getLegendGraphic() != null ) {
                     LegendGraphic g = s.getLegendGraphic();
@@ -116,8 +125,15 @@ public class ConfigUtils {
                         st = store.getStyle( ls.getLayerNameRef(), ls.getStyleNameRef() );
                     }
                     legendStyleMap.put( name, st );
+                    if ( defaultLegendStyle == null ) {
+                        defaultLegendStyle = st;
+                    }
                 }
             }
+        }
+        if ( defaultStyle != null && !styleMap.containsKey( "default" ) ) {
+            styleMap.put( "default", defaultStyle );
+            legendStyleMap.put( "default", defaultLegendStyle );
         }
         return new Pair<Map<String, Style>, Map<String, Style>>( styleMap, legendStyleMap );
     }

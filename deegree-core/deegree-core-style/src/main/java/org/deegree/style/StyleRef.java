@@ -70,9 +70,13 @@ public class StyleRef {
     public String getName() {
         return name;
     }
-    
+
+    public void resolve( Style style ) {
+        this.style = style;
+    }
+
     @Override
-    public String toString(){
+    public String toString() {
         return name;
     }
 

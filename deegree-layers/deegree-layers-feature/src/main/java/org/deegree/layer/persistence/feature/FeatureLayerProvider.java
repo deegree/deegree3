@@ -44,11 +44,12 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
+import static org.deegree.layer.config.ConfigUtils.parseStyles;
 import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
-import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -59,6 +60,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.DoublePair;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.filter.OperatorFilter;
@@ -70,11 +72,8 @@ import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.SingleLayerStore;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
-import org.deegree.layer.persistence.base.jaxb.StyleRefType;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayer;
 import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.style.persistence.StyleStore;
-import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
@@ -139,19 +138,10 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
             }
 
-            // also extract styles
-            // StyleStoreManager smgr = workspace.getSubsystemManager( StyleStoreManager.class );
-            // for(StyleRefType s : lay.getStyleRef()){
-            // String id = s.getStyleStoreId();
-            // StyleStore store = smgr.get( id );
-            // if(store == null){
-            // LOG.warn("Style store with id '{}' was not available.", id);
-            // continue;
-            // }
-            // List<Style> style = store.getAll( lay.getName() );
-            // }
+            Pair<Map<String, Style>, Map<String, Style>> p = parseStyles( workspace, lay.getName(), lay.getStyleRef() );
 
-            Layer l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter );
+            Layer l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter, p.first,
+                                                                              p.second );
             return new SingleLayerStore( l );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse layer configuration file.", e );
