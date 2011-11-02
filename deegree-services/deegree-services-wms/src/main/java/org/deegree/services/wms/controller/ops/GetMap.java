@@ -48,9 +48,9 @@ import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.protocol.wms.ops.GetMapExtensions.Antialias.BOTH;
-import static org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.protocol.wms.ops.GetMapExtensions.Quality.NORMAL;
+import static org.deegree.rendering.r2d.context.RenderingOptions.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.RenderingOptions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.RenderingOptions.Quality.NORMAL;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.sld.SLDParser.parse;
 import static org.deegree.style.utils.Styles.getStyleFilters;
@@ -91,11 +91,11 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.dims.DimensionLexer;
 import org.deegree.layer.dims.parser;
 import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.wms.ops.GetMapExtensions;
-import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
-import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
-import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
 import org.deegree.rendering.r2d.RenderHelper;
+import org.deegree.rendering.r2d.context.RenderingOptions;
+import org.deegree.rendering.r2d.context.RenderingOptions.Antialias;
+import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
+import org.deegree.rendering.r2d.context.RenderingOptions.Quality;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.StyleRegistry;
 import org.deegree.services.wms.controller.WMSController111;
@@ -128,7 +128,7 @@ public class GetMap {
 
     private LinkedList<Style> styles = new LinkedList<Style>();
 
-    private GetMapExtensions extensions = new GetMapExtensions();
+    private RenderingOptions options = new RenderingOptions();
 
     private HashMap<String, Filter> filters = new HashMap<String, Filter>();
 
@@ -378,11 +378,11 @@ public class GetMap {
     }
 
     private void handleVSPs( MapService service, Map<String, String> map ) {
-        handleEnumVSP( Quality.class, extensions.getQualities(), NORMAL, map.get( "QUALITY" ),
+        handleEnumVSP( Quality.class, options.getQualities(), NORMAL, map.get( "QUALITY" ),
                        service.getExtensions().getQualities() );
-        handleEnumVSP( Interpolation.class, extensions.getInterpolations(), NEARESTNEIGHBOR,
-                       map.get( "INTERPOLATION" ), service.getExtensions().getInterpolations() );
-        handleEnumVSP( Antialias.class, extensions.getAntialiases(), BOTH, map.get( "ANTIALIAS" ),
+        handleEnumVSP( Interpolation.class, options.getInterpolations(), NEARESTNEIGHBOR, map.get( "INTERPOLATION" ),
+                       service.getExtensions().getInterpolations() );
+        handleEnumVSP( Antialias.class, options.getAntialiases(), BOTH, map.get( "ANTIALIAS" ),
                        service.getExtensions().getAntialiases() );
         String maxFeatures = map.get( "MAX_FEATURES" );
         if ( maxFeatures == null ) {
@@ -392,7 +392,7 @@ public class GetMap {
                     max = service.getGlobalMaxFeatures();
                     LOG.debug( "Using global max features setting of {}.", max );
                 }
-                extensions.getMaxFeatures().put( l.getName(), max );
+                options.getMaxFeatures().put( l.getName(), max );
             }
         } else {
             String[] mfs = maxFeatures.split( "," );
@@ -403,10 +403,10 @@ public class GetMap {
                     Integer def = defaults.get( cur );
                     try {
                         Integer val = Integer.valueOf( mfs[i] );
-                        extensions.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
+                        options.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
                     } catch ( NumberFormatException e ) {
                         LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                        extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
+                        options.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                     }
                 }
             } else {
@@ -416,13 +416,13 @@ public class GetMap {
                     if ( mfs.length <= i ) {
                         try {
                             Integer val = Integer.valueOf( mfs[i] );
-                            extensions.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
+                            options.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
                         } catch ( NumberFormatException e ) {
                             LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                            extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
+                            options.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                         }
                     } else {
-                        extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
+                        options.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
                     }
                 }
             }
@@ -788,8 +788,8 @@ public class GetMap {
     /**
      * @return the extension parameter values for this request
      */
-    public GetMapExtensions getExtensions() {
-        return extensions;
+    public RenderingOptions getRenderingOptions() {
+        return options;
     }
 
     /**

@@ -36,12 +36,8 @@ package org.deegree.layer;
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-import java.util.Date;
-import java.util.HashMap;
-
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
-import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
 
 /**
@@ -54,10 +50,6 @@ import org.deegree.layer.metadata.LayerMetadata;
  */
 @LoggingNotes(warn = "logs information about dimension handling")
 public abstract class AbstractLayer implements Layer {
-
-    Dimension<Date> time;
-
-    HashMap<String, Dimension<Object>> dimensions = new HashMap<String, Dimension<Object>>();
 
     private LayerMetadata metadata;
 

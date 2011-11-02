@@ -7,6 +7,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -138,7 +139,7 @@ public class RemoteWMSLayer extends AbstractLayer {
     }
 
     @Override
-    public RemoteWMSLayerData mapQuery( LayerQuery query ) {
+    public RemoteWMSLayerData mapQuery( LayerQuery query, List<String> headers ) {
         try {
             Map<String, String> extraParams = new HashMap<String, String>();
             handleParameters( extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap );
@@ -161,7 +162,7 @@ public class RemoteWMSLayer extends AbstractLayer {
     }
 
     @Override
-    public RemoteWMSLayerData infoQuery( LayerQuery query ) {
+    public RemoteWMSLayerData infoQuery( LayerQuery query, List<String> headers ) {
         Map<String, String> extraParams = new HashMap<String, String>();
         handleParameters( extraParams, query.getParameters(), defaultParametersGetFeatureInfo,
                           hardParametersGetFeatureInfo );

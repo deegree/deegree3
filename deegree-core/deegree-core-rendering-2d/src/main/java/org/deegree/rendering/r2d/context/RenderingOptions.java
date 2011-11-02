@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wms.ops;
+package org.deegree.rendering.r2d.context;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ import java.util.Map;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetMapExtensions {
+public class RenderingOptions {
 
     private Map<String, Quality> qualities;
 
@@ -55,14 +55,14 @@ public class GetMapExtensions {
 
     private Map<String, Integer> maxFeatures;
 
-    public GetMapExtensions() {
+    public RenderingOptions() {
         this.qualities = new HashMap<String, Quality>();
         this.interpolations = new HashMap<String, Interpolation>();
         this.antialiases = new HashMap<String, Antialias>();
         this.maxFeatures = new HashMap<String, Integer>();
     }
 
-    public GetMapExtensions( Map<String, Quality> qualities, Map<String, Interpolation> interpolations,
+    public RenderingOptions( Map<String, Quality> qualities, Map<String, Interpolation> interpolations,
                              Map<String, Antialias> antialiases, Map<String, Integer> maxFeatures ) {
         this.qualities = qualities;
         this.interpolations = interpolations;

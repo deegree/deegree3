@@ -37,11 +37,14 @@ package org.deegree.layer;
 
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
+import java.util.List;
 import java.util.Map;
 
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
+import org.deegree.protocol.oldwms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
+import org.deegree.rendering.r2d.context.RenderingOptions;
 import org.deegree.style.se.unevaluated.Style;
 
 /**
@@ -67,19 +70,30 @@ public class LayerQuery {
 
     private double scale;
 
+    private final Map<String, List<?>> dimensions;
+
+    private double resolution;
+
+    private final RenderingOptions options;
+
     public LayerQuery( Envelope envelope, int width, int height, Map<String, Style> styles,
-                       Map<String, OperatorFilter> filters, Map<String, String> parameters, double pixelSize ) {
+                       Map<String, OperatorFilter> filters, Map<String, String> parameters,
+                       Map<String, List<?>> dimensions, double pixelSize, RenderingOptions options ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
         this.styles = styles;
         this.filters = filters;
         this.parameters = parameters;
+        this.dimensions = dimensions;
+        this.options = options;
         this.scale = RenderHelper.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(), pixelSize );
+        this.resolution = Utils.calcResolution( envelope, width, height );
     }
 
     public LayerQuery( Envelope envelope, int width, int height, int x, int y, int featureCount,
-                       Map<String, OperatorFilter> filters, Map<String, Style> styles, Map<String, String> parameters ) {
+                       Map<String, OperatorFilter> filters, Map<String, Style> styles, Map<String, String> parameters,
+                       Map<String, List<?>> dimensions, RenderingOptions options ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
@@ -89,8 +103,11 @@ public class LayerQuery {
         this.filters = filters;
         this.styles = styles;
         this.parameters = parameters;
+        this.dimensions = dimensions;
+        this.options = options;
         this.scale = RenderHelper.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(),
                                                    DEFAULT_PIXEL_SIZE );
+        this.resolution = Utils.calcResolution( envelope, width, height );
     }
 
     public Envelope getEnvelope() {
@@ -125,12 +142,24 @@ public class LayerQuery {
         return styles.get( name );
     }
 
+    public Map<String, List<?>> getDimensions() {
+        return dimensions;
+    }
+
     public int getFeatureCount() {
         return featureCount;
     }
 
     public double getScale() {
         return scale;
+    }
+
+    public double getResolution() {
+        return resolution;
+    }
+
+    public RenderingOptions getRenderingOptions() {
+        return options;
     }
 
 }

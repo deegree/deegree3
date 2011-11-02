@@ -45,8 +45,10 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
 import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -68,14 +70,21 @@ import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.SingleLayerStore;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
+import org.deegree.layer.persistence.base.jaxb.StyleRefType;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayer;
 import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.style.persistence.StyleStore;
+import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.se.unevaluated.Style;
+import org.slf4j.Logger;
 
 /**
  * @author stranger
  * 
  */
 public class FeatureLayerProvider implements LayerStoreProvider {
+
+    private static final Logger LOG = getLogger( FeatureLayerProvider.class );
 
     private static final URL SCHEMA_URL = FeatureLayerProvider.class.getResource( "/META-INF/schemas/layers/feature/3.1.0/feature.xsd" );
 
@@ -95,12 +104,15 @@ public class FeatureLayerProvider implements LayerStoreProvider {
 
             QName featureType = lay.getFeatureType();
 
+            OperatorFilter filter = null;
             XMLInputFactory fac = XMLInputFactory.newInstance();
-            XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( lay.getFilter() ) );
-            nextElement( reader );
-            nextElement( reader );
-            OperatorFilter filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
-            reader.close();
+            if ( lay.getFilter() != null ) {
+                XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( lay.getFilter() ) );
+                nextElement( reader );
+                nextElement( reader );
+                filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
+                reader.close();
+            }
 
             FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
             String fsRef = lay.getFeatureStoreId();
@@ -127,7 +139,19 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
             }
 
-            Layer l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter, null, null );
+            // also extract styles
+            // StyleStoreManager smgr = workspace.getSubsystemManager( StyleStoreManager.class );
+            // for(StyleRefType s : lay.getStyleRef()){
+            // String id = s.getStyleStoreId();
+            // StyleStore store = smgr.get( id );
+            // if(store == null){
+            // LOG.warn("Style store with id '{}' was not available.", id);
+            // continue;
+            // }
+            // List<Style> style = store.getAll( lay.getName() );
+            // }
+
+            Layer l = new org.deegree.layer.persistence.feature.FeatureLayer( md, fs, featureType, filter );
             return new SingleLayerStore( l );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse layer configuration file.", e );

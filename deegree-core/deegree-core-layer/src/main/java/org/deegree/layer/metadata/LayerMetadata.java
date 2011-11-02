@@ -38,8 +38,11 @@ package org.deegree.layer.metadata;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 
+import java.util.HashMap;
+
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.layer.dims.Dimension;
 import org.deegree.protocol.ows.metadata.Description;
 
 /**
@@ -62,6 +65,8 @@ public class LayerMetadata {
     private boolean queryable = true;
 
     private int cascaded;
+
+    private HashMap<String, Dimension<?>> dimensions = new HashMap<String, Dimension<?>>();
 
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
@@ -185,6 +190,21 @@ public class LayerMetadata {
                 }
             }
         }
+    }
+
+    /**
+     * @return the dimensions
+     */
+    public HashMap<String, Dimension<?>> getDimensions() {
+        return dimensions;
+    }
+
+    /**
+     * @param dimensions
+     *            the dimensions to set
+     */
+    public void setDimensions( HashMap<String, Dimension<?>> dimensions ) {
+        this.dimensions = dimensions;
     }
 
 }

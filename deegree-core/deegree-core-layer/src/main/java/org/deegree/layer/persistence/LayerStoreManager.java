@@ -45,6 +45,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.style.persistence.StyleStoreManager;
 
 /**
  * @author stranger
@@ -72,7 +73,7 @@ public class LayerStoreManager extends AbstractResourceManager<LayerStore> {
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
+        return new Class[] { StyleStoreManager.class };
     }
 
 }

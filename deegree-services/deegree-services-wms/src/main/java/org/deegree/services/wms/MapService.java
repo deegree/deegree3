@@ -58,9 +58,9 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.protocol.wms.ops.GetMapExtensions.Antialias.BOTH;
-import static org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.protocol.wms.ops.GetMapExtensions.Quality.NORMAL;
+import static org.deegree.rendering.r2d.context.RenderingOptions.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.RenderingOptions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.RenderingOptions.Quality.NORMAL;
 import static org.deegree.services.wms.model.layers.Layer.render;
 import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -102,18 +102,20 @@ import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
-import org.deegree.protocol.wms.ops.GetMapExtensions;
-import org.deegree.protocol.wms.ops.GetMapExtensions.Antialias;
-import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
-import org.deegree.protocol.wms.ops.GetMapExtensions.Quality;
 import org.deegree.protocol.wms.ops.LayerRef;
 import org.deegree.protocol.wms.ops.StyleRef;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.rendering.r2d.context.RenderingOptions;
+import org.deegree.rendering.r2d.context.RenderingOptions.Antialias;
+import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
+import org.deegree.rendering.r2d.context.RenderingOptions.Quality;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
@@ -169,7 +171,7 @@ public class MapService {
 
     private HashMap<Style, HashMap<String, BufferedImage>> legends = new HashMap<Style, HashMap<String, BufferedImage>>();
 
-    private GetMapExtensions extensions = new GetMapExtensions();
+    private RenderingOptions extensions = new RenderingOptions();
 
     private HashMap<Layer, Integer> defaultFeatureInfoRadius = new HashMap<Layer, Integer>();
 
@@ -673,9 +675,9 @@ public class MapService {
                             throws MissingDimensionValue, InvalidDimensionValue {
         Iterator<Layer> layers = gm.getLayers().iterator();
         Iterator<Style> styles = gm.getStyles().iterator();
-        Map<String, Quality> qualities = gm.getExtensions().getQualities();
-        Map<String, Interpolation> interpolations = gm.getExtensions().getInterpolations();
-        Map<String, Antialias> antialiases = gm.getExtensions().getAntialiases();
+        Map<String, Quality> qualities = gm.getRenderingOptions().getQualities();
+        Map<String, Interpolation> interpolations = gm.getRenderingOptions().getInterpolations();
+        Map<String, Antialias> antialiases = gm.getRenderingOptions().getAntialiases();
 
         if ( reduce( true, map( gm.getLayers(), CollectionUtils.<Layer> getInstanceofMapper( FeatureLayer.class ) ),
                      AND ) ) {
@@ -767,7 +769,8 @@ public class MapService {
         }
     }
 
-    public List<LayerData> query( org.deegree.protocol.wms.ops.GetMap gm ) {
+    public List<LayerData> query( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers )
+                            throws OWSException {
         Map<String, Style> styles = new HashMap<String, Style>();
         Iterator<StyleRef> iter = gm.getStyles().iterator();
         for ( LayerRef lr : gm.getLayers() ) {
@@ -778,22 +781,27 @@ public class MapService {
         }
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, gm.getFilters(),
-                                           gm.getParameterMap(), gm.getPixelSize() );
+                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(),
+                                           gm.getRenderingOptions() );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                list.add( l.mapQuery( query ) );
+                list.add( l.mapQuery( query, headers ) );
             }
         }
         return list;
     }
 
-    public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> themes ) {
+    public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> themes,
+                                          List<String> headers )
+                            throws OWSException {
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
-                                           gfi.getFeatureCount(), null, null, gfi.getParameterMap() );
+                                           gfi.getFeatureCount(), new HashMap<String, OperatorFilter>(),
+                                           new HashMap<String, Style>(), gfi.getParameterMap(),
+                                           new HashMap<String, List<?>>(), new RenderingOptions() );
         for ( String n : themes ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
-                list.add( l.infoQuery( query ) );
+                list.add( l.infoQuery( query, headers ) );
             }
         }
 
@@ -992,7 +1000,7 @@ public class MapService {
     /**
      * @return the extensions object with default extension parameter settings
      */
-    public GetMapExtensions getExtensions() {
+    public RenderingOptions getExtensions() {
         return extensions;
     }
 

@@ -95,11 +95,11 @@ import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
+import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
-import org.deegree.protocol.wms.ops.GetMapExtensions.Interpolation;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.RasterStyling;
 import org.deegree.style.styling.Styling;
@@ -257,7 +257,7 @@ public class RasterLayer extends Layer {
             Interpolation fromRequest = null;
             Layer parent = this;
             while ( fromRequest == null ) {
-                fromRequest = gm.getExtensions().getInterpolations().get( parent.getName() );
+                fromRequest = gm.getRenderingOptions().getInterpolations().get( parent.getName() );
                 parent = getParent();
             }
             switch ( fromRequest ) {

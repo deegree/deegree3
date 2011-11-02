@@ -36,7 +36,10 @@
 
 package org.deegree.layer;
 
+import java.util.List;
+
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * <code>Layer</code>
@@ -50,8 +53,10 @@ public interface Layer {
 
     LayerMetadata getMetadata();
 
-    LayerData mapQuery( LayerQuery query );
+    LayerData mapQuery( LayerQuery query, List<String> headers )
+                            throws OWSException;
 
-    LayerData infoQuery( LayerQuery query );
+    LayerData infoQuery( LayerQuery query, List<String> headers )
+                            throws OWSException;
 
 }

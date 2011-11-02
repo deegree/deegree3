@@ -592,6 +592,7 @@ public class WMSController extends AbstractOWS {
         ICRS crs;
         Map<String, String> nsBindings = new HashMap<String, String>();
         if ( service.isNewStyle() ) {
+            LinkedList<String> headers = new LinkedList<String>();
             org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map,
                                                                                                               version );
             crs = fi.getCoordinateSystem();
@@ -605,8 +606,8 @@ public class WMSController extends AbstractOWS {
             info.setFeatureCount( fi.getFeatureCount() );
             info.setX( fi.getX() );
             info.setY( fi.getY() );
-            pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, fi.getQueryLayers() ),
-                                                                    new LinkedList<String>() );
+            pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, fi.getQueryLayers(),
+                                                                                         headers ), headers );
         } else {
             GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
                                                        : securityManager.preprocess( new GetFeatureInfo( map, version,
@@ -766,11 +767,13 @@ public class WMSController extends AbstractOWS {
                                                     gm2.getPixelSize(), gm2.getFilters(), map );
             RenderContext ctx = new DefaultRenderContext( info );
             ctx.setOutput( response.getOutputStream() );
-            List<LayerData> list = service.query( gm2 );
+            LinkedList<String> headers = new LinkedList<String>();
+            List<LayerData> list = service.query( gm2, headers );
             for ( LayerData d : list ) {
                 d.render( ctx );
             }
             ctx.close();
+            addHeaders( response, headers );
         } else {
             GetMap gm = new GetMap( map, version, service );
             checkGetMap( version, gm );
