@@ -69,6 +69,8 @@ public class CSWProvider implements OWSProvider {
     // pre-initialized to avoid NPE in WebServicesConfiguration if no CSW is configured
     private ServiceProfile profile = new CommonCSWProfile();
 
+    private CSWController cswController;
+
     private DeegreeWorkspace ws;
 
     @Override
@@ -83,29 +85,16 @@ public class CSWProvider implements OWSProvider {
 
     @Override
     public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
+        if ( cswController != null && cswController.getStore() != null ) {
+            this.profile = ServiceProfileManager.createProfile( cswController.getStore() );
+        }
         return profile.getImplementationMetadata();
     }
 
     @Override
     public OWS create( URL configURL ) {
-        MetadataStoreManager mgr = ws.getSubsystemManager( MetadataStoreManager.class );
-        if ( mgr == null )
-            throw new IllegalArgumentException( "Could not find a MetadataStoreManager!" );
-        List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
-        for ( ResourceState<MetadataStore<?>> state : mgr.getStates() ) {
-            if ( state.getResource() != null ) {
-                availableStores.add( state.getResource() );
-            }
-        }
-        if ( availableStores.size() == 0 )
-            throw new IllegalArgumentException(
-                                                "There is no MetadataStore configured, ensure that exactly one store is available!" );
-        if ( availableStores.size() > 1 )
-            throw new IllegalArgumentException( "Number of MetadataStores must be one: configured are "
-                                                + availableStores.size() + " stores!" );
-        MetadataStore<?> store = availableStores.get( 0 );
-        profile = ServiceProfileManager.createProfile( store );
-        return new CSWController( configURL, getImplementationMetadata() );
+        cswController = new CSWController( configURL, getImplementationMetadata() );
+        return cswController;
     }
 
     @Override

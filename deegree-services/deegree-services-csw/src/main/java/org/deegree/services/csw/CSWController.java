@@ -185,23 +185,35 @@ public class CSWController extends AbstractOWS {
         super.init( serviceMetadata, mainConf, md, controllerConf );
         DeegreeCSW jaxbConfig = (DeegreeCSW) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
-        LOG.info( "Initializing/looking up configured record stores." );
         MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
         if ( mgr == null )
             throw new IllegalArgumentException( "Could not find a MetadataStoreManager!" );
-        List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
-        for ( ResourceState<MetadataStore<?>> state : mgr.getStates() ) {
-            if ( state.getResource() != null ) {
-                availableStores.add( state.getResource() );
+
+        String metadataStoreId = jaxbConfig.getMetadataStoreId();
+        if ( metadataStoreId == null ) {
+            LOG.info( "Metadata store id is not configured. Initializing/looking up configured record stores." );
+            List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
+            for ( ResourceState<MetadataStore<?>> state : mgr.getStates() ) {
+                if ( state.getResource() != null ) {
+                    availableStores.add( state.getResource() );
+                }
             }
+            if ( availableStores.size() == 0 )
+                throw new IllegalArgumentException(
+                                                    "There is no MetadataStore configured, ensure that exactly one store is available!" );
+            if ( availableStores.size() > 1 )
+                throw new IllegalArgumentException( "-----Number of MetadataStores must be one: configured are "
+                                                    + availableStores.size() + " stores!" );
+            store = availableStores.get( 0 );
+        } else {
+            ResourceState<MetadataStore> state = mgr.getState( metadataStoreId );
+            if ( state == null || state.getResource() == null ) {
+                String msg = "Cannot add metadata store '" + metadataStoreId
+                             + "': no such metadata store has been configured.";
+                throw new ResourceInitException( msg );
+            }
+            store = state.getResource();
         }
-        if ( availableStores.size() == 0 )
-            throw new IllegalArgumentException(
-                                                "There is no MetadataStore configured, ensure that exactly one store is available!" );
-        if ( availableStores.size() > 1 )
-            throw new IllegalArgumentException( "Number of MetadataStores must be one: configured are "
-                                                + availableStores.size() + " stores!" );
-        store = availableStores.get( 0 );
         profile = ServiceProfileManager.createProfile( store );
 
         if ( jaxbConfig.getSupportedVersions() == null ) {
@@ -374,38 +386,32 @@ public class CSWController extends AbstractOWS {
             doXML( soapDoc.getBody().getFirstElement(), response );
         } catch ( XMLStreamException e ) {
             LOG.debug( e.getMessage(), e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             NO_APPLICABLE_CODE ),
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e, NO_APPLICABLE_CODE ),
                                request, version );
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
             sendSoapException( soapDoc, factory, response, e, request, version );
         } catch ( IOException e ) {
             LOG.debug( e.getMessage(), e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             NO_APPLICABLE_CODE ),
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e, NO_APPLICABLE_CODE ),
                                request, version );
         } catch ( MissingParameterException e ) {
             LOG.debug( e.getMessage(), e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             MISSING_PARAMETER_VALUE ),
-                               request, version );
+            sendSoapException( soapDoc, factory, response,
+                               new OWSException( e.getMessage(), e, MISSING_PARAMETER_VALUE ), request, version );
         } catch ( InvalidParameterValueException e ) {
             LOG.debug( e.getMessage(), e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             INVALID_PARAMETER_VALUE ),
-                               request, version );
+            sendSoapException( soapDoc, factory, response,
+                               new OWSException( e.getMessage(), e, INVALID_PARAMETER_VALUE ), request, version );
         } catch ( FailedAuthentication e ) {
             LOG.debug( e.getMessage(), e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e,
-                                                                             NO_APPLICABLE_CODE ),
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), e, NO_APPLICABLE_CODE ),
                                request, version );
         } catch ( Throwable t ) {
             String msg = "An unexpected error occured: " + t.getMessage();
             LOG.debug( msg, t );
-            sendSoapException( soapDoc, factory, response, new OWSException( msg, t,
-                                                                             NO_APPLICABLE_CODE ),
-                               request, version );
+            sendSoapException( soapDoc, factory, response, new OWSException( msg, t, NO_APPLICABLE_CODE ), request,
+                               version );
         }
     }
 
@@ -625,5 +631,9 @@ public class CSWController extends AbstractOWS {
         }
         sendSOAPException( soapDoc.getHeader(), factory, response, e, serializer, null, null, request.getServerName(),
                            request.getCharacterEncoding() );
+    }
+
+    MetadataStore<?> getStore() {
+        return store;
     }
 }
