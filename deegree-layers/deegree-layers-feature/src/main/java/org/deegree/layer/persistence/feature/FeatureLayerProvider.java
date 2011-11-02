@@ -49,6 +49,8 @@ import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -61,6 +63,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.filter.OperatorFilter;
@@ -131,6 +134,11 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 } else {
                     smd.setEnvelope( getCombinedEnvelope( fs ) );
                 }
+            }
+            if ( smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty() ) {
+                List<ICRS> crs = new ArrayList<ICRS>();
+                crs.add( smd.getEnvelope().getCoordinateSystem() );
+                smd.setCoordinateSystems( crs );
             }
 
             ScaleDenominatorsType denoms = lay.getScaleDenominators();
