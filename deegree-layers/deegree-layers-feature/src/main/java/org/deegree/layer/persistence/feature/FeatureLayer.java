@@ -82,6 +82,7 @@ import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
 import org.slf4j.Logger;
@@ -114,14 +115,14 @@ public class FeatureLayer extends AbstractLayer {
     public FeatureLayerData mapQuery( final LayerQuery query, List<String> headers )
                             throws OWSException {
         OperatorFilter filter = this.filter;
-        Style style = query.getStyle( getMetadata().getName() );
-        filter = Filters.and( filter, Styles.getStyleFilters( style, query.getScale() ) );
+        StyleRef style = query.getStyle( getMetadata().getName() );
+        filter = Filters.and( filter, Styles.getStyleFilters( style.getStyle(), query.getScale() ) );
         filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
         filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
 
         final Envelope bbox = query.getEnvelope();
 
-        Set<Expression> exprs = new HashSet<Expression>( Styles.getGeometryExpressions( style ) );
+        Set<Expression> exprs = new HashSet<Expression>( Styles.getGeometryExpressions( style.getStyle() ) );
 
         final ValueReference geomProp;
 
@@ -131,7 +132,7 @@ public class FeatureLayer extends AbstractLayer {
             geomProp = null;
         }
 
-        QName ftName = featureType == null ? style.getFeatureType() : featureType;
+        QName ftName = featureType == null ? style.getStyle().getFeatureType() : featureType;
         if ( ftName != null && featureStore.getSchema().getFeatureType( ftName ) == null ) {
             LOG.warn( "FeatureType '" + ftName + "' is not known to the FeatureStore." );
             return null;
@@ -163,7 +164,7 @@ public class FeatureLayer extends AbstractLayer {
         }
 
         try {
-            Style s = style.filter( query.getScale() );
+            Style s = style.getStyle().filter( query.getScale() );
             FeatureInputStream features = featureStore.query( queries.toArray( new Query[queries.size()] ) );
             return new FeatureLayerData( features, maxFeatures, s );
         } catch ( FilterEvaluationException e ) {
