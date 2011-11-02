@@ -116,14 +116,14 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.layer.LayerRef;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
-import org.deegree.protocol.wms.ops.LayerRef;
-import org.deegree.protocol.wms.ops.StyleRef;
 import org.deegree.rendering.r2d.RenderHelper;
+import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
 
 /**

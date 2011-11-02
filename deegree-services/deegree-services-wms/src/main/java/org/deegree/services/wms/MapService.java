@@ -105,11 +105,10 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
+import org.deegree.layer.LayerRef;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
-import org.deegree.protocol.wms.ops.LayerRef;
-import org.deegree.protocol.wms.ops.StyleRef;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.context.RenderingOptions;
@@ -135,6 +134,7 @@ import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.model.layers.RasterLayer;
 import org.deegree.services.wms.model.layers.RemoteWMSLayer;
+import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.ImageUtils;
 import org.deegree.theme.Theme;
@@ -771,12 +771,12 @@ public class MapService {
 
     public List<LayerData> query( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers )
                             throws OWSException {
-        Map<String, Style> styles = new HashMap<String, Style>();
+        Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
         Iterator<StyleRef> iter = gm.getStyles().iterator();
         for ( LayerRef lr : gm.getLayers() ) {
-            String styleName = iter.next().getName();
+            StyleRef style = iter.next();
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                styles.put( l.getMetadata().getName(), registry.get( l.getMetadata().getName(), styleName ) );
+                styles.put( l.getMetadata().getName(), style );
             }
         }
         List<LayerData> list = new ArrayList<LayerData>();
@@ -797,7 +797,7 @@ public class MapService {
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
                                            gfi.getFeatureCount(), new HashMap<String, OperatorFilter>(),
-                                           new HashMap<String, Style>(), gfi.getParameterMap(),
+                                           new HashMap<String, StyleRef>(), gfi.getParameterMap(),
                                            new HashMap<String, List<?>>(), new RenderingOptions() );
         for ( String n : themes ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {

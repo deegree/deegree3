@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wms.ops;
+package org.deegree.style;
 
 import org.deegree.style.se.unevaluated.Style;
 

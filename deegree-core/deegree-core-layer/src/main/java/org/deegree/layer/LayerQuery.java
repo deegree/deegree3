@@ -45,7 +45,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.protocol.oldwms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.RenderingOptions;
-import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.StyleRef;
 
 /**
  * 
@@ -64,7 +64,7 @@ public class LayerQuery {
 
     private int x, y, featureCount;
 
-    private final Map<String, Style> styles;
+    private final Map<String, StyleRef> styles;
 
     private final Map<String, OperatorFilter> filters;
 
@@ -76,7 +76,7 @@ public class LayerQuery {
 
     private final RenderingOptions options;
 
-    public LayerQuery( Envelope envelope, int width, int height, Map<String, Style> styles,
+    public LayerQuery( Envelope envelope, int width, int height, Map<String, StyleRef> styles,
                        Map<String, OperatorFilter> filters, Map<String, String> parameters,
                        Map<String, List<?>> dimensions, double pixelSize, RenderingOptions options ) {
         this.envelope = envelope;
@@ -92,8 +92,8 @@ public class LayerQuery {
     }
 
     public LayerQuery( Envelope envelope, int width, int height, int x, int y, int featureCount,
-                       Map<String, OperatorFilter> filters, Map<String, Style> styles, Map<String, String> parameters,
-                       Map<String, List<?>> dimensions, RenderingOptions options ) {
+                       Map<String, OperatorFilter> filters, Map<String, StyleRef> styles,
+                       Map<String, String> parameters, Map<String, List<?>> dimensions, RenderingOptions options ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
@@ -138,7 +138,7 @@ public class LayerQuery {
         return filters.get( name );
     }
 
-    public Style getStyle( String name ) {
+    public StyleRef getStyle( String name ) {
         return styles.get( name );
     }
 
