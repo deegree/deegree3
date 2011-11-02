@@ -112,6 +112,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                     identifierList.add( rec.getIdentifier() );
                 }
             } catch ( XMLStreamException e ) {
+                e.printStackTrace();
                 throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
             }
         }

@@ -166,7 +166,10 @@ public class CoupledDataInspector implements RecordInspector<ISORecord> {
         List<String> operatesOnUuidList = new ArrayList<String>();
         List<String> resourceIDs = new ArrayList<String>();
         for ( OMElement operatesOnElem : operatesOnElemList ) {
-            operatesOnUuidList.add( operatesOnElem.getAttributeValue( new QName( "uuidref" ) ).trim() );
+            String uuid = operatesOnElem.getAttributeValue( new QName( "uuidref" ) );
+            if ( uuid != null ) {
+                operatesOnUuidList.add( uuid.trim() );
+            }
         }
 
         List<OMElement> operatesOnCoupledResources = a.getElements( identificationInfo,

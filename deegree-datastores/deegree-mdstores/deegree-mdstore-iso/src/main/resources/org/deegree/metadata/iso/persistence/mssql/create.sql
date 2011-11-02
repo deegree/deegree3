@@ -43,7 +43,7 @@ CREATE TABLE IDXTB_Constraint (
 	id integer NOT NULL,
 	fk_main integer NOT NULL,
 	ConditionAppToAcc nvarchar(max),
-	AccessConstraints varchar(25),
+	AccessConstraints varchar(30),
 	OtherConstraints nvarchar(max),
 	Classification varchar(20)
 );
