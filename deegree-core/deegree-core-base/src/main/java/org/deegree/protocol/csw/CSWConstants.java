@@ -60,6 +60,7 @@ public final class CSWConstants {
      * */
     public static final String CSW_202_NS = "http://www.opengis.net/cat/csw/2.0.2";
 
+    public static final String CSW_202_PREFIX = "csw";
     /**
      * ISO application profile <br>
      * "http://www.isotc211.org/2005/gmd"
