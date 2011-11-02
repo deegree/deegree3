@@ -176,14 +176,6 @@
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
 
-  <licenses>
-    <license>
-      <name>GNU Lesser General Public License (LGPL), version 2.1</name>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
   <modules>
     <module>deegree-client</module>
     <module>deegree-core</module>
@@ -233,11 +225,11 @@
               </reportPlugins>
             </configuration>
             <dependencies>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-ssh</artifactId>
-      <version>1.0</version>
-    </dependency>
+		      <dependency>
+		        <groupId>org.apache.maven.wagon</groupId>
+		        <artifactId>wagon-ssh</artifactId>
+		        <version>1.0</version>
+		    </dependency>
             </dependencies>
           </plugin>
         </plugins>
@@ -260,4 +252,59 @@
     </profile>
   </profiles>
 
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 2.1</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <issueManagement>
+    <system>Trac</system>
+    <url>http://tracker.deegree.org/deegree-services/</url>
+  </issueManagement>
+  
+  <developers>
+    <developer>
+      <name>Markus Schneider</name>
+      <email>schneider@lat-lon.de</email>
+    </developer>
+    <developer>
+      <name>Andreas Schmitz</name>
+      <email>schmitz@lat-lon.de</email>
+    </developer>
+    <developer>
+      <name>Lyn Goltz</name>
+      <email>buesching@lat-lon.de</email>
+    </developer>
+  </developers>
+  
+  <mailingLists>
+    <mailingList>
+      <name>deegree users mailing list</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/deegree-users</subscribe>
+      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/deegree-users</unsubscribe>
+      <post>deegree-users@lists.sourceforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=deegree-users</archive>
+    </mailingList>
+    <mailingList>
+      <name>deegree developers mailing list</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/deegree-devel</subscribe>
+      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/deegree-devel</unsubscribe>
+      <post>deegree-devel@lists.sourceforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=deegree-devel</archive>
+    </mailingList>
+    <mailingList>
+      <name>deegree announce mailing list</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/deegree-announce</subscribe>
+      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/deegree-announce</unsubscribe>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=deegree-announce</archive>
+    </mailingList>
+  </mailingLists>
+  
+  <description>
+    deegree 3 is the new generation of the deegree Java framework for geospatial applications and OGC service implementations.
+  </description>
+  
 </project>
