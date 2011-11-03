@@ -51,7 +51,6 @@ import org.deegree.protocol.ows.metadata.DatasetMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.services.OWS;
-import org.w3c.dom.Element;
 
 /**
  * Implementations provide metadata that {@link OWS} instances can use in their <code>GetCapabilities</code> responses.
