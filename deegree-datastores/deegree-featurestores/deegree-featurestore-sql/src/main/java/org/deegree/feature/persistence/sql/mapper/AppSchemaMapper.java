@@ -477,8 +477,10 @@ public class AppSchemaMapper {
         List<String> fromColumns = Collections.singletonList( from.getIdColumn() );
         List<String> toColumns = Collections.singletonList( "parentfk" );
         List<String> orderColumns = Collections.singletonList( "num" );
-        TableJoin join = new TableJoin( fromTable, toTable, fromColumns, toColumns, orderColumns, true, "id",
-                                        new AutoIDGenerator() );
+        Map<SQLIdentifier, IDGenerator> keyColumnToIdGenerator = new HashMap<SQLIdentifier, IDGenerator>();
+        keyColumnToIdGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
+        TableJoin join = new TableJoin( fromTable, toTable, fromColumns, toColumns, orderColumns, true,
+                                        keyColumnToIdGenerator );
         return Collections.singletonList( join );
     }
 
@@ -491,8 +493,10 @@ public class AppSchemaMapper {
         TableName toTable = new TableName( "?" );
         List<String> fromColumns = Collections.singletonList( from.getColumn() );
         List<String> toColumns = Collections.singletonList( "attr_gml_id" );
-        ftJoin = new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false, "id",
-                                new AutoIDGenerator() );
+        Map<SQLIdentifier, IDGenerator> keyColumnToIdGenerator = new HashMap<SQLIdentifier, IDGenerator>();
+        keyColumnToIdGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
+        ftJoin = new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false,
+                                keyColumnToIdGenerator );
         return ftJoin;
     }
 

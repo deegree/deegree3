@@ -44,16 +44,16 @@ class InsertRowReference {
 
     private final TableJoin join;
 
-    private final ChildInsertRow ref;
+    private final InsertNode ref;
 
-    private final Set<ChildInsertRow> hrefingRows = new HashSet<ChildInsertRow>();
+    private final Set<InsertNode> hrefingRows = new HashSet<InsertNode>();
 
-    InsertRowReference( TableJoin join, ChildInsertRow ref ) {
+    InsertRowReference( TableJoin join, InsertNode ref ) {
         this.join = join;
         this.ref = ref;
     }
 
-    public void addHrefingRow( ChildInsertRow row ) {
+    public void addHrefingRow( InsertNode row ) {
         hrefingRows.add( row );
     }
 
@@ -61,11 +61,11 @@ class InsertRowReference {
         return join;
     }
 
-    public ChildInsertRow getRef() {
+    public InsertNode getRef() {
         return ref;
     }
 
-    public boolean isHrefed( ChildInsertRow childInsertRow ) {
+    public boolean isHrefed( InsertNode childInsertRow ) {
         return hrefingRows.contains( childInsertRow );
     }
 }

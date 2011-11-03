@@ -222,9 +222,9 @@ public class XPathSchemaWalker {
                 throw new IllegalArgumentException( "XPath '" + propName
                                                     + "' refers to a complex type with complex content." );
             }
-            return new Pair<PrimitiveType, Boolean>( new PrimitiveType( complexType.getSimpleType() ), FALSE );
+            return new Pair<PrimitiveType, Boolean>( new PrimitiveType( complexType.getSimpleType() ), currentEl.second );
         }
-        return new Pair<PrimitiveType, Boolean>( new PrimitiveType( (XSSimpleTypeDefinition) typeDef ), FALSE );
+        return new Pair<PrimitiveType, Boolean>( new PrimitiveType( (XSSimpleTypeDefinition) typeDef ), currentEl.second  );
     }
 
     private QName getQName( NameStep step ) {

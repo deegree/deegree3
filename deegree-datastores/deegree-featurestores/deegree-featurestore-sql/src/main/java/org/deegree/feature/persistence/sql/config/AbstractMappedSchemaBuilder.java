@@ -46,13 +46,16 @@ import static org.deegree.feature.types.property.GeometryPropertyType.GeometryTy
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -67,6 +70,7 @@ import org.deegree.feature.persistence.sql.id.UUIDGenerator;
 import org.deegree.feature.persistence.sql.jaxb.AbstractIDGeneratorType;
 import org.deegree.feature.persistence.sql.jaxb.AutoIdGenerator;
 import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.Join.AutoKeyColumn;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
@@ -115,7 +119,8 @@ public class AbstractMappedSchemaBuilder {
         } else if ( jaxbElement.getValue() instanceof org.deegree.feature.persistence.sql.jaxb.UUIDGenerator ) {
             return new UUIDGenerator();
         }
-        throw new RuntimeException( "Internal error. Unhandled JAXB id generator bean: " + jaxbElement.getClass() );
+        throw new RuntimeException( "Internal error. Unhandled JAXB id generator bean: "
+                                    + jaxbElement.getValue().getClass() );
     }
 
     protected BaseType getPrimitiveType( org.deegree.feature.persistence.sql.jaxb.PrimitiveType type ) {
@@ -188,9 +193,18 @@ public class AbstractMappedSchemaBuilder {
                 throw new UnsupportedOperationException( "Joins must use at least a single column." );
             }
             boolean isNumbered = join.isNumbered() == null ? false : join.isNumbered();
-            IDGenerator idGenerator = buildGenerator( join.getAbstractIDGenerator() );
+            Map<SQLIdentifier, IDGenerator> keyColumnToGenerator = new HashMap<SQLIdentifier, IDGenerator>();
+            for ( AutoKeyColumn keyColumn : join.getAutoKeyColumn() ) {
+                SQLIdentifier columnName = new SQLIdentifier( keyColumn.getName() );
+                IDGenerator idGenerator = buildGenerator( keyColumn.getAbstractIDGenerator() );
+                keyColumnToGenerator.put( columnName, idGenerator );
+            }
+            if ( keyColumnToGenerator.isEmpty() ) {
+                // defaulting
+                keyColumnToGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
+            }
             TableJoin tj = new TableJoin( from, target, join.getFromColumns(), join.getToColumns(),
-                                          join.getOrderColumns(), isNumbered, join.getPkColumn(), idGenerator );
+                                          join.getOrderColumns(), isNumbered, keyColumnToGenerator );
             return Collections.singletonList( tj );
         }
         return null;

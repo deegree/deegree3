@@ -37,7 +37,6 @@ package org.deegree.feature.persistence.sql.insert;
 
 import java.util.List;
 
-import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
@@ -91,7 +90,7 @@ public class InsertFID {
         return newId;
     }
 
-    void assign( InsertRow featureRow )
+    void assign( InsertNode featureRow )
                             throws FeatureStoreException {
         newId = fidMapping.getPrefix();
         List<Pair<SQLIdentifier, BaseType>> fidColumns = fidMapping.getColumns();
@@ -101,7 +100,7 @@ public class InsertFID {
         }
     }
 
-    private Object checkFIDParticle( InsertRow featureRow, SQLIdentifier column )
+    private Object checkFIDParticle( InsertNode featureRow, SQLIdentifier column )
                             throws FeatureStoreException {
         Object value = featureRow.get( column );
         if ( value == null ) {

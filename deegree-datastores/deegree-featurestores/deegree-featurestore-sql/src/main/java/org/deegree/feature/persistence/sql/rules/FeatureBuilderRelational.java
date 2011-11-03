@@ -258,7 +258,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 LOG.debug( "Cache hit." );
             }
         } catch ( Throwable t ) {
-            t.printStackTrace();
+            LOG.error( t.getMessage(), t );
+            throw new SQLException( t.getMessage(), t );
         }
         return feature;
     }

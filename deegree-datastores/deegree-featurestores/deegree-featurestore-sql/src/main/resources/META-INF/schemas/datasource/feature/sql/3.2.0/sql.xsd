@@ -492,10 +492,9 @@
             </documentation>
           </annotation>
           <complexType>
-            <choice>
-              <element ref="sqlfs:SequenceIDGenerator" />
-              <element ref="sqlfs:AutoIdGenerator" />
-            </choice>
+            <sequence>
+              <element ref="sqlfs:AbstractIDGenerator" />
+            </sequence>
             <attribute name="name" type="string" use="required">
               <annotation>
                 <documentation>Name of the column.</documentation>
