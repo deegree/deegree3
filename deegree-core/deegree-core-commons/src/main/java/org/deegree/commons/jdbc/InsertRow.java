@@ -59,7 +59,7 @@ public class InsertRow extends TransactionRow {
 
     private static Logger LOG = LoggerFactory.getLogger( InsertRow.class );
 
-    private final Map<SQLIdentifier, Object> columnToAutoKey = new HashMap<SQLIdentifier, Object>();
+    protected final Map<SQLIdentifier, Object> columnToAutoKey = new HashMap<SQLIdentifier, Object>();
 
     protected SQLIdentifier autogenColumn;
 

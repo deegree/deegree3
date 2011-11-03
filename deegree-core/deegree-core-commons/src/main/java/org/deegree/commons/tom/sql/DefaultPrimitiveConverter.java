@@ -159,9 +159,17 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
             } catch ( ParseException e ) {
                 throw new IllegalArgumentException( e.getMessage(), e );
             }
-        } else {
-            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
-                                                + "' to Date object." );
+        } else if ( sqlValue != null ) {
+            try {
+                value = new Date( sqlValue.toString() );
+            } catch ( ParseException e ) {
+                LOG.error(e.getMessage(), e );
+                try {
+                    value = new Date("1970-01-01");
+                } catch ( ParseException e1 ) {
+                    // should never happen
+                }
+            }
         }
         return new PrimitiveValue( value, pt );
     }
