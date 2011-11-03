@@ -111,7 +111,7 @@ public class AbstractMappedSchemaBuilder {
     }
 
     protected IDGenerator buildGenerator( JAXBElement<? extends AbstractIDGeneratorType> jaxbElement ) {
-        if ( jaxbElement == null || jaxbElement.getValue() == null && jaxbElement.getValue() instanceof AutoIdGenerator ) {
+        if ( jaxbElement == null || jaxbElement.getValue() == null || jaxbElement.getValue() instanceof AutoIdGenerator ) {
             return new AutoIDGenerator();
         } else if ( jaxbElement.getValue() instanceof org.deegree.feature.persistence.sql.jaxb.SequenceIDGenerator ) {
             String sequence = ( (org.deegree.feature.persistence.sql.jaxb.SequenceIDGenerator) jaxbElement.getValue() ).getSequence();
