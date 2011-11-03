@@ -390,14 +390,19 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             } else {
                 // pure relational mode
                 List<InsertFID> idAssignments = new ArrayList<InsertFID>();
-                InsertRowManager insertManager = new InsertRowManager( fs, conn );
+                InsertRowManager insertManager = new InsertRowManager( fs, conn, mode );
                 for ( Feature feature : features ) {
                     FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
                     if ( ftMapping == null ) {
                         throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
                                                          + "'. No mapping defined and BLOB mode is off." );
                     }
-                    idAssignments.add( insertManager.insertFeature( feature, ftMapping, mode ) );
+                    idAssignments.add( insertManager.insertFeature( feature, ftMapping ) );
+                }
+                if ( insertManager.getDelayedRows() != 0 ) {
+                    String msg = "After insertion, " + insertManager.getDelayedRows()
+                                 + " delayed rows left uninserted. Probably a cyclic key constraint blocks insertion.";
+                    throw new RuntimeException( msg );
                 }
                 // TODO why is this necessary?
                 fids.clear();

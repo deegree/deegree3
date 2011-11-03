@@ -39,37 +39,26 @@ import static java.util.Collections.EMPTY_LIST;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.sql.ParticleConverter;
-import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreTransaction;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
-import org.deegree.feature.persistence.sql.id.IDGenerator;
-import org.deegree.feature.persistence.sql.id.IdAnalysis;
-import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
-import org.deegree.feature.persistence.sql.id.UUIDGenerator;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -94,14 +83,12 @@ import org.slf4j.LoggerFactory;
  * The strategy aims for:
  * <ul>
  * <li>Streaming/low memory footprint</li>
- * <li>Feature references must not be resolved</li>
- * <li>Usability for complex structures / mappings</li>
- * <li>Auto-generated columns (feature ids)</li>
+ * <li>Usability for complex structures/mappings</li>
+ * <li>Coping with unresolved feature references</li>
+ * <li>Auto-generated columns</li>
  * <li>Forward xlink references</li>
  * <li>Backward xlink references</li>
  * </ul>
- * 
- * TODO strategy for cyclic foreign keys (at least detection)
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -120,60 +107,59 @@ public class InsertRowManager {
 
     private final GMLVersion gmlVersion;
 
+    // key: original (literal) feature id, value: FID
     private final Map<String, InsertFID> origIdToInsertFID = new HashMap<String, InsertFID>();
 
+    // key: FID, value:
     private final Map<InsertFID, InsertNode> fidToFeatureRow = new HashMap<InsertFID, InsertNode>();
 
     private final Map<InsertNode, InsertFID> delayedFeatureRowToFID = new HashMap<InsertNode, InsertFID>();
 
     private final Map<InsertNode, List<InsertNode>> rowToChildRows = new HashMap<InsertNode, List<InsertNode>>();
 
-    public InsertRowManager( SQLFeatureStore fs, Connection conn ) {
+    private final IDGenMode idGenMode;
+
+    /**
+     * 
+     * @param fs
+     * @param conn
+     * @param idGenMode
+     *            feature id generation mode, must not be <code>null</code>
+     */
+    public InsertRowManager( SQLFeatureStore fs, Connection conn, IDGenMode idGenMode ) {
         this.fs = fs;
         this.dialect = fs.getDialect();
         this.conn = conn;
         this.gmlVersion = fs.getSchema().getGMLSchema() == null ? GML_32 : fs.getSchema().getGMLSchema().getVersion();
+        this.idGenMode = idGenMode;
     }
 
     /**
      * Inserts the specified feature (relational mode).
      * 
-     * @param f
+     * @param feature
      *            feature instance to be inserted, must not be <code>null</code>
      * @param ftMapping
      *            mapping of the corresponding feature type, must not be <code>null</code>
-     * @param idGenMode
-     *            feature id generation mode, must not be <code>null</code>
+     * 
      * @return id of the stored feature, never <code>null</code>
      */
-    public InsertFID insertFeature( Feature feature, FeatureTypeMapping ftMapping, IDGenMode mode )
+    public InsertFID insertFeature( Feature feature, FeatureTypeMapping ftMapping )
                             throws SQLException, FeatureStoreException, FilterEvaluationException {
 
         InsertFID fid = null;
         try {
             fid = getInsertFID( feature );
             InsertNode featureRow = getFeatureRow( fid );
-            featureRow.assignFeatureType( ftMapping );
+
+            // make it a feature row
+            featureRow.assignFeatureType( fs, feature, ftMapping, fid, idGenMode );
+
             FIDMapping fidMapping = ftMapping.getFidMapping();
             fid.setFIDMapping( fidMapping );
 
-            // pre-INSERT fid assignment
-            switch ( mode ) {
-            case GENERATE_NEW: {
-                preInsertGenerateNew( feature, fid, featureRow, fidMapping );
-                break;
-            }
-            case REPLACE_DUPLICATE: {
-                throw new UnsupportedOperationException( "ReplaceDuplicate is not implemented yet." );
-            }
-            case USE_EXISTING: {
-                preInsertUseExisting( feature, fid, featureRow, fidMapping );
-                break;
-            }
-            }
-
             for ( Mapping particleMapping : ftMapping.getMappings() ) {
-                insertParticles( feature, particleMapping, featureRow );
+                buildInsertRows( feature, particleMapping, featureRow );
             }
 
             LOG.debug( "Built feature row {}", featureRow );
@@ -185,79 +171,10 @@ public class InsertRowManager {
         return fid;
     }
 
-    private void preInsertGenerateNew( Feature feature, InsertFID fid, InsertNode featureRow, FIDMapping fidMapping )
-                            throws FeatureStoreException {
-
-        IDGenerator gen = fidMapping.getIdGenerator();
-        if ( gen instanceof AutoIDGenerator ) {
-            // featureRow.setAutoGenColumn( new SQLIdentifier( fidMapping.getColumn() ) );
-            // nothing to do
-        } else if ( gen instanceof UUIDGenerator ) {
-            String uuid = UUID.randomUUID().toString();
-            featureRow.addPreparedArgument( fidMapping.getColumn(), uuid );
-            fid.assign( featureRow );
-        } else {
-            String sql = dialect.getSelectSequenceNextVal( ( (SequenceIDGenerator) gen ).getSequence() );
-            Statement stmt = null;
-            ResultSet rs = null;
-            try {
-                stmt = conn.createStatement();
-                LOG.debug( "Determing feature ID from db sequence: " + sql );
-                rs = stmt.executeQuery( sql );
-                if ( rs.next() ) {
-                    int idKernel = rs.getInt( 1 );
-                    featureRow.addPreparedArgument( fidMapping.getColumn(), idKernel );
-                    fid.assign( featureRow );
-                } else {
-                    String msg = "Error determining ID from db sequence. No value returned for: " + sql;
-                    throw new FeatureStoreException( msg );
-                }
-            } catch ( SQLException e ) {
-                String msg = "Error determining ID from db sequence. No value returned for: " + sql;
-                throw new FeatureStoreException( msg, e );
-            } finally {
-                JDBCUtils.close( rs, stmt, null, LOG );
-            }
-        }
-    }
-
-    private void preInsertUseExisting( Feature feature, InsertFID fid, InsertNode featureRow, FIDMapping fidMapping )
-                            throws FeatureStoreException {
-
-        if ( fid.getOriginalId() == null || fid.getOriginalId().isEmpty() ) {
-            String msg = "Cannot insert features without id and id generation mode 'UseExisting'.";
-            throw new FeatureStoreException( msg );
-        }
-        String[] idKernels = null;
-        try {
-            IdAnalysis analysis = fs.getSchema().analyzeId( fid.getOriginalId() );
-            idKernels = analysis.getIdKernels();
-            if ( analysis.getFeatureType() != feature.getType() ) {
-                String msg = "Cannot insert feature with id '" + fid.getOriginalId()
-                             + "' and id generation mode 'UseExisting'. "
-                             + "Id does not match configured feature id pattern for feature type '"
-                             + feature.getType().getName() + "'.";
-                throw new FeatureStoreException( msg );
-            }
-        } catch ( IllegalArgumentException e ) {
-            String msg = "Cannot insert feature with id '" + fid.getOriginalId()
-                         + "' and id generation mode 'UseExisting'. "
-                         + "Id does not match configured feature id pattern.";
-            throw new FeatureStoreException( msg );
-        }
-        for ( int i = 0; i < fidMapping.getColumns().size(); i++ ) {
-            Pair<SQLIdentifier, BaseType> idColumn = fidMapping.getColumns().get( i );
-            // TODO mapping to non-string columns
-            Object value = idKernels[i];
-            featureRow.addPreparedArgument( idColumn.getFirst(), value );
-        }
-        fid.assign( featureRow );
-    }
-
-    private InsertFID getInsertFID( Feature f ) {
-        String fid = f.getId();
+    private InsertFID getInsertFID( Feature feature ) {
+        String fid = feature.getId();
         if ( fid == null ) {
-            fid = "" + f.hashCode();
+            fid = "" + feature.hashCode();
         }
         return getInsertFID( fid );
     }
@@ -273,17 +190,18 @@ public class InsertRowManager {
         return insertFid;
     }
 
-    private InsertNode getFeatureRow( InsertFID fid ) {
+    private InsertNode getFeatureRow( InsertFID fid )
+                            throws FeatureStoreException {
         InsertNode featureRow = fidToFeatureRow.get( fid );
         if ( featureRow == null ) {
-            featureRow = new InsertNode( null, null );
+            featureRow = new InsertNode( null, dialect, conn, null );
             fidToFeatureRow.put( fid, featureRow );
             delayedFeatureRowToFID.put( featureRow, fid );
         }
         return featureRow;
     }
 
-    private void insertParticles( final TypedObjectNode particle, final Mapping mapping, final InsertNode row )
+    private void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertNode row )
                             throws FilterEvaluationException, FeatureStoreException {
 
         List<TableJoin> jc = mapping.getJoinedTable();
@@ -348,7 +266,7 @@ public class InsertRowManager {
                         InsertNode parentRow = getFeatureRow( subFid );
                         TableJoin join = jc.get( 0 );
                         for ( int i = 0; i < join.getFromColumns().size(); i++ ) {
-                            // invert join (the logical parent is the sub feature row)
+                            // invert join (the relational parent is the sub feature row)
                             SQLIdentifier fromColumn = join.getToColumns().get( i );
                             SQLIdentifier toColumn = join.getFromColumns().get( i );
                             Object key = parentRow.get( fromColumn );
@@ -386,7 +304,7 @@ public class InsertRowManager {
                 }
             } else if ( mapping instanceof CompoundMapping ) {
                 for ( Mapping child : ( (CompoundMapping) mapping ).getParticles() ) {
-                    insertParticles( value, child, currentRow );
+                    buildInsertRows( value, child, currentRow );
                 }
             } else {
                 LOG.warn( "Unhandled mapping type '" + mapping.getClass() + "'." );
@@ -404,9 +322,10 @@ public class InsertRowManager {
         }
     }
 
-    private InsertNode addChildRow( InsertNode parent, TableName table, TableJoin join ) {
+    private InsertNode addChildRow( InsertNode parent, TableName table, TableJoin join )
+                            throws FeatureStoreException {
 
-        InsertNode newRow = new InsertNode( table, join.getKeyColumnToGenerator() );
+        InsertNode newRow = new InsertNode( table, dialect, conn, join.getKeyColumnToGenerator() );
         InsertRowReference ref = new InsertRowReference( join, parent );
         newRow.addParent( ref );
 
@@ -438,7 +357,8 @@ public class InsertRowManager {
 
     private void insertRow( InsertNode row )
                             throws SQLException, FeatureStoreException {
-        if ( row.hasParents() ) {
+
+        if ( !row.hasParents() ) {
             LOG.debug( "Inserting row " + row );
             row.performInsert( conn, rowToChildRows.get( row ) != null, dialect );
 
@@ -461,5 +381,14 @@ public class InsertRowManager {
         } else {
             LOG.debug( "Delaying insert of row " + row + "." );
         }
+    }
+
+    /**
+     * Returns the number of currently delayed rows (rows that depend on some other row to be inserted first).
+     * 
+     * @return number of currently delayed rows
+     */
+    public int getDelayedRows() {
+        return delayedFeatureRowToFID.size();
     }
 }
