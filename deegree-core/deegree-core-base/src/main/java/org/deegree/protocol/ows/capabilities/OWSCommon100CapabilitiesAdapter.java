@@ -64,6 +64,7 @@ import org.deegree.protocol.ows.metadata.operation.Operation;
  * Known OWS Common 1.0.0-based specifications:
  * <ul>
  * <li>WFS 1.1.0</li>
+ * <li>CSW 2.0.2</li>
  * </ul>
  * </p>
  * 
