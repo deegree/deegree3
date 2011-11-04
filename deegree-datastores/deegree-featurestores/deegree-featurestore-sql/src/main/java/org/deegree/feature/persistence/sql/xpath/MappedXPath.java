@@ -261,7 +261,7 @@ public class MappedXPath {
 
                 List<String> toColumns = new ArrayList<String>( joinedTable.getToColumns().size() );
                 for ( SQLIdentifier toColumn : joinedTable.getToColumns() ) {
-                    fromColumns.add( toColumn.toString() );
+                    toColumns.add( toColumn.toString() );
                 }
 
                 Join appliedJoin = new Join( fromTable, fromTableAlias, fromColumns, toTable, toTableAlias, toColumns );
