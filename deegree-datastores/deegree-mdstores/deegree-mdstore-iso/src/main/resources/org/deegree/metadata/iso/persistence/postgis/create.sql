@@ -25,7 +25,7 @@ CREATE TABLE IDXTB_MAIN (
 	DistanceUOM varchar(10),
 	TempExtent_begin timestamp,
 	TempExtent_end timestamp,
-	ServiceType varchar(10),
+	ServiceType varchar(150),
 	ServiceTypeVersion varchar(1000),
 	CouplingType varchar(10),
 	formats varchar(2000),
