@@ -65,7 +65,7 @@ package org.deegree.commons.jdbc;
  * 
  * @version $Revision$, $Date$
  */
-public class SQLIdentifier {
+public class SQLIdentifier implements Comparable<SQLIdentifier> {
 
     private boolean isEscaped;
 
@@ -237,5 +237,10 @@ public class SQLIdentifier {
             sb.append( escapeEndChar );
         }
         return sb.toString();
+    }
+
+    @Override
+    public int compareTo( SQLIdentifier o ) {
+        return this.normalizedString.compareTo( o.normalizedString );
     }
 }
