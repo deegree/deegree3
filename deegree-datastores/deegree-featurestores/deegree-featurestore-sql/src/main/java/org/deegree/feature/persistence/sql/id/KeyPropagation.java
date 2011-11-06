@@ -79,13 +79,23 @@ public class KeyPropagation {
     }
 
     /**
+     * Returns whether the foreign relation is constrained by the DB, i.e. if creating a state where the fk column
+     * contains a value without a match in the pk column will fail.
+     * 
+     * @return <code>true</code>, if the foreign key relation is constrained, otherwise <code>false</code>
+     */
+    public boolean isFKConstrained() {
+        throw new UnsupportedOperationException( "Not implemented yet." );
+    }
+
+    /**
      * Returns whether corresponding rows in the target table are automatically deleted by the database if a row is
      * deleted in the source table.
      * 
-     * @return <code>true</code>, if corresponding rows are deleted,automatically, <code>false</code> otherwise
+     * @return <code>true</code>, if corresponding rows are deleted automatically, <code>false</code> otherwise
      */
     public boolean getCascadeOnDelete() {
-        return cascadeOnDelete;
+        throw new UnsupportedOperationException( "Not implemented yet." );
     }
 
     @Override

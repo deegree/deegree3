@@ -54,16 +54,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extracts and tracks the dependencies between key columns in a {@link MappedAppSchema}.
+ * Provides efficient access to dependencies between key columns of tables in a {@link MappedAppSchema}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
  * 
  * @version $Revision: $, $Date: $
  */
-public class KeyDependencies {
+public class TableDependencies {
 
-    private static Logger LOG = LoggerFactory.getLogger( KeyDependencies.class );
+    private static Logger LOG = LoggerFactory.getLogger( TableDependencies.class );
 
     private final Map<TableName, LinkedHashSet<SQLIdentifier>> tableToGenerators = new HashMap<TableName, LinkedHashSet<SQLIdentifier>>();
 
@@ -71,7 +71,7 @@ public class KeyDependencies {
 
     private final Map<TableName, LinkedHashSet<KeyPropagation>> tableToChildren = new HashMap<TableName, LinkedHashSet<KeyPropagation>>();
 
-    public KeyDependencies( FeatureTypeMapping[] ftMappings ) {
+    public TableDependencies( FeatureTypeMapping[] ftMappings ) {
         for ( FeatureTypeMapping ftMapping : ftMappings ) {
             buildFIDGenerator( ftMapping );
             TableName currentTable = ftMapping.getFtTable();
@@ -90,17 +90,25 @@ public class KeyDependencies {
 
     private void buildDependencies( Mapping particle, TableName currentTable ) {
 
-        if ( particle instanceof FeatureMapping ) {
-            LOG.warn( "Unhandled key propagation for feature property " + particle );
-            return;
-        }
-
         List<TableJoin> joins = particle.getJoinedTable();
-        if ( joins != null ) {
-            for ( TableJoin join : joins ) {
+        if ( joins != null && !joins.isEmpty() ) {
 
+            if ( particle instanceof FeatureMapping ) {
+                FeatureMapping f = (FeatureMapping) particle;
+                if ( joins.size() != 1 ) {
+                    String msg = "Feature type joins with more than one table are not supported yet.";
+                    throw new UnsupportedOperationException( msg );
+                }
+                TableJoin join = joins.get( 0 );
+                if ( f.getValueFtName() == null || join.getToTable().getName().equals( "?" ) ) {
+                    LOG.debug( "Found special key propagation (involving ambigous feature table). Needs implementation." );
+                    return;
+                }
+            }
+
+            for ( TableJoin join : joins ) {
                 TableName joinTable = join.getToTable();
-                
+
                 // check for propagations from current table to joined table
                 for ( int i = 0; i < join.getFromColumns().size(); i++ ) {
                     SQLIdentifier fromColumn = join.getFromColumns().get( i );

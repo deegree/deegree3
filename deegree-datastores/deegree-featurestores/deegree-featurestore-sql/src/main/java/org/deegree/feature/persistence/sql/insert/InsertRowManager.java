@@ -59,6 +59,7 @@ import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreTransaction;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.id.TableDependencies;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -80,14 +81,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Performs inserts in courtesy of the {@link SQLFeatureStoreTransaction}.
  * <p>
- * The strategy aims for:
+ * Important aspects of the implementation:
  * <ul>
  * <li>Streaming/low memory footprint</li>
  * <li>Usability for complex structures/mappings</li>
- * <li>Coping with unresolved feature references</li>
- * <li>Auto-generated columns</li>
- * <li>Forward xlink references</li>
- * <li>Backward xlink references</li>
+ * <li>Coping with unresolved feature references (forward/backward xlinks)</li>
+ * <li>Auto-generated feature ids/key columns</li>
  * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -107,7 +106,11 @@ public class InsertRowManager {
 
     private final GMLVersion gmlVersion;
 
-    // key: original (literal) feature id, value: FID
+    private final IDGenMode idGenMode;
+
+    private final TableDependencies tableDeps;
+
+    // key: original (literal) feature id found in a feature/reference, value: FID
     private final Map<String, InsertFID> origIdToInsertFID = new HashMap<String, InsertFID>();
 
     // key: FID, value:
@@ -116,8 +119,6 @@ public class InsertRowManager {
     private final Map<InsertNode, InsertFID> delayedFeatureRowToFID = new HashMap<InsertNode, InsertFID>();
 
     private final Map<InsertNode, List<InsertNode>> rowToChildRows = new HashMap<InsertNode, List<InsertNode>>();
-
-    private final IDGenMode idGenMode;
 
     /**
      * 
@@ -132,16 +133,21 @@ public class InsertRowManager {
         this.conn = conn;
         this.gmlVersion = fs.getSchema().getGMLSchema() == null ? GML_32 : fs.getSchema().getGMLSchema().getVersion();
         this.idGenMode = idGenMode;
+        this.tableDeps = fs.getSchema().getKeyDependencies();
     }
 
     /**
-     * Inserts the specified feature (relational mode).
+     * Inserts the specified feature.
+     * <p>
+     * Note that some or all of the corresponding table rows may actually not be inserted when this method returns. They
+     * may be delayed until their dependencies are inserted. This method also takes care of checking for rows that have
+     * been delayed and can be inserted now.
+     * </p>
      * 
      * @param feature
      *            feature instance to be inserted, must not be <code>null</code>
      * @param ftMapping
      *            mapping of the corresponding feature type, must not be <code>null</code>
-     * 
      * @return id of the stored feature, never <code>null</code>
      */
     public InsertFID insertFeature( Feature feature, FeatureTypeMapping ftMapping )
@@ -310,12 +316,15 @@ public class InsertRowManager {
                 LOG.warn( "Unhandled mapping type '" + mapping.getClass() + "'." );
             }
 
-            if ( jc != null ) {
-                // add index column value
-                for ( SQLIdentifier col : jc.get( 0 ).getOrderColumns() ) {
-                    if ( currentRow.get( col ) == null ) {
-                        // TODO do this properly
-                        currentRow.addLiteralValue( col, "" + childIdx++ );
+            // add index column value if the join uses a numbered order column
+            if ( jc != null && jc.size() == 1 ) {
+                TableJoin join = jc.get( 0 );
+                if ( join.isNumberedOrder() ) {
+                    for ( SQLIdentifier col : join.getOrderColumns() ) {
+                        if ( currentRow.get( col ) == null ) {
+                            // TODO do this properly
+                            currentRow.addLiteralValue( col, "" + childIdx++ );
+                        }
                     }
                 }
             }

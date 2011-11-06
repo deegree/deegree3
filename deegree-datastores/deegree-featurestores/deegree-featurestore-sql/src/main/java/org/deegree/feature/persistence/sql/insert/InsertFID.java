@@ -44,11 +44,13 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.protocol.wfs.transaction.IDGenMode;
 
 /**
- * The id of a {@link Feature} during an insert operation of a {@link FeatureStoreTransaction}.
+ * A placeholder for the id of a {@link Feature} during an insert operation of a {@link FeatureStoreTransaction}.
  * <p>
- * The final value of the inserted id is not necessarily known from the beginning.
+ * The final value of the inserted id is usually not known during construction of the object (e.g. when
+ * {@link IDGenMode#GENERATE_NEW} is used).
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -64,12 +66,14 @@ public class InsertFID {
 
     private FIDMapping fidMapping;
 
+    /**
+     * Creates a new {@link InsertFID} instance.
+     * 
+     * @param originalId
+     *            original id of the feature (before id generation), must not be <code>null</code>
+     */
     InsertFID( String originalId ) {
         this.originalId = originalId;
-    }
-
-    void setFIDMapping( FIDMapping fidMapping ) {
-        this.fidMapping = fidMapping;
     }
 
     /**
@@ -82,14 +86,18 @@ public class InsertFID {
     }
 
     /**
-     * Returns the new id that's been assigned to the {@link Feature} during the insert process.
+     * Returns the new id that's been assigned to the {@link Feature} by id generation.
      * 
-     * @return new id, can be <code>null</code> (not known yet)
+     * @return new id, can be <code>null</code> (not assigned yet)
      */
     public String getNewId() {
         return newId;
     }
 
+    void setFIDMapping( FIDMapping fidMapping ) {
+        this.fidMapping = fidMapping;
+    }
+    
     void assign( InsertNode featureRow )
                             throws FeatureStoreException {
         newId = fidMapping.getPrefix();

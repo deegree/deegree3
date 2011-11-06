@@ -45,7 +45,7 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.id.IdAnalyzer;
-import org.deegree.feature.persistence.sql.id.KeyDependencies;
+import org.deegree.feature.persistence.sql.id.TableDependencies;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
@@ -81,7 +81,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     private final IdAnalyzer idAnalyzer;
 
-    private final KeyDependencies keyDependencies;
+    private final TableDependencies keyDependencies;
 
     /**
      * Creates a new {@link MappedAppSchema} from the given parameters.
@@ -136,7 +136,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
         this.bboxMapping = bboxMapping;
         this.blobMapping = blobMapping;
-        this.keyDependencies = new KeyDependencies( ftMappings );
+        this.keyDependencies = new TableDependencies( ftMappings );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Key dependencies: " + keyDependencies );
         }
@@ -246,7 +246,7 @@ public class MappedAppSchema extends GenericAppSchema {
      * 
      * @return dependencies between key columns, never <code>null</code>
      */
-    public KeyDependencies getKeyDependencies() {
+    public TableDependencies getKeyDependencies() {
         return keyDependencies;
     }
 }
