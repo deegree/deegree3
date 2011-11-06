@@ -533,7 +533,7 @@ public class GMLFormat implements Format {
 
         int maxFeatures = featureLimit;
         if ( request.getPresentationParams().getCount() != null
-             && ( maxFeatures == -1 || request.getPresentationParams().getCount().intValue() < maxFeatures ) ) {
+             && ( featureLimit < 1 || request.getPresentationParams().getCount().intValue() < featureLimit ) ) {
             maxFeatures = request.getPresentationParams().getCount().intValue();
         }
 
@@ -640,12 +640,12 @@ public class GMLFormat implements Format {
             FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature member : rs ) {
-                    writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0 );
-                    featuresAdded++;
                     if ( featuresAdded == maxFeatures ) {
                         // limit the number of features written to maxfeatures
                         break;
                     }
+                    writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0 );
+                    featuresAdded++;
                 }
             } finally {
                 LOG.debug( "Closing FeatureResultSet (stream)" );
@@ -671,13 +671,13 @@ public class GMLFormat implements Format {
             FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature feature : rs ) {
+                    if ( featuresAdded == maxFeatures ) {
+                        break;
+                    }
                     if ( !fids.contains( feature.getId() ) ) {
                         allFeatures.add( feature );
                         fids.add( feature.getId() );
                         featuresAdded++;
-                        if ( featuresAdded == maxFeatures ) {
-                            break;
-                        }
                     }
                 }
             } finally {
