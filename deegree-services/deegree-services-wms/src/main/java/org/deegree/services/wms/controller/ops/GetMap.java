@@ -165,7 +165,7 @@ public class GetMap {
         }
         parameterMap.putAll( map );
         try {
-            scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
+            scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize / 1000 );
             LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}' (adapted to pixel size of {}).", scale,
                        pixelSize );
             resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
@@ -197,7 +197,7 @@ public class GetMap {
         transparent = false;
         handleVSPs( service, new HashMap<String, String>() );
         try {
-            scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
+            scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize / 1000 );
             LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}' (adapted to pixel size of {}).", scale,
                        pixelSize );
             resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
