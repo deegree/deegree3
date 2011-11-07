@@ -16,7 +16,7 @@
     <sequence>
       <element name="ServiceIdentification" type="md:ServiceIdentificationType" minOccurs="0" />
       <element name="ServiceProvider" type="md:ServiceProviderType" minOccurs="0" />
-      <element name="MetadataURLTemplate" minOccurs="0" type="string"/>      
+      <element name="MetadataURLTemplate" minOccurs="0" type="string" />
       <element name="DatasetMetadata" type="md:DatasetMetadataType" minOccurs="0" maxOccurs="unbounded" />
       <element name="ExtendedCapabilities" type="md:ExtendedCapabilitiesType" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
@@ -48,7 +48,7 @@
       <element name="Phone" type="string" minOccurs="0" />
       <element name="Facsimile" type="string" minOccurs="0" />
       <element name="ElectronicMailAddress" type="string" minOccurs="0" maxOccurs="unbounded" />
-      <element name="Address" type="md:AddressType" />
+      <element name="Address" type="md:AddressType" minOccurs="0" />
       <element name="OnlineResource" type="anyURI" />
       <element name="HoursOfService" type="string" minOccurs="0" />
       <element name="ContactInstructions" type="string" minOccurs="0" />

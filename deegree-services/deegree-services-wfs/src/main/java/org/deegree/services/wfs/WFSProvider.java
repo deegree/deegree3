@@ -51,6 +51,7 @@ import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 
 /**
  * {@link OWSProvider} for the {@link WebFeatureService}.
@@ -95,7 +96,7 @@ public class WFSProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { FeatureStoreManager.class };
+        return new Class[] { FeatureStoreManager.class, OWSMetadataProviderManager.class };
     }
 
     @Override

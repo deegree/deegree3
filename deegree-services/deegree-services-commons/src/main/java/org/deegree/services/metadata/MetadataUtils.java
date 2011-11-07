@@ -151,8 +151,10 @@ public class MetadataUtils {
         phone.setVoice( Collections.singletonList( sc.getPhone() ) );
         info.setPhone( phone );
         Address ad = convertFromJAXB( sc.getAddress() );
-        ad.setElectronicMailAddress( sc.getElectronicMailAddress() );
-        info.setAddress( ad );
+        if ( ad != null ) {
+            ad.setElectronicMailAddress( sc.getElectronicMailAddress() );
+            info.setAddress( ad );
+        }
         res.setContactInfo( info );
         return res;
     }

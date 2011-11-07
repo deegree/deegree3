@@ -38,13 +38,9 @@ package org.deegree.services.csw;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.services.OWS;
@@ -80,7 +76,7 @@ public class CSWProvider implements OWSProvider {
 
     @Override
     public URL getConfigSchema() {
-        return CSWProvider.class.getResource( "/META-INF/schemas/csw/3.1.0/csw_configuration.xsd" );
+        return CSWProvider.class.getResource( "/META-INF/schemas/csw/3.2.0/csw_configuration.xsd" );
     }
 
     @Override

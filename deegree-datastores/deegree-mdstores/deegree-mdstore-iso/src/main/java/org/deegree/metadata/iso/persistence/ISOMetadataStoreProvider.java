@@ -84,7 +84,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/3.0.0/iso19115.xsd" );
+        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/3.2.0/iso19115.xsd" );
     }
 
     @Override

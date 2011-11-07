@@ -519,7 +519,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                 }
 
                 maybeWriteElement( writer, "ContactPosition", contact.getPositionName() );
-                Address addr = contact.getContactInfo().getAddress();
+                Address address = contact.getContactInfo().getAddress();
+                Address addr = address;
                 if ( addr != null ) {
                     writer.writeStartElement( "ContactAddress" );
                     writeElement( writer, "AddressType", "postal" );
@@ -537,8 +538,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                                    contact.getContactInfo().getPhone().getVoice().get( 0 ) );
                 maybeWriteElement( writer, "ContactFacsimileTelephone",
                                    contact.getContactInfo().getPhone().getFacsimile().get( 0 ) );
-                for ( String email : contact.getContactInfo().getAddress().getElectronicMailAddress() ) {
-                    maybeWriteElement( writer, "ContactElectronicMailAddress", email );
+                if ( address != null ) {
+                    for ( String email : address.getElectronicMailAddress() ) {
+                        maybeWriteElement( writer, "ContactElectronicMailAddress", email );
+                    }
                 }
 
                 writer.writeEndElement();
