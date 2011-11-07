@@ -78,6 +78,22 @@ public class KeyPropagation {
         this.cascadeOnDelete = true;
     }
 
+    public TableName getPKTable() {
+        return source;
+    }
+
+    public SQLIdentifier getPKColumn() {
+        return pkColumn;
+    }
+
+    public TableName getFKTable() {
+        return target;
+    }
+
+    public SQLIdentifier getFKColumn() {
+        return fkColumn;
+    }
+
     /**
      * Returns whether the foreign relation is constrained by the DB, i.e. if creating a state where the fk column
      * contains a value without a match in the pk column will fail.

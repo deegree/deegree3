@@ -35,37 +35,42 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.feature.persistence.sql.id.KeyPropagation;
 
-class InsertRowReference {
+class ParentRowReference {
 
-    private final TableJoin join;
+    private final InsertRow parent;
 
-    private final InsertNode ref;
+    private final KeyPropagation propagation;
 
-    private final Set<InsertNode> hrefingRows = new HashSet<InsertNode>();
+    private final Map<InsertRow, SQLIdentifier> hrefingRows = new HashMap<InsertRow, SQLIdentifier>();
 
-    InsertRowReference( TableJoin join, InsertNode ref ) {
-        this.join = join;
-        this.ref = ref;
+    ParentRowReference( InsertRow parent, KeyPropagation propagation ) {
+        this.parent = parent;
+        this.propagation = propagation;
     }
 
-    public void addHrefingRow( InsertNode row ) {
-        hrefingRows.add( row );
+    InsertRow getTarget() {
+        return parent;
     }
 
-    public TableJoin getJoin() {
-        return join;
+    KeyPropagation getKeyPropagation() {
+        return propagation;
     }
 
-    public InsertNode getRef() {
-        return ref;
+    void addHrefingRow( InsertRow row, SQLIdentifier hrefCol ) {
+        hrefingRows.put( row, hrefCol );
+    }
+    
+    boolean isHrefed( InsertRow childInsertRow ) {
+        return hrefingRows.containsKey( childInsertRow );
     }
 
-    public boolean isHrefed( InsertNode childInsertRow ) {
-        return hrefingRows.contains( childInsertRow );
+    SQLIdentifier getHrefColum( InsertRow childInsertRow ) {
+        return hrefingRows.get( childInsertRow );
     }
 }

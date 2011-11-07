@@ -70,6 +70,7 @@ import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.insert.FeatureRow;
 import org.deegree.feature.persistence.sql.insert.InsertFID;
 import org.deegree.feature.persistence.sql.insert.InsertRowManager;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -389,7 +390,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             } else {
                 // pure relational mode
-                List<InsertFID> idAssignments = new ArrayList<InsertFID>();
+                List<FeatureRow> idAssignments = new ArrayList<FeatureRow>();
                 InsertRowManager insertManager = new InsertRowManager( fs, conn, mode );
                 for ( Feature feature : features ) {
                     FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
@@ -406,7 +407,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
                 // TODO why is this necessary?
                 fids.clear();
-                for ( InsertFID assignment : idAssignments ) {
+                for ( FeatureRow assignment : idAssignments ) {
                     fids.add( assignment.getNewId() );
                 }
             }

@@ -98,7 +98,7 @@ public class InsertFID {
         this.fidMapping = fidMapping;
     }
     
-    void assign( InsertNode featureRow )
+    void assign( InsertRow featureRow )
                             throws FeatureStoreException {
         newId = fidMapping.getPrefix();
         List<Pair<SQLIdentifier, BaseType>> fidColumns = fidMapping.getColumns();
@@ -108,7 +108,7 @@ public class InsertFID {
         }
     }
 
-    private Object checkFIDParticle( InsertNode featureRow, SQLIdentifier column )
+    private Object checkFIDParticle( InsertRow featureRow, SQLIdentifier column )
                             throws FeatureStoreException {
         Object value = featureRow.get( column );
         if ( value == null ) {

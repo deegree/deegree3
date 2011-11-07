@@ -101,18 +101,6 @@ public class TableJoin implements MappingExpression {
         this.keyColumnToGenerator = keyColumnToGenerator;
     }
 
-    public TableJoin( boolean numberedOrder, TableName fromTable, TableName toTable, List<SQLIdentifier> fromColumns,
-                      List<SQLIdentifier> toColumns, List<SQLIdentifier> orderColumns,
-                      Map<SQLIdentifier, IDGenerator> keyColumnToGenerator ) {
-        this.numberedOrder = numberedOrder;
-        this.fromTable = fromTable;
-        this.toTable = toTable;
-        this.toColumns = toColumns;
-        this.fromColumns = fromColumns;
-        this.orderColumns = orderColumns;
-        this.keyColumnToGenerator = keyColumnToGenerator;
-    }
-
     public TableName getFromTable() {
         return fromTable;
     }

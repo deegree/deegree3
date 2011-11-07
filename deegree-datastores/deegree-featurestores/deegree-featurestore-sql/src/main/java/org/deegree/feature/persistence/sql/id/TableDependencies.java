@@ -184,6 +184,10 @@ public class TableDependencies {
         return tableToChildren.get( table );
     }
 
+    public Set<SQLIdentifier> getGenColumns( TableName table ) {
+        return tableToGenerators.get( table );
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -213,5 +217,36 @@ public class TableDependencies {
             }
         }
         return sb.toString();
+    }
+
+    public KeyPropagation getKeyPropagation( TableName fromTable, List<SQLIdentifier> fromColumns, TableName toTable,
+                                             List<SQLIdentifier> toColumns ) {
+
+        SQLIdentifier fromColumn = fromColumns.get( 0 );
+        SQLIdentifier toColumn = toColumns.get( 0 );
+
+        Set<KeyPropagation> candidates = tableToChildren.get( fromTable );
+        if ( candidates != null ) {
+            for ( KeyPropagation candidate : candidates ) {
+                if ( candidate.getFKTable().equals( toTable ) ) {
+                    if ( candidate.getPKColumn().equals( fromColumn ) && candidate.getFKColumn().equals( toColumn ) ) {
+                        return candidate;
+                    }
+                }
+            }
+        }
+
+        candidates = tableToParents.get( fromTable );
+        if ( candidates != null ) {
+            for ( KeyPropagation candidate : candidates ) {
+                if ( candidate.getPKTable().equals( toTable ) ) {
+                    if ( candidate.getFKColumn().equals( fromColumn ) && candidate.getPKColumn().equals( toColumn ) ) {
+                        return candidate;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }
