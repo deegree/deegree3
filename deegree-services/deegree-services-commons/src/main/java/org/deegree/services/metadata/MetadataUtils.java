@@ -91,7 +91,9 @@ public class MetadataUtils {
         public Pair<List<LanguageString>, CodeType> apply( KeywordsType u ) {
             Pair<List<LanguageString>, CodeType> p = new Pair<List<LanguageString>, CodeType>();
             p.first = map( u.getKeyword(), LANG_LANG_MAPPER );
-            p.second = CODE_TYPE_MAPPER.apply( u.getType() );
+            if ( u.getType() != null ) {
+                p.second = CODE_TYPE_MAPPER.apply( u.getType() );
+            }
             return p;
         }
     };
