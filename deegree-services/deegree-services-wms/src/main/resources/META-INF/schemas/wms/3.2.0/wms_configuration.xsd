@@ -179,7 +179,7 @@
           <element name="Title" type="string" minOccurs="0" />
           <element name="Abstract" type="string" minOccurs="0" />
           <element name="MetadataSetId" type="string" minOccurs="0" />
-          <element ref="wms:Keywords" minOccurs="0" />
+          <element ref="wms:Keywords" minOccurs="0" maxOccurs="unbounded" />
           <element ref="wms:BoundingBox" minOccurs="0" />
           <element name="CRS" type="string" minOccurs="0" />
           <element name="Dimension" type="wms:DimensionType" minOccurs="0" maxOccurs="unbounded" />
@@ -212,7 +212,7 @@
             <element name="Title" type="string" />
             <element name="Abstract" type="string" minOccurs="0" />
             <element name="MetadataSetId" type="string" minOccurs="0" />
-            <element ref="wms:Keywords" minOccurs="0" />
+            <element ref="wms:Keywords" minOccurs="0" maxOccurs="unbounded" />
             <element ref="wms:BoundingBox" minOccurs="0" />
             <element name="CRS" type="string" minOccurs="0" />
             <element name="Dimension" type="wms:DimensionType" minOccurs="0" maxOccurs="unbounded" />
@@ -244,7 +244,7 @@
           <sequence>
             <element name="Title" type="string" />
             <element name="Abstract" type="string" minOccurs="0" />
-            <element ref="wms:Keywords" minOccurs="0" />
+            <element ref="wms:Keywords" minOccurs="0" maxOccurs="unbounded" />
             <element ref="wms:BoundingBox" minOccurs="0" />
             <element name="CRS" type="string" minOccurs="0" />
             <choice>
@@ -409,6 +409,7 @@
     <restriction base="string">
       <enumeration value="3.0.0" />
       <enumeration value="3.1.0" />
+      <enumeration value="3.2.0" />
     </restriction>
   </simpleType>
 

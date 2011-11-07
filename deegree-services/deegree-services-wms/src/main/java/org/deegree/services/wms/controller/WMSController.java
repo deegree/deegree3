@@ -174,7 +174,7 @@ public class WMSController extends AbstractOWS {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wms/3.1.0/wms_configuration.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wms/3.2.0/wms_configuration.xsd";
 
     private final HashMap<String, FeatureInfoSerializer> featureInfoSerializers = new HashMap<String, FeatureInfoSerializer>();
 

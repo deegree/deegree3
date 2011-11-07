@@ -154,16 +154,18 @@ public abstract class Layer {
         title = layer.getTitle();
         abstract_ = layer.getAbstract();
         dataMetadataSetId = layer.getMetadataSetId();
-        KeywordsType kwType = layer.getKeywords();
+        List<KeywordsType> kwTypeList = layer.getKeywords();
         keywords = new LinkedList<Pair<CodeType, LanguageStringType>>();
-        if ( kwType != null ) {
-            org.deegree.services.jaxb.wms.CodeType jaxbct = kwType.getType();
-            CodeType ct = null;
-            if ( jaxbct != null ) {
-                ct = new CodeType( jaxbct.getValue(), jaxbct.getCodeSpace() );
-            }
-            for ( LanguageStringType lst : kwType.getKeyword() ) {
-                keywords.add( new Pair<CodeType, LanguageStringType>( ct, lst ) );
+        if ( kwTypeList != null ) {
+            for ( KeywordsType kwType : kwTypeList ) {
+                org.deegree.services.jaxb.wms.CodeType jaxbct = kwType.getType();
+                CodeType ct = null;
+                if ( jaxbct != null ) {
+                    ct = new CodeType( jaxbct.getValue(), jaxbct.getCodeSpace() );
+                }
+                for ( LanguageStringType lst : kwType.getKeyword() ) {
+                    keywords.add( new Pair<CodeType, LanguageStringType>( ct, lst ) );
+                }
             }
         }
         bbox = parseBoundingBox( layer.getBoundingBox() );
