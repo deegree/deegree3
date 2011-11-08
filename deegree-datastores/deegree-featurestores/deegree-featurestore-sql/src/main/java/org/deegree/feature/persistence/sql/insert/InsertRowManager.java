@@ -163,12 +163,30 @@ public class InsertRowManager {
         try {
             featureRow = lookupFeatureRow( feature );
 
+            // tracks all rows of this feature instance
+            List<InsertRow> allRows = new ArrayList<InsertRow>();
+            allRows.add( featureRow );
+
             for ( Mapping particleMapping : ftMapping.getMappings() ) {
-                buildInsertRows( feature, particleMapping, featureRow );
+                buildInsertRows( feature, particleMapping, featureRow, allRows );
             }
 
-            LOG.debug( "Built feature row {}", featureRow );
-            insertRow( featureRow );
+            LOG.debug( "Built feature row for feature '" + feature.getId() + "': " + featureRow );
+            LOG.debug( "Additional rows: " + allRows.size() );
+
+            while ( true ) {
+                boolean found = false;
+                for ( InsertRow row : allRows ) {
+                    if ( delayedRows.contains( row ) && !row.hasParents() ) {
+                        found = true;
+                        insertRow( row );
+                    }
+                }
+                if ( !found ) {
+                    break;
+                }
+            }
+
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
             throw new FeatureStoreException( t.getMessage(), t );
@@ -225,7 +243,8 @@ public class InsertRowManager {
         return featureRow;
     }
 
-    private void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertRow row )
+    private void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertRow row,
+                                  List<InsertRow> additionalRows )
                             throws FilterEvaluationException, FeatureStoreException {
 
         List<TableJoin> jc = mapping.getJoinedTable();
@@ -243,12 +262,14 @@ public class InsertRowManager {
             if ( jc != null && !( mapping instanceof FeatureMapping ) ) {
                 TableJoin join = jc.get( 0 );
                 currentRow = buildJoinRow( currentRow, join );
+                additionalRows.add( currentRow );
             }
             if ( mapping instanceof PrimitiveMapping ) {
                 MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
                 if ( !( me instanceof DBField ) ) {
                     LOG.debug( "Skipping primitive mapping. Not mapped to database column." );
                 } else {
+                    @SuppressWarnings("unchecked")
                     ParticleConverter<PrimitiveValue> converter = (ParticleConverter<PrimitiveValue>) fs.getConverter( mapping );
                     PrimitiveValue primitiveValue = getPrimitiveValue( value );
                     String column = ( (DBField) me ).getColumn();
@@ -290,49 +311,37 @@ public class InsertRowManager {
                 if ( subFeatureRow != null ) {
 
                     // TODO: pure href propagation (no fk)
-                    
+
                     if ( jc.isEmpty() ) {
                         LOG.debug( "Skipping feature mapping (fk). Not mapped to database column." );
                     } else {
                         TableJoin join = jc.get( 0 );
                         KeyPropagation keyPropagation = getKeyPropagation( (FeatureMapping) mapping, join );
-                        if ( keyPropagation.getPKTable().equals( join.getFromTable() ) ) {
-                            // inverse: fk in subfeature table
-                            ParentRowReference ref = new ParentRowReference( currentRow, keyPropagation );
-                            subFeatureRow.addParent( ref );
-                            List<InsertRow> children = rowToChildRows.get( currentRow );
-                            if ( children == null ) {
-                                children = new ArrayList<InsertRow>();
-                                rowToChildRows.put( currentRow, children );
-                            }
-                            children.add( subFeatureRow );
-                        } else {
-                            // standard: pk in subfeature table (usually feature id)
-                            ParentRowReference ref = new ParentRowReference( subFeatureRow, keyPropagation );
-                            currentRow.addParent( ref );
-                            List<InsertRow> children = rowToChildRows.get( subFeatureRow );
-                            if ( children == null ) {
-                                children = new ArrayList<InsertRow>();
-                                rowToChildRows.put( subFeatureRow, children );
-                            }
-                            children.add( currentRow );
+                        // standard: pk in subfeature table (usually feature id)
+                        ParentRowReference ref = new ParentRowReference( subFeatureRow, keyPropagation );
+                        currentRow.addParent( ref );
+                        List<InsertRow> children = rowToChildRows.get( subFeatureRow );
+                        if ( children == null ) {
+                            children = new ArrayList<InsertRow>();
+                            rowToChildRows.put( subFeatureRow, children );
+                        }
+                        children.add( currentRow );
 
-                            SQLIdentifier hrefCol = null;
-                            if ( ( (FeatureMapping) mapping ).getHrefMapping() != null ) {
-                                hrefCol = new SQLIdentifier( ( (FeatureMapping) mapping ).getHrefMapping().toString() );
-                            }
-                            ref.addHrefingRow( currentRow, hrefCol );
-                            
-                            if (!delayedRows.contains( subFeatureRow )) {
-                                // sub feature already inserted, propagate key values right away
-                                currentRow.removeParent( subFeatureRow );
-                            }
+                        SQLIdentifier hrefCol = null;
+                        if ( ( (FeatureMapping) mapping ).getHrefMapping() != null ) {
+                            hrefCol = new SQLIdentifier( ( (FeatureMapping) mapping ).getHrefMapping().toString() );
+                        }
+                        ref.addHrefingRow( currentRow, hrefCol );
+
+                        if ( !delayedRows.contains( subFeatureRow ) ) {
+                            // sub feature already inserted, propagate key values right away
+                            currentRow.removeParent( subFeatureRow );
                         }
                     }
                 }
             } else if ( mapping instanceof CompoundMapping ) {
                 for ( Mapping child : ( (CompoundMapping) mapping ).getParticles() ) {
-                    buildInsertRows( value, child, currentRow );
+                    buildInsertRows( value, child, currentRow, additionalRows );
                 }
             } else {
                 LOG.warn( "Unhandled mapping type '" + mapping.getClass() + "'." );
@@ -365,7 +374,7 @@ public class InsertRowManager {
         if ( mapping.getValueFtName() != null ) {
             ftName = mapping.getValueFtName();
             // may be abstract, so take any concrete substitution feature type
-            ftName = getSchema().getConcreteSubtypes( getSchema().getFeatureType( ftName ))[0].getName();
+            ftName = getSchema().getConcreteSubtypes( getSchema().getFeatureType( ftName ) )[0].getName();
         }
         FeatureTypeMapping ftMapping = getSchema().getFtMapping( ftName );
         TableName ftTable = ftMapping.getFtTable();
@@ -375,13 +384,15 @@ public class InsertRowManager {
         }
 
         // must be the other way round
-        Set<SQLIdentifier> joinTableGenColumns = tableDeps.getGenColumns( join.getFromTable() );
-        if ( !joinTableGenColumns.contains( fromColumn ) ) {
-            String msg = "Invalid feature property join configuration.";
-            throw new FeatureStoreException( msg );
-        }
-
-        return new KeyPropagation( join.getFromTable(), fromColumn, ftTable, toColumn );
+        throw new UnsupportedOperationException(
+                                                 "Propagating feature property fks from join tables into target feature tables is not supported yet. " );
+        // Set<SQLIdentifier> joinTableGenColumns = tableDeps.getGenColumns( join.getFromTable() );
+        // if ( !joinTableGenColumns.contains( fromColumn ) ) {
+        // String msg = "Invalid feature property join configuration.";
+        // throw new FeatureStoreException( msg );
+        // }
+        //
+        // return new KeyPropagation( join.getFromTable(), fromColumn, ftTable, toColumn );
     }
 
     private JoinRow buildJoinRow( InsertRow row, TableJoin join )

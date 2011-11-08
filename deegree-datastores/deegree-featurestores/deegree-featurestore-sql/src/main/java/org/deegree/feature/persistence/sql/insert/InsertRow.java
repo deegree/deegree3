@@ -134,10 +134,6 @@ abstract class InsertRow extends TransactionRow {
         }
     }
 
-    boolean isInserted() {
-        return isInserted();
-    }
-
     void addParent( ParentRowReference ref ) {
         parentToRef.put( ref.getTarget(), ref );
     }

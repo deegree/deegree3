@@ -41,6 +41,17 @@ import java.util.Map;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.feature.persistence.sql.id.KeyPropagation;
 
+/**
+ * A reference from an {@link InsertRow} to a parent {@link InsertRow}.
+ * <p>
+ * The parent provides values for foreign key columns.
+ * </p>
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 class ParentRowReference {
 
     private final InsertRow parent;
@@ -58,6 +69,11 @@ class ParentRowReference {
         return parent;
     }
 
+    /**
+     * Returns the {@link KeyPropagation} from the parent {@link InsertRow}.
+     * 
+     * @return key propagation, never <code>null</code>
+     */
     KeyPropagation getKeyPropagation() {
         return propagation;
     }
@@ -65,7 +81,7 @@ class ParentRowReference {
     void addHrefingRow( InsertRow row, SQLIdentifier hrefCol ) {
         hrefingRows.put( row, hrefCol );
     }
-    
+
     boolean isHrefed( InsertRow childInsertRow ) {
         return hrefingRows.containsKey( childInsertRow );
     }
