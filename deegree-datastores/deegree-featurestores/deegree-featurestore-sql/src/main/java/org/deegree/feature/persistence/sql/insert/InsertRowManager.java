@@ -114,7 +114,7 @@ public class InsertRowManager {
 
     private final TableDependencies tableDeps;
 
-    // key: original feature id (from processed Feature or FeatureReference), value: feature row
+    // key: original feature id (from Feature or FeatureReference), value: feature row
     private final Map<String, FeatureRow> origFidToFeatureRow = new HashMap<String, FeatureRow>();
 
     // key: insert row, value: dependent rows (never null)
@@ -122,6 +122,9 @@ public class InsertRowManager {
 
     // values: rows that have not been inserted yet
     private final Set<InsertRow> delayedRows = new HashSet<InsertRow>();
+
+    // values: rows that have not been inserted yet, but can be inserted (no parents)
+    private final Set<InsertRow> rootRows = new HashSet<InsertRow>();
 
     /**
      * Creates a new {@link InsertRowManager} instance.
@@ -171,21 +174,17 @@ public class InsertRowManager {
                 buildInsertRows( feature, particleMapping, featureRow, allRows );
             }
 
-            LOG.debug( "Built feature row for feature '" + feature.getId() + "': " + featureRow );
-            LOG.debug( "Additional rows: " + allRows.size() );
+            LOG.debug( "Built rows for feature '" + feature.getId() + "': " + allRows.size() );
 
-            while ( true ) {
-                boolean found = false;
-                for ( InsertRow row : allRows ) {
-                    if ( delayedRows.contains( row ) && !row.hasParents() ) {
-                        found = true;
-                        insertRow( row );
-                    }
-                }
-                if ( !found ) {
-                    break;
+            for ( InsertRow insertRow : allRows ) {
+                if ( !insertRow.hasParents() ) {
+                    rootRows.add( insertRow );
                 }
             }
+
+            LOG.debug( "Before heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size());
+            processHeap();
+            LOG.debug( "After heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size());
 
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
@@ -445,26 +444,33 @@ public class InsertRowManager {
         return prop;
     }
 
-    private void insertRow( InsertRow row )
+    private void processHeap()
                             throws SQLException, FeatureStoreException {
 
-        if ( !row.hasParents() ) {
-            LOG.debug( "Inserting row " + row );
-            row.performInsert( conn, rowToChildRows.get( row ) != null );
-            delayedRows.remove( row );
+        while ( !rootRows.isEmpty() ) {
+            List<InsertRow> rootRemoves = new ArrayList<InsertRow>();
+            List<InsertRow> rootAdds = new ArrayList<InsertRow>();
+            for ( InsertRow row : rootRows ) {
+                LOG.debug( "Inserting row " + row );
+                row.performInsert( conn, rowToChildRows.get( row ) != null );
+                delayedRows.remove( row );
+                rootRemoves.add( row );
 
-            // try to insert child rows (there may still be other parents)
-            List<InsertRow> childRows = rowToChildRows.get( row );
-            if ( childRows != null ) {
-                for ( InsertRow childRow : childRows ) {
-                    LOG.debug( "Child row: " + childRow );
-                    childRow.removeParent( row );
-                    insertRow( childRow );
+                // update child rows
+                List<InsertRow> childRows = rowToChildRows.get( row );
+                if ( childRows != null ) {
+                    for ( InsertRow childRow : childRows ) {
+                        LOG.debug( "Child row: " + childRow );
+                        childRow.removeParent( row );
+                        if ( !childRow.hasParents() ) {
+                            rootAdds.add( childRow );
+                        }
+                    }
+                    rowToChildRows.remove( row );
                 }
-                rowToChildRows.remove( row );
             }
-        } else {
-            LOG.debug( "Insert of row " + row + " still blocked. Has uninserted parents." );
+            rootRows.removeAll( rootRemoves );
+            rootRows.addAll( rootAdds );
         }
     }
 
