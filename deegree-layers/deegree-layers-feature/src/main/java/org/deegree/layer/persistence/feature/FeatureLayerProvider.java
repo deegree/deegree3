@@ -126,10 +126,12 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             String name = ft.getName().getLocalPart();
             LayerMetadata md = new LayerMetadata( name, null, null );
             Map<String, Style> styles = new HashMap<String, Style>();
-            for ( Style s : sstore.getAll( name ) ) {
-                styles.put( s.getName(), s );
-                if ( !styles.containsKey( "default" ) ) {
-                    styles.put( "default", s );
+            if ( sstore != null ) {
+                for ( Style s : sstore.getAll( name ) ) {
+                    styles.put( s.getName(), s );
+                    if ( !styles.containsKey( "default" ) ) {
+                        styles.put( "default", s );
+                    }
                 }
             }
             if ( !styles.containsKey( "default" ) ) {
