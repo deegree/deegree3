@@ -288,15 +288,16 @@ public class InsertRowManager {
                 }
 
                 if ( subFeatureRow != null ) {
-                    if ( subFeatureRow.getNewId() != null ) {
-                        href = "#" + subFeatureRow.getNewId();
-                    }
+
+                    // TODO: pure href propagation (no fk)
+                    
                     if ( jc.isEmpty() ) {
                         LOG.debug( "Skipping feature mapping (fk). Not mapped to database column." );
                     } else {
                         TableJoin join = jc.get( 0 );
                         KeyPropagation keyPropagation = getKeyPropagation( (FeatureMapping) mapping, join );
                         if ( keyPropagation.getPKTable().equals( join.getFromTable() ) ) {
+                            // inverse: fk in subfeature table
                             ParentRowReference ref = new ParentRowReference( currentRow, keyPropagation );
                             subFeatureRow.addParent( ref );
                             List<InsertRow> children = rowToChildRows.get( currentRow );
@@ -306,7 +307,7 @@ public class InsertRowManager {
                             }
                             children.add( subFeatureRow );
                         } else {
-                            // standard: fk to feature id column
+                            // standard: pk in subfeature table (usually feature id)
                             ParentRowReference ref = new ParentRowReference( subFeatureRow, keyPropagation );
                             currentRow.addParent( ref );
                             List<InsertRow> children = rowToChildRows.get( subFeatureRow );
@@ -321,6 +322,11 @@ public class InsertRowManager {
                                 hrefCol = new SQLIdentifier( ( (FeatureMapping) mapping ).getHrefMapping().toString() );
                             }
                             ref.addHrefingRow( currentRow, hrefCol );
+                            
+                            if (!delayedRows.contains( subFeatureRow )) {
+                                // sub feature already inserted, propagate key values right away
+                                currentRow.removeParent( subFeatureRow );
+                            }
                         }
                     }
                 }
