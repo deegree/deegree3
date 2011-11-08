@@ -440,6 +440,12 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                           ComplexParticleJAXB config ) {
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
         elDecl = schemaWalker.getTargetElement( elDecl, path );
+
+        List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
+        if ( joinedTable != null ) {
+            currentTable = joinedTable.get( joinedTable.size() - 1 ).getToTable();
+        }
+
         List<JAXBElement<? extends AbstractParticleJAXB>> children = config.getAbstractParticle();
         List<Mapping> particles = new ArrayList<Mapping>( children.size() );
         for ( JAXBElement<? extends AbstractParticleJAXB> child : children ) {
@@ -448,7 +454,6 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 particles.add( particle );
             }
         }
-        List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         return new CompoundMapping( path, elDecl.second, particles, joinedTable, elDecl.first );
     }
 }
