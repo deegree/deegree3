@@ -87,7 +87,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 
-    private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.1.0/metadata.xsd" );
+    private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.2.0/metadata.xsd" );
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to OWS instances
     private final Map<String, List<OWS>> ogcNameToService = new HashMap<String, List<OWS>>();
@@ -125,7 +125,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
         try {
             URL mdurl;
             if ( !metadata.exists() ) {
-                mdurl = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.1.0/example.xml" );
+                mdurl = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.2.0/example.xml" );
                 String msg = "No 'services/metadata.xml' file, assuming defaults.";
                 LOG.debug( msg );
             } else {
