@@ -104,6 +104,8 @@ public class FeatureLayerProvider implements LayerStoreProvider {
 
     private MultipleLayerStore createInAutoMode( AutoLayers auto )
                             throws ResourceInitException {
+        LOG.debug( "Creating feature layers for all feature types automatically." );
+
         Map<String, Layer> map = new HashMap<String, Layer>();
         FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
         String id = auto.getFeatureStoreId();
@@ -150,6 +152,8 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             if ( lays.getAutoLayers() != null ) {
                 return createInAutoMode( lays.getAutoLayers() );
             }
+
+            LOG.debug( "Creating configured feature layers only." );
 
             FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
             String id = lays.getFeatureStoreId();
