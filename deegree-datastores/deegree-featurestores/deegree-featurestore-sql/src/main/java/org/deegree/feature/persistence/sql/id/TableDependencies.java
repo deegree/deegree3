@@ -107,6 +107,7 @@ public class TableDependencies {
             }
 
             for ( TableJoin join : joins ) {
+                boolean found = false;
                 TableName joinTable = join.getToTable();
 
                 // check for propagations from current table to joined table
@@ -120,6 +121,7 @@ public class TableDependencies {
                         LOG.debug( "Found key propagation (to join table): " + prop );
                         addChild( currentTable, prop );
                         addParent( joinTable, prop );
+                        found = true;
                     }
                 }
 
@@ -131,12 +133,20 @@ public class TableDependencies {
                         SQLIdentifier fromColumn = join.getFromColumns().get( i );
                         SQLIdentifier toColumn = join.getToColumns().get( i );
                         if ( autoGenColumn.equals( toColumn ) ) {
-                            KeyPropagation prop = new KeyPropagation( joinTable, toColumn, join.getFromTable(), fromColumn );
+                            KeyPropagation prop = new KeyPropagation( joinTable, toColumn, join.getFromTable(),
+                                                                      fromColumn );
                             LOG.debug( "Found key propagation (from join table): " + prop );
                             addChild( joinTable, prop );
                             addParent( currentTable, prop );
+                            found = true;
                         }
                     }
+                }
+
+                if ( !found ) {
+                    String msg = "Mapping configuration not transaction capable. Join " + join
+                                 + " does not contain key generator on either side.";
+                    LOG.warn( msg );
                 }
 
                 currentTable = joinTable;
