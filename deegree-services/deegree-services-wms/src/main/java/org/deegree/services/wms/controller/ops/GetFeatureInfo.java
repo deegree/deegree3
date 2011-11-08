@@ -217,7 +217,7 @@ public class GetFeatureInfo {
             throw new OWSException( get( "WMS.NOT_A_NUMBER", "J", ys ), OWSException.INVALID_PARAMETER_VALUE );
         }
 
-        if ( x > width || y > height || x < 1 || y < 1 ) {
+        if ( x >= width || y >= height || x < 0 || y < 0 ) {
             throw new OWSException( get( "WMS.INVALID_POINT" ), OWSException.INVALID_POINT );
         }
 
@@ -331,7 +331,8 @@ public class GetFeatureInfo {
             try {
                 featureCount = parseInt( fc );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "FEATURE_COUNT", fc ), OWSException.INVALID_PARAMETER_VALUE );
+                throw new OWSException( get( "WMS.NOT_A_NUMBER", "FEATURE_COUNT", fc ),
+                                        OWSException.INVALID_PARAMETER_VALUE );
             }
         }
 

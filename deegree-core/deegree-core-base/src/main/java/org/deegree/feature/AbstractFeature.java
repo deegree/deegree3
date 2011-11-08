@@ -197,8 +197,11 @@ public abstract class AbstractFeature implements Feature {
         } else if ( node instanceof ElementNode ) {
             // e.g. INSPIRE Address geometry
             ElementNode xml = (ElementNode) node;
-            for ( TypedObjectNode child : xml.getChildren() ) {
-                env = mergeEnvelope( child, env );
+            List<TypedObjectNode> children = xml.getChildren();
+            if ( children != null ) {
+	            for ( TypedObjectNode child : children ) {
+	                env = mergeEnvelope( child, env );
+	            }
             }
         }
         return env;

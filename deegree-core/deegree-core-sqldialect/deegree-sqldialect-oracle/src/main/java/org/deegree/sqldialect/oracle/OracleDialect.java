@@ -63,6 +63,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.SQLDialect;
@@ -190,11 +191,14 @@ public class OracleDialect implements SQLDialect {
     @Override
     public Envelope getBBoxAggregateValue( ResultSet rs, int colIdx, ICRS crs ) {
         try {
-            return new OracleGeometryConverter( null, crs, "0" ).toParticle( rs, colIdx ).getEnvelope();
+            Geometry p = new OracleGeometryConverter( null, crs, "0" ).toParticle( rs, colIdx );
+            if ( p != null ) {
+                return p.getEnvelope();
+            }
         } catch ( SQLException e ) {
-            LOG.warn( "Could not detemine aggregated envelope, using world." );
             LOG.trace( "Stack trace:", e );
         }
+        LOG.warn( "Could not determine aggregated envelope, using world." );
         return new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 );
     }
 
