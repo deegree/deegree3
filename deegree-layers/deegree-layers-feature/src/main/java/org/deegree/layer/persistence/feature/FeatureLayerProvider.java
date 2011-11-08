@@ -66,10 +66,12 @@ import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
@@ -124,7 +126,19 @@ public class FeatureLayerProvider implements LayerStoreProvider {
 
         for ( FeatureType ft : store.getSchema().getFeatureTypes() ) {
             String name = ft.getName().getLocalPart();
-            LayerMetadata md = new LayerMetadata( name, null, null );
+            List<ICRS> crs = new ArrayList<ICRS>();
+            Envelope envelope = null;
+            try {
+                envelope = store.getEnvelope( ft.getName() );
+            } catch ( FeatureStoreException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            if ( envelope != null ) {
+                crs.add( envelope.getCoordinateSystem() );
+            }
+            SpatialMetadata smd = new SpatialMetadata( envelope, crs );
+            LayerMetadata md = new LayerMetadata( name, null, smd );
             Map<String, Style> styles = new HashMap<String, Style>();
             if ( sstore != null ) {
                 for ( Style s : sstore.getAll( name ) ) {

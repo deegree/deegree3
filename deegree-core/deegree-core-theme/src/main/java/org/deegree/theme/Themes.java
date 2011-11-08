@@ -61,6 +61,9 @@ public class Themes {
      */
     public static List<Layer> getAllLayers( Theme t ) {
         List<Layer> list = new ArrayList<Layer>();
+        if ( t == null ) {
+            return list;
+        }
         list.addAll( t.getLayers() );
         for ( Theme c : t.getThemes() ) {
             list.addAll( getAllLayers( c ) );
@@ -100,6 +103,9 @@ public class Themes {
         }
         for ( Layer l : theme.getLayers() ) {
             SpatialMetadata smd = l.getMetadata().getSpatialMetadata();
+            if ( smd == null ) {
+                continue;
+            }
             if ( smd.getEnvelope() != null ) {
                 if ( env == null ) {
                     env = smd.getEnvelope();
