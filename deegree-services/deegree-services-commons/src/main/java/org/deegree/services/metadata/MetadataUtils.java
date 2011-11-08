@@ -91,7 +91,9 @@ public class MetadataUtils {
         public Pair<List<LanguageString>, CodeType> apply( KeywordsType u ) {
             Pair<List<LanguageString>, CodeType> p = new Pair<List<LanguageString>, CodeType>();
             p.first = map( u.getKeyword(), LANG_LANG_MAPPER );
-            p.second = CODE_TYPE_MAPPER.apply( u.getType() );
+            if ( u.getType() != null ) {
+                p.second = CODE_TYPE_MAPPER.apply( u.getType() );
+            }
             return p;
         }
     };
@@ -104,12 +106,15 @@ public class MetadataUtils {
         if ( si == null ) {
             return null;
         }
-        // TODO Keywords
+        List<Pair<List<LanguageString>, CodeType>> keywords = null;
+        if ( si.getKeywords() != null ) {
+            keywords = map( si.getKeywords(), KW_MAPPER );
+        }
         List<LanguageString> titles = map( si.getTitle(), LANG_MAPPER );
         List<LanguageString> abstracts = map( si.getAbstract(), LANG_MAPPER );
         String fees = si.getFees();
         List<String> accessConstraints = si.getAccessConstraints();
-        return new ServiceIdentification( null, titles, abstracts, null, null, null, null, fees, accessConstraints );
+        return new ServiceIdentification( null, titles, abstracts, keywords, null, null, null, fees, accessConstraints );
     }
 
     public static Address convertFromJAXB( AddressType ad ) {
