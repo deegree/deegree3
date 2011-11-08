@@ -128,4 +128,9 @@ public class TableJoin implements MappingExpression {
     public Map<SQLIdentifier, IDGenerator> getKeyColumnToGenerator() {
         return keyColumnToGenerator;
     }
+
+    @Override
+    public String toString() {
+        return fromTable + "." + fromColumns + " <-> " + toTable + "." + toColumns;
+    }
 }

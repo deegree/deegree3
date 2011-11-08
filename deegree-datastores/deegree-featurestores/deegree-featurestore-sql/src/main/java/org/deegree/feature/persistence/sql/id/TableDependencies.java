@@ -222,6 +222,10 @@ public class TableDependencies {
     public KeyPropagation getKeyPropagation( TableName fromTable, List<SQLIdentifier> fromColumns, TableName toTable,
                                              List<SQLIdentifier> toColumns ) {
 
+        if ( fromColumns.size() != 1 ) {
+            throw new UnsupportedOperationException( "Multi-column joins are not support for INSERT key propagation." );
+        }
+
         SQLIdentifier fromColumn = fromColumns.get( 0 );
         SQLIdentifier toColumn = toColumns.get( 0 );
 
