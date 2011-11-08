@@ -540,14 +540,14 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
                                                                       geomType, dim, crs, srid );
-                        columnNameToMD.put( new SQLIdentifier( column.toLowerCase() ), columnMd );
+                        columnNameToMD.put( new SQLIdentifier( column ), columnMd );
                     } else {
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
                                                                       isAutoincrement );
-                        columnNameToMD.put( new SQLIdentifier( column.toLowerCase() ), columnMd );
+                        columnNameToMD.put( new SQLIdentifier( column ), columnMd );
                     }
                 }
-                tableNameToColumns.put( new TableName( qTable.toString().toLowerCase() ), columnNameToMD );
+                tableNameToColumns.put( new TableName( qTable.toString() ), columnNameToMD );
             } finally {
                 JDBCUtils.close( rs );
             }
