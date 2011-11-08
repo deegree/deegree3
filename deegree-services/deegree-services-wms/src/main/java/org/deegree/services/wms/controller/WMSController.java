@@ -909,7 +909,10 @@ public class WMSController extends AbstractOWS {
 
         WMSControllerBase controller = requestVersion == null ? null : controllers.get( requestVersion );
         if ( controller == null ) {
-            controller = controllers.values().iterator().next();
+            Iterator<WMSControllerBase> iterator = controllers.values().iterator();
+            while ( iterator.hasNext() ) {
+                controller = iterator.next();
+            }
         }
         return new Pair<XMLExceptionSerializer<OWSException>, String>( controller.EXCEPTIONS, controller.EXCEPTION_MIME );
     }
