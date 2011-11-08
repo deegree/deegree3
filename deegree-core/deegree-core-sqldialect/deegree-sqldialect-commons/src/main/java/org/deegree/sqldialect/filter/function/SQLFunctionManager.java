@@ -104,16 +104,22 @@ public class SQLFunctionManager extends AbstractBasicResourceManager {
         return getFunctionProviders().get( name.toLowerCase() );
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[0];
     }
 
+    @Override
     public ResourceManagerMetadata<?> getMetadata() {
         return null;
     }
 
+    @Override
     public void shutdown() {
+        if ( functionLoader == null ) {
+            return;
+        }
         for ( SQLFunctionProvider fp : functionLoader ) {
             try {
                 fp.destroy();
@@ -128,6 +134,7 @@ public class SQLFunctionManager extends AbstractBasicResourceManager {
         nameToFunction = null;
     }
 
+    @Override
     public void startup( DeegreeWorkspace ws )
                             throws ResourceInitException {
         functionLoader = ServiceLoader.load( SQLFunctionProvider.class, ws.getModuleClassLoader() );
