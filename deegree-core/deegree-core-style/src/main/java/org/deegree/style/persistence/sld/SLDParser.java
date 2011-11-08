@@ -141,6 +141,7 @@ public class SLDParser {
                             || in.getLocalName().equals( "CoverageStyle" )
                             || in.getLocalName().equals( "OnlineResource" ) ) {
                         Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
+                        style.setName( styleName );
                         styles.add( style );
                         in.nextTag();
                     }

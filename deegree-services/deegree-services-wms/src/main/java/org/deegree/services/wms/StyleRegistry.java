@@ -449,6 +449,7 @@ public class StyleRegistry extends TimerTask {
                     if ( store != null ) {
                         LOG.info( "Using SLD file loaded from style store." );
                         for ( Style s : store.getAll( namedLayer ) ) {
+                            s.setName( map.get( s.getName() ) );
                             put( layerName, s, false );
                             Pair<File, URL> p = legends.get( s.getName() );
                             if ( p != null && p.first != null ) {
