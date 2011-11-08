@@ -88,8 +88,11 @@ import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
- * @author stranger
  * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
+ * 
+ * @version $Revision: $, $Date: $
  */
 public class FeatureLayerProvider implements LayerStoreProvider {
 
@@ -130,9 +133,9 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             Envelope envelope = null;
             try {
                 envelope = store.getEnvelope( ft.getName() );
-            } catch ( FeatureStoreException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch ( Throwable e ) {
+                LOG.debug( "Could not get envelope from feature store: {}", e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
             }
             if ( envelope != null ) {
                 crs.add( envelope.getCoordinateSystem() );
