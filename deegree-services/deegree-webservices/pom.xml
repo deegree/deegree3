@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.1</version>
   </parent>
 
   <repositories>
@@ -131,12 +131,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
-      <version>3.1.1-SNAPSHOT</version>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-console</artifactId>
-      <version>3.1.1-SNAPSHOT</version>
+      <version>3.1.1</version>
     </dependency>
   </dependencies>
 
