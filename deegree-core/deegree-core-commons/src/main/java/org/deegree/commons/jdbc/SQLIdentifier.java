@@ -158,16 +158,16 @@ public class SQLIdentifier implements Comparable<SQLIdentifier> {
         }
         if ( qualifier != null ) {
             if ( isEscaped ) {
-                sb.append( qualifier.toUpperCase() );
-            } else {
                 sb.append( qualifier );
+            } else {
+                sb.append( qualifier.toUpperCase() );
             }
             sb.append( "." );
         }
         if ( isEscaped ) {
-            sb.append( name.toUpperCase() );
-        } else {
             sb.append( name );
+        } else {
+            sb.append( name.toUpperCase() );
         }
         if ( isEscaped ) {
             sb.append( escapeEndChar );
