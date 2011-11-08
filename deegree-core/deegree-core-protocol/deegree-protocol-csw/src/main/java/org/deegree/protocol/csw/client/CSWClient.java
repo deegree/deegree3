@@ -36,6 +36,7 @@
 package org.deegree.protocol.csw.client;
 
 import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.GetRecords;
+import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.Transaction;
 
 import java.io.IOException;
 import java.net.URL;
@@ -57,9 +58,12 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.client.getrecords.GetRecords;
 import org.deegree.protocol.csw.client.getrecords.GetRecordsResponse;
 import org.deegree.protocol.csw.client.getrecords.GetRecordsXMLEncoder;
+import org.deegree.protocol.csw.client.transaction.TransactionResponse;
+import org.deegree.protocol.csw.client.transaction.TransactionXMLEncoder;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.ows.metadata.OperationsMetadata;
 
 /**
  * API-level client for accessing servers that implement the <a
@@ -96,7 +100,9 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     @Override
     protected CSWCapabilitiesAdapter getCapabilitiesAdapter( OMElement rootEl, String version )
                             throws IOException {
-        return new CSWCapabilitiesAdapter();
+        CSWCapabilitiesAdapter cswCapAdapter = new CSWCapabilitiesAdapter();
+        cswCapAdapter.setRootElement( rootEl );
+        return cswCapAdapter;
     }
 
     public GetRecordsResponse getIsoRecords( ResultType resultType, ReturnableElement elementSetName, Filter constraint )
@@ -161,12 +167,27 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         throw new UnsupportedOperationException( "GetRecordById is not implemented yet!" );
     }
 
-    public boolean insert( OMElement record ) {
-        throw new UnsupportedOperationException( "Transactions are not implemented yet!" );
+    public TransactionResponse insert( OMElement record )
+                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+        return insert( Collections.singletonList( record ) );
     }
-    
-    public boolean insert( List<OMElement> record ) {
-        throw new UnsupportedOperationException( "Transactions are not implemented yet!" );
+
+    public TransactionResponse insert( List<OMElement> records )
+                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+        ckeckOperationSupported( Transaction.name() );
+        URL endPoint = getPostUrl( Transaction.name() );
+
+        StreamBufferStore request = new StreamBufferStore();
+        try {
+            XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( request );
+            TransactionXMLEncoder.exportInsert( records, xmlWriter );
+            xmlWriter.close();
+            request.close();
+        } catch ( Throwable t ) {
+            throw new RuntimeException( "Error insering " + records.size() + " records" );
+        }
+        OWSResponse response = doPost( endPoint, "text/xml", request, null );
+        return new TransactionResponse( response );
     }
 
     public boolean update( String fileIdentifier, OMElement record ) {
@@ -183,6 +204,13 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
     public boolean deleteAll() {
         throw new UnsupportedOperationException( "Transactions are not implemented yet!" );
+    }
+
+    private void ckeckOperationSupported( String operationName )
+                            throws UnsupportedOperationException {
+        OperationsMetadata om = getOperations();
+        if ( om.getOperation( operationName ) == null )
+            throw new UnsupportedOperationException( "Operation " + operationName + " is not supported!" );
     }
 
 }
