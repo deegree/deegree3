@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.deegree</groupId>
 		<artifactId>deegree-processproviders</artifactId>
-		<version>3.2-pre1</version>
+		<version>3.2-pre2-SNAPSHOT</version>
 	</parent>
 
 	<repositories>
@@ -36,12 +36,12 @@
 		<dependency>
 			<groupId>org.deegree</groupId>
 			<artifactId>deegree-services-wps</artifactId>
-			<version>3.2-pre1</version>
+			<version>3.2-pre2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.deegree</groupId>
 			<artifactId>deegree-core-rendering-2d</artifactId>
-			<version>3.2-pre1</version>
+			<version>3.2-pre2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
