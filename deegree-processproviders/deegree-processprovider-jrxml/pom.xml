@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-processprovider-jrxml</artifactId>
   <packaging>jar</packaging>
@@ -8,7 +7,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-processproviders</artifactId>
-    <version>3.2-pre1-SNAPSHOT</version>
+    <version>3.2-pre1</version>
   </parent>
 
   <repositories>
@@ -37,17 +36,17 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wps</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-remoteows-wms</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-rendering-2d</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jasperreports</groupId>
