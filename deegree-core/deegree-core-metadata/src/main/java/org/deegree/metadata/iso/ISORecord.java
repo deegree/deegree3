@@ -238,7 +238,11 @@ public class ISORecord implements MetadataRecord {
         for ( BoundingBox box : bboxList ) {
             CRS bboxCRS = pElem.getQueryableProperties().getCrs().get( counter );
             // convert to the deegree CRSCodeType - this is not nice!
-            CRSCodeType crsCT = new CRSCodeType( bboxCRS.getCrsId(), bboxCRS.getAuthority() );
+            CRSCodeType crsCT;
+            if ( bboxCRS.getAuthority() != null )
+                crsCT = new CRSCodeType( bboxCRS.getCrsId(), bboxCRS.getAuthority() );
+            else
+                crsCT = new CRSCodeType( bboxCRS.getCrsId() );
             ICRS crs = CRSManager.getCRSRef( crsCT.toString() );
             env[counter++] = new GeometryFactory().createEnvelope( box.getWestBoundLongitude(),
                                                                    box.getSouthBoundLatitude(),
@@ -352,9 +356,9 @@ public class ISORecord implements MetadataRecord {
                             throws FactoryConfigurationError {
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream( 20000 );           
+            ByteArrayOutputStream out = new ByteArrayOutputStream( 20000 );
             root.serialize( out );
-            out.close();            
+            out.close();
             return out.toByteArray();
         } catch ( XMLStreamException e ) {
             return root.toString().getBytes();
@@ -468,7 +472,6 @@ public class ISORecord implements MetadataRecord {
     public OMElement getNodeFromXPath( XPath xpath ) {
         return new XMLAdapter().getElement( root, xpath );
     }
-    
 
     public String[] getStringsFromXPath( XPath xpath ) {
         return new XMLAdapter().getNodesAsStrings( root, xpath );
