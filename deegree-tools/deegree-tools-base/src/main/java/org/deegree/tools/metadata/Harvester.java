@@ -234,7 +234,7 @@ public class Harvester {
     }
 
     private static void printHelp( Options options ) {
-        String help = "Reads records from the passed CSW, validates them against the INSPIRE metadata validator and write all records and the validation results in the output directory.";
+        String help = "Harvests metadata records from directory and insert them in the CSW.";
         CommandUtils.printHelp( options, Harvester.class.getSimpleName(), help, null );
     }
 
