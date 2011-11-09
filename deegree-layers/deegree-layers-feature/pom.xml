@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-layers</artifactId>
-    <version>3.2-pre1-SNAPSHOT</version>
+    <version>3.2-pre1</version>
   </parent>
 
   <repositories>
@@ -44,12 +44,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-layer</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
   </dependencies>
 

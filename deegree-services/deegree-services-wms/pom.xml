@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.2-pre1-SNAPSHOT</version>
+    <version>3.2-pre1</version>
   </parent>
 
   <repositories>
@@ -37,12 +37,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-rendering-2d</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-filterfunctions</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -52,32 +52,32 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-commons</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-commons</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-theme</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-simplesql</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-shape</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-protocol-wms</artifactId>
-      <version>3.2-pre1-SNAPSHOT</version>
+      <version>3.2-pre1</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
