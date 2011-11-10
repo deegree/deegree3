@@ -1,6 +1,4 @@
-<?xml version="1.0" ?>
-<deegreeWMS xmlns="http://www.deegree.org/services/wms" configVersion="0.6.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.6.0/wms_configuration.xsd">
+<deegreeWMS xmlns="http://www.deegree.org/services/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.1.0" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/3.1.0/wms_configuration.xsd">
 
   <SupportedVersions>
     <Version>1.1.1</Version>
@@ -760,14 +758,14 @@
               <Name>Flurstuecksnummer</Name>
               <Title>Flurstücksnummer</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_Flurstueck_Flurstuecksnummer.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_Flurstuecksnummer.se</File>
@@ -778,14 +776,14 @@
               <Name>Zuordnungspfeil</Name>
               <Title>Zuordnungspfeil</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_LPO_Zuordnungspfeil.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_LPO_ZuordnungspfeilARZ.se</File>
@@ -795,7 +793,7 @@
             <RequestableLayer>
               <Name>FlurstuecksUeberhaken</Name>
               <Title>Flurstücks-Überhaken</Title>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PPO_Haken.se</File>
@@ -804,7 +802,7 @@
             <RequestableLayer>
               <Name>Flurnummer</Name>
               <Title>Flurnummer</Title>
-              <ScaleDenominators max="5000" min="0" />
+              <ScaleDenominators max="5000" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_Flurnummer.se</File>
@@ -835,7 +833,7 @@
             <RequestableLayer>
               <Name>LagebezeichnungMitHausnummer</Name>
               <Title>Lagebezeichnung mit Hausnummer</Title>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_LagebezeichnungMitHausnummer.se</File>
@@ -844,7 +842,7 @@
             <RequestableLayer>
               <Name>LagebezeichnungMitPseudonummer</Name>
               <Title>Lagebezeichnung mit Pseudonummer</Title>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_LagebezeichnungMitPseudonummer.se</File>
@@ -860,14 +858,14 @@
             <Name>GebaeudeName</Name>
             <Title>Gebäude, Name</Title>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AX_GebaeudeName.se</File>
               </DirectStyle>
             </LogicalLayer>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_Gebaeude_Name.se</File>
@@ -878,21 +876,21 @@
             <Name>Gebaeudefunktion</Name>
             <Title>Gebäudefunktion</Title>
             <LogicalLayer>
-              <ScaleDenominators max="5000" min="0" />
+              <ScaleDenominators max="5000" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AX_Gebaeude_gebaeudefunktion.se</File>
               </DirectStyle>
             </LogicalLayer>
             <LogicalLayer>
-              <ScaleDenominators max="5000" min="0" />
+              <ScaleDenominators max="5000" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_Gebaeude_Gebaeudefunktion.se</File>
               </DirectStyle>
             </LogicalLayer>
             <LogicalLayer>
-              <ScaleDenominators max="5000" min="0" />
+              <ScaleDenominators max="5000" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PPO_GebaeudeFunktion.se</File>
@@ -903,14 +901,14 @@
             <Name>DachformGebaeude</Name>
             <Title>Gebäude, Dachform</Title>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AX_GebaeudeDachform.se</File>
               </DirectStyle>
             </LogicalLayer>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_Gebaeude_Dachform.se</File>
@@ -921,14 +919,14 @@
             <Name>GebaeudeZustand</Name>
             <Title>Gebäude, Zustand</Title>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AX_GebaeudeZustand.se</File>
               </DirectStyle>
             </LogicalLayer>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_Gebaeude_Zustand.se</File>
@@ -939,14 +937,14 @@
             <Name>GeschossanzahlGebaeude</Name>
             <Title>Gebäude, Anzahl der Geschosse</Title>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AX_GebaeudeGeschosse.se</File>
               </DirectStyle>
             </LogicalLayer>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_Gebaeude_Geschosse.se</File>
@@ -957,7 +955,7 @@
             <Name>DachformBauteil</Name>
             <Title>Bauteil, Dachform</Title>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AX_BauteilDachform.se</File>
@@ -968,14 +966,14 @@
             <Name>GeschossanzahlBauteil</Name>
             <Title>Bauteil, Anzahl der oberirdischen Geschosse</Title>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AX_BauteilGeschosse.se</File>
               </DirectStyle>
             </LogicalLayer>
             <LogicalLayer>
-              <ScaleDenominators max="2500" min="0" />
+              <ScaleDenominators max="2500" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_Bauteil_Geschosse.se</File>
@@ -994,14 +992,14 @@
               <Name>HafenbeckenName</Name>
               <Title>Hafenbecken, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_HafenbeckenName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_HafenbeckenName.se</File>
@@ -1012,14 +1010,14 @@
               <Name>MeerName</Name>
               <Title>Meer, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_MeerName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_MeerName.se</File>
@@ -1034,14 +1032,14 @@
               <Name>WohnbauflaecheName</Name>
               <Title>Wohnbaufläche, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_WohnbauflaecheName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_WohnbauflaecheName.se</File>
@@ -1052,14 +1050,14 @@
               <Name>IndustrieUndGewerbeflaecheName</Name>
               <Title>Industrie- und Gewerbefläche, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_IndustrieUndGewerbeflaecheName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_IndustrieUndGewerbeflaecheName.se</File>
@@ -1070,14 +1068,14 @@
               <Name>HaldeName</Name>
               <Title>Halde, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_HaldeName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_HaldeName.se</File>
@@ -1088,14 +1086,14 @@
               <Name>BergbaubetriebName</Name>
               <Title>Bergbaubetrieb, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_BergbaubetriebName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_BergbaubetriebName.se</File>
@@ -1106,14 +1104,14 @@
               <Name>FlaecheGemischterNutzungName</Name>
               <Title>Fläche gemischter Nutzung, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_FlaecheGemischterNutzungName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_FlaecheGemischterNutzungName.se</File>
@@ -1124,14 +1122,14 @@
               <Name>FlaecheBesondererFunktionalerPraegungName</Name>
               <Title>Fläche besonderer funktionaler Prägung, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_FlaecheBesondererFunktionalerPraegungName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_FlaecheBesondererFunktionalerPraegungName.se</File>
@@ -1142,14 +1140,14 @@
               <Name>SportFreizeitUndErholungsflaecheName</Name>
               <Title>Sport-, Freizeit- und Erholungsfläche, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_SportFreizeitUndErholungsflaecheName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_SportFreizeitUndErholungsflaecheName.se</File>
@@ -1160,14 +1158,14 @@
               <Name>FriedhofName</Name>
               <Title>Friedhof, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_FriedhofName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_FriedhofName.se</File>
@@ -1182,14 +1180,14 @@
               <Name>LandwirtschaftName</Name>
               <Title>Landwirtschaft, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_LandwirtschaftName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_LandwirtschaftName.se</File>
@@ -1200,14 +1198,14 @@
               <Name>WaldName</Name>
               <Title>Wald, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_WaldName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_WaldName.se</File>
@@ -1218,14 +1216,14 @@
               <Name>GehoelzName</Name>
               <Title>Gehölz, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_GehoelzName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_GehoelzName.se</File>
@@ -1236,14 +1234,14 @@
               <Name>HeideName</Name>
               <Title>Heide, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_HeideName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_HeideName.se</File>
@@ -1254,14 +1252,14 @@
               <Name>MoorName</Name>
               <Title>Moor, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_MoorName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_MoorName.se</File>
@@ -1272,14 +1270,14 @@
               <Name>SumpfName</Name>
               <Title>Sumpf, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_SumpfName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_SumpfName.se</File>
@@ -1290,14 +1288,14 @@
               <Name>UnlandVegetationsloseFlaecheName</Name>
               <Title>Unland/Vegetationslose Fläche, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_UnlandVegetationsloseFlaecheName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="5000" min="0" />
+                <ScaleDenominators max="5000" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_UnlandName.se</File>
@@ -1312,14 +1310,14 @@
               <Name>StrassenverkehrBeschriftung</Name>
               <Title>Straßenverkehr, Beschriftung</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_StrassenverkehrName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_StrassenverkehrName.se</File>
@@ -1332,7 +1330,7 @@
               <RequestableLayer>
                 <Name>PlatzSymbol</Name>
                 <Title>Platz, Symbol</Title>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_PlatzSymbol.se</File>
@@ -1342,14 +1340,14 @@
                 <Name>PlatzName</Name>
                 <Title>Platz, Name</Title>
                 <LogicalLayer>
-                  <ScaleDenominators max="2500" min="0" />
+                  <ScaleDenominators max="2500" min="0"/>
                   <FeatureStoreId>aaa-511</FeatureStoreId>
                   <DirectStyle>
                     <File>../styles/aaa-511/AX_PlatzName.se</File>
                   </DirectStyle>
                 </LogicalLayer>
                 <LogicalLayer>
-                  <ScaleDenominators max="2500" min="0" />
+                  <ScaleDenominators max="2500" min="0"/>
                   <FeatureStoreId>aaa-511</FeatureStoreId>
                   <DirectStyle>
                     <File>../styles/aaa-511/AP_PTO_PlatzName.se</File>
@@ -1361,14 +1359,14 @@
               <Name>BahnverkehrBeschriftung</Name>
               <Title>Bahnverkehr, Beschriftung</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_BahnverkehrName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_BahnverkehrName.se</File>
@@ -1379,14 +1377,14 @@
               <Name>FlugverkehrName</Name>
               <Title>Flugverkehr, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_FlugverkehrName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_FlugverkehrName.se</File>
@@ -1397,14 +1395,14 @@
               <Name>SchiffsverkehrName</Name>
               <Title>Schiffsverkehr, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_SchiffsverkehrName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_SchiffsverkehrName.se</File>
@@ -1424,14 +1422,14 @@
               <Name>TurmName</Name>
               <Title>Turm</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_TurmName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_TurmName.se</File>
@@ -1442,14 +1440,14 @@
               <Name>BauwerkOderAnlageFuerIndustrieUndGewerbeName</Name>
               <Title>Bauwerk oder Anlage für Industrie und Gewerbe, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_BauwerkOderAnlageFuerIndustrieUndGewerbeName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_BauwerkOderAnlageFuerIndustrieUndGewerbeName.se</File>
@@ -1460,14 +1458,14 @@
               <Name>VorratsbehaelterSpeicherbauwerkName</Name>
               <Title>Vorratsbehälter, Speicherbauwerk, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_VorratsbehaelterSpeicherbauwerkName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_VorratsbehaelterSpeicherbauwerkName.se</File>
@@ -1478,14 +1476,14 @@
               <Name>TransportanlageProdukt</Name>
               <Title>Transportanlage</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_TransportanlageProdukt.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_TransportanlageProdukt.se</File>
@@ -1496,14 +1494,14 @@
               <Name>LeitungName</Name>
               <Title>Leitung</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_LeitungErdkabelSpannungsebene.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_LeitungErdkabelSpannungsebene.se</File>
@@ -1514,14 +1512,14 @@
               <Name>BauwerkOderAnlageFuerSportFreizeitUndErholungName</Name>
               <Title>Bauwerke und Einrichtungen für Sport, Freizeit und Erholung</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_BauwerkOderAnlageFuerSportFreizeitUndErholungName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_BauwerkOderAnlageFuerSportFreizeitUndErholungName.se</File>
@@ -1532,14 +1530,14 @@
               <Name>HistorischesBauwerkOderHistorischeEinrichtungName</Name>
               <Title>Historisches Bauwerk oder historische Einrichtung</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_HistorischesBauwerkOderHistorischeEinrichtungName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_HistorischesBauwerkOderHistorischeEinrichtungName.se</File>
@@ -1550,14 +1548,14 @@
               <Name>SonstigesBauwerkOderSonstigeEinrichtungName</Name>
               <Title>Sonstiges Bauwerk oder sonstige Einrichtung, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_SonstigesBauwerkOderSonstigeEinrichtungName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_SonstigesBauwerkOderSonstigeEinrichtungName.se</File>
@@ -1572,14 +1570,14 @@
               <Name>BauwerkImVerkehrsbereichName</Name>
               <Title>Bauwerk im Verkehrsbereich, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_BauwerkImVerkehrsbereichName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_BauwerkImVerkehrsbereichName.se</File>
@@ -1590,14 +1588,14 @@
               <Name>StrassenverkehrsanlageName</Name>
               <Title>Straßenverkehrsanlage, Name</Title>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AX_StrassenverkehrsanlageName.se</File>
                 </DirectStyle>
               </LogicalLayer>
               <LogicalLayer>
-                <ScaleDenominators max="2500" min="0" />
+                <ScaleDenominators max="2500" min="0"/>
                 <FeatureStoreId>aaa-511</FeatureStoreId>
                 <DirectStyle>
                   <File>../styles/aaa-511/AP_PTO_StrassenverkehrsanlageName.se</File>
@@ -1616,7 +1614,7 @@
             <RequestableLayer>
               <Name>KlassifizierungNachStrassenrechtBezeichnung</Name>
               <Title>Klassifizierung nach Straßenrecht, Bezeichnung</Title>
-              <ScaleDenominators max="5000" min="0" />
+              <ScaleDenominators max="5000" min="0"/>
               <FeatureStoreId>aaa-511</FeatureStoreId>
               <DirectStyle>
                 <File>../styles/aaa-511/AP_PTO_KlassifizierungNachStrassenrechtBezeichnung.se</File>
