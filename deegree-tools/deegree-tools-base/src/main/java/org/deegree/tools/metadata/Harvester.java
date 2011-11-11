@@ -131,27 +131,34 @@ public class Harvester {
             System.out.println( "Reading XML files from: " + inputDir );
             for ( int i = 0; i < listOfFiles.length; i++ ) {
                 System.out.println( listOfFiles[i].getName() );
-                XMLAdapter xml = new XMLAdapter( listOfFiles[i] );
-                // TODO
-                // if ( redefineIDs ) {
-                // OMElement elem = xml.getElement( xml.getRootElement(),
-                // new XPath( xPathFileId, CommonNamespaces.getNamespaceContext() ) );
-                // XMLTools.setNodeValue( elem, UUID.randomUUID().toString() );
-                // elem = xml.getElement( xml.getRootElement(),
-                // new XPath( xPathId, CommonNamespaces.getNamespaceContext() ) );
-                // sFile = xml.getAsPrettyString();
-                // }
+                XMLAdapter xml = null;
                 try {
+                    xml = new XMLAdapter( listOfFiles[i] );
+                    // TODO
+                    // if ( redefineIDs ) {
+                    // OMElement elem = xml.getElement( xml.getRootElement(),
+                    // new XPath( xPathFileId, CommonNamespaces.getNamespaceContext() ) );
+                    // XMLTools.setNodeValue( elem, UUID.randomUUID().toString() );
+                    // elem = xml.getElement( xml.getRootElement(),
+                    // new XPath( xPathId, CommonNamespaces.getNamespaceContext() ) );
+                    // sFile = xml.getAsPrettyString();
+                    // }
                     boolean inserted = insertRecord( xml.getRootElement() );
                     if ( inserted )
                         count++;
                 } catch ( Exception e ) {
                     countFailed++;
-                    final String fi = xml.getNodeAsString( xml.getRootElement(),
-                                                           new XPath( xPathFileId,
-                                                                      CommonNamespaces.getNamespaceContext() ), null );
-                    System.out.println( "ignore record with fileIdentifier " + fi + ", insert failed: "
-                                        + e.getMessage() );
+                    if ( xml != null ) {
+                        final String fi = xml.getNodeAsString( xml.getRootElement(),
+                                                               new XPath( xPathFileId,
+                                                                          CommonNamespaces.getNamespaceContext() ),
+                                                               null );
+
+                        System.out.println( "ignore record with fileIdentifier " + fi + ", insert failed: "
+                                            + e.getMessage() );
+                    } else {
+                        System.out.println( "insert failed: " + e.getMessage() );
+                    }
                     if ( verbose )
                         e.printStackTrace();
                 }
