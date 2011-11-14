@@ -114,6 +114,8 @@ public class ConfigUtils {
                 if ( defaultStyle == null ) {
                     defaultStyle = st;
                 }
+                st = st.copy();
+                st.setName( name );
                 styleMap.put( name, st );
                 if ( s.getLegendGraphic() != null ) {
                     LegendGraphic g = s.getLegendGraphic();
@@ -123,6 +125,8 @@ public class ConfigUtils {
                     LegendStyle ls = s.getLegendStyle();
                     if ( ls != null ) {
                         st = store.getStyle( ls.getLayerNameRef(), ls.getStyleNameRef() );
+                        st = st.copy();
+                        st.setName( name );
                     }
                     legendStyleMap.put( name, st );
                     if ( defaultLegendStyle == null ) {
