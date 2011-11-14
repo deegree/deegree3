@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style;
 
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.style.se.unevaluated.Style;
 
 /**
@@ -79,5 +80,12 @@ public class StyleRef {
     public String toString() {
         return name;
     }
+
+    public static final Mapper<StyleRef, String> FROM_NAMES = new Mapper<StyleRef, String>() {
+        @Override
+        public StyleRef apply( String u ) {
+            return new StyleRef( u );
+        }
+    };
 
 }
