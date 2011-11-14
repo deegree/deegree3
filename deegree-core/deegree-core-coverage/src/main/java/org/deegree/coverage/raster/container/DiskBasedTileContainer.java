@@ -146,7 +146,7 @@ public class DiskBasedTileContainer implements TileContainer {
         } catch ( IOException e ) {
             LOG.debug( "Raster pyramid file '{}' could not be read: '{}'", file, e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
-        } catch ( ClassNotFoundException e ) {
+        } catch ( Throwable e ) {
             LOG.debug( "Raster pyramid file '{}' was in the wrong format.", file );
             LOG.trace( "Stack trace:", e );
         } finally {
@@ -161,18 +161,22 @@ public class DiskBasedTileContainer implements TileContainer {
         }
     }
 
+    @Override
     public Envelope getEnvelope() {
         return envelope;
     }
 
+    @Override
     public RasterDataInfo getRasterDataInfo() {
         return rasterDataInfo;
     }
 
+    @Override
     public RasterGeoReference getRasterReference() {
         return rasterGeoReference;
     }
 
+    @Override
     public ResolutionInfo getResolutionInfo() {
         return resolutionInfo;
     }
@@ -184,6 +188,7 @@ public class DiskBasedTileContainer implements TileContainer {
         return initialized;
     }
 
+    @Override
     public List<AbstractRaster> getTiles( Envelope env ) {
         List<File> files = qtree.query( createEnvelope( env ) );
         List<AbstractRaster> result = new ArrayList<AbstractRaster>( files.size() );
