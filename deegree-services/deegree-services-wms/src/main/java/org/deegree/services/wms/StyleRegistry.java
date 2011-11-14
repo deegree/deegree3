@@ -298,7 +298,7 @@ public class StyleRegistry extends TimerTask {
                     String styleId = file.getName().substring( 0, file.getName().length() - 4 );
                     StyleStore store = styleManager.get( styleId );
                     if ( store != null ) {
-                        style = store.getStyle( null );
+                        style = store.getStyle( null ).copy();
                     } else {
                         LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
                         style = loadNoImport( layerName, file, false );
@@ -343,7 +343,7 @@ public class StyleRegistry extends TimerTask {
                         String styleId = file.getName().substring( 0, file.getName().length() - 4 );
                         StyleStore store = styleManager.get( styleId );
                         if ( store != null ) {
-                            style = store.getStyle( null );
+                            style = store.getStyle( null ).copy();
                         } else {
                             LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
                             style = loadNoImport( layerName, file, true );
@@ -405,7 +405,7 @@ public class StyleRegistry extends TimerTask {
                             String styleId = legendFile.getName().substring( 0, legendFile.getName().length() - 4 );
                             StyleStore store = styleManager.get( styleId );
                             if ( store != null ) {
-                                style = store.getStyle( null );
+                                style = store.getStyle( null ).copy();
                             } else {
                                 LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
                                 style = loadNoImport( layerName, legendFile, true );
