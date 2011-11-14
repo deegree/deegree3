@@ -75,6 +75,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.style.se.parser.SymbologyParser.FilterContinuation;
+import org.deegree.style.styling.Copyable;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
 import org.deegree.style.styling.PolygonStyling;
@@ -92,7 +93,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31255 $, $Date: 2011-07-12 12:08:02 +0200 (Tue, 12 Jul 2011) $
  */
-public class Style {
+public class Style implements Copyable<Style> {
 
     private static final Logger LOG = getLogger( Style.class );
 
@@ -440,5 +441,18 @@ public class Style {
         public void updateStep( T base, Feature f, XPathEvaluator<Feature> evaluator ) {
             base.add( value );
         }
+    }
+
+    @Override
+    public Style copy() {
+        Style style = new Style( rules, labels, labelXMLTexts, name, featureType );
+        style.useDefault = useDefault;
+        style.defaultPointStyle = defaultPointStyle;
+        style.defaultLineStyle = defaultLineStyle;
+        style.defaultPolygonStyle = defaultPolygonStyle;
+        style.legendFile = legendFile;
+        style.legendUrl = legendUrl;
+        style.prefersGetLegendGraphicUrl = prefersGetLegendGraphicUrl;
+        return style;
     }
 }
