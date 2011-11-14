@@ -172,10 +172,12 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
         return fs;
     }
 
+    @Override
     public void init( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};

@@ -244,11 +244,7 @@ public class ShapeFeatureStore implements FeatureStore {
                 }
             } else {
                 LOG.debug( "No crs configured, and no .prj found, assuming CRS:84 (WGS84 in x/y axis order)." );
-                try {
-                    crs = CRSManager.lookup( "CRS:84" );
-                } catch ( UnknownCRSException e ) {
-                    LOG.error( "Unknown error", e );
-                }
+                crs = CRSManager.getCRSRef( "CRS:84" );
             }
         }
 
@@ -361,10 +357,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     /**
      * @param shapeReader
-     * @throws IOException
      */
-    private static Pair<RTree<Long>, Boolean> createIndex( SHPReader shapeReader )
-                            throws IOException {
+    private static Pair<RTree<Long>, Boolean> createIndex( SHPReader shapeReader ) {
         Envelope env = shapeReader.getEnvelope();
         // use 128 values per rect.
         RTree<Long> result = new RTree<Long>( createEnvelope( env ), -1 );
