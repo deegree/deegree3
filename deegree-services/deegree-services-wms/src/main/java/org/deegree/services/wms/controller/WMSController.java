@@ -772,6 +772,7 @@ public class WMSController extends AbstractOWS {
             for ( LayerData d : list ) {
                 d.render( ctx );
             }
+            response.setContentType( gm2.getFormat() );
             ctx.close();
             addHeaders( response, headers );
         } else {
