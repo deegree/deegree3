@@ -49,12 +49,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
-      <version>3.2-pre2-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <artifactId>deegree-sqldialect-postgis</artifactId>
       <groupId>org.deegree</groupId>
-      <version>3.2-pre2-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
@@ -72,7 +72,7 @@
         <dependency>
           <artifactId>latlon-sqldialect-mssql</artifactId>
           <groupId>de.latlon</groupId>
-          <version>3.2-pre1-SNAPSHOT</version>
+          <version>${project.version}</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -90,7 +90,7 @@
         <dependency>
           <artifactId>deegree-sqldialect-oracle</artifactId>
           <groupId>org.deegree</groupId>
-          <version>3.2-pre1-SNAPSHOT</version>
+          <version>${project.version}</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
