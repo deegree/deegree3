@@ -62,10 +62,24 @@ public class CollectionUtils {
      * for all primitive-arrays is not possible...
      */
     public static final Mapper<String, double[]> DOUBLE_PRINTER = new Mapper<String, double[]>() {
+        @Override
         public String apply( double[] u ) {
             return Arrays.toString( u );
         }
     };
+
+    /**
+     * Maps objects to its #toString result, or to null if null. A constant would do here, but compiler warnings would
+     * the be result.
+     */
+    public static <T> Mapper<String, T> getToStringMapper() {
+        return new Mapper<String, T>() {
+            @Override
+            public String apply( T u ) {
+                return u == null ? null : u.toString();
+            }
+        };
+    }
 
     /**
      * @param delim
@@ -73,6 +87,7 @@ public class CollectionUtils {
      */
     public static Reducer<String> getStringJoiner( final String delim ) {
         return new Reducer<String>() {
+            @Override
             public String reduce( String t1, String t2 ) {
                 return t1 + delim + t2;
             }
@@ -85,6 +100,7 @@ public class CollectionUtils {
      * */
     public static <T> Mapper<String, T[]> getArrayPrinter() {
         return new Mapper<String, T[]>() {
+            @Override
             public String apply( T[] u ) {
                 return Arrays.toString( u );
             }
@@ -98,6 +114,7 @@ public class CollectionUtils {
      */
     public static <T> Mapper<Boolean, T> getInstanceofMapper( final Class<?> c ) {
         return new Mapper<Boolean, T>() {
+            @Override
             public Boolean apply( T u ) {
                 return c.isInstance( u );
             }
@@ -106,6 +123,7 @@ public class CollectionUtils {
 
     /***/
     public static final Reducer<Boolean> AND = new Reducer<Boolean>() {
+        @Override
         public Boolean reduce( Boolean t1, Boolean t2 ) {
             return t1 && t2;
         }
