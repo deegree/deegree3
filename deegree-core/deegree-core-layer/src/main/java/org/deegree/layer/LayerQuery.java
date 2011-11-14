@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer;
 
+import static java.lang.Integer.parseInt;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
 import java.util.List;
@@ -42,6 +43,7 @@ import java.util.Map;
 
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.oldwms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.RenderingOptions;
@@ -173,5 +175,29 @@ public class LayerQuery {
     public RenderingOptions getRenderingOptions() {
         return options;
     }
+
+    public Envelope calcClickBox( int radius ) {
+        radius = parameters.get( "RADIUS" ) == null ? radius : parseInt( parameters.get( "RADIUS" ) );
+        GeometryFactory fac = new GeometryFactory();
+        double dw = envelope.getSpan0() / width;
+        double dh = envelope.getSpan1() / height;
+        int r2 = radius / 2;
+        r2 = r2 == 0 ? 1 : r2;
+        return fac.createEnvelope( new double[] { envelope.getMin().get0() + ( x - r2 ) * dw,
+                                                 envelope.getMax().get1() - ( y + r2 ) * dh },
+                                   new double[] { envelope.getMin().get0() + ( x + r2 ) * dw,
+                                                 envelope.getMax().get1() - ( y - r2 ) * dh },
+                                   envelope.getCoordinateSystem() );
+    }
+
+    // public Envelope calcClickBox( int radius ) {
+    // TODO again: re-implement this properly
+    // TODO implement all this per layer also if more than one layer is requested
+    // if ( layers.size() == 1 && service.getDefaultFeatureInfoRadius().get( layers.getFirst() ) != null ) {
+    // radius = service.getDefaultFeatureInfoRadius().get( layers.getFirst() );
+    // }
+    // radius = parameters.get( "RADIUS" ) == null ? radius : parseInt( parameters.get( "RADIUS" ) );
+    // return calcClickBox( radius );
+    // }
 
 }

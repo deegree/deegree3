@@ -39,6 +39,8 @@ package org.deegree.protocol.wms.ops;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.layer.LayerRef.FROM_NAMES;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_POINT;
 import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
@@ -56,7 +58,9 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.layer.LayerRef;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
 
 /**
@@ -77,9 +81,9 @@ public class GetFeatureInfo {
 
     private Envelope bbox;
 
-    private LinkedList<String> layers = new LinkedList<String>();
+    private LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
 
-    private LinkedList<String> styles = new LinkedList<String>();
+    private LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
     private int width;
 
@@ -117,7 +121,7 @@ public class GetFeatureInfo {
 
     public GetFeatureInfo( List<String> layers, int width, int height, int x, int y, Envelope envelope, ICRS crs,
                            int featureCount ) {
-        this.layers.addAll( layers );
+        this.layers.addAll( map( layers, FROM_NAMES ) );
         this.width = width;
         this.height = height;
         this.x = x;
@@ -231,21 +235,25 @@ public class GetFeatureInfo {
             ss = "";
         }
 
-        this.layers = new LinkedList<String>( asList( ls.split( "," ) ) );
-        this.styles = new LinkedList<String>( asList( ss.split( "," ) ) );
-
+        this.layers = new LinkedList<LayerRef>( map( ls.split( "," ), FROM_NAMES ) );
         LinkedList<String> qlayers = new LinkedList<String>( asList( qls.split( "," ) ) );
+        this.styles = GetMap.handleKVPStyles( ss, layers.size() );
 
-        ListIterator<String> lays = this.layers.listIterator();
-        ListIterator<String> stys = this.styles.listIterator();
+        ListIterator<LayerRef> lays = this.layers.listIterator();
+        ListIterator<StyleRef> stys = this.styles.listIterator();
 
         while ( lays.hasNext() ) {
-            String name = lays.next();
+            String name = lays.next().getName();
             stys.next();
             if ( !qlayers.contains( name ) ) {
                 lays.remove();
                 stys.remove();
             }
+        }
+
+        if ( layers.isEmpty() ) {
+            throw new OWSException( "An invalid combination of LAYERS and QUERY_LAYERS was specified.",
+                                    "InvalidParameterValue" );
         }
 
         String format = map.get( "INFO_FORMAT" );
@@ -297,14 +305,14 @@ public class GetFeatureInfo {
     /**
      * @return the live list of query layers
      */
-    public LinkedList<String> getQueryLayers() {
+    public LinkedList<LayerRef> getQueryLayers() {
         return layers;
     }
 
     /**
      * @return the live list of styles (this uses the query_layers parameter as source for layer names)
      */
-    public LinkedList<String> getStyles() {
+    public LinkedList<StyleRef> getStyles() {
         return styles;
     }
 

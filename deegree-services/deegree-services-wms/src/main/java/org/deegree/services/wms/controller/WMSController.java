@@ -96,6 +96,7 @@ import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
+import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -597,9 +598,10 @@ public class WMSController extends AbstractOWS {
             LinkedList<String> headers = new LinkedList<String>();
             org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map,
                                                                                                               version );
+            checkGetFeatureInfo( version, fi );
             crs = fi.getCoordinateSystem();
             geometries = fi.returnGeometries();
-            queryLayers = fi.getQueryLayers();
+            queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
 
             RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
                                                     fi.getEnvelope(), 0.28, null, map );
@@ -608,8 +610,7 @@ public class WMSController extends AbstractOWS {
             info.setFeatureCount( fi.getFeatureCount() );
             info.setX( fi.getX() );
             info.setY( fi.getY() );
-            pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, fi.getQueryLayers(),
-                                                                                         headers ), headers );
+            pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, headers ), headers );
         } else {
             GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
                                                        : securityManager.preprocess( new GetFeatureInfo( map, version,
@@ -692,8 +693,9 @@ public class WMSController extends AbstractOWS {
                 // GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GMLVersion.GML_2,xmlWriter );
                 // gmlWriter.setOutputCRS(fi.getCoordinateSystem() );
                 // gmlWriter.set
-                new GMLFeatureWriter( GML_2, xmlWriter, crs, null, "#{}", null, 0, -1, false, geometries, null, null,
-                                      false ).export( col, ns == null ? loc : null, bindings );
+                GMLFeatureWriter fwriter = new GMLFeatureWriter( GML_2, xmlWriter, crs, null, "#{}", null, 0, -1,
+                                                                 false, geometries, null, null, false );
+                fwriter.export( col, ns == null ? loc : null, bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
@@ -800,6 +802,39 @@ public class WMSController extends AbstractOWS {
         }
     }
 
+    private void checkGetFeatureInfo( Version version, org.deegree.protocol.wms.ops.GetFeatureInfo gfi )
+                            throws OWSException {
+        if ( gfi.getInfoFormat() != null && !gfi.getInfoFormat().equals( "" )
+             && !supportedFeatureInfoFormats.containsKey( gfi.getInfoFormat() ) ) {
+            throw new OWSException( get( "WMS.INVALID_INFO_FORMAT", gfi.getInfoFormat() ), OWSException.INVALID_FORMAT );
+        }
+        if ( service.isNewStyle() ) {
+            for ( LayerRef lr : gfi.getQueryLayers() ) {
+                if ( !service.hasTheme( lr.getName() ) ) {
+                    throw new OWSException( "The layer with name " + lr.getName() + " is not defined.",
+                                            "LayerNotDefined", "layers" );
+                }
+            }
+            for ( StyleRef sr : gfi.getStyles() ) {
+                // TODO check style availability
+            }
+        }
+        try {
+            if ( gfi.getCoordinateSystem() == null ) {
+                // this can happen if some AUTO SRS id was invalid
+                controllers.get( version ).throwSRSException( "automatic" );
+            }
+            ICRS crs = gfi.getCoordinateSystem();
+            if ( crs instanceof CRSRef ) {
+                ( (CRSRef) crs ).getReferencedObject();
+            }
+        } catch ( ReferenceResolvingException e ) {
+            // only throw an exception if a truly invalid srs is found
+            // this makes it possible to request srs that are not advertised, which may be useful
+            controllers.get( version ).throwSRSException( gfi.getCoordinateSystem().getAlias() );
+        }
+    }
+
     private void checkGetMap( Version version, GetMap gm )
                             throws OWSException {
         if ( !supportedImageFormats.contains( gm.getFormat() ) ) {
@@ -832,11 +867,11 @@ public class WMSController extends AbstractOWS {
             for ( LayerRef lr : gm.getLayers() ) {
                 if ( !service.hasTheme( lr.getName() ) ) {
                     throw new OWSException( "The layer with name " + lr.getName() + " is not defined.",
-                                            "InvalidParameterValue", "layers" );
+                                            "LayerNotDefined", "layers" );
                 }
             }
             for ( StyleRef sr : gm.getStyles() ) {
-                // TODO check style availability
+                // TODO check style availability here instead of the layer
             }
         }
         try {

@@ -795,28 +795,37 @@ public class MapService {
         return list;
     }
 
-    public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> themes,
-                                          List<String> headers )
+    public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> headers )
                             throws OWSException {
+        Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
+        Iterator<StyleRef> iter = gfi.getStyles().iterator();
+        for ( LayerRef lr : gfi.getQueryLayers() ) {
+            StyleRef style = iter.next();
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                styles.put( l.getMetadata().getName(), style );
+            }
+        }
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
-                                           gfi.getFeatureCount(), new HashMap<String, OperatorFilter>(),
-                                           new HashMap<String, StyleRef>(), gfi.getParameterMap(),
-                                           new HashMap<String, List<?>>(), new RenderingOptions() );
-        for ( String n : themes ) {
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n ) ) ) {
+                                           gfi.getFeatureCount(), new HashMap<String, OperatorFilter>(), styles,
+                                           gfi.getParameterMap(), new HashMap<String, List<?>>(),
+                                           new RenderingOptions() );
+        for ( LayerRef n : gfi.getQueryLayers() ) {
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
                 list.add( l.infoQuery( query, headers ) );
             }
         }
 
-        FeatureCollection col = null;
+        List<Feature> feats = new ArrayList<Feature>( gfi.getFeatureCount() );
         for ( LayerData d : list ) {
-            if ( col == null ) {
-                col = d.info();
-            } else {
-                col.addAll( d.info() );
-            }
+            FeatureCollection col = d.info();
+            feats.addAll( col );
         }
+        if ( feats.size() > gfi.getFeatureCount() ) {
+            feats = feats.subList( 0, gfi.getFeatureCount() );
+        }
+        GenericFeatureCollection col = new GenericFeatureCollection();
+        col.addAll( feats );
         return col;
     }
 

@@ -44,6 +44,7 @@ import java.util.List;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
@@ -134,10 +135,31 @@ public class FeatureLayerData implements LayerData {
         }
     }
 
+    private static FeatureCollection clearDuplicates( FeatureInputStream rs ) {
+        FeatureCollection col = null;
+        try {
+            col = new GenericFeatureCollection();
+            for ( Feature f : rs ) {
+                if ( !col.contains( f ) ) {
+                    col.add( f );
+                }
+            }
+        } finally {
+            rs.close();
+        }
+        return col;
+    }
+
     @Override
     public FeatureCollection info() {
-        // TODO Auto-generated method stub
-        return null;
+        FeatureCollection col = null;
+        try {
+            col = clearDuplicates( featureStore.query( queries.toArray( new Query[queries.size()] ) ) );
+        } catch ( Throwable e ) {
+            LOG.warn( "Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+        return col;
     }
 
 }

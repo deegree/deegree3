@@ -172,9 +172,10 @@ public class GetMap {
      * @param width
      * @param height
      * @param boundingBox
+     * @throws OWSException
      */
     public GetMap( Collection<LayerRef> layers, Collection<StyleRef> styles, int width, int height,
-                   Envelope boundingBox, RenderingOptions exts ) {
+                   Envelope boundingBox, RenderingOptions exts ) throws OWSException {
         this.layers.addAll( layers );
         this.styles.addAll( styles );
         this.width = width;
@@ -193,7 +194,7 @@ public class GetMap {
             LOG.debug( "Resolution per pixel is {}.", resolution );
         } catch ( ReferenceResolvingException e ) {
             LOG.trace( "Stack trace:", e );
-            LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
+            throw new OWSException( e.getLocalizedMessage(), "InvalidParameterValue" );
         }
     }
 
@@ -209,7 +210,7 @@ public class GetMap {
     }
 
     public GetMap( List<Pair<String, String>> layers, int width, int height, Envelope boundingBox, String format,
-                   boolean transparent ) {
+                   boolean transparent ) throws OWSException {
         for ( Pair<String, String> layer : layers ) {
             this.layers.add( new LayerRef( layer.first ) );
             this.styles.add( new StyleRef( layer.second ) );
@@ -229,7 +230,7 @@ public class GetMap {
             LOG.debug( "Resolution per pixel is {}.", resolution );
         } catch ( ReferenceResolvingException e ) {
             LOG.trace( "Stack trace:", e );
-            LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
+            throw new OWSException( e.getLocalizedMessage(), "InvalidParameterValue" );
         }
     }
 

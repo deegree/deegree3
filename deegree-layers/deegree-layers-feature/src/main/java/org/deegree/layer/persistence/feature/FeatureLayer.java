@@ -41,13 +41,18 @@
 package org.deegree.layer.persistence.feature;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.commons.utils.CollectionUtils.clearNulls;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.layer.dims.Dimension.formatDimensionValueList;
+import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -62,6 +67,8 @@ import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
@@ -73,6 +80,8 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Or;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerQuery;
@@ -124,6 +133,11 @@ public class FeatureLayer extends AbstractLayer {
             ref.resolve( styles.get( ref.getName() ) );
         }
         Style style = ref.getStyle();
+
+        if ( style == null ) {
+            throw new OWSException( "The style " + ref.getName() + " is not defined for layer "
+                                    + getMetadata().getName() + ".", "StyleNotDefined", "styles" );
+        }
 
         OperatorFilter filter = this.filter;
         style = style.filter( query.getScale() );
@@ -178,8 +192,77 @@ public class FeatureLayer extends AbstractLayer {
     }
 
     @Override
-    public FeatureLayerData infoQuery( LayerQuery query, List<String> headers ) {
-        return null;
+    public FeatureLayerData infoQuery( final LayerQuery query, List<String> headers )
+                            throws OWSException {
+        OperatorFilter filter = this.filter;
+        filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
+        StyleRef ref = query.getStyle( getMetadata().getName() );
+        if ( !ref.isResolved() ) {
+            ref.resolve( styles.get( ref.getName() ) );
+        }
+        Style style = ref.getStyle();
+        style = style.filter( query.getScale() );
+        filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
+        filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
+
+        final Envelope clickBox = query.calcClickBox( 3 );
+
+        filter = (OperatorFilter) Filters.addBBoxConstraint( clickBox, filter, null );
+
+        QName featureType = style == null ? null : style.getFeatureType();
+
+        LOG.debug( "Querying the feature store(s)..." );
+
+        final Filter filter2 = filter;
+        List<Query> queries = new ArrayList<Query>();
+        if ( featureType == null ) {
+            queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
+                                 new Mapper<Query, FeatureType>() {
+                                     @Override
+                                     public Query apply( FeatureType u ) {
+                                         return new Query( u.getName(), filter2, -1, query.getFeatureCount(), -1 );
+                                     }
+                                 } ) );
+            clearNulls( queries );
+        } else {
+            queries.add( new Query( featureType, filter2, -1, query.getFeatureCount(), -1 ) );
+        }
+
+        LOG.debug( "Finished querying the feature store(s)." );
+
+        return new FeatureLayerData( queries, featureStore, query.getFeatureCount(), style );
+    }
+
+    static OperatorFilter buildFilter( Operator operator, FeatureType ft, Envelope clickBox ) {
+        if ( ft == null ) {
+            if ( operator == null ) {
+                return null;
+            }
+            return new OperatorFilter( operator );
+        }
+        LinkedList<Operator> list = new LinkedList<Operator>();
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            if ( pt instanceof GeometryPropertyType
+                 && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
+                list.add( new And( new BBOX( new ValueReference( pt.getName() ), clickBox ),
+                                   new Intersects( new ValueReference( pt.getName() ), clickBox ) ) );
+            }
+        }
+        if ( list.size() > 1 ) {
+            Or or = new Or( list.toArray( new Operator[list.size()] ) );
+            if ( operator == null ) {
+                return new OperatorFilter( or );
+            }
+            return new OperatorFilter( new And( or, operator ) );
+        }
+        if ( list.isEmpty() ) {
+            // obnoxious case where feature has no geometry properties (but features may have extra geometry props)
+            list.add( new And( new BBOX( null, clickBox ), new Intersects( null, clickBox ) ) );
+        }
+        if ( operator == null ) {
+            return new OperatorFilter( list.get( 0 ) );
+        }
+        return new OperatorFilter( new And( list.get( 0 ), operator ) );
     }
 
     /**
