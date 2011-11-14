@@ -54,6 +54,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.geometry.metadata.SpatialMetadataConverter;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
@@ -74,7 +75,7 @@ public class StandardThemeProvider implements ThemeProvider {
 
     private static final Logger LOG = getLogger( StandardThemeProvider.class );
 
-    private static final URL SCHEMA_URL = StandardThemeProvider.class.getResource( "/META-INF/schemas/themes/3.1.0/themes.xsd" );
+    private static final URL SCHEMA_URL = StandardThemeProvider.class.getResource( "/META-INF/schemas/themes/3.2.0/themes.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -118,10 +119,11 @@ public class StandardThemeProvider implements ThemeProvider {
         for ( ThemeType tt : themes ) {
             thms.add( buildTheme( tt, tt.getLayer(), tt.getTheme(), stores ) );
         }
-        // spatial md will be filled later
-        SpatialMetadata smd = new SpatialMetadata( null, null );
+
+        SpatialMetadata smd = SpatialMetadataConverter.fromJaxb( current.getEnvelope(), current.getCRS() );
         Description desc = DescriptionConverter.fromJaxb( current.getTitle(), current.getAbstract(),
                                                           current.getKeywords() );
+
         LayerMetadata md = new LayerMetadata( current.getIdentifier(), desc, smd );
         return new StandardTheme( md, thms, lays );
     }

@@ -85,8 +85,14 @@ public class Themes {
     }
 
     public static void aggregateSpatialMetadata( Theme theme ) {
-        Envelope env = null;
+        // TODO price question is, bottom up or top down inheritance? Possibly a combined approach is desirable (top
+        // down inheritance for configured theme values, bottom up for envelopes from layers or so)
+        SpatialMetadata curSmd = theme.getMetadata().getSpatialMetadata();
+        Envelope env = curSmd.getEnvelope();
         List<ICRS> crs = new ArrayList<ICRS>();
+        if ( curSmd.getCoordinateSystems() != null ) {
+            crs.addAll( curSmd.getCoordinateSystems() );
+        }
         for ( Theme t : theme.getThemes() ) {
             aggregateSpatialMetadata( t );
             SpatialMetadata smd = t.getMetadata().getSpatialMetadata();

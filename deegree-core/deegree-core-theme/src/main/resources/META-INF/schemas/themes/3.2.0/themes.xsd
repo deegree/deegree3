@@ -2,9 +2,10 @@
 <!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
 <schema xmlns:t="http://www.deegree.org/themes/standard" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/themes/standard" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-  jaxb:version="2.1" xmlns:d="http://www.deegree.org/metadata/description">
+  jaxb:version="2.1" xmlns:d="http://www.deegree.org/metadata/description" xmlns:g="http://www.deegree.org/metadata/spatial">
 
   <import namespace="http://www.deegree.org/metadata/description" schemaLocation="http://schemas.deegree.org/commons/description/3.1.0/description.xsd" />
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
 
   <annotation>
     <appinfo>
@@ -25,6 +26,7 @@
         <sequence>
           <element name="Identifier" type="string" minOccurs="0" />
           <group ref="d:Description" />
+          <group ref="g:SpatialMetadata" />
         </sequence>
       </choice>
       <element name="Layer" minOccurs="0" maxOccurs="unbounded">

@@ -35,6 +35,11 @@
             <artifactId>deegree-core-commons</artifactId>
             <version>${project.version}</version>
           </dependency>
+          <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-core-geometry</artifactId>
+            <version>${project.version}</version>
+          </dependency>
         </dependencies>
       </plugin>
     </plugins>
