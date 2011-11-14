@@ -115,6 +115,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.layer.LayerData;
+import org.deegree.layer.LayerRef;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -157,6 +158,7 @@ import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.controller.plugins.XSLTFeatureInfoSerializer;
 import org.deegree.services.wms.controller.security.WMSSecurityManager;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
 
 /**
@@ -762,6 +764,8 @@ public class WMSController extends AbstractOWS {
             org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
                                                                                                service.getExtensions() );
 
+            checkGetMap( version, gm2 );
+
             RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(),
                                                     gm2.getTransparent(), gm2.getBgColor(), gm2.getBoundingBox(),
                                                     gm2.getPixelSize(), gm2.getFilters(), map );
@@ -817,6 +821,39 @@ public class WMSController extends AbstractOWS {
             controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
         }
 
+    }
+
+    private void checkGetMap( Version version, org.deegree.protocol.wms.ops.GetMap gm )
+                            throws OWSException {
+        if ( !supportedImageFormats.contains( gm.getFormat() ) ) {
+            throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", gm.getFormat() ), OWSException.INVALID_FORMAT );
+        }
+        if ( service.isNewStyle() ) {
+            for ( LayerRef lr : gm.getLayers() ) {
+                if ( !service.hasTheme( lr.getName() ) ) {
+                    throw new OWSException( "The layer with name " + lr.getName() + " is not defined.",
+                                            "InvalidParameterValue", "layers" );
+                }
+            }
+            for ( StyleRef sr : gm.getStyles() ) {
+                // TODO check style availability
+            }
+        }
+        try {
+            // check for existence/validity
+            if ( gm.getCoordinateSystem() == null ) {
+                // this can happen if some AUTO SRS id was invalid
+                controllers.get( version ).throwSRSException( "automatic" );
+            }
+            ICRS crs = gm.getCoordinateSystem();
+            if ( crs instanceof CRSRef ) {
+                ( (CRSRef) crs ).getReferencedObject();
+            }
+        } catch ( ReferenceResolvingException e ) {
+            // only throw an exception if a truly invalid srs is found
+            // this makes it possible to request srs that are not advertised, which may be useful
+            controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
+        }
     }
 
     protected void getCapabilities( Map<String, String> map, HttpResponseBuffer response )

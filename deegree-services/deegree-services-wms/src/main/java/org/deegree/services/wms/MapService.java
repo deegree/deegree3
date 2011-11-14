@@ -769,6 +769,10 @@ public class MapService {
         }
     }
 
+    public boolean hasTheme( String name ) {
+        return themeMap.get( name ) != null;
+    }
+
     public List<LayerData> query( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers )
                             throws OWSException {
         Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
