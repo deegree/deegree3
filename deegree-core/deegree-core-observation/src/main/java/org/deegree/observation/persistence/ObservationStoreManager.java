@@ -108,8 +108,9 @@ public class ObservationStoreManager extends AbstractBasicResourceManager implem
             try {
                 ObservationDatastore ods = create( osConfigFile.toURI().toURL() );
                 register( odsId, ods );
-            } catch ( Exception e ) {
-                LOG.error( "Error creating feature store: " + e.getMessage(), e );
+            } catch ( Throwable e ) {
+                LOG.error( "Error creating observation store: " + e.getMessage() );
+                LOG.trace( "Stack trace:", e );
             }
         }
         LOG.info( "" );
