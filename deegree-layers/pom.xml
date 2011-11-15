@@ -26,6 +26,7 @@
 
   <modules>
     <module>deegree-layers-feature</module>
+    <module>deegree-layers-coverage</module>
     <module>deegree-layers-remotewms</module>
   </modules>
 
