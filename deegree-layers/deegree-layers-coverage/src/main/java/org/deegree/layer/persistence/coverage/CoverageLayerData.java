@@ -32,12 +32,32 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
+import static java.lang.Integer.MAX_VALUE;
+import static org.deegree.coverage.rangeset.RangeSetBuilder.createBandRangeSetFromRaster;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.util.LinkedList;
+
+import org.deegree.commons.utils.Triple;
+import org.deegree.coverage.filter.raster.RasterFilter;
+import org.deegree.coverage.rangeset.RangeSet;
+import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.geom.Grid;
+import org.deegree.coverage.raster.interpolation.InterpolationType;
+import org.deegree.coverage.raster.utils.CoverageTransform;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 import org.deegree.layer.LayerData;
+import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.context.RenderContext;
+import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.styling.RasterStyling;
+import org.deegree.style.styling.Styling;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -48,21 +68,63 @@ import org.deegree.rendering.r2d.context.RenderContext;
  */
 public class CoverageLayerData implements LayerData {
 
-    /* (non-Javadoc)
-     * @see org.deegree.layer.LayerData#render(org.deegree.rendering.r2d.context.RenderContext)
-     */
-    @Override
-    public void render( RenderContext context ) {
-        // TODO Auto-generated method stub
-        
+    private static final Logger LOG = getLogger( CoverageLayerData.class );
+
+    private AbstractRaster raster;
+
+    private final Envelope bbox;
+
+    private final int width;
+
+    private final int height;
+
+    private final InterpolationType interpol;
+
+    private final RangeSet filter;
+
+    private final Style style;
+
+    public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
+                              RangeSet filter, Style style ) {
+        this.raster = raster;
+        this.bbox = bbox;
+        this.width = width;
+        this.height = height;
+        this.interpol = interpol;
+        this.filter = filter;
+        this.style = style;
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.layer.LayerData#info()
-     */
+    @Override
+    public void render( RenderContext context ) {
+        try {
+            RasterRenderer renderer = context.getRasterRenderer();
+
+            raster = CoverageTransform.transform( this.raster, bbox, Grid.fromSize( width, height, MAX_VALUE, bbox ),
+                                                  interpol.toString() );
+
+            if ( filter != null ) {
+                RangeSet cbr = createBandRangeSetFromRaster( null, null, raster );
+                raster = new RasterFilter( raster ).apply( cbr, filter );
+            }
+
+            LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null ? null
+                                                                                          : style.evaluate( null, null );
+            if ( list != null && list.size() > 0 ) {
+                for ( Triple<Styling, LinkedList<Geometry>, String> t : list ) {
+                    renderer.render( (RasterStyling) t.first, raster );
+                }
+            } else {
+                renderer.render( null, raster );
+            }
+        } catch ( Throwable e ) {
+            LOG.trace( "Stack trace:", e );
+            LOG.error( "Unable to render raster: {}", e.getLocalizedMessage() );
+        }
+    }
+
     @Override
     public FeatureCollection info() {
-        // TODO Auto-generated method stub
         return null;
     }
 

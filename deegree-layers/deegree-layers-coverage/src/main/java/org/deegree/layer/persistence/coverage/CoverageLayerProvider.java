@@ -35,17 +35,43 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
+import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
+import static org.deegree.layer.config.ConfigUtils.parseDimensions;
+import static org.deegree.layer.config.ConfigUtils.parseStyles;
+import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.utils.DoublePair;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.MultiResolutionRaster;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.layer.Layer;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
+import org.deegree.layer.persistence.MultipleLayerStore;
+import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
+import org.deegree.layer.persistence.coverage.jaxb.CoverageLayerType;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers.AutoLayers;
+import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.se.unevaluated.Style;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -55,6 +81,8 @@ import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers.AutoLayers;
  * @version $Revision: $, $Date: $
  */
 public class CoverageLayerProvider implements LayerStoreProvider {
+
+    private static final Logger LOG = getLogger( CoverageLayerProvider.class );
 
     private static final URL CONFIG_SCHEMA = CoverageLayerProvider.class.getResource( "/META-INF/schemas/layers/coverage/3.2.0/coverage.xsd" );
 
@@ -80,7 +108,48 @@ public class CoverageLayerProvider implements LayerStoreProvider {
             if ( cfg.getAutoLayers() != null ) {
                 return createFromAutoLayers( cfg.getAutoLayers() );
             }
-            return null;
+
+            Map<String, Layer> map = new HashMap<String, Layer>();
+
+            CoverageBuilderManager mgr = workspace.getSubsystemManager( CoverageBuilderManager.class );
+            StyleStoreManager smgr = workspace.getSubsystemManager( StyleStoreManager.class );
+            Coverage cov = mgr.get( cfg.getCoverageStoreId() );
+
+            if ( cov == null ) {
+                throw new ResourceInitException( "Coverage store with id '" + cfg.getCoverageStoreId()
+                                                 + "' is not available." );
+            }
+
+            for ( CoverageLayerType lay : cfg.getCoverageLayer() ) {
+                SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
+                Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
+                LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
+                md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
+
+                if ( smd.getEnvelope() == null ) {
+                    smd.setEnvelope( cov.getEnvelope() );
+                }
+                if ( smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty() ) {
+                    List<ICRS> crs = new ArrayList<ICRS>();
+                    crs.add( smd.getEnvelope().getCoordinateSystem() );
+                    smd.setCoordinateSystems( crs );
+                }
+
+                ScaleDenominatorsType denoms = lay.getScaleDenominators();
+                if ( denoms != null ) {
+                    md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
+                }
+
+                Pair<Map<String, Style>, Map<String, Style>> p = parseStyles( workspace, lay.getName(),
+                                                                              lay.getStyleRef() );
+
+                Layer l = new CoverageLayer( md, cov instanceof AbstractRaster ? (AbstractRaster) cov : null,
+                                             cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null,
+                                             p.first, p.second );
+                map.put( lay.getName(), l );
+            }
+
+            return new MultipleLayerStore( map );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Error while creating coverage layers: " + e.getLocalizedMessage(), e );
         }
