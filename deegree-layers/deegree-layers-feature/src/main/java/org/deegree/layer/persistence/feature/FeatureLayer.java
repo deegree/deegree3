@@ -346,6 +346,9 @@ public class FeatureLayer extends AbstractLayer {
         }
 
         for ( String name : getMetadata().getDimensions().keySet() ) {
+            if ( name.equals( "time" ) ) {
+                continue;
+            }
             Dimension<?> dim = getMetadata().getDimensions().get( name );
             final ValueReference property = new ValueReference( dim.getPropertyName() );
 
