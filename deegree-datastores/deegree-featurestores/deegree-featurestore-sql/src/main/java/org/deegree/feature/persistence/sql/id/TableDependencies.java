@@ -72,11 +72,13 @@ public class TableDependencies {
     private final Map<TableName, LinkedHashSet<KeyPropagation>> tableToChildren = new HashMap<TableName, LinkedHashSet<KeyPropagation>>();
 
     public TableDependencies( FeatureTypeMapping[] ftMappings ) {
-        for ( FeatureTypeMapping ftMapping : ftMappings ) {
-            buildFIDGenerator( ftMapping );
-            TableName currentTable = ftMapping.getFtTable();
-            for ( Mapping particle : ftMapping.getMappings() ) {
-                buildDependencies( particle, currentTable );
+        if ( ftMappings != null ) {
+            for ( FeatureTypeMapping ftMapping : ftMappings ) {
+                buildFIDGenerator( ftMapping );
+                TableName currentTable = ftMapping.getFtTable();
+                for ( Mapping particle : ftMapping.getMappings() ) {
+                    buildDependencies( particle, currentTable );
+                }
             }
         }
     }
