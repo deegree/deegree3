@@ -253,7 +253,7 @@ public class GetFeatureInfo {
 
         if ( layers.isEmpty() ) {
             throw new OWSException( "An invalid combination of LAYERS and QUERY_LAYERS was specified.",
-                                    "InvalidParameterValue" );
+                                    "LayerNotDefined" );
         }
 
         String format = map.get( "INFO_FORMAT" );
