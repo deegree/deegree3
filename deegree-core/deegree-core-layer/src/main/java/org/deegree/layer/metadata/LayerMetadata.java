@@ -39,6 +39,7 @@ import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.geometry.metadata.SpatialMetadata;
@@ -66,7 +67,7 @@ public class LayerMetadata {
 
     private int cascaded;
 
-    private HashMap<String, Dimension<?>> dimensions = new HashMap<String, Dimension<?>>();
+    private Map<String, Dimension<?>> dimensions = new HashMap<String, Dimension<?>>();
 
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
@@ -195,7 +196,7 @@ public class LayerMetadata {
     /**
      * @return the dimensions
      */
-    public HashMap<String, Dimension<?>> getDimensions() {
+    public Map<String, Dimension<?>> getDimensions() {
         return dimensions;
     }
 
@@ -203,7 +204,7 @@ public class LayerMetadata {
      * @param dimensions
      *            the dimensions to set
      */
-    public void setDimensions( HashMap<String, Dimension<?>> dimensions ) {
+    public void setDimensions( Map<String, Dimension<?>> dimensions ) {
         this.dimensions = dimensions;
     }
 

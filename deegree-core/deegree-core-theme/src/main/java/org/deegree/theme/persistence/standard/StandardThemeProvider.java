@@ -46,6 +46,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.SpatialMetadataConverter;
 import org.deegree.layer.Layer;
+import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreManager;
@@ -89,6 +91,8 @@ public class StandardThemeProvider implements ThemeProvider {
                             throws ResourceInitException {
         List<Layer> lays = new ArrayList<Layer>( layers.size() );
 
+        HashMap<String, Dimension<?>> dims = new HashMap<String, Dimension<?>>();
+
         for ( ThemeType.Layer l : layers ) {
             Layer lay = null;
             if ( l.getLayerStore() != null ) {
@@ -113,6 +117,9 @@ public class StandardThemeProvider implements ThemeProvider {
                 LOG.warn( "Layer with identifier {} is not available from any layer store.", l.getValue() );
                 continue;
             }
+            if ( lay.getMetadata().getDimensions() != null ) {
+                dims.putAll( lay.getMetadata().getDimensions() );
+            }
             lays.add( lay );
         }
         List<Theme> thms = new ArrayList<Theme>( themes.size() );
@@ -125,6 +132,7 @@ public class StandardThemeProvider implements ThemeProvider {
                                                           current.getKeywords() );
 
         LayerMetadata md = new LayerMetadata( current.getIdentifier(), desc, smd );
+        md.setDimensions( dims );
         return new StandardTheme( md, thms, lays );
     }
 

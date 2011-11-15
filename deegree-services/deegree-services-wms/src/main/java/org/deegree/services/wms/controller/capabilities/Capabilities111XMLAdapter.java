@@ -196,6 +196,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
         SpatialMetadata smd = md.getSpatialMetadata();
         writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
+        writeDimensions( writer, md.getDimensions() );
 
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
@@ -277,6 +278,34 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         }
     }
 
+    private static void writeDimensions( XMLStreamWriter writer, Map<String, Dimension<?>> dims )
+                            throws XMLStreamException {
+        for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
+            Dimension<?> dim = entry.getValue();
+            writer.writeStartElement( "Dimension" );
+            writer.writeAttribute( "name", entry.getKey() );
+            writer.writeAttribute( "units", dim.getUnits() == null ? "EPSG:4979" : dim.getUnits() );
+            writer.writeAttribute( "unitSymbol", dim.getUnitSymbol() == null ? "" : dim.getUnitSymbol() );
+            writer.writeEndElement();
+        }
+
+        for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
+            String name = entry.getKey();
+            Dimension<?> dim = entry.getValue();
+            writer.writeStartElement( "Extent" );
+            writer.writeAttribute( "name", name );
+            if ( dim.getDefaultValue() != null ) {
+                writer.writeAttribute( "default",
+                                       formatDimensionValueList( dim.getDefaultValue(), "time".equals( name ) ) );
+            }
+            if ( dim.getNearestValue() ) {
+                writer.writeAttribute( "nearestValue", "1" );
+            }
+            writer.writeCharacters( dim.getExtentAsString() );
+            writer.writeEndElement();
+        }
+    }
+
     @Deprecated
     private void writeLayers( XMLStreamWriter writer, Layer layer )
                             throws XMLStreamException {
@@ -303,31 +332,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
         writeSrsAndEnvelope( writer, layer.getSrs(), layer.getBbox() );
 
-        final Map<String, Dimension<?>> dims = layer.getDimensions();
-        for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
-            Dimension<?> dim = entry.getValue();
-            writer.writeStartElement( "Dimension" );
-            writer.writeAttribute( "name", entry.getKey() );
-            writer.writeAttribute( "units", dim.getUnits() == null ? "EPSG:4979" : dim.getUnits() );
-            writer.writeAttribute( "unitSymbol", dim.getUnitSymbol() == null ? "" : dim.getUnitSymbol() );
-            writer.writeEndElement();
-        }
-
-        for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
-            String name = entry.getKey();
-            Dimension<?> dim = entry.getValue();
-            writer.writeStartElement( "Extent" );
-            writer.writeAttribute( "name", name );
-            if ( dim.getDefaultValue() != null ) {
-                writer.writeAttribute( "default",
-                                       formatDimensionValueList( dim.getDefaultValue(), "time".equals( name ) ) );
-            }
-            if ( dim.getNearestValue() ) {
-                writer.writeAttribute( "nearestValue", "1" );
-            }
-            writer.writeCharacters( dim.getExtentAsString() );
-            writer.writeEndElement();
-        }
+        writeDimensions( writer, layer.getDimensions() );
 
         Style def = service.getStyles().get( layer.getName(), null );
         if ( def != null ) {

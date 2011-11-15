@@ -44,6 +44,7 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
+import static org.deegree.layer.config.ConfigUtils.parseDimensions;
 import static org.deegree.layer.config.ConfigUtils.parseStyles;
 import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -198,6 +199,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
                 Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
                 LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
+                md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
 
                 if ( smd.getEnvelope() == null ) {
                     if ( featureType != null ) {

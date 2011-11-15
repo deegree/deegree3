@@ -237,6 +237,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         SpatialMetadata smd = md.getSpatialMetadata();
         writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
+        writeDimensions( writer, md.getDimensions() );
 
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
@@ -363,6 +364,32 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         }
     }
 
+    private static void writeDimensions( XMLStreamWriter writer, Map<String, Dimension<?>> dims )
+                            throws XMLStreamException {
+        for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
+            writer.writeStartElement( WMSNS, "Dimension" );
+            Dimension<?> dim = entry.getValue();
+            writer.writeAttribute( "name", entry.getKey() );
+            writer.writeAttribute( "units", dim.getUnits() == null ? "CRS:88" : dim.getUnits() );
+            writer.writeAttribute( "unitSymbol", dim.getUnitSymbol() == null ? "" : dim.getUnitSymbol() );
+            if ( dim.getDefaultValue() != null ) {
+                writer.writeAttribute( "default",
+                                       formatDimensionValueList( dim.getDefaultValue(), "time".equals( entry.getKey() ) ) );
+            }
+            if ( dim.getNearestValue() ) {
+                writer.writeAttribute( "nearestValue", "1" );
+            }
+            if ( dim.getMultipleValues() ) {
+                writer.writeAttribute( "multipleValues", "1" );
+            }
+            if ( dim.getCurrent() ) {
+                writer.writeAttribute( "current", "1" );
+            }
+            writer.writeCharacters( dim.getExtentAsString() );
+            writer.writeEndElement();
+        }
+    }
+
     @Deprecated
     private void writeLayers( XMLStreamWriter writer, Layer layer )
                             throws XMLStreamException {
@@ -394,29 +421,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
         writeSrsAndEnvelope( writer, layer.getSrs(), layer.getBbox() );
 
-        Map<String, Dimension<?>> dims = layer.getDimensions();
-        for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
-            writer.writeStartElement( WMSNS, "Dimension" );
-            Dimension<?> dim = entry.getValue();
-            writer.writeAttribute( "name", entry.getKey() );
-            writer.writeAttribute( "units", dim.getUnits() == null ? "CRS:88" : dim.getUnits() );
-            writer.writeAttribute( "unitSymbol", dim.getUnitSymbol() == null ? "" : dim.getUnitSymbol() );
-            if ( dim.getDefaultValue() != null ) {
-                writer.writeAttribute( "default",
-                                       formatDimensionValueList( dim.getDefaultValue(), "time".equals( entry.getKey() ) ) );
-            }
-            if ( dim.getNearestValue() ) {
-                writer.writeAttribute( "nearestValue", "1" );
-            }
-            if ( dim.getMultipleValues() ) {
-                writer.writeAttribute( "multipleValues", "1" );
-            }
-            if ( dim.getCurrent() ) {
-                writer.writeAttribute( "current", "1" );
-            }
-            writer.writeCharacters( dim.getExtentAsString() );
-            writer.writeEndElement();
-        }
+        writeDimensions( writer, layer.getDimensions() );
 
         if ( layer.getAuthorityURL() != null ) {
             writer.writeStartElement( WMSNS, "AuthorityURL" );

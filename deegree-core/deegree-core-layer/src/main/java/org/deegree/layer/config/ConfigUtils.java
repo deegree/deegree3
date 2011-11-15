@@ -142,8 +142,8 @@ public class ConfigUtils {
         return new Pair<Map<String, Style>, Map<String, Style>>( styleMap, legendStyleMap );
     }
 
-    public static Map<String, Dimension<Object>> parseDimensions( String layerName, List<DimensionType> dimensions ) {
-        Map<String, Dimension<Object>> map = new LinkedHashMap<String, Dimension<Object>>();
+    public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {
+        Map<String, Dimension<?>> map = new LinkedHashMap<String, Dimension<?>>();
         for ( DimensionType type : dimensions ) {
             parser parser = new parser( new DimensionLexer( new StringReader( type.getExtent() ) ) );
             parser defaultParser = null;
