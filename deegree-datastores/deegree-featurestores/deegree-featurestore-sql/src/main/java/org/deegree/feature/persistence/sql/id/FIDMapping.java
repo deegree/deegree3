@@ -68,15 +68,16 @@ public class FIDMapping {
      * @param prefix
      *            static prefix for all feature ids, must not be <code>null</code> (but can be empty)
      * @param delimiter
-     *            delimiter that separates the values of the individual columns, must not be <code>null</code> (but
-     *            can be empty)
+     *            delimiter that separates the values of the individual columns, must not be <code>null</code> (but can
+     *            be empty)
      * @param columns
      *            database columns that the feature ids are mapped to, must not be <code>null</code> (and contain at
      *            least one entry)
      * @param generator
      *            generator for determining new ids, can be <code>null</code> (in this case, no inserts are possible)
      */
-    public FIDMapping( String prefix, String delimiter, List<Pair<SQLIdentifier, BaseType>> columns, IDGenerator generator ) {
+    public FIDMapping( String prefix, String delimiter, List<Pair<SQLIdentifier, BaseType>> columns,
+                       IDGenerator generator ) {
         this.prefix = prefix;
         this.delimiter = delimiter;
         this.columns = columns;
@@ -101,7 +102,7 @@ public class FIDMapping {
 
     @Deprecated
     public String getColumn() {
-        if ( columns.size() != 1 ) {
+        if ( columns.size() == 0 ) {
             throw new IllegalArgumentException();
         }
         return columns.get( 0 ).first.toString();
@@ -109,7 +110,7 @@ public class FIDMapping {
 
     @Deprecated
     public BaseType getColumnType() {
-        if ( columns.size() != 1 ) {
+        if ( columns.size() == 0 ) {
             throw new IllegalArgumentException();
         }
         return columns.get( 0 ).second;
