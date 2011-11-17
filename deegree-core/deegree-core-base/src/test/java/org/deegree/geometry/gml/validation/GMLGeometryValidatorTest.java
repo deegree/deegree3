@@ -168,7 +168,7 @@ class DummyGMLValidationEventHandler implements GMLValidationEventHandler {
     }
 
     @Override
-    public boolean interiorRingCCW( PolygonPatch patch, List<Object> affectedGeometryParticles,
+    public boolean interiorRingCCW( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles,
                                     List<GMLElementIdentifier> affectedElements ) {
         String msg = "Geometry error in element " + affectedElements.get( 0 ) + ": ";
         msg += "An interior ring of a (possibly nested) surface patch has a counter-clockwise orientation.";
@@ -176,7 +176,7 @@ class DummyGMLValidationEventHandler implements GMLValidationEventHandler {
     }
 
     @Override
-    public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx,
+    public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx, Point location,
                                                    List<Object> affectedGeometryParticles,
                                                    List<GMLElementIdentifier> affectedElements ) {
         String msg = "Geometry error in element " + affectedElements.get( 0 ) + ": ";
@@ -194,7 +194,7 @@ class DummyGMLValidationEventHandler implements GMLValidationEventHandler {
     }
 
     @Override
-    public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx,
+    public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx, Point location,
                                                 List<Object> affectedGeometryParticles,
                                                 List<GMLElementIdentifier> affectedElements ) {
         String msg = "Geometry error in element " + affectedElements.get( 0 ) + ": ";
@@ -203,7 +203,7 @@ class DummyGMLValidationEventHandler implements GMLValidationEventHandler {
     }
 
     @Override
-    public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx,
+    public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
                                            List<Object> affectedGeometryParticles,
                                            List<GMLElementIdentifier> affectedElements ) {
         String msg = "Geometry error in element " + affectedElements.get( 0 ) + ": ";
@@ -212,7 +212,7 @@ class DummyGMLValidationEventHandler implements GMLValidationEventHandler {
     }
 
     @Override
-    public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx,
+    public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
                                        List<Object> affectedGeometryParticles,
                                        List<GMLElementIdentifier> affectedElements ) {
         String msg = "Geometry error in element " + affectedElements.get( 0 ) + ": ";

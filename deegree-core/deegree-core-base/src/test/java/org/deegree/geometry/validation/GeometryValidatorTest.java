@@ -307,14 +307,14 @@ class DummyValidationEventHandler implements GeometryValidationEventHandler {
     }
 
     @Override
-    public boolean interiorRingCCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
+    public boolean interiorRingCCW( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RING_CCW );
         printAffectedGeometryParticles( affectedGeometryParticles );
         return false;
     }
 
     @Override
-    public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx,
+    public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx, Point location,
                                                    List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RING_INTERSECTS_EXTERIOR );
         printAffectedGeometryParticles( affectedGeometryParticles );
@@ -329,14 +329,15 @@ class DummyValidationEventHandler implements GeometryValidationEventHandler {
     }
 
     @Override
-    public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles ) {
+    public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx, Point lcation,
+                                                List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RING_TOUCHES_EXTERIOR );
         printAffectedGeometryParticles( affectedGeometryParticles );
         return false;
     }
 
     @Override
-    public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx,
+    public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
                                            List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RINGS_INTERSECT );
         printAffectedGeometryParticles( affectedGeometryParticles );
@@ -344,7 +345,7 @@ class DummyValidationEventHandler implements GeometryValidationEventHandler {
     }
 
     @Override
-    public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx,
+    public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
                                        List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RINGS_TOUCH );
         printAffectedGeometryParticles( affectedGeometryParticles );

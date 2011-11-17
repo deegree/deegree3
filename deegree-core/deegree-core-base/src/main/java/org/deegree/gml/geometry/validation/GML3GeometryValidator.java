@@ -67,8 +67,8 @@ import org.slf4j.LoggerFactory;
  * Takes an XML stream as input (which should provide a GML geometry, GML feature or feature collection document) and
  * validates all contained <code>gml:_Geometry</code> elements (at all levels of the document).
  * <p>
- * The validator's reaction on topological issues can be customized by providing a {@link GMLValidationEventHandler}
- * which is also suitable for generating validation reports.
+ * The validator's reaction on topological issues is controlled by providing a {@link GMLValidationEventHandler} which
+ * can be used for generating validation reports.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -175,14 +175,14 @@ public class GML3GeometryValidator extends XMLAdapter {
         }
 
         @Override
-        public boolean interiorRingCCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.interiorRingCCW( patch, affectedGeometryParticles, getAffectedElements() );
+        public boolean interiorRingCCW( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles ) {
+            return gmlErrorHandler.interiorRingCCW( patch, ringIdx, affectedGeometryParticles, getAffectedElements() );
         }
 
         @Override
-        public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx,
+        public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx, Point location,
                                                        List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.interiorRingIntersectsExterior( patch, ringIdx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingIntersectsExterior( patch, ringIdx, location, affectedGeometryParticles,
                                                                    getAffectedElements() );
         }
 
@@ -194,23 +194,23 @@ public class GML3GeometryValidator extends XMLAdapter {
         }
 
         @Override
-        public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx,
+        public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx, Point location,
                                                     List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.interiorRingTouchesExterior( patch, ringIdx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingTouchesExterior( patch, ringIdx, location, affectedGeometryParticles,
                                                                 getAffectedElements() );
         }
 
         @Override
-        public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx,
+        public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
                                                List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.interiorRingsIntersect( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
-                                                           getAffectedElements() );
+            return gmlErrorHandler.interiorRingsIntersect( patch, ring1Idx, ring2Idx, location,
+                                                           affectedGeometryParticles, getAffectedElements() );
         }
 
         @Override
-        public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx,
+        public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
                                            List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.interiorRingsTouch( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingsTouch( patch, ring1Idx, ring2Idx, location, affectedGeometryParticles,
                                                        getAffectedElements() );
         }
 
