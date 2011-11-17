@@ -182,9 +182,9 @@ public class InsertRowManager {
                 }
             }
 
-            LOG.debug( "Before heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size());
+            LOG.debug( "Before heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size() );
             processHeap();
-            LOG.debug( "After heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size());
+            LOG.debug( "After heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size() );
 
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
@@ -379,7 +379,7 @@ public class InsertRowManager {
         TableName ftTable = ftMapping.getFtTable();
         Set<SQLIdentifier> ftTableGenColumns = tableDeps.getGenColumns( ftTable );
         if ( ftTableGenColumns != null && ftTableGenColumns.contains( toColumn ) ) {
-            return new KeyPropagation( ftTable, toColumn, join.getFromTable(), fromColumn );
+            return new KeyPropagation( ftTable, toColumn, join.getFromTable(), fromColumn, true );
         }
 
         // must be the other way round

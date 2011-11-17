@@ -502,6 +502,15 @@
             </attribute>
           </complexType>
         </element>
+        <element name="AutoDeletePropagation" minOccurs="0">
+          <simpleType>
+            <restriction base="string">
+              <enumeration value="fromParent" />
+              <enumeration value="toParent" />
+              <enumeration value="none" />
+            </restriction>
+          </simpleType>
+        </element>
       </sequence>
       <attribute name="table" type="string" use="required">
         <annotation>

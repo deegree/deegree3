@@ -44,6 +44,7 @@ import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
+import static org.deegree.feature.persistence.sql.expressions.DeletePropagation.FROM_PARENT;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,6 +79,7 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
+import org.deegree.feature.persistence.sql.expressions.DeletePropagation;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
@@ -480,7 +482,7 @@ public class AppSchemaMapper {
         Map<SQLIdentifier, IDGenerator> keyColumnToIdGenerator = new HashMap<SQLIdentifier, IDGenerator>();
         keyColumnToIdGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
         TableJoin join = new TableJoin( fromTable, toTable, fromColumns, toColumns, orderColumns, true,
-                                        keyColumnToIdGenerator );
+                                        keyColumnToIdGenerator, FROM_PARENT );
         return Collections.singletonList( join );
     }
 
@@ -496,7 +498,7 @@ public class AppSchemaMapper {
         Map<SQLIdentifier, IDGenerator> keyColumnToIdGenerator = new HashMap<SQLIdentifier, IDGenerator>();
         keyColumnToIdGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
         ftJoin = new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false,
-                                keyColumnToIdGenerator );
+                                keyColumnToIdGenerator, DeletePropagation.NONE );
         return ftJoin;
     }
 

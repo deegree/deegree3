@@ -69,13 +69,17 @@ public class KeyPropagation {
      *            target table, must not be <code>null</code>
      * @param fkColumn
      *            foreign key column (in target table), must not be <code>null</code>
+     * @param cascadeOnDelete
+     *            <code>true</code>, if referenced columns in the target table are automatically deleted when columns
+     *            are deleted in the source table, <code>false</code> otherwise
      */
-    public KeyPropagation( TableName source, SQLIdentifier pkColumn, TableName target, SQLIdentifier fkColumn ) {
+    public KeyPropagation( TableName source, SQLIdentifier pkColumn, TableName target, SQLIdentifier fkColumn,
+                           boolean cascadeOnDelete ) {
         this.source = source;
         this.pkColumn = pkColumn;
         this.target = target;
         this.fkColumn = fkColumn;
-        this.cascadeOnDelete = true;
+        this.cascadeOnDelete = cascadeOnDelete;
     }
 
     public TableName getPKTable() {
@@ -111,7 +115,7 @@ public class KeyPropagation {
      * @return <code>true</code>, if corresponding rows are deleted automatically, <code>false</code> otherwise
      */
     public boolean getCascadeOnDelete() {
-        throw new UnsupportedOperationException( "Not implemented yet." );
+        return cascadeOnDelete;
     }
 
     @Override

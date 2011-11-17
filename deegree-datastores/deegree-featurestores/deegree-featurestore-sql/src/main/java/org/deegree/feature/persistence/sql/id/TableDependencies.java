@@ -119,7 +119,7 @@ public class TableDependencies {
                     LinkedHashSet<SQLIdentifier> linkedHashSet = tableToGenerators.get( currentTable );
                     if ( tableToGenerators.get( currentTable ) != null
                          && tableToGenerators.get( currentTable ).contains( fromColumn ) ) {
-                        KeyPropagation prop = new KeyPropagation( join.getFromTable(), fromColumn, joinTable, toColumn );
+                        KeyPropagation prop = new KeyPropagation( join.getFromTable(), fromColumn, joinTable, toColumn, true );
                         LOG.debug( "Found key propagation (to join table): " + prop );
                         addChild( currentTable, prop );
                         addParent( joinTable, prop );
@@ -136,7 +136,7 @@ public class TableDependencies {
                         SQLIdentifier toColumn = join.getToColumns().get( i );
                         if ( autoGenColumn.equals( toColumn ) ) {
                             KeyPropagation prop = new KeyPropagation( joinTable, toColumn, join.getFromTable(),
-                                                                      fromColumn );
+                                                                      fromColumn, true );
                             LOG.debug( "Found key propagation (from join table): " + prop );
                             addChild( joinTable, prop );
                             addParent( currentTable, prop );

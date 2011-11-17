@@ -62,6 +62,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
+import org.deegree.feature.persistence.sql.expressions.DeletePropagation;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
@@ -203,8 +204,12 @@ public class AbstractMappedSchemaBuilder {
                 // defaulting
                 keyColumnToGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
             }
+
+            DeletePropagation deletePropagation = DeletePropagation.FROM_PARENT;
+
             TableJoin tj = new TableJoin( from, target, join.getFromColumns(), join.getToColumns(),
-                                          join.getOrderColumns(), isNumbered, keyColumnToGenerator );
+                                          join.getOrderColumns(), isNumbered, keyColumnToGenerator,
+                                          deletePropagation );
             return Collections.singletonList( tj );
         }
         return null;

@@ -45,7 +45,7 @@ import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
- * Defines a join between two tables with optional ordering.
+ * Defines a join between two tables with optional ordering and key generation / delete propagation information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -68,9 +68,11 @@ public class TableJoin implements MappingExpression {
 
     private final Map<SQLIdentifier, IDGenerator> keyColumnToGenerator;
 
+    private final DeletePropagation deletePropagation;
+
     public TableJoin( TableName fromTable, TableName toTable, List<String> fromColumns, List<String> toColumns,
                       List<String> orderColumns, boolean numberedOrder,
-                      Map<SQLIdentifier, IDGenerator> keyColumnToGenerator ) {
+                      Map<SQLIdentifier, IDGenerator> keyColumnToGenerator, DeletePropagation deletePropagation ) {
         this.fromTable = fromTable;
         this.toTable = toTable;
         if ( fromColumns != null ) {
@@ -99,6 +101,7 @@ public class TableJoin implements MappingExpression {
         }
         this.numberedOrder = numberedOrder;
         this.keyColumnToGenerator = keyColumnToGenerator;
+        this.deletePropagation = deletePropagation;
     }
 
     public TableName getFromTable() {
@@ -129,8 +132,13 @@ public class TableJoin implements MappingExpression {
         return keyColumnToGenerator;
     }
 
+    public DeletePropagation getDeletePropagation() {
+        return deletePropagation;
+    }
+
     @Override
     public String toString() {
-        return fromTable + "." + fromColumns + " <-> " + toTable + "." + toColumns;
+        return fromTable + "." + fromColumns + " <-> " + toTable + "." + toColumns + " (delete propagation: "
+               + deletePropagation + ")";
     }
 }
