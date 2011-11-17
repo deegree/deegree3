@@ -50,14 +50,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -1087,6 +1085,26 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
+    /**
+     * Determines the active {@link DeegreeWorkspace} for this webapp.
+     * <p>
+     * The following steps are performed to find it (in order). Strategy stops on first match:
+     * <nl>
+     * <li>Analyse file $DEEGREE_WORKSPACE_ROOT/webapps.properties (and lookup entry for this webapp context name)</li>
+     * <li>Match workspace by webapp context name</li>
+     * <li>Read WEB-INF/workspace_name (in webapp directory)</li>
+     * </nl>
+     * If this doesn't lead to an existing workspace directory, the following additional steps are performed:
+     * <nl>
+     * <li>Check for WEB-INF/workspace</li>
+     * <li>Check for WEB-INF/conf</li>
+     * </nl>
+     * </p>
+     * 
+     * @return workspace (uninitialized), never <code>null</code>
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     private DeegreeWorkspace getActiveWorkspace()
                             throws IOException, URISyntaxException {
 
@@ -1102,22 +1120,46 @@ public class OGCFrontController extends HttpServlet {
         Properties props = loadWebappToWsMappings( activeWsConfigFile );
         String wsName = props.getProperty( ctxPath );
 
+        File fallbackDir = null;
         if ( wsName != null ) {
-            LOG.info( "Active workspace determined by file: " + activeWsConfigFile );
-            DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName, null );
-            LOG.info( "Using workspace '{}' at '{}'", ws.getName(), ws.getLocation() );
-            return ws;
+            LOG.info( "Active workspace determined by webapp-to-workspace mapping file: " + activeWsConfigFile );
+        } else {
+            LOG.debug( "No webapp-to-workspace mappings file. Trying alternative methods." );
+            if ( !ctxPath.isEmpty() ) {
+                String webappName = ctxPath;
+                if ( webappName.startsWith( "/" ) ) {
+                    webappName = webappName.substring( 1 );
+                }
+                if ( !webappName.isEmpty() ) {
+                    File file = new File( wsRoot, webappName );
+                    LOG.debug( "Matching by webapp name ('" + file + "'). Checking for workspace directory '" + file
+                               + "'" );
+                    if ( file.exists() ) {
+                        wsName = webappName;
+                        LOG.info( "Active workspace determined by matching webapp name (" + webappName
+                                  + ") with available workspaces." );
+                    }
+                }
+            }
+
+            if ( wsName == null ) {
+                wsName = getActiveWorkspaceName();
+                if ( wsName != null && new File( wsRoot, wsName ).exists() ) {
+                    LOG.info( "Active workspace determined by matching workspace name from WEB-INF/workspace_name ("
+                              + wsName + ") with available workspaces." );
+                } else {
+                    LOG.info( "Active workspace in webapp." );
+                    fallbackDir = new File( resolveFileLocation( "WEB-INF/workspace", getServletContext() ).toURI() );
+                    if ( !fallbackDir.exists() ) {
+                        LOG.debug( "Trying legacy-style workspace directory (WEB-INF/conf)" );
+                        fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
+                    } else {
+                        LOG.debug( "Using new-style workspace directory (WEB-INF/workspace)" );
+                    }
+                }
+            }
         }
 
-        LOG.info( "No workspace-to-webapp mappings file. Trying alternative methods." );
-        wsName = getActiveWorkspaceName();
-        File fallbackDir = new File( resolveFileLocation( "WEB-INF/workspace", getServletContext() ).toURI() );
-        if ( !fallbackDir.exists() ) {
-            LOG.debug( "Trying legacy-style workspace directory (WEB-INF/conf)" );
-            fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
-        } else {
-            LOG.debug( "Using new-style workspace directory (WEB-INF/workspace)" );
-        }
         DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName, fallbackDir );
         LOG.info( "Using workspace '{}' at '{}'", ws.getName(), ws.getLocation() );
         return ws;
@@ -1151,7 +1193,7 @@ public class OGCFrontController extends HttpServlet {
      * Setting is saved in properties file <code>webapps.properties</code> in the deegree workspace root folder.
      * </p>
      * 
-     * TODO file locking
+     * TODO file locking to prevent race conditions when this method gets called simultaneously in different webapps
      * 
      * @param wsName
      *            name of the workspace, must not be <code>null</code>
@@ -1168,9 +1210,11 @@ public class OGCFrontController extends HttpServlet {
 
         File activeWsConfigFile = new File( wsRoot, ACTIVE_WS_CONFIG_FILE );
         Properties props = loadWebappToWsMappings( activeWsConfigFile );
-        props.put( ctxPath, wsName );
-
-        writeWebappToWsMappings( props, activeWsConfigFile );
+        String oldWsName = props.getProperty( ctxPath );
+        if ( oldWsName == null || !oldWsName.equals( wsName ) ) {
+            props.put( ctxPath, wsName );
+            writeWebappToWsMappings( props, activeWsConfigFile );
+        }
     }
 
     private void writeWebappToWsMappings( Properties props, File file )
