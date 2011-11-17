@@ -37,7 +37,6 @@ package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static javax.faces.application.FacesMessage.SEVERITY_INFO;
-import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.deegree.client.core.utils.ActionParams.getParam1;
@@ -58,7 +57,6 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FileUtils;
@@ -204,11 +202,10 @@ public class WorkspaceBean implements Serializable {
                             throws Exception {
 
         String wsName = (String) getParam1();
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        File file = new File( ctx.getRealPath( "WEB-INF/workspace_name" ) );
-        writeStringToFile( file, wsName );
         try {
-            OGCFrontController.getInstance().reload( wsName );
+            OGCFrontController fc = OGCFrontController.getInstance();
+            fc.setActiveWorkspaceName( wsName );
+            fc.reload();
         } catch ( Exception e ) {
             e.printStackTrace();
         }

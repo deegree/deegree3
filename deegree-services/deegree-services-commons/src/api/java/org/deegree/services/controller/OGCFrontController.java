@@ -45,16 +45,19 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -64,6 +67,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.imageio.spi.IIORegistry;
 import javax.servlet.ServletConfig;
@@ -116,8 +120,8 @@ import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.slf4j.Logger;
 
 /**
- * Servlet that acts as single HTTP communication end point and dispatcher to the OWS instances configured in the
- * {@link DeegreeWorkspace}.
+ * Servlet that acts as OWS-HTTP communication end point and dispatcher to the {@link OWS} instances configured in the
+ * active {@link DeegreeWorkspace}.
  * <p>
  * Calls to {@link #doGet(HttpServletRequest, HttpServletResponse)} and
  * {@link #doPost(HttpServletRequest, HttpServletResponse)} are processed as follows:
@@ -159,6 +163,9 @@ public class OGCFrontController extends HttpServlet {
     private static final String DEFAULT_ENCODING = "UTF-8";
 
     private static final String defaultTMPDir = System.getProperty( "java.io.tmpdir" );
+
+    // file name that stores active workspaces (per webapp)
+    private static final String ACTIVE_WS_CONFIG_FILE = "webapps.properties";
 
     private static OGCFrontController instance;
 
@@ -1008,12 +1015,13 @@ public class OGCFrontController extends HttpServlet {
                       + System.getProperty( "java.vendor" ) + ")" );
             LOG.info( "- operating system   " + System.getProperty( "os.name" ) + " ("
                       + System.getProperty( "os.version" ) + ", " + System.getProperty( "os.arch" ) + ")" );
+            LOG.info( "- webapp path        " + ctxPath );
             LOG.info( "- default encoding   " + DEFAULT_ENCODING );
             LOG.info( "- system encoding    " + Charset.defaultCharset().displayName() );
             LOG.info( "- temp directory     " + defaultTMPDir );
             LOG.info( "" );
 
-            initWorkspace( null );
+            initWorkspace();
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -1029,8 +1037,9 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private void initWorkspace( String name )
+    private void initWorkspace()
                             throws IOException, URISyntaxException, ResourceInitException {
+
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Initializing workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
@@ -1045,8 +1054,8 @@ public class OGCFrontController extends HttpServlet {
             LOG.warn( "*** The workspace root is not writable. ***" );
             LOG.warn( "*** This will lead to problems when you'll try to download workspaces. ***" );
         }
-        // LOG.info( "- servlet context path    " + ctxPath );
-        workspace = getWorkspace( name );
+
+        workspace = getActiveWorkspace();
         workspace.initAll();
         serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
         mainConfig = serviceConfiguration.getMainConfiguration();
@@ -1070,34 +1079,41 @@ public class OGCFrontController extends HttpServlet {
      */
     public void reload()
                             throws IOException, URISyntaxException, ServletException {
-        reload( null );
-    }
-
-    /**
-     * Re-initializes the whole workspace, effectively reloading the whole configuration.
-     * 
-     * @param workspaceName
-     *            if not null, the specified workspace will be started after shutting down the currently running one
-     * @throws URISyntaxException
-     * @throws IOException
-     * @throws ServletException
-     */
-    public void reload( String workspaceName )
-                            throws IOException, URISyntaxException, ServletException {
         destroyWorkspace();
         try {
-            initWorkspace( workspaceName );
+            initWorkspace();
         } catch ( ResourceInitException e ) {
             throw new ServletException( e.getLocalizedMessage(), e.getCause() );
         }
     }
 
-    private DeegreeWorkspace getWorkspace( String name )
+    private DeegreeWorkspace getActiveWorkspace()
                             throws IOException, URISyntaxException {
-        String wsName = getWorkspaceName( name );
+
+        File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
+        if ( !wsRoot.exists() || !wsRoot.isDirectory() ) {
+            String msg = "Workspace root directory ('" + wsRoot + "') does not exist or does not denote a directory.";
+            LOG.error( msg );
+            throw new IOException( msg );
+        }
+
+        File activeWsConfigFile = new File( wsRoot, ACTIVE_WS_CONFIG_FILE );
+
+        Properties props = loadWebappToWsMappings( activeWsConfigFile );
+        String wsName = props.getProperty( ctxPath );
+
+        if ( wsName != null ) {
+            LOG.info( "Active workspace determined by file: " + activeWsConfigFile );
+            DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName, null );
+            LOG.info( "Using workspace '{}' at '{}'", ws.getName(), ws.getLocation() );
+            return ws;
+        }
+
+        LOG.info( "No workspace-to-webapp mappings file. Trying alternative methods." );
+        wsName = getActiveWorkspaceName();
         File fallbackDir = new File( resolveFileLocation( "WEB-INF/workspace", getServletContext() ).toURI() );
         if ( !fallbackDir.exists() ) {
-            LOG.debug( "Trying old-style workspace directory (WEB-INF/conf)" );
+            LOG.debug( "Trying legacy-style workspace directory (WEB-INF/conf)" );
             fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
         } else {
             LOG.debug( "Using new-style workspace directory (WEB-INF/workspace)" );
@@ -1107,11 +1123,11 @@ public class OGCFrontController extends HttpServlet {
         return ws;
     }
 
-    private String getWorkspaceName( String defaultName )
+    private String getActiveWorkspaceName()
                             throws URISyntaxException, IOException {
-        String wsName = defaultName == null ? null : defaultName;
+        String wsName = null;
         File wsNameFile = new File( resolveFileLocation( "WEB-INF/workspace_name", getServletContext() ).toURI() );
-        if ( wsNameFile.exists() && defaultName == null ) {
+        if ( wsNameFile.exists() ) {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader( new FileReader( wsNameFile ) );
@@ -1124,13 +1140,81 @@ public class OGCFrontController extends HttpServlet {
             }
             LOG.info( "Using workspace name {} (defined in WEB-INF/workspace_name)", wsName, wsNameFile );
         } else {
-            if ( defaultName == null ) {
-                LOG.info( "Using default workspace (WEB-INF/workspace_name does not exist)" );
-            } else {
-                LOG.info( "Using workspace named {}", defaultName );
-            }
+            LOG.info( "Using default workspace (WEB-INF/workspace_name does not exist)" );
         }
         return wsName;
+    }
+
+    /**
+     * Associates the specified workspace with the current webapp.
+     * <p>
+     * Setting is saved in properties file <code>webapps.properties</code> in the deegree workspace root folder.
+     * </p>
+     * 
+     * TODO file locking
+     * 
+     * @param wsName
+     *            name of the workspace, must not be <code>null</code>
+     */
+    public void setActiveWorkspaceName( String wsName )
+                            throws IOException {
+
+        File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
+        if ( !wsRoot.exists() || !wsRoot.isDirectory() ) {
+            String msg = "Workspace root directory ('" + wsRoot + "') does not exist or does not denote a directory.";
+            LOG.error( msg );
+            throw new IOException( msg );
+        }
+
+        File activeWsConfigFile = new File( wsRoot, ACTIVE_WS_CONFIG_FILE );
+        Properties props = loadWebappToWsMappings( activeWsConfigFile );
+        props.put( ctxPath, wsName );
+
+        writeWebappToWsMappings( props, activeWsConfigFile );
+    }
+
+    private void writeWebappToWsMappings( Properties props, File file )
+                            throws IOException {
+
+        if ( file.exists() && !file.canWrite() ) {
+            String msg = "Webapp-to-workspace mappings file ('" + file + "') is not a writable file.";
+            LOG.error( msg );
+        }
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream( file );
+            props.store( fos, null );
+        } catch ( IOException e ) {
+            String msg = "Error writing webapp-to-workspace mappings to file '" + file + "': " + e.getMessage();
+            LOG.error( msg );
+            throw new IOException( msg, e );
+        } finally {
+            IOUtils.closeQuietly( fos );
+        }
+        LOG.info( "Successfully saved webapp-to-workspace mapping in file '" + file + "'." );
+    }
+
+    private Properties loadWebappToWsMappings( File file )
+                            throws IOException {
+
+        Properties props = new Properties();
+        if ( file.exists() ) {
+            LOG.info( "Loading webapp-to-workspace mappings from file '" + file + "'" );
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream( file );
+                props = new Properties();
+                props.load( fis );
+            } catch ( IOException e ) {
+                String msg = "Error reading webapp-to-workspace mappings from file '" + file + "': " + e.getMessage();
+                LOG.error( msg );
+                throw new IOException( msg, e );
+            } finally {
+                IOUtils.closeQuietly( fis );
+            }
+        }
+        return props;
     }
 
     @Override

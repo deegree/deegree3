@@ -65,7 +65,9 @@ public class Restart {
         // TODO handle case of partial workspace restart
 
         try {
-            OGCFrontController.getInstance().reload( p.first.getName() );
+            OGCFrontController fc = OGCFrontController.getInstance();
+            fc.setActiveWorkspaceName( p.first.getName() );
+            fc.reload();
         } catch ( IOException e ) {
             IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
             return;
