@@ -8,7 +8,7 @@ CREATE TABLE IDXTB_MAIN (
 	anytext text NOT NULL,
 	fileidentifier varchar(150) NOT NULL,
 	modified timestamp NOT NULL,
-	type varchar(15),
+	type varchar(25),
 	topicCategories varchar(1000), 
 	revisiondate timestamp,
 	creationdate timestamp,
