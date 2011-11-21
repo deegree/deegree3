@@ -110,7 +110,7 @@ public class WFSClientTest {
         assertNull( si.getFees() );
 
         // ServiceProvider
-        assertEquals( "http://www.deegree.org", client.getProvider().getProviderSite() );
+        assertEquals( "http://www.lat-lon.de", client.getProvider().getProviderSite() );
 
         // OperationMetadata (TODO)
     }

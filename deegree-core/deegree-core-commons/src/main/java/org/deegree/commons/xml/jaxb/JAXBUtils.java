@@ -37,7 +37,6 @@ package org.deegree.commons.xml.jaxb;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.lang.reflect.Field;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
@@ -54,9 +53,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.slf4j.Logger;
-
-import com.sun.xml.bind.v2.ClassFactory;
-import com.sun.xml.bind.v2.runtime.Coordinator;
 
 /**
  * 
@@ -75,26 +71,27 @@ public class JAXBUtils {
      * Call this once you're done in the thread that uses jaxb (un-)marshalling.
      */
     public static void fixThreadLocalLeaks() {
-        try {
-            Field f = ClassFactory.class.getDeclaredField( "tls" );
-            f.setAccessible( true );
-            ( (ThreadLocal<?>) f.get( null ) ).set( null );
-            f = Coordinator.class.getDeclaredField( "activeTable" );
-            f.setAccessible( true );
-            ( (ThreadLocal<?>) f.get( null ) ).set( null );
-        } catch ( java.lang.SecurityException e ) {
-            LOG.error( "Failed to plug thread local leaks of jaxb." );
-            LOG.trace( "Stack trace:", e );
-        } catch ( NoSuchFieldException e ) {
-            LOG.error( "Failed to plug thread local leaks of jaxb." );
-            LOG.trace( "Stack trace:", e );
-        } catch ( IllegalArgumentException e ) {
-            LOG.error( "Failed to plug thread local leaks of jaxb." );
-            LOG.trace( "Stack trace:", e );
-        } catch ( IllegalAccessException e ) {
-            LOG.error( "Failed to plug thread local leaks of jaxb." );
-            LOG.trace( "Stack trace:", e );
-        }
+          LOG.warn ("Not fixing JAXB classloader leaks. Code needs updating.");
+//        try {
+//            Field f = ClassFactory.class.getDeclaredField( "tls" );
+//            f.setAccessible( true );
+//            ( (ThreadLocal<?>) f.get( null ) ).set( null );
+//            f = Coordinator.class.getDeclaredField( "activeTable" );
+//            f.setAccessible( true );
+//            ( (ThreadLocal<?>) f.get( null ) ).set( null );
+//        } catch ( java.lang.SecurityException e ) {
+//            LOG.error( "Failed to plug thread local leaks of jaxb." );
+//            LOG.trace( "Stack trace:", e );
+//        } catch ( NoSuchFieldException e ) {
+//            LOG.error( "Failed to plug thread local leaks of jaxb." );
+//            LOG.trace( "Stack trace:", e );
+//        } catch ( IllegalArgumentException e ) {
+//            LOG.error( "Failed to plug thread local leaks of jaxb." );
+//            LOG.trace( "Stack trace:", e );
+//        } catch ( IllegalAccessException e ) {
+//            LOG.error( "Failed to plug thread local leaks of jaxb." );
+//            LOG.trace( "Stack trace:", e );
+//        }
     }
 
     public static Object unmarshall( String jaxbPackage, URL schemaLocation, URL url, DeegreeWorkspace workspace )
@@ -214,5 +211,4 @@ public class JAXBUtils {
         }
         return result;
     }
-
 }
