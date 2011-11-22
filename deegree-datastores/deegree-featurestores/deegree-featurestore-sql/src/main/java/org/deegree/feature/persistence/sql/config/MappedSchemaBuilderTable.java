@@ -125,6 +125,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
     private final SQLDialect dialect;
 
+    private final boolean deleteCascadingByDB;
+
     /**
      * Creates a new {@link MappedSchemaBuilderTable} instance.
      * 
@@ -135,8 +137,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
      * @throws SQLException
      * @throws FeatureStoreException
      */
-    public MappedSchemaBuilderTable( String jdbcConnId, List<FeatureTypeJAXB> ftDecls, SQLDialect dialect )
-                            throws SQLException, FeatureStoreException {
+    public MappedSchemaBuilderTable( String jdbcConnId, List<FeatureTypeJAXB> ftDecls, SQLDialect dialect,
+                                     boolean deleteCascadingByDB ) throws SQLException, FeatureStoreException {
         this.dialect = dialect;
         conn = ConnectionManager.getConnection( jdbcConnId );
         try {
@@ -146,6 +148,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         } finally {
             JDBCUtils.close( conn );
         }
+        this.deleteCascadingByDB = deleteCascadingByDB;
     }
 
     /**
@@ -163,7 +166,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         GeometryStorageParams geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( "EPSG:4326" ),
                                                                           dialect.getUndefinedSrid(),
                                                                           CoordinateDimension.DIM_2 );
-        return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null, geometryParams );
+        return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null, geometryParams,
+                                    deleteCascadingByDB );
     }
 
     private void process( FeatureTypeJAXB ftDecl )

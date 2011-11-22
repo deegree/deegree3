@@ -33,6 +33,14 @@
         <element name="DisablePostFiltering" minOccurs="0">
           <complexType />
         </element>
+        <element name="JoinTableDeletePropagation" minOccurs="0">
+          <simpleType>
+            <restriction base="string">
+              <enumeration value="db" />
+              <enumeration value="manual" />
+            </restriction>
+          </simpleType>
+        </element>        
         <choice>
           <element ref="sqlfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
           <sequence>
@@ -501,15 +509,6 @@
               </annotation>
             </attribute>
           </complexType>
-        </element>
-        <element name="AutoDeletePropagation" minOccurs="0">
-          <simpleType>
-            <restriction base="string">
-              <enumeration value="fromParent" />
-              <enumeration value="toParent" />
-              <enumeration value="none" />
-            </restriction>
-          </simpleType>
         </element>
       </sequence>
       <attribute name="table" type="string" use="required">

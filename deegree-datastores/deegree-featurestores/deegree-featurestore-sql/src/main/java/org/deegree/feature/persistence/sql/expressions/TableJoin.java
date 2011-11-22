@@ -68,11 +68,9 @@ public class TableJoin implements MappingExpression {
 
     private final Map<SQLIdentifier, IDGenerator> keyColumnToGenerator;
 
-    private final DeletePropagation deletePropagation;
-
     public TableJoin( TableName fromTable, TableName toTable, List<String> fromColumns, List<String> toColumns,
                       List<String> orderColumns, boolean numberedOrder,
-                      Map<SQLIdentifier, IDGenerator> keyColumnToGenerator, DeletePropagation deletePropagation ) {
+                      Map<SQLIdentifier, IDGenerator> keyColumnToGenerator ) {
         this.fromTable = fromTable;
         this.toTable = toTable;
         if ( fromColumns != null ) {
@@ -101,7 +99,6 @@ public class TableJoin implements MappingExpression {
         }
         this.numberedOrder = numberedOrder;
         this.keyColumnToGenerator = keyColumnToGenerator;
-        this.deletePropagation = deletePropagation;
     }
 
     public TableName getFromTable() {
@@ -132,13 +129,8 @@ public class TableJoin implements MappingExpression {
         return keyColumnToGenerator;
     }
 
-    public DeletePropagation getDeletePropagation() {
-        return deletePropagation;
-    }
-
     @Override
     public String toString() {
-        return fromTable + "." + fromColumns + " <-> " + toTable + "." + toColumns + " (delete propagation: "
-               + deletePropagation + ")";
+        return fromTable + "." + fromColumns + " <-> " + toTable + "." + toColumns;
     }
 }

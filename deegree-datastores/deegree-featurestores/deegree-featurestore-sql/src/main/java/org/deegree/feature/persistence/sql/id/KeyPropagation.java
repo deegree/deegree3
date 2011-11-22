@@ -56,8 +56,6 @@ public class KeyPropagation {
 
     private final SQLIdentifier fkColumn;
 
-    private final boolean cascadeOnDelete;
-
     /**
      * Creates a new {@link KeyPropagation} instance.
      * 
@@ -69,17 +67,12 @@ public class KeyPropagation {
      *            target table, must not be <code>null</code>
      * @param fkColumn
      *            foreign key column (in target table), must not be <code>null</code>
-     * @param cascadeOnDelete
-     *            <code>true</code>, if referenced columns in the target table are automatically deleted when columns
-     *            are deleted in the source table, <code>false</code> otherwise
      */
-    public KeyPropagation( TableName source, SQLIdentifier pkColumn, TableName target, SQLIdentifier fkColumn,
-                           boolean cascadeOnDelete ) {
+    public KeyPropagation( TableName source, SQLIdentifier pkColumn, TableName target, SQLIdentifier fkColumn ) {
         this.source = source;
         this.pkColumn = pkColumn;
         this.target = target;
         this.fkColumn = fkColumn;
-        this.cascadeOnDelete = cascadeOnDelete;
     }
 
     public TableName getPKTable() {
@@ -106,16 +99,6 @@ public class KeyPropagation {
      */
     public boolean isFKConstrained() {
         throw new UnsupportedOperationException( "Not implemented yet." );
-    }
-
-    /**
-     * Returns whether corresponding rows in the target table are automatically deleted by the database if a row is
-     * deleted in the source table.
-     * 
-     * @return <code>true</code>, if corresponding rows are deleted automatically, <code>false</code> otherwise
-     */
-    public boolean getCascadeOnDelete() {
-        return cascadeOnDelete;
     }
 
     @Override

@@ -143,9 +143,12 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private final XPathSchemaWalker schemaWalker;
 
+    private final boolean deleteCascadingByDB;
+
     public MappedSchemaBuilderGML( String configURL, List<String> gmlSchemas, StorageCRS storageCRS,
                                    List<NamespaceHint> nsHints, BLOBMapping blobConf,
-                                   List<FeatureTypeMappingJAXB> ftMappingConfs ) throws FeatureStoreException {
+                                   List<FeatureTypeMappingJAXB> ftMappingConfs, boolean deleteCascadingByDB )
+                            throws FeatureStoreException {
 
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
         CoordinateDimension dim = CoordinateDimension.DIM_2;
@@ -174,6 +177,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 ftNameToMapping.put( ftMapping.getFeatureType(), ftMapping );
             }
         }
+        this.deleteCascadingByDB = deleteCascadingByDB;
     }
 
     private void addNamespaceBindings( String componentLocation, AppSchema gmlSchema, List<NamespaceHint> userHints ) {
@@ -268,7 +272,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         GMLSchemaInfoSet xsModel = gmlSchema.getGMLSchema();
         return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping, blobMapping,
-                                    geometryParams );
+                                    geometryParams, deleteCascadingByDB );
     }
 
     private AppSchema buildGMLSchema( String configURL, List<String> gmlSchemas )

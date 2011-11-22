@@ -103,12 +103,16 @@ public class MappedAppSchema extends GenericAppSchema {
      *            BBOX mapping parameters, may be <code>null</code> (for relational-only mappings)
      * @param blobMapping
      *            BLOB mapping parameters, may be <code>null</code> (for relational-only mappings)
+     * @param deleteCascadingByDB
+     *            if <code>true</code>, the DB automatically deletes joined tables when a feature type table row is
+     *            deleted, <code>false</code> otherwise
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public MappedAppSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                             Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel, FeatureTypeMapping[] ftMappings,
-                            BBoxTableMapping bboxMapping, BlobMapping blobMapping, GeometryStorageParams geometryParams ) {
+                            BBoxTableMapping bboxMapping, BlobMapping blobMapping,
+                            GeometryStorageParams geometryParams, boolean deleteCascadingByDB ) {
 
         super( fts, ftToSuperFt, prefixToNs, xsModel );
         if ( ftMappings != null ) {
@@ -136,7 +140,8 @@ public class MappedAppSchema extends GenericAppSchema {
 
         this.bboxMapping = bboxMapping;
         this.blobMapping = blobMapping;
-        this.keyDependencies = new TableDependencies( ftMappings );
+        this.keyDependencies = new TableDependencies( ftMappings, deleteCascadingByDB );
+        LOG.info( "Key dependencies: " + keyDependencies );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Key dependencies: " + keyDependencies );
         }

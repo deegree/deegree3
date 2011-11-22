@@ -71,7 +71,9 @@ public class TableDependencies {
 
     private final Map<TableName, LinkedHashSet<KeyPropagation>> tableToChildren = new HashMap<TableName, LinkedHashSet<KeyPropagation>>();
 
-    public TableDependencies( FeatureTypeMapping[] ftMappings ) {
+    private final boolean deleteCascadingByDB;
+
+    public TableDependencies( FeatureTypeMapping[] ftMappings, boolean deleteCascadingByDB ) {
         if ( ftMappings != null ) {
             for ( FeatureTypeMapping ftMapping : ftMappings ) {
                 buildFIDGenerator( ftMapping );
@@ -81,6 +83,7 @@ public class TableDependencies {
                 }
             }
         }
+        this.deleteCascadingByDB = deleteCascadingByDB;
     }
 
     private void buildFIDGenerator( FeatureTypeMapping ftMapping ) {
@@ -119,7 +122,7 @@ public class TableDependencies {
                     LinkedHashSet<SQLIdentifier> linkedHashSet = tableToGenerators.get( currentTable );
                     if ( tableToGenerators.get( currentTable ) != null
                          && tableToGenerators.get( currentTable ).contains( fromColumn ) ) {
-                        KeyPropagation prop = new KeyPropagation( join.getFromTable(), fromColumn, joinTable, toColumn, true );
+                        KeyPropagation prop = new KeyPropagation( join.getFromTable(), fromColumn, joinTable, toColumn );
                         LOG.debug( "Found key propagation (to join table): " + prop );
                         addChild( currentTable, prop );
                         addParent( joinTable, prop );
@@ -136,7 +139,7 @@ public class TableDependencies {
                         SQLIdentifier toColumn = join.getToColumns().get( i );
                         if ( autoGenColumn.equals( toColumn ) ) {
                             KeyPropagation prop = new KeyPropagation( joinTable, toColumn, join.getFromTable(),
-                                                                      fromColumn, true );
+                                                                      fromColumn );
                             LOG.debug( "Found key propagation (from join table): " + prop );
                             addChild( joinTable, prop );
                             addParent( currentTable, prop );
@@ -264,5 +267,9 @@ public class TableDependencies {
         }
 
         return null;
+    }
+
+    public boolean deleteCascadingByDB() {
+        return deleteCascadingByDB;
     }
 }

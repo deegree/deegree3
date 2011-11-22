@@ -62,7 +62,6 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
-import org.deegree.feature.persistence.sql.expressions.DeletePropagation;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
@@ -96,9 +95,14 @@ public class AbstractMappedSchemaBuilder {
 
     public static MappedAppSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect )
                             throws SQLException, FeatureStoreException {
+        boolean deleteCascadingByDB = true;
+        if ( config.getJoinTableDeletePropagation() != null ) {
+            deleteCascadingByDB = config.getJoinTableDeletePropagation().equals( "db" );
+        }
         if ( config.getGMLSchema() == null || config.getGMLSchema().isEmpty() ) {
             MappedSchemaBuilderTable builder = new MappedSchemaBuilderTable( config.getJDBCConnId().getValue(),
-                                                                             config.getFeatureType(), dialect );
+                                                                             config.getFeatureType(), dialect,
+                                                                             deleteCascadingByDB );
             return builder.getMappedSchema();
         }
         List<String> gmlSchemas = config.getGMLSchema();
@@ -107,7 +111,7 @@ public class AbstractMappedSchemaBuilder {
         BLOBMapping blobConf = config.getBLOBMapping();
         List<FeatureTypeMappingJAXB> ftMappingConfs = config.getFeatureTypeMapping();
         MappedSchemaBuilderGML builder = new MappedSchemaBuilderGML( configURL, gmlSchemas, storageCRS, nsHints,
-                                                                     blobConf, ftMappingConfs );
+                                                                     blobConf, ftMappingConfs, deleteCascadingByDB );
         return builder.getMappedSchema();
     }
 
@@ -205,11 +209,8 @@ public class AbstractMappedSchemaBuilder {
                 keyColumnToGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
             }
 
-            DeletePropagation deletePropagation = DeletePropagation.FROM_PARENT;
-
             TableJoin tj = new TableJoin( from, target, join.getFromColumns(), join.getToColumns(),
-                                          join.getOrderColumns(), isNumbered, keyColumnToGenerator,
-                                          deletePropagation );
+                                          join.getOrderColumns(), isNumbered, keyColumnToGenerator );
             return Collections.singletonList( tj );
         }
         return null;

@@ -379,7 +379,7 @@ public class InsertRowManager {
         TableName ftTable = ftMapping.getFtTable();
         Set<SQLIdentifier> ftTableGenColumns = tableDeps.getGenColumns( ftTable );
         if ( ftTableGenColumns != null && ftTableGenColumns.contains( toColumn ) ) {
-            return new KeyPropagation( ftTable, toColumn, join.getFromTable(), fromColumn, true );
+            return new KeyPropagation( ftTable, toColumn, join.getFromTable(), fromColumn );
         }
 
         // must be the other way round
