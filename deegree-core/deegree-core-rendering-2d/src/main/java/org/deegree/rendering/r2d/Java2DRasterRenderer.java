@@ -46,6 +46,7 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -104,8 +105,11 @@ public class Java2DRasterRenderer implements RasterRenderer {
         this.envelope = bbox;
 
         if ( bbox != null ) {
-            double scalex = width / bbox.getSpan0();
-            double scaley = height / bbox.getSpan1();
+            Pair<Envelope, DoublePair> p = RenderHelper.getWorldToScreenTransform( worldToScreen, bbox, width, height );
+            double scalex = p.second.first;
+            double scaley = p.second.second;
+            bbox = p.first;
+
             resx = abs( 1 / scalex );
             resy = abs( 1 / scaley );
 
@@ -127,6 +131,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         this.graphics = graphics;
     }
 
+    @Override
     public void render( RasterStyling styling, AbstractRaster raster ) {
         LOG.debug( "Rendering raster with style '{}'.", styling );
         BufferedImage img = null;

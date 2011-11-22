@@ -38,15 +38,23 @@ package org.deegree.rendering.r2d;
 
 import static java.lang.Math.max;
 import static java.lang.Math.sqrt;
+import static org.deegree.cs.components.Unit.METRE;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.MapUtils;
+import org.deegree.commons.utils.Pair;
+import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.style.styling.components.Mark;
@@ -213,6 +221,49 @@ public class RenderHelper {
      */
     public static double calcResolution( Envelope env, int width, int height ) {
         return max( env.getSpan0() / width, env.getSpan1() / height );
+    }
+
+    public static Pair<Envelope, DoublePair> getWorldToScreenTransform( AffineTransform worldToScreen, Envelope bbox,
+                                                                        int width, int height ) {
+        boolean xy = true;
+        double scalex = width / bbox.getSpan0();
+        double scaley = height / bbox.getSpan1();
+        try {
+            if ( bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
+                 && !bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
+                xy = bbox.getCoordinateSystem().getAxis()[0].getOrientation() == Axis.AO_EAST;
+            }
+        } catch ( ReferenceResolvingException e ) {
+            LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
+            LOG.debug( "Stack trace:", e );
+        } catch ( Throwable e ) {
+            LOG.warn( "Could not transform bbox, assuming it's in meter..." );
+            LOG.debug( "Stack trace:", e );
+        }
+
+        if ( !xy ) {
+            CRSRef swapped = CRSManager.getCRSRef( bbox.getCoordinateSystem().getAlias(), true );
+            GeometryTransformer t = new GeometryTransformer( swapped );
+            try {
+                bbox = t.transform( bbox );
+            } catch ( Throwable e ) {
+                LOG.warn( "Could not swap bbox axis order, image will probably be flipped/broken." );
+                LOG.debug( "Stack trace:", e );
+            }
+        }
+
+        if ( xy ) {
+            // we have to flip horizontally, so invert y scale and add the screen height
+            worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
+            worldToScreen.scale( scalex, -scaley );
+        } else {
+            // recalculate scale with correct bbox
+            scalex = width / bbox.getSpan0();
+            scaley = height / bbox.getSpan1();
+            worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
+            worldToScreen.scale( scalex, -scaley );
+        }
+        return new Pair<Envelope, DoublePair>( bbox, new DoublePair( scalex, scaley ) );
     }
 
 }

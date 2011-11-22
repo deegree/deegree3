@@ -92,13 +92,12 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.ComparablePair;
+import org.deegree.commons.utils.DoublePair;
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
-import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -176,15 +175,15 @@ public class Java2DRenderer implements Renderer {
         this.graphics = graphics;
 
         if ( bbox != null ) {
-            double scalex = width / bbox.getSpan0();
-            double scaley = height / bbox.getSpan1();
-            boolean xy = true;
+            Pair<Envelope, DoublePair> p = RenderHelper.getWorldToScreenTransform( worldToScreen, bbox, width, height );
+            double scalex = p.second.first;
+            double scaley = p.second.second;
+            bbox = p.first;
             try {
                 if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
                      || bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
                     res = bbox.getSpan0() / width; // use x for resolution
                 } else {
-                    xy = bbox.getCoordinateSystem().getAxis()[0].getOrientation() == Axis.AO_EAST;
                     // heuristics more or less copied from d2, TODO is use the proper UTM conversion
                     Envelope box = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( bbox );
                     double minx = box.getMin().get0(), miny = box.getMin().get1();
@@ -207,29 +206,6 @@ public class Java2DRenderer implements Renderer {
                 LOG.warn( "Could not transform bbox, assuming it's in meter..." );
                 LOG.debug( "Stack trace:", e );
                 res = bbox.getSpan0() / width; // use x for resolution
-            }
-
-            if ( !xy ) {
-                CRSRef swapped = CRSManager.getCRSRef( bbox.getCoordinateSystem().getAlias(), true );
-                GeometryTransformer t = new GeometryTransformer( swapped );
-                try {
-                    bbox = t.transform( bbox );
-                } catch ( Throwable e ) {
-                    LOG.warn( "Could not swap bbox axis order, image will probably be flipped/broken." );
-                    LOG.debug( "Stack trace:", e );
-                }
-            }
-
-            if ( xy ) {
-                // we have to flip horizontally, so invert y scale and add the screen height
-                worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
-                worldToScreen.scale( scalex, -scaley );
-            } else {
-                // recalculate scale with correct bbox
-                scalex = width / bbox.getSpan0();
-                scaley = height / bbox.getSpan1();
-                worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
-                worldToScreen.scale( scalex, -scaley );
             }
 
             try {
