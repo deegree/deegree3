@@ -131,6 +131,8 @@ public class CoverageLayer extends AbstractLayer {
             }
 
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(), interpol, filter, style );
+        } catch ( OWSException e ) {
+            throw e;
         } catch ( Throwable e ) {
             LOG.warn( "Unable to prepare rendering of raster layer: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
@@ -161,6 +163,8 @@ public class CoverageLayer extends AbstractLayer {
 
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(),
                                           InterpolationType.NEAREST_NEIGHBOR, filter, style );
+        } catch ( OWSException e ) {
+            throw e;
         } catch ( Throwable e ) {
             LOG.warn( "Unable to prepare feature info of raster layer: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
