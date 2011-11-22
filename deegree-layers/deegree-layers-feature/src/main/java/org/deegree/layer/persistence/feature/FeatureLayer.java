@@ -205,6 +205,7 @@ public class FeatureLayer extends AbstractLayer {
         filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
 
+        // TODO radius still hardcoded
         final Envelope clickBox = query.calcClickBox( 3 );
 
         filter = (OperatorFilter) Filters.addBBoxConstraint( clickBox, filter, null );
