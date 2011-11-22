@@ -229,7 +229,9 @@ public class PostGISUpdater extends LayerUpdater {
                 if ( sourcequery == null ) {
                     StringPair queries = generateSQL( connectionid, sourcetable );
                     sourcequery = queries.first;
-                    bbox = queries.second;
+                    if ( bbox == null ) {
+                        bbox = queries.second;
+                    }
                 }
 
                 SimpleSQLFeatureStore ds = stores.get( sourcequery + crs + namespace );
