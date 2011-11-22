@@ -133,7 +133,6 @@ public class CoverageLayer extends AbstractLayer {
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(), interpol, filter, style );
         } catch ( Throwable e ) {
             LOG.warn( "Unable to prepare rendering of raster layer: {}", e.getLocalizedMessage() );
-            e.printStackTrace();
             LOG.trace( "Stack trace:", e );
         }
         return null;
@@ -142,6 +141,30 @@ public class CoverageLayer extends AbstractLayer {
     @Override
     public CoverageLayerData infoQuery( LayerQuery query, List<String> headers )
                             throws OWSException {
+        try {
+            Envelope bbox = query.calcClickBox( 3 );
+
+            RangeSet filter = getDimensionFilter( query.getDimensions(), headers );
+
+            StyleRef ref = query.getStyle( getMetadata().getName() );
+            if ( !ref.isResolved() ) {
+                ref.resolve( styles.get( ref.getName() ) );
+            }
+            Style style = ref.getStyle();
+            // handle SLD/SE scale settings
+            style = style == null ? null : style.filter( query.getScale() );
+
+            AbstractRaster raster = this.raster;
+            if ( raster == null ) {
+                raster = multiraster.getRaster( query.getResolution() );
+            }
+
+            return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(),
+                                          InterpolationType.NEAREST_NEIGHBOR, filter, style );
+        } catch ( Throwable e ) {
+            LOG.warn( "Unable to prepare feature info of raster layer: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
         return null;
     }
 
