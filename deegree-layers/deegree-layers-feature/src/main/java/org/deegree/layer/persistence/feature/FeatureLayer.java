@@ -111,18 +111,11 @@ public class FeatureLayer extends AbstractLayer {
 
     private final QName featureType;
 
-    private final Map<String, Style> styles;
-
-    private final Map<String, Style> legendStyles;
-
-    public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
-                         Map<String, Style> styles, Map<String, Style> legendStyles ) {
+    public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter ) {
         super( md );
         this.featureStore = featureStore;
         this.featureType = featureType;
         this.filter = filter;
-        this.styles = styles;
-        this.legendStyles = legendStyles;
     }
 
     @Override
@@ -130,7 +123,7 @@ public class FeatureLayer extends AbstractLayer {
                             throws OWSException {
         StyleRef ref = query.getStyle( getMetadata().getName() );
         if ( !ref.isResolved() ) {
-            ref.resolve( styles.get( ref.getName() ) );
+            ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
         }
         Style style = ref.getStyle();
 
@@ -198,7 +191,7 @@ public class FeatureLayer extends AbstractLayer {
         filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
         StyleRef ref = query.getStyle( getMetadata().getName() );
         if ( !ref.isResolved() ) {
-            ref.resolve( styles.get( ref.getName() ) );
+            ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
         }
         Style style = ref.getStyle();
         style = style.filter( query.getScale() );

@@ -51,7 +51,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,7 +111,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                             throws ResourceInitException {
         LOG.debug( "Creating feature layers for all feature types automatically." );
 
-        Map<String, Layer> map = new HashMap<String, Layer>();
+        Map<String, Layer> map = new LinkedHashMap<String, Layer>();
         FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
         String id = auto.getFeatureStoreId();
         FeatureStore store = mgr.get( id );
@@ -142,7 +142,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             }
             SpatialMetadata smd = new SpatialMetadata( envelope, crs );
             LayerMetadata md = new LayerMetadata( name, null, smd );
-            Map<String, Style> styles = new HashMap<String, Style>();
+            Map<String, Style> styles = new LinkedHashMap<String, Style>();
             if ( sstore != null ) {
                 for ( Style s : sstore.getAll( name ) ) {
                     styles.put( s.getName(), s );
@@ -154,7 +154,8 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             if ( !styles.containsKey( "default" ) ) {
                 styles.put( "default", new Style() );
             }
-            Layer l = new FeatureLayer( md, store, ft.getName(), null, styles, styles );
+            md.setStyles( styles );
+            Layer l = new FeatureLayer( md, store, ft.getName(), null );
             map.put( name, l );
         }
 
@@ -182,7 +183,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                                                  + " is not available." );
             }
 
-            Map<String, Layer> map = new HashMap<String, Layer>();
+            Map<String, Layer> map = new LinkedHashMap<String, Layer>();
             for ( FeatureLayerType lay : lays.getFeatureLayer() ) {
                 QName featureType = lay.getFeatureType();
 
@@ -221,8 +222,9 @@ public class FeatureLayerProvider implements LayerStoreProvider {
 
                 Pair<Map<String, Style>, Map<String, Style>> p = parseStyles( workspace, lay.getName(),
                                                                               lay.getStyleRef() );
-
-                Layer l = new FeatureLayer( md, store, featureType, filter, p.first, p.second );
+                md.setStyles( p.first );
+                md.setLegendStyles( p.second );
+                Layer l = new FeatureLayer( md, store, featureType, filter );
                 map.put( lay.getName(), l );
             }
             return new MultipleLayerStore( map );

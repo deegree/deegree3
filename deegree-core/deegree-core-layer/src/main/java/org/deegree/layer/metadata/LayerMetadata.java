@@ -38,13 +38,14 @@ package org.deegree.layer.metadata;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
  * 
@@ -67,7 +68,10 @@ public class LayerMetadata {
 
     private int cascaded;
 
-    private Map<String, Dimension<?>> dimensions = new HashMap<String, Dimension<?>>();
+    private Map<String, Dimension<?>> dimensions = new LinkedHashMap<String, Dimension<?>>();
+
+    private Map<String, Style> styles = new LinkedHashMap<String, Style>(),
+                            legendStyles = new LinkedHashMap<String, Style>();
 
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
@@ -206,6 +210,36 @@ public class LayerMetadata {
      */
     public void setDimensions( Map<String, Dimension<?>> dimensions ) {
         this.dimensions = dimensions;
+    }
+
+    /**
+     * @return the styles
+     */
+    public Map<String, Style> getStyles() {
+        return styles;
+    }
+
+    /**
+     * @param styles
+     *            the styles to set
+     */
+    public void setStyles( Map<String, Style> styles ) {
+        this.styles = styles;
+    }
+
+    /**
+     * @return the legendStyles
+     */
+    public Map<String, Style> getLegendStyles() {
+        return legendStyles;
+    }
+
+    /**
+     * @param legendStyles
+     *            the legendStyles to set
+     */
+    public void setLegendStyles( Map<String, Style> legendStyles ) {
+        this.legendStyles = legendStyles;
     }
 
 }

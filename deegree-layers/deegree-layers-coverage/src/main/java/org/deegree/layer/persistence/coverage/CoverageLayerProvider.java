@@ -142,10 +142,10 @@ public class CoverageLayerProvider implements LayerStoreProvider {
 
                 Pair<Map<String, Style>, Map<String, Style>> p = parseStyles( workspace, lay.getName(),
                                                                               lay.getStyleRef() );
-
+                md.setStyles( p.first );
+                md.setLegendStyles( p.second );
                 Layer l = new CoverageLayer( md, cov instanceof AbstractRaster ? (AbstractRaster) cov : null,
-                                             cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null,
-                                             p.first, p.second );
+                                             cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null );
                 map.put( lay.getName(), l );
             }
 

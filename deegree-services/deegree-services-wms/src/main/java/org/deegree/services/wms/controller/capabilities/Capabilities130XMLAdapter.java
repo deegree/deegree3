@@ -238,6 +238,14 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         SpatialMetadata smd = md.getSpatialMetadata();
         writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
         writeDimensions( writer, md.getDimensions() );
+        for ( Entry<String, Style> e : md.getStyles().entrySet() ) {
+            if ( e.getKey() == null || e.getKey().isEmpty() ) {
+                continue;
+            }
+            // TODO proper legend handling
+            writeStyle( writer, e.getKey(), e.getKey(), new Pair<Integer, Integer>( 10, 10 ), md.getName(),
+                        e.getValue() );
+        }
 
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );

@@ -80,17 +80,10 @@ public class CoverageLayer extends AbstractLayer {
 
     private final MultiResolutionRaster multiraster;
 
-    private final Map<String, Style> styles;
-
-    private final Map<String, Style> legendStyles;
-
-    public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster,
-                          Map<String, Style> styles, Map<String, Style> legendStyles ) {
+    public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster ) {
         super( md );
         this.raster = raster;
         this.multiraster = multiraster;
-        this.styles = styles;
-        this.legendStyles = legendStyles;
     }
 
     @Override
@@ -103,7 +96,7 @@ public class CoverageLayer extends AbstractLayer {
 
             StyleRef ref = query.getStyle( getMetadata().getName() );
             if ( !ref.isResolved() ) {
-                ref.resolve( styles.get( ref.getName() ) );
+                ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
             }
             Style style = ref.getStyle();
             // handle SLD/SE scale settings
@@ -150,7 +143,7 @@ public class CoverageLayer extends AbstractLayer {
 
             StyleRef ref = query.getStyle( getMetadata().getName() );
             if ( !ref.isResolved() ) {
-                ref.resolve( styles.get( ref.getName() ) );
+                ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
             }
             Style style = ref.getStyle();
             // handle SLD/SE scale settings
