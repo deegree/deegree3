@@ -45,7 +45,7 @@ import java.util.Map;
  * 
  * @version $Revision: $, $Date: $
  */
-public class RenderingOptions {
+public class RenderingOptionsMaps {
 
     private Map<String, Quality> qualities;
 
@@ -55,31 +55,19 @@ public class RenderingOptions {
 
     private Map<String, Integer> maxFeatures;
 
-    public RenderingOptions() {
+    public RenderingOptionsMaps() {
         this.qualities = new HashMap<String, Quality>();
         this.interpolations = new HashMap<String, Interpolation>();
         this.antialiases = new HashMap<String, Antialias>();
         this.maxFeatures = new HashMap<String, Integer>();
     }
 
-    public RenderingOptions( Map<String, Quality> qualities, Map<String, Interpolation> interpolations,
+    public RenderingOptionsMaps( Map<String, Quality> qualities, Map<String, Interpolation> interpolations,
                              Map<String, Antialias> antialiases, Map<String, Integer> maxFeatures ) {
         this.qualities = qualities;
         this.interpolations = interpolations;
         this.antialiases = antialiases;
         this.maxFeatures = maxFeatures;
-    }
-
-    public Quality getQuality( String layer ) {
-        return qualities.get( layer );
-    }
-
-    public Interpolation getInterpolation( String layer ) {
-        return interpolations.get( layer );
-    }
-
-    public Antialias getAntialias( String layer ) {
-        return antialiases.get( layer );
     }
 
     public Integer getMaxFeatures( String layer ) {

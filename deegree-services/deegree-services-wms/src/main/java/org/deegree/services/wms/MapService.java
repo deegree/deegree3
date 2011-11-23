@@ -58,9 +58,9 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Antialias.BOTH;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Quality.NORMAL;
+import static org.deegree.rendering.r2d.context.RenderingOptionsMaps.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.RenderingOptionsMaps.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.RenderingOptionsMaps.Quality.NORMAL;
 import static org.deegree.services.wms.model.layers.Layer.render;
 import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -113,10 +113,10 @@ import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
-import org.deegree.rendering.r2d.context.RenderingOptions;
-import org.deegree.rendering.r2d.context.RenderingOptions.Antialias;
-import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
-import org.deegree.rendering.r2d.context.RenderingOptions.Quality;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Antialias;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Interpolation;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Quality;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
@@ -171,7 +171,7 @@ public class MapService {
 
     private HashMap<Style, HashMap<String, BufferedImage>> legends = new HashMap<Style, HashMap<String, BufferedImage>>();
 
-    private RenderingOptions extensions = new RenderingOptions();
+    private RenderingOptionsMaps extensions = new RenderingOptionsMaps();
 
     private HashMap<Layer, Integer> defaultFeatureInfoRadius = new HashMap<Layer, Integer>();
 
@@ -208,12 +208,16 @@ public class MapService {
         this.workspace = workspace;
         this.registry = new StyleRegistry( workspace );
         layers = new HashMap<String, Layer>();
-        if ( conf != null && conf.getAbstractLayer() != null ) {
+
+        Antialias alias = Antialias.BOTH;
+        Quality quali = Quality.HIGH;
+        Interpolation interpol = Interpolation.NEARESTNEIGHBOUR;
+        if ( conf != null ) {
             LayerOptionsType sf = conf.getDefaultLayerOptions();
-            Antialias alias = handleDefaultValue( sf == null ? null : sf.getAntiAliasing(), Antialias.class, BOTH );
-            Quality quali = handleDefaultValue( sf == null ? null : sf.getRenderingQuality(), Quality.class, NORMAL );
-            Interpolation interpol = handleDefaultValue( sf == null ? null : sf.getInterpolation(),
-                                                         Interpolation.class, NEARESTNEIGHBOR );
+            alias = handleDefaultValue( sf == null ? null : sf.getAntiAliasing(), Antialias.class, BOTH );
+            quali = handleDefaultValue( sf == null ? null : sf.getRenderingQuality(), Quality.class, NORMAL );
+            interpol = handleDefaultValue( sf == null ? null : sf.getInterpolation(), Interpolation.class,
+                                           NEARESTNEIGHBOR );
             if ( sf != null && sf.getMaxFeatures() != null ) {
                 globalDefaultMaxFeatures = sf.getMaxFeatures();
                 LOG.debug( "Using global max features setting of {}.", globalDefaultMaxFeatures );
@@ -227,6 +231,9 @@ public class MapService {
             } else {
                 LOG.debug( "Using default feature info radius of {}.", globalFeatureInfoRadius );
             }
+        }
+
+        if ( conf != null && conf.getAbstractLayer() != null ) {
             root = parseLayer( conf.getAbstractLayer().getValue(), null, adapter, alias, interpol, quali );
             fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
             // update the dynamic layers once on startup to avoid having a disappointingly long initial GetCapabilities
@@ -809,7 +816,7 @@ public class MapService {
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
                                            gfi.getFeatureCount(), new HashMap<String, OperatorFilter>(), styles,
                                            gfi.getParameterMap(), new HashMap<String, List<?>>(),
-                                           new RenderingOptions() );
+                                           new RenderingOptionsMaps() );
         for ( LayerRef n : gfi.getQueryLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
                 list.add( l.infoQuery( query, headers ) );
@@ -1034,7 +1041,7 @@ public class MapService {
     /**
      * @return the extensions object with default extension parameter settings
      */
-    public RenderingOptions getExtensions() {
+    public RenderingOptionsMaps getExtensions() {
         return extensions;
     }
 

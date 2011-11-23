@@ -95,7 +95,7 @@ import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
-import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Interpolation;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;

@@ -48,9 +48,9 @@ import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Antialias.BOTH;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Quality.NORMAL;
+import static org.deegree.rendering.r2d.context.RenderingOptionsMaps.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.RenderingOptionsMaps.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.RenderingOptionsMaps.Quality.NORMAL;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.sld.SLDParser.parse;
 import static org.deegree.style.utils.Styles.getStyleFilters;
@@ -92,10 +92,10 @@ import org.deegree.layer.dims.DimensionLexer;
 import org.deegree.layer.dims.parser;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r2d.RenderHelper;
-import org.deegree.rendering.r2d.context.RenderingOptions;
-import org.deegree.rendering.r2d.context.RenderingOptions.Antialias;
-import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
-import org.deegree.rendering.r2d.context.RenderingOptions.Quality;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Antialias;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Interpolation;
+import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Quality;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.StyleRegistry;
 import org.deegree.services.wms.controller.WMSController111;
@@ -128,7 +128,7 @@ public class GetMap {
 
     private LinkedList<Style> styles = new LinkedList<Style>();
 
-    private RenderingOptions options = new RenderingOptions();
+    private RenderingOptionsMaps options = new RenderingOptionsMaps();
 
     private HashMap<String, Filter> filters = new HashMap<String, Filter>();
 
@@ -788,7 +788,7 @@ public class GetMap {
     /**
      * @return the extension parameter values for this request
      */
-    public RenderingOptions getRenderingOptions() {
+    public RenderingOptionsMaps getRenderingOptions() {
         return options;
     }
 
