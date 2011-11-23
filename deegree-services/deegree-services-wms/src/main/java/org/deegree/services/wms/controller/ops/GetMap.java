@@ -48,9 +48,9 @@ import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Antialias.BOTH;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.rendering.r2d.context.RenderingOptions.Quality.NORMAL;
+import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.sld.SLDParser.parse;
 import static org.deegree.style.utils.Styles.getStyleFilters;
@@ -92,10 +92,10 @@ import org.deegree.layer.dims.DimensionLexer;
 import org.deegree.layer.dims.parser;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r2d.RenderHelper;
-import org.deegree.rendering.r2d.context.RenderingOptions.Antialias;
-import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
-import org.deegree.rendering.r2d.context.RenderingOptions.Quality;
-import org.deegree.rendering.r2d.context.RenderingOptionsMaps;
+import org.deegree.rendering.r2d.context.MapOptions.Antialias;
+import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
+import org.deegree.rendering.r2d.context.MapOptions.Quality;
+import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.StyleRegistry;
 import org.deegree.services.wms.controller.WMSController111;
@@ -128,7 +128,7 @@ public class GetMap {
 
     private LinkedList<Style> styles = new LinkedList<Style>();
 
-    private RenderingOptionsMaps options = new RenderingOptionsMaps();
+    private MapOptionsMaps options = new MapOptionsMaps();
 
     private HashMap<String, Filter> filters = new HashMap<String, Filter>();
 
@@ -788,7 +788,7 @@ public class GetMap {
     /**
      * @return the extension parameter values for this request
      */
-    public RenderingOptionsMaps getRenderingOptions() {
+    public MapOptionsMaps getRenderingOptions() {
         return options;
     }
 

@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.context;
 
 /**
@@ -42,11 +42,83 @@ package org.deegree.rendering.r2d.context;
  * 
  * @version $Revision: $, $Date: $
  */
-public class RenderingOptions {
+public class MapOptions {
 
-    public RenderingOptions(){
+    private Quality quality;
+
+    private Interpolation interpol;
+
+    private Antialias antialias;
+
+    private int maxFeatures;
+
+    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures ) {
+        this.quality = quality;
+        this.interpol = interpol;
+        this.antialias = antialias;
+        this.maxFeatures = maxFeatures;
     }
-    
+
+    /**
+     * @return the quality
+     */
+    public Quality getQuality() {
+        return quality;
+    }
+
+    /**
+     * @param quality
+     *            the quality to set
+     */
+    public void setQuality( Quality quality ) {
+        this.quality = quality;
+    }
+
+    /**
+     * @return the interpol
+     */
+    public Interpolation getInterpolation() {
+        return interpol;
+    }
+
+    /**
+     * @param interpol
+     *            the interpol to set
+     */
+    public void setInterpolation( Interpolation interpol ) {
+        this.interpol = interpol;
+    }
+
+    /**
+     * @return the antialias
+     */
+    public Antialias getAntialias() {
+        return antialias;
+    }
+
+    /**
+     * @param antialias
+     *            the antialias to set
+     */
+    public void setAntialias( Antialias antialias ) {
+        this.antialias = antialias;
+    }
+
+    /**
+     * @return the maxFeatures
+     */
+    public int getMaxFeatures() {
+        return maxFeatures;
+    }
+
+    /**
+     * @param maxFeatures
+     *            the maxFeatures to set
+     */
+    public void setMaxFeatures( int maxFeatures ) {
+        this.maxFeatures = maxFeatures;
+    }
+
     /**
      * <code>Quality</code>
      * 

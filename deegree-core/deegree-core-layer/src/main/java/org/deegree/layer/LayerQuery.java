@@ -46,7 +46,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.oldwms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
-import org.deegree.rendering.r2d.context.RenderingOptionsMaps;
+import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.style.StyleRef;
 
 /**
@@ -76,7 +76,7 @@ public class LayerQuery {
 
     private double resolution;
 
-    private final RenderingOptionsMaps options;
+    private final MapOptionsMaps options;
 
     /**
      * @param envelope
@@ -92,7 +92,7 @@ public class LayerQuery {
      */
     public LayerQuery( Envelope envelope, int width, int height, Map<String, StyleRef> styles,
                        Map<String, OperatorFilter> filters, Map<String, String> parameters,
-                       Map<String, List<?>> dimensions, double pixelSize, RenderingOptionsMaps options ) {
+                       Map<String, List<?>> dimensions, double pixelSize, MapOptionsMaps options ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
@@ -107,7 +107,7 @@ public class LayerQuery {
 
     public LayerQuery( Envelope envelope, int width, int height, int x, int y, int featureCount,
                        Map<String, OperatorFilter> filters, Map<String, StyleRef> styles,
-                       Map<String, String> parameters, Map<String, List<?>> dimensions, RenderingOptionsMaps options ) {
+                       Map<String, String> parameters, Map<String, List<?>> dimensions, MapOptionsMaps options ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
@@ -172,7 +172,7 @@ public class LayerQuery {
         return resolution;
     }
 
-    public RenderingOptionsMaps getRenderingOptions() {
+    public MapOptionsMaps getRenderingOptions() {
         return options;
     }
 

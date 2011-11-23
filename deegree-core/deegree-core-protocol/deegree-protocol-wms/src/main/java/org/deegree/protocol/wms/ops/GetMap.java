@@ -88,10 +88,10 @@ import org.deegree.layer.dims.parser;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
-import org.deegree.rendering.r2d.context.RenderingOptionsMaps;
-import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Antialias;
-import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Interpolation;
-import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Quality;
+import org.deegree.rendering.r2d.context.MapOptions.Antialias;
+import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
+import org.deegree.rendering.r2d.context.MapOptions.Quality;
+import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
@@ -135,7 +135,7 @@ public class GetMap {
 
     private double resolution;
 
-    private RenderingOptionsMaps extensions;
+    private MapOptionsMaps extensions;
 
     private Map<String, String> parameterMap = new HashMap<String, String>();
 
@@ -145,7 +145,7 @@ public class GetMap {
      * @param service
      * @throws OWSException
      */
-    public GetMap( Map<String, String> map, Version version, RenderingOptionsMaps exts ) throws OWSException {
+    public GetMap( Map<String, String> map, Version version, MapOptionsMaps exts ) throws OWSException {
         if ( version.equals( VERSION_111 ) ) {
             parse111( map, exts );
         }
@@ -175,7 +175,7 @@ public class GetMap {
      * @throws OWSException
      */
     public GetMap( Collection<LayerRef> layers, Collection<StyleRef> styles, int width, int height,
-                   Envelope boundingBox, RenderingOptionsMaps exts ) throws OWSException {
+                   Envelope boundingBox, MapOptionsMaps exts ) throws OWSException {
         this.layers.addAll( layers );
         this.styles.addAll( styles );
         this.width = width;
@@ -234,7 +234,7 @@ public class GetMap {
         }
     }
 
-    private void parse111( Map<String, String> map, RenderingOptionsMaps exts )
+    private void parse111( Map<String, String> map, MapOptionsMaps exts )
                             throws OWSException {
         String c = map.get( "SRS" );
         if ( c == null || c.trim().isEmpty() ) {
@@ -309,7 +309,7 @@ public class GetMap {
         return styles;
     }
 
-    private void handleCommon( Map<String, String> map, RenderingOptionsMaps exts )
+    private void handleCommon( Map<String, String> map, MapOptionsMaps exts )
                             throws OWSException {
         String ls = map.get( "LAYERS" );
         String sld = map.get( "SLD" );
@@ -388,11 +388,11 @@ public class GetMap {
         handleVSPs( map, exts );
     }
 
-    private void handleVSPs( Map<String, String> map, RenderingOptionsMaps defaults ) {
+    private void handleVSPs( Map<String, String> map, MapOptionsMaps defaults ) {
         if ( defaults == null ) {
-            defaults = new RenderingOptionsMaps();
+            defaults = new MapOptionsMaps();
         }
-        extensions = new RenderingOptionsMaps();
+        extensions = new MapOptionsMaps();
         handleEnumVSP( Quality.class, extensions.getQualities(), Quality.NORMAL, map.get( "QUALITY" ),
                        defaults.getQualities() );
         handleEnumVSP( Interpolation.class, extensions.getInterpolations(), Interpolation.NEARESTNEIGHBOR,
@@ -607,7 +607,7 @@ public class GetMap {
         }
     }
 
-    private void parse130( Map<String, String> map, RenderingOptionsMaps exts )
+    private void parse130( Map<String, String> map, MapOptionsMaps exts )
                             throws OWSException {
         String c = map.get( "CRS" );
         if ( c == null || c.trim().isEmpty() ) {
@@ -758,7 +758,7 @@ public class GetMap {
     /**
      * @return the get map extensions for the layers
      */
-    public RenderingOptionsMaps getRenderingOptions() {
+    public MapOptionsMaps getRenderingOptions() {
         return extensions;
     }
 
