@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-datastores</artifactId>
+  <artifactId>deegree-tilestores</artifactId>
   <packaging>pom</packaging>
-  <name>deegree-datastores</name>
+  <name>deegree-tilestores</name>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree</artifactId>
+    <artifactId>deegree-datastores</artifactId>
     <version>3.2-pre2-SNAPSHOT</version>
   </parent>
 
@@ -25,10 +25,7 @@
   </repositories>
 
   <modules>
-    <module>deegree-featurestores</module>
-    <module>deegree-mdstores</module>
-    <module>deegree-coveragestores</module>
-    <module>deegree-tilestores</module>
+    <module>deegree-tilestore-commons</module>
   </modules>
 
 </project>
