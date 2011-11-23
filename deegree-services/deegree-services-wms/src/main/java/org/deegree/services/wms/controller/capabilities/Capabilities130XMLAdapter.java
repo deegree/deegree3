@@ -407,6 +407,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
     private void writeLayers( XMLStreamWriter writer, Layer layer )
                             throws XMLStreamException {
         if ( layer.getTitle() == null || !layer.isAvailable() ) {
+            for ( Layer l : new LinkedList<Layer>( layer.getChildren() ) ) {
+                writeLayers( writer, l );
+            }
             return;
         }
 
