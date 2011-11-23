@@ -127,6 +127,16 @@ public class CoverageLayerProvider implements LayerStoreProvider {
                                             null );
         LayerMetadata md = new LayerMetadata( cid, desc, smd );
 
+        // add standard coverage feature type to list of feature types
+        List<PropertyType> pts = new LinkedList<PropertyType>();
+        pts.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "value", "app" ), 0, -1,
+                                         DECIMAL, null, null ) );
+        FeatureType featureType = new GenericFeatureType( new QName( "http://www.deegree.org/app", "data",
+                                                                     "app" ), pts, false );
+        // needed to get the back reference to the schema into the featureType (it's a strange mechanism indeed)
+        new GenericAppSchema( new FeatureType[] { featureType }, null, null, null );
+        md.getFeatureTypes().add( featureType );
+
         if ( sstore != null ) {
             for ( Style s : sstore.getAll( cid ) ) {
                 md.getStyles().put( s.getName(), s );
