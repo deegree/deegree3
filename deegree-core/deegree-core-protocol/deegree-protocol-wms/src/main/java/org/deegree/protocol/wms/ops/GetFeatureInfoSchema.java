@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.wms.controller.ops;
+package org.deegree.protocol.wms.ops;
 
 import static java.util.Arrays.copyOf;
 
