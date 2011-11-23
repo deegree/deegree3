@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestores/deegree-featurestore-sql/src/main/java/org/deegree/feature/persistence/sql/config/MappedSchemaBuilderTable.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -75,13 +75,13 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
-import org.deegree.feature.persistence.sql.jaxb.AbstractParticleJAXB;
+import org.deegree.feature.persistence.sql.jaxb.AbstractPropertyJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB.ColumnJAXB;
-import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
-import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
+import org.deegree.feature.persistence.sql.jaxb.FeatureTypeJAXB;
+import org.deegree.feature.persistence.sql.jaxb.GeometryPropertyJAXB;
 import org.deegree.feature.persistence.sql.jaxb.Join;
-import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
+import org.deegree.feature.persistence.sql.jaxb.SimplePropertyJAXB;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -101,16 +101,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generates {@link MappedAppSchema} instances (table-driven mode).
+ * Generates {@link MappedAppSchema} instances from JAXB {@link FeatureTypeDecl} instances.
+ * <p>
+ * NOTE: As table-driven configs can now be configured using the same elements as used by schema-driven mode, this class
+ * is a candidate for removal.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 32459 $, $Date: 2011-11-22 17:42:19 +0100 (Di, 22. Nov 2011) $
  */
-public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
+public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MappedSchemaBuilderTable.class );
+    private static final Logger LOG = LoggerFactory.getLogger( MappedSchemaBuilderTableOld.class );
 
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
@@ -121,14 +125,14 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     private DatabaseMetaData md;
 
     // caches the column information
-    private Map<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadata>> tableNameToColumns = new HashMap<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadata>>();
+    private Map<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadataOld>> tableNameToColumns = new HashMap<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadataOld>>();
 
     private final SQLDialect dialect;
 
     private final boolean deleteCascadingByDB;
 
     /**
-     * Creates a new {@link MappedSchemaBuilderTable} instance.
+     * Creates a new {@link MappedSchemaBuilderTableOld} instance.
      * 
      * @param jdbcConnId
      *            identifier of JDBC connection, must not be <code>null</code> (used to determine columns / types)
@@ -137,12 +141,12 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
      * @throws SQLException
      * @throws FeatureStoreException
      */
-    public MappedSchemaBuilderTable( String jdbcConnId, List<FeatureTypeMappingJAXB> ftDecls, SQLDialect dialect,
-                                     boolean deleteCascadingByDB ) throws SQLException, FeatureStoreException {
+    public MappedSchemaBuilderTableOld( String jdbcConnId, List<FeatureTypeJAXB> ftDecls, SQLDialect dialect,
+                                        boolean deleteCascadingByDB ) throws SQLException, FeatureStoreException {
         this.dialect = dialect;
         conn = ConnectionManager.getConnection( jdbcConnId );
         try {
-            for ( FeatureTypeMappingJAXB ftDecl : ftDecls ) {
+            for ( FeatureTypeJAXB ftDecl : ftDecls ) {
                 process( ftDecl );
             }
         } finally {
@@ -170,7 +174,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                                     deleteCascadingByDB );
     }
 
-    private void process( FeatureTypeMappingJAXB ftDecl )
+    private void process( FeatureTypeJAXB ftDecl )
                             throws SQLException, FeatureStoreException {
 
         if ( ftDecl.getTable() == null || ftDecl.getTable().isEmpty() ) {
@@ -194,7 +198,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
         FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
 
-        List<JAXBElement<? extends AbstractParticleJAXB>> propDecls = ftDecl.getAbstractParticle();
+        List<JAXBElement<? extends AbstractPropertyJAXB>> propDecls = ftDecl.getAbstractProperty();
         if ( propDecls != null && !propDecls.isEmpty() ) {
             process( table, ftName, fidMapping, propDecls );
         } else {
@@ -215,7 +219,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             fidColumnNames.add( column.first );
         }
 
-        for ( ColumnMetadata md : getColumns( table ).values() ) {
+        for ( ColumnMetadataOld md : getColumns( table ).values() ) {
             if ( fidColumnNames.contains( md.column.toLowerCase() ) ) {
                 LOG.debug( "Omitting column '" + md.column + "' from properties. Used in FIDMapping." );
                 continue;
@@ -256,15 +260,15 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     }
 
     private void process( TableName table, QName ftName, FIDMapping fidMapping,
-                          List<JAXBElement<? extends AbstractParticleJAXB>> propDecls )
+                          List<JAXBElement<? extends AbstractPropertyJAXB>> propDecls )
                             throws FeatureStoreException, SQLException {
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
         List<Mapping> mappings = new ArrayList<Mapping>();
 
-        for ( JAXBElement<? extends AbstractParticleJAXB> propDeclEl : propDecls ) {
-            AbstractParticleJAXB propDecl = propDeclEl.getValue();
-            Pair<PropertyType, Mapping> pt = process( table, propDecl, ftName.getPrefix(), ftName.getNamespaceURI() );
+        for ( JAXBElement<? extends AbstractPropertyJAXB> propDeclEl : propDecls ) {
+            AbstractPropertyJAXB propDecl = propDeclEl.getValue();
+            Pair<PropertyType, Mapping> pt = process( table, propDecl );
             pts.add( pt.first );
             mappings.add( pt.second );
         }
@@ -276,30 +280,19 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private Pair<PropertyType, Mapping> process( TableName table, AbstractParticleJAXB propDecl, String ftPrefix,
-                                                 String ftNs )
+    private Pair<PropertyType, Mapping> process( TableName table, AbstractPropertyJAXB propDecl )
                             throws FeatureStoreException, SQLException {
 
         PropertyType pt = null;
-        QName propName = new QName( propDecl.getPath() );
+        QName propName = propDecl.getName();
         if ( propName != null ) {
-            propName = makeFullyQualified( propName, ftPrefix, ftNs );
+            propName = makeFullyQualified( propName, "app", "http://www.deegree.org/app" );
         }
 
-        String me = null;
-        if ( propDecl instanceof PrimitiveParticleJAXB ) {
-            me = ( (PrimitiveParticleJAXB) propDecl ).getMapping();
-        } else if ( propDecl instanceof GeometryParticleJAXB ) {
-            me = ( (GeometryParticleJAXB) propDecl ).getMapping();
-        } else {
-            throw new FeatureStoreException(
-                                             "Table-driven configs currently only support Primitive/Geometry particles." );
-        }
-
-        MappingExpression mapping = parseMappingExpression( me );
+        MappingExpression mapping = parseMappingExpression( propDecl.getMapping() );
         if ( !( mapping instanceof DBField ) ) {
             throw new FeatureStoreException( "Unhandled mapping type '" + mapping.getClass()
-                                             + "'. Currently, only DBFields are supported in table-driven mode." );
+                                             + "'. Currently, only DBFields are supported." );
         }
         String columnName = ( (DBField) mapping ).getColumn();
         if ( propName == null ) {
@@ -320,12 +313,12 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         int maxOccurs = joinConfig != null ? -1 : 1;
 
         ValueReference path = new ValueReference( propName );
-        ColumnMetadata md = getColumn( valueTable, new SQLIdentifier( columnName ) );
+        ColumnMetadataOld md = getColumn( valueTable, new SQLIdentifier( columnName ) );
         int minOccurs = joinConfig != null ? 0 : md.isNullable ? 0 : 1;
 
         Mapping m = null;
-        if ( propDecl instanceof PrimitiveParticleJAXB ) {
-            PrimitiveParticleJAXB simpleDecl = (PrimitiveParticleJAXB) propDecl;
+        if ( propDecl instanceof SimplePropertyJAXB ) {
+            SimplePropertyJAXB simpleDecl = (SimplePropertyJAXB) propDecl;
             BaseType primType = null;
             if ( simpleDecl.getType() != null ) {
                 primType = getPrimitiveType( simpleDecl.getType() );
@@ -335,8 +328,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             pt = new SimplePropertyType( propName, minOccurs, maxOccurs, primType, null, null );
             m = new PrimitiveMapping( path, minOccurs == 0, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(),
                                       jc, null );
-        } else if ( propDecl instanceof GeometryParticleJAXB ) {
-            GeometryParticleJAXB geomDecl = (GeometryParticleJAXB) propDecl;
+        } else if ( propDecl instanceof GeometryPropertyJAXB ) {
+            GeometryPropertyJAXB geomDecl = (GeometryPropertyJAXB) propDecl;
             GeometryType type = null;
             if ( geomDecl.getType() != null ) {
                 type = GeometryType.fromGMLTypeName( geomDecl.getType().name() );
@@ -344,18 +337,24 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 type = md.geomType;
             }
             ICRS crs = null;
-            if ( geomDecl.getStorageCRS() != null && geomDecl.getStorageCRS().getValue() != null ) {
-                crs = CRSManager.getCRSRef( geomDecl.getStorageCRS().getValue() );
+            if ( geomDecl.getCrs() != null ) {
+                crs = CRSManager.getCRSRef( geomDecl.getCrs() );
             } else {
                 crs = md.geometryParams.getCrs();
             }
             String srid = null;
-            if ( geomDecl.getStorageCRS() != null && geomDecl.getStorageCRS().getSrid() != null ) {
-                srid = geomDecl.getStorageCRS().getSrid().toString();
+            if ( geomDecl.getSrid() != null ) {
+                srid = geomDecl.getSrid().toString();
             } else {
                 srid = md.geometryParams.getSrid();
             }
-            CoordinateDimension dim = crs.getDimension() == 3 ? DIM_2 : DIM_3;
+            CoordinateDimension dim = null;
+            if ( geomDecl.getDim() != null ) {
+                // TODO why does JAXB return a list here?
+                dim = DIM_2;
+            } else {
+                dim = md.geometryParams.getDim();
+            }
             pt = new GeometryPropertyType( propName, minOccurs, maxOccurs, null, null, type, dim, INLINE );
             m = new GeometryMapping( path, minOccurs == 0, mapping, type, new GeometryStorageParams( crs, srid, dim ),
                                      jc );
@@ -381,7 +380,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 BaseType columnType = configColumn.getType() != null ? getPrimitiveType( configColumn.getType() )
                                                                     : null;
                 if ( columnType == null ) {
-                    ColumnMetadata md = getColumn( table, columnName );
+                    ColumnMetadataOld md = getColumn( table, columnName );
                     columnType = BaseType.valueOf( md.sqlType );
                 }
                 columns.add( new Pair<SQLIdentifier, BaseType>( columnName, columnType ) );
@@ -392,7 +391,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         if ( generator instanceof AutoIDGenerator ) {
             if ( columns.isEmpty() ) {
                 // determine autoincrement column automatically
-                for ( ColumnMetadata md : getColumns( table ).values() ) {
+                for ( ColumnMetadataOld md : getColumns( table ).values() ) {
                     if ( md.isAutoincrement ) {
                         BaseType columnType = BaseType.valueOf( md.sqlType );
                         columns.add( new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( md.column ), columnType ) );
@@ -436,9 +435,9 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         return md;
     }
 
-    private ColumnMetadata getColumn( TableName qTable, SQLIdentifier columnName )
+    private ColumnMetadataOld getColumn( TableName qTable, SQLIdentifier columnName )
                             throws SQLException, FeatureStoreException {
-        ColumnMetadata md = getColumns( qTable ).get( columnName );
+        ColumnMetadataOld md = getColumns( qTable ).get( columnName );
         if ( md == null ) {
             throw new FeatureStoreException( "Table '" + qTable + "' does not have a column with name '" + columnName
                                              + "'" );
@@ -446,14 +445,14 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         return md;
     }
 
-    private LinkedHashMap<SQLIdentifier, ColumnMetadata> getColumns( TableName qTable )
+    private LinkedHashMap<SQLIdentifier, ColumnMetadataOld> getColumns( TableName qTable )
                             throws SQLException {
 
-        LinkedHashMap<SQLIdentifier, ColumnMetadata> columnNameToMD = tableNameToColumns.get( qTable );
+        LinkedHashMap<SQLIdentifier, ColumnMetadataOld> columnNameToMD = tableNameToColumns.get( qTable );
 
         if ( columnNameToMD == null ) {
             DatabaseMetaData md = getDBMetadata();
-            columnNameToMD = new LinkedHashMap<SQLIdentifier, ColumnMetadata>();
+            columnNameToMD = new LinkedHashMap<SQLIdentifier, ColumnMetadataOld>();
             ResultSet rs = null;
             try {
                 LOG.info( "Analyzing metadata for table {}", qTable );
@@ -507,8 +506,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                         } finally {
                             JDBCUtils.close( rs2, stmt, null, LOG );
                         }
-                        ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
-                                                                      geomType, dim, crs, srid );
+                        ColumnMetadataOld columnMd = new ColumnMetadataOld( column, sqlType, sqlTypeName, isNullable,
+                                                                            geomType, dim, crs, srid );
                         columnNameToMD.put( new SQLIdentifier( column ), columnMd );
                     } else if ( sqlTypeName.toLowerCase().contains( "geography" ) ) {
 
@@ -547,12 +546,12 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                             JDBCUtils.close( rs2, stmt, null, LOG );
                         }
 
-                        ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
-                                                                      geomType, dim, crs, srid );
+                        ColumnMetadataOld columnMd = new ColumnMetadataOld( column, sqlType, sqlTypeName, isNullable,
+                                                                            geomType, dim, crs, srid );
                         columnNameToMD.put( new SQLIdentifier( column ), columnMd );
                     } else {
-                        ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
-                                                                      isAutoincrement );
+                        ColumnMetadataOld columnMd = new ColumnMetadataOld( column, sqlType, sqlTypeName, isNullable,
+                                                                            isAutoincrement );
                         columnNameToMD.put( new SQLIdentifier( column ), columnMd );
                     }
                 }
@@ -565,7 +564,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     }
 }
 
-class ColumnMetadata {
+class ColumnMetadataOld {
 
     String column;
 
@@ -581,7 +580,7 @@ class ColumnMetadata {
 
     GeometryStorageParams geometryParams;
 
-    ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, boolean isAutoincrement ) {
+    ColumnMetadataOld( String column, int sqlType, String sqlTypeName, boolean isNullable, boolean isAutoincrement ) {
         this.column = column;
         this.sqlType = sqlType;
         this.sqlTypeName = sqlTypeName;
@@ -589,8 +588,8 @@ class ColumnMetadata {
         this.isAutoincrement = isAutoincrement;
     }
 
-    public ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, GeometryType geomType,
-                           CoordinateDimension dim, ICRS crs, String srid ) {
+    public ColumnMetadataOld( String column, int sqlType, String sqlTypeName, boolean isNullable,
+                              GeometryType geomType, CoordinateDimension dim, ICRS crs, String srid ) {
         this.column = column;
         this.sqlType = sqlType;
         this.sqlTypeName = sqlTypeName;

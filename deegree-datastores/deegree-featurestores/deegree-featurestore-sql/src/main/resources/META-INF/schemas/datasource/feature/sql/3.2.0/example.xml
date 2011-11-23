@@ -1,7 +1,5 @@
-<SQLFeatureStore configVersion="3.1.0" xmlns="http://www.deegree.org/datasource/feature/sql"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd">
+<SQLFeatureStore configVersion="3.2.0" xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd">
 
   <!-- [1] Identifier of JDBC connection -->
   <JDBCConnId>postgis</JDBCConnId>
@@ -9,45 +7,42 @@ http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd">
   <!-- [0...n] Definitions of feature types (derived from tables) -->
 
   <!-- Config option 1: Minimal configuration (just table) -->
-  <!--
-    Implicit namespace (xmlns:app="http://www.deegree.org/app"), automatic property mapping (all table fields)
-  -->
-  <FeatureType table="country" />
+  <!-- Implicit namespace (xmlns:app="http://www.deegree.org/app"), automatic property mapping (all table columns) -->
+  <FeatureTypeMapping table="country" />
 
   <!-- Config option 2: Configuration based on table and explicit name -->
-  <FeatureType table="country" name="Country" />
+  <FeatureTypeMapping table="country" name="Country" />
 
-  <!-- Config option 3: Configuration based on table and explicit name with namespace-->
-  <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country" />
+  <!-- Config option 3: Configuration based on table and explicit name with namespace -->
+  <FeatureTypeMapping xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country" />
 
-  <!-- TODO: this creates the properties in a different namespace than expected! 
-  Config option 4: Configuration based on table and explicit name with namespace and 
-  explicit property mapping -->
-  <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
-    <SimpleProperty mapping="prop1" />
-    <GeometryProperty mapping="the_geom" />
-  </FeatureType>
+  <!-- TODO: this creates the properties in a different namespace than expected! Config option 4: Configuration based on 
+    table and explicit name with namespace and explicit property mapping -->
+  <FeatureTypeMapping xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
+    <Primitive mapping="prop1" />
+    <Geometry mapping="the_geom" />
+  </FeatureTypeMapping>
 
-  <!--
-    Config option 5: Configuration based on table specifying explicit feature type name with namespace, explicit property mapping and 
-    specifying CRS
-  -->
-  <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
-    <SimpleProperty mapping="prop1" name="property1" />
-    <GeometryProperty mapping="the_geom" crs="EPSG:4326" srid="-1" />
-  </FeatureType>
+  <!-- Config option 5: Configuration based on table specifying explicit feature type name with namespace, explicit property 
+    mapping and specifying CRS -->
+  <FeatureTypeMapping xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
+    <Primitive path="property1" mapping="prop1" />
+    <Geometry mapping="the_geom">
+      <StorageCRS srid="-1">EPSG:4326</StorageCRS>
+    </Geometry>
+  </FeatureTypeMapping>
 
-  <!--
-    Config option 5: Configuration based on table specifying explicit feature type name with namespace, explicit property mapping and 
-    specifying CRS. In case no autoincrement PK column could be found for gml:id FID Mapping is required.
-  -->
-  <FeatureType xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
-  <FIDMapping>
-  <Column name="youridcolumnname"/>
-  <AutoIdGenerator/>
-  </FIDMapping>
-    <SimpleProperty mapping="prop1" name="property1" />
-    <GeometryProperty mapping="the_geom" crs="EPSG:4326" srid="-1" />
-  </FeatureType>
+  <!-- Config option 5: Configuration based on table specifying explicit feature type name with namespace, explicit property 
+    mapping and specifying CRS. In case no autoincrement PK column could be found for gml:id FID Mapping is required. -->
+  <FeatureTypeMapping xmlns:myapp="http://www.deegree.org/myapp" table="country2" name="myapp:Country">
+    <FIDMapping>
+      <Column name="youridcolumnname" />
+      <AutoIdGenerator />
+    </FIDMapping>
+    <Primitive mapping="prop1" path="property1" />
+    <Geometry mapping="the_geom">
+      <StorageCRS srid="-1">EPSG:4326</StorageCRS>
+    </Geometry>
+  </FeatureTypeMapping>
 
 </SQLFeatureStore>

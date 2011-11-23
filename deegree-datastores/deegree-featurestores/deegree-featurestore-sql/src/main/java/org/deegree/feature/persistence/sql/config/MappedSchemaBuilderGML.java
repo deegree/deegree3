@@ -39,6 +39,8 @@ import static java.lang.Boolean.TRUE;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +68,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -88,7 +91,7 @@ import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
-import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.StorageCRS;
+import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.ConstantMapping;
@@ -151,15 +154,10 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                             throws FeatureStoreException {
 
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
-        CoordinateDimension dim = CoordinateDimension.DIM_2;
-        if ( storageCRS.getDim() != null && !storageCRS.getDim().isEmpty() ) {
-            String s = storageCRS.getDim().get( 0 );
-            if ( s.equals( "3D" ) ) {
-                dim = CoordinateDimension.DIM_3;
-            }
-        }
-        geometryParams = new GeometryStorageParams( CRSManager.getCRSRef( storageCRS.getValue() ),
-                                                    storageCRS.getSrid(), dim );
+
+        CRSRef crs = CRSManager.getCRSRef( storageCRS.getValue() );
+        CoordinateDimension dim = crs.getDimension() == 3 ? DIM_2 : DIM_3;
+        geometryParams = new GeometryStorageParams( crs, storageCRS.getSrid(), dim );
 
         // add namespace bindings
         addNamespaceBindings( configURL, gmlSchema, nsHints );

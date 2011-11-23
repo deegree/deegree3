@@ -74,7 +74,7 @@ import org.deegree.feature.persistence.sql.jaxb.Join.AutoKeyColumn;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
-import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.StorageCRS;
+import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -89,7 +89,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class AbstractMappedSchemaBuilder {
+public abstract class AbstractMappedSchemaBuilder {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractMappedSchemaBuilder.class );
 
@@ -99,21 +99,31 @@ public class AbstractMappedSchemaBuilder {
         if ( config.getJoinTableDeletePropagation() != null ) {
             deleteCascadingByDB = config.getJoinTableDeletePropagation().equals( "db" );
         }
+        AbstractMappedSchemaBuilder builder = null;
         if ( config.getGMLSchema() == null || config.getGMLSchema().isEmpty() ) {
-            MappedSchemaBuilderTable builder = new MappedSchemaBuilderTable( config.getJDBCConnId().getValue(),
-                                                                             config.getFeatureType(), dialect,
-                                                                             deleteCascadingByDB );
-            return builder.getMappedSchema();
+            LOG.debug( "Table-driven mode configuration" );
+            if ( config.getFeatureType() != null && !config.getFeatureType().isEmpty() ) {
+                builder = new MappedSchemaBuilderTableOld( config.getJDBCConnId().getValue(), config.getFeatureType(),
+                                                           dialect, deleteCascadingByDB );
+            } else {
+                builder = new MappedSchemaBuilderTable( config.getJDBCConnId().getValue(),
+                                                        config.getFeatureTypeMapping(), dialect, deleteCascadingByDB );
+            }
+        } else {
+            LOG.debug( "Schema-driven mode configuration" );
+            List<String> gmlSchemas = config.getGMLSchema();
+            StorageCRS storageCRS = config.getStorageCRS();
+            List<NamespaceHint> nsHints = config.getNamespaceHint();
+            BLOBMapping blobConf = config.getBLOBMapping();
+            List<FeatureTypeMappingJAXB> ftMappingConfs = config.getFeatureTypeMapping();
+            builder = new MappedSchemaBuilderGML( configURL, gmlSchemas, storageCRS, nsHints, blobConf, ftMappingConfs,
+                                                  deleteCascadingByDB );
         }
-        List<String> gmlSchemas = config.getGMLSchema();
-        StorageCRS storageCRS = config.getStorageCRS();
-        List<NamespaceHint> nsHints = config.getNamespaceHint();
-        BLOBMapping blobConf = config.getBLOBMapping();
-        List<FeatureTypeMappingJAXB> ftMappingConfs = config.getFeatureTypeMapping();
-        MappedSchemaBuilderGML builder = new MappedSchemaBuilderGML( configURL, gmlSchemas, storageCRS, nsHints,
-                                                                     blobConf, ftMappingConfs, deleteCascadingByDB );
+
         return builder.getMappedSchema();
     }
+
+    protected abstract MappedAppSchema getMappedSchema();
 
     protected IDGenerator buildGenerator( JAXBElement<? extends AbstractIDGeneratorType> jaxbElement ) {
         if ( jaxbElement == null || jaxbElement.getValue() == null || jaxbElement.getValue() instanceof AutoIdGenerator ) {
