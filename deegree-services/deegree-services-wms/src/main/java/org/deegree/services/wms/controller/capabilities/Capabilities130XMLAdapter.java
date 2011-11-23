@@ -80,6 +80,7 @@ import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
+import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
@@ -238,13 +239,17 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         SpatialMetadata smd = md.getSpatialMetadata();
         writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
         writeDimensions( writer, md.getDimensions() );
+        Map<String, Style> legends = md.getLegendStyles();
         for ( Entry<String, Style> e : md.getStyles().entrySet() ) {
             if ( e.getKey() == null || e.getKey().isEmpty() ) {
                 continue;
             }
-            // TODO proper legend handling
-            writeStyle( writer, e.getKey(), e.getKey(), new Pair<Integer, Integer>( 10, 10 ), md.getName(),
-                        e.getValue() );
+            Style ls = e.getValue();
+            if ( legends.get( e.getKey() ) != null ) {
+                ls = legends.get( e.getKey() );
+            }
+            Pair<Integer, Integer> p = new Legends().getLegendSize( ls );
+            writeStyle( writer, e.getKey(), e.getKey(), p, md.getName(), e.getValue() );
         }
 
         for ( Theme t : theme.getThemes() ) {
