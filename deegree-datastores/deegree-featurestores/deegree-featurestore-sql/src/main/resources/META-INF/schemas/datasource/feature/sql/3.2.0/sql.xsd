@@ -227,7 +227,7 @@
   <element name="Feature" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>
-        <documentation>Defines the mapping for a feature particle</documentation>
+        <documentation>Defines the mapping for a feature-valued particle</documentation>
         <appinfo>
           <jaxb:class name="FeatureParticleJAXB" />
         </appinfo>
@@ -236,6 +236,23 @@
         <extension base="sqlfs:AbstractParticleType">
           <sequence>
             <element ref="sqlfs:Href" minOccurs="0" />
+            <element name="FeatureTypeJoin" minOccurs="0">
+              <complexType>
+                <attribute name="fkColumns" type="sqlfs:columnList" use="required">
+                  <annotation>
+                    <documentation>Join columns (current table) for the FIDMapping of target feature type(s)
+                    </documentation>
+                  </annotation>
+                </attribute>
+                <attribute name="ftName" type="QName" use="optional">
+                  <annotation>
+                    <documentation>Name of target feature type (used for narrowing if multiple types are allowed by
+                      schema)
+                    </documentation>
+                  </annotation>
+                </attribute>
+              </complexType>
+            </element>
           </sequence>
         </extension>
       </complexContent>
@@ -262,7 +279,7 @@
     <complexType>
       <annotation>
         <documentation>Defines the storage for URIs that reference internal or external objects (e.g. '#FEATURE_1' or
-          'http://www.deegree.org/features#FEATURE_1'")
+          'http://www.deegree.org/features#FEATURE_1')
         </documentation>
       </annotation>
       <attribute name="mapping" type="string" use="required">
