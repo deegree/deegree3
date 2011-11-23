@@ -38,6 +38,10 @@ package org.deegree.rendering.r2d.context;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.deegree.rendering.r2d.context.RenderingOptions.Antialias;
+import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
+import org.deegree.rendering.r2d.context.RenderingOptions.Quality;
+
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -63,7 +67,7 @@ public class RenderingOptionsMaps {
     }
 
     public RenderingOptionsMaps( Map<String, Quality> qualities, Map<String, Interpolation> interpolations,
-                             Map<String, Antialias> antialiases, Map<String, Integer> maxFeatures ) {
+                                 Map<String, Antialias> antialiases, Map<String, Integer> maxFeatures ) {
         this.qualities = qualities;
         this.interpolations = interpolations;
         this.antialiases = antialiases;
@@ -88,53 +92,6 @@ public class RenderingOptionsMaps {
 
     public Map<String, Integer> getMaxFeatures() {
         return maxFeatures;
-    }
-
-    /**
-     * <code>Quality</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Quality {
-        /***/
-        LOW, /***/
-        NORMAL, /***/
-        HIGH
-    }
-
-    /**
-     * <code>Interpolation</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Interpolation {
-        /***/
-        NEARESTNEIGHBOR, /***/
-        NEARESTNEIGHBOUR, /***/
-        BILINEAR, /***/
-        BICUBIC
-    }
-
-    /**
-     * <code>Antialias</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Antialias {
-        /***/
-        IMAGE, /***/
-        TEXT, /***/
-        BOTH, /***/
-        NONE
     }
 
 }

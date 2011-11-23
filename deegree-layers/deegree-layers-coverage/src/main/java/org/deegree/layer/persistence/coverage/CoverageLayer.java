@@ -60,7 +60,7 @@ import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.rendering.r2d.context.RenderingOptionsMaps.Interpolation;
+import org.deegree.rendering.r2d.context.RenderingOptions.Interpolation;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
