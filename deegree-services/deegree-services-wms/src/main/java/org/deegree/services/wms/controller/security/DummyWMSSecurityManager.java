@@ -43,14 +43,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
-import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.services.authentication.InvalidCredentialsException;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
-import org.deegree.services.wms.controller.ops.GetLegendGraphic;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.slf4j.Logger;
 

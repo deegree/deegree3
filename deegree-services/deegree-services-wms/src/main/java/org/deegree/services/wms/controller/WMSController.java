@@ -129,6 +129,7 @@ import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
+import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
@@ -151,7 +152,6 @@ import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
-import org.deegree.services.wms.controller.ops.GetLegendGraphic;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.controller.plugins.FeatureInfoSerializer;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
@@ -538,8 +538,8 @@ public class WMSController extends AbstractOWS {
 
     private void getLegendGraphic( Map<String, String> map, HttpResponseBuffer response )
                             throws OWSException, IOException {
-        GetLegendGraphic glg = securityManager == null ? new GetLegendGraphic( map, service )
-                                                      : securityManager.preprocess( new GetLegendGraphic( map, service ),
+        GetLegendGraphic glg = securityManager == null ? new GetLegendGraphic( map )
+                                                      : securityManager.preprocess( new GetLegendGraphic( map ),
                                                                                     OGCFrontController.getContext().getCredentials() );
 
         if ( !supportedImageFormats.contains( glg.getFormat() ) ) {

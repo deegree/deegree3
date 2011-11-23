@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/branches/3.1/deegree-services/deegree-services-wms/src/main/java/org/deegree/services/wms/controller/ops/GetLegendGraphic.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,30 +33,30 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wms.controller.ops;
+package org.deegree.protocol.wms.ops;
 
 import static java.lang.Integer.parseInt;
-import static org.deegree.services.i18n.Messages.get;
 
 import java.util.Map;
 
+import org.deegree.layer.LayerRef;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r2d.legends.LegendOptions;
-import org.deegree.services.wms.MapService;
-import org.deegree.services.wms.model.layers.Layer;
-import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.StyleRef;
 
 /**
  * <code>GetLegendGraphic</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31688 $, $Date: 2011-08-30 15:05:12 +0200 (Tue, 30 Aug 2011) $
  */
 public class GetLegendGraphic {
 
-    private Style style;
+    private LayerRef layer;
+
+    private StyleRef style;
 
     private String format;
 
@@ -64,28 +64,29 @@ public class GetLegendGraphic {
 
     private int width = -1, height = -1;
 
+    private static final String nan( String name, String value ) {
+        return "The '" + name + "' parameter value '" + value + "' is not a number.";
+    }
+
     /**
      * @param map
      * @param service
      * @throws OWSException
      */
-    public GetLegendGraphic( Map<String, String> map, MapService service ) throws OWSException {
+    public GetLegendGraphic( Map<String, String> map ) throws OWSException {
         String layer = map.get( "LAYER" );
         if ( layer == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYER" ), OWSException.MISSING_PARAMETER_VALUE );
+            throw new OWSException( "The 'LAYER' parameter was missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
-        Layer l = service.getLayer( layer );
-        if ( l == null ) {
-            throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layer ), OWSException.LAYER_NOT_DEFINED );
-        }
+        this.layer = new LayerRef( layer );
         String s = map.get( "STYLE" );
-        style = service.getStyles().getLegendStyle( layer, s );
-        if ( style == null ) {
-            throw new OWSException( get( "WMS.UNDEFINED_STYLE", s, layer ),OWSException.STYLE_NOT_DEFINED );
+        if ( s == null ) {
+            s = "default";
         }
+        this.style = new StyleRef( s );
         format = map.get( "FORMAT" );
         if ( format == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "FORMAT" ), OWSException.MISSING_PARAMETER_VALUE );
+            throw new OWSException( "The 'FORMAT' parameter was missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
 
         String w = map.get( "WIDTH" );
@@ -93,7 +94,7 @@ public class GetLegendGraphic {
             try {
                 width = parseInt( w );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "WIDTH", w ), OWSException.INVALID_PARAMETER_VALUE );
+                throw new OWSException( nan( "WIDTH", w ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         String h = map.get( "HEIGHT" );
@@ -101,7 +102,7 @@ public class GetLegendGraphic {
             try {
                 height = parseInt( h );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "HEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
+                throw new OWSException( nan( "HEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         w = map.get( "BASEWIDTH" );
@@ -109,7 +110,7 @@ public class GetLegendGraphic {
             try {
                 opts.baseWidth = parseInt( w );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "BASEWIDTH", w ), OWSException.INVALID_PARAMETER_VALUE );
+                throw new OWSException( nan( "BASEWIDTH", w ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         h = map.get( "BASEHEIGHT" );
@@ -117,7 +118,7 @@ public class GetLegendGraphic {
             try {
                 opts.baseHeight = parseInt( h );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "BASEHEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
+                throw new OWSException( nan( "BASEHEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         h = map.get( "TEXTSIZE" );
@@ -125,7 +126,7 @@ public class GetLegendGraphic {
             try {
                 opts.textSize = parseInt( h );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "TEXTSIZE", h ), OWSException.INVALID_PARAMETER_VALUE );
+                throw new OWSException( nan( "TEXTSIZE", h ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
         h = map.get( "SPACING" );
@@ -133,7 +134,7 @@ public class GetLegendGraphic {
             try {
                 opts.spacing = parseInt( h );
             } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.NOT_A_NUMBER", "SPACING", h ), OWSException.INVALID_PARAMETER_VALUE );
+                throw new OWSException( nan( "SPACING", h ), OWSException.INVALID_PARAMETER_VALUE );
             }
         }
     }
@@ -141,7 +142,7 @@ public class GetLegendGraphic {
     /**
      * @return the style selected by the request
      */
-    public Style getStyle() {
+    public StyleRef getStyle() {
         return style;
     }
 
@@ -185,6 +186,13 @@ public class GetLegendGraphic {
      */
     public LegendOptions getLegendOptions() {
         return opts;
+    }
+
+    /**
+     * @return the layer
+     */
+    public LayerRef getLayer() {
+        return layer;
     }
 
 }

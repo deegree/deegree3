@@ -37,9 +37,9 @@ package org.deegree.services.wms.controller.security;
 
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
+import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
-import org.deegree.services.wms.controller.ops.GetLegendGraphic;
 import org.deegree.services.wms.controller.ops.GetMap;
 
 /**
