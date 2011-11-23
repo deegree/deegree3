@@ -38,10 +38,13 @@ package org.deegree.layer.metadata;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.utils.DoublePair;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.protocol.ows.metadata.Description;
@@ -65,6 +68,8 @@ public class LayerMetadata {
     private DoublePair scaleDenominators = new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY );
 
     private boolean queryable = true;
+
+    private List<FeatureType> featureTypes = new ArrayList<FeatureType>();
 
     private int cascaded;
 
@@ -240,6 +245,21 @@ public class LayerMetadata {
      */
     public void setLegendStyles( Map<String, Style> legendStyles ) {
         this.legendStyles = legendStyles;
+    }
+
+    /**
+     * @return the featureTypes
+     */
+    public List<FeatureType> getFeatureTypes() {
+        return featureTypes;
+    }
+
+    /**
+     * @param featureTypes
+     *            the featureTypes to set
+     */
+    public void setFeatureTypes( List<FeatureType> featureTypes ) {
+        this.featureTypes = featureTypes;
     }
 
 }

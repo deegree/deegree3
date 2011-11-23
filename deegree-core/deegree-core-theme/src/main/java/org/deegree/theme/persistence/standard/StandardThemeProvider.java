@@ -53,6 +53,7 @@ import java.util.Map;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.SpatialMetadataConverter;
 import org.deegree.layer.Layer;
@@ -94,6 +95,7 @@ public class StandardThemeProvider implements ThemeProvider {
         LinkedHashMap<String, Dimension<?>> dims = new LinkedHashMap<String, Dimension<?>>();
         LinkedHashMap<String, Style> styles = new LinkedHashMap<String, Style>();
         LinkedHashMap<String, Style> legendStyles = new LinkedHashMap<String, Style>();
+        List<FeatureType> types = new ArrayList<FeatureType>();
 
         for ( ThemeType.Layer l : layers ) {
             Layer lay = null;
@@ -124,6 +126,7 @@ public class StandardThemeProvider implements ThemeProvider {
             }
             styles.putAll( lay.getMetadata().getStyles() );
             legendStyles.putAll( lay.getMetadata().getLegendStyles() );
+            types.addAll( lay.getMetadata().getFeatureTypes() );
             lays.add( lay );
         }
         List<Theme> thms = new ArrayList<Theme>( themes.size() );

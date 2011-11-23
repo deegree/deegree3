@@ -773,7 +773,7 @@ public class MapService {
         return themeMap.get( name ) != null;
     }
 
-    public List<LayerData> query( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers )
+    public List<LayerData> getMap( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers )
                             throws OWSException {
         Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
         Iterator<StyleRef> iter = gm.getStyles().iterator();
@@ -908,6 +908,12 @@ public class MapService {
         }
     }
 
+    private void getFeatureTypes( Collection<FeatureType> types, String name ) {
+        for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( name ) ) ) {
+            types.addAll( l.getMetadata().getFeatureTypes() );
+        }
+    }
+
     /**
      * @param fis
      * @return an application schema object
@@ -915,7 +921,11 @@ public class MapService {
     public List<FeatureType> getSchema( GetFeatureInfoSchema fis ) {
         List<FeatureType> list = new LinkedList<FeatureType>();
         for ( String l : fis.getLayers() ) {
-            getFeatureTypes( list, layers.get( l ) );
+            if ( isNewStyle() ) {
+                getFeatureTypes( list, l );
+            } else {
+                getFeatureTypes( list, layers.get( l ) );
+            }
         }
         return list;
     }

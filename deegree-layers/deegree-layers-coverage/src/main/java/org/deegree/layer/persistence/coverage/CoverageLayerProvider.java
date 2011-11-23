@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
 import static org.deegree.layer.config.ConfigUtils.parseDimensions;
 import static org.deegree.layer.config.ConfigUtils.parseStyles;
@@ -44,8 +45,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -58,6 +62,11 @@ import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.GenericAppSchema;
+import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
@@ -125,6 +134,14 @@ public class CoverageLayerProvider implements LayerStoreProvider {
                 Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
                 LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
                 md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
+                // add standard coverage feature type to list of feature types
+                List<PropertyType> pts = new LinkedList<PropertyType>();
+                pts.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "value", "app" ), 0, -1,
+                                                 DECIMAL, null, null ) );
+                FeatureType featureType = new GenericFeatureType( new QName( "http://www.deegree.org/app", "data",
+                                                                             "app" ), pts, false );
+                new GenericAppSchema( new FeatureType[] { featureType }, null, null, null );
+                md.getFeatureTypes().add( featureType );
 
                 if ( smd.getEnvelope() == null ) {
                     smd.setEnvelope( cov.getEnvelope() );

@@ -36,7 +36,6 @@
 package org.deegree.layer.persistence.coverage;
 
 import static java.lang.Integer.MAX_VALUE;
-import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.coverage.rangeset.RangeSetBuilder.createBandRangeSetFromRaster;
 import static org.deegree.coverage.raster.utils.CoverageTransform.transform;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -44,8 +43,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Triple;
@@ -65,9 +62,6 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.layer.LayerData;
@@ -103,8 +97,10 @@ public class CoverageLayerData implements LayerData {
 
     private final Style style;
 
+    private final FeatureType featureType;
+
     public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
-                              RangeSet filter, Style style ) {
+                              RangeSet filter, Style style, FeatureType featureType ) {
         this.raster = raster;
         this.bbox = bbox;
         this.width = width;
@@ -112,6 +108,7 @@ public class CoverageLayerData implements LayerData {
         this.interpol = interpol;
         this.filter = filter;
         this.style = style;
+        this.featureType = featureType;
     }
 
     @Override
@@ -145,9 +142,6 @@ public class CoverageLayerData implements LayerData {
     @Override
     public FeatureCollection info() {
         try {
-            List<PropertyType> pts = new LinkedList<PropertyType>();
-            pts.add( new SimplePropertyType( new QName( "value" ), 0, -1, DECIMAL, null, null ) );
-            FeatureType featureType = new GenericFeatureType( new QName( "data" ), pts, false );
             SimpleRaster res = transform( raster, bbox, Grid.fromSize( 1, 1, MAX_VALUE, bbox ), interpol.toString() ).getAsSimpleRaster();
             RasterData data = res.getRasterData();
             GenericFeatureCollection col = new GenericFeatureCollection();

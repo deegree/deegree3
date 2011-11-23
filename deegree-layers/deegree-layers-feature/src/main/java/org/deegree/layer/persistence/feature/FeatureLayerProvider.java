@@ -51,6 +51,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +143,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             }
             SpatialMetadata smd = new SpatialMetadata( envelope, crs );
             LayerMetadata md = new LayerMetadata( name, null, smd );
+            md.getFeatureTypes().add( ft );
             Map<String, Style> styles = new LinkedHashMap<String, Style>();
             if ( sstore != null ) {
                 for ( Style s : sstore.getAll( name ) ) {
@@ -201,6 +203,11 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
                 LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
                 md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
+                if ( featureType != null ) {
+                    md.getFeatureTypes().add( store.getSchema().getFeatureType( featureType ) );
+                } else {
+                    md.getFeatureTypes().addAll( Arrays.asList( store.getSchema().getFeatureTypes() ) );
+                }
 
                 if ( smd.getEnvelope() == null ) {
                     if ( featureType != null ) {

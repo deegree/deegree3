@@ -123,7 +123,8 @@ public class CoverageLayer extends AbstractLayer {
                 raster = multiraster.getRaster( query.getResolution() );
             }
 
-            return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(), interpol, filter, style );
+            return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(), interpol, filter, style,
+                                          getMetadata().getFeatureTypes().get( 0 ) );
         } catch ( OWSException e ) {
             throw e;
         } catch ( Throwable e ) {
@@ -155,7 +156,8 @@ public class CoverageLayer extends AbstractLayer {
             }
 
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(),
-                                          InterpolationType.NEAREST_NEIGHBOR, filter, style );
+                                          InterpolationType.NEAREST_NEIGHBOR, filter, style,
+                                          getMetadata().getFeatureTypes().get( 0 ) );
         } catch ( OWSException e ) {
             throw e;
         } catch ( Throwable e ) {

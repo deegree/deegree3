@@ -69,7 +69,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -95,8 +94,8 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.CollectionUtils;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -616,13 +615,6 @@ public class WMSController extends AbstractOWS {
                                                        : securityManager.preprocess( new GetFeatureInfo( map, version,
                                                                                                          service ),
                                                                                      OGCFrontController.getContext().getCredentials() );
-            for ( Layer l : fi.getQueryLayers() ) {
-                FeatureType ft = l.getFeatureType();
-                if ( ft != null && ft.getSchema() != null ) {
-                    nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
-                }
-            }
-            type = fi.getQueryLayers().get( 0 ).getFeatureType();
             crs = fi.getCoordinateSystem();
             geometries = fi.returnGeometries();
             format = fi.getInfoFormat();
@@ -643,15 +635,19 @@ public class WMSController extends AbstractOWS {
         response.setContentType( format );
         response.setCharacterEncoding( "UTF-8" );
 
-        FeatureInfoSerializer serializer = featureInfoSerializers.get( format );
-        if ( serializer != null ) {
-            Map<String, String> fismap = new HashMap<String, String>();
-            fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
-            GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
-            List<FeatureType> schema = service.getSchema( fis );
-            for ( FeatureType ft : schema ) {
+        Map<String, String> fismap = new HashMap<String, String>();
+        fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
+        GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
+        List<FeatureType> schema = service.getSchema( fis );
+        for ( FeatureType ft : schema ) {
+            type = ft;
+            if ( ft.getSchema() != null ) {
                 nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
             }
+        }
+
+        FeatureInfoSerializer serializer = featureInfoSerializers.get( format );
+        if ( serializer != null ) {
             serializer.serialize( nsBindings, col, response.getOutputStream() );
             response.flushBuffer();
             return;
@@ -666,17 +662,6 @@ public class WMSController extends AbstractOWS {
         if ( format.equalsIgnoreCase( "application/vnd.ogc.gml" ) || format.equalsIgnoreCase( "text/xml" ) ) {
             try {
                 XMLStreamWriter xmlWriter = response.getXMLWriter();
-                // quick hack to get better prefixes
-                HashSet<String> set = new HashSet<String>();
-                int cur = 0;
-                for ( Feature f : col ) {
-                    String ns = f.getType().getName().getNamespaceURI();
-                    if ( ns != null && ns.length() > 0 && !set.contains( ns ) ) {
-                        set.add( ns );
-                        xmlWriter.setPrefix( "app" + cur++, ns );
-                    }
-                }
-                xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
                 String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
 
                 // for more than just quick 'hacky' schemaLocation attributes one should use a proper WFS
@@ -694,7 +679,7 @@ public class WMSController extends AbstractOWS {
                 // gmlWriter.setOutputCRS(fi.getCoordinateSystem() );
                 // gmlWriter.set
                 GMLFeatureWriter fwriter = new GMLFeatureWriter( GML_2, xmlWriter, crs, null, "#{}", null, 0, -1,
-                                                                 false, geometries, null, null, false );
+                                                                 false, geometries, nsBindings, null, false );
                 fwriter.export( col, ns == null ? loc : null, bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
@@ -774,7 +759,7 @@ public class WMSController extends AbstractOWS {
             RenderContext ctx = new DefaultRenderContext( info );
             ctx.setOutput( response.getOutputStream() );
             LinkedList<String> headers = new LinkedList<String>();
-            List<LayerData> list = service.query( gm2, headers );
+            List<LayerData> list = service.getMap( gm2, headers );
             for ( LayerData d : list ) {
                 d.render( ctx );
             }
