@@ -44,6 +44,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +55,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
@@ -73,11 +75,13 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
+import org.deegree.layer.persistence.SingleLayerStore;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayerType;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers.AutoLayers;
 import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
@@ -102,9 +106,36 @@ public class CoverageLayerProvider implements LayerStoreProvider {
         this.workspace = workspace;
     }
 
-    private LayerStore createFromAutoLayers( AutoLayers cfg ) {
+    private LayerStore createFromAutoLayers( AutoLayers cfg )
+                            throws ResourceInitException {
+        String cid = cfg.getCoverageStoreId();
+        String sid = cfg.getStyleStoreId();
+        CoverageBuilderManager mgr = workspace.getSubsystemManager( CoverageBuilderManager.class );
+        StyleStoreManager smgr = workspace.getSubsystemManager( StyleStoreManager.class );
+        Coverage cov = mgr.get( cid );
+        StyleStore sstore = smgr.get( sid );
+        if ( cov == null ) {
+            throw new ResourceInitException( "Coverage store with id " + cid + " is not available." );
+        }
+        if ( sid != null && sstore == null ) {
+            throw new ResourceInitException( "Style store with id " + sid + " is not available." );
+        }
 
-        return null;
+        SpatialMetadata smd = new SpatialMetadata( cov.getEnvelope(),
+                                                   Collections.singletonList( cov.getCoordinateSystem() ) );
+        Description desc = new Description( cid, Collections.singletonList( new LanguageString( cid, null ) ), null,
+                                            null );
+        LayerMetadata md = new LayerMetadata( cid, desc, smd );
+
+        if ( sstore != null ) {
+            for ( Style s : sstore.getAll( cid ) ) {
+                md.getStyles().put( s.getName(), s );
+            }
+        }
+
+        Layer l = new CoverageLayer( md, cov instanceof AbstractRaster ? (AbstractRaster) cov : null,
+                                     cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null );
+        return new SingleLayerStore( l );
     }
 
     @Override
@@ -115,13 +146,15 @@ public class CoverageLayerProvider implements LayerStoreProvider {
             cfg = (CoverageLayers) JAXBUtils.unmarshall( "org.deegree.layer.persistence.coverage.jaxb", CONFIG_SCHEMA,
                                                          configUrl, workspace );
             if ( cfg.getAutoLayers() != null ) {
+                LOG.debug( "Using auto configuration for coverage layers." );
                 return createFromAutoLayers( cfg.getAutoLayers() );
             }
+
+            LOG.debug( "Using manual configuration for coverage layers." );
 
             Map<String, Layer> map = new HashMap<String, Layer>();
 
             CoverageBuilderManager mgr = workspace.getSubsystemManager( CoverageBuilderManager.class );
-            StyleStoreManager smgr = workspace.getSubsystemManager( StyleStoreManager.class );
             Coverage cov = mgr.get( cfg.getCoverageStoreId() );
 
             if ( cov == null ) {
@@ -140,6 +173,7 @@ public class CoverageLayerProvider implements LayerStoreProvider {
                                                  DECIMAL, null, null ) );
                 FeatureType featureType = new GenericFeatureType( new QName( "http://www.deegree.org/app", "data",
                                                                              "app" ), pts, false );
+                // needed to get the back reference to the schema into the featureType (it's a strange mechanism indeed)
                 new GenericAppSchema( new FeatureType[] { featureType }, null, null, null );
                 md.getFeatureTypes().add( featureType );
 
@@ -172,9 +206,10 @@ public class CoverageLayerProvider implements LayerStoreProvider {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { CoverageBuilderManager.class };
+        return new Class[] { CoverageBuilderManager.class, StyleStoreManager.class };
     }
 
     @Override

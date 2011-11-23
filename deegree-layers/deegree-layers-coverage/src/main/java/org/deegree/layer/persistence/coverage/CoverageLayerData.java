@@ -44,6 +44,8 @@ import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Triple;
 import org.deegree.coverage.filter.raster.RasterFilter;
@@ -150,14 +152,16 @@ public class CoverageLayerData implements LayerData {
             switch ( dataType ) {
             case SHORT:
             case USHORT: {
-                PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( 0, 0, 0 ) ) );
+                PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( 0, 0, 0 ) ),
+                                                         new PrimitiveType( BaseType.DECIMAL ) );
                 props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
                 break;
             }
             case BYTE: {
                 // TODO unknown why this always yields 0 values for eg. satellite images/RGB/ARGB
                 for ( int i = 0; i < data.getBands(); ++i ) {
-                    PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( 0, 0, i ) ) );
+                    PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( 0, 0, i ) ),
+                                                             new PrimitiveType( BaseType.DECIMAL ) );
                     props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
                 }
                 break;
@@ -168,7 +172,8 @@ public class CoverageLayerData implements LayerData {
                 LOG.warn( "The raster is of type '{}', this is handled as float currently.", dataType );
             case FLOAT:
                 props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ),
-                                                new PrimitiveValue( new BigDecimal( data.getFloatSample( 0, 0, 0 ) ) ) ) );
+                                                new PrimitiveValue( new BigDecimal( data.getFloatSample( 0, 0, 0 ) ),
+                                                                    new PrimitiveType( BaseType.DECIMAL ) ) ) );
                 break;
             }
 
