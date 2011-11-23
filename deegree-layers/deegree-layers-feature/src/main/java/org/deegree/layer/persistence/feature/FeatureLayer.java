@@ -157,7 +157,7 @@ public class FeatureLayer extends AbstractLayer {
         }
 
         List<Query> queries = new LinkedList<Query>();
-        Integer maxFeats = query.getRenderingOptions().getMaxFeatures().get( getMetadata().getName() );
+        Integer maxFeats = query.getRenderingOptions().getMaxFeatures( getMetadata().getName() );
         final int maxFeatures = maxFeats == null ? -1 : maxFeats;
         if ( featureType == null && featureStore != null ) {
             final Filter filter2 = filter;
@@ -198,8 +198,7 @@ public class FeatureLayer extends AbstractLayer {
         filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
 
-        // TODO radius still hardcoded
-        final Envelope clickBox = query.calcClickBox( 3 );
+        final Envelope clickBox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
 
         filter = (OperatorFilter) Filters.addBBoxConstraint( clickBox, filter, null );
 

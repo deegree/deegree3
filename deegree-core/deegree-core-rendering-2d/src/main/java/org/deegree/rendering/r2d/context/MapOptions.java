@@ -52,11 +52,15 @@ public class MapOptions {
 
     private int maxFeatures;
 
-    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures ) {
+    private int featureInfoRadius;
+
+    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
+                       int featureInfoRadius ) {
         this.quality = quality;
         this.interpol = interpol;
         this.antialias = antialias;
         this.maxFeatures = maxFeatures;
+        this.setFeatureInfoRadius( featureInfoRadius );
     }
 
     /**
@@ -120,6 +124,21 @@ public class MapOptions {
     }
 
     /**
+     * @return the featureInfoRadius
+     */
+    public int getFeatureInfoRadius() {
+        return featureInfoRadius;
+    }
+
+    /**
+     * @param featureInfoRadius
+     *            the featureInfoRadius to set
+     */
+    public void setFeatureInfoRadius( int featureInfoRadius ) {
+        this.featureInfoRadius = featureInfoRadius;
+    }
+
+    /**
      * <code>Quality</code>
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -164,6 +183,68 @@ public class MapOptions {
         TEXT, /***/
         BOTH, /***/
         NONE
+    }
+
+    public static interface MapOptionsSetter<T> {
+        void setOption( String layer, T value );
+    }
+
+    public static MapOptionsSetter<Quality> getQualitySetter( final MapOptionsMaps options ) {
+        return new MapOptionsSetter<Quality>() {
+            @Override
+            public void setOption( String layer, Quality value ) {
+                options.setQuality( layer, value );
+            }
+        };
+    }
+
+    public static MapOptionsSetter<Antialias> getAntialiasSetter( final MapOptionsMaps options ) {
+        return new MapOptionsSetter<Antialias>() {
+            @Override
+            public void setOption( String layer, Antialias value ) {
+                options.setAntialias( layer, value );
+            }
+        };
+    }
+
+    public static MapOptionsSetter<Interpolation> getInterpolationSetter( final MapOptionsMaps options ) {
+        return new MapOptionsSetter<Interpolation>() {
+            @Override
+            public void setOption( String layer, Interpolation value ) {
+                options.setInterpolation( layer, value );
+            }
+        };
+    }
+
+    public static interface MapOptionsGetter<T> {
+        T getOption( String layer );
+    }
+
+    public static MapOptionsGetter<Quality> getQualityGetter( final MapOptionsMaps options ) {
+        return new MapOptionsGetter<Quality>() {
+            @Override
+            public Quality getOption( String layer ) {
+                return options.getQuality( layer );
+            }
+        };
+    }
+
+    public static MapOptionsGetter<Antialias> getAntialiasGetter( final MapOptionsMaps options ) {
+        return new MapOptionsGetter<Antialias>() {
+            @Override
+            public Antialias getOption( String layer ) {
+                return options.getAntialias( layer );
+            }
+        };
+    }
+
+    public static MapOptionsGetter<Interpolation> getInterpolationGetter( final MapOptionsMaps options ) {
+        return new MapOptionsGetter<Interpolation>() {
+            @Override
+            public Interpolation getOption( String layer ) {
+                return options.getInterpolation( layer );
+            }
+        };
     }
 
 }

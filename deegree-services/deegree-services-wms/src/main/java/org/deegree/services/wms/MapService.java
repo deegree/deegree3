@@ -172,13 +172,9 @@ public class MapService {
 
     private HashMap<Style, HashMap<String, BufferedImage>> legends = new HashMap<Style, HashMap<String, BufferedImage>>();
 
-    private MapOptionsMaps extensions = new MapOptionsMaps();
+    private MapOptionsMaps layerOptions = new MapOptionsMaps();
 
     private MapOptions defaultLayerOptions;
-
-    private HashMap<Layer, Integer> defaultFeatureInfoRadius = new HashMap<Layer, Integer>();
-
-    private int globalFeatureInfoRadius = 1;
 
     private static int stylesCounter = 0;
 
@@ -214,6 +210,7 @@ public class MapService {
         Quality quali = Quality.HIGH;
         Interpolation interpol = Interpolation.NEARESTNEIGHBOUR;
         int maxFeatures = 10000;
+        int featureInfoRadius = 1;
         if ( conf != null ) {
             LayerOptionsType sf = conf.getDefaultLayerOptions();
             alias = handleDefaultValue( sf == null ? null : sf.getAntiAliasing(), Antialias.class, BOTH );
@@ -228,12 +225,12 @@ public class MapService {
                            maxFeatures );
             }
             if ( sf != null && sf.getFeatureInfoRadius() != null ) {
-                globalFeatureInfoRadius = sf.getFeatureInfoRadius();
-                LOG.debug( "Using global feature info radius setting of {}.", globalFeatureInfoRadius );
+                featureInfoRadius = sf.getFeatureInfoRadius();
+                LOG.debug( "Using global feature info radius setting of {}.", featureInfoRadius );
             } else {
-                LOG.debug( "Using default feature info radius of {}.", globalFeatureInfoRadius );
+                LOG.debug( "Using default feature info radius of {}.", featureInfoRadius );
             }
-            defaultLayerOptions = new MapOptions( quali, interpol, alias, maxFeatures );
+            defaultLayerOptions = new MapOptions( quali, interpol, alias, maxFeatures, featureInfoRadius );
         }
 
         if ( conf != null && conf.getAbstractLayer() != null ) {
@@ -466,15 +463,15 @@ public class MapService {
                 quality = handleDefaultValue( sf.getRenderingQuality(), Quality.class, quality );
                 interpol = handleDefaultValue( sf.getInterpolation(), Interpolation.class, interpol );
                 if ( sf.getMaxFeatures() != null ) {
-                    extensions.getMaxFeatures().put( res.getName(), sf.getMaxFeatures() );
+                    layerOptions.setMaxFeatures( res.getName(), sf.getMaxFeatures() );
                 }
                 if ( sf.getFeatureInfoRadius() != null ) {
-                    defaultFeatureInfoRadius.put( res, sf.getFeatureInfoRadius() );
+                    layerOptions.setFeatureInfoRadius( res.getName(), sf.getFeatureInfoRadius() );
                 }
             }
-            extensions.getAntialiases().put( res.getName(), alias );
-            extensions.getQualities().put( res.getName(), quality );
-            extensions.getInterpolations().put( res.getName(), interpol );
+            layerOptions.setAntialias( res.getName(), alias );
+            layerOptions.setQuality( res.getName(), quality );
+            layerOptions.setInterpolation( res.getName(), interpol );
 
             addChildren( res, aLayer.getAbstractLayer(), adapter, alias, interpol, quality );
         } else if ( layer instanceof StatisticsLayer ) {
@@ -565,10 +562,12 @@ public class MapService {
         return ImageUtils.prepareImage( format, width, height, transparent, bgcolor );
     }
 
-    protected static void applyHints( final String l, final Map<String, Quality> qualities,
-                                      final Map<String, Interpolation> interpolations,
-                                      final Map<String, Antialias> antialiases, final Graphics2D g ) {
-        switch ( qualities.get( l ) ) {
+    protected void applyHints( final String l, final Graphics2D g ) {
+        Quality q = layerOptions.getQuality( l );
+        if ( q == null ) {
+            q = defaultLayerOptions.getQuality();
+        }
+        switch ( q ) {
         case HIGH:
             g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
             break;
@@ -579,7 +578,11 @@ public class MapService {
             g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_DEFAULT );
             break;
         }
-        switch ( interpolations.get( l ) ) {
+        Interpolation i = layerOptions.getInterpolation( l );
+        if ( i == null ) {
+            i = defaultLayerOptions.getInterpolation();
+        }
+        switch ( i ) {
         case BICUBIC:
             g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC );
             break;
@@ -591,7 +594,11 @@ public class MapService {
             g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
             break;
         }
-        switch ( antialiases.get( l ) ) {
+        Antialias a = layerOptions.getAntialias( l );
+        if ( a == null ) {
+            a = defaultLayerOptions.getAntialias();
+        }
+        switch ( a ) {
         case IMAGE:
             g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
             g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
@@ -685,9 +692,6 @@ public class MapService {
                             throws MissingDimensionValue, InvalidDimensionValue {
         Iterator<Layer> layers = gm.getLayers().iterator();
         Iterator<Style> styles = gm.getStyles().iterator();
-        Map<String, Quality> qualities = gm.getRenderingOptions().getQualities();
-        Map<String, Interpolation> interpolations = gm.getRenderingOptions().getInterpolations();
-        Map<String, Antialias> antialiases = gm.getRenderingOptions().getAntialiases();
 
         if ( reduce( true, map( gm.getLayers(), CollectionUtils.<Layer> getInstanceofMapper( FeatureLayer.class ) ),
                      AND ) ) {
@@ -741,7 +745,7 @@ public class MapService {
                             QName name = f.getType().getName();
                             FeatureLayer l = ftToLayer.get( name );
 
-                            applyHints( l.getName(), qualities, interpolations, antialiases, g );
+                            applyHints( l.getName(), g );
                             render( f, evaluator, ftToStyle.get( name ), renderer, textRenderer, gm.getScale(),
                                     gm.getResolution() );
                         }
@@ -773,7 +777,7 @@ public class MapService {
             Layer l = layers.next();
             Style s = styles.next();
 
-            applyHints( l.getName(), qualities, interpolations, antialiases, g );
+            applyHints( l.getName(), g );
 
             warnings.addAll( paintLayer( l, s, g, gm ) );
         }
@@ -818,8 +822,7 @@ public class MapService {
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
                                            gfi.getFeatureCount(), new HashMap<String, OperatorFilter>(), styles,
-                                           gfi.getParameterMap(), new HashMap<String, List<?>>(),
-                                           new MapOptionsMaps() );
+                                           gfi.getParameterMap(), new HashMap<String, List<?>>(), new MapOptionsMaps() );
         for ( LayerRef n : gfi.getQueryLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
                 list.add( l.infoQuery( query, headers ) );
@@ -1045,21 +1048,14 @@ public class MapService {
      * @return the extensions object with default extension parameter settings
      */
     public MapOptionsMaps getExtensions() {
-        return extensions;
-    }
-
-    /**
-     * @return the map w/ default settings
-     */
-    public HashMap<Layer, Integer> getDefaultFeatureInfoRadius() {
-        return defaultFeatureInfoRadius;
+        return layerOptions;
     }
 
     /**
      * @return the default feature info radius
      */
     public int getGlobalFeatureInfoRadius() {
-        return globalFeatureInfoRadius;
+        return defaultLayerOptions.getFeatureInfoRadius();
     }
 
     /**

@@ -49,6 +49,15 @@ import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.protocol.wms.ops.SLDParser.parse;
+import static org.deegree.rendering.r2d.context.MapOptions.getAntialiasGetter;
+import static org.deegree.rendering.r2d.context.MapOptions.getAntialiasSetter;
+import static org.deegree.rendering.r2d.context.MapOptions.getInterpolationGetter;
+import static org.deegree.rendering.r2d.context.MapOptions.getInterpolationSetter;
+import static org.deegree.rendering.r2d.context.MapOptions.getQualityGetter;
+import static org.deegree.rendering.r2d.context.MapOptions.getQualitySetter;
+import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -90,6 +99,8 @@ import org.deegree.protocol.wms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
+import org.deegree.rendering.r2d.context.MapOptions.MapOptionsGetter;
+import org.deegree.rendering.r2d.context.MapOptions.MapOptionsSetter;
 import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.style.StyleRef;
@@ -393,12 +404,12 @@ public class GetMap {
             defaults = new MapOptionsMaps();
         }
         extensions = new MapOptionsMaps();
-        handleEnumVSP( Quality.class, extensions.getQualities(), Quality.NORMAL, map.get( "QUALITY" ),
-                       defaults.getQualities() );
-        handleEnumVSP( Interpolation.class, extensions.getInterpolations(), Interpolation.NEARESTNEIGHBOR,
-                       map.get( "INTERPOLATION" ), defaults.getInterpolations() );
-        handleEnumVSP( Antialias.class, extensions.getAntialiases(), Antialias.BOTH, map.get( "ANTIALIAS" ),
-                       defaults.getAntialiases() );
+        handleEnumVSP( Quality.class, getQualitySetter( extensions ), NORMAL, map.get( "QUALITY" ),
+                       getQualityGetter( defaults ) );
+        handleEnumVSP( Interpolation.class, getInterpolationSetter( extensions ), NEARESTNEIGHBOR,
+                       map.get( "INTERPOLATION" ), getInterpolationGetter( defaults ) );
+        handleEnumVSP( Antialias.class, getAntialiasSetter( extensions ), BOTH, map.get( "ANTIALIAS" ),
+                       getAntialiasGetter( defaults ) );
         String maxFeatures = map.get( "MAX_FEATURES" );
         if ( maxFeatures == null ) {
             for ( LayerRef l : this.layers ) {
@@ -407,73 +418,72 @@ public class GetMap {
                     max = 10000;
                     LOG.debug( "Using global max features setting of {}.", max );
                 }
-                extensions.getMaxFeatures().put( l.getName(), max );
+                extensions.setMaxFeatures( l.getName(), max );
             }
         } else {
             String[] mfs = maxFeatures.split( "," );
-            Map<String, Integer> mfdefaults = defaults.getMaxFeatures();
             if ( mfs.length == this.layers.size() ) {
                 for ( int i = 0; i < mfs.length; ++i ) {
                     LayerRef cur = this.layers.get( i );
-                    Integer def = mfdefaults.get( cur );
+                    Integer def = defaults.getMaxFeatures( cur.getName() );
                     try {
                         Integer val = Integer.valueOf( mfs[i] );
-                        extensions.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
+                        extensions.setMaxFeatures( cur.getName(), def == null ? val : min( def, val ) );
                     } catch ( NumberFormatException e ) {
                         LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                        extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
+                        extensions.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
                     }
                 }
             } else {
                 for ( int i = 0; i < mfs.length; ++i ) {
                     LayerRef cur = this.layers.get( i );
-                    Integer def = mfdefaults.get( cur );
+                    Integer def = defaults.getMaxFeatures( cur.getName() );
                     if ( mfs.length <= i ) {
                         try {
                             Integer val = Integer.valueOf( mfs[i] );
-                            extensions.getMaxFeatures().put( cur.getName(), def == null ? val : min( def, val ) );
+                            extensions.setMaxFeatures( cur.getName(), def == null ? val : min( def, val ) );
                         } catch ( NumberFormatException e ) {
                             LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                            extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
+                            extensions.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
                         }
                     } else {
-                        extensions.getMaxFeatures().put( cur.getName(), def == null ? 10000 : def );
+                        extensions.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
                     }
                 }
             }
         }
     }
 
-    private <T extends Enum<T>> void handleEnumVSP( Class<T> enumType, Map<String, T> map, T defaultVal, String vals,
-                                                    Map<String, T> defaults ) {
+    private <T extends Enum<T>> void handleEnumVSP( Class<T> enumType, MapOptionsSetter<T> setter, T defaultVal,
+                                                    String vals, MapOptionsGetter<T> defaults ) {
         if ( vals == null ) {
             for ( LayerRef l : layers ) {
-                T val = defaults.get( l );
-                map.put( l.getName(), val == null ? defaultVal : val );
+                T val = defaults.getOption( l.getName() );
+                setter.setOption( l.getName(), val == null ? defaultVal : val );
             }
         } else {
             String[] ss = vals.split( "," );
             if ( ss.length == layers.size() ) {
                 for ( int i = 0; i < ss.length; ++i ) {
-                    T val = defaults.get( layers.get( i ) );
+                    T val = defaults.getOption( layers.get( i ).getName() );
                     try {
-                        map.put( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
+                        setter.setOption( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
                     } catch ( IllegalArgumentException e ) {
-                        map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
+                        setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
                         LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
                                   new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
                     }
                 }
             } else {
                 for ( int i = 0; i < layers.size(); ++i ) {
-                    T val = defaults.get( layers.get( i ) );
+                    T val = defaults.getOption( layers.get( i ).getName() );
                     if ( ss.length <= i ) {
-                        map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
+                        setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
                     } else {
                         try {
-                            map.put( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
+                            setter.setOption( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
                         } catch ( IllegalArgumentException e ) {
-                            map.put( layers.get( i ).getName(), val == null ? defaultVal : val );
+                            setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
                             LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
                                       new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
                         }

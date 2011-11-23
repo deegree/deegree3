@@ -103,7 +103,7 @@ public class CoverageLayer extends AbstractLayer {
             style = style == null ? null : style.filter( query.getScale() );
 
             InterpolationType interpol = NEAREST_NEIGHBOR;
-            Interpolation fromRequest = query.getRenderingOptions().getInterpolations().get( getMetadata().getName() );
+            Interpolation fromRequest = query.getRenderingOptions().getInterpolation( getMetadata().getName() );
             if ( fromRequest != null ) {
                 switch ( fromRequest ) {
                 case BICUBIC:
@@ -138,7 +138,7 @@ public class CoverageLayer extends AbstractLayer {
     public CoverageLayerData infoQuery( LayerQuery query, List<String> headers )
                             throws OWSException {
         try {
-            Envelope bbox = query.calcClickBox( 3 );
+            Envelope bbox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
 
             RangeSet filter = getDimensionFilter( query.getDimensions(), headers );
 

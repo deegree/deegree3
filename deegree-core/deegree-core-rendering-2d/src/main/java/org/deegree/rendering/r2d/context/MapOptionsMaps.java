@@ -59,68 +59,88 @@ public class MapOptionsMaps {
     }
 
     public MapOptionsMaps( Map<String, Quality> qualities, Map<String, Interpolation> interpolations,
-                                 Map<String, Antialias> antialiases, Map<String, Integer> maxFeatures ) {
+                           Map<String, Antialias> antialiases, Map<String, Integer> maxFeatures ) {
         options = new HashMap<String, MapOptions>();
         for ( Entry<String, Quality> e : qualities.entrySet() ) {
-            options.put( e.getKey(), new MapOptions( e.getValue(), null, null, -1 ) );
+            options.put( e.getKey(), new MapOptions( e.getValue(), null, null, -1, -1 ) );
         }
         for ( Entry<String, Interpolation> e : interpolations.entrySet() ) {
             if ( options.get( e.getKey() ) != null ) {
                 options.get( e.getKey() ).setInterpolation( e.getValue() );
             } else {
-                options.put( e.getKey(), new MapOptions( null, e.getValue(), null, -1 ) );
+                options.put( e.getKey(), new MapOptions( null, e.getValue(), null, -1, -1 ) );
             }
         }
         for ( Entry<String, Antialias> e : antialiases.entrySet() ) {
             if ( options.get( e.getKey() ) != null ) {
                 options.get( e.getKey() ).setAntialias( e.getValue() );
             } else {
-                options.put( e.getKey(), new MapOptions( null, null, e.getValue(), -1 ) );
+                options.put( e.getKey(), new MapOptions( null, null, e.getValue(), -1, -1 ) );
             }
         }
         for ( Entry<String, Integer> e : maxFeatures.entrySet() ) {
-            if ( options.get( e.getKey() ) != null ) {
-                options.get( e.getKey() ).setMaxFeatures( e.getValue() );
-            } else {
-                options.put( e.getKey(), new MapOptions( null, null, null, e.getValue() ) );
-            }
+            setMaxFeatures( e.getKey(), e.getValue() );
         }
     }
 
-    public Integer getMaxFeatures( String layer ) {
+    public int getMaxFeatures( String layer ) {
         return options.get( layer ).getMaxFeatures();
     }
 
-    public Map<String, Quality> getQualities() {
-        Map<String, Quality> qualities = new HashMap<String, Quality>();
-        for ( Entry<String, MapOptions> e : options.entrySet() ) {
-            qualities.put( e.getKey(), e.getValue().getQuality() );
-        }
-        return qualities;
+    public int getFeatureInfoRadius( String layer ) {
+        return options.get( layer ).getFeatureInfoRadius();
     }
 
-    public Map<String, Interpolation> getInterpolations() {
-        Map<String, Interpolation> interpolations = new HashMap<String, Interpolation>();
-        for ( Entry<String, MapOptions> e : options.entrySet() ) {
-            interpolations.put( e.getKey(), e.getValue().getInterpolation() );
-        }
-        return interpolations;
+    public Quality getQuality( String layer ) {
+        return options.get( layer ).getQuality();
     }
 
-    public Map<String, Antialias> getAntialiases() {
-        Map<String, Antialias> antialiases = new HashMap<String, Antialias>();
-        for ( Entry<String, MapOptions> e : options.entrySet() ) {
-            antialiases.put( e.getKey(), e.getValue().getAntialias() );
-        }
-        return antialiases;
+    public Antialias getAntialias( String layer ) {
+        return options.get( layer ).getAntialias();
     }
 
-    public Map<String, Integer> getMaxFeatures() {
-        Map<String, Integer> maxFeatures = new HashMap<String, Integer>();
-        for ( Entry<String, MapOptions> e : options.entrySet() ) {
-            maxFeatures.put( e.getKey(), e.getValue().getMaxFeatures() );
+    public Interpolation getInterpolation( String layer ) {
+        return options.get( layer ).getInterpolation();
+    }
+
+    public void setMaxFeatures( String layer, int maxFeatures ) {
+        if ( options.get( layer ) == null ) {
+            options.put( layer, new MapOptions( null, null, null, maxFeatures, -1 ) );
+        } else {
+            options.get( layer ).setMaxFeatures( maxFeatures );
         }
-        return maxFeatures;
+    }
+
+    public void setFeatureInfoRadius( String layer, int radius ) {
+        if ( options.get( layer ) == null ) {
+            options.put( layer, new MapOptions( null, null, null, -1, radius ) );
+        } else {
+            options.get( layer ).setFeatureInfoRadius( radius );
+        }
+    }
+
+    public void setQuality( String layer, Quality q ) {
+        if ( options.get( layer ) == null ) {
+            options.put( layer, new MapOptions( q, null, null, -1, -1 ) );
+        } else {
+            options.get( layer ).setQuality( q );
+        }
+    }
+
+    public void setInterpolation( String layer, Interpolation interpol ) {
+        if ( options.get( layer ) == null ) {
+            options.put( layer, new MapOptions( null, interpol, null, -1, -1 ) );
+        } else {
+            options.get( layer ).setInterpolation( interpol );
+        }
+    }
+
+    public void setAntialias( String layer, Antialias alias ) {
+        if ( options.get( layer ) == null ) {
+            options.put( layer, new MapOptions( null, null, alias, -1, -1 ) );
+        } else {
+            options.get( layer ).setAntialias( alias );
+        }
     }
 
 }

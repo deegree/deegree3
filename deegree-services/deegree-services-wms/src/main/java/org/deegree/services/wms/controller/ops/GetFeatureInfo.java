@@ -238,8 +238,8 @@ public class GetFeatureInfo {
     private void calcClickBox( Map<String, String> map ) {
         int radius = service.getGlobalFeatureInfoRadius();
         // TODO implement all this per layer also if more than one layer is requested
-        if ( layers.size() == 1 && service.getDefaultFeatureInfoRadius().get( layers.getFirst() ) != null ) {
-            radius = service.getDefaultFeatureInfoRadius().get( layers.getFirst() );
+        if ( layers.size() == 1 && service.getExtensions().getFeatureInfoRadius( layers.getFirst().getName() ) != -1 ) {
+            radius = service.getExtensions().getFeatureInfoRadius( layers.getFirst().getName() );
         }
         radius = map.get( "RADIUS" ) == null ? radius : parseInt( map.get( "RADIUS" ) );
         calcClickBox( radius );

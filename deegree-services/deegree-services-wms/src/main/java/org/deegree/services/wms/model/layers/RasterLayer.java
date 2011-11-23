@@ -257,7 +257,7 @@ public class RasterLayer extends Layer {
             Interpolation fromRequest = null;
             Layer parent = this;
             while ( fromRequest == null ) {
-                fromRequest = gm.getRenderingOptions().getInterpolations().get( parent.getName() );
+                fromRequest = gm.getRenderingOptions().getInterpolation( parent.getName() );
                 parent = getParent();
             }
             switch ( fromRequest ) {
