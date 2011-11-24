@@ -141,7 +141,6 @@ public class MappedAppSchema extends GenericAppSchema {
         this.bboxMapping = bboxMapping;
         this.blobMapping = blobMapping;
         this.keyDependencies = new TableDependencies( ftMappings, deleteCascadingByDB );
-        LOG.info( "Key dependencies: " + keyDependencies );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Key dependencies: " + keyDependencies );
         }

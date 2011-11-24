@@ -108,7 +108,7 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
             SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId().getValue() );
             return new SQLFeatureStore( cfg, configURL, dialect );
         } catch ( JAXBException e ) {
-            LOG.trace( "Stack trace: ", e );
+            LOG.info( "Stack trace: ", e );
             throw new ResourceInitException( "Error when parsing configuration: " + e.getLocalizedMessage(), e );
         }
     }
