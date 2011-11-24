@@ -36,7 +36,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-tile</artifactId>
+      <artifactId>deegree-tilestore-commons</artifactId>
       <version>3.2-pre2-SNAPSHOT</version>
     </dependency>
     <dependency>
