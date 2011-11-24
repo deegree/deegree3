@@ -84,23 +84,28 @@ public class MapOptionsMaps {
     }
 
     public int getMaxFeatures( String layer ) {
-        return options.get( layer ).getMaxFeatures();
+        MapOptions opts = options.get( layer );
+        return opts == null ? -1 : opts.getMaxFeatures();
     }
 
     public int getFeatureInfoRadius( String layer ) {
-        return options.get( layer ).getFeatureInfoRadius();
+        MapOptions opts = options.get( layer );
+        return opts == null ? -1 : opts.getFeatureInfoRadius();
     }
 
     public Quality getQuality( String layer ) {
-        return options.get( layer ).getQuality();
+        MapOptions opts = options.get( layer );
+        return opts == null ? null : opts.getQuality();
     }
 
     public Antialias getAntialias( String layer ) {
-        return options.get( layer ).getAntialias();
+        MapOptions opts = options.get( layer );
+        return opts == null ? null : opts.getAntialias();
     }
 
     public Interpolation getInterpolation( String layer ) {
-        return options.get( layer ).getInterpolation();
+        MapOptions opts = options.get( layer );
+        return opts == null ? null : opts.getInterpolation();
     }
 
     public void setMaxFeatures( String layer, int maxFeatures ) {
