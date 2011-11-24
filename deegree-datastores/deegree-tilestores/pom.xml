@@ -26,6 +26,7 @@
 
   <modules>
     <module>deegree-tilestore-commons</module>
+    <module>deegree-tilestore-geotiff</module>
   </modules>
 
 </project>
