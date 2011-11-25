@@ -40,7 +40,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence;
 
+import java.util.List;
+
 import org.deegree.commons.config.Resource;
+import org.deegree.geometry.Envelope;
+import org.deegree.tile.Tile;
 
 /**
  * <code>TileStore</code>
@@ -52,5 +56,7 @@ import org.deegree.commons.config.Resource;
  */
 
 public interface TileStore extends Resource {
+
+    List<Tile> getTiles( Envelope envelope, double resolution );
 
 }
