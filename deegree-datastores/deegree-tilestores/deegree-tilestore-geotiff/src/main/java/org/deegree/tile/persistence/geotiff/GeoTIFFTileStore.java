@@ -41,6 +41,7 @@
 package org.deegree.tile.persistence.geotiff;
 
 import static java.util.Collections.singletonList;
+import static javax.imageio.ImageIO.createImageInputStream;
 import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
@@ -48,7 +49,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
@@ -63,7 +63,9 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
+import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
 import org.slf4j.Logger;
 
@@ -101,7 +103,7 @@ public class GeoTIFFTileStore implements TileStore {
                 crs = CRSManager.getCRSRef( this.crs );
             }
 
-            ImageInputStream iis = ImageIO.createImageInputStream( file );
+            ImageInputStream iis = createImageInputStream( file );
             reader.setInput( iis );
             int num = reader.getNumImages( true );
             IIOMetadata md = reader.getImageMetadata( 0 );
@@ -117,7 +119,7 @@ public class GeoTIFFTileStore implements TileStore {
 
             SpatialMetadata smd = new SpatialMetadata( envelope, singletonList( envelope.getCoordinateSystem() ) );
 
-            List<GeoTIFFTileMatrix> matrices = new ArrayList<GeoTIFFTileMatrix>( num );
+            List<TileMatrix> matrices = new ArrayList<TileMatrix>( num );
 
             for ( int i = 0; i < num; ++i ) {
                 int tw = reader.getTileWidth( i );
@@ -134,6 +136,10 @@ public class GeoTIFFTileStore implements TileStore {
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );
             }
+            TileMatrixSet set = new TileMatrixSet( matrices );
+            // System.out.println(set.getTiles( envelope, 0.5 ));
+            // System.out.println(set.getTiles( envelope, 3 ));
+            // System.out.println(set.getTiles( envelope, 32 ));
 
             iis.close();
 
