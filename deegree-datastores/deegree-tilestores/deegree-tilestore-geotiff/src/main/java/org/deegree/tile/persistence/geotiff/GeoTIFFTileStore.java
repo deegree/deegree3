@@ -88,6 +88,8 @@ public class GeoTIFFTileStore implements TileStore {
 
     private final String crs;
 
+    private TileMatrixSet tileMatrixSet;
+
     public GeoTIFFTileStore( TIFFImageReader reader, File file, String crs ) {
         this.reader = reader;
         this.file = file;
@@ -107,7 +109,7 @@ public class GeoTIFFTileStore implements TileStore {
             reader.setInput( iis );
             int num = reader.getNumImages( true );
             IIOMetadata md = reader.getImageMetadata( 0 );
-            Envelope envelope = getCRS( md, reader.getWidth( 0 ), reader.getHeight( 0 ), crs );
+            Envelope envelope = getEnvelope( md, reader.getWidth( 0 ), reader.getHeight( 0 ), crs );
 
             if ( envelope == null ) {
                 throw new ResourceInitException( "No envelope information could be read from GeoTIFF, "
@@ -136,10 +138,7 @@ public class GeoTIFFTileStore implements TileStore {
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );
             }
-            TileMatrixSet set = new TileMatrixSet( matrices );
-            // System.out.println(set.getTiles( envelope, 0.5 ));
-            // System.out.println(set.getTiles( envelope, 3 ));
-            // System.out.println(set.getTiles( envelope, 32 ));
+            tileMatrixSet = new TileMatrixSet( matrices );
 
             iis.close();
 
@@ -155,11 +154,10 @@ public class GeoTIFFTileStore implements TileStore {
 
     @Override
     public List<Tile> getTiles( Envelope envelope, double resolution ) {
-
-        return null;
+        return tileMatrixSet.getTiles( envelope, resolution );
     }
 
-    private static Envelope getCRS( IIOMetadata metaData, int width, int height, ICRS crs )
+    private static Envelope getEnvelope( IIOMetadata metaData, int width, int height, ICRS crs )
                             throws ResourceInitException {
         GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
         try {
