@@ -117,7 +117,9 @@ public class GeoTIFFTileStore implements TileStore {
                 int height = reader.getHeight( i );
                 int numx = (int) Math.ceil( (double) width / (double) tw );
                 int numy = (int) Math.ceil( (double) height / (double) th );
-                LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels.", new Object[] { i, numx, numy, tw, th } );
+                double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
+                LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
+                                                                                                       tw, th, res } );
             }
 
             iis.close();
