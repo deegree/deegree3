@@ -149,7 +149,7 @@ public class GeoTIFFTileStore implements TileStore {
 
     @Override
     public void destroy() {
-        // nothing to do
+        reader.dispose();
     }
 
     @Override
