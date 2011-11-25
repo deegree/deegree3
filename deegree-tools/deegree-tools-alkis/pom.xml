@@ -2,15 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-alkis-fixer</artifactId>
+  <artifactId>deegree-tools-alkis</artifactId>
   <packaging>jar</packaging>
-  <name>deegree-alkis-fixer</name>
+  <name>deegree-tools-alkis</name>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-workspace-alkis</artifactId>
+    <artifactId>deegree-tools</artifactId>
     <version>3.2-pre2-SNAPSHOT</version>
   </parent>
+
+  <properties>
+    <toolboxname>d3alkis</toolboxname>
+  </properties>
 
   <repositories>
     <repository>
