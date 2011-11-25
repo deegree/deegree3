@@ -60,11 +60,21 @@ public class TileMatrixMetadata {
 
     private Pair<Integer, Integer> tileSize;
 
-    public TileMatrixMetadata( SpatialMetadata spatialMetadata, int width, int height, Pair<Integer, Integer> tileSize ) {
+    private double resolution;
+
+    private int numTilesX;
+
+    private int numTilesY;
+
+    public TileMatrixMetadata( SpatialMetadata spatialMetadata, int width, int height, Pair<Integer, Integer> tileSize,
+                               double resolution, int numTilesX, int numTilesY ) {
         this.width = width;
         this.height = height;
         this.spatialMetadata = spatialMetadata;
         this.tileSize = tileSize;
+        this.resolution = resolution;
+        this.numTilesX = numTilesX;
+        this.numTilesY = numTilesY;
     }
 
     public void setSpatialMetadata( SpatialMetadata spatialMetadata ) {
@@ -97,6 +107,30 @@ public class TileMatrixMetadata {
 
     public Pair<Integer, Integer> getTileSize() {
         return tileSize;
+    }
+
+    public void setResolution( double resolution ) {
+        this.resolution = resolution;
+    }
+
+    public double getResolution() {
+        return resolution;
+    }
+
+    public void setNumTilesX( int numTilesX ) {
+        this.numTilesX = numTilesX;
+    }
+
+    public int getNumTilesX() {
+        return numTilesX;
+    }
+
+    public void setNumTilesY( int numTilesY ) {
+        this.numTilesY = numTilesY;
+    }
+
+    public int getNumTilesY() {
+        return numTilesY;
     }
 
 }

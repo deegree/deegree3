@@ -40,25 +40,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
+import static java.util.Collections.singletonList;
 import static org.slf4j.LoggerFactory.getLogger;
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileMatrixMetadata;
 import org.deegree.tile.persistence.TileStore;
 import org.slf4j.Logger;
 
@@ -75,13 +79,13 @@ public class GeoTIFFTileStore implements TileStore {
 
     private static final Logger LOG = getLogger( GeoTIFFTileStore.class );
 
-    private final ImageReader reader;
+    private final TIFFImageReader reader;
 
     private final File file;
 
     private final String crs;
 
-    public GeoTIFFTileStore( ImageReader reader, File file, String crs ) {
+    public GeoTIFFTileStore( TIFFImageReader reader, File file, String crs ) {
         this.reader = reader;
         this.file = file;
         this.crs = crs;
@@ -110,6 +114,8 @@ public class GeoTIFFTileStore implements TileStore {
 
             LOG.debug( "Envelope from GeoTIFF was {}.", envelope );
 
+            SpatialMetadata smd = new SpatialMetadata( envelope, singletonList( envelope.getCoordinateSystem() ) );
+
             for ( int i = 0; i < num; ++i ) {
                 int tw = reader.getTileWidth( i );
                 int th = reader.getTileHeight( i );
@@ -118,6 +124,9 @@ public class GeoTIFFTileStore implements TileStore {
                 int numx = (int) Math.ceil( (double) width / (double) tw );
                 int numy = (int) Math.ceil( (double) height / (double) th );
                 double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
+                TileMatrixMetadata tmd = new TileMatrixMetadata( smd, width, height,
+                                                                 new Pair<Integer, Integer>( tw, th ), res, numx, numy );
+                GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd );
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );
             }
