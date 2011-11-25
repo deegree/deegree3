@@ -45,6 +45,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -116,6 +117,8 @@ public class GeoTIFFTileStore implements TileStore {
 
             SpatialMetadata smd = new SpatialMetadata( envelope, singletonList( envelope.getCoordinateSystem() ) );
 
+            List<GeoTIFFTileMatrix> matrices = new ArrayList<GeoTIFFTileMatrix>( num );
+
             for ( int i = 0; i < num; ++i ) {
                 int tw = reader.getTileWidth( i );
                 int th = reader.getTileHeight( i );
@@ -126,7 +129,8 @@ public class GeoTIFFTileStore implements TileStore {
                 double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
                 TileMatrixMetadata tmd = new TileMatrixMetadata( smd, width, height,
                                                                  new Pair<Integer, Integer>( tw, th ), res, numx, numy );
-                GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd );
+                GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, reader, i );
+                matrices.add( matrix );
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );
             }

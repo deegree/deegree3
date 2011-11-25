@@ -40,7 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
-import org.deegree.tile.Tile;
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
+
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
 
@@ -57,8 +58,14 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     private final TileMatrixMetadata metadata;
 
-    public GeoTIFFTileMatrix( TileMatrixMetadata metadata ) {
+    private final TIFFImageReader reader;
+
+    private final int imageIndex;
+
+    public GeoTIFFTileMatrix( TileMatrixMetadata metadata, TIFFImageReader reader, int imageIndex ) {
         this.metadata = metadata;
+        this.reader = reader;
+        this.imageIndex = imageIndex;
     }
 
     @Override
@@ -67,8 +74,8 @@ public class GeoTIFFTileMatrix implements TileMatrix {
     }
 
     @Override
-    public Tile getTile( int x, int y ) {
-        return null;
+    public GeoTIFFTile getTile( int x, int y ) {
+        return new GeoTIFFTile( reader, imageIndex, x, y );
     }
 
 }
