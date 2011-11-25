@@ -40,13 +40,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
+import static javax.imageio.ImageIO.getImageReadersBySuffix;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
+
+import java.io.File;
 import java.net.URL;
+import java.util.Iterator;
+
+import javax.imageio.ImageReader;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
+import org.deegree.tile.persistence.geotiff.jaxb.Pyramid;
 
 /**
  * <code>GeoTIFFTileStoreProvider</code>
@@ -71,9 +80,28 @@ public class GeoTIFFTileStoreProvider implements TileStoreProvider {
     @Override
     public TileStore create( URL configUrl )
                             throws ResourceInitException {
-        return null;
+        try {
+            Pyramid p = (Pyramid) unmarshall( "org.deegree.tile.persistence.geotiff.jaxb", SCHEMA, configUrl, workspace );
+            Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
+            ImageReader reader = null;
+            while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
+                reader = readers.next();
+            }
+
+            if ( reader == null ) {
+                throw new ResourceInitException( "No TIFF reader was found for imageio." );
+            }
+
+            String file = p.getPyramidFile();
+            File resolved = new File( configUrl.toURI().resolve( file ) );
+
+            return new GeoTIFFTileStore( reader, resolved, p.getCRS() );
+        } catch ( Throwable e ) {
+            throw new ResourceInitException( "Unable to create tile store.", e );
+        }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};
