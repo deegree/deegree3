@@ -37,11 +37,37 @@ package org.deegree.tools.alkis;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import javax.xml.namespace.QName;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.feature.Feature;
+import org.deegree.feature.property.GenericProperty;
 import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.FeatureReference;
+import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
+import org.deegree.services.wfs.format.gml.XlinkedObjectsHandler;
 import org.slf4j.Logger;
+
+import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 
 /**
  * 
@@ -55,51 +81,97 @@ public class BackReferenceFixer {
 
     private static final Logger LOG = getLogger( BackReferenceFixer.class );
 
-    private static String ns601 = "http://www.adv-online.de/namespaces/adv/gid/6.0";
+    private static final String ns601 = "http://www.adv-online.de/namespaces/adv/gid/6.0";
 
-    private static QName[] interestingProps601 = new QName[] { new QName( ns601, "AP_Darstellung" ),
-                                                              new QName( ns601, "AP_LTO" ),
-                                                              new QName( ns601, "AP_PTO" ),
-                                                              new QName( ns601, "AP_FTO" ),
-                                                              new QName( ns601, "AP_LTO" ), new QName( ns601, "AP_PPO" ) };
+    private static Options initOptions() {
+        Options opts = new Options();
 
-    /**
-     * Update index. Must be called after each transaction.
-     */
-    // public static void update() {
-    // if ( featureStore == null ) {
-    // return;
-    // }
-    //
-    // featuresWithPO.clear();
-    //
-    // try {
-    // for ( QName q : is511 ? interestingProps511 : interestingProps601 ) {
-    // FeatureResultSet col = featureStore.query( new Query( q, null, null, -1, -1, -1 ) );
-    // QName name = new QName( is511 ? ns511 : ns601, "dientZurDarstellungVon" );
-    // for ( Feature f : col ) {
-    // for ( Property p : f.getProperties( name ) ) {
-    // if ( p != null && p.getType() instanceof FeaturePropertyType ) {
-    // FeatureReference ref = (FeatureReference) p.getValue();
-    // if ( ref.isResolved() ) {
-    // featuresWithPO.add( ref.getReferencedObject() );
-    // }
-    // }
-    // }
-    // }
-    // }
-    // } catch ( FeatureStoreException e ) {
-    // LOG.warn( "Could not update the HasPO index: {}", e.getLocalizedMessage() );
-    // LOG.trace( "Stack trace:", e );
-    // } catch ( FilterEvaluationException e ) {
-    // LOG.warn( "Could not update the HasPO index: {}", e.getLocalizedMessage() );
-    // LOG.trace( "Stack trace:", e );
-    // }
-    // }
+        Option opt = new Option( "i", "input", true, "input file" );
+        opt.setRequired( true );
+        opts.addOption( opt );
+
+        opt = new Option( "o", "output", true, "output file" );
+        opt.setRequired( true );
+        opts.addOption( opt );
+
+        CommandUtils.addDefaultOptions( opts );
+
+        return opts;
+    }
 
     public static void main( String[] args ) {
-        GMLInputFactory fac = new GMLInputFactory();
-        // fac.createGMLStreamReader(GMLVersion.GML_32, null );
+        Options opts = initOptions();
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            CommandLine line = new PosixParser().parse( opts, args );
+            String input = line.getOptionValue( 'i' );
+            String output = line.getOptionValue( 'o' );
+            fis = new FileInputStream( input );
+            fos = new FileOutputStream( output );
+            XMLInputFactory xifac = XMLInputFactory.newInstance();
+            XMLOutputFactory xofac = XMLOutputFactory.newInstance();
+            XMLStreamReader xreader = xifac.createXMLStreamReader( input, fis );
+            IndentingXMLStreamWriter xwriter = new IndentingXMLStreamWriter( xofac.createXMLStreamWriter( fos ) );
+            GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, xreader );
+            GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, xwriter );
+            XlinkedObjectsHandler handler = new XlinkedObjectsHandler( xwriter, true, null );
+            writer.setAdditionalObjectHandler( handler );
+
+            QName prop = new QName( ns601, "dientZurDarstellungVon" );
+
+            Map<String, String> refs = new HashMap<String, String>();
+            Map<String, String> bindings = null;
+
+            for ( Feature f : reader.readFeatureCollectionStream() ) {
+                if ( bindings == null ) {
+                    bindings = f.getType().getSchema().getNamespaceBindings();
+                }
+                if ( f.getProperty( prop ) != null ) {
+                    GenericProperty p = (GenericProperty) f.getProperty( prop );
+                    FeatureReference ref = (FeatureReference) p.getValue();
+                    refs.put( ref.getId(), f.getId() );
+                }
+            }
+
+            reader.close();
+            fis.close();
+            writer.setNamespaceBindings( bindings );
+
+            fis = new FileInputStream( input );
+            xreader = xifac.createXMLStreamReader( input, fis );
+            reader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, xreader );
+
+            if ( bindings != null ) {
+                for ( Map.Entry<String, String> e : bindings.entrySet() ) {
+                    if ( !e.getKey().isEmpty() ) {
+                        xwriter.setPrefix( e.getValue(), e.getKey() );
+                    }
+                }
+            }
+            xwriter.writeStartDocument();
+            xwriter.setPrefix( "gml", "http://www.opengis.net/gml/3.2" );
+            xwriter.writeStartElement( "http://www.opengis.net/gml/3.2", "FeatureCollection" );
+            xwriter.writeNamespace( "gml", "http://www.opengis.net/gml/3.2" );
+
+            for ( Feature f : reader.readFeatureCollectionStream() ) {
+                if ( refs.containsKey( f.getId() ) ) {
+
+                }
+                xwriter.writeStartElement( "http://www.opengis.net/gml/3.2", "featureMember" );
+                writer.write( f );
+                xwriter.writeEndElement();
+            }
+
+            xwriter.writeEndElement();
+            xwriter.close();
+        } catch ( Throwable e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly( fis );
+            IOUtils.closeQuietly( fos );
+        }
     }
 
 }
