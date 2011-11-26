@@ -46,7 +46,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -55,19 +54,18 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
-import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
-import org.deegree.services.wfs.format.gml.XlinkedObjectsHandler;
+import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.slf4j.Logger;
-
-import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 
 /**
  * 
@@ -82,6 +80,9 @@ public class BackReferenceFixer {
     private static final Logger LOG = getLogger( BackReferenceFixer.class );
 
     private static final String ns601 = "http://www.adv-online.de/namespaces/adv/gid/6.0";
+
+    // ACHTUNG: Anpassen (besser als Parameter übergeben)
+    private static final String APP_SCHEMA_FILE = "/home/markus/.deegree/deegree-workspace-alkis/appschemas/NAS_6.0.1/schema/NAS-Operationen.xsd";
 
     private static Options initOptions() {
         Options opts = new Options();
@@ -114,6 +115,10 @@ public class BackReferenceFixer {
             XMLStreamReader xreader = xifac.createXMLStreamReader( input, fis );
             IndentingXMLStreamWriter xwriter = new IndentingXMLStreamWriter( xofac.createXMLStreamWriter( fos ) );
             GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, xreader );
+
+            AppSchema appSchema = new GMLAppSchemaReader( null, null, APP_SCHEMA_FILE ).extractAppSchema();
+            reader.setApplicationSchema( appSchema );
+
             GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, xwriter );
             XlinkedObjectsHandler handler = new XlinkedObjectsHandler( xwriter, true, null );
             writer.setAdditionalObjectHandler( handler );
@@ -141,6 +146,7 @@ public class BackReferenceFixer {
             fis = new FileInputStream( input );
             xreader = xifac.createXMLStreamReader( input, fis );
             reader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, xreader );
+            reader.setApplicationSchema( appSchema );
 
             if ( bindings != null ) {
                 for ( Map.Entry<String, String> e : bindings.entrySet() ) {
@@ -173,5 +179,4 @@ public class BackReferenceFixer {
             IOUtils.closeQuietly( fos );
         }
     }
-
 }
