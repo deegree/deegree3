@@ -81,9 +81,6 @@ public class BackReferenceFixer {
 
     private static final String ns601 = "http://www.adv-online.de/namespaces/adv/gid/6.0";
 
-    // ACHTUNG: Anpassen (besser als Parameter übergeben)
-    private static final String APP_SCHEMA_FILE = "/home/markus/.deegree/deegree-workspace-alkis/appschemas/NAS_6.0.1/schema/NAS-Operationen.xsd";
-
     private static Options initOptions() {
         Options opts = new Options();
 
@@ -92,6 +89,10 @@ public class BackReferenceFixer {
         opts.addOption( opt );
 
         opt = new Option( "o", "output", true, "output file" );
+        opt.setRequired( true );
+        opts.addOption( opt );
+
+        opt = new Option( "s", "schema", true, "schema file" );
         opt.setRequired( true );
         opts.addOption( opt );
 
@@ -108,6 +109,7 @@ public class BackReferenceFixer {
             CommandLine line = new PosixParser().parse( opts, args );
             String input = line.getOptionValue( 'i' );
             String output = line.getOptionValue( 'o' );
+            String schema = line.getOptionValue( 's' );
             fis = new FileInputStream( input );
             fos = new FileOutputStream( output );
             XMLInputFactory xifac = XMLInputFactory.newInstance();
@@ -116,7 +118,7 @@ public class BackReferenceFixer {
             IndentingXMLStreamWriter xwriter = new IndentingXMLStreamWriter( xofac.createXMLStreamWriter( fos ) );
             GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32, xreader );
 
-            AppSchema appSchema = new GMLAppSchemaReader( null, null, APP_SCHEMA_FILE ).extractAppSchema();
+            AppSchema appSchema = new GMLAppSchemaReader( null, null, schema ).extractAppSchema();
             reader.setApplicationSchema( appSchema );
 
             GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, xwriter );
