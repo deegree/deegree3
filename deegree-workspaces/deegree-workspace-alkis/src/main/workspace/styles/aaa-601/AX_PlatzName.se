@@ -11,10 +11,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo>      
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>5130</ogc:Literal>
@@ -24,7 +45,7 @@
     <TextSymbolizer uom="meter">
       <Label>
       <ogc:Literal>Fußgängerzone</ogc:Literal>
-      </Label>    
+      </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-size">3</SvgParameter>
@@ -41,10 +62,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>5340</ogc:Literal>
@@ -54,7 +96,7 @@
     <TextSymbolizer uom="meter">
       <Label>
       <ogc:Literal>Marktplatz</ogc:Literal>
-      </Label>    
+      </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-size">4</SvgParameter>
@@ -71,10 +113,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>5350</ogc:Literal>
@@ -84,7 +147,7 @@
     <TextSymbolizer uom="meter">
       <Label>
       <ogc:Literal>Festplatz</ogc:Literal>
-      </Label>    
+      </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-size">4</SvgParameter>
@@ -101,10 +164,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:Not>
         <ogc:PropertyIsNull>
           <ogc:PropertyName>adv:zweitname</ogc:PropertyName>
@@ -115,7 +199,7 @@
     <TextSymbolizer uom="meter">
       <Label>
       <ogc:PropertyName>adv:zweitname</ogc:PropertyName>
-      </Label>    
+      </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
@@ -126,4 +210,4 @@
       </Fill>
     </TextSymbolizer>
   </Rule>
-</FeatureTypeStyle>                    
+</FeatureTypeStyle>

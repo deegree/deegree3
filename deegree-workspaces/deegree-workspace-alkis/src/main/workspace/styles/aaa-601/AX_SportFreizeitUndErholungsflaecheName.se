@@ -11,10 +11,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4100</ogc:Literal>
@@ -41,10 +62,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4200</ogc:Literal>
@@ -71,10 +113,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4310</ogc:Literal>
@@ -101,10 +164,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4110</ogc:Literal>
@@ -131,10 +215,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4230</ogc:Literal>
@@ -161,10 +266,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4240</ogc:Literal>
@@ -191,10 +317,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4250</ogc:Literal>
@@ -221,10 +368,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4260</ogc:Literal>
@@ -251,10 +419,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4270</ogc:Literal>
@@ -281,10 +470,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4280</ogc:Literal>
@@ -311,10 +521,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-       <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4290</ogc:Literal>
@@ -341,10 +572,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:Or>
         <ogc:PropertyIsEqualTo>
           <ogc:PropertyName>adv:funktion</ogc:PropertyName>
@@ -377,10 +629,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:Or>
         <ogc:PropertyIsEqualTo>
           <ogc:PropertyName>adv:funktion</ogc:PropertyName>
@@ -413,10 +686,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>adv:funktion</ogc:PropertyName>
         <ogc:Literal>4450</ogc:Literal>
@@ -443,10 +737,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-        <ogc:Function name="HasPO" />
-        <ogc:Literal>false</ogc:Literal>
-      </ogc:PropertyIsEqualTo> 
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:Not>
         <ogc:PropertyIsNull>
           <ogc:PropertyName>adv:name</ogc:PropertyName>
@@ -457,7 +772,7 @@
     <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:name</ogc:PropertyName>
-      </Label>    
+      </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
         <SvgParameter name="font-weight">bold</SvgParameter>
@@ -468,4 +783,4 @@
       </Fill>
     </TextSymbolizer>
   </Rule>
-</FeatureTypeStyle>                    
+</FeatureTypeStyle>

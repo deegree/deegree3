@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
   <Name>adv:AX_Bergbaubetrieb</Name>
   <FeatureTypeName>adv:AX_Bergbaubetrieb</FeatureTypeName>
-  
+
   <Rule>
     <Name>BergbaubetriebName</Name>
     <Description>
@@ -12,10 +12,31 @@
     </Description>
     <ogc:Filter>
       <ogc:And>
-      <ogc:PropertyIsEqualTo>
-            <ogc:Function name="HasPO" />
-            <ogc:Literal>false</ogc:Literal>
-        </ogc:PropertyIsEqualTo>
+        <ogc:Not>
+          <ogc:Or>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_Darstellung</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PTO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_FPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_KPO_3D</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_LPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+            <ogc:PropertyIsNull>
+              <ogc:PropertyName>adv:inversZu_dientZurDarstellungVon_AP_PPO</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          </ogc:Or>
+        </ogc:Not>
       <ogc:Not>
         <ogc:PropertyIsNull>
           <ogc:PropertyName>adv:name</ogc:PropertyName>
@@ -37,4 +58,4 @@
       </Fill>
     </TextSymbolizer>
   </Rule>
-</FeatureTypeStyle>                    
+</FeatureTypeStyle>
