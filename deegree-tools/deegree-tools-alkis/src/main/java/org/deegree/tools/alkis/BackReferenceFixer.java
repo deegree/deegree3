@@ -39,7 +39,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -57,7 +62,10 @@ import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.AppSchema;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
@@ -122,12 +130,13 @@ public class BackReferenceFixer {
             reader.setApplicationSchema( appSchema );
 
             GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, xwriter );
-            XlinkedObjectsHandler handler = new XlinkedObjectsHandler( xwriter, true, null );
+            XlinkedObjectsHandler handler = new XlinkedObjectsHandler( true, null );
             writer.setAdditionalObjectHandler( handler );
 
             QName prop = new QName( ns601, "dientZurDarstellungVon" );
 
-            Map<String, String> refs = new HashMap<String, String>();
+            Map<String, List<String>> refs = new HashMap<String, List<String>>();
+            Map<String, List<String>> types = new HashMap<String, List<String>>();
             Map<String, String> bindings = null;
 
             for ( Feature f : reader.readFeatureCollectionStream() ) {
@@ -135,11 +144,32 @@ public class BackReferenceFixer {
                     bindings = f.getType().getSchema().getNamespaceBindings();
                 }
                 if ( f.getProperty( prop ) != null ) {
-                    GenericProperty p = (GenericProperty) f.getProperty( prop );
-                    FeatureReference ref = (FeatureReference) p.getValue();
-                    refs.put( ref.getId(), f.getId() );
+                    for ( Property p : f.getProperties( prop ) ) {
+                        FeatureReference ref = (FeatureReference) p.getValue();
+                        List<String> list = refs.get( ref.getId() );
+                        if ( list == null ) {
+                            list = new ArrayList<String>();
+                            refs.put( ref.getId(), list );
+                        }
+                        list.add( f.getId() );
+                        list = types.get( ref.getId() );
+                        if ( list == null ) {
+                            list = new ArrayList<String>();
+                            types.put( ref.getId(), list );
+                        }
+                        list.add( "inversZu_dientZurDarstellungVon_" + f.getType().getName().getLocalPart() );
+                    }
                 }
             }
+
+            QName[] inversePropNames = new QName[] {
+                                                    new QName( ns601, "inversZu_dientZurDarstellungVon_AP_Darstellung" ),
+                                                    new QName( ns601, "inversZu_dientZurDarstellungVon_AP_LTO" ),
+                                                    new QName( ns601, "inversZu_dientZurDarstellungVon_AP_PTO" ),
+                                                    new QName( ns601, "inversZu_dientZurDarstellungVon_AP_FPO" ),
+                                                    new QName( ns601, "inversZu_dientZurDarstellungVon_AP_KPO_3D" ),
+                                                    new QName( ns601, "inversZu_dientZurDarstellungVon_AP_LPO" ),
+                                                    new QName( ns601, "inversZu_dientZurDarstellungVon_AP_PPO" ) };
 
             reader.close();
             fis.close();
@@ -162,8 +192,38 @@ public class BackReferenceFixer {
             xwriter.writeStartElement( "http://www.opengis.net/gml/3.2", "FeatureCollection" );
             xwriter.writeNamespace( "gml", "http://www.opengis.net/gml/3.2" );
 
+            GMLDocumentIdContext ctx = new GMLDocumentIdContext( GMLVersion.GML_32 );
+
             for ( Feature f : reader.readFeatureCollectionStream() ) {
                 if ( refs.containsKey( f.getId() ) ) {
+                    List<Property> props = new ArrayList<Property>( Arrays.asList( f.getProperties() ) );
+                    ListIterator<Property> iter = props.listIterator();
+                    String name = iter.next().getName().getLocalPart();
+                    while ( name.equals( "lebenszeitintervall" ) || name.equals( "modellart" )
+                            || name.equals( "anlass" ) || name.equals( "zeigtAufExternes" )
+                            || name.equals( "istTeilVon" ) || name.equals( "identifier" ) ) {
+                        if ( iter.hasNext() ) {
+                            name = iter.next().getName().getLocalPart();
+                        } else {
+                            break;
+                        }
+                    }
+                    if ( iter.hasPrevious() ) {
+                        iter.previous();
+                    }
+                    for ( QName propName : inversePropNames ) {
+                        Iterator<String> idIter = refs.get( f.getId() ).iterator();
+                        Iterator<String> typeIter = types.get( f.getId() ).iterator();
+                        while ( idIter.hasNext() ) {
+                            String id = idIter.next();
+                            if ( typeIter.next().equals( propName.getLocalPart() ) ) {
+                                PropertyType pt = f.getType().getPropertyDeclaration( propName );
+                                Property p = new GenericProperty( pt, new FeatureReference( ctx, "#" + id, null ) );
+                                iter.add( p );
+                            }
+                        }
+                    }
+                    f.setProperties( props );
 
                 }
                 xwriter.writeStartElement( "http://www.opengis.net/gml/3.2", "featureMember" );

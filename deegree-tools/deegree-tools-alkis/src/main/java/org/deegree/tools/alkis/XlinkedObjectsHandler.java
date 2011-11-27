@@ -38,9 +38,6 @@ package org.deegree.tools.alkis;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.gml.feature.GMLForwardReferenceHandler;
@@ -62,14 +59,11 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     private LinkedHashMap<String, GMLReference<?>> objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
 
-    private final XMLStreamWriter xmlStream;
-
     private final boolean localReferencesPossible;
 
     private final String remoteXlinkTemplate;
 
-    XlinkedObjectsHandler( XMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate ) {
-        this.xmlStream = xmlStream;
+    XlinkedObjectsHandler( boolean localReferencesPossible, String xlinkTemplate ) {
         this.localReferencesPossible = localReferencesPossible;
         this.remoteXlinkTemplate = xlinkTemplate;
     }
@@ -86,11 +80,11 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
         if ( localReferencesPossible ) {
             LOG.debug( "Exporting potential forward reference to object {} which may or may not be exported later.",
                        ref.getId() );
-//            try {
-//                xmlStream.activateBuffering();
-//            } catch ( XMLStreamException e ) {
-//                throw new RuntimeException( e.getMessage(), e );
-//            }
+            // try {
+            // xmlStream.activateBuffering();
+            // } catch ( XMLStreamException e ) {
+            // throw new RuntimeException( e.getMessage(), e );
+            // }
             return "{" + ref.getId() + "}";
         }
         LOG.debug( "Exporting reference to object {} as remote reference.", ref.getId() );
