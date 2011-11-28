@@ -441,7 +441,7 @@ public class FeatureLayer extends Layer {
                 }
             }
 
-            final Operator operator = dimFilter == null ? null : ( (OperatorFilter) dimFilter.first ).getOperator();
+            final Operator operator = filter == null ? null : filter.getOperator();
 
             QName featureType = style == null ? null : style.getFeatureType();
 
