@@ -79,7 +79,6 @@ import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
-import org.deegree.feature.persistence.sql.id.KeyPropagation;
 import org.deegree.feature.persistence.sql.insert.FeatureRow;
 import org.deegree.feature.persistence.sql.insert.InsertRowManager;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
@@ -310,47 +309,91 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return deleted;
     }
 
-    private void deleteJoinedRows( IdAnalysis analysis )
+    /**
+     * Deletes the joined rows for the specified feature id.
+     * <p>
+     * Deletes all joined rows and transitive join rows, but stops at joins to subfeature tables.
+     * </p>
+     * 
+     * @param fid
+     *            feature id, must not be <code>null</code>
+     * @throws FeatureStoreException
+     */
+    private void deleteJoinedRows( IdAnalysis fid )
                             throws FeatureStoreException {
 
         Map<SQLIdentifier, Object> keyColsToValues = new HashMap<SQLIdentifier, Object>();
 
-        FeatureTypeMapping ftMapping = schema.getFtMapping( analysis.getFeatureType().getName() );
-        FIDMapping fidMapping = ftMapping.getFidMapping();
+        FeatureTypeMapping ftMapping = schema.getFtMapping( fid.getFeatureType().getName() );
 
         // add values for feature id columns
         int i = 0;
         for ( Pair<SQLIdentifier, BaseType> fidColumns : ftMapping.getFidMapping().getColumns() ) {
-            keyColsToValues.put( fidColumns.first, analysis.getIdKernels()[i] );
+            PrimitiveType pt = new PrimitiveType( fidColumns.second );
+            PrimitiveValue value = new PrimitiveValue( fid.getIdKernels()[i], pt );
+            Object sqlValue = SQLValueMangler.internalToSQL( value );
+            keyColsToValues.put( fidColumns.first, sqlValue );
+            i++;
         }
 
-        // determine all key columns
-        Set<SQLIdentifier> keyCols = getKeys( ftMapping.getFtTable() );
-        if ( !keyCols.isEmpty() ) {
+        // traverse mapping particles
+        for ( Mapping particle : ftMapping.getMappings() ) {
+            deleteJoinedRows( particle, keyColsToValues );
+        }
+    }
+
+    private void deleteJoinedRows( Mapping particle, Map<SQLIdentifier, Object> keyColToValue )
+                            throws FeatureStoreException {
+
+        // TODO: After FeatureTypeJoin is introduced, rework this case (may allow joins)
+        if ( particle instanceof FeatureMapping ) {
+            return;
+        }
+
+        // determine and delete joined rows
+        if ( particle.getJoinedTable() != null && !particle.getJoinedTable().isEmpty() ) {
+            TableJoin tableJoin = particle.getJoinedTable().get( 0 );
+
             PreparedStatement stmt = null;
-            ResultSet rs = null;
             try {
-                StringBuilder sql = new StringBuilder( "SELECT" );
+                StringBuilder sql = new StringBuilder( "SELECT " );
                 boolean first = true;
-                for ( SQLIdentifier keyCol : keyCols ) {
+                for ( SQLIdentifier selectColumn : tableJoin.getToColumns() ) {
                     if ( !first ) {
                         sql.append( ',' );
+                    } else {
+                        first = false;
                     }
-                    sql.append( ' ' );
-                    sql.append( keyCol.getName() );
-                    first = false;
+                    sql.append( "X2." );
+                    sql.append( selectColumn );
                 }
                 sql.append( " FROM " );
-                sql.append( ftMapping.getFtTable() );
+                sql.append( tableJoin.getFromTable() );
+                sql.append( " X1," );
+                sql.append( tableJoin.getToTable() );
+                sql.append( " X2" );
                 sql.append( " WHERE" );
 
                 first = true;
-                for ( Entry<SQLIdentifier, Object> keyColToValue : keyColsToValues.entrySet() ) {
+                int i = 0;
+                for ( SQLIdentifier fromColumn : tableJoin.getFromColumns() ) {
+                    SQLIdentifier toColumn = tableJoin.getToColumns().get( i++ );
                     if ( !first ) {
-                        sql.append( " AND" );
+                        sql.append( ',' );
+                    } else {
+                        first = false;
                     }
-                    sql.append( ' ' );
-                    sql.append( keyColToValue.getKey().getName() );
+                    sql.append( " X1." );
+                    sql.append( fromColumn );
+                    sql.append( "=" );
+                    sql.append( "X2." );
+                    sql.append( toColumn );
+                    first = false;
+                }
+
+                for ( Entry<SQLIdentifier, Object> joinKey : keyColToValue.entrySet() ) {
+                    sql.append( " AND X1." );
+                    sql.append( joinKey.getKey() );
                     sql.append( "=?" );
                     first = false;
                 }
@@ -358,123 +401,19 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 stmt = conn.prepareStatement( sql.toString() );
 
                 i = 1;
-                for ( Pair<SQLIdentifier, BaseType> keyColToValue : fidMapping.getColumns() ) {
-                    PrimitiveType pt = new PrimitiveType( keyColToValue.second );
-                    PrimitiveValue value = new PrimitiveValue( keyColsToValues.get( keyColToValue.first ), pt );
-                    Object sqlValue = SQLValueMangler.internalToSQL( value );
-                    stmt.setObject( i++, sqlValue );
+                for ( Entry<SQLIdentifier, Object> joinKey : keyColToValue.entrySet() ) {
+                    stmt.setObject( i++, joinKey.getValue() );
                 }
-                LOG.debug( "Executing: " + stmt );
-
-                rs = stmt.executeQuery();
-                if ( rs.next() ) {
-                    i = 1;
-                    for ( SQLIdentifier keyCol : keyCols ) {
-                        keyColsToValues.put( keyCol, rs.getObject( i++ ) );
-                    }
-                    for ( Mapping particle : ftMapping.getMappings() ) {
-                        deleteJoinedRows( particle, keyColsToValues );
-                    }
-                }
-            } catch ( Throwable e ) {
-                LOG.error( e.getMessage(), e );
-                throw new FeatureStoreException( e.getMessage(), e );
-            } finally {
-                JDBCUtils.close( rs, stmt, null, LOG );
-            }
-        }
-    }
-
-    private void deleteJoinedRows( Mapping particle, Map<SQLIdentifier, Object> parentRowKeys )
-                            throws FeatureStoreException {
-
-        if ( particle instanceof FeatureMapping ) {
-            return;
-        }
-
-        // determine joined rows
-        if ( particle.getJoinedTable() != null && !particle.getJoinedTable().isEmpty() ) {
-            TableJoin tableJoin = particle.getJoinedTable().get( 0 );
-
-            List<Pair<SQLIdentifier, SQLIdentifier>> fromKeyToToKey = buildKeyRelations( tableJoin );
-
-            ResultSet rs = null;
-            PreparedStatement stmt = null;
-            try {
-                // add child keys
-                Set<SQLIdentifier> keyCols = getKeys( tableJoin.getToTable() );
-
-                StringBuilder sql = new StringBuilder( "SELECT" );
-                boolean first = true;
-                for ( SQLIdentifier keyCol : keyCols ) {
-                    if ( !first ) {
-                        sql.append( ',' );
-                    }
-                    sql.append( ' ' );
-                    sql.append( keyCol.getName() );
-                    first = false;
-                }
-                sql.append( " FROM " );
-                sql.append( tableJoin.getToTable() );
-                sql.append( " WHERE" );
-
-                first = true;
-                for ( SQLIdentifier toColumn : tableJoin.getToColumns() ) {
-                    if ( !first ) {
-                        sql.append( " AND" );
-                    }
-                    sql.append( ' ' );
-                    sql.append( toColumn.getName() );
-                    sql.append( "=?" );
-                    first = false;
-                }
-
-                stmt = conn.prepareStatement( sql.toString() );
-
-                int i = 1;
-                for ( SQLIdentifier fromColumn : tableJoin.getFromColumns() ) {
-                    stmt.setObject( i++, parentRowKeys.get( fromColumn ) );
-                }
-                LOG.debug( "Executing SELECT (joined rows): " + stmt );
-
-                rs = stmt.executeQuery();
+                LOG.debug( "Executing SELECT (following join): " + stmt );
+                ResultSet rs = stmt.executeQuery();
                 while ( rs.next() ) {
-                    Map<SQLIdentifier, Object> childRowKeys = new HashMap<SQLIdentifier, Object>();
+                    Map<SQLIdentifier, Object> joinKeyToValue = new HashMap<SQLIdentifier, Object>();
                     i = 1;
-                    for ( SQLIdentifier keyCol : keyCols ) {
-                        childRowKeys.put( keyCol, rs.getObject( i++ ) );
+                    for ( SQLIdentifier toColumn : tableJoin.getToColumns() ) {
+                        joinKeyToValue.put( toColumn, rs.getObject( i++ ) );
                     }
+                    deleteJoinedRows( particle, tableJoin, joinKeyToValue );
                 }
-            } catch ( SQLException e ) {
-                LOG.error( e.getMessage(), e );
-                throw new FeatureStoreException( e.getMessage(), e );
-            } finally {
-                JDBCUtils.close( rs, stmt, null, LOG );
-            }
-
-            // delete rows in join table
-            stmt = null;
-            try {
-                StringBuilder sql = new StringBuilder( "DELETE FROM " + tableJoin.getToTable() + " WHERE" );
-                boolean first = true;
-                for ( Pair<SQLIdentifier, SQLIdentifier> fromAndTo : fromKeyToToKey ) {
-                    if ( !first ) {
-                        sql.append( " AND" );
-                    }
-                    sql.append( ' ' );
-                    sql.append( fromAndTo.second.getName() );
-                    sql.append( "=?" );
-                    first = false;
-                }
-
-                stmt = conn.prepareStatement( sql.toString() );
-
-                int i = 1;
-                for ( Pair<SQLIdentifier, SQLIdentifier> fromAndTo : fromKeyToToKey ) {
-                    stmt.setObject( i++, parentRowKeys.get( fromAndTo.first ) );
-                }
-                LOG.debug( "Executing DELETE (joined rows): " + stmt );
-                stmt.executeUpdate();
             } catch ( SQLException e ) {
                 LOG.error( e.getMessage(), e );
                 throw new FeatureStoreException( e.getMessage(), e );
@@ -482,47 +421,58 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 JDBCUtils.close( stmt );
             }
         } else {
+            // process compound particle structure
             if ( particle instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) particle;
                 for ( Mapping child : cm.getParticles() ) {
-                    deleteJoinedRows( child, parentRowKeys );
+                    deleteJoinedRows( child, keyColToValue );
                 }
             }
         }
     }
 
-    private Set<SQLIdentifier> getKeys( TableName table ) {
-        Set<SQLIdentifier> keyCols = new LinkedHashSet<SQLIdentifier>();
-        if ( schema.getKeyDependencies().getChildren( table ) != null ) {
-            for ( KeyPropagation childProp : schema.getKeyDependencies().getChildren( table ) ) {
-                keyCols.add( childProp.getPKColumn() );
-            }
-        }
-        if ( schema.getKeyDependencies().getParents( table ) != null ) {
-            for ( KeyPropagation parentProp : schema.getKeyDependencies().getParents( table ) ) {
-                keyCols.add( parentProp.getFKColumn() );
-            }
-        }
-        return keyCols;
-    }
+    private void deleteJoinedRows( Mapping particle, TableJoin tableJoin, Map<SQLIdentifier, Object> joinKeyColToValue )
+                            throws FeatureStoreException {
 
-    private List<Pair<SQLIdentifier, SQLIdentifier>> buildKeyRelations( TableJoin tableJoin ) {
-        List<Pair<SQLIdentifier, SQLIdentifier>> keyRelations = new ArrayList<Pair<SQLIdentifier, SQLIdentifier>>();
-        if ( schema.getKeyDependencies().getParents( tableJoin.getToTable() ) != null ) {
-            for ( KeyPropagation prop : schema.getKeyDependencies().getParents( tableJoin.getToTable() ) ) {
-                if ( prop.getPKTable().equals( tableJoin.getFromTable() ) ) {
-                    keyRelations.add( new Pair<SQLIdentifier, SQLIdentifier>( prop.getPKColumn(), prop.getFKColumn() ) );
-                }
+        TableName joinTable = tableJoin.getToTable();
+
+        if ( particle instanceof CompoundMapping ) {
+            CompoundMapping cm = (CompoundMapping) particle;
+            for ( Mapping child : cm.getParticles() ) {
+                deleteJoinedRows( child, joinKeyColToValue );
             }
         }
-        if ( schema.getKeyDependencies().getChildren( tableJoin.getToTable() ) != null ) {
-            for ( KeyPropagation prop : schema.getKeyDependencies().getChildren( tableJoin.getToTable() ) ) {
-                if ( prop.getFKTable().equals( tableJoin.getFromTable() ) ) {
-                    keyRelations.add( new Pair<SQLIdentifier, SQLIdentifier>( prop.getFKColumn(), prop.getPKColumn() ) );
+
+        // DELETE join rows
+        PreparedStatement stmt = null;
+        try {
+            StringBuilder sql = new StringBuilder( "DELETE FROM " + joinTable + " WHERE" );
+
+            boolean first = true;
+            for ( Entry<SQLIdentifier, Object> joinKey : joinKeyColToValue.entrySet() ) {
+                if ( !first ) {
+                    sql.append( " AND" );
                 }
+                sql.append( ' ' );
+                sql.append( joinKey.getKey() );
+                sql.append( "=?" );
+                first = false;
             }
+
+            stmt = conn.prepareStatement( sql.toString() );
+
+            int i = 1;
+            for ( Entry<SQLIdentifier, Object> joinKey : joinKeyColToValue.entrySet() ) {
+                stmt.setObject( i++, joinKey.getValue() );
+            }
+            LOG.debug( "Executing DELETE (joined rows): " + stmt );
+            stmt.executeUpdate();
+        } catch ( SQLException e ) {
+            LOG.error( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
+        } finally {
+            JDBCUtils.close( stmt );
         }
-        return keyRelations;
     }
 
     @Override
