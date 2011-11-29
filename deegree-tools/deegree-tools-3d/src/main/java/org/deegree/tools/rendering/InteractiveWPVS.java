@@ -92,6 +92,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
+import org.deegree.services.OWS;
 import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wpvs.SkyImages;
@@ -225,8 +226,13 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
 
-        this.perspectiveViewService = ( (WPVSController) workspace.getSubsystemManager( WebServicesConfiguration.class ).getByOWSClass(
-                                                                                                                            WPVSController.class ) ).getService();
+        WebServicesConfiguration wsConfig = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        List<OWS> wpvsControllers = wsConfig.getByOWSClass( WPVSController.class );
+        if ( wpvsControllers.isEmpty() ) {
+            throw new ServiceInitException( "No active WPVS found in workspace." );
+        }
+
+        this.perspectiveViewService = ( (WPVSController) wpvsControllers.get( 0 ) ).getService();
 
         this.demRenderer = this.perspectiveViewService.getDefaultDEMRenderer();
         DEMDataset dDW = this.perspectiveViewService.getDEMDatasets();
@@ -857,18 +863,17 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         try {
             CommandLine line = new PosixParser().parse( options, args );
 
-            String request = line.getOptionValue( "url" );
-
+            String request = null;
             // request =
             // "http://localhost:8080/services/services?service=WPVS&request=GetView&version=0.4.0&crs=epsg:31466&ELEVATIONMODEL=Elevation&OUTPUTFORMAT=image%2Fjpeg&EXCEPTIONS=application/vnd.ogc.se_xml&ROLL=0&Boundingbox=2579816.5%2C5616304.5%2C2582519.5%2C5619007.5&DATETIME=2006-06-21T12:30:00&AOV=60&SCALE=1.0&BACKGROUND=cirrus&WIDTH=800&HEIGHT=600&BACKGROUNDCOLOR=0xc6d6e5&datasets=Buildings,Trees,aerophoto-2007&POI=2579778,5620865,50&YAW=273&PITCH=25&DISTANCE=842";
 
-            String configFile = options.getOption( OPT_WPVS_CONFIG_FILE ).getValue();
+            String configFile = line.getOptionValue( OPT_WPVS_CONFIG_FILE );
 
-            String dbURL = options.getOption( OPT_WPVS_DB_CONNECTION ).getValue();
+            String dbURL = line.getOptionValue( OPT_WPVS_DB_CONNECTION );
             if ( dbURL != null && !"".equals( dbURL ) ) {
-                String user = options.getOption( OPT_WPVS_DB_USER ).getValue();
-                String pass = options.getOption( OPT_WPVS_DB_PASS ).getValue();
-                String id = options.getOption( OPT_WPVS_DB_ID ).getValue();
+                String user = line.getOptionValue( OPT_WPVS_DB_USER );
+                String pass = line.getOptionValue( OPT_WPVS_DB_PASS );
+                String id = line.getOptionValue( OPT_WPVS_DB_ID );
                 ConnectionManager.addConnection( id, dbURL, user, pass, 5, 10 );
             }
 
