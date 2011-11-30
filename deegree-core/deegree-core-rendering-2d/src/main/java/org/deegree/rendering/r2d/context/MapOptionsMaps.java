@@ -148,4 +148,9 @@ public class MapOptionsMaps {
         }
     }
 
+    public MapOptions get( String layer ) {
+        return new MapOptions( getQuality( layer ), getInterpolation( layer ), getAntialias( layer ),
+                               getMaxFeatures( layer ), getFeatureInfoRadius( layer ) );
+    }
+
 }

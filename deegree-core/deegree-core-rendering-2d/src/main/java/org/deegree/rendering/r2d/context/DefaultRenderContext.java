@@ -35,6 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.context;
 
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.KEY_INTERPOLATION;
+import static java.awt.RenderingHints.KEY_RENDERING;
+import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_OFF;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+import static java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC;
+import static java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+import static java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
+import static java.awt.RenderingHints.VALUE_RENDER_DEFAULT;
+import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
+import static java.awt.RenderingHints.VALUE_RENDER_SPEED;
+import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
+import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 import static javax.imageio.ImageIO.write;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
@@ -129,6 +143,51 @@ public class DefaultRenderContext implements RenderContext {
     @Override
     public void paintImage( BufferedImage img ) {
         graphics.drawImage( img, 0, 0, null );
+    }
+
+    @Override
+    public void applyOptions( MapOptions options ) {
+        switch ( options.getQuality() ) {
+        case HIGH:
+            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
+            break;
+        case LOW:
+            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_SPEED );
+            break;
+        case NORMAL:
+            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_DEFAULT );
+            break;
+        }
+        switch ( options.getInterpolation() ) {
+        case BICUBIC:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC );
+            break;
+        case BILINEAR:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR );
+            break;
+        case NEARESTNEIGHBOR:
+        case NEARESTNEIGHBOUR:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+            break;
+        }
+        switch ( options.getAntialias() ) {
+        case IMAGE:
+            graphics.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
+            graphics.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
+            break;
+        case TEXT:
+            graphics.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF );
+            graphics.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
+            break;
+        case BOTH:
+            graphics.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
+            graphics.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
+            break;
+        case NONE:
+            graphics.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF );
+            graphics.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
+            break;
+        }
     }
 
 }

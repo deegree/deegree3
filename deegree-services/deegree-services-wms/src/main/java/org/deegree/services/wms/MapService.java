@@ -118,6 +118,7 @@ import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
+import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
@@ -562,10 +563,10 @@ public class MapService {
         return ImageUtils.prepareImage( format, width, height, transparent, bgcolor );
     }
 
-    protected void applyHints( final String l, final Graphics2D g ) {
-        Quality q = layerOptions.getQuality( l );
+    private static void applyHints( final String l, final Graphics2D g, MapOptionsMaps options, MapOptions defaults ) {
+        Quality q = options.getQuality( l );
         if ( q == null ) {
-            q = defaultLayerOptions.getQuality();
+            q = defaults.getQuality();
         }
         switch ( q ) {
         case HIGH:
@@ -578,9 +579,9 @@ public class MapService {
             g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_DEFAULT );
             break;
         }
-        Interpolation i = layerOptions.getInterpolation( l );
+        Interpolation i = options.getInterpolation( l );
         if ( i == null ) {
-            i = defaultLayerOptions.getInterpolation();
+            i = defaults.getInterpolation();
         }
         switch ( i ) {
         case BICUBIC:
@@ -594,9 +595,9 @@ public class MapService {
             g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
             break;
         }
-        Antialias a = layerOptions.getAntialias( l );
+        Antialias a = options.getAntialias( l );
         if ( a == null ) {
-            a = defaultLayerOptions.getAntialias();
+            a = defaults.getAntialias();
         }
         switch ( a ) {
         case IMAGE:
@@ -745,7 +746,7 @@ public class MapService {
                             QName name = f.getType().getName();
                             FeatureLayer l = ftToLayer.get( name );
 
-                            applyHints( l.getName(), g );
+                            applyHints( l.getName(), g, layerOptions, defaultLayerOptions );
                             render( f, evaluator, ftToStyle.get( name ), renderer, textRenderer, gm.getScale(),
                                     gm.getResolution() );
                         }
@@ -777,7 +778,7 @@ public class MapService {
             Layer l = layers.next();
             Style s = styles.next();
 
-            applyHints( l.getName(), g );
+            applyHints( l.getName(), g, layerOptions, defaultLayerOptions );
 
             warnings.addAll( paintLayer( l, s, g, gm ) );
         }
@@ -787,26 +788,78 @@ public class MapService {
         return themeMap.get( name ) != null;
     }
 
-    public List<LayerData> getMap( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers )
+    public void getMap( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers, RenderContext ctx )
                             throws OWSException {
         Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
         Iterator<StyleRef> iter = gm.getStyles().iterator();
+        MapOptionsMaps options = gm.getRenderingOptions();
+        List<MapOptions> mapOptions = new ArrayList<MapOptions>();
         for ( LayerRef lr : gm.getLayers() ) {
             StyleRef style = iter.next();
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
+                                      defaultLayerOptions );
+                mapOptions.add( options.get( l.getMetadata().getName() ) );
                 styles.put( l.getMetadata().getName(), style );
             }
         }
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, gm.getFilters(),
-                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize() / 1000,
-                                           gm.getRenderingOptions() );
+                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize() / 1000, options );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
                 list.add( l.mapQuery( query, headers ) );
             }
         }
-        return list;
+        Iterator<MapOptions> optIter = mapOptions.iterator();
+        for ( LayerData d : list ) {
+            ctx.applyOptions( optIter.next() );
+            d.render( ctx );
+        }
+    }
+
+    private static void insertMissingOptions( String layer, MapOptionsMaps options, MapOptions layerDefaults,
+                                              MapOptions globalDefaults ) {
+        if ( options.getAntialias( layer ) == null ) {
+            if ( layerDefaults != null ) {
+                options.setAntialias( layer, layerDefaults.getAntialias() );
+            }
+            if ( options.getAntialias( layer ) == null ) {
+                options.setAntialias( layer, globalDefaults.getAntialias() );
+            }
+        }
+        if ( options.getQuality( layer ) == null ) {
+            if ( layerDefaults != null ) {
+                options.setQuality( layer, layerDefaults.getQuality() );
+            }
+            if ( options.getQuality( layer ) == null ) {
+                options.setQuality( layer, globalDefaults.getQuality() );
+            }
+        }
+        if ( options.getInterpolation( layer ) == null ) {
+            if ( layerDefaults != null ) {
+                options.setInterpolation( layer, layerDefaults.getInterpolation() );
+            }
+            if ( options.getInterpolation( layer ) == null ) {
+                options.setInterpolation( layer, globalDefaults.getInterpolation() );
+            }
+        }
+        if ( options.getMaxFeatures( layer ) == -1 ) {
+            if ( layerDefaults != null ) {
+                options.setMaxFeatures( layer, layerDefaults.getMaxFeatures() );
+            }
+            if ( options.getMaxFeatures( layer ) == -1 ) {
+                options.setMaxFeatures( layer, globalDefaults.getMaxFeatures() );
+            }
+        }
+        if ( options.getFeatureInfoRadius( layer ) == -1 ) {
+            if ( layerDefaults != null ) {
+                options.setFeatureInfoRadius( layer, layerDefaults.getFeatureInfoRadius() );
+            }
+            if ( options.getFeatureInfoRadius( layer ) == -1 ) {
+                options.setFeatureInfoRadius( layer, globalDefaults.getFeatureInfoRadius() );
+            }
+        }
     }
 
     public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> headers )

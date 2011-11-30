@@ -114,7 +114,6 @@ import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
-import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerRef;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
@@ -759,10 +758,7 @@ public class WMSController extends AbstractOWS {
             RenderContext ctx = new DefaultRenderContext( info );
             ctx.setOutput( response.getOutputStream() );
             LinkedList<String> headers = new LinkedList<String>();
-            List<LayerData> list = service.getMap( gm2, headers );
-            for ( LayerData d : list ) {
-                d.render( ctx );
-            }
+            service.getMap( gm2, headers, ctx );
             response.setContentType( gm2.getFormat() );
             ctx.close();
             addHeaders( response, headers );

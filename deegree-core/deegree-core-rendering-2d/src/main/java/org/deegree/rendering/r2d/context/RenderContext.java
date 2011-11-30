@@ -65,4 +65,6 @@ public interface RenderContext {
     boolean close()
                             throws IOException;
 
+    void applyOptions( MapOptions options );
+
 }
