@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<Themes configVersion="3.1.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd" xmlns:d="http://www.deegree.org/metadata/description" xmlns:g="http://www.deegree.org/metadata/spatial">
+
+  <LayerStoreId>vegetation</LayerStoreId>
+  <LayerStoreId>contours</LayerStoreId>
+  <LayerStoreId>springs</LayerStoreId>
+  <LayerStoreId>ttf</LayerStoreId>
+
+  <Theme>
+    <d:Title>CITE layers</d:Title>
+    <g:CRS>EPSG:26912 EPSG:4326 AUTO:42001 AUTO:42002</g:CRS>
+    <Theme>
+      <Identifier>SGID024_Springs</Identifier>
+      <d:Title>SGID024_Springs</d:Title>
+      <Layer>springs</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>SGID500_Contours500Ft</Identifier>
+      <d:Title>SGID500_Contours500Ft</d:Title>
+      <Layer>contours</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>SGID500_DominantVegetation</Identifier>
+      <d:Title>SGID500_DominantVegetation</d:Title>
+      <Layer>dominant</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>ttfsymbol</Identifier>
+      <d:Title>ttfsymbol</d:Title>
+      <Layer>ttfsymbol</Layer>
+    </Theme>
+  </Theme>
+
+</Themes>
