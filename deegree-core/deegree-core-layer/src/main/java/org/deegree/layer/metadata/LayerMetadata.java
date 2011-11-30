@@ -48,6 +48,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.style.se.unevaluated.Style;
 
 /**
@@ -77,6 +78,8 @@ public class LayerMetadata {
 
     private Map<String, Style> styles = new LinkedHashMap<String, Style>(),
                             legendStyles = new LinkedHashMap<String, Style>();
+
+    private MapOptions mapOptions;
 
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
@@ -260,6 +263,21 @@ public class LayerMetadata {
      */
     public void setFeatureTypes( List<FeatureType> featureTypes ) {
         this.featureTypes = featureTypes;
+    }
+
+    /**
+     * @return the mapOptions
+     */
+    public MapOptions getMapOptions() {
+        return mapOptions;
+    }
+
+    /**
+     * @param mapOptions
+     *            the mapOptions to set
+     */
+    public void setMapOptions( MapOptions mapOptions ) {
+        this.mapOptions = mapOptions;
     }
 
 }

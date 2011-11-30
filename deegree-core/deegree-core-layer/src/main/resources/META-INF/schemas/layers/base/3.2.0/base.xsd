@@ -23,6 +23,7 @@
       <element name="ScaleDenominators" type="l:ScaleDenominatorsType" minOccurs="0" />
       <element name="Dimension" type="l:DimensionType" minOccurs="0" maxOccurs="unbounded" />
       <element name="StyleRef" minOccurs="0" maxOccurs="unbounded" type="l:StyleRefType" />
+      <element name="LayerOptions" minOccurs="0" type="l:LayerOptionsType" />
     </sequence>
   </group>
 
@@ -85,6 +86,16 @@
     </sequence>
     <attribute name="isTime" type="boolean" use="optional" default="false" />
     <attribute name="isElevation" type="boolean" use="optional" default="false" />
+  </complexType>
+
+  <complexType name="LayerOptionsType">
+    <sequence>
+      <element name="AntiAliasing" type="string" minOccurs="0" />
+      <element name="RenderingQuality" type="string" minOccurs="0" />
+      <element name="Interpolation" type="string" minOccurs="0" />
+      <element name="MaxFeatures" type="int" minOccurs="0" />
+      <element name="FeatureInfoRadius" type="int" minOccurs="0" />
+    </sequence>
   </complexType>
 
 </schema>

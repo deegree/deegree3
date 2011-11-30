@@ -53,9 +53,14 @@ import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.dims.DimensionLexer;
 import org.deegree.layer.dims.parser;
 import org.deegree.layer.persistence.base.jaxb.DimensionType;
+import org.deegree.layer.persistence.base.jaxb.LayerOptionsType;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType.Style.LegendGraphic;
 import org.deegree.layer.persistence.base.jaxb.StyleRefType.Style.LegendStyle;
+import org.deegree.rendering.r2d.context.MapOptions;
+import org.deegree.rendering.r2d.context.MapOptions.Antialias;
+import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
+import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.unevaluated.Style;
@@ -140,6 +145,43 @@ public class ConfigUtils {
             legendStyleMap.put( "default", defaultLegendStyle );
         }
         return new Pair<Map<String, Style>, Map<String, Style>>( styleMap, legendStyleMap );
+    }
+
+    /**
+     * @param cfg
+     * @return null, if cfg is null
+     */
+    public static MapOptions parseLayerOptions( LayerOptionsType cfg ) {
+        if ( cfg == null ) {
+            return null;
+        }
+        Antialias alias = null;
+        Quality quali = null;
+        Interpolation interpol = null;
+        int maxFeats = -1;
+        int rad = -1;
+        try {
+            alias = Antialias.valueOf( cfg.getAntiAliasing() );
+        } catch ( Throwable e ) {
+            // ignore
+        }
+        try {
+            quali = Quality.valueOf( cfg.getRenderingQuality() );
+        } catch ( Throwable e ) {
+            // ignore
+        }
+        try {
+            interpol = Interpolation.valueOf( cfg.getInterpolation() );
+        } catch ( Throwable e ) {
+            // ignore
+        }
+        if ( cfg.getMaxFeatures() != null ) {
+            maxFeats = cfg.getMaxFeatures();
+        }
+        if ( cfg.getFeatureInfoRadius() != null ) {
+            rad = cfg.getFeatureInfoRadius();
+        }
+        return new MapOptions( quali, interpol, alias, maxFeats, rad );
     }
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {

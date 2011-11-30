@@ -71,6 +71,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
+import org.deegree.layer.config.ConfigUtils;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
@@ -129,10 +130,10 @@ public class CoverageLayerProvider implements LayerStoreProvider {
 
         // add standard coverage feature type to list of feature types
         List<PropertyType> pts = new LinkedList<PropertyType>();
-        pts.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "value", "app" ), 0, -1,
-                                         DECIMAL, null, null ) );
-        FeatureType featureType = new GenericFeatureType( new QName( "http://www.deegree.org/app", "data",
-                                                                     "app" ), pts, false );
+        pts.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "value", "app" ), 0, -1, DECIMAL,
+                                         null, null ) );
+        FeatureType featureType = new GenericFeatureType( new QName( "http://www.deegree.org/app", "data", "app" ),
+                                                          pts, false );
         // needed to get the back reference to the schema into the featureType (it's a strange mechanism indeed)
         new GenericAppSchema( new FeatureType[] { featureType }, null, null, null );
         md.getFeatureTypes().add( featureType );
@@ -177,6 +178,7 @@ public class CoverageLayerProvider implements LayerStoreProvider {
                 Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
                 LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
                 md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
+                md.setMapOptions( ConfigUtils.parseLayerOptions( lay.getLayerOptions() ) );
                 // add standard coverage feature type to list of feature types
                 List<PropertyType> pts = new LinkedList<PropertyType>();
                 pts.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "value", "app" ), 0, -1,

@@ -75,6 +75,7 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
+import org.deegree.layer.config.ConfigUtils;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
@@ -202,6 +203,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
                 Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
                 LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
+                md.setMapOptions( ConfigUtils.parseLayerOptions( lay.getLayerOptions() ) );
                 md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
                 if ( featureType != null ) {
                     md.getFeatureTypes().add( store.getSchema().getFeatureType( featureType ) );
@@ -240,6 +242,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { FeatureStoreManager.class, StyleStoreManager.class };

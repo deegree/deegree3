@@ -12,7 +12,7 @@
     </appinfo>
   </annotation>
 
-  <import namespace="http://www.deegree.org/layers/base" schemaLocation="http://schemas.deegree.org/layers/base/3.1.0/base.xsd" />
+  <import namespace="http://www.deegree.org/layers/base" schemaLocation="http://schemas.deegree.org/layers/base/3.2.0/base.xsd" />
 
   <complexType name="CoverageLayerType">
     <sequence>
@@ -39,6 +39,7 @@
           </element>
         </choice>
       </sequence>
+      <attribute name="configVersion" type="f:ConfigVersionType" use="required" />
     </complexType>
   </element>
 
