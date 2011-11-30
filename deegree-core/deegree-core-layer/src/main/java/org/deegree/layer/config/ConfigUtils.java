@@ -144,6 +144,10 @@ public class ConfigUtils {
             styleMap.put( "default", defaultStyle );
             legendStyleMap.put( "default", defaultLegendStyle );
         }
+        if ( !styleMap.containsKey( "default" ) ) {
+            styleMap.put( "default", new Style() );
+            legendStyleMap.put( "default", new Style() );
+        }
         return new Pair<Map<String, Style>, Map<String, Style>>( styleMap, legendStyleMap );
     }
 
