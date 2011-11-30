@@ -553,7 +553,12 @@ public class SHPReader {
             }
             }
 
-            buffer.position( (int) ( pos + length ) );
+            try {
+                buffer.position( (int) ( pos + length ) );
+            } catch ( IllegalArgumentException e ) {
+                // ignore it, this seems to happen with some broken shape files
+                return new Pair<ArrayList<Pair<float[], Long>>, Boolean>( list, startsFromZero );
+            }
         }
 
         return new Pair<ArrayList<Pair<float[], Long>>, Boolean>( list, startsFromZero );
