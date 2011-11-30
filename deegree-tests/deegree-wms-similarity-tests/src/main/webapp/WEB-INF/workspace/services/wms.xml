@@ -30,7 +30,7 @@
         <Title>ttfsymbol</Title>
         <FeatureStoreId>ttf</FeatureStoreId>
         <DirectStyle>
-          <File>../../utah/ttfsymbol.sld</File>
+          <File>../data/utah/ttfsymbol.sld</File>
         </DirectStyle>
       </RequestableLayer>
 
