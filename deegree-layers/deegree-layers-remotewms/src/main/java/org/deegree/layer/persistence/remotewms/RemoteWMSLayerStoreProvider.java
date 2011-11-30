@@ -14,6 +14,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.SpatialMetadataConverter;
 import org.deegree.layer.Layer;
+import org.deegree.layer.config.ConfigUtils;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
@@ -30,7 +31,7 @@ import org.deegree.remoteows.wms.RemoteWMS;
 
 public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
 
-    private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/3.1.0/remotewms.xsd" );
+    private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/3.2.0/remotewms.xsd" );
 
     private DeegreeWorkspace workspace;
 
@@ -71,6 +72,7 @@ public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
                                                               l.getDescription().getKeywords() );
                     }
                     LayerMetadata md = new LayerMetadata( name, desc, smd );
+                    md.setMapOptions( ConfigUtils.parseLayerOptions( l.getLayerOptions() ) );
                     configured.put( l.getOriginalName(), md );
                 }
             }
