@@ -37,17 +37,18 @@
  http://www.occamlabs.de/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence;
+----------------------------------------------------------------------------*/
+package org.deegree.layer.persistence.tile;
 
 import java.util.Iterator;
 
-import org.deegree.commons.config.Resource;
-import org.deegree.geometry.Envelope;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.layer.LayerData;
+import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.tile.Tile;
 
 /**
- * <code>TileStore</code>
+ * <code>TileLayerData</code>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -55,8 +56,23 @@ import org.deegree.tile.Tile;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public interface TileStore extends Resource {
+public class TileLayerData implements LayerData {
 
-    Iterator<Tile> getTiles( Envelope envelope, double resolution );
+    private final Iterator<Tile> tiles;
+
+    public TileLayerData(Iterator<Tile> tiles){
+        this.tiles = tiles;
+    }
+    
+    @Override
+    public void render( RenderContext context ) {
+        while(tiles.hasNext()){
+        }
+    }
+
+    @Override
+    public FeatureCollection info() {
+        return null;
+    }
 
 }

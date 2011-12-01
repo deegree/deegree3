@@ -68,7 +68,8 @@ public class TileMatrixSet {
         this.matrices = matrices;
     }
 
-    public List<Tile> getTiles( Envelope envelope, double resolution ) {
+    public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
+        // what's left is to produce tile objects on the fly instead of using a list here
         List<Tile> tiles = new ArrayList<Tile>();
 
         // select correct matrix
@@ -128,7 +129,7 @@ public class TileMatrixSet {
             }
         }
 
-        return tiles;
+        return tiles.iterator();
     }
 
 }

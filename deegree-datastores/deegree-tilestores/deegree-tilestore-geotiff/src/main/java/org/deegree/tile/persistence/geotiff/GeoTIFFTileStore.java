@@ -47,6 +47,7 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.metadata.IIOMetadata;
@@ -153,7 +154,7 @@ public class GeoTIFFTileStore implements TileStore {
     }
 
     @Override
-    public List<Tile> getTiles( Envelope envelope, double resolution ) {
+    public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
         return tileMatrixSet.getTiles( envelope, resolution );
     }
 

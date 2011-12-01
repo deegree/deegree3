@@ -38,16 +38,21 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence;
+package org.deegree.layer.persistence.tile;
 
 import java.util.Iterator;
+import java.util.List;
 
-import org.deegree.commons.config.Resource;
-import org.deegree.geometry.Envelope;
+import org.deegree.layer.AbstractLayer;
+import org.deegree.layer.LayerData;
+import org.deegree.layer.LayerQuery;
+import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.tile.Tile;
+import org.deegree.tile.persistence.TileStore;
 
 /**
- * <code>TileStore</code>
+ * <code>TileLayer</code>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -55,8 +60,26 @@ import org.deegree.tile.Tile;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public interface TileStore extends Resource {
+public class TileLayer extends AbstractLayer {
 
-    Iterator<Tile> getTiles( Envelope envelope, double resolution );
+    private final TileStore tileStore;
+
+    public TileLayer( LayerMetadata md, TileStore tileStore ) {
+        super( md );
+        this.tileStore = tileStore;
+    }
+
+    @Override
+    public TileLayerData mapQuery( LayerQuery query, List<String> headers )
+                            throws OWSException {
+        Iterator<Tile> tiles = tileStore.getTiles( query.getEnvelope(), query.getResolution() );
+        return new TileLayerData( tiles );
+    }
+
+    @Override
+    public LayerData infoQuery( LayerQuery query, List<String> headers )
+                            throws OWSException {
+        return null;
+    }
 
 }
