@@ -487,12 +487,15 @@ public class GMLFeatureWriter {
                 writeAttributeWithNS( XSINS, "nil", "true" );
             }
             CodeType codeType = (CodeType) value;
-            if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 ) {
-                if ( GML_2 != version ) {
-                    writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
+
+            if ( codeType != null ) {
+                if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 ) {
+                    if ( GML_2 != version ) {
+                        writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
+                    }
                 }
+                writer.writeCharacters( codeType.getCode() );
             }
-            writer.writeCharacters( codeType.getCode() );
             writer.writeEndElement();
         } else if ( propertyType instanceof EnvelopePropertyType ) {
             if ( nilled ) {
