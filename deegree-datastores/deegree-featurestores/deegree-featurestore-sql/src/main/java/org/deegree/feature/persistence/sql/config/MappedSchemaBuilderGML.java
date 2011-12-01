@@ -410,7 +410,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         elDecl = schemaWalker.getTargetElement( elDecl, path );
         QName ptName = new QName( elDecl.first.getNamespace(), elDecl.getFirst().getName() );
         ObjectPropertyType pt = gmlSchema.getGMLSchema().getGMLPropertyDecl( elDecl.first, ptName, 1, 1, null );
-        GeometryType type = ( (GeometryPropertyType) pt ).getGeometryType();
+        GeometryType type = GeometryType.GEOMETRY;
         if ( !( pt instanceof GeometryPropertyType ) ) {
             String msg = "Mapping '" + path + "' (in context of table '" + currentTable
                          + "') does not target the container element of a GML geometry element.";
