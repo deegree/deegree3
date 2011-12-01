@@ -60,9 +60,7 @@ import java.io.OutputStream;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
-import org.deegree.rendering.r2d.RasterRenderer;
-import org.deegree.rendering.r2d.Renderer;
-import org.deegree.rendering.r2d.TextRenderer;
+import org.deegree.rendering.r2d.Java2DTileRenderer;
 import org.deegree.style.utils.ImageUtils;
 
 /**
@@ -84,6 +82,8 @@ public class DefaultRenderContext implements RenderContext {
 
     private Java2DRasterRenderer rasterRenderer;
 
+    private Java2DTileRenderer tileRenderer;
+
     private OutputStream out;
 
     private String format;
@@ -97,21 +97,27 @@ public class DefaultRenderContext implements RenderContext {
                                        info.getPixelSize() );
         textRenderer = new Java2DTextRenderer( renderer );
         rasterRenderer = new Java2DRasterRenderer( graphics );
+        tileRenderer = new Java2DTileRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope() );
     }
 
     @Override
-    public Renderer getVectorRenderer() {
+    public Java2DRenderer getVectorRenderer() {
         return renderer;
     }
 
     @Override
-    public TextRenderer getTextRenderer() {
+    public Java2DTextRenderer getTextRenderer() {
         return textRenderer;
     }
 
     @Override
-    public RasterRenderer getRasterRenderer() {
+    public Java2DRasterRenderer getRasterRenderer() {
         return rasterRenderer;
+    }
+
+    @Override
+    public Java2DTileRenderer getTileRenderer() {
+        return tileRenderer;
     }
 
     @Override

@@ -91,6 +91,8 @@ public class GeoTIFFTileStore implements TileStore {
 
     private TileMatrixSet tileMatrixSet;
 
+    private SpatialMetadata spatialMetadata;
+
     public GeoTIFFTileStore( TIFFImageReader reader, File file, String crs ) {
         this.reader = reader;
         this.file = file;
@@ -121,6 +123,7 @@ public class GeoTIFFTileStore implements TileStore {
             LOG.debug( "Envelope from GeoTIFF was {}.", envelope );
 
             SpatialMetadata smd = new SpatialMetadata( envelope, singletonList( envelope.getCoordinateSystem() ) );
+            this.spatialMetadata = smd;
 
             List<TileMatrix> matrices = new ArrayList<TileMatrix>( num );
 
@@ -206,6 +209,11 @@ public class GeoTIFFTileStore implements TileStore {
             LOG.debug( "couldn't read crs information in GeoTIFF" );
         }
         return null;
+    }
+
+    @Override
+    public SpatialMetadata getMetadata() {
+        return spatialMetadata;
     }
 
 }

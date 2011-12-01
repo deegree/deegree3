@@ -38,19 +38,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence.geotiff;
+package org.deegree.rendering.r2d;
 
-import static org.slf4j.LoggerFactory.getLogger;
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
-import java.awt.image.BufferedImage;
-
+import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
-import org.slf4j.Logger;
 
 /**
- * <code>GeoTIFFTile</code>
+ * <code>Java2DTileRenderer</code>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -58,38 +57,36 @@ import org.slf4j.Logger;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class GeoTIFFTile implements Tile {
+public class Java2DTileRenderer implements TileRenderer {
 
-    private static final Logger LOG = getLogger( GeoTIFFTile.class );
+    private Graphics2D graphics;
 
-    private final TIFFImageReader reader;
+    private AffineTransform worldToScreen = new AffineTransform();
 
-    private final int imageIndex, x, y;
-
-    private final Envelope envelope;
-
-    public GeoTIFFTile( TIFFImageReader reader, int imageIndex, int x, int y, Envelope envelope ) {
-        this.reader = reader;
-        this.imageIndex = imageIndex;
-        this.x = x;
-        this.y = y;
-        this.envelope = envelope;
+    /**
+     * @param graphics
+     * @param width
+     * @param height
+     * @param envelope
+     */
+    public Java2DTileRenderer( Graphics2D graphics, int width, int height, Envelope envelope ) {
+        this.graphics = graphics;
+        RenderHelper.getWorldToScreenTransform( worldToScreen, envelope, width, height );
     }
 
     @Override
-    public BufferedImage getAsImage() {
-        try {
-            return reader.readTile( imageIndex, x, y );
-        } catch ( Throwable e ) {
-            LOG.error( "Could not read GeoTIFF tile: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace: ", e );
-            return null;
-        }
-    }
-
-    @Override
-    public Envelope getEnvelope() {
-        return envelope;
+    public void render( Tile tile ) {
+        int minx, miny, maxx, maxy;
+        Envelope env = tile.getEnvelope();
+        Point2D.Double p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( env.getMin().get0(),
+                                                                                         env.getMin().get1() ), null );
+        minx = MathUtils.round( p.x );
+        miny = MathUtils.round( p.y );
+        p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( env.getMax().get0(), env.getMax().get1() ),
+                                                      null );
+        maxx = MathUtils.round( p.x );
+        maxy = MathUtils.round( p.y );
+        graphics.drawImage( tile.getAsImage(), minx, miny, maxx - minx, maxy - miny, null );
     }
 
 }

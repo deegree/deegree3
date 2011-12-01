@@ -42,6 +42,8 @@ package org.deegree.tile;
 
 import java.awt.image.BufferedImage;
 
+import org.deegree.geometry.Envelope;
+
 /**
  * <code>Tile</code>
  * 
@@ -54,5 +56,7 @@ import java.awt.image.BufferedImage;
 public interface Tile {
 
     BufferedImage getAsImage();
+
+    Envelope getEnvelope();
 
 }

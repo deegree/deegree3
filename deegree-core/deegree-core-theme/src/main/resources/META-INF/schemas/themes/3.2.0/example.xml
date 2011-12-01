@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <Themes configVersion="3.1.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd" xmlns:d="http://www.deegree.org/metadata/description">
+  xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd" xmlns:d="http://www.deegree.org/metadata/description"
+  xmlns:s="http://www.deegree.org/metadata/spatial">
 
   <LayerStoreId>layerstore</LayerStoreId>
   <LayerStoreId>layerstore2</LayerStoreId>
@@ -8,6 +9,7 @@
   <Theme>
     <Identifier>base</Identifier>
     <d:Title>Root theme</d:Title>
+    <s:CRS>EPSG:26912</s:CRS>
     <Layer>water</Layer>
     <Layer>water2</Layer>
     <Theme>

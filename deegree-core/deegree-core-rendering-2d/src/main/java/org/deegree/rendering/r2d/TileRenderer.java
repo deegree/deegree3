@@ -38,19 +38,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence.geotiff;
+package org.deegree.rendering.r2d;
 
-import static org.slf4j.LoggerFactory.getLogger;
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
-
-import java.awt.image.BufferedImage;
-
-import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
-import org.slf4j.Logger;
 
 /**
- * <code>GeoTIFFTile</code>
+ * <code>TileRenderer</code>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -58,38 +51,8 @@ import org.slf4j.Logger;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class GeoTIFFTile implements Tile {
+public interface TileRenderer {
 
-    private static final Logger LOG = getLogger( GeoTIFFTile.class );
-
-    private final TIFFImageReader reader;
-
-    private final int imageIndex, x, y;
-
-    private final Envelope envelope;
-
-    public GeoTIFFTile( TIFFImageReader reader, int imageIndex, int x, int y, Envelope envelope ) {
-        this.reader = reader;
-        this.imageIndex = imageIndex;
-        this.x = x;
-        this.y = y;
-        this.envelope = envelope;
-    }
-
-    @Override
-    public BufferedImage getAsImage() {
-        try {
-            return reader.readTile( imageIndex, x, y );
-        } catch ( Throwable e ) {
-            LOG.error( "Could not read GeoTIFF tile: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace: ", e );
-            return null;
-        }
-    }
-
-    @Override
-    public Envelope getEnvelope() {
-        return envelope;
-    }
+    void render( Tile tile );
 
 }

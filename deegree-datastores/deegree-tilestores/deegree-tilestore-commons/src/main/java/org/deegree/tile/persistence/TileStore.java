@@ -44,6 +44,7 @@ import java.util.Iterator;
 
 import org.deegree.commons.config.Resource;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
 
 /**
@@ -57,6 +58,8 @@ import org.deegree.tile.Tile;
 
 public interface TileStore extends Resource {
 
+    SpatialMetadata getMetadata();
+    
     Iterator<Tile> getTiles( Envelope envelope, double resolution );
 
 }

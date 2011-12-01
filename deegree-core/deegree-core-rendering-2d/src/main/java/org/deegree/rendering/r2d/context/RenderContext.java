@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
+import org.deegree.rendering.r2d.TileRenderer;
 
 /**
  * 
@@ -59,6 +60,8 @@ public interface RenderContext {
     TextRenderer getTextRenderer();
 
     RasterRenderer getRasterRenderer();
+
+    TileRenderer getTileRenderer();
 
     void paintImage( BufferedImage img );
 

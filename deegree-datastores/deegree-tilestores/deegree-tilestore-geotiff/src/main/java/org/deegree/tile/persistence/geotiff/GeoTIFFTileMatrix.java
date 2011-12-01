@@ -42,6 +42,8 @@ package org.deegree.tile.persistence.geotiff;
 
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
 
@@ -62,6 +64,8 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     private final int imageIndex;
 
+    private final GeometryFactory fac = new GeometryFactory();
+
     public GeoTIFFTileMatrix( TileMatrixMetadata metadata, TIFFImageReader reader, int imageIndex ) {
         this.metadata = metadata;
         this.reader = reader;
@@ -75,7 +79,14 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     @Override
     public GeoTIFFTile getTile( int x, int y ) {
-        return new GeoTIFFTile( reader, imageIndex, x, y );
+        double res = metadata.getResolution();
+        double width = metadata.getTileWidth() * res;
+        double height = metadata.getTileHeight() * res;
+        Envelope env = metadata.getSpatialMetadata().getEnvelope();
+        double minx = width * x + env.getMin().get0();
+        double miny = height * y + env.getMin().get1();
+        Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny + height, env.getCoordinateSystem() );
+        return new GeoTIFFTile( reader, imageIndex, x, y, envelope );
     }
 
 }

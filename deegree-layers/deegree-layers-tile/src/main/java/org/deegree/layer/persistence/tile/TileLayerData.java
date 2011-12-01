@@ -37,13 +37,14 @@
  http://www.occamlabs.de/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.tile;
 
 import java.util.Iterator;
 
 import org.deegree.feature.FeatureCollection;
 import org.deegree.layer.LayerData;
+import org.deegree.rendering.r2d.TileRenderer;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.tile.Tile;
 
@@ -60,13 +61,15 @@ public class TileLayerData implements LayerData {
 
     private final Iterator<Tile> tiles;
 
-    public TileLayerData(Iterator<Tile> tiles){
+    public TileLayerData( Iterator<Tile> tiles ) {
         this.tiles = tiles;
     }
-    
+
     @Override
     public void render( RenderContext context ) {
-        while(tiles.hasNext()){
+        TileRenderer renderer = context.getTileRenderer();
+        while ( tiles.hasNext() ) {
+            renderer.render( tiles.next() );
         }
     }
 

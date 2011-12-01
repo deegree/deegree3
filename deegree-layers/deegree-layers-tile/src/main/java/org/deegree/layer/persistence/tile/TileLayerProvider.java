@@ -83,10 +83,20 @@ public class TileLayerProvider implements LayerStoreProvider {
         this.workspace = workspace;
     }
 
-    private TileLayer createLayer( TileLayerType cfg ) {
+    private TileLayer createLayer( TileLayerType cfg )
+                            throws ResourceInitException {
         TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
         TileStore store = mgr.get( cfg.getTileStoreId() );
+        if ( store == null ) {
+            throw new ResourceInitException( "Tile store with id " + cfg.getTileStoreId() + " was not available." );
+        }
         SpatialMetadata smd = fromJaxb( cfg.getEnvelope(), cfg.getCRS() );
+        if ( smd.getEnvelope() == null ) {
+            smd.setEnvelope( store.getMetadata().getEnvelope() );
+        }
+        if ( smd.getCoordinateSystems().isEmpty() ) {
+            smd.getCoordinateSystems().addAll( store.getMetadata().getCoordinateSystems() );
+        }
         Description desc = fromJaxb( cfg.getTitle(), cfg.getAbstract(), cfg.getKeywords() );
         LayerMetadata md = new LayerMetadata( cfg.getName(), desc, smd );
         md.setMapOptions( ConfigUtils.parseLayerOptions( cfg.getLayerOptions() ) );
