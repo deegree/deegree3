@@ -291,6 +291,9 @@ public class OGCFrontController extends HttpServlet {
                 }
             }
 
+            // add cache control headers
+            response.addHeader( "Cache-Control", "no-cache, no-store" );
+
             response = handleCompression( response );
 
             String queryString = request.getQueryString();
