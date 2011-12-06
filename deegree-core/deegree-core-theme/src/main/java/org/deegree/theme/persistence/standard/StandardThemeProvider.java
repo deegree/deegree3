@@ -40,19 +40,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence.standard;
 
+import static java.util.Collections.singletonList;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.theme.Themes.aggregateSpatialMetadata;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.SpatialMetadataConverter;
@@ -145,6 +150,41 @@ public class StandardThemeProvider implements ThemeProvider {
         return new StandardTheme( md, thms, lays );
     }
 
+    private static Theme buildAutoTheme( Layer layer ) {
+        LayerMetadata md = new LayerMetadata( null, null, null );
+        LayerMetadata lmd = layer.getMetadata();
+        md.merge( lmd );
+        md.setDimensions( new LinkedHashMap<String, Dimension<?>>( lmd.getDimensions() ) );
+        md.setStyles( new LinkedHashMap<String, Style>( lmd.getStyles() ) );
+        md.setLegendStyles( new LinkedHashMap<String, Style>( lmd.getLegendStyles() ) );
+        return new StandardTheme( md, Collections.<Theme> emptyList(), singletonList( layer ) );
+    }
+
+    private static Theme buildAutoTheme( String id, LayerStore store ) {
+        Description desc = new Description( id, singletonList( new LanguageString( id, null ) ), null, null );
+        LayerMetadata md = new LayerMetadata( null, desc, new SpatialMetadata(null, Collections.<ICRS>emptyList()) );
+        List<Theme> themes = new ArrayList<Theme>();
+
+        for ( Layer l : store.getAll() ) {
+            themes.add( buildAutoTheme( l ) );
+        }
+
+        return new StandardTheme( md, themes, new ArrayList<Layer>() );
+    }
+
+    private static Theme buildAutoTheme( Map<String, LayerStore> stores ) {
+        Description desc = new Description( null, Collections.singletonList( new LanguageString( "root", null ) ),
+                                            null, null );
+        LayerMetadata md = new LayerMetadata( null, desc, new SpatialMetadata(null, Collections.<ICRS>emptyList()) );
+        List<Theme> themes = new ArrayList<Theme>();
+
+        for ( Entry<String, LayerStore> e : stores.entrySet() ) {
+            themes.add( buildAutoTheme( e.getKey(), e.getValue() ) );
+        }
+
+        return new StandardTheme( md, themes, new ArrayList<Layer>() );
+    }
+
     @Override
     public Theme create( URL configUrl )
                             throws ResourceInitException {
@@ -167,7 +207,12 @@ public class StandardThemeProvider implements ThemeProvider {
             }
 
             ThemeType root = cfg.getTheme();
-            Theme theme = buildTheme( root, root.getLayer(), root.getTheme(), stores );
+            Theme theme;
+            if ( root == null ) {
+                theme = buildAutoTheme( stores );
+            } else {
+                theme = buildTheme( root, root.getLayer(), root.getTheme(), stores );
+            }
             aggregateSpatialMetadata( theme );
             return theme;
         } catch ( Throwable e ) {
@@ -175,6 +220,7 @@ public class StandardThemeProvider implements ThemeProvider {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};

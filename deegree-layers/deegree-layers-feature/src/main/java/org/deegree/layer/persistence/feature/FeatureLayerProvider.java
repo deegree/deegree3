@@ -52,6 +52,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,7 @@ import javax.xml.transform.dom.DOMSource;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -143,7 +145,9 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 crs.add( envelope.getCoordinateSystem() );
             }
             SpatialMetadata smd = new SpatialMetadata( envelope, crs );
-            LayerMetadata md = new LayerMetadata( name, null, smd );
+            Description desc = new Description( name, Collections.singletonList( new LanguageString( name, null ) ),
+                                                null, null );
+            LayerMetadata md = new LayerMetadata( name, desc, smd );
             md.getFeatureTypes().add( ft );
             Map<String, Style> styles = new LinkedHashMap<String, Style>();
             if ( sstore != null ) {

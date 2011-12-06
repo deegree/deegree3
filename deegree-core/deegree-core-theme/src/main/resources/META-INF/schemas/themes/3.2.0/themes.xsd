@@ -46,7 +46,7 @@
     <complexType>
       <sequence>
         <element name="LayerStoreId" type="string" minOccurs="0" maxOccurs="unbounded" />
-        <element name="Theme" type="t:ThemeType" />
+        <element name="Theme" type="t:ThemeType" minOccurs="0" />
       </sequence>
       <attribute name="configVersion" use="required" type="t:ConfigVersionType" />
     </complexType>
