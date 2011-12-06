@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>
-    <version>3.2-pre2</version>
+    <version>3.2-pre3-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-sql</artifactId>
-      <version>3.2-pre2</version>
+      <version>3.2-pre3-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
