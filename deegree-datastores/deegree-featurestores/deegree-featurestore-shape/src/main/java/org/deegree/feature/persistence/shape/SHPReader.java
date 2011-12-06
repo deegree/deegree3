@@ -355,10 +355,8 @@ public class SHPReader {
      *            if not null, the resulting list will only contain record numbers which are also contained in this set.
      *            If null, all matching records are returned.
      * @return the list of matching record ids
-     * @throws IOException
      */
-    public List<Pair<Integer, Long>> query( Envelope bbox, HashSet<Integer> ids )
-                            throws IOException {
+    public List<Pair<Integer, Long>> query( Envelope bbox, HashSet<Integer> ids ) {
 
         LOG.debug( "Querying shp with bbox {}", bbox );
 
@@ -395,10 +393,8 @@ public class SHPReader {
      * @param withGeometry
      * @param exact
      * @return the list of contained geometries
-     * @throws IOException
      */
-    public LinkedList<Pair<Integer, Geometry>> query( Envelope bbox, boolean withGeometry, boolean exact )
-                            throws IOException {
+    public LinkedList<Pair<Integer, Geometry>> query( Envelope bbox, boolean withGeometry, boolean exact ) {
 
         LOG.debug( "Querying shp with bbox {}", bbox );
         ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
@@ -669,14 +665,14 @@ public class SHPReader {
         }
     }
 
-    private final int getBEInt( ByteBuffer buffer ) {
+    private final static int getBEInt( ByteBuffer buffer ) {
         buffer.order( BIG_ENDIAN );
         int result = buffer.getInt();
         buffer.order( LITTLE_ENDIAN );
         return result;
     }
 
-    private final void skipBytes( ByteBuffer buffer, int bytes ) {
+    private final static void skipBytes( ByteBuffer buffer, int bytes ) {
         buffer.position( buffer.position() + bytes );
     }
 
@@ -751,14 +747,14 @@ public class SHPReader {
 
         LinkedList<Point> list = new LinkedList<Point>();
         for ( int i = 0; i < num; ++i ) {
-            list.add( fac.createPoint( null, buffer.getInt(), buffer.getInt(), crs ) );
+            list.add( fac.createPoint( null, buffer.getDouble(), buffer.getDouble(), crs ) );
         }
 
         return fac.createMultiPoint( null, crs, list );
     }
 
     private Point readPointM( ByteBuffer buffer ) {
-        return fac.createPoint( null, buffer.getInt(), buffer.getInt(), buffer.getInt(), crs );
+        return fac.createPoint( null, buffer.getDouble(), buffer.getDouble(), buffer.getDouble(), crs );
     }
 
     private MultiPoint readMultipointM( ByteBuffer buffer, int length ) {
@@ -769,7 +765,7 @@ public class SHPReader {
             LinkedList<Point> list = new LinkedList<Point>();
 
             for ( int i = 0; i < num; ++i ) {
-                list.add( fac.createPoint( null, new double[] { buffer.getInt(), buffer.getInt(), 0, 0 }, crs ) );
+                list.add( fac.createPoint( null, new double[] { buffer.getDouble(), buffer.getDouble(), 0, 0 }, crs ) );
             }
 
             return fac.createMultiPoint( null, crs, list );
@@ -777,14 +773,14 @@ public class SHPReader {
 
         LinkedList<double[]> xy = new LinkedList<double[]>();
         for ( int i = 0; i < num; ++i ) {
-            xy.add( new double[] { buffer.getInt(), buffer.getInt(), 0, 0 } );
+            xy.add( new double[] { buffer.getDouble(), buffer.getDouble(), 0, 0 } );
         }
 
         LinkedList<Point> list = new LinkedList<Point>();
         skipBytes( buffer, 16 ); // skip measure bounds
         for ( int i = 0; i < num; ++i ) {
             double[] p = xy.poll();
-            p[3] = buffer.getInt();
+            p[3] = buffer.getDouble();
             list.add( fac.createPoint( null, p, crs ) );
         }
 
@@ -793,8 +789,8 @@ public class SHPReader {
 
     private Point readPointZ( ByteBuffer buffer ) {
         return fac.createPoint( null,
-                                new double[] { buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt() },
-                                crs );
+                                new double[] { buffer.getDouble(), buffer.getDouble(), buffer.getDouble(),
+                                              buffer.getDouble() }, crs );
     }
 
     private Geometry readPolyline( ByteBuffer buffer, boolean z, boolean m, int length ) {
@@ -813,14 +809,14 @@ public class SHPReader {
         if ( len == length ) {
             LinkedList<double[]> xy = new LinkedList<double[]>();
             for ( int i = 0; i < num; ++i ) {
-                xy.add( new double[] { buffer.getInt(), buffer.getInt(), 0, 0 } );
+                xy.add( new double[] { buffer.getDouble(), buffer.getDouble(), 0, 0 } );
             }
 
             LinkedList<Point> list = new LinkedList<Point>();
             skipBytes( buffer, 16 ); // skip Z bounds
             for ( int i = 0; i < num; ++i ) {
                 double[] p = xy.poll();
-                p[2] = buffer.getInt();
+                p[2] = buffer.getDouble();
                 list.add( fac.createPoint( null, p, crs ) );
             }
 
@@ -834,14 +830,14 @@ public class SHPReader {
 
         skipBytes( buffer, 16 ); // skip Z bounds
         for ( double[] ps : xy ) {
-            ps[2] = buffer.getInt();
+            ps[2] = buffer.getDouble();
         }
 
         LinkedList<Point> list = new LinkedList<Point>();
         skipBytes( buffer, 16 ); // skip measure bounds
         for ( int i = 0; i < num; ++i ) {
             double[] p = xy.poll();
-            p[3] = buffer.getInt();
+            p[3] = buffer.getDouble();
             list.add( fac.createPoint( null, p, crs ) );
         }
 
@@ -978,7 +974,7 @@ public class SHPReader {
     }
 
     // bad: do it by hand using JTS
-    private boolean isCCW( LinearRing c ) {
+    private static boolean isCCW( LinearRing c ) {
         Points ps = c.getControlPoints();
         Coordinate[] cs = new Coordinate[ps.size()];
         int i = 0;

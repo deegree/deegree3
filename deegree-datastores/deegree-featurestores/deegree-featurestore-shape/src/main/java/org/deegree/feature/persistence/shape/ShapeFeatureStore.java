@@ -449,14 +449,9 @@ public class ShapeFeatureStore implements FeatureStore {
         boolean queryIndex = filterPair.first == null || !generateAlphanumericIndexes;
         Pair<Filter, SortProperty[]> p = queryIndex ? null : dbfIndex.query( recNumsAndPos, filterPair.first,
                                                                              query.getSortProperties() );
-        try {
-            HashSet<Integer> recNums = new HashSet<Integer>( unzipPair( recNumsAndPos ).first );
-            recNumsAndPos = shp.query( bbox, filter == null || p == null ? null : recNums );
-            LOG.debug( "{} records matching after BBOX filtering", recNumsAndPos.size() );
-        } catch ( IOException e ) {
-            LOG.debug( "Stack trace", e );
-            throw new FeatureStoreException( e );
-        }
+        HashSet<Integer> recNums = new HashSet<Integer>( unzipPair( recNumsAndPos ).first );
+        recNumsAndPos = shp.query( bbox, filter == null || p == null ? null : recNums );
+        LOG.debug( "{} records matching after BBOX filtering", recNumsAndPos.size() );
 
         // don't forget about filters if dbf index could not be queried
         if ( p == null ) {
