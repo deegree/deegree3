@@ -106,11 +106,13 @@ public class FunctionManager extends AbstractBasicResourceManager {
         return getFunctionProviders().get( name.toLowerCase() );
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, CRSManager.class };
     }
 
+    @Override
     public ResourceManagerMetadata<?> getMetadata() {
         return null;
     }
