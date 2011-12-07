@@ -151,12 +151,14 @@ public class Java2DTextRenderer implements TextRenderer {
         renderer.graphics.draw( line );
     }
 
+    @Override
     public void render( TextStyling styling, String text, Collection<Geometry> geoms ) {
         for ( Geometry g : geoms ) {
             render( styling, text, g );
         }
     }
 
+    @Override
     public void render( TextStyling styling, String text, Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
