@@ -53,6 +53,8 @@ import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.multi.MultiPolygon;
+import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.standard.primitive.DefaultSurface;
 
 /**
@@ -93,6 +95,13 @@ public class InteriorPoint implements FunctionProvider {
                     Geometry geom = getGeometryValue( val );
                     if ( geom != null && geom instanceof DefaultSurface ) {
                         points.add( ( (DefaultSurface) geom ).getInteriorPoint() );
+                    }
+                    if ( geom != null && geom instanceof MultiPolygon ) {
+                        for ( Polygon p : ( (MultiPolygon) geom ) ) {
+                            if ( p instanceof DefaultSurface ) {
+                                points.add( ( (DefaultSurface) p ).getInteriorPoint() );
+                            }
+                        }
                     }
                 }
                 return points.toArray( new TypedObjectNode[points.size()] );
