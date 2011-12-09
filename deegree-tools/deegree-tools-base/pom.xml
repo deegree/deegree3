@@ -23,7 +23,7 @@
       </snapshots>
     </repository>
   </repositories>
-  
+
   <properties>
     <toolboxname>d3toolbox</toolboxname>
   </properties>
@@ -32,12 +32,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-rendering-2d</artifactId>
-      <version>3.2-pre3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-sql</artifactId>
-      <version>3.2-pre3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -47,12 +47,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-iso</artifactId>
-      <version>3.2-pre3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-protocol-csw</artifactId>
-      <version>3.2-pre3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

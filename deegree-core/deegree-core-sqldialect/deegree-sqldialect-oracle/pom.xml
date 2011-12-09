@@ -49,7 +49,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-commons</artifactId>
-      <version>3.2-pre1</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

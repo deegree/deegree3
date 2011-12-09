@@ -28,12 +28,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-style</artifactId>
-      <version>3.2-pre3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-layer</artifactId>
-      <version>3.2-pre3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>

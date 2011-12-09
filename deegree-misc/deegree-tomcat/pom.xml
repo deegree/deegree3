@@ -103,7 +103,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-javacheck</artifactId>
-      <version>3.2-pre3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
