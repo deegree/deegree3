@@ -144,7 +144,7 @@ public class GeoTIFFTileStore implements TileStore {
             }
             tileMatrixSet = new TileMatrixSet( matrices );
 
-            iis.close();
+//            iis.close();
 
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );
