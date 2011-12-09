@@ -87,6 +87,9 @@ public class TileMatrixSet {
 
         // calc tile indices
         Envelope menvelope = md.getSpatialMetadata().getEnvelope();
+        if(!menvelope.intersects(envelope )){
+            return tiles.iterator();
+        }
         double mminx = menvelope.getMin().get0();
         double mminy = menvelope.getMin().get1();
         double minx = envelope.getMin().get0();
@@ -110,12 +113,12 @@ public class TileMatrixSet {
         if ( mmaxx < maxx ) {
             tilemaxx = md.getNumTilesX() - 1;
         } else {
-            tilemaxx = (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() );
+            tilemaxx = Math.max(0, (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() ));
         }
         if ( mmaxy < maxy ) {
             tilemaxy = md.getNumTilesY() - 1;
         } else {
-            tilemaxy = (int) Math.floor( ( maxy - mminy ) / md.getTileHeight() );
+            tilemaxy = Math.max(0, (int) Math.floor( ( maxy - mminy ) / md.getTileHeight() ));
         }
 
         LOG.debug( "Selected tile matrix with resolution {}, from {}x{} to {}x{}.", new Object[] { md.getResolution(),
