@@ -24,27 +24,23 @@
     </repository>
   </repositories>
 
-  <!-- <build> -->
-  <!--   <plugins> -->
-  <!--     <plugin> -->
-  <!--       <groupId>org.jvnet.jaxb2.maven2</groupId> -->
-  <!--       <artifactId>maven-jaxb2-plugin</artifactId> -->
-  <!--       <dependencies> -->
-  <!--         <dependency> -->
-  <!--           <groupId>org.deegree</groupId> -->
-  <!--           <artifactId>deegree-core-geometry</artifactId> -->
-  <!--           <version>${project.version}</version> -->
-  <!--         </dependency> -->
-  <!--       </dependencies> -->
-  <!--     </plugin> -->
-  <!--   </plugins> -->
-  <!-- </build> -->
-
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-geometry</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.0-rc1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
