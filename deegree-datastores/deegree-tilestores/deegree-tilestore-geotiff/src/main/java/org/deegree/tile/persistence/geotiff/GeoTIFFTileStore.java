@@ -103,6 +103,8 @@ public class GeoTIFFTileStore implements TileStore {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
+        ImageReader reader = null;
+        ImageInputStream iis = null;
         try {
             ICRS crs = null;
             if ( this.crs != null ) {
@@ -110,11 +112,10 @@ public class GeoTIFFTileStore implements TileStore {
             }
 
             Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
-            ImageReader reader = null;
             while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
                 reader = readers.next();
             }
-            ImageInputStream iis = createImageInputStream( file );
+            iis = createImageInputStream( file );
             // this is already checked in provider
             reader.setInput( iis );
             int num = reader.getNumImages( true );
@@ -151,10 +152,19 @@ public class GeoTIFFTileStore implements TileStore {
             }
             tileMatrixSet = new DefaultTileMatrixSet( matrices );
 
-            iis.close();
-
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );
+        } finally {
+            try {
+                if ( iis != null ) {
+                    iis.close();
+                }
+                if ( reader != null ) {
+                    reader.dispose();
+                }
+            } catch ( Throwable e ) {
+                throw new ResourceInitException( "Unable to close image input stream, this should not happen.", e );
+            }
         }
     }
 
