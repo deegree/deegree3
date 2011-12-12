@@ -43,7 +43,7 @@ package org.deegree.tile.persistence;
 import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
- * <code>TileStoreProvider</code>
+ * <code>TileStoreProvider</code> is the SPI interface that tile store implementations need to implement.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $

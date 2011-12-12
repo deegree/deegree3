@@ -48,18 +48,38 @@ import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
 
 /**
- * <code>TileStore</code>
+ * The <code>TileStore</code> interface defines a deegree resource that can be used to read tiles. It's planned to
+ * extend the interface to provide write access as well (that's why it has been called store already).
+ * 
+ * <p>
+ * TODO: specify transactional methods, think about what the WMTS protocol will need (probably the
+ * <code>TileMatrixMetadata</code>) and provide access here.
+ * </p>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public interface TileStore extends Resource {
 
+    /**
+     * Returns the spatial extent of this tile store. Once instantiated, the extent of a tile store must not change,
+     * even when it's transactional.
+     * 
+     * @return the envelope and crs of this tile store, never null.
+     */
     SpatialMetadata getMetadata();
-    
+
+    /**
+     * Creates tile stream according to the parameters.
+     * 
+     * @param envelope
+     *            the extent of tiles needed, never null
+     * @param resolution
+     *            the desired minimum resolution of tiles, must be positive
+     * @return an iterator of tiles for the given envelope and resolution.
+     */
     Iterator<Tile> getTiles( Envelope envelope, double resolution );
 
 }
