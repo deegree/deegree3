@@ -42,6 +42,7 @@ package org.deegree.tile.persistence.geotiff;
 
 import static java.util.Collections.singletonList;
 import static javax.imageio.ImageIO.createImageInputStream;
+import static javax.imageio.ImageIO.getImageReadersBySuffix;
 import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
@@ -50,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
@@ -83,8 +85,6 @@ public class GeoTIFFTileStore implements TileStore {
 
     private static final Logger LOG = getLogger( GeoTIFFTileStore.class );
 
-    private final TIFFImageReader reader;
-
     private final File file;
 
     private final String crs;
@@ -93,8 +93,7 @@ public class GeoTIFFTileStore implements TileStore {
 
     private SpatialMetadata spatialMetadata;
 
-    public GeoTIFFTileStore( TIFFImageReader reader, File file, String crs ) {
-        this.reader = reader;
+    public GeoTIFFTileStore( File file, String crs ) {
         this.file = file;
         this.crs = crs;
     }
@@ -108,7 +107,13 @@ public class GeoTIFFTileStore implements TileStore {
                 crs = CRSManager.getCRSRef( this.crs );
             }
 
+            Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
+            ImageReader reader = null;
+            while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
+                reader = readers.next();
+            }
             ImageInputStream iis = createImageInputStream( file );
+            // this is already checked in provider
             reader.setInput( iis );
             int num = reader.getNumImages( true );
             IIOMetadata md = reader.getImageMetadata( 0 );
@@ -137,14 +142,14 @@ public class GeoTIFFTileStore implements TileStore {
                 double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
                 TileMatrixMetadata tmd = new TileMatrixMetadata( smd, new Pair<Integer, Integer>( tw, th ), res, numx,
                                                                  numy );
-                GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, reader, i );
+                GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, file, i );
                 matrices.add( matrix );
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );
             }
             tileMatrixSet = new DefaultTileMatrixSet( matrices );
 
-            // iis.close();
+            iis.close();
 
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );
@@ -153,7 +158,7 @@ public class GeoTIFFTileStore implements TileStore {
 
     @Override
     public void destroy() {
-        reader.dispose();
+        // nothing to destroy
     }
 
     @Override

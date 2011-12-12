@@ -40,7 +40,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
+import static javax.imageio.ImageIO.createImageInputStream;
+import static javax.imageio.ImageIO.getImageReadersBySuffix;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -60,15 +69,16 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     private final TileMatrixMetadata metadata;
 
-    private final TIFFImageReader reader;
 
     private final int imageIndex;
 
     private final GeometryFactory fac = new GeometryFactory();
 
-    public GeoTIFFTileMatrix( TileMatrixMetadata metadata, TIFFImageReader reader, int imageIndex ) {
+    private final File file;
+
+    public GeoTIFFTileMatrix( TileMatrixMetadata metadata, File file, int imageIndex ) {
         this.metadata = metadata;
-        this.reader = reader;
+        this.file = file;
         this.imageIndex = imageIndex;
     }
 
@@ -79,14 +89,27 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     @Override
     public GeoTIFFTile getTile( int x, int y ) {
-        double res = metadata.getResolution();
-        double width = metadata.getTileWidth() * res;
-        double height = metadata.getTileHeight() * res;
+        Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
+        ImageReader reader = null;
+        while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
+            reader = readers.next();
+        }
+        ImageInputStream iis;
+        try {
+            iis = createImageInputStream( file );
+            // already checked in provider
+            reader.setInput( iis );
+        } catch ( IOException e ) {
+            // think about how to do this properly
+        }
+
+        double width = metadata.getTileWidth();
+        double height = metadata.getTileHeight();
         Envelope env = metadata.getSpatialMetadata().getEnvelope();
         double minx = width * x + env.getMin().get0();
-        double miny = height * y + env.getMin().get1();
-        Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny + height, env.getCoordinateSystem() );
-        return new GeoTIFFTile( reader, imageIndex, x, y, envelope );
+        double miny = env.getMax().get1() - height * y;
+        Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny - height, env.getCoordinateSystem() );
+        return new GeoTIFFTile( (TIFFImageReader) reader, imageIndex, x, y, envelope );
     }
 
 }

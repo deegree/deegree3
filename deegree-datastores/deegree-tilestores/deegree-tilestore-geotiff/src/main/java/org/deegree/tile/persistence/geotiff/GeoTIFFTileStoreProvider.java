@@ -95,7 +95,7 @@ public class GeoTIFFTileStoreProvider implements TileStoreProvider {
             String file = p.getPyramidFile();
             File resolved = new File( configUrl.toURI().resolve( file ) );
 
-            return new GeoTIFFTileStore( (TIFFImageReader) reader, resolved, p.getCRS() );
+            return new GeoTIFFTileStore( resolved, p.getCRS() );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );
         }
