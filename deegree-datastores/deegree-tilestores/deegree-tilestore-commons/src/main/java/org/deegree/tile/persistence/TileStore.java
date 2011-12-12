@@ -78,7 +78,7 @@ public interface TileStore extends Resource {
      *            the extent of tiles needed, never null
      * @param resolution
      *            the desired minimum resolution of tiles, must be positive
-     * @return an iterator of tiles for the given envelope and resolution.
+     * @return an iterator of tiles for the given envelope and resolution, never null.
      */
     Iterator<Tile> getTiles( Envelope envelope, double resolution );
 
