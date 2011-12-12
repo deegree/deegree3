@@ -126,8 +126,9 @@ public class CoverageLayerData implements LayerData {
                 raster = new RasterFilter( raster ).apply( cbr, filter );
             }
 
-            LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null ? null
-                                                                                          : style.evaluate( null, null );
+            LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null || style.isDefault() ? null
+                                                                                                               : style.evaluate( null,
+                                                                                                                                 null );
             if ( list != null && list.size() > 0 ) {
                 for ( Triple<Styling, LinkedList<Geometry>, String> t : list ) {
                     renderer.render( (RasterStyling) t.first, raster );
