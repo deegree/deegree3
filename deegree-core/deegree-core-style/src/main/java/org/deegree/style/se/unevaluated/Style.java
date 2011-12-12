@@ -176,6 +176,13 @@ public class Style implements Copyable<Style> {
     }
 
     /**
+     * @return true, if this is the default style (built with default constructor)
+     */
+    public boolean isDefault() {
+        return useDefault;
+    }
+
+    /**
      * Uses first geometry and default style in specified color.
      */
     public Style( Color c ) {
