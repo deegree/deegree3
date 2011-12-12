@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transaction xmlns="http://www.opengis.net/cat/csw/2.0.2" version="2.0.2" service="CSW">
   <Insert>
-    <MD_Metadata xmlns="http://www.isotc211.org/2005/gmd" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.isotc211.org/2005/gmd ../../apiso.xsd">
+    <MD_Metadata xmlns="http://www.isotc211.org/2005/gmd" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd">
   <fileIdentifier>
     <gco:CharacterString>655e5998-a20e-66b5-c888-00005553421</gco:CharacterString>
   </fileIdentifier>
