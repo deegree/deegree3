@@ -97,32 +97,27 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
         double mminy = menvelope.getMin().get1();
         double minx = envelope.getMin().get0();
         double miny = envelope.getMin().get1();
-        double mmaxx = menvelope.getMax().get0();
-        double mmaxy = menvelope.getMax().get1();
         double maxx = envelope.getMax().get0();
         double maxy = envelope.getMax().get1();
 
-        int tileminx, tileminy, tilemaxx, tilemaxy;
-        if ( mminx > minx ) {
-            tileminx = 0;
-        } else {
-            tileminx = (int) Math.floor( ( minx - mminx ) / md.getTileWidth() );
-        }
-        if ( mminy > miny ) {
-            tileminy = 0;
-        } else {
-            tileminy = (int) Math.floor( ( miny - mminy ) / md.getTileHeight() );
-        }
-        if ( mmaxx < maxx ) {
-            tilemaxx = md.getNumTilesX() - 1;
-        } else {
-            tilemaxx = Math.max( 0, (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() ) );
-        }
-        if ( mmaxy < maxy ) {
-            tilemaxy = md.getNumTilesY() - 1;
-        } else {
-            tilemaxy = Math.max( 0, (int) Math.floor( ( maxy - mminy ) / md.getTileHeight() ) );
-        }
+        int tileminx = (int) Math.floor( ( minx - mminx ) / md.getTileWidth() );
+        int tileminy = (int) Math.floor( ( miny - mminy ) / md.getTileHeight() );
+        int tilemaxx = (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() );
+        int tilemaxy = (int) Math.ceil( ( maxy - mminy ) / md.getTileHeight() );
+
+        // sanitize values
+        tileminx = Math.max( 0, tileminx );
+        tileminy = Math.max( 0, tileminy );
+        tilemaxx = Math.max( 0, tilemaxx );
+        tilemaxy = Math.max( 0, tilemaxy );
+        tileminx = Math.min( md.getNumTilesX() - 1, tileminx );
+        tileminy = Math.min( md.getNumTilesY() - 1, tileminy );
+        tilemaxx = Math.min( md.getNumTilesX() - 1, tilemaxx );
+        tilemaxy = Math.min( md.getNumTilesY() - 1, tilemaxy );
+
+        int h = tileminy;
+        tileminy = md.getNumTilesY() - tilemaxy - 1;
+        tilemaxy = md.getNumTilesY() - h - 1;
 
         LOG.debug( "Selected tile matrix with resolution {}, from {}x{} to {}x{}.", new Object[] { md.getResolution(),
                                                                                                   tileminx, tileminy,
