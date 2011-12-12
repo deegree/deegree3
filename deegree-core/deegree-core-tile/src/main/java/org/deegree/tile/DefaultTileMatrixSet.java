@@ -58,13 +58,13 @@ import org.slf4j.Logger;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class TileMatrixSet {
+public class DefaultTileMatrixSet {
 
-    private static final Logger LOG = getLogger( TileMatrixSet.class );
+    private static final Logger LOG = getLogger( DefaultTileMatrixSet.class );
 
     private final List<TileMatrix> matrices;
 
-    public TileMatrixSet( List<TileMatrix> matrices ) {
+    public DefaultTileMatrixSet( List<TileMatrix> matrices ) {
         this.matrices = matrices;
     }
 

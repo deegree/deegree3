@@ -45,7 +45,9 @@ import java.awt.image.BufferedImage;
 import org.deegree.geometry.Envelope;
 
 /**
- * <code>Tile</code>
+ * The <code>Tile</code> interface specifies a single tile. For streaming purposes implementations are required to not
+ * load the data in memory, but only generate it upon request. At a later time it's planned to add other method
+ * specifications to obtain the tile as stream or URL.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -55,8 +57,19 @@ import org.deegree.geometry.Envelope;
 
 public interface Tile {
 
+    /**
+     * This method must generate the image only upon request. It should not hold a reference to the data after creating
+     * it, caching is done on a different level.
+     * 
+     * @return the tile as image, never null.
+     */
     BufferedImage getAsImage();
 
+    /**
+     * Returns the envelope of the tile data, specified from the outer bounds of the border pixels.
+     * 
+     * @return the envelope, never null.
+     */
     Envelope getEnvelope();
 
 }

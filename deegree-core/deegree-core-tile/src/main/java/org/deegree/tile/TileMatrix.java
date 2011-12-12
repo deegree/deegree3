@@ -41,7 +41,7 @@
 package org.deegree.tile;
 
 /**
- * <code>TileMatrix</code>
+ * A <code>TileMatrix</code> is a grid of tiles. Tile indices are counted from 0.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -51,8 +51,20 @@ package org.deegree.tile;
 
 public interface TileMatrix {
 
+    /**
+     * Returns the tile matrix metadata, which describes the extent of data, size of tiles etc.
+     * 
+     * @return the metadata, never null.
+     */
     TileMatrixMetadata getMetadata();
 
+    /**
+     * Retrieve a single tile.
+     * 
+     * @param x
+     * @param y
+     * @return the tile at x/y. May return null if there is no such tile.
+     */
     Tile getTile( int x, int y );
 
 }
