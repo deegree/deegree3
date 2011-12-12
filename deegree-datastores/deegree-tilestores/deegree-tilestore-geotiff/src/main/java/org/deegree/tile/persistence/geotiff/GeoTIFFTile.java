@@ -43,8 +43,11 @@ package org.deegree.tile.persistence.geotiff;
 import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Hashtable;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.slf4j.Logger;
@@ -68,18 +71,40 @@ public class GeoTIFFTile implements Tile {
 
     private final Envelope envelope;
 
-    public GeoTIFFTile( TIFFImageReader reader, int imageIndex, int x, int y, Envelope envelope ) {
+    private final Pair<Integer, Integer> size;
+
+    public GeoTIFFTile( TIFFImageReader reader, int imageIndex, int x, int y, Envelope envelope,
+                        Pair<Integer, Integer> size ) {
         this.reader = reader;
         this.imageIndex = imageIndex;
         this.x = x;
         this.y = y;
         this.envelope = envelope;
+        this.size = size;
     }
 
     @Override
     public BufferedImage getAsImage() {
         try {
-            return reader.readTile( imageIndex, x, y );
+            BufferedImage img = reader.readTile( imageIndex, x, y );
+            if ( img.getWidth() != size.first || img.getHeight() != size.second ) {
+                Hashtable table = new Hashtable();
+                String[] props = img.getPropertyNames();
+                if ( props != null ) {
+                    for ( String p : props ) {
+                        table.put( p, img.getProperty( p ) );
+                    }
+                }
+                BufferedImage img2 = new BufferedImage( img.getColorModel(),
+                                                        img.getData().createCompatibleWritableRaster( size.first,
+                                                                                                      size.second ),
+                                                        img.isAlphaPremultiplied(), table );
+                Graphics2D g = img2.createGraphics();
+                g.drawImage( img, 0, 0, null );
+                g.dispose();
+                img = img2;
+            }
+            return img;
         } catch ( Throwable e ) {
             LOG.error( "Could not read GeoTIFF tile: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace: ", e );
