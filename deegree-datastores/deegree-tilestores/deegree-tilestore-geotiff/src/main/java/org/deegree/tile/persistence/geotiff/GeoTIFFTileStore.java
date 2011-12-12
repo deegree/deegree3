@@ -43,6 +43,8 @@ package org.deegree.tile.persistence.geotiff;
 import static java.util.Collections.singletonList;
 import static javax.imageio.ImageIO.createImageInputStream;
 import static javax.imageio.ImageIO.getImageReadersBySuffix;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
@@ -65,10 +67,10 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.tile.DefaultTileMatrixSet;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
-import org.deegree.tile.DefaultTileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
 import org.slf4j.Logger;
 
@@ -201,13 +203,13 @@ public class GeoTIFFTileStore implements TileStore {
                     // rb: this might not always be right, see examples at
                     // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
                     // search for PixelIsArea/PixelIsPoint to determine center/outer
-                    rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0],
-                                                              -scale[1], tiePoints[3], tiePoints[4], crs );
+                    rasterReference = new RasterGeoReference( CENTER, scale[0], -scale[1], tiePoints[3], tiePoints[4],
+                                                              crs );
                 } else {
-                    rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0],
-                                                              -scale[1], tiePoints[3], tiePoints[4], crs );
+                    rasterReference = new RasterGeoReference( OUTER, scale[0], -scale[1], tiePoints[3], tiePoints[4],
+                                                              crs );
                 }
-                return rasterReference.getEnvelope( width, height, crs );
+                return rasterReference.getEnvelope( OUTER, width, height, crs );
             }
 
         } catch ( UnsupportedOperationException ex ) {
