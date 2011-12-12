@@ -40,16 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
-import static javax.imageio.ImageIO.createImageInputStream;
-import static javax.imageio.ImageIO.getImageReadersBySuffix;
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -88,20 +79,6 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     @Override
     public GeoTIFFTile getTile( int x, int y ) {
-        Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
-        ImageReader reader = null;
-        while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
-            reader = readers.next();
-        }
-        ImageInputStream iis;
-        try {
-            iis = createImageInputStream( file );
-            // already checked in provider
-            reader.setInput( iis );
-        } catch ( IOException e ) {
-            // think about how to do this properly
-        }
-
         double width = metadata.getTileWidth();
         double height = metadata.getTileHeight();
         Envelope env = metadata.getSpatialMetadata().getEnvelope();
@@ -109,7 +86,7 @@ public class GeoTIFFTileMatrix implements TileMatrix {
         double miny = env.getMax().get1() - height * y + metadata.getResolution() / 2;
         Envelope envelope = fac.createEnvelope( minx, miny, minx + width + metadata.getResolution() / 2,
                                                 miny - height - metadata.getResolution() / 2, env.getCoordinateSystem() );
-        return new GeoTIFFTile( (TIFFImageReader) reader, imageIndex, x, y, envelope, metadata.getTileSize() );
+        return new GeoTIFFTile( file, imageIndex, x, y, envelope, metadata.getTileSize() );
     }
 
 }

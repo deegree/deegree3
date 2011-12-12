@@ -40,12 +40,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
+import static javax.imageio.ImageIO.createImageInputStream;
+import static javax.imageio.ImageIO.getImageReadersBySuffix;
 import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Iterator;
+
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
@@ -65,17 +73,16 @@ public class GeoTIFFTile implements Tile {
 
     private static final Logger LOG = getLogger( GeoTIFFTile.class );
 
-    private final TIFFImageReader reader;
-
     private final int imageIndex, x, y;
 
     private final Envelope envelope;
 
     private final Pair<Integer, Integer> size;
 
-    public GeoTIFFTile( TIFFImageReader reader, int imageIndex, int x, int y, Envelope envelope,
-                        Pair<Integer, Integer> size ) {
-        this.reader = reader;
+    private final File file;
+
+    public GeoTIFFTile( File file, int imageIndex, int x, int y, Envelope envelope, Pair<Integer, Integer> size ) {
+        this.file = file;
         this.imageIndex = imageIndex;
         this.x = x;
         this.y = y;
@@ -85,7 +92,17 @@ public class GeoTIFFTile implements Tile {
 
     @Override
     public BufferedImage getAsImage() {
+        ImageInputStream iis = null;
+        ImageReader reader = null;
         try {
+            Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
+            while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
+                reader = readers.next();
+            }
+            iis = createImageInputStream( file );
+            // already checked in provider
+            reader.setInput( iis );
+
             BufferedImage img = reader.readTile( imageIndex, x, y );
             if ( img.getWidth() != size.first || img.getHeight() != size.second ) {
                 Hashtable table = new Hashtable();
@@ -109,6 +126,17 @@ public class GeoTIFFTile implements Tile {
             LOG.error( "Could not read GeoTIFF tile: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace: ", e );
             return null;
+        } finally {
+            try {
+                if ( iis != null ) {
+                    iis.close();
+                }
+                if ( reader != null ) {
+                    reader.dispose();
+                }
+            } catch ( IOException e ) {
+                // ignore closing error
+            }
         }
     }
 

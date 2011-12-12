@@ -58,7 +58,7 @@ import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.geotiff.jaxb.Pyramid;
 
 /**
- * <code>GeoTIFFTileStoreProvider</code>
+ * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled BIGTIFF).
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
