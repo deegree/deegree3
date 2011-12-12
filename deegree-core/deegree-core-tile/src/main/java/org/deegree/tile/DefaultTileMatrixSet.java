@@ -42,7 +42,7 @@ package org.deegree.tile;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -72,9 +72,6 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
 
     @Override
     public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
-        // what's left is to produce tile objects on the fly instead of using a list here
-        List<Tile> tiles = new ArrayList<Tile>();
-
         // select correct matrix
         Iterator<TileMatrix> iter = matrices.iterator();
         TileMatrix matrix = iter.next();
@@ -87,11 +84,12 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
             matrix = next;
         }
         TileMatrixMetadata md = matrix.getMetadata();
+        final TileMatrix fmatrix = matrix;
 
         // calc tile indices
         Envelope menvelope = md.getSpatialMetadata().getEnvelope();
         if ( !menvelope.intersects( envelope ) ) {
-            return tiles.iterator();
+            return Collections.<Tile> emptyList().iterator();
         }
         double mminx = menvelope.getMin().get0();
         double mminy = menvelope.getMin().get1();
@@ -123,14 +121,34 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
                                                                                                   tileminx, tileminy,
                                                                                                   tilemaxx, tilemaxy } );
 
-        // fetch tiles
-        for ( int x = tileminx; x <= tilemaxx; ++x ) {
-            for ( int y = tileminy; y <= tilemaxy; ++y ) {
-                tiles.add( matrix.getTile( x, y ) );
-            }
-        }
+        final int fminx = tileminx, fminy = tileminy, fmaxx = tilemaxx, fmaxy = tilemaxy;
 
-        return tiles.iterator();
+        // fetch tiles lazily
+        return new Iterator<Tile>() {
+            int x = fminx, y = fminy;
+
+            @Override
+            public boolean hasNext() {
+                return x <= fmaxx;
+            }
+
+            @Override
+            public Tile next() {
+                Tile t = fmatrix.getTile( x, y );
+                if ( y == fmaxy ) {
+                    y = fminy;
+                    ++x;
+                } else {
+                    ++y;
+                }
+                return t;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
     @Override
