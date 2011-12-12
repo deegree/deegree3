@@ -50,7 +50,9 @@ import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
 /**
- * <code>TileMatrixSet</code>
+ * The <code>DefaultTileMatrixSet</code> is an implementation of the <code>TileMatrixSet</code> that selects tile
+ * matrices manually based on the tile matrix metadata. It can be used in conjunction with any tile matrix
+ * implementation.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -58,7 +60,7 @@ import org.slf4j.Logger;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class DefaultTileMatrixSet {
+public class DefaultTileMatrixSet implements TileMatrixSet {
 
     private static final Logger LOG = getLogger( DefaultTileMatrixSet.class );
 
@@ -68,6 +70,7 @@ public class DefaultTileMatrixSet {
         this.matrices = matrices;
     }
 
+    @Override
     public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
         // what's left is to produce tile objects on the fly instead of using a list here
         List<Tile> tiles = new ArrayList<Tile>();
@@ -87,7 +90,7 @@ public class DefaultTileMatrixSet {
 
         // calc tile indices
         Envelope menvelope = md.getSpatialMetadata().getEnvelope();
-        if(!menvelope.intersects(envelope )){
+        if ( !menvelope.intersects( envelope ) ) {
             return tiles.iterator();
         }
         double mminx = menvelope.getMin().get0();
@@ -113,12 +116,12 @@ public class DefaultTileMatrixSet {
         if ( mmaxx < maxx ) {
             tilemaxx = md.getNumTilesX() - 1;
         } else {
-            tilemaxx = Math.max(0, (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() ));
+            tilemaxx = Math.max( 0, (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() ) );
         }
         if ( mmaxy < maxy ) {
             tilemaxy = md.getNumTilesY() - 1;
         } else {
-            tilemaxy = Math.max(0, (int) Math.floor( ( maxy - mminy ) / md.getTileHeight() ));
+            tilemaxy = Math.max( 0, (int) Math.floor( ( maxy - mminy ) / md.getTileHeight() ) );
         }
 
         LOG.debug( "Selected tile matrix with resolution {}, from {}x{} to {}x{}.", new Object[] { md.getResolution(),
@@ -133,6 +136,11 @@ public class DefaultTileMatrixSet {
         }
 
         return tiles.iterator();
+    }
+
+    @Override
+    public List<TileMatrix> getTileMatrices() {
+        return matrices;
     }
 
 }

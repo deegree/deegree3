@@ -66,7 +66,7 @@ import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.DefaultTileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
 import org.slf4j.Logger;
 
@@ -89,7 +89,7 @@ public class GeoTIFFTileStore implements TileStore {
 
     private final String crs;
 
-    private TileMatrixSet tileMatrixSet;
+    private DefaultTileMatrixSet tileMatrixSet;
 
     private SpatialMetadata spatialMetadata;
 
@@ -135,16 +135,16 @@ public class GeoTIFFTileStore implements TileStore {
                 int numx = (int) Math.ceil( (double) width / (double) tw );
                 int numy = (int) Math.ceil( (double) height / (double) th );
                 double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
-                TileMatrixMetadata tmd = new TileMatrixMetadata( smd, width, height,
-                                                                 new Pair<Integer, Integer>( tw, th ), res, numx, numy );
+                TileMatrixMetadata tmd = new TileMatrixMetadata( smd, new Pair<Integer, Integer>( tw, th ), res, numx,
+                                                                 numy );
                 GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, reader, i );
                 matrices.add( matrix );
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );
             }
-            tileMatrixSet = new TileMatrixSet( matrices );
+            tileMatrixSet = new DefaultTileMatrixSet( matrices );
 
-//            iis.close();
+            // iis.close();
 
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );

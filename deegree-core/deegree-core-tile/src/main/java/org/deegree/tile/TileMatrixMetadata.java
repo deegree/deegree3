@@ -44,7 +44,8 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.metadata.SpatialMetadata;
 
 /**
- * <code>TileMatrixMetadata</code>
+ * The <code>TileMatrixMetadata</code> describes the properties of a tile matrix. It can be used to determine which
+ * tiles to request from the matrix.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -56,16 +57,28 @@ public class TileMatrixMetadata {
 
     private SpatialMetadata spatialMetadata;
 
-    private int width, height, numTilesX, numTilesY;
+    private int numTilesX, numTilesY;
 
     private Pair<Integer, Integer> tileSize;
 
     private double resolution, tileWidth, tileHeight;
 
-    public TileMatrixMetadata( SpatialMetadata spatialMetadata, int width, int height, Pair<Integer, Integer> tileSize,
-                               double resolution, int numTilesX, int numTilesY ) {
-        this.width = width;
-        this.height = height;
+    /**
+     * All fields must be set. The width/height of the tiles in world coordinates is calculated automatically.
+     * 
+     * @param spatialMetadata
+     *            the envelope and coordinate system, never null
+     * @param tileSize
+     *            the pixel width/height of a tile
+     * @param resolution
+     *            the resolution of a pixel in world coordinates
+     * @param numTilesX
+     *            the number of tiles in x direction
+     * @param numTilesY
+     *            the number of tiles in y direction
+     */
+    public TileMatrixMetadata( SpatialMetadata spatialMetadata, Pair<Integer, Integer> tileSize, double resolution,
+                               int numTilesX, int numTilesY ) {
         this.spatialMetadata = spatialMetadata;
         this.tileSize = tileSize;
         this.resolution = resolution;
@@ -75,66 +88,51 @@ public class TileMatrixMetadata {
         this.tileHeight = tileSize.second * resolution;
     }
 
-    public void setSpatialMetadata( SpatialMetadata spatialMetadata ) {
-        this.spatialMetadata = spatialMetadata;
-    }
-
+    /**
+     * @return the envelope and crs, never null
+     */
     public SpatialMetadata getSpatialMetadata() {
         return spatialMetadata;
     }
 
-    public void setWidth( int width ) {
-        this.width = width;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setHeight( int height ) {
-        this.height = height;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setTileSize( Pair<Integer, Integer> tileSize ) {
-        this.tileSize = tileSize;
-    }
-
+    /**
+     * @return the width/height of a tile
+     */
     public Pair<Integer, Integer> getTileSize() {
         return tileSize;
     }
 
-    public void setResolution( double resolution ) {
-        this.resolution = resolution;
-    }
-
+    /**
+     * @return the resolution of a pixel in world coordinates
+     */
     public double getResolution() {
         return resolution;
     }
 
-    public void setNumTilesX( int numTilesX ) {
-        this.numTilesX = numTilesX;
-    }
-
+    /**
+     * @return the number of tiles in x direction
+     */
     public int getNumTilesX() {
         return numTilesX;
     }
 
-    public void setNumTilesY( int numTilesY ) {
-        this.numTilesY = numTilesY;
-    }
-
+    /**
+     * @return the number of tiles in y direction
+     */
     public int getNumTilesY() {
         return numTilesY;
     }
 
+    /**
+     * @return the width of a tile in world coordinates (outer edges)
+     */
     public double getTileWidth() {
         return tileWidth;
     }
 
+    /**
+     * @return the height of a tile in world coordinates (outer edges)
+     */
     public double getTileHeight() {
         return tileHeight;
     }
