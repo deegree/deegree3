@@ -92,7 +92,6 @@ public class BBoxTracker {
                     LOG.error( "Tracking bbox increase failed. Falling back to full recalculation. Error: "
                                + t.getMessage() );
                     recalcFts.add( f.getName() );
-                    increaseBBoxes.remove( f.getName() );
                 }
             }
         }
@@ -107,7 +106,6 @@ public class BBoxTracker {
     public void update( QName ft ) {
         LOG.debug( "Update on feature type '" + ft + "'. Full bbox recalculation required on commit." );
         recalcFts.add( ft );
-        increaseBBoxes.remove( ft );
     }
 
     /**
@@ -119,7 +117,6 @@ public class BBoxTracker {
     public void delete( QName ft ) {
         LOG.debug( "Delete on feature type '" + ft + "'. Full bbox recalculation required on commit." );
         recalcFts.add( ft );
-        increaseBBoxes.remove( ft );
     }
 
     /**

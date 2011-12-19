@@ -208,11 +208,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
 
-            // handle bbox recalculations
-            for ( QName ftName : recalcFTs ) {
-                Envelope bbox = fs.calcEnvelope( ftName, conn );
-                fs.getBBoxCache().set( ftName, bbox );
+            // TODO configuration switch for bbox recalculation strategy
+            if ( !recalcFTs.isEmpty() ) {
+                LOG.debug( "Full recalculation of feature type envelopes required. Delete 'bbox_cache.properties' if you need minimal envelopes." );
             }
+
             try {
                 fs.getBBoxCache().persist();
             } catch ( Throwable t ) {
