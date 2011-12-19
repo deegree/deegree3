@@ -115,7 +115,7 @@ public class CityGMLImporter implements ModelImporter {
 
     private static final String CITYGML_SCHEMA = CityGMLImporter.class.getResource( "schema/citygml100_old/CityGML.xsd" ).toString();
 
-    private static final String OPENGIS_SCHEMA = "http://schemas.opengis.net/citygml/building/1.0/building.xsd";
+    private static final String OPENGIS_SCHEMA = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
 
     private final String SCHEMA_URL;
 
