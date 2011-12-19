@@ -68,6 +68,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.persistence.BBoxTracker;
 import org.deegree.feature.persistence.FeatureInspector;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -123,11 +124,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final BlobMapping blobMapping;
 
-    private final TransactionManager taManager;
-
     private final Connection conn;
 
     private final List<FeatureInspector> inspectors;
+
+    private final BBoxTracker bboxTracker;
 
     // TODO
     private ParticleConverter<Geometry> blobGeomConverter;
@@ -136,9 +137,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
      * Creates a new {@link SQLFeatureStoreTransaction} instance.
      * 
      * @param store
-     *            invoking feature store instance, must not be <code>null</code>
-     * @param taManager
-     *            transaction manager, must not be <code>null</code>
+     *            corresponding feature store instance, must not be <code>null</code>
      * @param conn
      *            JDBC connection associated with the transaction, must not be <code>null</code> and have
      *            <code>autocommit</code> set to <code>false</code>
@@ -147,10 +146,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
      * @param inspectors
      *            feature inspectors, must not be <code>null</code>
      */
-    SQLFeatureStoreTransaction( SQLFeatureStore store, TransactionManager taManager, Connection conn,
-                                MappedAppSchema schema, List<FeatureInspector> inspectors ) {
+    SQLFeatureStoreTransaction( SQLFeatureStore store, Connection conn, MappedAppSchema schema,
+                                List<FeatureInspector> inspectors ) {
         this.fs = store;
-        this.taManager = taManager;
         this.conn = conn;
         this.schema = schema;
         this.inspectors = inspectors;
@@ -162,6 +160,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                                                                    geometryParams, null );
             blobGeomConverter = fs.getGeometryConverter( blobGeomMapping );
         }
+        this.bboxTracker = new BBoxTracker();
     }
 
     @Override
@@ -170,22 +169,73 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
         LOG.debug( "Committing transaction." );
         try {
-            // TODO only recalculate if necessary
-            for ( FeatureType ft : getStore().getSchema().getFeatureTypes( null, false, false ) ) {
-                Envelope bbox = fs.calcEnvelope( ft.getName(), conn );
-                fs.getBBoxCache().set( ft.getName(), bbox );
-            }
-            try {
-                fs.getBBoxCache().persist();
-            } catch ( Throwable t ) {
-                LOG.debug( "Unable to persist bbox cache: " + t.getMessage() );
-            }
             conn.commit();
+            updateBBoxCache();
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
             throw new FeatureStoreException( "Unable to commit SQL transaction: " + t.getMessage() );
         } finally {
-            taManager.releaseTransaction( this );
+            try {
+                conn.close();
+            } catch ( SQLException e ) {
+                LOG.error( "Error closing connection/removing it from the pool." );
+            }
+        }
+    }
+
+    private void updateBBoxCache()
+                            throws FeatureStoreException {
+
+        // beware of concurrent transactions
+        synchronized ( fs ) {
+
+            Set<QName> recalcFTs = bboxTracker.getRecalcFeatureTypes();
+            Map<QName, Envelope> ftNamesToIncreaseBBoxes = bboxTracker.getIncreaseBBoxes();
+
+            // handle bbox increases
+            for ( Entry<QName, Envelope> ftNameToIncreaseBBox : ftNamesToIncreaseBBoxes.entrySet() ) {
+                QName ftName = ftNameToIncreaseBBox.getKey();
+                Envelope bbox = null;
+                if ( fs.getBBoxCache().contains( ftName ) ) {
+                    bbox = ftNameToIncreaseBBox.getValue();
+                }
+                if ( bbox != null ) {
+                    Envelope oldBbox = fs.getBBoxCache().get( ftName );
+                    if ( oldBbox != null ) {
+                        bbox = oldBbox.merge( bbox );
+                    }
+                    fs.getBBoxCache().set( ftName, bbox );
+                }
+            }
+
+            // handle bbox recalculations
+            for ( QName ftName : recalcFTs ) {
+                Envelope bbox = fs.calcEnvelope( ftName, conn );
+                fs.getBBoxCache().set( ftName, bbox );
+            }
+            try {
+                fs.getBBoxCache().persist();
+            } catch ( Throwable t ) {
+                LOG.error( "Unable to persist bbox cache: " + t.getMessage() );
+            }
+        }
+    }
+
+    @Override
+    public void rollback()
+                            throws FeatureStoreException {
+        LOG.debug( "Performing rollback of transaction." );
+        try {
+            conn.rollback();
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( "Unable to rollback SQL transaction: " + e.getMessage() );
+        } finally {
+            try {
+                conn.close();
+            } catch ( SQLException e ) {
+                LOG.error( "Error closing connection/removing it from the pool." );
+            }
         }
     }
 
@@ -214,13 +264,18 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performDelete( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
-
         int deleted = 0;
         if ( blobMapping != null ) {
             deleted = performDeleteBlob( filter, lock );
         } else {
             deleted = performDeleteRelational( filter, lock );
         }
+
+        // TODO improve this
+        for ( FeatureType ft : schema.getFeatureTypes( null, false, false ) ) {
+            bboxTracker.delete( ft.getName() );
+        }
+
         return deleted;
     }
 
@@ -574,6 +629,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                     if ( ftMapping != null ) {
                         throw new UnsupportedOperationException();
                     }
+                    ICRS storageSrs = blobMapping.getCRS();
+                    bboxTracker.insert( feature, storageSrs );
                 }
                 if ( blobInsertStmt != null ) {
                     blobInsertStmt.close();
@@ -589,6 +646,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                                                          + "'. No mapping defined and BLOB mode is off." );
                     }
                     idAssignments.add( insertManager.insertFeature( feature, ftMapping ) );
+                    Pair<TableName, GeometryMapping> mapping = ftMapping.getDefaultGeometryMapping();
+                    if ( mapping != null ) {
+                        ICRS storageSrs = mapping.second.getCRS();
+                        bboxTracker.insert( feature, storageSrs );
+                    }
                 }
                 if ( insertManager.getDelayedRows() != 0 ) {
                     String msg = "After insertion, " + insertManager.getDelayedRows()
@@ -697,6 +759,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
         }
+        bboxTracker.update( ftName );
         return performUpdate( ftName, replacementProps, idFilter );
     }
 
@@ -857,19 +920,5 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         }
         return new IdFilter( ids );
-    }
-
-    @Override
-    public void rollback()
-                            throws FeatureStoreException {
-        LOG.debug( "Performing rollback of transaction." );
-        try {
-            conn.rollback();
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new FeatureStoreException( "Unable to rollback SQL transaction: " + e.getMessage() );
-        } finally {
-            taManager.releaseTransaction( this );
-        }
     }
 }

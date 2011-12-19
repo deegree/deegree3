@@ -62,6 +62,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
@@ -103,7 +104,6 @@ import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.deegree.feature.persistence.sql.rules.Mappings;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.stream.CombinedFeatureInputStream;
 import org.deegree.feature.stream.FeatureInputStream;
@@ -111,7 +111,6 @@ import org.deegree.feature.stream.FilteredFeatureInputStream;
 import org.deegree.feature.stream.IteratorFeatureInputStream;
 import org.deegree.feature.stream.MemoryFeatureInputStream;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.Filter;
@@ -163,8 +162,6 @@ public class SQLFeatureStore implements FeatureStore {
     private final boolean allowInMemoryFiltering;
 
     private MappedAppSchema schema;
-
-    private TransactionManager taManager;
 
     private BlobMapping blobMapping;
 
@@ -232,7 +229,6 @@ public class SQLFeatureStore implements FeatureStore {
         this.workspace = workspace;
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
-        taManager = new TransactionManager( this, getConnId(), inspectors );
         initConverters();
         try {
             // however TODO it properly on the DB
@@ -426,19 +422,14 @@ public class SQLFeatureStore implements FeatureStore {
         LOG.trace( "Determining BBOX for feature type '{}' (relational mode)", ftMapping.getFeatureType() );
 
         String column = null;
-        FeatureType ft = getSchema().getFeatureType( ftMapping.getFeatureType() );
-        GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
-        if ( pt == null ) {
+        Pair<TableName, GeometryMapping> propMapping = ftMapping.getDefaultGeometryMapping();
+        if ( propMapping == null ) {
             return null;
         }
-        Mapping propMapping = ftMapping.getMapping( pt.getName() );
-        GeometryMapping mapping = Mappings.getGeometryMapping( propMapping );
-        if ( mapping == null ) {
-            return null;
-        }
-        MappingExpression me = mapping.getMapping();
+        MappingExpression me = propMapping.second.getMapping();
         if ( me == null || !( me instanceof DBField ) ) {
-            String msg = "Cannot determine BBOX for feature type '" + ft.getName() + "' (relational mode).";
+            String msg = "Cannot determine BBOX for feature type '" + ftMapping.getFeatureType()
+                         + "' (relational mode).";
             LOG.warn( msg );
             return null;
         }
@@ -448,7 +439,7 @@ public class SQLFeatureStore implements FeatureStore {
         StringBuilder sql = new StringBuilder( "SELECT " );
         sql.append( dialect.getBBoxAggregateSnippet( column ) );
         sql.append( " FROM " );
-        sql.append( ftMapping.getFtTable() );
+        sql.append( propMapping.first );
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -457,7 +448,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "Executing envelope SELECT: " + sql );
             rs = stmt.executeQuery( sql.toString() );
             rs.next();
-            ICRS crs = mapping.getCRS();
+            ICRS crs = propMapping.second.getCRS();
             env = dialect.getBBoxAggregateValue( rs, 1, crs );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
@@ -590,7 +581,15 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
-        return taManager.acquireTransaction();
+        FeatureStoreTransaction ta = null;
+        try {
+            Connection conn = getConnection();
+            conn.setAutoCommit( false );
+            ta = new SQLFeatureStoreTransaction( this, conn, getSchema(), inspectors );
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
+        }
+        return ta;
     }
 
     /**

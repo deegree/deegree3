@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.cache;
 
+import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -75,7 +76,7 @@ public class BBoxPropertiesCache implements BBoxCache {
 
     private final File propsFile;
 
-    private final Map<String, Envelope> ftNameToEnvelope = new TreeMap<String, Envelope>();
+    private final Map<String, Envelope> ftNameToEnvelope = synchronizedMap( new TreeMap<String, Envelope>() );
 
     /**
      * Creates a new {@link BBoxPropertiesCache} instance.

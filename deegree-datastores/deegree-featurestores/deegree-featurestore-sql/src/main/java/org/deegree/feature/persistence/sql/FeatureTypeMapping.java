@@ -43,7 +43,11 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.TableName;
+import org.deegree.commons.utils.Pair;
+import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.rules.CompoundMapping;
+import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.types.FeatureType;
 
@@ -143,5 +147,63 @@ public class FeatureTypeMapping {
      */
     public List<Mapping> getMappings() {
         return particles;
+    }
+
+    /**
+     * Returns the default (i.e. the first) {@link GeometryMapping}.
+     * 
+     * @return default geometry mapping, may be <code>null</code> (no geometry mapping defined)
+     */
+    public Pair<TableName, GeometryMapping> getDefaultGeometryMapping() {
+        TableName table = getFtTable();
+        for ( Mapping particle : particles ) {
+            if ( particle instanceof GeometryMapping ) {
+                List<TableJoin> joins = particle.getJoinedTable();
+                if ( joins != null && !joins.isEmpty() ) {
+                    table = joins.get( joins.size() - 1 ).getToTable();
+                }
+                return new Pair<TableName, GeometryMapping>( table, (GeometryMapping) particle );
+            }
+        }
+        for ( Mapping particle : particles ) {
+            TableName propTable = table;
+            if ( particle instanceof CompoundMapping ) {
+                List<TableJoin> joins = particle.getJoinedTable();
+                if ( joins != null && !joins.isEmpty() ) {
+                    propTable = joins.get( joins.size() - 1 ).getToTable();
+                }
+                Pair<TableName, GeometryMapping> gm = getDefaultGeometryMapping( propTable, (CompoundMapping) particle );
+                if ( gm != null ) {
+                    return gm;
+                }
+            }
+        }
+        return null;
+    }
+
+    private Pair<TableName, GeometryMapping> getDefaultGeometryMapping( TableName table, CompoundMapping complex ) {
+        for ( Mapping particle : complex.getParticles() ) {
+            if ( particle instanceof GeometryMapping ) {
+                List<TableJoin> joins = particle.getJoinedTable();
+                if ( joins != null && !joins.isEmpty() ) {
+                    table = joins.get( joins.size() - 1 ).getToTable();
+                }
+                return new Pair<TableName, GeometryMapping>( table, (GeometryMapping) particle );
+            }
+        }
+        for ( Mapping particle : complex.getParticles() ) {
+            TableName propTable = table;
+            if ( particle instanceof CompoundMapping ) {
+                List<TableJoin> joins = particle.getJoinedTable();
+                if ( joins != null && !joins.isEmpty() ) {
+                    propTable = joins.get( joins.size() - 1 ).getToTable();
+                }
+                Pair<TableName, GeometryMapping> gm = getDefaultGeometryMapping( propTable, (CompoundMapping) particle );
+                if ( gm != null ) {
+                    return gm;
+                }
+            }
+        }
+        return null;
     }
 }
