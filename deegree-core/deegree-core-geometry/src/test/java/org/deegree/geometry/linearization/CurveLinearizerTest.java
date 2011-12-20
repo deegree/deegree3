@@ -130,9 +130,28 @@ public class CurveLinearizerTest {
 
         Arc arc = geomFac.createArc( p0, p1, p2 );
         Points positions = linearizer.linearize( arc, new MaxErrorCriterion( error, maxNumPoints ) ).getControlPoints();
-        for ( Point point : positions ) {
+
+        Point start = null;
+        for ( Point point : positions ) {            
             double dist = getDistance( center, point );
-            Assert.assertEquals( radius, dist, error );
+            // every segment start/end point must be *on* arc
+            Assert.assertEquals( radius, dist, 0.00000001 );
+
+            if ( start != null ) {
+                Point end = point;
+                // test distance of mid point of segment as well
+                double minX = Math.min( start.get0(), end.get0() );
+                double maxX = Math.max( start.get0(), end.get0() );
+                double minY = Math.min( start.get1(), end.get1() );
+                double maxY = Math.max( start.get1(), end.get1() );
+                double[] coords = new double[] { ( maxX - minX ) / 2 + minX, ( maxY - minY ) / 2 + minY };
+                Point mid = new DefaultPoint( null, start.getCoordinateSystem(), null, coords );
+                dist = getDistance( center, mid );
+                double actualError = Math.abs( radius - dist );
+                Assert.assertTrue( "Actual error is " + actualError + ", allowed error is " + error,
+                                   actualError < error );
+            }
+            start = point;
         }
     }
 

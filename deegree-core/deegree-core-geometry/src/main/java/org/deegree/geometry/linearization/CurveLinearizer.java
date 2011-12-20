@@ -102,7 +102,8 @@ public class CurveLinearizer {
      * Creates a new {@link CurveLinearizer} instance.
      * 
      * @param geomFac
-     *            geometry factory to be used for creating {@link LineString}s and {@link LineStringSegments}, must not be <code>null</code>
+     *            geometry factory to be used for creating {@link LineString}s and {@link LineStringSegments}, must not
+     *            be <code>null</code>
      */
     public CurveLinearizer( GeometryFactory geomFac ) {
         this.geomFac = geomFac;
@@ -257,7 +258,7 @@ public class CurveLinearizer {
      * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link ArcString}.
      * <p>
      * If one of the arc elements is collinear, it will be added as a straight segment.
-     * </p> 
+     * </p>
      * 
      * @param arcString
      *            curve segment to be linearized, must not be <code>null</code>
@@ -267,19 +268,19 @@ public class CurveLinearizer {
      */
     public LineStringSegment linearizeArcString( ArcString arcString, LinearizationCriterion crit ) {
 
-    	List<Point> points = new ArrayList<Point>();
+        List<Point> points = new ArrayList<Point>();
 
         Points srcpnts = arcString.getControlPoints();
         Point a = null;
         Point b = null;
         Point c = null;
         Points pnts = null;
-        
+
         // insert first point
         if ( srcpnts.size() > 0 ) {
-            points.add( srcpnts.get(0));
+            points.add( srcpnts.get( 0 ) );
         }
-        
+
         for ( int i = 0, j = ( srcpnts.size() - 2 ); i < j; i += 2 ) {
             a = srcpnts.get( i );
             b = srcpnts.get( i + 1 );
@@ -302,7 +303,7 @@ public class CurveLinearizer {
                 String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
                 throw new IllegalArgumentException( msg );
             }
-            
+
             // add point 2..n
             for ( int m = 1, n = pnts.size(); m < n; m++ ) {
                 points.add( pnts.get( m ) );
@@ -642,18 +643,18 @@ public class CurveLinearizer {
         double angleStep = 2 * Math.acos( 1 - error / radius );
         int numPoints;
         if ( isCircle ) {
-            numPoints = (int) Math.round( 2 * Math.PI / angleStep );
+            numPoints = (int) Math.ceil( 2 * Math.PI / angleStep ) + 1;
         } else {
             if ( !isClockwise( p0Shifted, p1Shifted, p2Shifted ) ) {
                 if ( endAngle < startAngle ) {
                     endAngle += 2 * Math.PI;
                 }
-                numPoints = (int) Math.round( ( endAngle - startAngle ) / angleStep );
+                numPoints = (int) Math.ceil( ( endAngle - startAngle ) / angleStep ) + 1;
             } else {
                 if ( startAngle < endAngle ) {
                     startAngle += 2 * Math.PI;
                 }
-                numPoints = (int) Math.round( ( startAngle - endAngle ) / angleStep );
+                numPoints = (int) Math.ceil( ( startAngle - endAngle ) / angleStep ) + 1;
             }
         }
         return numPoints;
