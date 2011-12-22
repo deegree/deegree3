@@ -22,7 +22,7 @@ CREATE TABLE IDXTB_MAIN (
 	GeographicDescriptionCode varchar(500),
 	Denominator integer,
 	DistanceValue decimal(10,2),
-	DistanceUOM varchar(10),
+	DistanceUOM varchar(250),
 	TempExtent_begin timestamp,
 	TempExtent_end timestamp,
 	ServiceType varchar(150),
