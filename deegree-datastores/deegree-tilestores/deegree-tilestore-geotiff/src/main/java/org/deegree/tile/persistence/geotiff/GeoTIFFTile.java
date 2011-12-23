@@ -55,6 +55,7 @@ import java.util.Iterator;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
@@ -79,10 +80,11 @@ public class GeoTIFFTile implements Tile {
 
     private final Pair<Integer, Integer> size;
 
-    private final File file;
+    private final GenericObjectPool readerPool;
 
-    public GeoTIFFTile( File file, int imageIndex, int x, int y, Envelope envelope, Pair<Integer, Integer> size ) {
-        this.file = file;
+    public GeoTIFFTile( GenericObjectPool readerPool, int imageIndex, int x, int y, Envelope envelope,
+                        Pair<Integer, Integer> size ) {
+        this.readerPool = readerPool;
         this.imageIndex = imageIndex;
         this.x = x;
         this.y = y;
@@ -92,17 +94,9 @@ public class GeoTIFFTile implements Tile {
 
     @Override
     public BufferedImage getAsImage() {
-        ImageInputStream iis = null;
         ImageReader reader = null;
         try {
-            Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
-            while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
-                reader = readers.next();
-            }
-            iis = createImageInputStream( file );
-            // already checked in provider
-            reader.setInput( iis );
-
+            reader = (ImageReader) readerPool.borrowObject();
             BufferedImage img = reader.readTile( imageIndex, x, y );
             if ( img.getWidth() != size.first || img.getHeight() != size.second ) {
                 Hashtable table = new Hashtable();
@@ -128,13 +122,8 @@ public class GeoTIFFTile implements Tile {
             return null;
         } finally {
             try {
-                if ( iis != null ) {
-                    iis.close();
-                }
-                if ( reader != null ) {
-                    reader.dispose();
-                }
-            } catch ( IOException e ) {
+                readerPool.returnObject( reader );
+            } catch ( Exception e ) {
                 // ignore closing error
             }
         }
