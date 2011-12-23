@@ -38,56 +38,58 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence;
+package org.deegree.tile.persistence.geotiff;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeTrue;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Iterator;
 
-import org.deegree.commons.config.Resource;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.persistence.TileStore;
+import org.junit.Test;
 
 /**
- * The <code>TileStore</code> interface defines a deegree resource that can be used to read tiles. It's planned to
- * extend the interface to provide write access as well (that's why it has been called store already).
- * 
- * <p>
- * TODO: specify transactional methods, think about what the WMTS protocol will need (probably the
- * <code>TileMatrixMetadata</code>) and provide access here.
- * </p>
+ * <code>GeoTIFFTileStoreTest</code>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public interface TileStore extends Resource {
 
-    /**
-     * Returns the spatial extent of this tile store. Once instantiated, the extent of a tile store must not change,
-     * even when it's transactional.
-     * 
-     * @return the envelope and crs of this tile store, never null.
-     */
-    SpatialMetadata getMetadata();
+public class GeoTIFFTileStoreTest {
 
-    /**
-     * Returns the set of available tile matrices that this store serves.
-     * 
-     * @return the tile matrix set.
-     */
-    TileMatrixSet getTileMatrixSet();
+    @Test
+    public void testGetTiles()
+                            throws ResourceInitException {
+        File file = new File( "/stick/merged.tif" );
+        assumeTrue( file.exists() );
+        TileStore ts = new GeoTIFFTileStore( file, null );
+        ts.init( null );
+        Envelope envelope = ts.getMetadata().getEnvelope();
+        TileMatrixSet set = ts.getTileMatrixSet();
+        double res = 0;
+        for ( TileMatrix tm : set.getTileMatrices() ) {
+            res = Math.max( tm.getMetadata().getResolution(), res );
+        }
 
-    /**
-     * Creates tile stream according to the parameters.
-     * 
-     * @param envelope
-     *            the extent of tiles needed, never null
-     * @param resolution
-     *            the desired minimum resolution of tiles, must be positive
-     * @return an iterator of tiles for the given envelope and resolution, never null.
-     */
-    Iterator<Tile> getTiles( Envelope envelope, double resolution );
+        Iterator<Tile> i = ts.getTiles( envelope, res );
+        int cnt = 0;
+        long t1 = System.currentTimeMillis();
+        while ( i.hasNext() ) {
+            ++cnt;
+            BufferedImage img = i.next().getAsImage();
+            assertNotNull( "A tile resulted in null image.", img );
+        }
+        double secs = ( System.currentTimeMillis() - t1 ) / 1000d;
+        System.out.println( "Took " + secs + " seconds to fetch " + cnt + " tile images." );
+    }
 
 }

@@ -53,7 +53,8 @@ import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
- * <code>ImageReaderFactory</code>
+ * <code>ImageReaderFactory</code>: an object factory for commons-pool. It should really be replaced with a better
+ * solution, not using generics here (and throwing Exception) is not the way to go...
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -107,7 +108,7 @@ public class ImageReaderFactory implements PoolableObjectFactory {
     public boolean validateObject( Object o ) {
         // ImageReader reader = (ImageReader) o;
         // ImageInputStream iis = (ImageInputStream) reader.getInput();
-        // unknown if we need something here
+        // unknown if we need something here, so far no readers have become invalid
         return true;
     }
 

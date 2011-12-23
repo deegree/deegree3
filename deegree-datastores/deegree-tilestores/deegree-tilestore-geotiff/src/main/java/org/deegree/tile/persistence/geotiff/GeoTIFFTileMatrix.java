@@ -42,7 +42,6 @@ package org.deegree.tile.persistence.geotiff;
 
 import java.io.File;
 
-import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -50,7 +49,8 @@ import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
 
 /**
- * <code>GeoTIFFTileMatrix</code>
+ * The <code>GeoTIFFTileMatrix</code> is a tile matrix handing out GeoTIFFTile tiles. It uses an object pool shared
+ * among all tiles created by this matrix.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -66,17 +66,13 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     private final GeometryFactory fac = new GeometryFactory();
 
-    private final File file;
-
     private GenericObjectPool readerPool;
 
-    
     public GeoTIFFTileMatrix( TileMatrixMetadata metadata, File file, int imageIndex ) {
         this.metadata = metadata;
-        this.file = file;
         this.imageIndex = imageIndex;
-        ImageReaderFactory fac = new ImageReaderFactory(file);
-        this.readerPool = new GenericObjectPool(fac);
+        ImageReaderFactory fac = new ImageReaderFactory( file );
+        this.readerPool = new GenericObjectPool( fac );
     }
 
     @Override

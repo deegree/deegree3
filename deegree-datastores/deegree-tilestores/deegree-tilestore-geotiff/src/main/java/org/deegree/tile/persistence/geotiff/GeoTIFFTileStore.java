@@ -71,11 +71,12 @@ import org.deegree.tile.DefaultTileMatrixSet;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
+import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
 import org.slf4j.Logger;
 
 /**
- * <code>GeoTIFFTileStore</code>
+ * The <code>GeoTIFFTileStore</code> is the GeoTIFF/BigTIFF implementation of a tile store.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -231,6 +232,11 @@ public class GeoTIFFTileStore implements TileStore {
     @Override
     public SpatialMetadata getMetadata() {
         return spatialMetadata;
+    }
+
+    @Override
+    public TileMatrixSet getTileMatrixSet() {
+        return tileMatrixSet;
     }
 
 }

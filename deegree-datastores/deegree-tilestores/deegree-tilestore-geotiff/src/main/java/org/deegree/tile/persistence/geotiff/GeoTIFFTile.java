@@ -40,20 +40,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
-import static javax.imageio.ImageIO.createImageInputStream;
-import static javax.imageio.ImageIO.getImageReadersBySuffix;
 import static org.slf4j.LoggerFactory.getLogger;
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.commons.utils.Pair;
@@ -62,7 +55,8 @@ import org.deegree.tile.Tile;
 import org.slf4j.Logger;
 
 /**
- * <code>GeoTIFFTile</code>
+ * <code>GeoTIFFTile</code> is a Tile implementation that reads from a GeoTIFF/BigTIFF file, through
+ * ImageIO/imageio-ext. Uses an object pool to cache readers (they take a long time to startup).
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
