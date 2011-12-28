@@ -268,7 +268,7 @@
       </ogc:Filter>
       <TextSymbolizer uom="meter">
         <Label>
-          <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Platzadv:zweitname</ogc:PropertyName>
+          <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Platz/adv:zweitname</ogc:PropertyName>
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>

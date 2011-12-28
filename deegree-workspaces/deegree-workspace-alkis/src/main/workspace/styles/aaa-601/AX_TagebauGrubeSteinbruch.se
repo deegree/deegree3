@@ -36,7 +36,7 @@
 		<ogc:Filter>
 			<ogc:PropertyIsEqualTo>
 				<ogc:PropertyName>adv:abbaugut</ogc:PropertyName>
-				<ogc:PropertyName>9999</ogc:PropertyName>
+				<ogc:Literal>9999</ogc:Literal>
 			</ogc:PropertyIsEqualTo>
 		</ogc:Filter>
 		<PolygonSymbolizer uom="meter">
@@ -59,7 +59,7 @@
 		<ogc:Filter>
 			<ogc:PropertyIsEqualTo>
 				<ogc:PropertyName>adv:abbaugut</ogc:PropertyName>
-				<ogc:PropertyName>4010</ogc:PropertyName>
+				<ogc:Literal>4010</ogc:Literal>
 			</ogc:PropertyIsEqualTo>
 		</ogc:Filter>
 		<PolygonSymbolizer uom="meter">
