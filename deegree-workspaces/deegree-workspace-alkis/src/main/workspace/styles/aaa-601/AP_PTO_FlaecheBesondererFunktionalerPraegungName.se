@@ -64,7 +64,7 @@
       </ogc:Filter>
       <TextSymbolizer uom="meter">
         <Label>
-          <ogc:PropertyName>advdientZurDarstellungVon/adv:AX_FlaecheBesondererFunktionalerPraegung/adv:name</ogc:PropertyName>
+          <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_FlaecheBesondererFunktionalerPraegung/adv:name</ogc:PropertyName>
         </Label>
         <Font>
           <SvgParameter name="font-family">Arial</SvgParameter>
