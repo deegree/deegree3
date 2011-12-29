@@ -299,7 +299,7 @@
     </Description>
     <ogc:Filter>
       <ogc:PropertyIsEqualTo>
-        <ogc:PropertyName>art</ogc:PropertyName>
+        <ogc:PropertyName>adv:art</ogc:PropertyName>
         <ogc:Literal>Turmdach</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
