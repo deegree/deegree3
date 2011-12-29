@@ -40,7 +40,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -84,7 +84,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -121,7 +121,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -157,7 +157,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -201,7 +201,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -246,7 +246,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -287,7 +287,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -336,7 +336,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -375,7 +375,7 @@
 					</ogc:PropertyIsEqualTo>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1200</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -425,7 +425,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 				<ogc:Or>
 					<ogc:PropertyIsNull>
@@ -483,7 +483,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 				<ogc:PropertyIsEqualTo>
 					<ogc:PropertyName>adv:bauweise</ogc:PropertyName>
@@ -533,7 +533,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -570,7 +570,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -606,7 +606,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -650,7 +650,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -695,7 +695,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -736,7 +736,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -785,7 +785,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -824,7 +824,7 @@
 					</ogc:PropertyIsEqualTo>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1200</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -874,7 +874,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 				<ogc:Or>
 					<ogc:PropertyIsNull>
@@ -932,7 +932,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 				<ogc:PropertyIsEqualTo>
 					<ogc:PropertyName>adv:bauweise</ogc:PropertyName>
@@ -982,7 +982,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -1019,7 +1019,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -1055,7 +1055,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1099,7 +1099,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1144,7 +1144,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -1185,7 +1185,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1234,7 +1234,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1273,7 +1273,7 @@
 					</ogc:PropertyIsEqualTo>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1200</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1322,7 +1322,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -1365,7 +1365,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -1401,7 +1401,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -1436,7 +1436,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1479,7 +1479,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1523,7 +1523,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsNull>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 				</ogc:PropertyIsNull>
 			</ogc:And>
 		</ogc:Filter>
@@ -1563,7 +1563,7 @@
 					<ogc:Literal>2150</ogc:Literal>
 				</ogc:PropertyIsGreaterThan>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1611,7 +1611,7 @@
 					</ogc:Not>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1400</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
@@ -1649,7 +1649,7 @@
 					</ogc:PropertyIsEqualTo>
 				</ogc:Or>
 				<ogc:PropertyIsEqualTo>
-					<ogc:PropertyName>adv:lageZurErdoberlfaeche</ogc:PropertyName>
+					<ogc:PropertyName>adv:lageZurErdoberflaeche</ogc:PropertyName>
 					<ogc:Literal>1200</ogc:Literal>
 				</ogc:PropertyIsEqualTo>
 			</ogc:And>
