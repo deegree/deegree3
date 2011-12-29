@@ -117,7 +117,7 @@
         </ogc:PropertyIsNull>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:PropertyIsEqualTo>
@@ -128,7 +128,7 @@
     </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
@@ -248,7 +248,7 @@
         </ogc:PropertyIsNull>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:PropertyIsEqualTo>
@@ -259,7 +259,7 @@
     </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
@@ -386,7 +386,7 @@
         </ogc:PropertyIsNull>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:PropertyIsEqualTo>
@@ -397,7 +397,7 @@
     </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
@@ -524,7 +524,7 @@
         </ogc:PropertyIsNull>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:PropertyIsEqualTo>
@@ -535,7 +535,7 @@
     </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
@@ -643,7 +643,7 @@
         </ogc:PropertyIsNull>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:PropertyIsEqualTo>
@@ -654,7 +654,7 @@
     </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
@@ -765,7 +765,7 @@
         </ogc:PropertyIsNull>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:PropertyIsEqualTo>
@@ -776,7 +776,7 @@
     </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
@@ -895,7 +895,7 @@
         </ogc:PropertyIsNull>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:PropertyIsEqualTo>
@@ -906,7 +906,7 @@
     </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:bezeichnung</ogc:PropertyName>
+        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_LagebezeichnungOhneHausnummer/adv:lagebezeichnung/adv:AX_Lagebezeichnung/adv:verschluesselt/adv:AX_VerschluesselteLagebezeichnung/adv:lage</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
