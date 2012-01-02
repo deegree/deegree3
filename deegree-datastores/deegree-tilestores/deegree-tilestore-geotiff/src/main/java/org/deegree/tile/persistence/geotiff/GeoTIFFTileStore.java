@@ -118,7 +118,7 @@ public class GeoTIFFTileStore implements TileStore {
             }
             iis = createImageInputStream( file );
             // this is already checked in provider
-            reader.setInput( iis );
+            reader.setInput( iis, false, true );
             int num = reader.getNumImages( true );
             IIOMetadata md = reader.getImageMetadata( 0 );
             Envelope envelope = getEnvelope( md, reader.getWidth( 0 ), reader.getHeight( 0 ), crs );
