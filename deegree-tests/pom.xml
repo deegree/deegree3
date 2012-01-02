@@ -89,6 +89,7 @@
     <module>deegree-workspace-tests</module>
     <module>deegree-compliance-tests</module>
     <module>deegree-wms-similarity-tests</module>
+    <module>deegree-wms-tiling-tests</module>
   </modules>
 
   <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
