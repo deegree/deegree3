@@ -35,7 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.io;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.toByteArray;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -57,5 +61,33 @@ public class Utils {
             // lost
         }
     };
+
+    /**
+     * Makes byte by byte comparison and determines the percentage of equal bytes. This is a very crude method, but
+     * works well enough for images. Take into account that the encoding of images (such as png) might be different
+     * across Java implementations and even versions.
+     * 
+     * @param in1
+     * @param in2
+     * @return the percentage (0..1)
+     * @throws IOException
+     */
+    public static double determineSimilarity( InputStream in1, InputStream in2 )
+                            throws IOException {
+        try {
+            byte[] buf1 = toByteArray( in1 );
+            byte[] buf2 = toByteArray( in2 );
+            long equal = 0;
+            for ( int i = 0; i < buf1.length; ++i ) {
+                if ( i < buf2.length && buf1[i] == buf2[i] ) {
+                    ++equal;
+                }
+            }
+            return (double) equal / (double) buf1.length;
+        } finally {
+            closeQuietly( in1 );
+            closeQuietly( in2 );
+        }
+    }
 
 }
