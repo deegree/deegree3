@@ -215,14 +215,14 @@ public class OGCFrontController extends HttpServlet {
      * @return the service workspace
      */
     public static DeegreeWorkspace getServiceWorkspace() {
-        return instance.workspace;
+        return getInstance().workspace;
     }
 
     /**
      * @return the service configuration
      */
     public static WebServicesConfiguration getServiceConfiguration() {
-        return instance.serviceConfiguration;
+        return getInstance().serviceConfiguration;
     }
 
     /**
@@ -238,8 +238,8 @@ public class OGCFrontController extends HttpServlet {
      */
     public static String getHttpPostURL() {
         String url = null;
-        if ( instance.mainConfig.getDCP() != null && instance.mainConfig.getDCP().getHTTPPost() != null ) {
-            url = instance.mainConfig.getDCP().getHTTPPost();
+        if ( getInstance().mainConfig.getDCP() != null && getInstance().mainConfig.getDCP().getHTTPPost() != null ) {
+            url = getInstance().mainConfig.getDCP().getHTTPPost();
         } else {
             url = getContext().getRequestedBaseURL();
         }
@@ -259,8 +259,8 @@ public class OGCFrontController extends HttpServlet {
      */
     public static String getHttpGetURL() {
         String url = null;
-        if ( instance.mainConfig.getDCP() != null && instance.mainConfig.getDCP().getHTTPGet() != null ) {
-            url = instance.mainConfig.getDCP().getHTTPGet();
+        if ( getInstance().mainConfig.getDCP() != null && getInstance().mainConfig.getDCP().getHTTPGet() != null ) {
+            url = getInstance().mainConfig.getDCP().getHTTPGet();
         } else {
             url = getContext().getRequestedBaseURL() + "?";
         }
@@ -360,7 +360,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "Handling HTTP-GET request with status 'success' took: "
                        + ( System.currentTimeMillis() - entryTime ) + " ms." );
         } finally {
-            instance.CONTEXT.remove();
+            getInstance().CONTEXT.remove();
         }
     }
 
