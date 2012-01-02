@@ -50,6 +50,7 @@ import jj2000.j2k.NotImplementedError;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -195,56 +196,12 @@ public class Query {
                         returnTypeNames[i] = adapter.parseQName( elementSetNameTypeNamesString[i], omElement );
                     }
                 }
-
-                if ( new QName( CSWConstants.CSW_202_NS, "Constraint" ).equals( omQueryElement.getQName() ) ) {
-                    Version versionConstraint = adapter.getRequiredNodeAsVersion( omQueryElement,
-                                                                                  new XPath( "@version", nsContext ) );
-
-                    OMElement filterEl = omQueryElement.getFirstChildWithName( new QName( OGCNS, "Filter" ) );
-                    OMElement cqlTextEl = omQueryElement.getFirstChildWithName( new QName( "", "CQLTEXT" ) );
-                    if ( ( filterEl != null ) && ( cqlTextEl == null ) ) {
-
-                        constraintLanguage = ConstraintLanguage.FILTER;
-                        try {
-                            // TODO remove usage of wrapper (necessary at the moment to work around problems
-                            // with AXIOM's
-
-                            XMLStreamReader xmlStream = new XMLStreamReaderWrapper(
-                                                                                    filterEl.getXMLStreamReaderWithoutCaching(),
-                                                                                    null );
-                            // skip START_DOCUMENT
-                            xmlStream.nextTag();
-
-                            if ( versionConstraint.equals( new Version( 1, 1, 0 ) ) ) {
-
-                                constraint = Filter110XMLDecoder.parse( xmlStream );
-
-                            } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
-                                constraint = Filter100XMLDecoder.parse( xmlStream );
-                            } else {
-                                String msg = Messages.get( "CSW_FILTER_VERSION_NOT_SPECIFIED", versionConstraint,
-                                                           Version.getVersionsString( new Version( 1, 1, 0 ) ),
-                                                           Version.getVersionsString( new Version( 1, 0, 0 ) ) );
-                                LOG.info( msg );
-                                throw new InvalidParameterValueException( msg );
-                            }
-                        } catch ( XMLStreamException e ) {
-                            String msg = "FilterParsingException: There went something wrong while parsing the filter expression, so please check this!";
-                            LOG.debug( msg );
-                            throw new XMLParsingException( adapter, filterEl, e.getMessage() );
-                        }
-
-                    } else if ( ( filterEl == null ) && ( cqlTextEl != null ) ) {
-                        String msg = Messages.get( "CSW_UNSUPPORTED_CQL_FILTER" );
-                        LOG.info( msg );
-                        throw new NotImplementedError( msg );
-                    } else {
-                        String msg = Messages.get( "CSW_MISSING_FILTER_OR_CQL" );
-                        LOG.debug( msg );
-                        throw new InvalidParameterValueException( msg );
-                    }
-
+                Pair<Filter, ConstraintLanguage> parsedConstraint = parseConstraint( adapter, omQueryElement );
+                if ( parsedConstraint != null ) {
+                    constraintLanguage = parsedConstraint.second;
+                    constraint = parsedConstraint.first;
                 }
+
                 if ( new QName( OGCNS, "SortBy" ).equals( omQueryElement.getQName() ) ) {
 
                     List<OMElement> sortPropertyElements = adapter.getRequiredElements( omQueryElement,
@@ -258,8 +215,9 @@ public class Query {
                         String sortOrder = adapter.getNodeAsString( sortPropertyEl, new XPath( "ogc:SortOrder",
                                                                                                nsContext ), "ASC" );
                         SortProperty sortProp = new SortProperty(
-                                                                  new ValueReference( propNameEl.getText(),
-                                                                                    adapter.getNamespaceContext( propNameEl ) ),
+                                                                  new ValueReference(
+                                                                                      propNameEl.getText(),
+                                                                                      adapter.getNamespaceContext( propNameEl ) ),
                                                                   sortOrder.equals( "ASC" ) );
                         sortProps[counter++] = sortProp;
                     }
@@ -269,5 +227,59 @@ public class Query {
                               returnTypeNames );
         }
         return null;
+    }
+
+    protected static Pair<Filter, ConstraintLanguage> parseConstraint( XMLAdapter adapter, OMElement omQueryElement ) {
+        Pair<Filter, ConstraintLanguage> pc = null;
+        if ( omQueryElement != null && new QName( CSWConstants.CSW_202_NS, "Constraint" ).equals( omQueryElement.getQName() ) ) {
+            Version versionConstraint = adapter.getRequiredNodeAsVersion( omQueryElement, new XPath( "@version",
+                                                                                                     nsContext ) );
+
+            OMElement filterEl = omQueryElement.getFirstChildWithName( new QName( OGCNS, "Filter" ) );
+            OMElement cqlTextEl = omQueryElement.getFirstChildWithName( new QName( "", "CQLTEXT" ) );
+            if ( ( filterEl != null ) && ( cqlTextEl == null ) ) {
+
+                ConstraintLanguage constraintLanguage = ConstraintLanguage.FILTER;
+                Filter constraint;
+                try {
+                    // TODO remove usage of wrapper (necessary at the moment to work around problems
+                    // with AXIOM's
+
+                    XMLStreamReader xmlStream = new XMLStreamReaderWrapper(
+                                                                            filterEl.getXMLStreamReaderWithoutCaching(),
+                                                                            null );
+                    // skip START_DOCUMENT
+                    xmlStream.nextTag();
+
+                    if ( versionConstraint.equals( new Version( 1, 1, 0 ) ) ) {
+
+                        constraint = Filter110XMLDecoder.parse( xmlStream );
+
+                    } else if ( versionConstraint.equals( new Version( 1, 0, 0 ) ) ) {
+                        constraint = Filter100XMLDecoder.parse( xmlStream );
+                    } else {
+                        String msg = Messages.get( "CSW_FILTER_VERSION_NOT_SPECIFIED", versionConstraint,
+                                                   Version.getVersionsString( new Version( 1, 1, 0 ) ),
+                                                   Version.getVersionsString( new Version( 1, 0, 0 ) ) );
+                        LOG.info( msg );
+                        throw new InvalidParameterValueException( msg );
+                    }
+                } catch ( XMLStreamException e ) {
+                    String msg = "FilterParsingException: There went something wrong while parsing the filter expression, so please check this!";
+                    LOG.debug( msg );
+                    throw new XMLParsingException( adapter, filterEl, e.getMessage() );
+                }
+                pc = new Pair<Filter, CSWConstants.ConstraintLanguage>( constraint, constraintLanguage );
+            } else if ( ( filterEl == null ) && ( cqlTextEl != null ) ) {
+                String msg = Messages.get( "CSW_UNSUPPORTED_CQL_FILTER" );
+                LOG.info( msg );
+                throw new NotImplementedError( msg );
+            } else {
+                String msg = Messages.get( "CSW_MISSING_FILTER_OR_CQL" );
+                LOG.debug( msg );
+                throw new InvalidParameterValueException( msg );
+            }
+        }
+        return pc;
     }
 }
