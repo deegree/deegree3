@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -78,10 +77,11 @@ public class TileLayerPT {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
         base += "/deegree-wms-tiling-tests/services";
         WMSClient client = new WMSClient111( new URL( base + "?request=GetCapabilities&service=WMS&version=1.1.1" ) );
-        // skip test if performance layer has no bounding box (which happens if big test file is not available)
-        Assume.assumeNotNull( client.getLatLonBoundingBox( Collections.singletonList( "performance" ) ) );
-
         String crs = client.getCoordinateSystems( "performance" ).getFirst();
+
+        // skip test if performance layer has no native coordinate system added
+        Assume.assumeTrue( !"EPSG:31467".equals( crs ) );
+
         Envelope envelope = client.getBoundingBox( crs, "performance" );
         double minx = envelope.getMin().get0();
         double miny = envelope.getMin().get1();
