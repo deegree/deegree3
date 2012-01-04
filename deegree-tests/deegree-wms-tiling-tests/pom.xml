@@ -81,6 +81,7 @@
           <testFailureIgnore>true</testFailureIgnore>
           <includes>
             <include>**/*IT.java</include>
+            <include>**/*PT.java</include>
           </includes>
           <argLine>-Xmx1024m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber}</argLine>
         </configuration>
