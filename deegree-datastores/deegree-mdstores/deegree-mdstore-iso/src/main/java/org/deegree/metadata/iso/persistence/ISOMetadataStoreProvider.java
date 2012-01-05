@@ -101,6 +101,11 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
             script = ISOMetadataStoreProvider.class.getResource( "postgis/create_inspire.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+        } else if ( dbType == Type.Oracle ) {
+            URL script = ISOMetadataStoreProvider.class.getResource( "oracle/create.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+            script = ISOMetadataStoreProvider.class.getResource( "oracle/create_inspire.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
         }
         return creates.toArray( new String[creates.size()] );
     }
@@ -118,6 +123,11 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
             URL script = ISOMetadataStoreProvider.class.getResource( "postgis/drop_inspire.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
             script = ISOMetadataStoreProvider.class.getResource( "postgis/drop.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+        } else if ( dbType == Type.Oracle ) {
+            URL script = ISOMetadataStoreProvider.class.getResource( "oracle/drop.sql" );
+            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
+            script = ISOMetadataStoreProvider.class.getResource( "oracle/drop.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
         }
         return creates.toArray( new String[creates.size()] );
