@@ -187,11 +187,15 @@ public enum BaseType {
             pt = TIME;
             break;
         }
+        case Types.BIT:
+        case Types.BOOLEAN: {
+            pt = BOOLEAN;
+            break;
+        }
+            
         case Types.ARRAY:
         case Types.BINARY:
-        case Types.BIT:
         case Types.BLOB:
-        case Types.BOOLEAN:
         case Types.CLOB:
         case Types.DATALINK:
         case Types.DISTINCT:
