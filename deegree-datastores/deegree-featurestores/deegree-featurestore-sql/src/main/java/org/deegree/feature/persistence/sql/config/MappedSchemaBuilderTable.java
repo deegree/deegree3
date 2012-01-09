@@ -216,7 +216,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         }
 
         for ( ColumnMetadata md : getColumns( table ).values() ) {
-            if ( fidColumnNames.contains( md.column.toLowerCase() ) ) {
+            if ( fidColumnNames.contains( new SQLIdentifier( md.column.toLowerCase() ) ) ) {
                 LOG.debug( "Omitting column '" + md.column + "' from properties. Used in FIDMapping." );
                 continue;
             }
@@ -281,9 +281,23 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                             throws FeatureStoreException, SQLException {
 
         PropertyType pt = null;
-        QName propName = new QName( propDecl.getPath() );
-        if ( propName != null ) {
-            propName = makeFullyQualified( propName, ftPrefix, ftNs );
+        QName propName = null;
+        String xpath = propDecl.getPath();
+        if ( xpath != null ) {
+            int colonIdx = xpath.indexOf( ":" );
+            if ( colonIdx == -1 ) {
+                propName = makeFullyQualified( new QName( xpath ), ftPrefix, ftNs );
+            } else {
+                String prefix = xpath.substring( 0, colonIdx );
+                String localPart = xpath.substring( colonIdx + 1 );
+                if ( !ftPrefix.equals( prefix ) ) {
+                    String msg = "Invalid property definition " + xpath
+                                 + ". Property definition in table-driven mode is only "
+                                 + "possible for the feature type namespace.";
+                    throw new FeatureStoreException( msg );
+                }
+                propName = makeFullyQualified( new QName( null, localPart, prefix ), ftPrefix, ftNs );
+            }
         }
 
         String me = null;
@@ -472,7 +486,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     LOG.debug( "Found column '" + column + "', typeName: '" + sqlTypeName + "', typeCode: '" + sqlType
                                + "', isNullable: '" + isNullable + "', isAutoincrement:' " + isAutoincrement + "'" );
 
-                    // type name works for PostGIS, MSSQL and Oracle
+                    // type name ("geometry") works for PostGIS, MSSQL and Oracle
                     if ( sqlTypeName.toLowerCase().contains( "geometry" ) ) {
                         String srid = dialect.getUndefinedSrid();
                         ICRS crs = CRSManager.getCRSRef( "EPSG:4326", true );
