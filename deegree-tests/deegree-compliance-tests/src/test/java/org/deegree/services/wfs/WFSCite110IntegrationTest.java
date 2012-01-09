@@ -28,7 +28,7 @@ import org.junit.runners.Parameterized.Parameters;
  *          2010) $
  */
 @RunWith(Parameterized.class)
-public class WFSCite110IT {
+public class WFSCite110IntegrationTest {
 
 	private static String CITE_SCRIPT_PROP = "cite.script";
 
@@ -36,7 +36,7 @@ public class WFSCite110IT {
 
 	private String resultSnippet;
 
-	public WFSCite110IT(String testLabel, String resultSnippet) {
+	public WFSCite110IntegrationTest(String testLabel, String resultSnippet) {
 		this.testLabel = testLabel;
 		this.resultSnippet = resultSnippet;
 	}
@@ -44,7 +44,7 @@ public class WFSCite110IT {
 	@Parameters
 	public static Collection getResultSnippets() throws Exception {
 
-		URL url = WFSCite110IT.class.getResource("/citewfs110/src/main.xml");
+		URL url = WFSCite110IntegrationTest.class.getResource("/citewfs110/src/main.xml");
 		String file = new File(url.toURI()).getAbsolutePath();
 
 		CiteWrapper wrapper = new CiteWrapper(file);

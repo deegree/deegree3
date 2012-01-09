@@ -69,7 +69,7 @@ import org.junit.Test;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class TileLayerPT {
+public class TileLayerPerformanceTest {
 
     @Test
     public void testPerformance()

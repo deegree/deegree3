@@ -19,21 +19,21 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Wraps the execution of the CITE WMS 1.1.1 TestSuite as a JUnit-test.
+ * Wraps the execution of the new CITE WMS 1.3.0 TestSuite as a JUnit-test.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 22950 $, $Date: 2010-03-09 19:05:17 +0100 (Di, 09. Mär 2010) $
  */
 @RunWith(Parameterized.class)
-public class WMSCite111IT {
+public class WMSCite130NewIntegrationTest {
 
-    private String testLabel = "WMS111";
+    private String testLabel = "WMS130New";
 
     private String resultSnippet;
 
-    public WMSCite111IT( String testLabel, String resultSnippet ) {
+    public WMSCite130NewIntegrationTest( String testLabel, String resultSnippet ) {
         this.testLabel = testLabel;
         this.resultSnippet = resultSnippet;
     }
@@ -42,7 +42,7 @@ public class WMSCite111IT {
     public static Collection getResultSnippets()
                             throws Exception {
 
-        URL url = WMSCite111IT.class.getResource( "/citewms111/ctl/" );
+        URL url = WMSCite130NewIntegrationTest.class.getResource( "/citewms130-new/ctl/" );
         String file = new File( url.toURI() ).getAbsolutePath();
 
         CiteWrapper wrapper = new CiteWrapper( file );

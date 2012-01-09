@@ -64,13 +64,13 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 @RunWith(Parameterized.class)
-public class TileLayerIT {
+public class TileLayerIntegrationTest {
 
     private String response;
 
     private String request;
 
-    public TileLayerIT( String test, String request ) {
+    public TileLayerIntegrationTest( String test, String request ) {
         this.response = test;
         this.request = request;
     }
@@ -95,7 +95,7 @@ public class TileLayerIT {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
         base += "/deegree-wms-tiling-tests/services" + request;
         InputStream in = retrieve( STREAM, base );
-        double sim = determineSimilarity( in, TileLayerIT.class.getResourceAsStream( response ) );
+        double sim = determineSimilarity( in, TileLayerIntegrationTest.class.getResourceAsStream( response ) );
         Assert.assertEquals( "Images are not similar enough.", 1.0, sim, 0.001 );
     }
 

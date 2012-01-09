@@ -97,7 +97,7 @@
           <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
           <includes>
-            <include>**/*IT.java</include>
+            <include>**/*IntegrationTest.java</include>
           </includes>
           <argLine>-Xmx1024m -Xss128m -XX:-UseGCOverheadLimit -Xincgc</argLine>
         </configuration>

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.deegree.services.wms;
+package org.deegree.services.wcs;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,7 +19,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Wraps the execution of the new CITE WMS 1.3.0 TestSuite as a JUnit-test.
+ * Wraps the execution of the CITE WCS 1.0.0 TestSuite as a JUnit-test.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
@@ -27,13 +27,13 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision: 22950 $, $Date: 2010-03-09 19:05:17 +0100 (Di, 09. Mär 2010) $
  */
 @RunWith(Parameterized.class)
-public class WMSCite130NewIT {
+public class WCSCite100IntegrationTest {
 
-    private String testLabel = "WMS130New";
+    private String testLabel = "WCS100";
 
     private String resultSnippet;
 
-    public WMSCite130NewIT( String testLabel, String resultSnippet ) {
+    public WCSCite100IntegrationTest( String testLabel, String resultSnippet ) {
         this.testLabel = testLabel;
         this.resultSnippet = resultSnippet;
     }
@@ -42,7 +42,7 @@ public class WMSCite130NewIT {
     public static Collection getResultSnippets()
                             throws Exception {
 
-        URL url = WMSCite130NewIT.class.getResource( "/citewms130-new/ctl/" );
+        URL url = WCSCite100IntegrationTest.class.getResource( "/citewcs100/ctl/wcs.xml" );
         String file = new File( url.toURI() ).getAbsolutePath();
 
         CiteWrapper wrapper = new CiteWrapper( file );

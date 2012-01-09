@@ -59,7 +59,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
-public class SOSCite100IT {
+public class SOSCite100IntegrationTest {
 
     private static String CITE_SCRIPT_PROP = "cite.script";
 
@@ -67,7 +67,7 @@ public class SOSCite100IT {
 
     private String resultSnippet;
 
-    public SOSCite100IT( String testLabel, String resultSnippet ) {
+    public SOSCite100IntegrationTest( String testLabel, String resultSnippet ) {
         this.testLabel = testLabel;
         this.resultSnippet = resultSnippet;
     }
@@ -75,7 +75,7 @@ public class SOSCite100IT {
     @Parameters
     public static Collection getResultSnippets()
                             throws Exception {
-        URL url = SOSCite100IT.class.getResource( "/citesos100/ctl/" );
+        URL url = SOSCite100IntegrationTest.class.getResource( "/citesos100/ctl/" );
         String file = new File( url.toURI() ).getAbsolutePath();
 
         CiteWrapper wrapper = new CiteWrapper( file );

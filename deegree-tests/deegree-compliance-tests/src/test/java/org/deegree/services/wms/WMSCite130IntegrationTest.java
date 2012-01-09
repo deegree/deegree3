@@ -27,13 +27,13 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
-public class WMSCite130IT {
+public class WMSCite130IntegrationTest {
 
     private String testLabel = "WMS130";
 
     private String resultSnippet;
 
-    public WMSCite130IT( String testLabel, String resultSnippet ) {
+    public WMSCite130IntegrationTest( String testLabel, String resultSnippet ) {
         this.testLabel = testLabel;
         this.resultSnippet = resultSnippet;
     }
@@ -42,7 +42,7 @@ public class WMSCite130IT {
     public static Collection getResultSnippets()
                             throws Exception {
 
-        URL url = WMSCite130IT.class.getResource( "/citewms130/ctl/" );
+        URL url = WMSCite130IntegrationTest.class.getResource( "/citewms130/ctl/" );
         String file = new File( url.toURI() ).getAbsolutePath();
 
         CiteWrapper wrapper = new CiteWrapper( file );
