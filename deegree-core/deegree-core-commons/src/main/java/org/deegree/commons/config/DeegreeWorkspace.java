@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
@@ -398,10 +399,8 @@ public class DeegreeWorkspace {
     public synchronized void initAll()
                             throws ResourceInitException {
         ImageIO.scanForPlugins();
-        // LOG.warn(
-        // "FixMe: Setting VM-global TimeZone to GMT. This *will* cause severe problems depending on your environment, e.g. strange JSF errors on WebLogic."
-        // );
-        // TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
+        LOG.warn( "FixMe: Setting VM-global TimeZone to GMT. This *will* cause severe problems depending on your environment, e.g. strange JSF errors on WebLogic." );
+        TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
         initManagers();
         for ( ResourceManager m : managers ) {
             m.startup( this );
