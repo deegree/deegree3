@@ -43,7 +43,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.protocol.sos.filter.DurationFilter;

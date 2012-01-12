@@ -58,7 +58,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
 import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralOutputDefinition;

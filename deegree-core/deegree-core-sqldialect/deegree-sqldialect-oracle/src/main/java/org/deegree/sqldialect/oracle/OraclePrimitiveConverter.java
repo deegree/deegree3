@@ -40,10 +40,10 @@ import java.text.ParseException;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
-import org.deegree.commons.utils.time.DateUtils;
 
 /**
  * Implementations convert between {@link PrimitiveValue} particles and SQL column values.

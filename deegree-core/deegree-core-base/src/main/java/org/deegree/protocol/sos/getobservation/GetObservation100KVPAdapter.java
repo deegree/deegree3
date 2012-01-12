@@ -44,7 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.protocol.sos.filter.DurationFilter;
 import org.deegree.protocol.sos.filter.ProcedureFilter;
 import org.deegree.protocol.sos.filter.PropertyFilter;

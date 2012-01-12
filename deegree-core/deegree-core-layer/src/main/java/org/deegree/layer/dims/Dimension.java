@@ -37,11 +37,11 @@
 package org.deegree.layer.dims;
 
 import static java.lang.Math.abs;
+import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601DateWOMS;
+import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601Duration;
+import static org.deegree.commons.tom.datetime.DateUtils.parseISO8601Date;
+import static org.deegree.commons.tom.datetime.DateUtils.parseISO8601Duration;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601Duration;
-import static org.deegree.commons.utils.time.DateUtils.parseISO8601Date;
-import static org.deegree.commons.utils.time.DateUtils.parseISO8601Duration;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.utils.time.Duration;
+import org.deegree.commons.tom.datetime.Duration;
 
 /**
  * <code>Dimension</code>

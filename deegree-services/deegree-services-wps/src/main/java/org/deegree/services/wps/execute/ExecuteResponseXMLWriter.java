@@ -48,7 +48,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.util.Base64;
-import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;

@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.protocol.sos.time.TimeInstant;
 
 /**

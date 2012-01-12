@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.sos.time.IndeterminateTime;
 import org.deegree.protocol.sos.time.SamplingTime;

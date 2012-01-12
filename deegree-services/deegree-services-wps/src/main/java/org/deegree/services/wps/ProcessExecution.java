@@ -46,8 +46,8 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.services.wps.execute.ExecuteRequest;

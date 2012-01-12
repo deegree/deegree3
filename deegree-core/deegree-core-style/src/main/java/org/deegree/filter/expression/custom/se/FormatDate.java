@@ -52,8 +52,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.Feature;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;

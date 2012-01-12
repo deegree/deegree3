@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.model.layers;
 
+import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601Date;
 import static org.deegree.commons.tom.primitive.BaseType.DATE;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;

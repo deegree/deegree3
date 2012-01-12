@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOTime;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601Time;
+import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601DateWOMS;
+import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601DateWOTime;
+import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601Time;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.time;
+package org.deegree.commons.tom.datetime;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -53,12 +53,12 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;

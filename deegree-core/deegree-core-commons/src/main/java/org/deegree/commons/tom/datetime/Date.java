@@ -37,7 +37,6 @@ package org.deegree.commons.tom.datetime;
 
 import java.text.ParseException;
 
-import org.deegree.commons.utils.time.DateUtils;
 
 /**
  * Represents an <code>xs:date</code> instance.

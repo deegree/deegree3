@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.time;
+package org.deegree.commons.tom.datetime;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,6 +43,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -267,15 +269,14 @@ public class DateUtilsTest {
         assertEquals( "1983-02-05T16:42:23.000Z", formatedDate );
     }
 
-    // @Test
+//    @Test
     public void testFormatLocale()
                             throws ParseException {
-        TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
         Date date = DateUtils.parseISO8601Date( "1983-02-05T16:42:23Z" );
         String formatedDate = DateUtils.formatLocaleDate( date, Locale.GERMANY );
         assertEquals( "05.02.1983 17:42:23 CET", formatedDate );
     }
-
+    
     @Test
     public void testDuration()
                             throws ParseException {

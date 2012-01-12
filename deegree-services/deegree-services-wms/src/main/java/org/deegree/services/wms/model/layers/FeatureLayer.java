@@ -37,12 +37,12 @@
 package org.deegree.services.wms.model.layers;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601Date;
+import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601DateWOMS;
 import static org.deegree.commons.utils.CollectionUtils.clearNulls;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
-import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
 import static org.deegree.cs.CRSCodeType.getUndefined;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;

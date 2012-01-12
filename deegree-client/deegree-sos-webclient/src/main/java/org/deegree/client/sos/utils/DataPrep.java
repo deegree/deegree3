@@ -82,7 +82,7 @@ public class DataPrep {
                 try {
                     for ( int i = 0; i < countValues; i++ ) {
                         String[] contents = rawblocks[i].split( tokenSeparator );
-                        dates[i] = org.deegree.commons.utils.time.DateUtils.parseISO8601Date( contents[0] );
+                        dates[i] = org.deegree.commons.tom.datetime.DateUtils.parseISO8601Date( contents[0] );
                         //Time occurs ever(!) first in the values!
 
                         countDiff = contents.length;

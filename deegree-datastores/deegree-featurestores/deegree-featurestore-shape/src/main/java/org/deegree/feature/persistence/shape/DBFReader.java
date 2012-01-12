@@ -60,8 +60,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.tom.primitive.BaseType;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;

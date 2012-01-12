@@ -38,8 +38,8 @@ package org.deegree.protocol.sos.time;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.commons.utils.time.Duration;
+import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.Duration;
 
 /**
  * This class represets a time period between to dates. The period can be extended.

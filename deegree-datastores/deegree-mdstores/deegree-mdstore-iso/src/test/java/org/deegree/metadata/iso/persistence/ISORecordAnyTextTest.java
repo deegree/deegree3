@@ -36,6 +36,7 @@
 package org.deegree.metadata.iso.persistence;
 
 import java.net.URL;
+import java.util.TimeZone;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -75,6 +76,9 @@ public class ISORecordAnyTextTest extends AbstractISOTest {
     @Test
     public void testAnyTextElement_CORE()
                             throws JAXBException {
+
+        TimeZone.setDefault( TimeZone.getTimeZone( "äää" ) );
+        
         LOG.info( "START Test: test anyText element 'CORE' for one metadataRecord " );
         ISORecord rec = (ISORecord) MetadataRecordFactory.create( ( new XMLAdapter( TstConstants.tst_10 ) ).getRootElement() );
         String anyText = AnyTextHelper.getAnyText( rec, getConfig( TstConstants.configURL_ANYTEXT_CORE ).getAnyText() );
