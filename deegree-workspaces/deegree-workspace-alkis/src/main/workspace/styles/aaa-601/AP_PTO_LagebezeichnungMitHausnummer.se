@@ -187,7 +187,7 @@
         </ogc:Not>
         <ogc:Not>
         <ogc:PropertyIsNull>
-          <ogc:PropertyName>adv:gehoertZu/adv:AX_Flurstueck</ogc:PropertyName>
+          <ogc:PropertyName>adv:gehoertZu</ogc:PropertyName>
         </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:Not>
@@ -236,7 +236,7 @@
         </ogc:PropertyIsNull>
         <ogc:Not>
         <ogc:PropertyIsNull>
-          <ogc:PropertyName>adv:gehoertZu/adv:AX_Flurstueck</ogc:PropertyName>
+          <ogc:PropertyName>adv:gehoertZu</ogc:PropertyName>
         </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:Not>
