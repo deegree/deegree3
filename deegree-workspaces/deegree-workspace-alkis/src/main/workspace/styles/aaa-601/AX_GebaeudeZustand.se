@@ -135,7 +135,7 @@
           </ogc:Or>
         </ogc:Not>
       <ogc:PropertyIsEqualTo>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Gebaeude/adv:zustand</ogc:PropertyName>
+        <ogc:PropertyName>adv:zustand</ogc:PropertyName>
         <ogc:Literal>3000</ogc:Literal>
       </ogc:PropertyIsEqualTo>
       </ogc:And>
@@ -184,7 +184,7 @@
           </ogc:Or>
         </ogc:Not>
       <ogc:PropertyIsEqualTo>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Gebaeude/adv:zustand</ogc:PropertyName>
+        <ogc:PropertyName>adv:zustand</ogc:PropertyName>
         <ogc:Literal>4000</ogc:Literal>
       </ogc:PropertyIsEqualTo>
       </ogc:And>
