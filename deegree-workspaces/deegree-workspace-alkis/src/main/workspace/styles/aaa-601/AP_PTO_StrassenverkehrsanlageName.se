@@ -115,7 +115,7 @@
     <ogc:Filter>
       <ogc:And>
         <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Strassenverkehrsanlage/adv:bauwerksfunktion</ogc:PropertyName>
+          <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Strassenverkehrsanlage/adv:art</ogc:PropertyName>
           <ogc:Literal>2000</ogc:Literal>
         </ogc:PropertyIsEqualTo>
         <ogc:PropertyIsEqualTo>
@@ -128,7 +128,7 @@
           </ogc:PropertyIsNull>
         </ogc:Not>
       </ogc:And>
-    </ogc:Filter>  
+    </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
         <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
