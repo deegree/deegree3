@@ -564,7 +564,7 @@
     <ogc:Filter>
       <ogc:And>
         <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>adv:funktion</ogc:PropertyName>
+          <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_IndustrieUndGewerbeflaeche/adv:funktion</ogc:PropertyName>
           <ogc:Literal>2570</ogc:Literal>
         </ogc:PropertyIsEqualTo>
         <ogc:Not>
