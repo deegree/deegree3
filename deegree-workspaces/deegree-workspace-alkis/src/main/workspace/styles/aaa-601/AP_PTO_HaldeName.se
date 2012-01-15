@@ -33,9 +33,9 @@
       </ogc:Filter>
       <TextSymbolizer uom="meter">
         <Label>
-          <ogc:PropertyName>Halde</ogc:PropertyName>
+          <ogc:Literal>Halde</ogc:Literal>
         </Label>
-      <Font>
+        <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>
           <SvgParameter name="font-size">4</SvgParameter>
         </Font>
@@ -46,7 +46,7 @@
       <TextSymbolizer uom="meter">
         <Label>
           (<Recode fallbackValue="">
-             <LookupValue>adv:lagergut</LookupValue>
+             <LookupValue>adv:dientZurDarstellungVon/adv:AX_Halde/adv:lagergut</LookupValue>
              <MapItem>
                <Data>7000</Data>
                <Value>Abraum</Value>
