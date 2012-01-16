@@ -166,11 +166,4 @@ public class MappingUtils {
             throw new IllegalArgumentException( "could not read as GMLGeometry: " + node.getNodeName(), e );
         }
     }
-
-
-    public static Date createDate( String isoDate )
-                            throws java.text.ParseException {
-        return DateUtils.parseISO8601Date( isoDate );
-    }
-
 }
