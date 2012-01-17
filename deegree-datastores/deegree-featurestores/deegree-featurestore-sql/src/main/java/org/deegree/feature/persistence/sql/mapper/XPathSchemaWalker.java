@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.mapper;
 
-import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;

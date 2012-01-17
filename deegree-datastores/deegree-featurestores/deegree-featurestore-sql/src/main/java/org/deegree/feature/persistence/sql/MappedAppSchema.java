@@ -50,6 +50,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
+import org.deegree.sqldialect.table.RelationalModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +84,8 @@ public class MappedAppSchema extends GenericAppSchema {
 
     private final TableDependencies keyDependencies;
 
+    private final RelationalModel relationalModel;
+
     /**
      * Creates a new {@link MappedAppSchema} from the given parameters.
      * 
@@ -106,13 +109,16 @@ public class MappedAppSchema extends GenericAppSchema {
      * @param deleteCascadingByDB
      *            if <code>true</code>, the DB automatically deletes joined tables when a feature type table row is
      *            deleted, <code>false</code> otherwise
+     * @param relationalModel
+     *            table detail information, may be <code>null</code>
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public MappedAppSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                             Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel, FeatureTypeMapping[] ftMappings,
                             BBoxTableMapping bboxMapping, BlobMapping blobMapping,
-                            GeometryStorageParams geometryParams, boolean deleteCascadingByDB ) {
+                            GeometryStorageParams geometryParams, boolean deleteCascadingByDB,
+                            RelationalModel relationalModel ) {
 
         super( fts, ftToSuperFt, prefixToNs, xsModel );
         if ( ftMappings != null ) {
@@ -144,6 +150,7 @@ public class MappedAppSchema extends GenericAppSchema {
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Key dependencies: " + keyDependencies );
         }
+        this.relationalModel = relationalModel;
     }
 
     /**
@@ -252,5 +259,14 @@ public class MappedAppSchema extends GenericAppSchema {
      */
     public TableDependencies getKeyDependencies() {
         return keyDependencies;
+    }
+
+    /**
+     * Returns details on the relational model.
+     * 
+     * @return details on the relational model, may be <code>null</code>
+     */
+    public RelationalModel getRelationalModel() {
+        return relationalModel;
     }
 }

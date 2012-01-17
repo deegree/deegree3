@@ -270,7 +270,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         GMLSchemaInfoSet xsModel = gmlSchema.getGMLSchema();
         return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping, blobMapping,
-                                    geometryParams, deleteCascadingByDB );
+                                    geometryParams, deleteCascadingByDB, null );
     }
 
     private AppSchema buildGMLSchema( String configURL, List<String> gmlSchemas )
@@ -297,6 +297,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
             appSchema = decoder.extractAppSchema();
         } catch ( Throwable t ) {
+            t.printStackTrace();
             String msg = "Error building GML application schema: " + t.getMessage();
             throw new FeatureStoreException( msg );
         }

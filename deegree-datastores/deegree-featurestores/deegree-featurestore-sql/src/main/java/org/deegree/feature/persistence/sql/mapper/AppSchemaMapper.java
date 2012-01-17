@@ -178,7 +178,7 @@ public class AppSchemaMapper {
         BlobMapping blobMapping = createBlobMapping ? generateBlobMapping() : null;
 
         this.mappedSchema = new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping,
-                                                 blobMapping, geometryParams, true );
+                                                 blobMapping, geometryParams, true, null );
     }
 
     /**

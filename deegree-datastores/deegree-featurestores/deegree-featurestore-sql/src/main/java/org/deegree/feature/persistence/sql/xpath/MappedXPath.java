@@ -95,6 +95,39 @@ public class MappedXPath {
 
     private PropertyNameMapping propMapping;
 
+    public MappedXPath( MappedAppSchema schema, FeatureTypeMapping ftMapping, ValueReference propName,
+                        TableAliasManager aliasManager ) throws UnmappableException {
+        this.fs = null;
+        this.schema = schema;
+        this.aliasManager = aliasManager;
+
+        // check for empty property name
+        if ( propName == null || propName.getAsText().isEmpty() ) {
+            LOG.debug( "Null / empty property name (=targets default geometry property)." );
+            FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
+            GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
+            if ( pt == null ) {
+                String msg = "Feature type '" + ft.getName()
+                             + "' does not have a geometry property and PropertyName is missing / empty.";
+                throw new UnmappableException( msg );
+            }
+            propName = new ValueReference( pt.getName() );
+        }
+
+        this.propName = propName;
+
+        List<MappableStep> steps = MappableStep.extractSteps( propName );
+
+        // the first step may be the name of the feature type or the name of a property
+        if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
+            steps.subList( 1, steps.size() );
+        }
+
+        currentTable = ftMapping.getFtTable().toString();
+        currentTableAlias = aliasManager.getRootTableAlias();
+        map( ftMapping.getMappings(), steps );
+    }
+
     /**
      * @param fs
      * @param ftMapping
@@ -197,7 +230,10 @@ public class MappedXPath {
         if ( !( me instanceof DBField ) ) {
             throw new UnmappableException( "Mappings to non-DBField primitives is currently not supported." );
         }
-        ParticleConverter<?> converter = fs.getConverter( primMapping );
+        ParticleConverter<?> converter = null;
+        if ( fs != null ) {
+            converter = fs.getConverter( primMapping );
+        }
         propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
     }
 
@@ -209,7 +245,10 @@ public class MappedXPath {
         if ( !( me instanceof DBField ) ) {
             throw new UnmappableException( "Mappings to non-DBField geometries is currently not supported." );
         }
-        ParticleConverter<?> converter = fs.getConverter( geomMapping );
+        ParticleConverter<?> converter = null;
+        if ( fs != null ) {
+            converter = fs.getConverter( geomMapping );
+        }
         propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
     }
 
