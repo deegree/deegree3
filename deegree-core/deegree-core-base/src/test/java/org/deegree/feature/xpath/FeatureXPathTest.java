@@ -289,7 +289,7 @@ public class FeatureXPathTest {
     @Test
     public void testXPath16()
                             throws FilterEvaluationException {
-        String xpath = "string(gml:featureMember/app:Philosopher/app:name)";
+        String xpath = "string(gml:featureMember[1]/app:Philosopher[1]/app:name[1])";
         TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new ValueReference( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 1, result.length );
