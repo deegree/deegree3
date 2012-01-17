@@ -50,6 +50,7 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.FeatureCollectionType;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -127,16 +128,16 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     }
 
     @Override
-    public Property[] getProperties() {
+    public List<Property> getProperties() {
         if ( props == null ) {
-            Property[] props = new Property[memberFeatures.size()];
+            List<Property> props = new ArrayList<Property>( memberFeatures.size() );
             int i = 0;
             for ( Feature feature : memberFeatures ) {
-                props[i++] = new GenericProperty( getType().getMemberDeclarations().get( 0 ), null, feature );
+                props.add( new GenericProperty( getType().getMemberDeclarations().get( 0 ), null, feature ) );
             }
             return props;
         }
-        return props.toArray( new Property[props.size()] );
+        return props;
     }
 
     @Override
@@ -221,7 +222,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     }
 
     @Override
-    public Property[] getProperties( QName propName ) {
+    public List<Property> getProperties( QName propName ) {
         List<Property> namedProps = new ArrayList<Property>();
         if ( props != null ) {
             for ( Property property : props ) {
@@ -234,36 +235,19 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
                 namedProps.add( new GenericProperty( getType().getMemberDeclarations().get( 0 ), null, feature ) );
             }
         }
-        return namedProps.toArray( new Property[namedProps.size()] );
+        return namedProps;
     }
 
     @Override
-    public Property getProperty( QName propName ) {
-        Property prop = null;
-        if ( props != null ) {
-            for ( Property property : props ) {
-                if ( propName.equals( property.getName() ) ) {
-                    if ( prop != null ) {
-                        String msg = "Feature has more than one property with name '" + propName + "'.";
-                        throw new IllegalArgumentException( msg );
-                    }
-                    prop = property;
-                }
-            }
-        }
-        return prop;
-    }
-
-    @Override
-    public Property[] getGeometryProperties() {
+    public List<Property> getGeometryProperties() {
         List<Property> geoProps = new ArrayList<Property>();
         if ( props != null ) {
             for ( Property property : props ) {
-                if ( property.getValue() instanceof Geometry ) {
+                if ( property.getValue() instanceof Geometry && !( property.getValue() instanceof Envelope ) ) {
                     geoProps.add( property );
                 }
             }
         }
-        return geoProps.toArray( new Property[geoProps.size()] );
+        return geoProps;
     }
 }

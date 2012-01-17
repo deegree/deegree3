@@ -90,7 +90,8 @@ public class GMLFeatureReaderTest {
     @Test
     public void testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException, ReferenceResolvingException, ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {      
+                            UnknownCRSException, ReferenceResolvingException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
 
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -329,7 +330,7 @@ public class GMLFeatureReaderTest {
         gmlReader.getIdContext().resolveLocalRefs();
         Feature feature = fc.iterator().next();
 
-        Property custom1Prop = feature.getProperty( new QName( "http://www.deegree.org/app", "custom1" ) );
+        Property custom1Prop = feature.getProperties( new QName( "http://www.deegree.org/app", "custom1" ) ).get( 0 );
         assertTrue( custom1Prop != null );
         assertNotNull( custom1Prop.getXSType() );
         assertTrue( custom1Prop.getXSType() instanceof XSElementDeclaration );

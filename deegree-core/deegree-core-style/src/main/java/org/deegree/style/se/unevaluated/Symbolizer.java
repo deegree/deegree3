@@ -39,6 +39,7 @@ package org.deegree.style.se.unevaluated;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -212,8 +213,8 @@ public class Symbolizer<T extends Styling<T>> {
                 LOG.trace( "Stack trace:", e );
             }
         } else if ( f != null ) {
-            Property[] gs = f.getGeometryProperties();
-            if ( gs.length > 0 ) {
+            List<Property> gs = f.getGeometryProperties();
+            if ( !gs.isEmpty() ) {
                 for ( Property p : gs ) {
                     if ( p.getValue() instanceof Geometry ) {
                         geoms.add( (Geometry) p.getValue() );

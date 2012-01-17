@@ -198,9 +198,9 @@ public class SextanteProcesslet implements Processlet {
 
         HashMap<String, String> namespaces = new HashMap<String, String>();
 
-        Property[] props = propertyTypeFeature.getProperties();
-        for ( int i = 0; i < props.length; i++ ) {
-            QName name = props[i].getName();
+        List<Property> props = propertyTypeFeature.getProperties();
+        for ( int i = 0; i < props.size(); i++ ) {
+            QName name = props.get( i ).getName();
             namespaces.put( name.getNamespaceURI(), name.getPrefix() );
         }
 
@@ -505,7 +505,7 @@ public class SextanteProcesslet implements Processlet {
      *            Input data as {@link ProcessletInputs}.
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
-     *@param paramSet
+     * @param paramSet
      *            Input parameter set of {@link GeoAlgorithm}.
      */
     private static void setMultipleInputInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm paramSet ) {
@@ -609,8 +609,7 @@ public class SextanteProcesslet implements Processlet {
         try {
 
             XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(
-                                                                               FormatHelper.determineGMLVersion( gmlInput ),
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( FormatHelper.determineGMLVersion( gmlInput ),
                                                                                xmlReader );
 
             return gmlReader.readGeometry();
@@ -635,8 +634,7 @@ public class SextanteProcesslet implements Processlet {
 
             XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
 
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(
-                                                                               FormatHelper.determineGMLVersion( gmlInput ),
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( FormatHelper.determineGMLVersion( gmlInput ),
                                                                                xmlReader );
 
             FeatureCollection fc = gmlReader.readFeatureCollection();
@@ -872,8 +870,7 @@ public class SextanteProcesslet implements Processlet {
 
             // sw.setPrefix( VectorLayerAdapter.APP_PREFIX, VectorLayerAdapter.APP_NS );
             // sw.setPrefix( "gml", CommonNamespaces.GML3_2_NS );
-            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
-                                                                                FormatHelper.determineGMLVersion( gmlOutput ),
+            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
             // gmlWriter.setOutputCRS(new CRS( "EPSG:4326" ));
             gmlWriter.write( coll );

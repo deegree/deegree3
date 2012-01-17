@@ -45,6 +45,7 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 
 /**
  * A feature is a structured object with named properties, an identifier and type information. Properties may have
@@ -68,20 +69,9 @@ import org.deegree.geometry.Envelope;
 public interface Feature extends GMLObject {
 
     /**
-     * Returns the id of the feature.
-     * <p>
-     * In a GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
-     * <code>fid</code> (GML 2) attribute of the feature element.
-     * </p>
-     * 
-     * @return the id of the feature, may be <code>null</code>
-     */
-    public String getId();
-
-    /**
      * Sets the id of the feature.
      * <p>
-     * In a GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
+     * In a GML encoding of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
      * <code>fid</code> (GML 2) attribute of the feature element.
      * </p>
      * 
@@ -93,7 +83,7 @@ public interface Feature extends GMLObject {
     /**
      * Returns the name of the feature.
      * <p>
-     * In a GML representation of the feature, this corresponds to the feature element's name.
+     * In a GML encoding of the feature, this corresponds to the feature's element name.
      * </p>
      * 
      * @return the name of the feature instance, never <code>null</code>
@@ -108,47 +98,46 @@ public interface Feature extends GMLObject {
     public FeatureType getType();
 
     /**
-     * Returns all properties in order, excluding standard GML properties such as <code>gml:name</code>.
+     * Returns all properties in order.
      * 
-     * @return all properties, excluding standard GML properties, may be empty, but never <code>null</code>
+     * @return all properties, in order, may be empty, but never <code>null</code>
      */
-    public Property[] getProperties();
+    public List<Property> getProperties();
 
     /**
-     * Returns the properties with the given name, in order.
-     * 
-     * @param propName
-     *            name of the requested properties
-     * @return the properties with the given name, in order, may be empty, but never <code>null</code>
-     */
-    public Property[] getProperties( QName propName );
-
-    /**
-     * Returns the property with the given name.
+     * Returns all properties with the given name, in order.
      * 
      * @param propName
-     *            name of the requested property
-     * @return the property with the given name
-     * @throws IllegalArgumentException
-     *             if the feature has more than one property with the given name
+     *            name of the requested properties, must not be <code>null</code>
+     * @return the properties with the given name, in order, may be empty (no such properties), but never
+     *         <code>null</code>
      */
-    public Property getProperty( QName propName );
+    public List<Property> getProperties( QName propName );
 
     /**
-     * Returns all geometry-valued properties in order.
+     * Returns all {@link Geometry}-valued properties in order.
+     * <p>
+     * NOTE: This excludes {@link Envelope}-valued properties, such as <code>gml:boundedBy</code>.
+     * </p>
      * 
      * @return all geometry properties
      */
-    public Property[] getGeometryProperties();
+    public List<Property> getGeometryProperties();
 
     /**
-     * Returns the envelope of the feature.
+     * Returns the envelope associated with this feature.
      * 
      * @return the envelope of the feature, or <code>null</code> if the feature has no envelope information / geometry
      *         properties
      */
     public Envelope getEnvelope();
 
+    /**
+     * Sets the envelope associated with this feature.
+     * 
+     * @param env
+     *            the envelope for the feature, can be <code>null</code> (no envelope)
+     */
     public void setEnvelope( Envelope env );
 
     /**
@@ -159,7 +148,7 @@ public interface Feature extends GMLObject {
     public Envelope calcEnvelope();
 
     /**
-     * Sets the value of a specific occurrence of a property with a given name (or removes the property feature).
+     * Sets the value of a specific occurrence of a property with a given name (or removes the property).
      * 
      * @param propName
      *            property name

@@ -262,7 +262,7 @@ public class TOPPStatesTest {
         Assert.assertEquals( 1, fc.size() );
 
         Feature f = fc.iterator().next();
-        Assert.assertEquals( 23, ( f.getProperties().length ) );
+        Assert.assertEquals( 23, ( f.getProperties().size() ) );
 
         assertEquals( "Illinois", getPropertyValue( f, STATE_NAME ).getAsText() );
         assertEquals( STRING, getPropertyValue( f, STATE_NAME ).getType().getBaseType() );
@@ -295,7 +295,7 @@ public class TOPPStatesTest {
     }
 
     private PrimitiveValue getPropertyValue( Feature f, QName propName ) {
-        return (PrimitiveValue) f.getProperty( propName ).getValue();
+        return (PrimitiveValue) f.getProperties( propName ).get( 0 ).getValue();
     }
 
     @Parameters

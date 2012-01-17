@@ -44,7 +44,6 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.gml.GMLVersion;
 
 /**
  * Defines a class of {@link Feature}s, i.e. features with same name and same types of properties.
@@ -112,7 +111,7 @@ public interface FeatureType {
     /**
      * Returns the {@link AppSchema} that this feature type belongs to.
      * 
-     * @return the corresponding <code>ApplicationSchema</code> or <code>null</code> if this feature type has none
+     * @return the corresponding {@link AppSchema} or <code>null</code> if this feature type has none
      */
     public AppSchema getSchema();
 }

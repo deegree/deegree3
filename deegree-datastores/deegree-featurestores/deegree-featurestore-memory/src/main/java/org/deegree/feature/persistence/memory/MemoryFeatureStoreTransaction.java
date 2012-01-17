@@ -392,7 +392,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
         }
-        feature.setEnvelope(null);
+        feature.setEnvelope( null );
         return feature;
     }
 
@@ -480,7 +480,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                         if ( replacement.getValue() instanceof Geometry ) {
                             Geometry geom = (Geometry) replacement.getValue();
                             if ( geom != null ) {
-                                Property current = feature.getProperty( replacement.getType().getName() );
+                                Property current = feature.getProperties( replacement.getType().getName() ).get( 0 );
                                 Geometry currentGeom = current != null ? ( (Geometry) current.getValue() ) : null;
                                 // check compatibility (CRS) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc7.2)

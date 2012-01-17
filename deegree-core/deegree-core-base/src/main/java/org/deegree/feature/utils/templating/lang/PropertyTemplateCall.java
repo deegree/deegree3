@@ -164,8 +164,10 @@ public class PropertyTemplateCall {
             eval( sb, t, obj, defs, null, (Feature) obj, geometries );
             return;
         }
+        List<Property> inputProps = ( (Feature) obj ).getProperties();
+        Property[] propArray = inputProps.toArray( new Property[inputProps.size()] );
 
-        List<Property> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate, geometries );
+        List<Property> props = getMatchingObjects( propArray, patterns, negate, geometries );
 
         LOG.debug( "Property template call '{}' matches objects '{}'.", name, props );
 

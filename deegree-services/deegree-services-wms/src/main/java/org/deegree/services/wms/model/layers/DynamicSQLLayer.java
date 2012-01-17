@@ -42,6 +42,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.awt.Graphics2D;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -185,8 +186,8 @@ public class DynamicSQLLayer extends Layer {
                 }
                 boolean painted = false;
                 if ( symbolField != null ) {
-                    Property[] props = f.getProperties( symbolField );
-                    if ( props != null && props.length > 0 ) {
+                    List<Property> props = f.getProperties( symbolField );
+                    if ( props != null && !props.isEmpty() ) {
                         for ( Property p : props ) {
                             TypedObjectNode n = p.getValue();
                             if ( n instanceof PrimitiveValue ) {

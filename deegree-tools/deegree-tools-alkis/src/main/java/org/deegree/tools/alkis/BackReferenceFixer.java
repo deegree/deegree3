@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -143,22 +142,20 @@ public class BackReferenceFixer {
                 if ( bindings == null ) {
                     bindings = f.getType().getSchema().getNamespaceBindings();
                 }
-                if ( f.getProperty( prop ) != null ) {
-                    for ( Property p : f.getProperties( prop ) ) {
-                        FeatureReference ref = (FeatureReference) p.getValue();
-                        List<String> list = refs.get( ref.getId() );
-                        if ( list == null ) {
-                            list = new ArrayList<String>();
-                            refs.put( ref.getId(), list );
-                        }
-                        list.add( f.getId() );
-                        list = types.get( ref.getId() );
-                        if ( list == null ) {
-                            list = new ArrayList<String>();
-                            types.put( ref.getId(), list );
-                        }
-                        list.add( "inversZu_dientZurDarstellungVon_" + f.getType().getName().getLocalPart() );
+                for ( Property p : f.getProperties( prop ) ) {
+                    FeatureReference ref = (FeatureReference) p.getValue();
+                    List<String> list = refs.get( ref.getId() );
+                    if ( list == null ) {
+                        list = new ArrayList<String>();
+                        refs.put( ref.getId(), list );
                     }
+                    list.add( f.getId() );
+                    list = types.get( ref.getId() );
+                    if ( list == null ) {
+                        list = new ArrayList<String>();
+                        types.put( ref.getId(), list );
+                    }
+                    list.add( "inversZu_dientZurDarstellungVon_" + f.getType().getName().getLocalPart() );
                 }
             }
 
@@ -196,7 +193,7 @@ public class BackReferenceFixer {
 
             for ( Feature f : reader.readFeatureCollectionStream() ) {
                 if ( refs.containsKey( f.getId() ) ) {
-                    List<Property> props = new ArrayList<Property>( Arrays.asList( f.getProperties() ) );
+                    List<Property> props = new ArrayList<Property>( f.getProperties() );
                     ListIterator<Property> iter = props.listIterator();
                     String name = iter.next().getName().getLocalPart();
                     while ( name.equals( "lebenszeitintervall" ) || name.equals( "modellart" )

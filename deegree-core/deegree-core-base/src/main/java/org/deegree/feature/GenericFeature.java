@@ -46,6 +46,7 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,8 +83,8 @@ public class GenericFeature extends AbstractFeature {
     }
 
     @Override
-    public Property[] getProperties() {
-        return props.toArray( new Property[props.size()] );
+    public List<Property> getProperties() {
+        return props;
     }
 
     @Override
@@ -98,7 +99,7 @@ public class GenericFeature extends AbstractFeature {
         LOG.debug( "Setting property value for " + occurrence + ". " + propName + " property" );
 
         // check if change would violate minOccurs/maxOccurs constraint
-        int current = getProperties( propName ).length;
+        int current = getProperties( propName ).size();
         PropertyType pt = getType().getPropertyDeclaration( propName );
         if ( value == null ) {
             // null means remove
@@ -130,39 +131,24 @@ public class GenericFeature extends AbstractFeature {
     }
 
     @Override
-    public Property[] getProperties( QName propName ) {
+    public List<Property> getProperties( QName propName ) {
         List<Property> namedProps = new ArrayList<Property>( props.size() );
         for ( Property property : props ) {
             if ( propName.equals( property.getName() ) ) {
                 namedProps.add( property );
             }
         }
-        return namedProps.toArray( new Property[namedProps.size()] );
+        return namedProps;
     }
 
     @Override
-    public Property getProperty( QName propName ) {
-        Property prop = null;
-        for ( Property property : props ) {
-            if ( propName.equals( property.getName() ) ) {
-                if ( prop != null ) {
-                    String msg = "Feature has more than one property with name '" + propName + "'.";
-                    throw new IllegalArgumentException( msg );
-                }
-                prop = property;
-            }
-        }
-        return prop;
-    }
-
-    @Override
-    public Property[] getGeometryProperties() {
+    public List<Property> getGeometryProperties() {
         List<Property> geoProps = new ArrayList<Property>( props.size() );
         for ( Property property : props ) {
-            if ( property.getValue() instanceof Geometry ) {
+            if ( property.getValue() instanceof Geometry && !( property.getValue() instanceof Envelope ) ) {
                 geoProps.add( property );
             }
         }
-        return geoProps.toArray( new Property[geoProps.size()] );
+        return geoProps;
     }
 }

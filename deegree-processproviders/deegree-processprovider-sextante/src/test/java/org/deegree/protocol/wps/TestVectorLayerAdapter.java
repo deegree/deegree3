@@ -38,7 +38,9 @@ package org.deegree.protocol.wps;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import junit.framework.Assert;
+
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -54,6 +56,7 @@ import org.deegree.services.wps.provider.sextante.VectorLayerImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import es.unex.sextante.dataObjects.IVectorLayer;
 
 /**
@@ -282,7 +285,7 @@ public class TestVectorLayerAdapter {
     private void checkFeature( Feature fIn, Feature fOut ) {
 
         // check only if geometries available
-        if ( fIn.getGeometryProperties().length > 0 && fOut.getGeometryProperties().length > 0 ) {
+        if ( !fIn.getGeometryProperties().isEmpty() && !fOut.getGeometryProperties().isEmpty() ) {
 
             // collect simple properties
             LinkedList<SimplePropertyType> sptsIn = new LinkedList<SimplePropertyType>();
@@ -324,26 +327,25 @@ public class TestVectorLayerAdapter {
                         Assert.assertTrue( sptIn.getName().equals( sptOut.getName() ) );
 
                         // check value content (only the first property with the same name)
-                        Property[] valuesIn = fIn.getProperties( sptIn.getName() );
-                        Property[] valuesOut = fOut.getProperties( sptOut.getName() );
+                        List<Property> valuesIn = fIn.getProperties( sptIn.getName() );
+                        List<Property> valuesOut = fOut.getProperties( sptOut.getName() );
 
-                        if ( valuesIn.length > 0 ) { // check if input value available
-                            TypedObjectNode valueIn = valuesIn[0].getValue();
+                        if ( valuesIn.size() > 0 ) { // check if input value available
+                            TypedObjectNode valueIn = valuesIn.get( 0 ).getValue();
 
-                            if ( valuesOut.length > 0 ) {// check if output value available
-                                TypedObjectNode valueOut = valuesOut[0].getValue();
+                            if ( valuesOut.size() > 0 ) {// check if output value available
+                                TypedObjectNode valueOut = valuesOut.get( 0 ).getValue();
 
                                 // check values
                                 if ( valueIn instanceof PrimitiveValue && valueOut instanceof PrimitiveValue ) {
-                                    Assert.assertTrue( ( (PrimitiveValue) valueIn ).getAsText().equals(
-                                                                                                        ( (PrimitiveValue) valueIn ).getAsText() ) );
+                                    Assert.assertTrue( ( (PrimitiveValue) valueIn ).getAsText().equals( ( (PrimitiveValue) valueIn ).getAsText() ) );
                                 } else {
                                     Assert.fail();
                                 }
                             }
                         } else { // no input value, check output value
-                            if ( valuesOut.length > 0 ) {// check if output value available
-                                TypedObjectNode valueOut = valuesOut[0].getValue();
+                            if ( valuesOut.size() > 0 ) {// check if output value available
+                                TypedObjectNode valueOut = valuesOut.get( 0 ).getValue();
                                 if ( valueOut instanceof PrimitiveValue ) {
                                     String val = ( (PrimitiveValue) valueOut ).getAsText();
                                     Assert.assertTrue( val.equals( "0" ) || val.equals( "0.0" ) || val.equals( "null" )
@@ -364,8 +366,8 @@ public class TestVectorLayerAdapter {
             }
 
             // check geometry content (only first geometry)
-            TypedObjectNode geomIn = fIn.getGeometryProperties()[0].getValue();
-            TypedObjectNode geomOut = fOut.getGeometryProperties()[0].getValue();
+            TypedObjectNode geomIn = fIn.getGeometryProperties().get( 0 ).getValue();
+            TypedObjectNode geomOut = fOut.getGeometryProperties().get( 0 ).getValue();
             Assert.assertTrue( geomIn.toString().equals( geomOut.toString() ) );
         }
     }
@@ -401,7 +403,7 @@ public class TestVectorLayerAdapter {
      */
     private Feature getNextFeatureWithGeometry( Iterator<Feature> it ) {
         Feature f = it.next();
-        if ( f.getGeometryProperties().length > 0 )
+        if ( !f.getGeometryProperties().isEmpty() )
             return f;
         else
             return getNextFeatureWithGeometry( it );

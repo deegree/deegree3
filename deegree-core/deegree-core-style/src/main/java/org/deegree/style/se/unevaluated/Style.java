@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -228,7 +229,7 @@ public class Style implements Copyable<Style> {
         if ( useDefault ) {
             LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = new LinkedList<Triple<Styling, LinkedList<Geometry>, String>>();
 
-            Property[] geoms = f.getGeometryProperties();
+            List<Property> geoms = f.getGeometryProperties();
             if ( geoms != null ) {
                 for ( Property p : geoms ) {
                     LinkedList<Geometry> geometries = new LinkedList<Geometry>();

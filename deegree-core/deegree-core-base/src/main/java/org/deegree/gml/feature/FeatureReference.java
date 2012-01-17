@@ -89,7 +89,7 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     }
 
     @Override
-    public Property[] getGeometryProperties() {
+    public List<Property> getGeometryProperties() {
         return getReferencedObject().getGeometryProperties();
     }
 
@@ -99,18 +99,13 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     }
 
     @Override
-    public Property[] getProperties() {
+    public List<Property> getProperties() {
         return getReferencedObject().getProperties();
     }
 
     @Override
-    public Property[] getProperties( QName propName ) {
+    public List<Property> getProperties( QName propName ) {
         return getReferencedObject().getProperties( propName );
-    }
-
-    @Override
-    public Property getProperty( QName propName ) {
-        return getReferencedObject().getProperty( propName );
     }
 
     @Override

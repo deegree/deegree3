@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -61,7 +60,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
 
     PropertyNodeIterator( GMLObjectNode<Feature, Feature> parent, GMLVersion version ) {
         this.parent = parent;
-        this.props = Arrays.asList( parent.getValue().getProperties() ).iterator();
+        this.props = parent.getValue().getProperties().iterator();
     }
 
     @Override

@@ -353,17 +353,15 @@ public class VectorLayerAdapter {
      */
     private static com.vividsolutions.jts.geom.Geometry createJTSGeometryFromFeature( Feature f ) {
 
-        Property[] fGeometries = f.getGeometryProperties();
+        List<Property> fGeometries = f.getGeometryProperties();
         com.vividsolutions.jts.geom.Geometry geom;
 
-        if ( fGeometries.length == 1 ) { // only one geometry
-
-            geom = createJTSGeometryFromGeometry( (Geometry) fGeometries[0].getValue() );
-
+        if ( fGeometries.size() == 1 ) { // only one geometry
+            geom = createJTSGeometryFromGeometry( (Geometry) fGeometries.get( 0 ).getValue() );
         } else { // more geometries
 
-            if ( fGeometries.length != 0 ) { // feature with more than one geometry
-                geom = createJTSGeometryFromGeometry( (Geometry) fGeometries[0].getValue() );
+            if ( fGeometries.size() != 0 ) { // feature with more than one geometry
+                geom = createJTSGeometryFromGeometry( (Geometry) fGeometries.get( 0 ).getValue() );
 
                 LOG.warn( "Feature '" + f.getId() + "' has many geometries, only the first is in use." );
 
@@ -544,9 +542,9 @@ public class VectorLayerAdapter {
     private static String determineCRS( Feature f ) {
 
         String crs = null;
-        Property[] geoms = f.getGeometryProperties();
-        if ( geoms.length > 0 ) {
-            Geometry g = (Geometry) geoms[0].getValue();
+        List<Property> geoms = f.getGeometryProperties();
+        if ( !geoms.isEmpty() ) {
+            Geometry g = (Geometry) geoms.get( 0 ).getValue();
             crs = g.getCoordinateSystem().getAlias();
         }
 
@@ -620,7 +618,7 @@ public class VectorLayerAdapter {
             Feature f = it.next();
 
             // if feature has geometries
-            if ( f.getGeometryProperties().length > 0 ) {
+            if ( !f.getGeometryProperties().isEmpty() ) {
 
                 FeatureType fType = f.getType();
 
@@ -709,10 +707,10 @@ public class VectorLayerAdapter {
             for ( int i = 0; i < propertyDeclarations.length; i++ ) {
 
                 // determine property value by name
-                Property[] allProperties = f.getProperties();
+                List<Property> allProperties = f.getProperties();
                 LinkedList<Property> propertyByName = new LinkedList<Property>();
-                for ( int j = 0; j < allProperties.length; j++ ) {
-                    Property prop = allProperties[j];
+                for ( int j = 0; j < allProperties.size(); j++ ) {
+                    Property prop = allProperties.get( j );
                     if ( prop.getName().equals( propertyDeclarations[i].getQName() ) )
                         propertyByName.add( prop );
                 }

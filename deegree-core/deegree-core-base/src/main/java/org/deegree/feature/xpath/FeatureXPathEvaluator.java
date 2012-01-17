@@ -105,7 +105,9 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
         // simple property with just a simple element step?
         QName simplePropName = propName.getAsQName();
         if ( simplePropName != null ) {
-            return context.getProperties( simplePropName );
+            List<Property> props = context.getProperties( simplePropName );
+            TypedObjectNode[] propArray = new TypedObjectNode[props.size()];
+            return props.toArray( propArray );
         }
 
         TypedObjectNode[] resultValues = null;
