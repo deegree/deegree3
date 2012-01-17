@@ -245,4 +245,16 @@ public class GMLAppSchemaReaderTest {
         FeatureType ft = fts.get( 0 );
         Assert.assertEquals( 9, ft.getPropertyDeclarations().size() );
     }
+
+    @Test
+    public void testParsingAIXM()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
+        FeatureType[] fts = schema.getFeatureTypes();
+        Assert.assertEquals( 157, fts.length );
+    }
 }
