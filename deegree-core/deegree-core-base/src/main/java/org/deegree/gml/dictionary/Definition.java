@@ -36,6 +36,7 @@
 package org.deegree.gml.dictionary;
 
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 
@@ -64,4 +65,11 @@ public interface Definition extends GMLObject {
      * @return the names, can be empty, but never <code>null</code>
      */
     public CodeType[] getNames();
+    
+    /**
+     * Returns the standard GML properties (e.g. <code>gml:name</code>).
+     * 
+     * @return the standard GML properties, may be <code><null</code>
+     */
+    public GMLStdProps getGMLProperties();        
 }

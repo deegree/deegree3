@@ -70,13 +70,13 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.URITranslator;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.gml.schema.GMLSchemaInfoSet;

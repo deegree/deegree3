@@ -57,11 +57,11 @@ import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +138,9 @@ public class GenericAppSchema implements AppSchema {
                     substitutionGroups.add( substitutionGroup );
                     substitutionGroup = ftToSuperFt.get( substitutionGroup );
                 }
-                ftToSuperFts.put( ft, substitutionGroups );
+                if ( !substitutionGroups.isEmpty() ) {
+                    ftToSuperFts.put( ft, substitutionGroups );
+                }
             }
         }
 

@@ -66,11 +66,11 @@ import java.util.LinkedList;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.io.WKTWriter;

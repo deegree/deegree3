@@ -40,14 +40,13 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.ExtraProps;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.gml.GMLVersion;
 
 /**
  * Generic {@link FeatureCollectionType} implementation, can be used for representing arbitrary feature collection
@@ -77,8 +76,8 @@ public class GenericFeatureCollectionType extends GenericFeatureType implements 
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version ) {
-        return new GenericFeatureCollection( this, fid, props, extraProps, version );
+    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
+        return new GenericFeatureCollection( this, fid, props, extraProps );
     }
 
     @Override

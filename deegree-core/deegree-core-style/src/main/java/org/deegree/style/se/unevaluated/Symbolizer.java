@@ -44,9 +44,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
-import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;

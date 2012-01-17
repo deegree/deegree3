@@ -68,6 +68,7 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
@@ -97,7 +98,6 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.ObjectPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -154,8 +154,19 @@ public class AppSchemaMapper {
         this.mapGMLProps = mapGMLProps;
 
         List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
-        FeatureType[] fts = appSchema.getFeatureTypes( null, false, false ).toArray( new FeatureType[ftList.size()] );
-        Map<FeatureType, FeatureType> ftToSuperFt = appSchema.getFtToSuperFt();
+        List<FeatureType> blackList = new ArrayList<FeatureType>();
+        for ( FeatureType ft : ftList ) {
+            if ( ft.getName().getNamespaceURI().equals( appSchema.getGMLSchema().getVersion().getNamespace() ) ) {
+                blackList.add( ft );
+            }
+        }
+
+        ftList.removeAll( blackList );
+        FeatureType[] fts = ftList.toArray( new FeatureType[ftList.size()] );
+        Map<FeatureType, FeatureType> ftToSuperFt = new HashMap<FeatureType, FeatureType>( appSchema.getFtToSuperFt() );
+        for ( FeatureType ft : blackList ) {
+            ftToSuperFt.remove( ft );
+        }
         Map<String, String> prefixToNs = appSchema.getNamespaceBindings();
         GMLSchemaInfoSet xsModel = appSchema.getGMLSchema();
 
@@ -222,28 +233,24 @@ public class AppSchemaMapper {
 
         FIDMapping fidMapping = null;
         String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
-        if ( mapGMLProps ) {
-            IDGenerator generator = new UUIDGenerator();
-            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>(
-                                                                                         new SQLIdentifier(
-                                                                                                            "attr_gml_id" ),
-                                                                                         STRING );
-            fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
-        } else {
-            IDGenerator generator = new AutoIDGenerator();
-            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( "gid" ),
-                                                                                         INTEGER );
-            fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
-        }
+        IDGenerator generator = new UUIDGenerator();
+        Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>(
+                                                                                     new SQLIdentifier( "attr_gml_id" ),
+                                                                                     STRING );
+        fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
 
         List<Mapping> mappings = new ArrayList<Mapping>();
         if ( mapGMLProps ) {
-            for ( PropertyType pt : ft.getPropertyDeclarations( ft.getSchema().getGMLSchema().getVersion() ) ) {
+            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 mappings.addAll( generatePropMapping( pt, mc ) );
             }
         } else {
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                mappings.addAll( generatePropMapping( pt, mc ) );
+                if ( !pt.getName().getNamespaceURI().equals( appSchema.getGMLSchema().getVersion().getNamespace() ) ) {
+                    mappings.addAll( generatePropMapping( pt, mc ) );
+                } else if (pt.getName().getLocalPart().equals( "identifier" )) {
+                    mappings.addAll( generatePropMapping( pt, mc ) );
+                }
             }
         }
 

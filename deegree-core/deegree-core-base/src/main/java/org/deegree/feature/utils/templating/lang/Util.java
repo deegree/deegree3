@@ -41,11 +41,11 @@ import static java.util.Collections.singletonList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
 
 /**

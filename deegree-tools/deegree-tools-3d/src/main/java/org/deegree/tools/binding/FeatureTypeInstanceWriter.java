@@ -67,6 +67,7 @@ import java.util.Set;
 import javax.lang.model.type.PrimitiveType;
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.StringPair;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
@@ -79,7 +80,6 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;

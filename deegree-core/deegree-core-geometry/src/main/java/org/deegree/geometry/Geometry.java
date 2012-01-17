@@ -384,4 +384,11 @@ public interface Geometry extends GMLObject {
      * @return shortest distance between the two geometries
      */
     public Measure getDistance( Geometry geometry, Unit requestedUnits );
+    
+    /**
+     * Returns the standard GML properties (e.g. <code>gml:name</code>).
+     * 
+     * @return the standard GML properties, may be <code><null</code>
+     */
+    public GMLStdProps getGMLProperties();    
 }

@@ -39,8 +39,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
-import org.deegree.feature.property.Property;
 import org.deegree.gml.GMLVersion;
 
 /**
@@ -61,7 +61,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
 
     PropertyNodeIterator( GMLObjectNode<Feature, Feature> parent, GMLVersion version ) {
         this.parent = parent;
-        this.props = Arrays.asList( parent.getValue().getProperties( version ) ).iterator();
+        this.props = Arrays.asList( parent.getValue().getProperties() ).iterator();
     }
 
     @Override

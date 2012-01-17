@@ -38,6 +38,7 @@ package org.deegree.feature.property;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.FeatureType;
 

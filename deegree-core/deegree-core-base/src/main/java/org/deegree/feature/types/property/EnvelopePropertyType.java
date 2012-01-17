@@ -40,6 +40,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.geometry.Envelope;
 
 /**

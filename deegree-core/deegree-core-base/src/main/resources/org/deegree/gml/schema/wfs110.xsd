@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<xsd:schema targetNamespace="http://www.opengis.net/wfs" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:gml32="http://www.opengis.net/gml/3.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+  <xsd:element name="FeatureCollection" type="wfs:FeatureCollectionType" substitutionGroup="gml:_FeatureCollection" />
+  <xsd:complexType name="FeatureCollectionType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureCollectionType">
+      <!--
+        <xsd:sequence>
+          <xsd:element name="gml32:featureMember" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="gml32:featureMembers" type="gml:FeatureArrayPropertyType" minOccurs="0" />
+        </xsd:sequence>
+      -->        
+      </xsd:extension>      
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

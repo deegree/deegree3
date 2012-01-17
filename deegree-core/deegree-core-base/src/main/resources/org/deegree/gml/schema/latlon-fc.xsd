@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<xsd:schema targetNamespace="http://www.lat-lon.de" xmlns:ll="http://www.lat-lon.de"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+  <xsd:element name="FeatureCollection" type="ll:FeatureCollectionType" substitutionGroup="gml:_FeatureCollection" />
+  <xsd:complexType name="FeatureCollectionType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureCollectionType" />
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

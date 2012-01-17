@@ -36,7 +36,7 @@
 package org.deegree.feature.xpath;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.feature.property.Property;
+import org.deegree.commons.tom.gml.property.Property;
 
 /**
  * {@link ElementNode} that wraps a {@link Property} of a feature.

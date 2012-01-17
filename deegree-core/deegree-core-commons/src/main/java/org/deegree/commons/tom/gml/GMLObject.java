@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.gml;
 
+import java.util.List;
+
 import org.deegree.commons.tom.Object;
+import org.deegree.commons.tom.gml.property.Property;
 
 /**
  * Base interface for GML objects.
@@ -47,10 +50,10 @@ import org.deegree.commons.tom.Object;
  */
 public interface GMLObject extends Object {
 
-    /**
-     * Returns the standard GML properties (e.g. <code>gml:name</code>).
-     * 
-     * @return the standard GML properties, may be <code><null</code>
-     */
-    public GMLStdProps getGMLProperties();
+//    /**
+//     * Returns the standard GML properties (e.g. <code>gml:name</code>).
+//     * 
+//     * @return the standard GML properties, may be <code><null</code>
+//     */
+//    public GMLStdProps getGMLProperties();
 }

@@ -40,10 +40,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.Lock;
-import org.deegree.feature.property.Property;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;

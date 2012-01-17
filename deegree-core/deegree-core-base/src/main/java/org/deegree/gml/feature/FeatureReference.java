@@ -43,12 +43,11 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
-import org.deegree.gml.GMLVersion;
 
 /**
  * A {@link GMLReference} that targets a {@link Feature}.
@@ -77,6 +76,16 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     @Override
     public Envelope getEnvelope() {
         return getReferencedObject().getEnvelope();
+    }
+
+    @Override
+    public void setEnvelope( Envelope env ) {
+        getReferencedObject().setEnvelope( env );
+    }
+
+    @Override
+    public Envelope calcEnvelope() {
+        return getReferencedObject().calcEnvelope();
     }
 
     @Override
@@ -123,37 +132,6 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     @Override
     public void setPropertyValue( QName propName, int occurence, TypedObjectNode value ) {
         getReferencedObject().setPropertyValue( propName, occurence, value );
-    }
-
-    @Override
-    public Property[] getProperties( GMLVersion version ) {
-        return getReferencedObject().getProperties( version );
-    }
-
-    @Override
-    public Property[] getProperties( QName propName, GMLVersion version ) {
-        return getReferencedObject().getProperties( propName, version );
-    }
-
-    @Override
-    public Property getProperty( QName propName, GMLVersion version ) {
-        return getReferencedObject().getProperty( propName, version );
-    }
-
-    @Override
-    public void setProperties( List<Property> props, GMLVersion version )
-                            throws IllegalArgumentException {
-        getReferencedObject().setProperties( props, version );
-    }
-
-    @Override
-    public void setPropertyValue( QName propName, int occurence, TypedObjectNode value, GMLVersion version ) {
-        getReferencedObject().setPropertyValue( propName, occurence, value, version );
-    }
-
-    @Override
-    public StandardGMLFeatureProps getGMLProperties() {
-        return getReferencedObject().getGMLProperties();
     }
 
     @Override

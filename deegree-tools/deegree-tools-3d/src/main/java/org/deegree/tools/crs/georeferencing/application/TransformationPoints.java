@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.Triple;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -62,9 +64,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsNull;
@@ -245,7 +245,7 @@ public class TransformationPoints {
             leftp4 = new Point4Values( left, g, null );
             Property p = new GenericProperty( pointGeometryType, new DefaultPoint( null, state.targetCRS, null,
                                                                                    new double[] { g.getX(), g.getY() } ) );
-            Feature f = featureType.newFeature( "test", Collections.singletonList( p ), null, GML_31 );
+            Feature f = featureType.newFeature( "test", Collections.singletonList( p ), null );
             try {
                 FeatureStoreTransaction ta = featureStore.acquireTransaction();
                 GenericFeatureCollection col = new GenericFeatureCollection();
@@ -324,7 +324,7 @@ public class TransformationPoints {
                 }
                 Polygon p = fac.createPolygon( null, state.targetCRS, r, null );
                 Property prop = new GenericProperty( buildingGeometryType, p );
-                Feature feat = featureType.newFeature( "test" + i++, singletonList( prop ), null, GML_31 );
+                Feature feat = featureType.newFeature( "test" + i++, singletonList( prop ), null );
                 col.add( feat );
             }
             ta = featureStore.acquireTransaction();

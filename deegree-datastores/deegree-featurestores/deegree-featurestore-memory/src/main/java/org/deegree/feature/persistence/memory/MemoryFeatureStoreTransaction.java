@@ -47,6 +47,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -59,7 +60,6 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -72,7 +72,6 @@ import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.gml.GMLVersion;
 import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
 import org.deegree.protocol.wfs.transaction.IDGenMode;
@@ -393,7 +392,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
         }
-        feature.getGMLProperties().setBoundedBy( null );
+        feature.setEnvelope(null);
         return feature;
     }
 
@@ -504,9 +503,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                                 }
                             }
                         }
-                        // TODO what about multi properties, strategy for proper handling of GML version
-                        feature.setPropertyValue( replacement.getType().getName(), 0, replacement.getValue(),
-                                                  GMLVersion.GML_31 );
+                        // TODO what about multi properties
+                        feature.setPropertyValue( replacement.getType().getName(), 0, replacement.getValue() );
                     }
                     if ( lock != null ) {
                         lock.release( feature.getId() );

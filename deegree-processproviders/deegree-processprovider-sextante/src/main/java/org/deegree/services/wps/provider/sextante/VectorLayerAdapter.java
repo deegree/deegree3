@@ -46,6 +46,8 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.persistence.CRSManager;
@@ -54,20 +56,17 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +79,9 @@ import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.IteratorException;
 
 /**
- * The {@link VectorLayerAdapter} has methods to create a {@link IVectorLayer} from a {@link Geometry}, <br> {@link Feature}
- * or {@link FeatureCollection} and methods to create a {@link Geometry}, {@link Feature} or {@link FeatureCollection}
- * from a {@link IVectorLayer} .
+ * The {@link VectorLayerAdapter} has methods to create a {@link IVectorLayer} from a {@link Geometry}, <br>
+ * {@link Feature} or {@link FeatureCollection} and methods to create a {@link Geometry}, {@link Feature} or
+ * {@link FeatureCollection} from a {@link IVectorLayer} .
  * 
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
@@ -530,7 +529,7 @@ public class VectorLayerAdapter {
         }
 
         // create feature
-        feature = new GenericFeature( fty, id, props, GMLVersion.GML_31, null );
+        feature = new GenericFeature( fty, id, props, null );
 
         return feature;
     }

@@ -5,6 +5,8 @@
   <Name>adv:AX_BesondererTopographischerPunkt</Name>
   <FeatureTypeName>adv:AX_BesondererTopographischerPunkt</FeatureTypeName>
   <!-- Test-Zeichenregel fuer noch nicht umgesetzte FeatureTypes-->
+  <!-- Auskommentiert, da fehlerhaft: adv:AX_BesondererTopographischerPunkt hat kein Property namens adv:position -->
+  <!---
   <Rule>
     <Name>Test</Name>
     <Description>
@@ -77,4 +79,5 @@
       </Graphic>
     </PointSymbolizer> 
   </Rule>
+  -->
 </FeatureTypeStyle>                    

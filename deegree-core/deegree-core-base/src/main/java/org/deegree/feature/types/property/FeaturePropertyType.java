@@ -41,6 +41,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.FeatureType;
 import org.slf4j.Logger;

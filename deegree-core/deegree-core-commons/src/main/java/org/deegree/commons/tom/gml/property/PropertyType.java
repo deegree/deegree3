@@ -33,12 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.types.property;
+package org.deegree.commons.tom.gml.property;
 
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.deegree.feature.types.FeatureType;
 
 /**
  * Declares a named property of a {@link FeatureType}.
@@ -102,7 +101,7 @@ public interface PropertyType {
     /**
      * Returns the XML schema element declaration for this property type.
      * 
-     * @return element declaration, or <code>null</code> (if the property type was not generated from XML schema)
+     * @return element declaration, or <code>null</code> (if the property type was not generated from a GML schema)
      */
     public XSElementDeclaration getElementDecl();
 }

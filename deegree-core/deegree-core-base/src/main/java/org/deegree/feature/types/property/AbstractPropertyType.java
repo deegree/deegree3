@@ -40,6 +40,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.property.PropertyType;
 
 /**
  * Abstract base class for {@link PropertyType}s that defines common fields and methods.

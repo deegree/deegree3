@@ -44,6 +44,7 @@ import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -62,7 +63,6 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -178,7 +178,7 @@ public class CoverageLayerData implements LayerData {
                 break;
             }
 
-            Feature f = new GenericFeature( featureType, null, props, null, null );
+            Feature f = new GenericFeature( featureType, null, props, null );
             col.add( f );
             return col;
         } catch ( Throwable e ) {

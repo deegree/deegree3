@@ -65,9 +65,4 @@ public class GMLReference<T extends GMLObject> extends Reference<T> implements G
     public GMLReference( ReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
-
-    @Override
-    public GMLStdProps getGMLProperties() {
-        return getReferencedObject().getGMLProperties();
-    }
 }

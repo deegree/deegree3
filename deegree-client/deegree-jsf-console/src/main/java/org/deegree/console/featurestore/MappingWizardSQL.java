@@ -85,7 +85,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JSF bean that helps with creating configurations for the {@link AbstractSQLFeatureStore}.
+ * JSF bean that helps with creating configurations for the {@link SQLFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -285,7 +285,7 @@ public class MappingWizardSQL {
                                                                               CoordinateDimension.DIM_2 );
             AppSchemaMapper mapper = new AppSchemaMapper( appSchema, createBlobMapping, createRelationalMapping,
                                                           geometryParams,
-                                                          Math.min( tableNameLength, columnNameLength ), true, true );
+                                                          Math.min( tableNameLength, columnNameLength ), true, false );
             mappedSchema = mapper.getMappedSchema();
             SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter( mappedSchema );
             File tmpConfigFile = File.createTempFile( "fsconfig", ".xml" );

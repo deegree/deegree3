@@ -41,6 +41,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.property.PropertyType;
 
 /**
  * {@link PropertyType} that defines a property with a user-defined value type.

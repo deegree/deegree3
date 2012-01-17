@@ -46,10 +46,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 
 /**
  * Creates a Graphviz dot representation of a feature type application schema.

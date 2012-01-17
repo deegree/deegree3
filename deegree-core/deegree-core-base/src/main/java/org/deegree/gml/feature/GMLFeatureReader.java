@@ -83,6 +83,8 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -99,7 +101,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.DynamicAppSchema;
@@ -115,7 +116,6 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Envelope;
@@ -283,7 +283,7 @@ public class GMLFeatureReader extends XMLAdapter {
             LOG.debug( "- property '" + propName + "'" );
 
             Property property = null;
-            PropertyType propDecl = ft.getPropertyDeclaration( propName, version );
+            PropertyType propDecl = ft.getPropertyDeclaration( propName );
             if ( propDecl == null ) {
                 property = parsePropertyDynamic( propName, xmlStream, activeCRS, ft, lastPropDecl, appSchema );
                 propDecl = property.getType();
@@ -315,7 +315,7 @@ public class GMLFeatureReader extends XMLAdapter {
             }
         }
 
-        Feature feature = ft.newFeature( fid, props, null, version );
+        Feature feature = ft.newFeature( fid, props, null );
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getObject( fid ) != null ) {
                 String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
@@ -407,7 +407,7 @@ public class GMLFeatureReader extends XMLAdapter {
         }
 
         // parse properties
-        Iterator<PropertyType> declIter = ft.getPropertyDeclarations( version ).iterator();
+        Iterator<PropertyType> declIter = ft.getPropertyDeclarations().iterator();
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
 
@@ -500,7 +500,7 @@ public class GMLFeatureReader extends XMLAdapter {
         if ( extraPropertyList != null ) {
             extraProps = new ExtraProps( extraPropertyList.toArray( new Property[extraPropertyList.size()] ) );
         }
-        feature = ft.newFeature( fid, propertyList, extraProps, version );
+        feature = ft.newFeature( fid, propertyList, extraProps );
 
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getObject( fid ) != null ) {

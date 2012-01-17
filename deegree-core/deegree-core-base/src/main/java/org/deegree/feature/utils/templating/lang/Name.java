@@ -37,8 +37,8 @@ package org.deegree.feature.utils.templating.lang;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
-import org.deegree.feature.property.Property;
 
 /**
  * <code>Name</code>

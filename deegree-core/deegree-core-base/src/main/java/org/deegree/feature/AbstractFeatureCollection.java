@@ -90,16 +90,7 @@ public abstract class AbstractFeatureCollection extends AbstractFeature implemen
     }
 
     @Override
-    public Envelope getEnvelope() {
-        if ( envelopeCalculated ) {
-            return standardProps.getBoundedBy();
-        }
-        envelopeCalculated = true;
-        return super.getEnvelope();
-    }
-
-    @Override
-    protected Envelope calcEnvelope() {
+    public Envelope calcEnvelope() {
         Envelope fcBBox = null;
         for ( Feature feature : this ) {
             Envelope memberBBox = feature.getEnvelope();

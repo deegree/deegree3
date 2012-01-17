@@ -43,6 +43,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeCurve;

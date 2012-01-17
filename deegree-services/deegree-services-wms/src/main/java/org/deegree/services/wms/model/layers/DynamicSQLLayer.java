@@ -47,6 +47,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
@@ -54,7 +55,6 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;

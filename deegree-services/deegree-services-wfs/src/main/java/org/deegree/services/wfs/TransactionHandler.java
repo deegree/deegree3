@@ -70,6 +70,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -89,10 +91,8 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
@@ -531,7 +531,7 @@ class TransactionHandler {
         while ( replacementIter.hasNext() ) {
             PropertyReplacement replacement = replacementIter.next();
             QName propName = replacement.getPropertyName();
-            PropertyType pt = ft.getPropertyDeclaration( propName, inputFormat );
+            PropertyType pt = ft.getPropertyDeclaration( propName );
             if ( pt == null ) {
                 throw new OWSException( "Cannot update property '" + propName + "' of feature type '" + ft.getName()
                                         + "'. The feature type does not define this property.",

@@ -104,84 +104,84 @@ public class FilterEvaluationTest {
     @Test
     public void filterCollection1()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter1.xml" );
+        Filter filter = parseFilter110( "testfilter1.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_7" );
     }
 
     @Test
     public void filterCollection2()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter2.xml" );
+        Filter filter = parseFilter110( "testfilter2.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_2" );
     }
 
     @Test
     public void filterCollection3()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter3.xml" );
+        Filter filter = parseFilter110( "testfilter3.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_5", "PHILOSOPHER_6" );
     }
 
     @Test
     public void filterCollection4()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter4.xml" );
+        Filter filter = parseFilter110( "testfilter4.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
     }
 
     @Test
     public void filterCollection5()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter5.xml" );
+        Filter filter = parseFilter110( "testfilter5.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
     }
 
     @Test
     public void filterCollection6()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter6.xml" );
+        Filter filter = parseFilter110( "testfilter6.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
 
     @Test
     public void filterCollection7()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter7.xml" );
+        Filter filter = parseFilter110( "testfilter7.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
 
     @Test
     public void filterCollection8()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter8.xml" );
+        Filter filter = parseFilter110( "testfilter8.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
 
     @Test
     public void filterCollection9()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter9.xml" );
+        Filter filter = parseFilter110( "testfilter9.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_6" );
     }
 
     @Test
     public void filterCollection10()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter10.invalid_xml" );
+        Filter filter = parseFilter110( "testfilter10.invalid_xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ) );
     }
 
     @Test
     public void filterCollection11()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter11.xml" );
+        Filter filter = parseFilter110( "testfilter11.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
     }
 
     @Test
     public void filterCollection12()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter12.xml" );
+        Filter filter = parseFilter110( "testfilter12.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1",
                          "PHILOSOPHER_2", "PHILOSOPHER_3" );
     }
@@ -189,35 +189,35 @@ public class FilterEvaluationTest {
     @Test
     public void filterCollection13()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter13.xml" );
+        Filter filter = parseFilter110( "testfilter13.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_7" );
     }
 
     @Test
     public void filterCollection14()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter14.xml" );
+        Filter filter = parseFilter110( "testfilter14.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
 
     @Test
     public void filterCollection25()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter25.xml" );
+        Filter filter = parseFilter110( "testfilter25.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
 
     @Test
     public void filterCollection26()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter26.xml" );
+        Filter filter = parseFilter110( "testfilter26.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_31 ) ), "PHILOSOPHER_1" );
     }
 
     @Test
     public void filterCollection27()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter100( "testfilter27.xml" );
+        Filter filter = parseFilter110( "testfilter27.xml" );
         assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_32 ) ), "PHILOSOPHER_1" );
     }
 
@@ -260,7 +260,7 @@ public class FilterEvaluationTest {
         }
     }
 
-    private Filter parseFilter100( String resourceName )
+    private Filter parseFilter110( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError {
         InputStream is = FilterEvaluationTest.class.getResourceAsStream( "xml/testdata/v110/" + resourceName );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );

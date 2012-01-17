@@ -39,11 +39,11 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 
 /**
@@ -76,31 +76,11 @@ public interface FeatureType {
     public PropertyType getPropertyDeclaration( QName propName );
 
     /**
-     * Returns the declaration of the property with the given name.
-     * 
-     * @param propName
-     *            name of the property
-     * @param version
-     *            GML version that determines the standard GML properties, must not be <code>null</code>
-     * @return the declaration of the property, or <code>null</code> if no such property is defined
-     */
-    public PropertyType getPropertyDeclaration( QName propName, GMLVersion version );
-
-    /**
      * Returns all property declarations of the feature type, excluding those that any GML feature allows for.
      * 
      * @return property declarations (in order)
      */
     public List<PropertyType> getPropertyDeclarations();
-
-    /**
-     * Returns all property declarations of the feature type, including those that any GML feature allows for.
-     * 
-     * @param version
-     *            GML version that determines the standard GML properties, must not be <code>null</code>
-     * @return property declarations (in order)
-     */
-    public List<PropertyType> getPropertyDeclarations( GMLVersion version );
 
     /**
      * Returns the first geometry property declaration of the feature type.
@@ -125,12 +105,9 @@ public interface FeatureType {
      *            properties
      * @param extraProps
      *            properties that are not defined by the {@link FeatureType} (e.g. rendering hints)
-     * @param version
-     *            determines the names and types of the standard GML properties, can be <code>null</code> (no GML
-     *            properties)
      * @return a new <code>Feature</code> instance
      */
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version );
+    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps );
 
     /**
      * Returns the {@link AppSchema} that this feature type belongs to.

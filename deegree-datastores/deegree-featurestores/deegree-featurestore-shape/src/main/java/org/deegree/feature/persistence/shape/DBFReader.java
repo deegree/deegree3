@@ -61,14 +61,14 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.slf4j.Logger;
 

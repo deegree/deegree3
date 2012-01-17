@@ -63,6 +63,7 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -77,7 +78,6 @@ import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
@@ -86,12 +86,6 @@ import org.w3c.dom.ls.LSInput;
 
 /**
  * Provides access to the {@link AppSchema} defined in one or more GML schema documents.
- * <p>
- * Note that the generated {@link AppSchema} only contains user-defined feature types, i.e. all feature base types from
- * the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This follows
- * the idea that working with {@link AppSchema} objects should not involve GML (and GML-version) specific details (such
- * as the mentioned GML feature types).
- * </p>
  * 
  * @see AppSchema
  * 
@@ -177,11 +171,16 @@ public class GMLAppSchemaReader {
         for ( XSElementDeclaration elementDecl : featureElementDecls ) {
             QName ftName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
             ftNameToFtElement.put( ftName, elementDecl );
-            XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
-            if ( substitutionElement != null ) {
-                QName substitutionElementName = createQName( substitutionElement.getNamespace(),
-                                                             substitutionElement.getName() );
-                ftNameToSubstitutionGroupName.put( ftName, substitutionElementName );
+
+            QName abstractFeatureElementName = createQName( analyzer.getAbstractFeatureElementDeclaration().getNamespace(),
+                                                            analyzer.getAbstractFeatureElementDeclaration().getName() );
+            if ( !ftName.equals( abstractFeatureElementName ) ) {
+                XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
+                if ( substitutionElement != null ) {
+                    QName substitutionElementName = createQName( substitutionElement.getNamespace(),
+                                                                 substitutionElement.getName() );
+                    ftNameToSubstitutionGroupName.put( ftName, substitutionElementName );
+                }
             }
         }
 
@@ -302,12 +301,13 @@ public class GMLAppSchemaReader {
     public AppSchema extractAppSchema() {
 
         for ( QName ftName : ftNameToFtElement.keySet() ) {
+
             FeatureType ft = buildFeatureType( ftNameToFtElement.get( ftName ) );
-            if ( gmlNs.equals( ft.getName().getNamespaceURI() ) ) {
-                ftNameToCoreFt.put( ftName, ft );
-            } else {
-                ftNameToFt.put( ftName, ft );
-            }
+            // if ( gmlNs.equals( ft.getName().getNamespaceURI() ) ) {
+            // ftNameToCoreFt.put( ftName, ft );
+            // } else {
+            ftNameToFt.put( ftName, ft );
+            // }
         }
 
         // resolveFtReferences();
@@ -317,12 +317,14 @@ public class GMLAppSchemaReader {
         Map<FeatureType, FeatureType> ftSubstitution = new HashMap<FeatureType, FeatureType>();
         for ( QName ftName : ftNameToSubstitutionGroupName.keySet() ) {
             QName substitutionFtName = ftNameToSubstitutionGroupName.get( ftName );
-            if ( ftName.getNamespaceURI().equals( gmlNs ) || substitutionFtName.getNamespaceURI().equals( gmlNs ) ) {
-                LOG.trace( "Skipping substitution relation: '" + ftName + "' -> '" + substitutionFtName
-                           + "' (involves GML internal feature type declaration)." );
-                continue;
+            // if ( ftName.getNamespaceURI().equals( gmlNs ) || substitutionFtName.getNamespaceURI().equals( gmlNs ) ) {
+            // LOG.trace( "Skipping substitution relation: '" + ftName + "' -> '" + substitutionFtName
+            // + "' (involves GML internal feature type declaration)." );
+            // continue;
+            // }
+            if ( substitutionFtName != null ) {
+                ftSubstitution.put( ftNameToFt.get( ftName ), ftNameToFt.get( substitutionFtName ) );
             }
-            ftSubstitution.put( ftNameToFt.get( ftName ), ftNameToFt.get( substitutionFtName ) );
         }
         return new GenericAppSchema( fts, ftSubstitution, prefixToNs, analyzer );
     }
@@ -450,44 +452,35 @@ public class GMLAppSchemaReader {
         QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "*** Found property declaration: '" + elementDecl.getName() + "'." );
 
-        // HACK HACK HACK
-        if ( gmlNs.equals( elementDecl.getNamespace() )
-             && ( "boundedBy".equals( elementDecl.getName() ) || "name".equals( elementDecl.getName() )
-                  || "description".equals( elementDecl.getName() ) || "metaDataProperty".equals( elementDecl.getName() )
-                  || "descriptionReference".equals( elementDecl.getName() )
-                  || "identifier".equals( elementDecl.getName() ) || ( "location".equals( elementDecl.getName() ) && gmlVersion != GMLVersion.GML_2 ) ) ) {
-            LOG.trace( "Omitting from feature type -- GML standard property." );
-        } else {
-            // parse substitutable property declarations (e.g. genericProperty in CityGML)
-            List<PropertyType> ptSubstitutions = new ArrayList<PropertyType>();
-            XSObjectList list = analyzer.getXSModel().getSubstitutionGroup( elementDecl );
-            if ( list != null ) {
-                for ( int i = 0; i < list.getLength(); i++ ) {
-                    XSElementDeclaration substitution = (XSElementDeclaration) list.item( i );
-                    QName declName = new QName( substitution.getNamespace(), substitution.getName() );
-                    PropertyType globalDecl = propNameToGlobalDecl.get( declName );
-                    if ( globalDecl == null ) {
-                        globalDecl = buildPropertyType( substitution, minOccurs, maxOccurs );
-                        propNameToGlobalDecl.put( declName, globalDecl );
-                    }
-                    ptSubstitutions.add( globalDecl );
+        // parse substitutable property declarations (e.g. genericProperty in CityGML)
+        List<PropertyType> ptSubstitutions = new ArrayList<PropertyType>();
+        XSObjectList list = analyzer.getXSModel().getSubstitutionGroup( elementDecl );
+        if ( list != null ) {
+            for ( int i = 0; i < list.getLength(); i++ ) {
+                XSElementDeclaration substitution = (XSElementDeclaration) list.item( i );
+                QName declName = new QName( substitution.getNamespace(), substitution.getName() );
+                PropertyType globalDecl = propNameToGlobalDecl.get( declName );
+                if ( globalDecl == null ) {
+                    globalDecl = buildPropertyType( substitution, minOccurs, maxOccurs );
+                    propNameToGlobalDecl.put( declName, globalDecl );
                 }
+                ptSubstitutions.add( globalDecl );
             }
+        }
 
-            XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
-            switch ( typeDef.getTypeCategory() ) {
-            case XSTypeDefinition.SIMPLE_TYPE: {
-                pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, getPrimitiveType( (XSSimpleType) typeDef ),
-                                             elementDecl, ptSubstitutions, (XSSimpleTypeDefinition) typeDef );
-                ( (SimplePropertyType) pt ).setCodeList( getCodeListId( elementDecl ) );
-                break;
-            }
-            case XSTypeDefinition.COMPLEX_TYPE: {
-                pt = buildPropertyType( elementDecl, (XSComplexTypeDefinition) typeDef, minOccurs, maxOccurs,
-                                        ptSubstitutions );
-                break;
-            }
-            }
+        XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
+        switch ( typeDef.getTypeCategory() ) {
+        case XSTypeDefinition.SIMPLE_TYPE: {
+            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, getPrimitiveType( (XSSimpleType) typeDef ),
+                                         elementDecl, ptSubstitutions, (XSSimpleTypeDefinition) typeDef );
+            ( (SimplePropertyType) pt ).setCodeList( getCodeListId( elementDecl ) );
+            break;
+        }
+        case XSTypeDefinition.COMPLEX_TYPE: {
+            pt = buildPropertyType( elementDecl, (XSComplexTypeDefinition) typeDef, minOccurs, maxOccurs,
+                                    ptSubstitutions );
+            break;
+        }
         }
         return pt;
     }

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.property;
+package org.deegree.commons.tom.gml.property;
 
 import java.util.List;
 
@@ -41,11 +41,10 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.feature.Feature;
-import org.deegree.feature.types.property.PropertyType;
+import org.deegree.commons.tom.gml.GMLObject;
 
 /**
- * A spatial or non-spatial property of a {@link Feature}.
+ * A property of a {@link GMLObject}.
  * <p>
  * Encapsulates a (qualified) name, type information and a value of a certain type.
  * </p>

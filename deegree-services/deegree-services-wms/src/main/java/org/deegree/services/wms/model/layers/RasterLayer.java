@@ -55,6 +55,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
@@ -82,10 +84,8 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -209,7 +209,7 @@ public class RasterLayer extends Layer {
                 break;
             }
 
-            Feature f = new GenericFeature( featureType, null, props, null, null );
+            Feature f = new GenericFeature( featureType, null, props, null );
             col.add( f );
             return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
         } catch ( IllegalArgumentException e ) {

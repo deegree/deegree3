@@ -56,6 +56,8 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
@@ -71,7 +73,6 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.stream.CombinedFeatureInputStream;
 import org.deegree.feature.stream.FeatureInputStream;
@@ -82,7 +83,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.utils.DBUtils;
 import org.deegree.filter.FilterEvaluationException;
@@ -342,37 +342,40 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                 LOG.debug( "Statement to fetch features was '{}'.", connType == Type.Oracle ? sql : stmt );
                 stmt.execute();
 
-                set = new IteratorFeatureInputStream( new ResultSetIterator<Feature>( stmt.getResultSet(), conn, stmt ) {
+                set = new IteratorFeatureInputStream(
+                                                      new ResultSetIterator<Feature>( stmt.getResultSet(), conn, stmt ) {
 
-                    @Override
-                    protected Feature createElement( ResultSet rs )
-                                            throws SQLException {
+                                                          @Override
+                                                          protected Feature createElement( ResultSet rs )
+                                                                                  throws SQLException {
 
-                        LinkedList<Property> props = new LinkedList<Property>();
-                        for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
-                            if ( pt instanceof GeometryPropertyType ) {
-                                byte[] bs = rs.getBytes( pt.getName().getLocalPart() );
-                                if ( bs != null ) {
-                                    try {
-                                        Geometry geom = WKBReader.read( bs, crs );
-                                        props.add( new GenericProperty( pt, geom ) );
-                                    } catch ( ParseException e ) {
-                                        LOG.info( "WKB from the DB could not be parsed: '{}'.", e.getLocalizedMessage() );
-                                        LOG.info( "For PostGIS users: you have to select the geometry field 'asbinary(geometry)'." );
-                                        LOG.trace( "Stack trace:", e );
-                                    }
-                                }
-                            } else {
-                                Object obj = rs.getObject( pt.getName().getLocalPart() );
-                                if ( obj != null ) {
-                                    SimplePropertyType spt = (SimplePropertyType) pt;
-                                    props.add( new SimpleProperty( spt, "" + obj ) );
-                                }
-                            }
-                        }
-                        return new GenericFeature( featureType, ( ++currentid ) + "", props, null, null );
-                    }
-                } );
+                                                              LinkedList<Property> props = new LinkedList<Property>();
+                                                              for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
+                                                                  if ( pt instanceof GeometryPropertyType ) {
+                                                                      byte[] bs = rs.getBytes( pt.getName().getLocalPart() );
+                                                                      if ( bs != null ) {
+                                                                          try {
+                                                                              Geometry geom = WKBReader.read( bs, crs );
+                                                                              props.add( new GenericProperty( pt, geom ) );
+                                                                          } catch ( ParseException e ) {
+                                                                              LOG.info( "WKB from the DB could not be parsed: '{}'.",
+                                                                                        e.getLocalizedMessage() );
+                                                                              LOG.info( "For PostGIS users: you have to select the geometry field 'asbinary(geometry)'." );
+                                                                              LOG.trace( "Stack trace:", e );
+                                                                          }
+                                                                      }
+                                                                  } else {
+                                                                      Object obj = rs.getObject( pt.getName().getLocalPart() );
+                                                                      if ( obj != null ) {
+                                                                          SimplePropertyType spt = (SimplePropertyType) pt;
+                                                                          props.add( new SimpleProperty( spt, "" + obj ) );
+                                                                      }
+                                                                  }
+                                                              }
+                                                              return new GenericFeature( featureType, ( ++currentid )
+                                                                                                      + "", props, null );
+                                                          }
+                                                      } );
 
                 if ( q.getFilter() != null ) {
                     set = new FilteredFeatureInputStream( set, q.getFilter() );

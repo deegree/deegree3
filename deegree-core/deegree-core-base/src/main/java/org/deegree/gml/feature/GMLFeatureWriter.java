@@ -62,6 +62,8 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -76,7 +78,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.ExtraProps;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
@@ -85,7 +86,6 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Envelope;
@@ -371,7 +371,7 @@ public class GMLFeatureWriter {
                     writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
                 }
             }
-            for ( Property prop : feature.getProperties( version ) ) {
+            for ( Property prop : feature.getProperties() ) {
                 if ( currentLevel == 0 ) {
                     maxInlineLevels = getInlineLevels( prop );
                 }

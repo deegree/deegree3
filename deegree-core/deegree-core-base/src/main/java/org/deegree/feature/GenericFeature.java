@@ -41,15 +41,12 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.StandardGMLFeatureProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,21 +73,12 @@ public class GenericFeature extends AbstractFeature {
      *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
      * @param props
      *            properties of the feature
-     * @param version
-     *            GML version (determines the names/types of the standard properties), or <code>null</code> (then no
-     *            standard GML properties are allowed)
      * @param extraProps
      *            extra properties, may be <code>null</code>
      */
-    public GenericFeature( FeatureType ft, String fid, List<Property> props, GMLVersion version, ExtraProps extraProps ) {
+    public GenericFeature( FeatureType ft, String fid, List<Property> props, ExtraProps extraProps ) {
         super( fid, ft, extraProps );
-        if ( version == null ) {
-            this.props = new ArrayList<Property>( props );
-        } else {
-            Pair<StandardGMLFeatureProps, List<Property>> pair = StandardGMLFeatureProps.create( props, version );
-            standardProps = pair.first;
-            this.props = new ArrayList<Property>( pair.second );
-        }
+        this.props = new ArrayList<Property>( props );
     }
 
     @Override

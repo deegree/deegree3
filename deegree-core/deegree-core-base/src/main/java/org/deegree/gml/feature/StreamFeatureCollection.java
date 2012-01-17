@@ -49,6 +49,8 @@ import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -57,12 +59,10 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLStreamReader;
 import org.slf4j.Logger;
@@ -119,7 +119,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
         this.xmlStream = xmlStream;
         xmlStream.next();
 
-        declIter = ft.getPropertyDeclarations( featureReader.version ).iterator();
+        declIter = ft.getPropertyDeclarations().iterator();
         activeDecl = declIter.next();
         propOccurences = 0;
         activeCRS = crs;
@@ -238,7 +238,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
         final Feature nextFeature;
         try {
             nextFeature = read();
-        } catch ( IOException e ) {
+        } catch ( IOException e ) {            
             throw new RuntimeException();
         }
         return new Iterator<Feature>() {

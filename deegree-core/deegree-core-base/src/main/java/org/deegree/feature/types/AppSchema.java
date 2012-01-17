@@ -8,21 +8,16 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 
 /**
  * Defines a number of {@link FeatureType}s and their derivation hierarchy.
  * <p>
- * Some notes:
- * <ul>
- * <li>May be based on a {@link GMLSchemaInfoSet}. If it is build from a GML schema, use {@link #getGMLSchema()} to
- * access to the full XML schema infoset.</li>
- * <li>There is no default head for the feature type substitution relation as in GML (prior to GML 3.2: element
- * <code>gml:_Feature</code>, since 3.2: <code>gml:AbstractFeature</code>). This is not necessary, as each
- * {@link FeatureType} object is already identified being a feature type by its class.</li>
- * </ul>
+ * May be based on a {@link GMLSchemaInfoSet}. If it is build from a GML schema, {@link #getGMLSchema()} can be used to
+ * access the full schema infoset.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -188,5 +183,4 @@ public interface AppSchema {
      * @return property declaration or <code>null</code> (if the element does not declare an {@link ObjectPropertyType})
      */
     ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl );
-
 }

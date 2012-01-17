@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.gml.GMLObject;
-import org.deegree.feature.property.Property;
+import org.deegree.commons.tom.gml.property.Property;
 import org.jaxen.Context;
 import org.jaxen.Function;
 import org.jaxen.FunctionCallException;

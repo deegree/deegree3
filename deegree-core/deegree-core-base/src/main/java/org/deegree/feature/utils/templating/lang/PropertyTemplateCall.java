@@ -44,9 +44,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.property.Property;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 

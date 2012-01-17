@@ -45,9 +45,9 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
-import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.ValueReference;
@@ -105,7 +105,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
         // simple property with just a simple element step?
         QName simplePropName = propName.getAsQName();
         if ( simplePropName != null ) {
-            return context.getProperties( simplePropName, version );
+            return context.getProperties( simplePropName );
         }
 
         TypedObjectNode[] resultValues = null;

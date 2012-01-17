@@ -54,13 +54,13 @@ import java.util.Map;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;

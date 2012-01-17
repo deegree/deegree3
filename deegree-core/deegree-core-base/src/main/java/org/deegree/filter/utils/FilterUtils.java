@@ -36,7 +36,7 @@
 package org.deegree.filter.utils;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.feature.property.Property;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.geometry.Geometry;
 
 /**

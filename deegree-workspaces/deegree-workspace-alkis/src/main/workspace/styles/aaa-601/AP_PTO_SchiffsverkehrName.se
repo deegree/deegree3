@@ -17,7 +17,8 @@
         </ogc:PropertyIsEqualTo>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Schiffsverkehr/adv:name</ogc:PropertyName>
+            <!-- TODO verschluesselte Lagebezeichnung -->
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Schiffsverkehr/adv:name/adv:AX_Lagebezeichnung/adv:unverschluesselt</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
         <ogc:Not>
@@ -54,7 +55,8 @@
         </ogc:PropertyIsEqualTo>
         <ogc:Not>
           <ogc:PropertyIsNull>
-            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Schiffsverkehr/adv:name</ogc:PropertyName>
+            <!-- TODO verschluesselte Lagebezeichnung -->
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Schiffsverkehr/adv:name/adv:AX_Lagebezeichnung/adv:unverschluesselt</ogc:PropertyName>
           </ogc:PropertyIsNull>
         </ogc:Not>
           <ogc:PropertyIsNull>
@@ -64,7 +66,8 @@
     </ogc:Filter>
     <TextSymbolizer uom="meter">
       <Label>
-        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Schiffsverkehr/adv:name</ogc:PropertyName>
+        <!-- TODO verschluesselte Lagebezeichnung -->
+        <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Schiffsverkehr/adv:name/adv:AX_Lagebezeichnung/adv:unverschluesselt</ogc:PropertyName>
       </Label>
       <Font>
         <SvgParameter name="font-family">Arial</SvgParameter>

@@ -60,6 +60,8 @@ import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
@@ -72,9 +74,7 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
@@ -243,7 +243,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 for ( Mapping mapping : ftMapping.getMappings() ) {
                     ValueReference propName = mapping.getPath();
                     if ( propName.getAsQName() != null ) {
-                        PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName(), gmlVersion );
+                        PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName() );
                         String idPrefix = gmlId + "_" + toIdPrefix( propName );
                         addProperties( props, pt, mapping, rs, idPrefix );
                     } else {
@@ -252,7 +252,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                   + "'. Only simple property names (QNames) are currently supported here." );
                     }
                 }
-                feature = ft.newFeature( gmlId, props, null, null );
+                feature = ft.newFeature( gmlId, props, null );
                 fs.getCache().add( feature );
             } else {
                 LOG.debug( "Cache hit." );

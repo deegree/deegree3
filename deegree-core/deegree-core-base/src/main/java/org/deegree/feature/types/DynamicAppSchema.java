@@ -50,8 +50,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 
 /**

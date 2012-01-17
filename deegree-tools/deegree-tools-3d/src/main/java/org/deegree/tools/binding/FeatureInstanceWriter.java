@@ -60,9 +60,9 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.utils.StringPair;
 import org.deegree.feature.AbstractFeature;
-import org.deegree.feature.property.Property;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLVersion;
 

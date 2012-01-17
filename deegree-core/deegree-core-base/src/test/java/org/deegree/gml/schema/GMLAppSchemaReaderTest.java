@@ -39,17 +39,18 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -72,9 +73,9 @@ public class GMLAppSchemaReaderTest {
 
         String schemaURL = this.getClass().getResource( "Philosopher.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
-        Assert.assertEquals( 4, fts.length );
-        // TODO do more thorough testing
+        AppSchema schema = adapter.extractAppSchema();
+        List<FeatureType> fts = schema.getFeatureTypes( "http://www.deegree.org/app", true, true );
+        Assert.assertEquals( 4, fts.size() );
     }
 
     @Test
@@ -85,10 +86,8 @@ public class GMLAppSchemaReaderTest {
         String schemaURL = this.getClass().getResource( "Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL, schemaURL2 );
-        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
-        LOG.debug( "" + fts[0].getName() );
-        Assert.assertEquals( 5, fts.length );
-        // TODO do more thorough testing
+        List<FeatureType> fts = adapter.extractAppSchema().getFeatureTypes( "http://www.deegree.org/app", false, false );
+        Assert.assertEquals( 4, fts.size() );
     }
 
     @Test
@@ -100,7 +99,7 @@ public class GMLAppSchemaReaderTest {
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
         FeatureType[] fts = schema.getFeatureTypes();
-        Assert.assertEquals( 54, fts.length );
+        Assert.assertEquals( 69, fts.length );
 
         FeatureType buildingFt = schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/citygml/building/1.0}Building" ) );
         PropertyType pt = buildingFt.getPropertyDeclaration( QName.valueOf( "{http://www.opengis.net/citygml/1.0}_GenericApplicationPropertyOfCityObject" ) );
@@ -129,8 +128,9 @@ public class GMLAppSchemaReaderTest {
 
         String schemaURL = this.getClass().getResource( "cite/cite-gmlsf0.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
-        Assert.assertEquals( 3, fts.length );
+        List<FeatureType> fts = adapter.extractAppSchema().getFeatureTypes( "http://cite.opengeospatial.org/gmlsf",
+                                                                            false, false );
+        Assert.assertEquals( 3, fts.size() );
     }
 
     @Test
@@ -141,7 +141,7 @@ public class GMLAppSchemaReaderTest {
         String schemaURL = this.getClass().getResource( "cite/cite-gmlsf1.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
-        Assert.assertEquals( 4, fts.length );
+        Assert.assertEquals( 5, fts.length );
         for ( FeatureType ft : fts ) {
             LOG.debug( "\nFt: " + ft.getName() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
@@ -173,7 +173,7 @@ public class GMLAppSchemaReaderTest {
         String schemaURL = this.getClass().getResource( "cite/all.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
-        Assert.assertEquals( 19, fts.length );
+        Assert.assertEquals( 21, fts.length );
     }
 
     @Test
@@ -240,9 +240,9 @@ public class GMLAppSchemaReaderTest {
 
         String schemaURL = this.getClass().getResource( "CustomProperties.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
-        FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
-        Assert.assertEquals( 1, fts.length );
-        FeatureType ft = fts[0];
-        Assert.assertEquals( 4, ft.getPropertyDeclarations().size() );
+        List<FeatureType> fts = adapter.extractAppSchema().getFeatureTypes( "http://www.deegree.org/app", false, false );
+        Assert.assertEquals( 1, fts.size() );
+        FeatureType ft = fts.get( 0 );
+        Assert.assertEquals( 9, ft.getPropertyDeclarations().size() );
     }
 }

@@ -52,10 +52,10 @@ import junit.framework.Assert;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.FilterEvaluationException;

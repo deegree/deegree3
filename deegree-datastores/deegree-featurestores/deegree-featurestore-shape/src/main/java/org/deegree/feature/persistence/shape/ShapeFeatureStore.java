@@ -65,6 +65,8 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.configuration.wkt.WKTParser;
@@ -84,7 +86,6 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.stream.CombinedFeatureInputStream;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.FilteredFeatureInputStream;
@@ -95,7 +96,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -537,7 +537,7 @@ public class ShapeFeatureStore implements FeatureStore {
             // add geometry property
             Geometry g = shp.readGeometry( recNumAndPos.second );
             props.add( new GenericProperty( ft.getDefaultGeometryPropertyDeclaration(), g ) );
-            feature = ft.newFeature( fid, props, null, null );
+            feature = ft.newFeature( fid, props, null );
 
             cache.add( feature );
         } else {

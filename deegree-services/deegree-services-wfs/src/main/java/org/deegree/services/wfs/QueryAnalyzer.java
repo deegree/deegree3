@@ -36,7 +36,6 @@
 package org.deegree.services.wfs;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_ID;
@@ -54,6 +53,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.CRSUtils;
@@ -63,7 +63,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
@@ -423,7 +422,7 @@ public class QueryAnalyzer {
                 if ( name != null ) {
                     if ( typeNames.length == 1 ) {
                         FeatureType ft = service.lookupFeatureType( typeNames[0].getFeatureTypeName() );
-                        if ( ft.getPropertyDeclaration( name, outputFormat ) == null ) {
+                        if ( ft.getPropertyDeclaration( name ) == null ) {
                             String msg = "Specified PropertyName '" + propName.getAsText() + "' (='" + name
                                          + "') does not exist for feature type '" + ft.getName() + "'.";
                             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
@@ -470,7 +469,7 @@ public class QueryAnalyzer {
 
         List<QName> propNames = new ArrayList<QName>();
         // TODO which GML version
-        for ( PropertyType pt : ft.getPropertyDeclarations( GML_31 ) ) {
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             propNames.add( pt.getName() );
         }
 
@@ -482,7 +481,7 @@ public class QueryAnalyzer {
         }
         if ( !match.equals( propName.getAsQName() ) ) {
             LOG.debug( "Repairing unqualified PropertyName: " + QNameUtils.toString( propName.getAsQName() ) + " -> "
-                      + QNameUtils.toString( match ) );
+                       + QNameUtils.toString( match ) );
             // vague match
             String text = match.getLocalPart();
             if ( !match.getPrefix().equals( DEFAULT_NS_PREFIX ) ) {

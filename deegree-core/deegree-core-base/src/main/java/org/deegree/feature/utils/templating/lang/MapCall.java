@@ -40,8 +40,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
-import org.deegree.feature.property.Property;
 import org.slf4j.Logger;
 
 /**

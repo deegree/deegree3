@@ -89,6 +89,8 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.struct.Tree;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
@@ -106,10 +108,8 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -627,7 +627,7 @@ public class WMSClient111 implements WMSClient {
                 props.add( tp );
             }
             GenericFeatureType ft = new GenericFeatureType( new QName( "feature" ), props, false );
-            col.add( new GenericFeature( ft, "esri_" + ++count, propValues, GML_2, null ) );
+            col.add( new GenericFeature( ft, "esri_" + ++count, propValues, null ) );
             nextElement( reader );
         }
 
@@ -661,7 +661,7 @@ public class WMSClient111 implements WMSClient {
                 }
 
                 GenericFeatureType ft = new GenericFeatureType( new QName( ftName ), props, false );
-                col.add( new GenericFeature( ft, "ftName_" + ++count, propValues, GML_2, null ) );
+                col.add( new GenericFeature( ft, "ftName_" + ++count, propValues, null ) );
                 nextElement( reader );
             }
             nextElement( reader );

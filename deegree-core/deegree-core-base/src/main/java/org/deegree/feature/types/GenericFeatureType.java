@@ -36,21 +36,18 @@
 package org.deegree.feature.types;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.property.ExtraProps;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.StandardGMLFeatureProps;
 
 /**
  * Generic implementation of {@link FeatureType}, can be used for representing arbitrary feature types.
@@ -90,28 +87,8 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
-    public PropertyType getPropertyDeclaration( QName propName, GMLVersion version ) {
-        PropertyType pt = StandardGMLFeatureProps.getPropertyType( propName, version );
-        if ( pt == null ) {
-            pt = propNameToDecl.get( propName );
-        }
-        return pt;
-    }
-
-    @Override
     public List<PropertyType> getPropertyDeclarations() {
         List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() );
-        for ( QName propName : propNameToDecl.keySet() ) {
-            propDecls.add( propNameToDecl.get( propName ) );
-        }
-        return propDecls;
-    }
-
-    @Override
-    public List<PropertyType> getPropertyDeclarations( GMLVersion version ) {
-        Collection<PropertyType> stdProps = StandardGMLFeatureProps.getPropertyTypes( version );
-        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() + stdProps.size() );
-        propDecls.addAll( stdProps );
         for ( QName propName : propNameToDecl.keySet() ) {
             propDecls.add( propNameToDecl.get( propName ) );
         }
@@ -132,8 +109,8 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps, GMLVersion version ) {
-        return new GenericFeature( this, fid, props, version, extraProps );
+    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
+        return new GenericFeature( this, fid, props, extraProps );
     }
 
     @Override

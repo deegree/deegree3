@@ -37,22 +37,20 @@ package org.deegree.gml.schema;
 
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericFeatureCollectionType;
-import org.deegree.feature.types.property.ArrayPropertyType;
-import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.PropertyType;
+import org.deegree.gml.GMLVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Defines well-known {@link FeatureType}s from the GML / OGC core schemas to support GML processing without schema
@@ -65,6 +63,8 @@ import org.deegree.feature.types.property.PropertyType;
  * @version $Revision$, $Date$
  */
 public class WellKnownGMLTypes {
+
+    private static final Logger LOG = LoggerFactory.getLogger( WellKnownGMLTypes.class );
 
     private static final Map<QName, FeatureCollectionType> elNameToFt = new HashMap<QName, FeatureCollectionType>();
 
@@ -83,40 +83,37 @@ public class WellKnownGMLTypes {
     static {
         // "gml:FeatureCollection" (GML 3.1)
         QName name = new QName( GMLNS, "FeatureCollection", "gml" );
-        List<PropertyType> props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, null, null, null, BOTH ) );
-        props.add( new ArrayPropertyType( new QName( GMLNS, "featureMembers", "gml" ), 0, -1, null, null ) );
-        GML311_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
+        GML311_FEATURECOLLECTION = extractFcCollectionType( "http://schemas.opengis.net/gml/3.1.1/base/feature.xsd",
+                                                            GML_31, name );
         elNameToFt.put( name, GML311_FEATURECOLLECTION );
-        
+
         // "gml:FeatureCollection" (GML 3.2)
         name = new QName( GML3_2_NS, "FeatureCollection", "gml" );
-        props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType( new QName( GML3_2_NS, "featureMember", "gml" ), 0, -1, null, null, null,
-                                            BOTH ) );
-        props.add( new ArrayPropertyType( new QName( GML3_2_NS, "featureMembers", "gml" ), 0, -1, null, null ) );
-        GML321_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
+        GML321_FEATURECOLLECTION = extractFcCollectionType( "http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd",
+                                                            GML_32, name );
         elNameToFt.put( name, GML321_FEATURECOLLECTION );
-        
+
         // "wfs:FeatureCollection" (WFS 1.1.0)
         name = new QName( WFS_NS, "FeatureCollection", "wfs" );
-        props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, null, null, null, BOTH ) );
-        props.add( new FeaturePropertyType( new QName( GML3_2_NS, "featureMember", "gml" ), 0, -1, null, null, null,
-                                            BOTH ) );
-        props.add( new ArrayPropertyType( new QName( GMLNS, "featureMembers", "gml" ), 0, -1, null, null ) );
-        props.add( new ArrayPropertyType( new QName( GML3_2_NS, "featureMembers", "gml" ), 0, -1, null, null ) );
-        WFS110_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
+        WFS110_FEATURECOLLECTION = extractFcCollectionType( WellKnownGMLTypes.class.getResource( "wfs110.xsd" ).toString(),
+                                                            GML_31, name );
         elNameToFt.put( name, WFS110_FEATURECOLLECTION );
-        
+
         // "ll:FeatureCollection" (deegree 2 WMS GetFeatureInfo)
         name = new QName( "http://www.lat-lon.de", "FeatureCollection", "ll" );
-        props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, null, null, null, BOTH ) );
-        props.add( new ArrayPropertyType( new QName( GMLNS, "featureMembers", "gml" ), 0, -1, null, null ) );
-        elNameToFt.put( name, new GenericFeatureCollectionType( name, props, false ) );
-        D2_WMS_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
+        D2_WMS_FEATURECOLLECTION = extractFcCollectionType( WellKnownGMLTypes.class.getResource( "latlon-fc.xsd" ).toString(),
+                                                            GML_31, name );
         elNameToFt.put( name, D2_WMS_FEATURECOLLECTION );
+    }
+
+    private static FeatureCollectionType extractFcCollectionType( String url, GMLVersion version, QName elName ) {
+        GMLAppSchemaReader schemaReader = null;
+        try {
+            schemaReader = new GMLAppSchemaReader( version, null, url );
+        } catch ( Exception e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        return (FeatureCollectionType) schemaReader.extractAppSchema().getFeatureType( elName );
     }
 
     /**
