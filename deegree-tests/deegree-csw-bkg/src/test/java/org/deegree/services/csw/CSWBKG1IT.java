@@ -3,15 +3,26 @@
  */
 package org.deegree.services.csw;
 
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_PREFIX;
+import static org.junit.Assume.assumeTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.net.HttpUtils;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
+import org.deegree.protocol.csw.CSWConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,20 +43,28 @@ public class CSWBKG1IT {
 
     private String resultSnippet;
 
-    public CSWBKG1IT( String testLabel, String resultSnippet ) {
+    private final boolean isCSWAvailable;
+    
+    public CSWBKG1IT( String testLabel, String resultSnippet, boolean isCSWAvailable) {
         this.testLabel = testLabel;
         this.resultSnippet = resultSnippet;
+        this.isCSWAvailable = isCSWAvailable;
     }
 
     @Parameters
-    public static Collection getResultSnippets()
+    public static Collection<Object[]> getResultSnippets()
                             throws Exception {
+        boolean cswAvailable = isCSWAvailable();
+        if ( !cswAvailable ) {
+            List<Object[]> resultSnippets = new ArrayList<Object[]>();
+            resultSnippets.add( new Object[] { null, null, false } );
+            return resultSnippets;
+        }
 
         URL url = CSWBKG1IT.class.getResource( "/bkg1/ctl/" );
         String file = new File( url.toURI() ).getAbsolutePath();
-        System.out.println("file: "+ file);
+        System.out.println( "file: " + file );
 
-       
         CiteWrapper wrapper = new CiteWrapper( file );
         try {
             wrapper.execute();
@@ -63,10 +82,31 @@ public class CSWBKG1IT {
         return getResultSnippets( out );
     }
 
-    private static Collection getResultSnippets( String out )
-                            throws IOException {
+    private static boolean isCSWAvailable() {
+        System.out.println("Check if CSW is available!");
+        String port = System.getProperty( "portnumber" );
+        String url = "http://localhost:" + port + "/deegree-csw-bkg/services";
+        try {
+            InputStream postBody = CSWBKG1IT.class.getResourceAsStream( "testGetRecordsRequest.xml" );
+            XMLAdapter resp = HttpUtils.post( HttpUtils.XML, url, postBody, null );
+            NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+            nsContext.addNamespace( CSW_202_PREFIX, CSWConstants.CSW_202_NS );
+            OMElement element = resp.getElement( resp.getRootElement(), new XPath( "/" + CSW_202_PREFIX
+                                                                                   + ":GetRecordsResponse/"
+                                                                                   + CSW_202_PREFIX + ":SearchResults",
+                                                                                   nsContext ) );
+            if ( element != null ) {
+                return true;
+            }
+        } catch ( Exception e ) {
+            System.out.println( "Could not check CSW, assume CSW is not available: " + e.getMessage() );
+        }
+        return false;
+    }
 
-        List resultSnippets = new ArrayList();
+    private static Collection<Object[]> getResultSnippets( String out )
+                            throws IOException {
+        List<Object[]> resultSnippets = new ArrayList<Object[]>();
 
         BufferedReader reader = new BufferedReader( new StringReader( out ) );
         List<String> lines = new ArrayList<String>();
@@ -82,7 +122,7 @@ public class CSWBKG1IT {
                 String s = trimmed.substring( 8 );
                 String caseId = s.substring( 0, s.indexOf( ' ' ) );
                 String result = findCorrespondingResult( lines, currentLine, caseId );
-                resultSnippets.add( new Object[] { caseId, result } );
+                resultSnippets.add( new Object[] { caseId, result, true } );
             }
         }
         return resultSnippets;
@@ -100,6 +140,7 @@ public class CSWBKG1IT {
 
     @Test
     public void singleTest() {
+        assumeTrue( isCSWAvailable );
         if ( resultSnippet.contains( "Failed" ) ) {
             throw new RuntimeException( "Test '" + testLabel + "' failed." );
         }

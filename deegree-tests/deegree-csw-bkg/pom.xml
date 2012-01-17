@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-csw-bkg</artifactId>
   <packaging>war</packaging>
@@ -6,8 +7,8 @@
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-cite-tests</artifactId>
-    <version>3.2-pre2-SNAPSHOT</version>
+    <artifactId>deegree-tests</artifactId>
+    <version>3.2-pre4-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -34,6 +35,80 @@
         <filtering>false</filtering>
       </testResource>
     </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-workspace</id>
+            <goals>
+              <goal>attach-workspace</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>generate-portnumber</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>generate-portnumber</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <id>start-tomcat</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>run-war</goal>
+            </goals>
+            <configuration>
+              <port>${portnumber}</port>
+              <fork>true</fork>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-tomcat</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>shutdown</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <skip>true</skip>
+          <testFailureIgnore>true</testFailureIgnore>
+          <includes>
+            <include>**/*IT.java</include>
+          </includes>
+          <argLine>-Xmx1024m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber}</argLine>
+        </configuration>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <skip>false</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <dependencies>
@@ -52,6 +127,96 @@
           <artifactId>xalan</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine</artifactId>
+      <version>deegreeversion</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-cite1</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-classes</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-CiteFunctions</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-citeXpathFunction</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-jaxen-full</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-jing</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-joda-time</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-saxon9</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-saxon9-dom</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-saxon9-s9api</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-saxon6</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-saxpath</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cite</groupId>
+      <artifactId>teamengine-transformers</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
