@@ -218,21 +218,20 @@ public class FeatureStoreConfig implements Serializable {
         } );
 
         for ( FeatureType ft : fts ) {
-            if ( ft instanceof FeatureCollectionType ) {
-                appendFtInfo( ft, fs, sb, "" );
-                sb.append( "<br/>" );
-            }
+            appendFcInfo( ft, sb, "" );
+            sb.append( "<br/>" );
         }
         return sb.toString();
     }
 
     private void appendFtInfo( FeatureType ft, FeatureStore store, StringBuffer sb, String indent )
                             throws IOException {
+        if ( ft instanceof FeatureCollectionType ) {
+            return;
+        }
         if ( ft.isAbstract() ) {
             sb.append( indent + "- <i>" + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart()
                        + " (abstract)</i><br/>" );
-        } else if ( ft instanceof FeatureCollectionType ) {
-            sb.append( indent + "- " + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart() );
         } else {
             Query query = new Query( ft.getName(), null, 0, -1, -1 );
             int numInstances = -1;
@@ -256,6 +255,31 @@ public class FeatureStoreConfig implements Serializable {
         } );
         for ( FeatureType childType : fts ) {
             appendFtInfo( childType, store, sb, indent + "&nbsp;&nbsp;" );
+        }
+    }
+
+    private void appendFcInfo( FeatureType ft, StringBuffer sb, String indent )
+                            throws IOException {
+        if ( ft instanceof FeatureCollectionType ) {
+            if ( ft.isAbstract() ) {
+                sb.append( indent + "- <i>" + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart()
+                           + " (abstract)</i><br/>" );
+            } else {
+                sb.append( indent + "- " + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart() + "<br/>" );
+            }
+        }
+        FeatureType[] fts = ft.getSchema().getDirectSubtypes( ft );
+        Arrays.sort( fts, new Comparator<FeatureType>() {
+            public int compare( FeatureType a, FeatureType b ) {
+                int order = a.getName().getNamespaceURI().compareTo( b.getName().getNamespaceURI() );
+                if ( order == 0 ) {
+                    order = a.getName().getLocalPart().compareTo( b.getName().getLocalPart() );
+                }
+                return order;
+            }
+        } );
+        for ( FeatureType childType : fts ) {
+            appendFcInfo( childType, sb, indent + "&nbsp;&nbsp;" );
         }
     }
 }
