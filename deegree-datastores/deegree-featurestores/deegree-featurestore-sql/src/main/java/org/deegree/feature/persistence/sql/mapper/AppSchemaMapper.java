@@ -128,7 +128,7 @@ public class AppSchemaMapper {
 
     private final GeometryStorageParams geometryParams;
 
-    private final boolean mapGMLProps;
+    private final boolean useIntegerFids;
 
     private final int MAX_COMPLEXITY_INDEX = 100;
 
@@ -146,11 +146,11 @@ public class AppSchemaMapper {
      */
     public AppSchemaMapper( AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
                             GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
-                            boolean mapGMLProps ) {
+                            boolean useIntegerFids ) {
 
         this.appSchema = appSchema;
         this.geometryParams = geometryParams;
-        this.mapGMLProps = mapGMLProps;
+        this.useIntegerFids = useIntegerFids;
 
         List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
         List<FeatureType> blackList = new ArrayList<FeatureType>();
@@ -232,24 +232,28 @@ public class AppSchemaMapper {
 
         FIDMapping fidMapping = null;
         String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
-        IDGenerator generator = new UUIDGenerator();
-        Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>(
-                                                                                     new SQLIdentifier( "attr_gml_id" ),
-                                                                                     STRING );
-        fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
+        if ( useIntegerFids ) {
+            IDGenerator generator = new AutoIDGenerator();
+            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>(
+                                                                                         new SQLIdentifier(
+                                                                                                            "gid" ),
+                                                                                         BaseType.INTEGER );
+            fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
+        } else {
+            IDGenerator generator = new UUIDGenerator();
+            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>(
+                                                                                         new SQLIdentifier(
+                                                                                                            "attr_gml_id" ),
+                                                                                         STRING );
+            fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
+        }
 
         List<Mapping> mappings = new ArrayList<Mapping>();
-        if ( mapGMLProps ) {
-            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            if ( !pt.getName().getNamespaceURI().equals( appSchema.getGMLSchema().getVersion().getNamespace() ) ) {
                 mappings.addAll( generatePropMapping( pt, mc ) );
-            }
-        } else {
-            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                if ( !pt.getName().getNamespaceURI().equals( appSchema.getGMLSchema().getVersion().getNamespace() ) ) {
-                    mappings.addAll( generatePropMapping( pt, mc ) );
-                } else if ( pt.getName().getLocalPart().equals( "identifier" ) ) {
-                    mappings.addAll( generatePropMapping( pt, mc ) );
-                }
+            } else if ( pt.getName().getLocalPart().equals( "identifier" ) ) {
+                mappings.addAll( generatePropMapping( pt, mc ) );
             }
         }
 

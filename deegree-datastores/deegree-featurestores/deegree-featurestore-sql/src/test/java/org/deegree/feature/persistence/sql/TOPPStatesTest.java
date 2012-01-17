@@ -209,7 +209,7 @@ public class TOPPStatesTest {
         ICRS crs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams storageParams = new GeometryStorageParams( crs, dialect.getUndefinedSrid(), DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, storageParams,
-                                                      dialect.getMaxTableNameLength(), false, false );
+                                                      dialect.getMaxTableNameLength(), false, true );
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
         // create tables
