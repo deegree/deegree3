@@ -636,6 +636,11 @@ public class ShapeFeatureStore implements FeatureStore {
         return schema;
     }
 
+    @Override
+    public boolean isMapped( QName ftName ) {
+        return schema.getFeatureType( ftName ) != null;
+    }
+
     /**
      * Returns the CRS used by the shape file.
      * 

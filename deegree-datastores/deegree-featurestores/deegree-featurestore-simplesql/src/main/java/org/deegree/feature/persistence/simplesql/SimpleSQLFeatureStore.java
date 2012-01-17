@@ -255,6 +255,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         return schema;
     }
 
+    @Override
+    public boolean isMapped( QName ftName ) {
+        return schema.getFeatureType( ftName ) != null;
+    }
+
     /**
      * @return the feature type (it can have only one)
      */

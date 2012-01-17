@@ -81,6 +81,15 @@ public interface FeatureStore extends Resource {
     AppSchema getSchema();
 
     /**
+     * Returns whether the specified feature type is actually mapped in the backend.
+     * 
+     * @param ftName
+     *            feature type name, must not be <code>null</code>
+     * @return <code>true</code>, if the feature type is mapped, <code>false</code> otherwise
+     */
+    boolean isMapped( QName ftName );
+
+    /**
      * Returns the envelope for all stored features of the given type.
      * <p>
      * NOTE: This method may return incorrect (cached) results. Use {@link #calcEnvelope(QName)} to force the

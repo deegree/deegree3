@@ -233,15 +233,20 @@ public class FeatureStoreConfig implements Serializable {
             sb.append( indent + "- <i>" + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart()
                        + " (abstract)</i><br/>" );
         } else {
-            Query query = new Query( ft.getName(), null, 0, -1, -1 );
-            int numInstances = -1;
-            try {
-                numInstances = store.queryHits( query );
-            } catch ( Exception e ) {
-                e.printStackTrace();
+            if ( store.isMapped( ft.getName() ) ) {
+                Query query = new Query( ft.getName(), null, 0, -1, -1 );
+                int numInstances = -1;
+                try {
+                    numInstances = store.queryHits( query );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+                sb.append( indent + "- " + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart() + " ("
+                           + numInstances + " instances)<br/>" );
+            } else {
+                sb.append( indent + "- " + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart()
+                           + " (not mapped)<br/>" );
             }
-            sb.append( indent + "- " + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart() + " ("
-                       + numInstances + " instances)<br/>" );
         }
         FeatureType[] fts = ft.getSchema().getDirectSubtypes( ft );
         Arrays.sort( fts, new Comparator<FeatureType>() {

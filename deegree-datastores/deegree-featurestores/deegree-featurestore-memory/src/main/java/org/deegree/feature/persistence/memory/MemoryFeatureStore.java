@@ -159,6 +159,11 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
+    public boolean isMapped( QName ftName ) {
+        return schema.getFeatureType( ftName ) != null;
+    }
+
+    @Override
     public FeatureInputStream query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
         return storedFeatures.query( query );

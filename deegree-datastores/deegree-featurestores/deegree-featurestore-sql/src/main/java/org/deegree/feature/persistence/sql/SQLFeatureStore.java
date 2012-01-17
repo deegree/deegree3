@@ -345,6 +345,17 @@ public class SQLFeatureStore implements FeatureStore {
         return schema;
     }
 
+    @Override
+    public boolean isMapped( QName ftName ) {
+        if ( schema.getFtMapping( ftName ) != null ) {
+            return true;
+        }
+        if ( schema.getBBoxMapping() != null ) {
+            return true;
+        }
+        return false;
+    }
+
     public String getConnId() {
         return jdbcConnId;
     }

@@ -141,6 +141,11 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     }
 
     @Override
+    public boolean isMapped( QName ftName ) {
+        return appSchema.getFeatureType( ftName ) != null;
+    }
+
+    @Override
     public Envelope getEnvelope( QName ftName )
                             throws FeatureStoreException {
         WFSFeatureType ftMetadata = client.getFeatureType( ftName );

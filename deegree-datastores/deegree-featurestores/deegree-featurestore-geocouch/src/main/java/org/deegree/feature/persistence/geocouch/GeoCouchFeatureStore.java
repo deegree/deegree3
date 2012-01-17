@@ -170,6 +170,11 @@ public class GeoCouchFeatureStore implements FeatureStore {
         return schema;
     }
 
+    @Override    
+    public boolean isMapped( QName ftName ) {
+        return schema.getFeatureType( ftName ) != null;
+    }
+
     @Override
     public Envelope getEnvelope( QName ftName )
                             throws FeatureStoreException {
