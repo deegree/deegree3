@@ -295,7 +295,7 @@ public class FeatureXPathTest {
         assertEquals( 1, result.length );
         PrimitiveValue value = (PrimitiveValue) result[0];
         assertEquals( STRING, value.getType().getBaseType() );
-        assertEquals( "Albert Camus", value.getValue() );
+        assertEquals( "Karl Marx", value.getValue() );
     }
 
     @Test
