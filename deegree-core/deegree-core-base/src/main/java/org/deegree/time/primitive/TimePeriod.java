@@ -37,6 +37,7 @@ package org.deegree.time.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.time.position.TemporalPosition;
 
@@ -95,5 +96,10 @@ public class TimePeriod implements TimeGeometricPrimitive {
     public String getFrame() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public GMLObjectType getType() {
+        throw new UnsupportedOperationException ("Implement me");
     }
 }

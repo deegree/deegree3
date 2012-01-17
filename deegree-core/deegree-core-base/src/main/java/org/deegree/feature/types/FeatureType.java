@@ -37,10 +37,8 @@ package org.deegree.feature.types;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
-import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -53,33 +51,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
  * 
  * @version $Revision:$, $Date:$
  */
-public interface FeatureType {
-
-    /**
-     * Returns the name that features of this type have.
-     * <p>
-     * In the GML representation, this corresponds to the feature's element name.
-     * </p>
-     * 
-     * @return the name of the feature instance
-     */
-    public QName getName();
-
-    /**
-     * Returns the declaration of the property with the given name.
-     * 
-     * @param propName
-     *            name of the property
-     * @return the declaration of the property, or <code>null</code> if no such property is defined
-     */
-    public PropertyType getPropertyDeclaration( QName propName );
-
-    /**
-     * Returns all property declarations of the feature type, excluding those that any GML feature allows for.
-     * 
-     * @return property declarations (in order)
-     */
-    public List<PropertyType> getPropertyDeclarations();
+public interface FeatureType extends GMLObjectType {
 
     /**
      * Returns the first geometry property declaration of the feature type.
@@ -87,13 +59,6 @@ public interface FeatureType {
      * @return first geometry property declaration or <code>null</code> if no such declaration exists
      */
     public GeometryPropertyType getDefaultGeometryPropertyDeclaration();
-
-    /**
-     * Returns whether this type is abstract or not.
-     * 
-     * @return true, if this feature type is abstract, false otherwise
-     */
-    public boolean isAbstract();
 
     /**
      * Creates a new {@link Feature} instance (that is of this type).

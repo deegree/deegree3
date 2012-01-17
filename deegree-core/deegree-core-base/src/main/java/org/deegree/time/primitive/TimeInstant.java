@@ -37,6 +37,7 @@ package org.deegree.time.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.time.position.TemporalPosition;
 
@@ -94,5 +95,10 @@ public class TimeInstant implements TimeGeometricPrimitive, Comparable<TimeInsta
     @Override
     public int compareTo( TimeInstant that ) {
         return value.compareTo( that.value );
+    }
+
+    @Override
+    public GMLObjectType getType() {
+        throw new UnsupportedOperationException ("Implement me");
     }
 }

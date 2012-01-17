@@ -36,10 +36,15 @@
 package org.deegree.geometry;
 
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.multi.MultiLineString;
+import org.deegree.geometry.multi.MultiPoint;
+import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
@@ -141,23 +146,20 @@ public interface Geometry extends GMLObject {
     public GeometryType getGeometryType();
 
     /**
-     * Returns the id of the geometry.
-     * <p>
-     * In a GML representation of the geometry, this corresponds to the <code>gml:id</code> (GML 3 and later) or
-     * <code>gid</code> (GML 2) attribute of the geometry element.
-     * </p>
-     * 
-     * @return the id of the geometry, or null if it is an anonymous (unidentified) geometry
-     */
-    public String getId();
-
-    /**
      * Sets the id of the geometry.
      * 
      * @param id
      *            id of the geometry
      */
     public void setId( String id );
+
+    /**
+     * Attaches {@link GMLObjectType} information to this geometry.
+     * 
+     * @param type
+     *            type information to be attached, may be <code>null</code>
+     */
+    public void setType( GMLObjectType type );
 
     /**
      * Returns the {@link PrecisionModel} of the geometry.
@@ -384,11 +386,11 @@ public interface Geometry extends GMLObject {
      * @return shortest distance between the two geometries
      */
     public Measure getDistance( Geometry geometry, Unit requestedUnits );
-    
+
     /**
      * Returns the standard GML properties (e.g. <code>gml:name</code>).
      * 
      * @return the standard GML properties, may be <code><null</code>
      */
-    public GMLStdProps getGMLProperties();    
+    public GMLStdProps getGMLProperties();
 }

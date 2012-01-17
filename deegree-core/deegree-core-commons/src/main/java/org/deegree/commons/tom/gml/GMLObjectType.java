@@ -57,7 +57,7 @@ public interface GMLObjectType {
      * In a GML encoding, this corresponds to the objects's element name.
      * </p>
      * 
-     * @return the name of the object
+     * @return the name of the object, never <code>null</code>
      */
     public QName getName();
 

@@ -38,6 +38,7 @@ package org.deegree.geometry.standard;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
@@ -96,6 +97,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     /** Geometry identifier. */
     protected String id;
 
+    private GMLObjectType type;
+
     /** Reference to a coordinate system. */
     protected ICRS crs;
 
@@ -122,6 +125,16 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public GMLObjectType getType() {
+        return type;
+    }
+
+    @Override
+    public void setType( GMLObjectType type ) {
+        this.type = type;
     }
 
     @Override

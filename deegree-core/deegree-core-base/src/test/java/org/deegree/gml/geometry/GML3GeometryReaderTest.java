@@ -866,4 +866,9 @@ public class GML3GeometryReaderTest {
         xmlReader.nextTag();
         return xmlReader;
     }
+
+    public void testIsGeometryOrEnvelopeElement()
+    {
+    
+    }
 }

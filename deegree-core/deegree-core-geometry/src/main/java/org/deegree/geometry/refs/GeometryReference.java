@@ -36,6 +36,7 @@
 
 package org.deegree.geometry.refs;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.gml.GMLStdProps;
@@ -212,5 +213,10 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
     @Override
     public boolean isSFSCompliant() {
         return getReferencedObject().isSFSCompliant();
+    }
+
+    @Override
+    public void setType( GMLObjectType type ) {
+        getReferencedObject().setType( type );
     }
 }

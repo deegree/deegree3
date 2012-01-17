@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
@@ -84,5 +85,10 @@ public class GenericDefinition implements Definition {
     @Override
     public GMLStdProps getGMLProperties() {
         return gmlProps;
+    }
+
+    @Override
+    public GMLObjectType getType() {
+        throw new UnsupportedOperationException ("Implement me");
     }
 }

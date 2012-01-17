@@ -59,10 +59,12 @@ public interface GMLObject extends Object {
     @Override
     public String getId();
 
-    // /**
-    // * Returns the standard GML properties (e.g. <code>gml:name</code>).
-    // *
-    // * @return the standard GML properties, may be <code><null</code>
-    // */
-    // public GMLStdProps getGMLProperties();
+    /**
+     * Returns the type information for this object.
+     * 
+     * TODO type information should always be available
+     * 
+     * @return type information, may be <code>null</code> (no type information available)
+     */
+    public GMLObjectType getType();
 }

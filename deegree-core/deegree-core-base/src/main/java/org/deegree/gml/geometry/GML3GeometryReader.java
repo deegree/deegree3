@@ -48,6 +48,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -56,6 +57,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -169,6 +171,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     private final GML3SurfacePatchReader surfacePatchParser;
 
     private final GMLDocumentIdContext idContext;
+
+    private final AppSchema schema = null;
 
     // local names of all concrete elements substitutable for "gml:_Curve"
     private static final Set<String> curveElements = new HashSet<String>();
@@ -299,6 +303,10 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @return true, if the element is a GML 3.1.1 geometry element, false otherwise
      */
     public boolean isGeometryElement( QName elName ) {
+        if ( schema != null ) {
+            GMLObjectType type = schema.getGeometryType( elName );
+            return type != null;
+        }
         if ( !gmlNs.equals( elName.getNamespaceURI() ) ) {
             return false;
         }
@@ -316,13 +324,10 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @return true, if the element is a GML 3.1.1 geometry or a GML 3.1.1 envelope element, false otherwise
      */
     public boolean isGeometryOrEnvelopeElement( QName elName ) {
-        if ( !gmlNs.equals( elName.getNamespaceURI() ) ) {
-            return false;
+        if (elName.getLocalPart().equals( "Envelope" ) && gmlNs.equals( elName ) ) {
+            return true;
         }
-        String localName = elName.getLocalPart();
-        return "Envelope".equals( localName ) || primitiveElements.contains( localName )
-               || aggregateElements.contains( localName ) || complexElements.contains( localName )
-               || implictGeometryElements.contains( localName );
+        return isGeometryElement( elName );
     }
 
     /**
