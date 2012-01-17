@@ -39,7 +39,6 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -189,7 +188,7 @@ public class AppSchemaMapper {
         BlobMapping blobMapping = createBlobMapping ? generateBlobMapping() : null;
 
         this.mappedSchema = new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping,
-                                                 blobMapping, geometryParams, true, null );
+                                                 blobMapping, geometryParams, true, null, null );
     }
 
     /**
@@ -248,7 +247,7 @@ public class AppSchemaMapper {
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 if ( !pt.getName().getNamespaceURI().equals( appSchema.getGMLSchema().getVersion().getNamespace() ) ) {
                     mappings.addAll( generatePropMapping( pt, mc ) );
-                } else if (pt.getName().getLocalPart().equals( "identifier" )) {
+                } else if ( pt.getName().getLocalPart().equals( "identifier" ) ) {
                     mappings.addAll( generatePropMapping( pt, mc ) );
                 }
             }

@@ -8,6 +8,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -183,4 +184,20 @@ public interface AppSchema {
      * @return property declaration or <code>null</code> (if the element does not declare an {@link ObjectPropertyType})
      */
     ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl );
+
+    /**
+     * Returns all geometry types that are defined in this application schema.
+     * 
+     * @return all geometry types, never <code>null</code>
+     */
+    List<GMLObjectType> getGeometryTypes();
+
+    /**
+     * Retrieves the geometry type declaration with the given name.
+     * 
+     * @param ftName
+     *            geometry type name to look up, must not be <code>null</code>
+     * @return the geometry type with the given name, or <code>null</code> if no such geometry type exists
+     */
+    GMLObjectType getGeometryType( QName name );
 }

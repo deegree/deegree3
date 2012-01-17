@@ -36,12 +36,14 @@
 package org.deegree.feature.persistence.sql;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.id.IdAnalyzer;
@@ -118,9 +120,9 @@ public class MappedAppSchema extends GenericAppSchema {
                             Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel, FeatureTypeMapping[] ftMappings,
                             BBoxTableMapping bboxMapping, BlobMapping blobMapping,
                             GeometryStorageParams geometryParams, boolean deleteCascadingByDB,
-                            RelationalModel relationalModel ) {
+                            RelationalModel relationalModel, List<GMLObjectType> geometryTypes ) {
 
-        super( fts, ftToSuperFt, prefixToNs, xsModel );
+        super( fts, ftToSuperFt, prefixToNs, xsModel, geometryTypes );
         if ( ftMappings != null ) {
             for ( FeatureTypeMapping ftMapping : ftMappings ) {
                 ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );

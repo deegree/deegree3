@@ -269,7 +269,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         if ( featureType == null ) {
             available = false;
         } else {
-            schema = new GenericAppSchema( new FeatureType[] { featureType }, null, null, null );
+            schema = new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null );
             available = true;
         }
     }

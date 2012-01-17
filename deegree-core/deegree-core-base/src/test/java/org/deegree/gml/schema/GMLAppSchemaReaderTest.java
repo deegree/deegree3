@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.feature.types.AppSchema;
@@ -256,5 +257,10 @@ public class GMLAppSchemaReaderTest {
         AppSchema schema = adapter.extractAppSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 157, fts.length );
+        Assert.assertEquals( 35, schema.getGeometryTypes().size() );
+
+        QName elevatedCurveName = QName.valueOf( "{http://www.aixm.aero/schema/5.1}ElevatedCurve" );
+        GMLObjectType geometryType = schema.getGeometryType( elevatedCurveName );
+        Assert.assertEquals( 13, geometryType.getPropertyDeclarations().size() );
     }
 }

@@ -57,6 +57,7 @@ import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
@@ -80,6 +81,8 @@ public class GenericAppSchema implements AppSchema {
 
     private final Map<QName, FeatureType> ftNameToFt = new LinkedHashMap<QName, FeatureType>();
 
+    private final Map<QName, GMLObjectType> gtNameToGt = new LinkedHashMap<QName, GMLObjectType>();
+
     // key: feature type A, value: feature type B (A is in substitutionGroup B)
     private final Map<FeatureType, FeatureType> ftToSuperFt = new HashMap<FeatureType, FeatureType>();
 
@@ -100,6 +103,8 @@ public class GenericAppSchema implements AppSchema {
 
     private final Map<XSElementDeclaration, ObjectPropertyType> elDeclToGMLObjectPropDecl = new HashMap<XSElementDeclaration, ObjectPropertyType>();
 
+    private final List<GMLObjectType> geometryTypes;
+
     /**
      * Creates a new {@link GenericAppSchema} instance from the given {@link FeatureType}s and their derivation
      * hierarchy.
@@ -119,7 +124,8 @@ public class GenericAppSchema implements AppSchema {
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public GenericAppSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
-                             Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel ) throws IllegalArgumentException {
+                             Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel, List<GMLObjectType> geometryTypes )
+                            throws IllegalArgumentException {
 
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
@@ -208,6 +214,12 @@ public class GenericAppSchema implements AppSchema {
         }
 
         this.gmlSchema = xsModel;
+        this.geometryTypes = geometryTypes;
+        if ( geometryTypes != null ) {
+            for ( GMLObjectType gmlObjectType : geometryTypes ) {
+                gtNameToGt.put( gmlObjectType.getName(), gmlObjectType );
+            }
+        }
     }
 
     @Override
@@ -456,5 +468,15 @@ public class GenericAppSchema implements AppSchema {
             pt = elDeclToGMLObjectPropDecl.get( elDecl );
         }
         return pt;
+    }
+
+    @Override
+    public List<GMLObjectType> getGeometryTypes() {
+        return geometryTypes;
+    }
+
+    @Override
+    public GMLObjectType getGeometryType( QName gtName ) {
+        return gtNameToGt.get( gtName );
     }
 }

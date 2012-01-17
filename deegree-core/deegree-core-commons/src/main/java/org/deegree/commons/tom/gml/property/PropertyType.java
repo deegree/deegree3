@@ -40,9 +40,9 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSElementDeclaration;
 
 /**
- * Declares a named property of a {@link FeatureType}.
+ * Declares a named property of a {@link GMLObjectType}.
  * 
- * @see FeatureType
+ * @see GMLObjectType
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

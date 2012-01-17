@@ -39,6 +39,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -50,6 +51,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -168,6 +170,16 @@ public class DynamicAppSchema implements AppSchema {
 
     @Override
     public ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
+        return null;
+    }
+
+    @Override
+    public List<GMLObjectType> getGeometryTypes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public GMLObjectType getGeometryType( QName name ) {
         return null;
     }
 }

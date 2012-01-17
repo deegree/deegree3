@@ -63,6 +63,7 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -108,9 +109,6 @@ public class GMLAppSchemaReader {
 
     // key: name of feature type, value: feature type
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
-
-    // key: name of feature type, value: GML core feature type
-    private Map<QName, FeatureType> ftNameToCoreFt = new HashMap<QName, FeatureType>();
 
     // key: name of ft A, value: name of ft B (A is in substitionGroup B)
     private Map<QName, QName> ftNameToSubstitutionGroupName = new HashMap<QName, QName>();
@@ -301,13 +299,8 @@ public class GMLAppSchemaReader {
     public AppSchema extractAppSchema() {
 
         for ( QName ftName : ftNameToFtElement.keySet() ) {
-
             FeatureType ft = buildFeatureType( ftNameToFtElement.get( ftName ) );
-            // if ( gmlNs.equals( ft.getName().getNamespaceURI() ) ) {
-            // ftNameToCoreFt.put( ftName, ft );
-            // } else {
             ftNameToFt.put( ftName, ft );
-            // }
         }
 
         // resolveFtReferences();
@@ -317,16 +310,17 @@ public class GMLAppSchemaReader {
         Map<FeatureType, FeatureType> ftSubstitution = new HashMap<FeatureType, FeatureType>();
         for ( QName ftName : ftNameToSubstitutionGroupName.keySet() ) {
             QName substitutionFtName = ftNameToSubstitutionGroupName.get( ftName );
-            // if ( ftName.getNamespaceURI().equals( gmlNs ) || substitutionFtName.getNamespaceURI().equals( gmlNs ) ) {
-            // LOG.trace( "Skipping substitution relation: '" + ftName + "' -> '" + substitutionFtName
-            // + "' (involves GML internal feature type declaration)." );
-            // continue;
-            // }
             if ( substitutionFtName != null ) {
                 ftSubstitution.put( ftNameToFt.get( ftName ), ftNameToFt.get( substitutionFtName ) );
             }
         }
-        return new GenericAppSchema( fts, ftSubstitution, prefixToNs, analyzer );
+
+        List<GMLObjectType> geometryTypes = new ArrayList<GMLObjectType>();
+        for ( QName geometryName : geometryNameToGeometryElement.keySet() ) {
+            geometryTypes.add( buildGeometryType( geometryNameToGeometryElement.get( geometryName ) ) );
+        }
+
+        return new GenericAppSchema( fts, ftSubstitution, prefixToNs, analyzer, geometryTypes );
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
@@ -398,6 +392,72 @@ public class GMLAppSchemaReader {
         }
 
         return new GenericFeatureType( ftName, pts, featureElementDecl.getAbstract() );
+    }
+
+    private GMLObjectType buildGeometryType( XSElementDeclaration elDecl ) {
+
+        QName elName = createQName( elDecl.getNamespace(), elDecl.getName() );
+        LOG.debug( "Building geometry type declaration: '" + elName + "'" );
+
+        if ( elDecl.getTypeDefinition().getType() == XSTypeDefinition.SIMPLE_TYPE ) {
+            String msg = "The schema type of feature element '" + elName
+                         + "' is simple, but geometry elements must always have a complex type.";
+            throw new IllegalArgumentException( msg );
+        }
+
+        // extract property types from type definition
+        List<PropertyType> pts = new ArrayList<PropertyType>();
+        XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
+
+        // element contents
+        switch ( typeDef.getContentType() ) {
+        case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
+            XSParticle particle = typeDef.getParticle();
+            int minOccurs = particle.getMinOccurs();
+            int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
+            XSTerm term = particle.getTerm();
+            switch ( term.getType() ) {
+            case XSConstants.MODEL_GROUP: {
+                addPropertyTypes( pts, (XSModelGroup) term, minOccurs, maxOccurs );
+                break;
+            }
+            case XSConstants.ELEMENT_DECLARATION: {
+                pts.add( buildPropertyType( (XSElementDeclaration) term, minOccurs, maxOccurs ) );
+                break;
+            }
+            case XSConstants.WILDCARD: {
+                String msg = "Broken GML application schema: Geometry element '" + elName
+                             + "' uses wildcard in type model.";
+                throw new IllegalArgumentException( msg );
+            }
+            default: {
+                String msg = "Internal error. Unhandled term type: " + term.getName();
+                throw new RuntimeException( msg );
+            }
+            }
+            break;
+        }
+        case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
+            LOG.debug( "Empty geometry type declaration." );
+            break;
+        }
+        case XSComplexTypeDefinition.CONTENTTYPE_MIXED: {
+            String msg = "Broken GML application schema: Geometry element '" + elName
+                         + "' uses mixed content in type model.";
+            throw new IllegalArgumentException( msg );
+        }
+        case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
+            String msg = "Broken GML application schema: Geometry element '" + elName
+                         + "' uses simple content in type model.";
+            throw new IllegalArgumentException( msg );
+        }
+        default: {
+            String msg = "Internal error. Unhandled ContentType: " + typeDef.getContentType();
+            throw new RuntimeException( msg );
+        }
+        }
+
+        return new GenericFeatureType( elName, pts, elDecl.getAbstract() );
     }
 
     private void addPropertyTypes( List<PropertyType> pts, XSModelGroup modelGroup, int parentMinOccurs,

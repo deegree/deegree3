@@ -167,7 +167,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                                                                           dialect.getUndefinedSrid(),
                                                                           CoordinateDimension.DIM_2 );
         return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, null, null, geometryParams,
-                                    deleteCascadingByDB, null );
+                                    deleteCascadingByDB, null, null );
     }
 
     private void process( FeatureTypeMappingJAXB ftDecl )

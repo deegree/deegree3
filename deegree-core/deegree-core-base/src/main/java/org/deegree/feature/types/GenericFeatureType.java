@@ -42,6 +42,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
@@ -57,7 +58,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GenericFeatureType implements FeatureType {
+public class GenericFeatureType implements GMLObjectType, FeatureType {
 
     private QName name;
 
