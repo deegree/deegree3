@@ -47,7 +47,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Provides the type information for an (application-defined) class of {@link Feature}s.
+ * Defines a class of {@link Feature}s, i.e. features with same name and same types of properties.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
