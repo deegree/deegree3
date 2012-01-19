@@ -75,7 +75,9 @@ public class ISORecordAnyTextTest extends AbstractISOTest {
 
     @Test
     public void testAnyTextElement_CORE()
-                            throws JAXBException {       
+                            throws JAXBException {
+        // TODO get rid of this
+        TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
         LOG.info( "START Test: test anyText element 'CORE' for one metadataRecord " );
         ISORecord rec = (ISORecord) MetadataRecordFactory.create( ( new XMLAdapter( TstConstants.tst_10 ) ).getRootElement() );
         String anyText = AnyTextHelper.getAnyText( rec, getConfig( TstConstants.configURL_ANYTEXT_CORE ).getAnyText() );
