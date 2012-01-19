@@ -593,7 +593,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         }
         if ( pt == null ) {
             if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
-                LOG.warn( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
+                LOG.debug( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
                           + elDecl.getName() + "), but handling is not implemented yet." );
                 // // TODO actually determine allowed value representations
                 // pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
