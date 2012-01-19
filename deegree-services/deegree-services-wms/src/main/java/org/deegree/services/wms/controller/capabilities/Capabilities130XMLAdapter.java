@@ -66,7 +66,6 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
@@ -355,19 +354,19 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
                     // LOG.trace( "Stack trace:", e );
                     // }
-                    switch ( srs.getAxis()[0].getOrientation() ) {
-                    case Axis.AO_NORTH:
-                        writer.writeAttribute( "miny", Double.toString( min.get0() ) );
-                        writer.writeAttribute( "minx", Double.toString( min.get1() ) );
-                        writer.writeAttribute( "maxy", Double.toString( max.get0() ) );
-                        writer.writeAttribute( "maxx", Double.toString( max.get1() ) );
-                        break;
-                    default:
-                        writer.writeAttribute( "minx", Double.toString( min.get0() ) );
-                        writer.writeAttribute( "miny", Double.toString( min.get1() ) );
-                        writer.writeAttribute( "maxx", Double.toString( max.get0() ) );
-                        writer.writeAttribute( "maxy", Double.toString( max.get1() ) );
-                    }
+                    // switch ( srs.getAxis()[0].getOrientation() ) {
+                    // case Axis.AO_NORTH:
+                    // writer.writeAttribute( "miny", Double.toString( min.get0() ) );
+                    // writer.writeAttribute( "minx", Double.toString( min.get1() ) );
+                    // writer.writeAttribute( "maxy", Double.toString( max.get0() ) );
+                    // writer.writeAttribute( "maxx", Double.toString( max.get1() ) );
+                    // break;
+                    // default:
+                    writer.writeAttribute( "minx", Double.toString( min.get0() ) );
+                    writer.writeAttribute( "miny", Double.toString( min.get1() ) );
+                    writer.writeAttribute( "maxx", Double.toString( max.get0() ) );
+                    writer.writeAttribute( "maxy", Double.toString( max.get1() ) );
+                    // }
                     writer.writeEndElement();
                 }
             }
