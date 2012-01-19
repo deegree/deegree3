@@ -51,10 +51,14 @@ public class OperatorFilter implements Filter {
      * Creates a new {@link OperatorFilter}.
      * 
      * @param rootOperator
-     *            root operator that defines the test expression
+     *            root operator that defines the test expression, must not be <code>null</code>
+     * @throws NullPointerException
      */
     public OperatorFilter( Operator rootOperator ) {
         this.rootOperator = rootOperator;
+        if ( rootOperator == null ) {
+            throw new NullPointerException();
+        }
     }
 
     /**
