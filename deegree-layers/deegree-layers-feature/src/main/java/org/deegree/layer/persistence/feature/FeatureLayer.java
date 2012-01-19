@@ -62,6 +62,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.datetime.TimeInstant;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
@@ -309,6 +310,10 @@ public class FeatureLayer extends AbstractLayer {
                     theVal = new Date( currentTimeMillis() );
                 } else if ( o instanceof Date ) {
                     theVal = (Date) o;
+                } else if ( o instanceof TimeInstant ) {
+                    theVal = ( (TimeInstant) o ).getDate();
+                } else {
+                    throw new RuntimeException( "Unexpected dimension value class: " + o.getClass() );
                 }
                 if ( theVal != null ) {
                     if ( time.getNearestValue() ) {
@@ -429,5 +434,4 @@ public class FeatureLayer extends AbstractLayer {
         }
         return new OperatorFilter( ops.get( 0 ) );
     }
-
 }
