@@ -110,8 +110,8 @@ public class ParseGetObservationRequestTest {
         TimeFilter timeFilter = timeFilters.get( 0 );
         if ( timeFilter instanceof DurationFilter ) {
             DurationFilter durationFilter = (DurationFilter) timeFilter;
-            assertTrue( DateUtils.parseISO8601Date( "2008-11-05T17:18:58.000-06:00" ).equals( durationFilter.getBegin() ) );
-            assertTrue( DateUtils.parseISO8601Date( "2008-11-05T21:18:59.000-06:00" ).equals( durationFilter.getEnd() ) );
+            assertTrue( DateUtils.parseISO8601Date( "2008-11-05T17:18:58.000-06:00" ).getSQLDate().equals( durationFilter.getBegin() ) );
+            assertTrue( DateUtils.parseISO8601Date( "2008-11-05T21:18:59.000-06:00" ).getSQLDate().equals( durationFilter.getEnd() ) );
         } else {
             fail( "filter is not parsed as DurationFilter" );
         }

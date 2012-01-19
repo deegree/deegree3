@@ -40,12 +40,12 @@ import static org.deegree.commons.utils.kvp.KVPUtils.getBoolean;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequiredDouble;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequiredInt;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 
 import java.awt.Color;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.text.ParseException;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +53,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -296,18 +296,16 @@ public class GetViewKVPAdapter {
 
         String date = requestParams.remove( "DATETIME" );
 
-        GregorianCalendar cal = DEFAULT_CAL;
+        Calendar cal = DEFAULT_CAL;
         if ( date != null ) {
             try {
-                Date requestedDate = DateUtils.parseISO8601Date( date );
-                cal = new GregorianCalendar();
-                cal.setTime( requestedDate );
-            } catch ( ParseException e ) {
-                throw new OWSException(
-                                        "Requested DATETIME: "
-                                                                + date
-                                                                + ", could not be parsed please specify it in ISO8601 (YYYY-MM-DDTHH:MM:SS), or leave blank to use the servers default ('2009-03-21T12:00:00')",
-                                        OWSException.INVALID_PARAMETER_VALUE );
+                DateTime requestedDate = new DateTime( date );
+                cal = requestedDate.getCalendar();
+            } catch ( IllegalArgumentException e ) {
+                String msg = "Requested DATETIME: "
+                             + date
+                             + " could not be parsed please specify it in ISO8601 (YYYY-MM-DDTHH:MM:SS), or leave blank to use the servers default ('2009-03-21T12:00:00')";
+                throw new OWSException( msg, INVALID_PARAMETER_VALUE );
             }
         }
 

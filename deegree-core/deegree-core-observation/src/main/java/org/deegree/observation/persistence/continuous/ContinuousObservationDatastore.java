@@ -102,7 +102,7 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
                             throws ObservationDatastoreException {
         super( jdbcId, tableName, columnMap, optionMap, properties );
         try {
-            begin = DateUtils.parseISO8601Date( optionMap.get( "beginDate" ) );
+            begin = DateUtils.parseISO8601Date( optionMap.get( "beginDate" ) ).getSQLDate();
             Duration duration = DateUtils.parseISO8601Duration( optionMap.get( "interval" ) );
             interval = duration.getDateAfter( begin ).getTime() - begin.getTime();
             String firstID = optionMap.get( "firstID" );

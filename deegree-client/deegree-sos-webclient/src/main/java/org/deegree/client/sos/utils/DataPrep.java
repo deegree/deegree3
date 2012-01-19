@@ -51,11 +51,11 @@ public class DataPrep {
     /**
      * Transforms the data from the DataStorage into a ChartInput.
      */
-    private void createChartInput(StorageGetObservation storage, String procedure ) {
+    private void createChartInput( StorageGetObservation storage, String procedure ) {
         List<Observation> observationCollection = storage.getObservationCollection();
         for ( Observation observation : observationCollection ) {
             if ( observation.getProcedure().equals( procedure ) ) {
-                
+
                 List<String> names = new ArrayList<String>();
 
                 String rawvalues = observation.getDataArray().getValues();
@@ -82,22 +82,22 @@ public class DataPrep {
                 try {
                     for ( int i = 0; i < countValues; i++ ) {
                         String[] contents = rawblocks[i].split( tokenSeparator );
-                        dates[i] = org.deegree.commons.tom.datetime.DateUtils.parseISO8601Date( contents[0] );
-                        //Time occurs ever(!) first in the values!
+                        dates[i] = org.deegree.commons.tom.datetime.DateUtils.parseISO8601Date( contents[0] ).getSQLDate();
+                        // Time occurs ever(!) first in the values!
 
                         countDiff = contents.length;
                     }
-                    
-                    for(int i = 1; i < countDiff; i++){ 
+
+                    for ( int i = 1; i < countDiff; i++ ) {
                         converted = new double[countValues];
-                        for(int j = 0; j < countValues; j++){ 
+                        for ( int j = 0; j < countValues; j++ ) {
                             String[] contents = rawblocks[j].split( tokenSeparator );
                             converted[j] = Double.parseDouble( contents[i] );
                         }
                         String columnName = "";
                         List<Field> fields = observation.getDataArray().getElementTypes();
-                        for(Field field : fields){
-                            if(field.getIndex()==i){
+                        for ( Field field : fields ) {
+                            if ( field.getIndex() == i ) {
                                 columnName = field.getName();
                                 names.add( columnName );
                             }
@@ -106,7 +106,7 @@ public class DataPrep {
                     }
                     chartInput.setDates( dates );
                     chartInput.setData( data );
-                    chartInput.setTimeResolution( determineTimeResolution(dates) );
+                    chartInput.setTimeResolution( determineTimeResolution( dates ) );
                 } catch ( ParseException e ) {
                     e.printStackTrace();
                     LOG.error( "error occured while parsing the dates" );

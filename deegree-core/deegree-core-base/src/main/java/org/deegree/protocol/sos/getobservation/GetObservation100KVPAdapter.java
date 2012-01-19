@@ -85,12 +85,11 @@ public class GetObservation100KVPAdapter {
         if ( time != null ) {
             if ( time.contains( "/" ) ) {
                 String[] timeParts = time.split( "/" );
-
-                Date begin = DateUtils.parseISO8601Date( timeParts[0] );
-                Date end = DateUtils.parseISO8601Date( timeParts[1] );
+                Date begin = DateUtils.parseISO8601Date( timeParts[0] ).getSQLDate();
+                Date end = DateUtils.parseISO8601Date( timeParts[1] ).getSQLDate();
                 result.add( new DurationFilter( begin, true, end, false ) );
             } else {
-                Date instant = DateUtils.parseISO8601Date( time );
+                Date instant = DateUtils.parseISO8601Date( time ).getSQLDate();
                 result.add( new TimeInstantFilter( instant ) );
             }
         }

@@ -40,20 +40,19 @@ import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.tom.datetime.Time;
+import org.deegree.commons.tom.datetime.TimeInstant;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Implementations convert between {@link PrimitiveValue} particles and SQL column values.
+ * {@link PrimitiveParticleConverter} for canonical conversion between SQL types and {@link PrimitiveValue}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -61,8 +60,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
-
-    private static Logger LOG = LoggerFactory.getLogger( DefaultPrimitiveConverter.class );
 
     protected final PrimitiveType pt;
 
@@ -151,34 +148,25 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
     }
 
     protected PrimitiveValue toDateParticle( Object sqlValue ) {
-        Date value = null;
+        TimeInstant value = null;
         if ( sqlValue instanceof java.util.Date ) {
-            value = new Date( DateUtils.formatISO8601DateWOTime( (java.util.Date) sqlValue ) );
+            Calendar cal = Calendar.getInstance();
+            cal.setTime( (java.util.Date) sqlValue );
+            value = new Date( cal, true );
         } else if ( sqlValue != null ) {
-            try {
-                value = new Date( sqlValue.toString() );
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-                try {
-                    value = new Date( "1970-01-01" );
-                } catch ( Exception e1 ) {
-                    // should never happen
-                }
-            }
+            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
+                                                + "' to Date object." );
         }
         return new PrimitiveValue( value, pt );
     }
 
     protected PrimitiveValue toDateTimeParticle( Object sqlValue ) {
-        DateTime value = null;
+        TimeInstant value = null;
         if ( sqlValue instanceof java.util.Date ) {
-            try {
-                value = new DateTime( DateUtils.formatISO8601DateWOMS( (java.util.Date) sqlValue ) );
-            } catch ( Exception e ) {
-                throw new IllegalArgumentException( "Unable to convert sql result value of type '"
-                                                    + sqlValue.getClass() + "' to DateTime object." );
-            }
-        } else {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime( (java.util.Date) sqlValue );
+            value = new DateTime( cal, true );
+        } else if ( sqlValue != null ) {
             throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
                                                 + "' to DateTime object." );
         }
@@ -186,14 +174,12 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
     }
 
     protected PrimitiveValue toTimeParticle( Object sqlValue ) {
-        Time value = null;
+        TimeInstant value = null;
         if ( sqlValue instanceof java.util.Date ) {
-            try {
-                value = new Time( DateUtils.formatISO8601Time( (java.util.Date) sqlValue ) );
-            } catch ( Exception e ) {
-                throw new IllegalArgumentException( e.getMessage(), e );
-            }
-        } else {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime( (java.util.Date) sqlValue );
+            value = new Time( cal, true );
+        } else if ( sqlValue != null ) {
             throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
                                                 + "' to Time object." );
         }

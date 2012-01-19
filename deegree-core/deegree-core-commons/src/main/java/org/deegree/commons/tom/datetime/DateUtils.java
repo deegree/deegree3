@@ -36,14 +36,10 @@
 
 package org.deegree.commons.tom.datetime;
 
-import static java.util.Calendar.MILLISECOND;
-
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -156,144 +152,9 @@ public final class DateUtils {
      * @throws ParseException
      *             if there is a problem parsing the string
      */
-    public static Date parseISO8601Date( final String dateString )
+    public static DateTime parseISO8601Date( final String dateString )
                             throws ParseException {
-        // Example: 2008-02-16T12:30:45.123-0600
-        // Example: 2008-W06-6
-        // Example: 2008-053
-        //
-        // Group Optional Field Description
-        // ----- -------- --------- ------------------------------------------
-        // 1 no 2008 4 digit year as a number
-        // 2 yes 02-16 or W06-6 or 053
-        // 3 yes W06-6
-        // 4 yes 06 2 digit week number (00-59)
-        // 5 yes 6 1 digit day of week as a number (1-7)
-        // 6 yes 02-16
-        // 7 yes 02 2 digit month as a number (00-19)
-        // 8 yes -16
-        // 9 yes 16 2 digit day of month as a number (00-39)
-        // 10 yes 02 2 digit month as a number (00-19)
-        // 11 yes 16 2 digit day of month as a number (00-39)
-        // 12 yes 234 3 digit day of year as a number (000-399)
-        // 13 yes T12:30:45.123-0600
-        // 14 yes 12 2 digit hour as a number (00-29)
-        // 15 yes 30 2 digit minute as a number (00-59)
-        // 16 yes :45.123
-        // 17 yes 45 2 digit second as a number (00-59)
-        // 18 yes .123
-        // 19 yes 123 1, 2 or 3 digit milliseconds as a number (000-999)
-        // 20 yes -0600
-        // 21 yes Z The letter 'Z' if in UTC
-        // 22 yes -06 1 or 2 digit time zone hour offset as a signed number
-        // 23 yes + the plus or minus in the time zone offset
-        // 24 yes 00 1 or 2 digit time zone hour offset as an unsigned number (00-29)
-        // 25 yes 00 1 or 2 digit time zone minute offset as a number (00-59)
-        final String regex = "^(\\d{4})-?(([wW]([012345]\\d)-?([1234567])?)|(([01]\\d)(-([0123]\\d))?)|([01]\\d)([0123]\\d)|([0123]\\d\\d))?(T([012]\\d):?([012345]\\d)?(:?([012345]\\d)(.(\\d{1,3}))?)?)?((Z)|(([+-])(\\d{2})):?(\\d{2})?)?$";
-        final Pattern pattern = Pattern.compile( regex );
-        if ( dateString == null ) {
-            throw new ParseException( "error while parsing iso8601 date: null", 0 );
-        }
-        final Matcher matcher = pattern.matcher( dateString );
-        if ( !matcher.matches() ) {
-            throw new ParseException( "error while parsing iso8601 date: " + dateString, 0 );
-        }
-        String year = matcher.group( 1 );
-        String week = matcher.group( 4 );
-        String dayOfWeek = matcher.group( 5 );
-        String month = matcher.group( 7 );
-        if ( month == null ) {
-            month = matcher.group( 10 );
-        }
-        String dayOfMonth = matcher.group( 9 );
-        if ( dayOfMonth == null ) {
-            dayOfMonth = matcher.group( 11 );
-        }
-        String dayOfYear = matcher.group( 12 );
-        String hourOfDay = matcher.group( 14 );
-        String minutesOfHour = matcher.group( 15 );
-        String seconds = matcher.group( 17 );
-        String milliseconds = matcher.group( 19 );
-        String timeZoneSign = matcher.group( 23 );
-        String timeZoneHour = matcher.group( 24 );
-        String timeZoneMinutes = matcher.group( 25 );
-
-        boolean localeTime = true;
-        if ( timeZoneHour != null ) {
-            localeTime = false;
-        }
-        if ( matcher.group( 21 ) != null ) {
-            localeTime = false;
-            timeZoneHour = "00";
-            timeZoneMinutes = "00";
-        }
-
-        // Create the calendar object and start setting the fields ...
-        Calendar calendar;
-        if ( localeTime ) {
-            calendar = Calendar.getInstance();
-        } else {
-            calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
-        }
-        calendar.clear();
-
-        // And start setting the fields. Note that Integer.parseInt should never fail, since we're checking for null and
-        // the
-        // regular expression should only have digits in these strings!
-        if ( year != null ) {
-            calendar.set( Calendar.YEAR, Integer.parseInt( year ) );
-        }
-        if ( month != null ) {
-            calendar.set( Calendar.MONTH, Integer.parseInt( month ) - 1 ); // month is zero-based!
-            if ( dayOfMonth != null ) {
-                calendar.set( Calendar.DAY_OF_MONTH, Integer.parseInt( dayOfMonth ) );
-            }
-        } else if ( week != null ) {
-            calendar.set( Calendar.WEEK_OF_YEAR, Integer.parseInt( week ) );
-            if ( dayOfWeek != null ) {
-                calendar.set( Calendar.DAY_OF_WEEK, Integer.parseInt( dayOfWeek ) );
-            }
-        } else if ( dayOfYear != null ) {
-            calendar.set( Calendar.DAY_OF_YEAR, Integer.parseInt( dayOfYear ) );
-        }
-        if ( hourOfDay != null ) {
-            calendar.set( Calendar.HOUR_OF_DAY, Integer.parseInt( hourOfDay ) );
-        }
-        if ( minutesOfHour != null ) {
-            calendar.set( Calendar.MINUTE, Integer.parseInt( minutesOfHour ) );
-        }
-        if ( seconds != null ) {
-            calendar.set( Calendar.SECOND, Integer.parseInt( seconds ) );
-        }
-        if ( milliseconds != null ) {
-            int ms = Integer.parseInt( milliseconds );
-            if ( milliseconds.length() == 1 ) {
-                ms *= 100;
-            }
-            if ( milliseconds.length() == 2 ) {
-                ms *= 10;
-            }
-            calendar.set( MILLISECOND, ms );
-        }
-        if ( timeZoneHour != null ) {
-            int zoneOffsetInMillis = Integer.parseInt( timeZoneHour ) * 60 * 60 * 1000;
-            if ( "-".equals( timeZoneSign ) ) {
-                zoneOffsetInMillis *= -1;
-            }
-            if ( timeZoneMinutes != null ) {
-                int minuteOffsetInMillis = Integer.parseInt( timeZoneMinutes ) * 60 * 1000;
-                if ( zoneOffsetInMillis < 0 ) {
-                    zoneOffsetInMillis -= minuteOffsetInMillis;
-                } else {
-                    zoneOffsetInMillis += minuteOffsetInMillis;
-                }
-            }
-            calendar.set( Calendar.ZONE_OFFSET, zoneOffsetInMillis );
-        }
-        // convert to utc time
-        Calendar result = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
-        result.setTime( calendar.getTime() );
-        return result.getTime();
+        return new DateTime( dateString );
     }
 
     /**
@@ -356,7 +217,13 @@ public final class DateUtils {
      *            the date
      * @return the string in the {@link #ISO_8601_2004_FORMAT_GMT standard format}
      */
-    public static String formatISO8601Date( final java.util.Date date ) {
+    public static String formatISO8601Date( TimeInstant date ) {
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT );
+        sdf.setTimeZone( GMT );
+        return sdf.format( date.getSQLDate() );
+    }
+
+    public static String formatISO8601Date( java.util.Date date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT );
         sdf.setTimeZone( GMT );
         return sdf.format( date );
@@ -366,7 +233,17 @@ public final class DateUtils {
      * @param date
      * @return the date string WithOutMilliSeconds
      */
-    public static String formatISO8601DateWOMS( final java.util.Date date ) {
+    public static String formatISO8601DateWOMS( final TimeInstant date ) {
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_MS );
+        sdf.setTimeZone( GMT );
+        return sdf.format( date.getSQLDate() );
+    }
+
+    /**
+     * @param date
+     * @return the date string WithOutMilliSeconds
+     */
+    public static String formatISO8601DateWOMS( final Date date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_MS );
         sdf.setTimeZone( GMT );
         return sdf.format( date );
@@ -376,7 +253,13 @@ public final class DateUtils {
      * @param date
      * @return the date string without time
      */
-    public static String formatISO8601DateWOTime( final java.util.Date date ) {
+    public static String formatISO8601DateWOTime( final TimeInstant date ) {
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_TIME );
+        sdf.setTimeZone( GMT );
+        return sdf.format( date.getSQLDate() );
+    }
+
+    public static String formatISO8601DateWOTime( final Date date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_TIME );
         sdf.setTimeZone( GMT );
         return sdf.format( date );
@@ -389,22 +272,22 @@ public final class DateUtils {
      *            the date
      * @return the string representation (only time)
      */
-    public static String formatISO8601Time( final java.util.Date date ) {
+    public static String formatISO8601Time( final TimeInstant date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_TIME );
         sdf.setTimeZone( GMT );
-        return sdf.format( date );
+        return sdf.format( date.getSQLDate() );
     }
 
-    /**
-     * Obtain an ISO 8601:2004 string representation of the date given the supplied milliseconds since the epoch.
-     * 
-     * @param date
-     *            the date in calendar form
-     * @return the string in the {@link #ISO_8601_2004_FORMAT_GMT standard format}
-     */
-    public static String formatISO8601Date( final Calendar date ) {
-        return formatISO8601Date( date.getTime() );
-    }
+    // /**
+    // * Obtain an ISO 8601:2004 string representation of the date given the supplied milliseconds since the epoch.
+    // *
+    // * @param date
+    // * the date in calendar form
+    // * @return the string in the {@link #ISO_8601_2004_FORMAT_GMT standard format}
+    // */
+    // public static String formatISO8601Date( final Calendar date ) {
+    // return formatISO8601Date( date.getTime() );
+    // }
 
     /**
      * Obtain an ISO 8601:2004 string representation of the duration given.
@@ -433,27 +316,6 @@ public final class DateUtils {
             }
         }
         return result.toString();
-    }
-
-    /**
-     * Return a string representation of the supplied date with the current default locale.
-     * 
-     * @param date
-     * @return the string in locale format
-     */
-    public static String formatLocaleDate( final java.util.Date date ) {
-        return formatLocaleDate( date, Locale.getDefault() );
-    }
-
-    /**
-     * Return a string representation of the supplied date with the supplied locale.
-     * 
-     * @param date
-     * @param locale
-     * @return the string in locale format
-     */
-    public static String formatLocaleDate( final java.util.Date date, Locale locale ) {
-        return DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.LONG, locale ).format( date );
     }
 
     private DateUtils() {

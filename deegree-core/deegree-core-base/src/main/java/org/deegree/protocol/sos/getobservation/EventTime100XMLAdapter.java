@@ -218,7 +218,7 @@ public class EventTime100XMLAdapter extends XMLAdapter {
         OMElement tpos = getElement( timeInstant, new XPath( "gml:timePosition", nsContext ) );
         if ( tpos.getText().trim().length() > 0 ) {
             try {
-                return DateUtils.parseISO8601Date( tpos.getText() );
+                return DateUtils.parseISO8601Date( tpos.getText() ).getSQLDate();
             } catch ( ParseException e ) {
                 throw new EventTimeXMLParsingException( this, tpos );
             }

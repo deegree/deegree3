@@ -314,7 +314,8 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
             case _date:
                 try {
                     ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ),
-                                            new Timestamp( ( DateUtils.parseISO8601Date( slotValue ).getTime() ) ) );
+                                            new Timestamp(
+                                                           ( DateUtils.parseISO8601Date( slotValue ).getTimeInMilliseconds() ) ) );
                 } catch ( java.text.ParseException e ) {
                     String msg = "Could not parse as Date:" + slotValue;
                     LOG.debug( msg, e );
@@ -406,11 +407,11 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
                             throws SQLException {
         InsertRow ir = new InsertRow( new TableName( Table.idxtb_association.name() ), null );
         addRegistryObject( ir, association );
-        ir.addPreparedArgument( new SQLIdentifier("sourceObject"), association.getSourceObject() );
-        ir.addPreparedArgument( new SQLIdentifier("targetObject"), association.getTargetObject() );
-        ir.addPreparedArgument( new SQLIdentifier("associationType"), association.getAssociationType() );
-        ir.addPreparedArgument( new SQLIdentifier("data"), getAsByteArray( association.getElement() ) );
-        ir.addPreparedArgument( new SQLIdentifier("fk_registrypackage"), regPackId );
+        ir.addPreparedArgument( new SQLIdentifier( "sourceObject" ), association.getSourceObject() );
+        ir.addPreparedArgument( new SQLIdentifier( "targetObject" ), association.getTargetObject() );
+        ir.addPreparedArgument( new SQLIdentifier( "associationType" ), association.getAssociationType() );
+        ir.addPreparedArgument( new SQLIdentifier( "data" ), getAsByteArray( association.getElement() ) );
+        ir.addPreparedArgument( new SQLIdentifier( "fk_registrypackage" ), regPackId );
         ir.performInsert( conn );
     }
 
@@ -418,11 +419,11 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
                             throws SQLException {
         InsertRow ir = new InsertRow( new TableName( Table.idxtb_classification.name() ), null );
         addRegistryObject( ir, classification );
-        ir.addPreparedArgument( new SQLIdentifier("classificationNode"), classification.getClassificationNode() );
-        ir.addPreparedArgument( new SQLIdentifier("classifiedObject"), classification.getClassifiedObject() );
-        ir.addPreparedArgument( new SQLIdentifier("classificationScheme"), classification.getClassificationScheme() );
-        ir.addPreparedArgument( new SQLIdentifier("data"), getAsByteArray( classification.getElement() ) );
-        ir.addPreparedArgument( new SQLIdentifier("fk_registrypackage"), regPackId );
+        ir.addPreparedArgument( new SQLIdentifier( "classificationNode" ), classification.getClassificationNode() );
+        ir.addPreparedArgument( new SQLIdentifier( "classifiedObject" ), classification.getClassifiedObject() );
+        ir.addPreparedArgument( new SQLIdentifier( "classificationScheme" ), classification.getClassificationScheme() );
+        ir.addPreparedArgument( new SQLIdentifier( "data" ), getAsByteArray( classification.getElement() ) );
+        ir.addPreparedArgument( new SQLIdentifier( "fk_registrypackage" ), regPackId );
         ir.performInsert( conn );
     }
 
@@ -430,24 +431,24 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
                             throws SQLException {
         InsertRow ir = new InsertRow( new TableName( Table.idxtb_classificationNode.name() ), null );
         addRegistryObject( ir, classificationNode );
-        ir.addPreparedArgument( new SQLIdentifier("parent"), classificationNode.getParent() );
-        ir.addPreparedArgument( new SQLIdentifier("code"), classificationNode.getCode() );
-        ir.addPreparedArgument( new SQLIdentifier("path"), classificationNode.getPath() );
-        ir.addPreparedArgument( new SQLIdentifier("data"), getAsByteArray( classificationNode.getElement() ) );
-        ir.addPreparedArgument( new SQLIdentifier("fk_registrypackage"), regPackId );
+        ir.addPreparedArgument( new SQLIdentifier( "parent" ), classificationNode.getParent() );
+        ir.addPreparedArgument( new SQLIdentifier( "code" ), classificationNode.getCode() );
+        ir.addPreparedArgument( new SQLIdentifier( "path" ), classificationNode.getPath() );
+        ir.addPreparedArgument( new SQLIdentifier( "data" ), getAsByteArray( classificationNode.getElement() ) );
+        ir.addPreparedArgument( new SQLIdentifier( "fk_registrypackage" ), regPackId );
         ir.performInsert( conn );
     }
 
     private void addRegistryObject( InsertRow ir, RegistryObject ro ) {
-        ir.addPreparedArgument( new SQLIdentifier("id"), ro.getId() );
-        ir.addPreparedArgument( new SQLIdentifier("objectType"), ro.getObjectType() );
-        ir.addPreparedArgument( new SQLIdentifier("home"), ro.getHome() );
-        ir.addPreparedArgument( new SQLIdentifier("lid"), ro.getLid() );
-        ir.addPreparedArgument( new SQLIdentifier("status"), ro.getStatus() );
-        ir.addPreparedArgument( new SQLIdentifier("externalId"), ro.getExtId() );
-        ir.addPreparedArgument( new SQLIdentifier("name"), ro.getName() );
-        ir.addPreparedArgument( new SQLIdentifier("description"), ro.getDesc() );
-        ir.addPreparedArgument( new SQLIdentifier("versionInfo"), ro.getVersionInfo() );
+        ir.addPreparedArgument( new SQLIdentifier( "id" ), ro.getId() );
+        ir.addPreparedArgument( new SQLIdentifier( "objectType" ), ro.getObjectType() );
+        ir.addPreparedArgument( new SQLIdentifier( "home" ), ro.getHome() );
+        ir.addPreparedArgument( new SQLIdentifier( "lid" ), ro.getLid() );
+        ir.addPreparedArgument( new SQLIdentifier( "status" ), ro.getStatus() );
+        ir.addPreparedArgument( new SQLIdentifier( "externalId" ), ro.getExtId() );
+        ir.addPreparedArgument( new SQLIdentifier( "name" ), ro.getName() );
+        ir.addPreparedArgument( new SQLIdentifier( "description" ), ro.getDesc() );
+        ir.addPreparedArgument( new SQLIdentifier( "versionInfo" ), ro.getVersionInfo() );
     }
 
     private String concatenate( String[] slotValue ) {

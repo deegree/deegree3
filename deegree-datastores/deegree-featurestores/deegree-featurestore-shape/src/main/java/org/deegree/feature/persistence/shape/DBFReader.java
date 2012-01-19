@@ -60,10 +60,12 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.GenericFeatureType;
@@ -371,7 +373,9 @@ public class DBFReader {
                 int month = Integer.valueOf( new String( bs, 4, 2 ) );
                 int day = Integer.valueOf( new String( bs, 6, 2 ) );
                 Calendar cal = new GregorianCalendar( year, month, day );
-                property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ) );
+                PrimitiveType pt = field.propertyType.getPrimitiveType();
+                PrimitiveValue pv = new PrimitiveValue( new Date( cal, true ), pt );
+                property = new SimpleProperty( field.propertyType, pv );
                 break;
             }
             case 'I': {
@@ -387,7 +391,9 @@ public class DBFReader {
                 cal.add( DAY_OF_MONTH, days ); // it's lenient by default
                 cal.add( MILLISECOND, millis );
                 // TODO check this
-                property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ) );
+                PrimitiveType pt = field.propertyType.getPrimitiveType();
+                PrimitiveValue pv = new PrimitiveValue( new Date( cal, true ), pt );
+                property = new SimpleProperty( field.propertyType, pv );
                 break;
             }
             case 'T':

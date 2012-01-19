@@ -246,12 +246,12 @@ public class Dimension<T> {
         if ( o instanceof DimensionInterval<?, ?, ?> ) {
             DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
             if ( time ) {
-                Date min = parseISO8601Date( (String) iv.min );
+                Date min = parseISO8601Date( (String) iv.min ).getSQLDate();
                 Date max;
                 if ( ( (String) iv.max ).equalsIgnoreCase( "current" ) ) {
                     max = new Date();
                 } else {
-                    max = parseISO8601Date( (String) iv.max );
+                    max = parseISO8601Date( (String) iv.max ).getSQLDate();
                 }
                 if ( iv.res instanceof Integer ) {
                     return new DimensionInterval<Date, Date, Object>( min, max, null );

@@ -221,7 +221,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                     try {
                         String date = result.getString( 1 );
                         if ( date != null ) {
-                            lastInserted = DateUtils.parseISO8601Date( date );
+                            lastInserted = DateUtils.parseISO8601Date( date ).getSQLDate();
                         }
                     } catch ( ParseException e ) {
                         LOG.info( "Could not parse lastInserted Date. Handle as never insertd!" );

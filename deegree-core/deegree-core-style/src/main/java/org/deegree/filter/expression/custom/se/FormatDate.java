@@ -43,7 +43,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -52,6 +51,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
@@ -108,7 +108,7 @@ public class FormatDate extends AbstractCustomExpression {
             dateValueContn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
         }
         try {
-            Date value = DateUtils.parseISO8601Date( sb.toString().trim() );
+            DateTime value = DateUtils.parseISO8601Date( sb.toString().trim() );
             return new TypedObjectNode[] { new PrimitiveValue( formatter.format( value ) ) };
         } catch ( ParseException e ) {
             LOG.warn( "Evaluated value could not be parsed as a date (in an argument to FormatDate)." );

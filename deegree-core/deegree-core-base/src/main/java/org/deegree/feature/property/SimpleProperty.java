@@ -61,6 +61,11 @@ public class SimpleProperty implements Property {
 
     private PrimitiveValue value;
 
+    public SimpleProperty( SimplePropertyType pt, PrimitiveValue value ) {
+        this.pt = pt;
+        this.value = value;
+    }
+
     public SimpleProperty( SimplePropertyType pt, String value ) {
         this.pt = pt;
         this.value = new PrimitiveValue( value, pt.getPrimitiveType() );

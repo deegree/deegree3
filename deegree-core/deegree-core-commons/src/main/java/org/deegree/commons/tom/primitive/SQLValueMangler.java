@@ -36,11 +36,8 @@
 package org.deegree.commons.tom.primitive;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 import org.deegree.commons.tom.datetime.Date;
-import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,13 +68,9 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case DATE:
-                sqlValue = new java.sql.Date( ( (Date) value ).getCalendar().getTimeInMillis() );
-                break;
             case DATE_TIME:
-                sqlValue = new Timestamp( ( (DateTime) value ).getCalendar().getTimeInMillis() );
-                break;
             case TIME:
-                sqlValue = new java.sql.Time( ( (Time) value ).getCalendar().getTimeInMillis() );
+                sqlValue = ( (Date) value ).getSQLDate();
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
@@ -119,13 +112,9 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case DATE:
-                sqlValue = new java.sql.Date( ( (Date) value ).getCalendar().getTimeInMillis() );
-                break;
             case DATE_TIME:
-                sqlValue = new Timestamp( ( (DateTime) value ).getCalendar().getTimeInMillis() );
-                break;
             case TIME:
-                sqlValue = new java.sql.Time( ( (Time) value ).getCalendar().getTimeInMillis() );
+                sqlValue = ( (Date) value ).getSQLDate();
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();

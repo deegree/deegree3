@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.sos.time;
 
 import java.text.ParseException;
@@ -43,12 +43,12 @@ import org.deegree.commons.tom.datetime.Duration;
 
 /**
  * This class represets a time period between to dates. The period can be extended.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class TimePeriod implements SamplingTime {
 
@@ -75,10 +75,10 @@ public class TimePeriod implements SamplingTime {
 
     /**
      * Create a new TimePeriod. One of the values may be null or empty.
-     *
+     * 
      * <p>
      * If all values are given, the end must be begin+duration.
-     *
+     * 
      * @param isoBegin
      *            iso8601 string
      * @param isoEnd
@@ -122,7 +122,7 @@ public class TimePeriod implements SamplingTime {
     private static Date parseDateOrNull( String date ) {
         if ( date != null && !date.equals( "" ) ) {
             try {
-                return DateUtils.parseISO8601Date( date );
+                return DateUtils.parseISO8601Date( date ).getSQLDate();
             } catch ( ParseException e ) {
                 return null;
             }
@@ -144,10 +144,9 @@ public class TimePeriod implements SamplingTime {
         return null;
     }
 
-
     /**
      * Extend the TimePeriod with the given date.
-     *
+     * 
      * @param samplingTime
      */
     public void extend( Date samplingTime ) {
@@ -161,7 +160,7 @@ public class TimePeriod implements SamplingTime {
 
     /**
      * Extend the TimePeriod with the given date.
-     *
+     * 
      * @param samplingTime
      */
     public void extend( SamplingTime samplingTime ) {
@@ -207,7 +206,7 @@ public class TimePeriod implements SamplingTime {
     @Override
     public boolean equals( Object obj ) {
         if ( obj != null && obj instanceof TimePeriod ) {
-            TimePeriod that = (TimePeriod)obj;
+            TimePeriod that = (TimePeriod) obj;
             if ( this.begin == null || that.begin == null ) { // if begin is null, end is null too
                 return this.begin == that.begin;
             }
