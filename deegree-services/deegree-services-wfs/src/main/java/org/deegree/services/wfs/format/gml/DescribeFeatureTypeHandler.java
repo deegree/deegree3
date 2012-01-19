@@ -36,6 +36,8 @@
 
 package org.deegree.services.wfs.format.gml;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
@@ -60,7 +62,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,13 +71,11 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.URITranslator;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -210,8 +209,7 @@ class DescribeFeatureTypeHandler {
 
         Map<String, String> importMap = buildImportMap( request, importNs );
         Map<String, String> prefixToNs = service.getPrefixToNs();
-        GMLAppSchemaWriter exporter = new GMLAppSchemaWriter( version, targetNs, importMap,
-                                                                                prefixToNs );
+        GMLAppSchemaWriter exporter = new GMLAppSchemaWriter( version, targetNs, importMap, prefixToNs );
 
         List<FeatureType> fts = new ArrayList<FeatureType>();
         for ( FeatureType ft : service.getFeatureTypes() ) {
@@ -256,7 +254,7 @@ class DescribeFeatureTypeHandler {
     private void writeWFSSchema( XMLStreamWriter writer, Version version, GMLVersion gmlVersion )
                             throws XMLStreamException {
 
-        writer.writeStartElement( XS_PREFIX, "schema", XSNS  );
+        writer.writeStartElement( XS_PREFIX, "schema", XSNS );
         writer.writeAttribute( "attributeFormDefault", "unqualified" );
         writer.writeAttribute( "elementFormDefault", "qualified" );
 
@@ -292,7 +290,7 @@ class DescribeFeatureTypeHandler {
             writer.writeAttribute( "schemaLocation", GML_31_DEFAULT_INCLUDE );
             break;
         case GML_32:
-            // there is no FeatureCollection in GML 3.2 anymore
+            // there is no abstract FeatureCollection element in GML 3.2 anymore
             parentElement = GML_PREFIX + ":AbstractFeature";
             parentType = GML_PREFIX + ":AbstractFeatureType";
             writer.writeAttribute( "schemaLocation", GML_32_DEFAULT_INCLUDE );
@@ -395,57 +393,6 @@ class DescribeFeatureTypeHandler {
     }
 
     /**
-     * Determines the feature type declarations that have to be respected in the response.
-     * 
-     * @param request
-     * @return key: namespace, value: list of feature types in the namespace
-     * @throws OWSException
-     */
-    private List<String> determineRequestedNamespaces( DescribeFeatureType request )
-                            throws OWSException {
-
-        Set<String> set = new LinkedHashSet<String>();
-        if ( request.getTypeNames() == null || request.getTypeNames().length == 0 ) {
-            if ( request.getNsBindings() == null ) {
-                LOG.debug( "Adding all namespaces." );
-                for ( FeatureStore fs : service.getStores() ) {
-                    set.addAll( fs.getSchema().getNamespaceBindings().values() );
-                }
-            } else {
-                LOG.debug( "Adding requested namespaces." );
-                for ( String ns : request.getNsBindings().values() ) {
-                    for ( FeatureStore fs : service.getStores() ) {
-                        AppSchema schema = fs.getSchema();
-                        if ( schema.getNamespaceBindings().values().contains( ns ) ) {
-                            set.add( ns );
-                            break;
-                        }
-                    }
-                }
-            }
-        } else {
-            LOG.debug( "Adding namespaces of requested feature types." );
-            for ( QName ftName : request.getTypeNames() ) {
-                FeatureType ft = service.lookupFeatureType( ftName );
-                if ( ft == null ) {
-                    throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
-                                            OWSException.INVALID_PARAMETER_VALUE );
-                }
-                set.add( ft.getName().getNamespaceURI() );
-            }
-        }
-
-        // add dependent namespaces
-        Set<String> add = findUnhandledNs( set );
-        while ( !add.isEmpty() ) {
-            set.addAll( add );
-            add = findUnhandledNs( set );
-        }
-
-        return new ArrayList<String>( set );
-    }
-
-    /**
      * Determines the application namespaces that have to be included in the generated schema response.
      * 
      * @param request
@@ -492,6 +439,9 @@ class DescribeFeatureTypeHandler {
             set.addAll( add );
             add = findUnhandledNs( set );
         }
+        
+        set.remove( GMLNS );
+        set.remove( GML3_2_NS );
 
         return new ArrayList<String>( set );
     }
@@ -510,82 +460,5 @@ class DescribeFeatureTypeHandler {
             }
         }
         return dependentNamespaces;
-    }
-
-    /**
-     * Determines all feature types that have to be respected in the response schema.
-     * <p>
-     * This includes:
-     * <nl>
-     * <li>All explicitly requested feature types.</li>
-     * <li>All feature types that may occur as values of the requested feature types.</li>
-     * <li>All feature types that may occur as values of the requested feature types.</li>
-     * </nl>
-     * </p>
-     * 
-     * @param request
-     * @return key: namespace, value: list of feature types in the namespace
-     * @throws OWSException
-     */
-    private Map<String, List<FeatureType>> determineFts( DescribeFeatureType request )
-                            throws OWSException {
-
-        Set<FeatureType> fts = new LinkedHashSet<FeatureType>();
-        if ( request.getTypeNames() == null || request.getTypeNames().length == 0 ) {
-            if ( request.getNsBindings() == null ) {
-                LOG.debug( "Describing all served feature types." );
-                fts.addAll( service.getFeatureTypes() );
-            } else {
-                String ns = request.getNsBindings().values().iterator().next();
-                LOG.debug( "Describing all feature types in namespace '" + ns + "'." );
-                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes( ns,
-                                                                                                                   true,
-                                                                                                                   false );
-                for ( FeatureType ft : nsFts ) {
-                    addToClosure( ft, fts );
-                }
-            }
-        } else {
-            for ( QName ftName : request.getTypeNames() ) {
-                FeatureType ft = service.lookupFeatureType( ftName );
-                if ( ft == null ) {
-                    throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
-                                            OWSException.INVALID_PARAMETER_VALUE );
-                }
-                addToClosure( ft, fts );
-            }
-        }
-
-        // sort per namespace
-        Map<String, List<FeatureType>> nsToFts = new LinkedHashMap<String, List<FeatureType>>();
-        for ( FeatureType ft : fts ) {
-            List<FeatureType> nsFts = nsToFts.get( ft.getName().getNamespaceURI() );
-            if ( nsFts == null ) {
-                nsFts = new ArrayList<FeatureType>();
-                nsToFts.put( ft.getName().getNamespaceURI(), nsFts );
-            }
-            nsFts.add( ft );
-        }
-        return nsToFts;
-    }
-
-    private void addToClosure( FeatureType ft, Set<FeatureType> fts ) {
-        if ( !fts.contains( ft ) ) {
-            fts.add( ft );
-            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                if ( pt instanceof FeaturePropertyType ) {
-                    FeatureType valueFt = ( (FeaturePropertyType) pt ).getValueFt();
-                    LOG.debug( "Value ft of property " + pt + ": " + valueFt );
-                    if ( valueFt == null ) {
-                        LOG.debug( "Unrestricted feature type reference. Adding all served feature types from application schema." );
-                        for ( FeatureType ft2 : ft.getSchema().getFeatureTypes() ) {
-                            addToClosure( ft2, fts );
-                        }
-                    } else {
-                        addToClosure( valueFt, fts );
-                    }
-                }
-            }
-        }
     }
 }
