@@ -33,11 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.tom.primitive;
+package org.deegree.commons.tom.sql;
 
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +72,13 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case DATE:
+                sqlValue = new java.sql.Date( ( (Date) value ).getTimeInMilliseconds() );
+                break;
             case DATE_TIME:
+                sqlValue = new Timestamp( ( (Date) value ).getTimeInMilliseconds() );
+                break;
             case TIME:
-                sqlValue = ( (Date) value ).getSQLDate();
+                sqlValue = new Time( ( (Date) value ).getTimeInMilliseconds() );
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
@@ -112,9 +120,13 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case DATE:
+                sqlValue = new java.sql.Date( ( (Date) value ).getTimeInMilliseconds() );
+                break;
             case DATE_TIME:
+                sqlValue = new Timestamp( ( (Date) value ).getTimeInMilliseconds() );
+                break;
             case TIME:
-                sqlValue = ( (Date) value ).getSQLDate();
+                sqlValue = new Time( ( (Date) value ).getTimeInMilliseconds() );
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();

@@ -46,7 +46,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
@@ -151,7 +151,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
      */
     public String getStartMessage() {
         if ( startedMessage == null ) {
-            return "Process execution started@" + DateUtils.formatISO8601Date( new Date( startTime ) );
+            return "Process execution started@" + ISO8601Converter.formatISO8601Date( new Date( startTime ) );
         }
         return startedMessage;
     }
@@ -202,7 +202,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
      */
     public String getSucceededMessage() {
         if ( succeededMessage == null && finishTime >= 0 ) {
-            return "Process execution succeeded@" + DateUtils.formatISO8601Date( new Date( finishTime ) );
+            return "Process execution succeeded@" + ISO8601Converter.formatISO8601Date( new Date( finishTime ) );
         }
         return succeededMessage;
     }

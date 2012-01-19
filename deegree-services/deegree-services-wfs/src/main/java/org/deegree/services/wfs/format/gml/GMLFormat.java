@@ -80,7 +80,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -523,11 +523,11 @@ public class GMLFormat implements Format {
                 if ( lockId != null ) {
                     xmlStream.writeAttribute( "lockId", lockId );
                 }
-                xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+                xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatISO8601Date( new Date() ) );
             }
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
             xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
-            xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+            xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatISO8601Date( new Date() ) );
         }
 
         if ( GML_32 == gmlVersion && !request.getVersion().equals( VERSION_200 ) ) {
@@ -885,18 +885,18 @@ public class GMLFormat implements Format {
             if ( lockId != null ) {
                 xmlStream.writeAttribute( "lockId", lockId );
             }
-            xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+            xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatISO8601Date( new Date() ) );
             xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
             xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
-            xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+            xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatISO8601Date( new Date() ) );
             xmlStream.writeAttribute( "numberMatched", "" + hitsTotal );
             xmlStream.writeAttribute( "numberReturned", "0" );
             if ( queryHits.length > 1 ) {
                 for ( int j = 0; j < queryHits.length; j++ ) {
                     xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
                     xmlStream.writeEmptyElement( "wfs", "FeatureCollection", WFS_200_NS );
-                    xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( queryTimeStamps[j] ) );
+                    xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatISO8601Date( queryTimeStamps[j] ) );
                     xmlStream.writeAttribute( "numberMatched", "" + queryHits[j] );
                     xmlStream.writeAttribute( "numberReturned", "0" );
                     xmlStream.writeEndElement();

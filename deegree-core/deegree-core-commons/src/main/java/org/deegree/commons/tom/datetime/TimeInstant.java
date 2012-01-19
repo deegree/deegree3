@@ -61,10 +61,12 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
     /**
      * Creates a new {@link TimeInstant} instance.
      * 
-     * @param time
+     * @param date
+     *            time instant as a date, must not be <code>null</code>
      * @param tz
+     *            timezone used by the date, can be <code>null</code> (time zone unknown)
      */
-    TimeInstant( java.util.Date time, TimeZone tz ) {
+    TimeInstant( java.util.Date date, TimeZone tz ) {
         Calendar cal = null;
         if ( tz != null ) {
             cal = Calendar.getInstance( tz );
@@ -74,16 +76,16 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
             isLocal = true;
         }
         this.cal = cal;
-        cal.setTime( time );
+        cal.setTime( date );
     }
 
     /**
      * Creates a new {@link TimeInstant} instance.
      * 
      * @param cal
-     *            calendar
-     * @param tzOffset
-     *            time zone offset relative to GMT in milliseconds, may be <code>null</code> (unknown time zone)
+     *            calendar, must not be <code>null</code>
+     * @param isLocal
+     *            <code>true</code>, if the timezone is unknown, <code>false</code> otherwise
      */
     TimeInstant( Calendar cal, boolean isLocal ) {
         this.cal = cal;
@@ -106,6 +108,10 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
 
     /**
      * Returns this time instant as a {@link Calendar}.
+     * <p>
+     * NOTE: When the time zone is unknown, this method will assume the default time zone ({@link TimeZone#getDefault()}
+     * ).
+     * </p>
      * 
      * @return calendar, never <code>null</code>
      */
@@ -116,17 +122,24 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
     /**
      * Returns this time instant as a {@link Date}.
      * <p>
-     * The actually returned subtype depends on the subtype of {@link TimeInstant}.
+     * NOTE: When the time zone is unknown, this method will assume the default time zone ({@link TimeZone#getDefault()}
+     * ).
      * </p>
      * 
      * @return calendar, never <code>null</code>
      */
-    public abstract Date getSQLDate();
+    public Date getDate() {
+        return cal.getTime();
+    }
 
     /**
-     * Returns this time instant in milliseconds.
+     * Returns the milliseconds since January 1, 1970, 00:00:00 GMT.
+     * <p>
+     * NOTE: When the time zone is unknown, this method will assume the default time zone ({@link TimeZone#getDefault()}
+     * ).
+     * </p>
      * 
-     * @return time instant as UTC milliseconds from the epoch
+     * @return the milliseconds since January 1, 1970, 00:00:00 GMT
      */
     public long getTimeInMilliseconds() {
         return cal.getTimeInMillis();
@@ -138,21 +151,8 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
      * @return <code>true</code>, if this time instant has been created without explicit time zone, <code>false</code>
      *         otherwise
      */
-    public boolean isLocal() {
+    public boolean isTimeZoneUnknown() {
         return isLocal;
-    }
-
-    /**
-     * Creates a new {@link Date} instance from the given <code>xs:date</code>, <code>xs:dateTime</code> or
-     * <code>xs:Time</code> encoded value.
-     * 
-     * @param xsValue
-     * @return
-     * @throws IllegalArgumentException
-     */
-    public static TimeInstant valueOf( String xsValue )
-                            throws IllegalArgumentException {
-        return null;
     }
 
     @Override

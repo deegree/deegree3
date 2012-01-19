@@ -40,7 +40,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.observation.model.Measurement;
 import org.deegree.observation.model.MeasurementCollection;
@@ -151,7 +151,7 @@ public class DataArray101XMLAdapter extends XMLAdapter {
 
     private static void exportValue( XMLStreamWriter writer, Measurement m, List<Property> properties )
                             throws XMLStreamException {
-        writer.writeCharacters( DateUtils.formatISO8601Date( m.getSamplingTime().getTime() ) );
+        writer.writeCharacters( ISO8601Converter.formatISO8601Date( m.getSamplingTime().getTime() ) );
         for ( Property property : properties ) {
             writer.writeCharacters( tokenSeparator );
             writer.writeCharacters( m.getResult( property ).getResultAsString() );

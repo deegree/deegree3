@@ -64,18 +64,8 @@ public class Time extends TimeInstant {
         super( parseTime( xsDate ), isLocal( xsDate ) );
     }
 
-    public Time( Calendar cal, boolean isLocal ) {
-        super( cal, isLocal );
-    }
-
-    /**
-     * Returns this time instant as a {@link java.sql.Time}.
-     * 
-     * @return SQL date, never <code>null</code>
-     */
-    @Override
-    public java.sql.Time getSQLDate() {
-        return new java.sql.Time( getTimeInMilliseconds() );
+    public Time( Calendar cal, boolean isUnknown ) {
+        super( cal, isUnknown );
     }
 
     @Override

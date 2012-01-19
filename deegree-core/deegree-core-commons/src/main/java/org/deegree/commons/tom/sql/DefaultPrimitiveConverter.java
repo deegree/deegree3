@@ -49,7 +49,6 @@ import org.deegree.commons.tom.datetime.TimeInstant;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.primitive.SQLValueMangler;
 
 /**
  * {@link PrimitiveParticleConverter} for canonical conversion between SQL types and {@link PrimitiveValue}.

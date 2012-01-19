@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.protocol.sos.time.TimeInstant;
 
 /**
@@ -110,7 +110,7 @@ public class SimpleMeasurement implements Measurement {
 
     @Override
     public String toString() {
-        return DateUtils.formatISO8601Date( getSamplingTime().getTime() ) + ": ["
+        return ISO8601Converter.formatISO8601Date( getSamplingTime().getTime() ) + ": ["
                + getResults().get( 0 ).getResultAsString() + ",...]";
     }
 }

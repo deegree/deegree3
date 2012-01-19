@@ -75,14 +75,11 @@ public class ISORecordAnyTextTest extends AbstractISOTest {
 
     @Test
     public void testAnyTextElement_CORE()
-                            throws JAXBException {
-
-        TimeZone.setDefault( TimeZone.getTimeZone( "äää" ) );
-        
+                            throws JAXBException {       
         LOG.info( "START Test: test anyText element 'CORE' for one metadataRecord " );
         ISORecord rec = (ISORecord) MetadataRecordFactory.create( ( new XMLAdapter( TstConstants.tst_10 ) ).getRootElement() );
         String anyText = AnyTextHelper.getAnyText( rec, getConfig( TstConstants.configURL_ANYTEXT_CORE ).getAnyText() );
-        String expected = "Raw (source) image from CwRS campaigns. RAW ECW d0e5c36eec7f473b91b8b249da87d522 eng Tue Jan 23 00:00:00 GMT 2007 SPOT 5 RAW 2007-01-23T10:25:14 dataset SPOT 5 PATH 50 ROW 242 Orthoimagery imageryBaseMapsEarthCover true otherRestrictions license Raw (Source) image as delivered by image provider. ";
+        String expected = "Raw (source) image from CwRS campaigns. RAW ECW d0e5c36eec7f473b91b8b249da87d522 eng 2007-01-23Z SPOT 5 RAW 2007-01-23T10:25:14 dataset SPOT 5 PATH 50 ROW 242 Orthoimagery imageryBaseMapsEarthCover true otherRestrictions license Raw (Source) image as delivered by image provider. ";
         Assert.assertEquals( "anyText CORE: ", expected, anyText );
     }
 

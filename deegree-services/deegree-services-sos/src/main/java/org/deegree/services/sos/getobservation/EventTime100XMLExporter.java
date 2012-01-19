@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.sos.time.IndeterminateTime;
 import org.deegree.protocol.sos.time.SamplingTime;
@@ -132,7 +132,7 @@ public class EventTime100XMLExporter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( GML_NS, "TimeInstant" );
         writer.writeStartElement( GML_NS, "timePosition" );
-        writer.writeCharacters( DateUtils.formatISO8601Date( timeInstant.getTime() ) );
+        writer.writeCharacters( ISO8601Converter.formatISO8601Date( timeInstant.getTime() ) );
         writer.writeEndElement();
         writer.writeEndElement();
     }
@@ -148,10 +148,10 @@ public class EventTime100XMLExporter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( GML_NS, "TimePeriod" );
         writer.writeStartElement( GML_NS, "beginPosition" );
-        writer.writeCharacters( DateUtils.formatISO8601Date( timePeriod.getBegin() ) );
+        writer.writeCharacters( ISO8601Converter.formatISO8601Date( timePeriod.getBegin() ) );
         writer.writeEndElement();
         writer.writeStartElement( GML_NS, "endPosition" );
-        writer.writeCharacters( DateUtils.formatISO8601Date( timePeriod.getEnd() ) );
+        writer.writeCharacters( ISO8601Converter.formatISO8601Date( timePeriod.getEnd() ) );
         writer.writeEndElement();
         writer.writeEndElement();
     }

@@ -52,7 +52,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryException;

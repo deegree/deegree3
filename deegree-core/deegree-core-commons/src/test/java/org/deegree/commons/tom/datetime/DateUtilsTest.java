@@ -63,15 +63,15 @@ public class DateUtilsTest {
     @Test
     public void testDates_yyyy_MM_dd()
                             throws ParseException {
-        DateTime date = DateUtils.parseISO8601Date( "1983-02-05Z" );
+        DateTime date = ISO8601Converter.parseISO8601TimeInstant( "1983-02-05Z" );
         assertTestDate( date );
-        assertUTCMidnight( date.getSQLDate() );
+        assertUTCMidnight( date.getDate() );
     }
 
     @Test
     public void testDates_yyyy_MM_ddTHH_mm_ss_SSS()
                             throws ParseException {
-        DateTime date = DateUtils.parseISO8601Date( "1983-02-05T16:42:23.823Z" );
+        DateTime date = ISO8601Converter.parseISO8601TimeInstant( "1983-02-05T16:42:23.823Z" );
         assertTestDate( date );
         assertTime( 16, 42, 23, 823, date );
     }
@@ -79,23 +79,23 @@ public class DateUtilsTest {
     @Test
     public void testDates_yyyy_MM_ddTHH_mm_ss()
                             throws ParseException {
-        DateTime date = DateUtils.parseISO8601Date( "1983-02-05T16:42:23Z" );
+        DateTime date = ISO8601Converter.parseISO8601TimeInstant( "1983-02-05T16:42:23Z" );
         assertTestDate( date );
         assertTime( 16, 42, 23, 0, date );
     }
 
-//    @Test
-//    public void testDates_yyyy_MM_ddTHH_mm()
-//                            throws ParseException {
-//        DateTime date = DateUtils.parseISO8601Date( "1983-02-05T16:42Z" );
-//        assertTestDate( date );
-//        assertUTCTime( 16, 42, 0, 0, date );
-//    }
+    // @Test
+    // public void testDates_yyyy_MM_ddTHH_mm()
+    // throws ParseException {
+    // DateTime date = DateUtils.parseISO8601Date( "1983-02-05T16:42Z" );
+    // assertTestDate( date );
+    // assertUTCTime( 16, 42, 0, 0, date );
+    // }
 
     @Test
     public void testDates_yyyy_MM_ddTHH_mm_ss_TZ()
                             throws ParseException {
-        DateTime date = DateUtils.parseISO8601Date( "1983-02-05T16:42:23+01:00" );
+        DateTime date = ISO8601Converter.parseISO8601TimeInstant( "1983-02-05T16:42:23+01:00" );
         assertTestDate( date );
         assertTime( 16, 42, 23, 0, date );
         assertEquals( 3600000, date.getCalendar().getTimeZone().getRawOffset() );
@@ -104,7 +104,7 @@ public class DateUtilsTest {
     @Test
     public void testDates_yyyy_MM_ddTHH_mm_ss_locale()
                             throws ParseException {
-        DateTime date = DateUtils.parseISO8601Date( "1983-02-05T16:42:23" );
+        DateTime date = ISO8601Converter.parseISO8601TimeInstant( "1983-02-05T16:42:23" );
         // assertTestDate( date );
         // assertUTCTime( 15, 42, 23, 0, date );
     }
@@ -134,19 +134,19 @@ public class DateUtilsTest {
     @Test
     public void testFormatISO8601()
                             throws ParseException {
-        DateTime date = DateUtils.parseISO8601Date( "1983-02-05T16:42:23Z" );
-        String formatedDate = DateUtils.formatISO8601Date( date );
+        DateTime date = ISO8601Converter.parseISO8601TimeInstant( "1983-02-05T16:42:23Z" );
+        String formatedDate = ISO8601Converter.formatISO8601Date( date );
         assertEquals( "1983-02-05T16:42:23.000Z", formatedDate );
     }
 
     @Test
     public void testDuration()
                             throws ParseException {
-        DateTime date = DateUtils.parseISO8601Date( "1981-08-31T12:12:23Z" );
-        Duration duration = DateUtils.parseISO8601Duration( "P1Y5M5DT3H90M" );
-        Date dateAfter = duration.getDateAfter( date.getSQLDate() );
-//        assertTestDate( dateAfter );
-//        assertTime( 16, 42, 23, 0, dateAfter );
+        DateTime date = ISO8601Converter.parseISO8601TimeInstant( "1981-08-31T12:12:23Z" );
+        Duration duration = ISO8601Converter.parseISO8601Duration( "P1Y5M5DT3H90M" );
+        Date dateAfter = duration.getDateAfter( date.getDate() );
+        // assertTestDate( dateAfter );
+        // assertTime( 16, 42, 23, 0, dateAfter );
     }
 
     private void assertTime( int hour, int min, int sec, int msec, DateTime date ) {

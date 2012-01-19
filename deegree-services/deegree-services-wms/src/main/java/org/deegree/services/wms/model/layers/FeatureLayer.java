@@ -37,8 +37,8 @@
 package org.deegree.services.wms.model.layers;
 
 import static java.lang.System.currentTimeMillis;
-import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601Date;
-import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601DateWOMS;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601Date;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601DateWOMS;
 import static org.deegree.commons.utils.CollectionUtils.clearNulls;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;

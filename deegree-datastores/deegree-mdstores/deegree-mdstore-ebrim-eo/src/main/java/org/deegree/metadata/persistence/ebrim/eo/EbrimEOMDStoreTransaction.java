@@ -61,7 +61,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
@@ -315,7 +315,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
                 try {
                     ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ),
                                             new Timestamp(
-                                                           ( DateUtils.parseISO8601Date( slotValue ).getTimeInMilliseconds() ) ) );
+                                                           ( ISO8601Converter.parseISO8601TimeInstant( slotValue ).getTimeInMilliseconds() ) ) );
                 } catch ( java.text.ParseException e ) {
                     String msg = "Could not parse as Date:" + slotValue;
                     LOG.debug( msg, e );

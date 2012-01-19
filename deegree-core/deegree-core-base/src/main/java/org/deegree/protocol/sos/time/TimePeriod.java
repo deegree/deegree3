@@ -35,11 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.sos.time;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
+
 import java.text.ParseException;
 import java.util.Date;
 
-import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.tom.datetime.Duration;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 
 /**
  * This class represets a time period between to dates. The period can be extended.
@@ -122,7 +124,7 @@ public class TimePeriod implements SamplingTime {
     private static Date parseDateOrNull( String date ) {
         if ( date != null && !date.equals( "" ) ) {
             try {
-                return DateUtils.parseISO8601Date( date ).getSQLDate();
+                return parseISO8601TimeInstant( date ).getDate();
             } catch ( ParseException e ) {
                 return null;
             }
@@ -136,7 +138,7 @@ public class TimePeriod implements SamplingTime {
     private static Duration parseDurationOrNull( String duration ) {
         if ( duration != null && !duration.equals( "" ) ) {
             try {
-                return DateUtils.parseISO8601Duration( duration );
+                return ISO8601Converter.parseISO8601Duration( duration );
             } catch ( ParseException e ) {
                 return null;
             }
@@ -192,7 +194,8 @@ public class TimePeriod implements SamplingTime {
 
     @Override
     public String toString() {
-        return "TimePeriod: from " + DateUtils.formatISO8601Date( begin ) + " to " + DateUtils.formatISO8601Date( end );
+        return "TimePeriod: from " + ISO8601Converter.formatISO8601Date( begin ) + " to "
+               + ISO8601Converter.formatISO8601Date( end );
     }
 
     @Override

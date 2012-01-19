@@ -58,7 +58,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XMLAdapter;
@@ -192,7 +192,7 @@ public class GetRecordsHandler {
                 throw new IllegalArgumentException( errorMessage );
             }
             writer.writeStartElement( CSW_PREFIX, "Acknowledgement", CSW_202_NS );
-            writer.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+            writer.writeAttribute( "timeStamp", ISO8601Converter.formatISO8601Date( new Date() ) );
             writer.writeStartElement( CSW_202_NS, "EchoedRequest" );
             readXMLFragment( getRec.getXMLRequest().toString(), writer );
             writer.writeEndElement();
@@ -204,7 +204,7 @@ public class GetRecordsHandler {
     private void exportSearchStatus202( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( CSW_202_NS, "SearchStatus" );
-        writer.writeAttribute( "timestamp", DateUtils.formatISO8601Date( new Date() ) );
+        writer.writeAttribute( "timestamp", ISO8601Converter.formatISO8601Date( new Date() ) );
         // SearchStatus
         writer.writeEndElement();
     }
@@ -288,7 +288,7 @@ public class GetRecordsHandler {
                 writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
                 writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( returnedRecords ) );
                 writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
-                writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+                writer.writeAttribute( "expires", ISO8601Converter.formatISO8601Date( new Date() ) );
 
                 if ( rs != null ) {
                     while ( rs.next() ) {
@@ -332,7 +332,7 @@ public class GetRecordsHandler {
                 writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( matches ) );
                 writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( records.size() ) );
                 writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
-                writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+                writer.writeAttribute( "expires", ISO8601Converter.formatISO8601Date( new Date() ) );
                 for ( MetadataRecord record : records ) {
                     writeRecord( writer, record, asDC, elementSetName, returnElements );
                 }

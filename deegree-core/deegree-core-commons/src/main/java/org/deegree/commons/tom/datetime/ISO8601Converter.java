@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -45,7 +45,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Utilities for working with dates.
+ * Converts between <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> representations and deegree's
+ * temporal primitives.
  * <p>
  * Many of the methods that convert dates to and from strings utilize the <a
  * href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> standard string format
@@ -78,7 +79,7 @@ import java.util.regex.Pattern;
  * @version r304 http://anonsvn.jboss.org/repos/dna/trunk/dna-common/src/main/java/org/jboss/dna/common/util/
  * @version $Revision$, $Date$
  */
-public final class DateUtils {
+public final class ISO8601Converter {
 
     private static final String ISO_8601_2004_FORMAT_GMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -87,8 +88,6 @@ public final class DateUtils {
     private static final String ISO_8601_2004_FORMAT_GMT_WO_MS = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     private static final String ISO_8601_2004_FORMAT_GMT_TIME = "HH:mm:ss";
-
-    private static final String JDBC_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
     private final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
 
@@ -152,7 +151,7 @@ public final class DateUtils {
      * @throws ParseException
      *             if there is a problem parsing the string
      */
-    public static DateTime parseISO8601Date( final String dateString )
+    public static DateTime parseISO8601TimeInstant( final String dateString )
                             throws ParseException {
         return new DateTime( dateString );
     }
@@ -220,7 +219,7 @@ public final class DateUtils {
     public static String formatISO8601Date( TimeInstant date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT );
         sdf.setTimeZone( GMT );
-        return sdf.format( date.getSQLDate() );
+        return sdf.format( date.getDate() );
     }
 
     public static String formatISO8601Date( java.util.Date date ) {
@@ -236,7 +235,7 @@ public final class DateUtils {
     public static String formatISO8601DateWOMS( final TimeInstant date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_MS );
         sdf.setTimeZone( GMT );
-        return sdf.format( date.getSQLDate() );
+        return sdf.format( date.getDate() );
     }
 
     /**
@@ -256,7 +255,7 @@ public final class DateUtils {
     public static String formatISO8601DateWOTime( final TimeInstant date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_TIME );
         sdf.setTimeZone( GMT );
-        return sdf.format( date.getSQLDate() );
+        return sdf.format( date.getDate() );
     }
 
     public static String formatISO8601DateWOTime( final Date date ) {
@@ -275,7 +274,7 @@ public final class DateUtils {
     public static String formatISO8601Time( final TimeInstant date ) {
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_TIME );
         sdf.setTimeZone( GMT );
-        return sdf.format( date.getSQLDate() );
+        return sdf.format( date.getDate() );
     }
 
     // /**
@@ -318,7 +317,7 @@ public final class DateUtils {
         return result.toString();
     }
 
-    private DateUtils() {
+    private ISO8601Converter() {
         // Prevent instantiation
     }
 }

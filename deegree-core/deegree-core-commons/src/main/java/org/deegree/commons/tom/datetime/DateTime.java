@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -73,22 +72,8 @@ public class DateTime extends TimeInstant {
         super( date, tz );
     }
 
-    public DateTime( Calendar cal, boolean isLocal ) {
-        super( cal, isLocal );
-    }
-
-    /**
-     * Returns this time instant as a {@link Timestamp}.
-     * 
-     * @return SQL date, never <code>null</code>
-     */
-    @Override
-    public Timestamp getSQLDate() {
-        return new Timestamp( getTimeInMilliseconds() );
-    }
-
-    public String format( String pattern ) {
-        return null;
+    public DateTime( Calendar cal, boolean isUnknown ) {
+        super( cal, isUnknown );
     }
 
     public String toXsDateTimeGmt() {

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.sos.getobservation;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;
 import static org.deegree.commons.utils.kvp.KVPUtils.splitAll;
 
@@ -44,7 +45,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.protocol.sos.filter.DurationFilter;
 import org.deegree.protocol.sos.filter.ProcedureFilter;
 import org.deegree.protocol.sos.filter.PropertyFilter;
@@ -85,11 +85,11 @@ public class GetObservation100KVPAdapter {
         if ( time != null ) {
             if ( time.contains( "/" ) ) {
                 String[] timeParts = time.split( "/" );
-                Date begin = DateUtils.parseISO8601Date( timeParts[0] ).getSQLDate();
-                Date end = DateUtils.parseISO8601Date( timeParts[1] ).getSQLDate();
+                Date begin = parseISO8601TimeInstant( timeParts[0] ).getDate();
+                Date end = parseISO8601TimeInstant( timeParts[1] ).getDate();
                 result.add( new DurationFilter( begin, true, end, false ) );
             } else {
-                Date instant = DateUtils.parseISO8601Date( time ).getSQLDate();
+                Date instant = parseISO8601TimeInstant( time ).getDate();
                 result.add( new TimeInstantFilter( instant ) );
             }
         }

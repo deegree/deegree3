@@ -58,7 +58,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
 import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralOutputDefinition;
@@ -437,7 +437,7 @@ public class ExecutionManager {
 
             // process execution has finished successfully
             state.setSucceeded( "Process execution finished@"
-                                + DateUtils.formatISO8601Date( new Date( System.currentTimeMillis() ) ) );
+                                + ISO8601Converter.formatISO8601Date( new Date( System.currentTimeMillis() ) ) );
         } catch ( ProcessletException e ) {
             OWSException oe = null;
             if ( e.hasOWSException() ) {

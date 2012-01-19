@@ -52,7 +52,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.filter.FilterEvaluationException;
@@ -108,7 +108,7 @@ public class FormatDate extends AbstractCustomExpression {
             dateValueContn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
         }
         try {
-            DateTime value = DateUtils.parseISO8601Date( sb.toString().trim() );
+            DateTime value = ISO8601Converter.parseISO8601TimeInstant( sb.toString().trim() );
             return new TypedObjectNode[] { new PrimitiveValue( formatter.format( value ) ) };
         } catch ( ParseException e ) {
             LOG.warn( "Evaluated value could not be parsed as a date (in an argument to FormatDate)." );

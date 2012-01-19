@@ -75,8 +75,8 @@ public class TimeInstantTest {
         assertEquals( 0, dt.getCalendar().getTimeZone().getRawOffset() );
         assertEquals( "2002-05-30T09:00:00Z", dt.toString() );
         assertEquals( "2002-05-30T09:00:00.000Z", dt.toXsDateTimeGmt() );
-        assertEquals( 1022749200000L, dt.getTimeInMilliseconds() );        
-        assertEquals( 1022749200000L, dt.getSQLDate().getTime() );
+        assertEquals( 1022749200000L, dt.getTimeInMilliseconds() );
+        assertEquals( 1022749200000L, dt.getDate().getTime() );
     }
 
     @Test
@@ -95,13 +95,13 @@ public class TimeInstantTest {
         assertEquals( "2002-05-30T09:00:00+01:00", dt.toString() );
         assertEquals( "2002-05-30T08:00:00.000Z", dt.toXsDateTimeGmt() );
         assertEquals( 1022745600000L, dt.getTimeInMilliseconds() );
-        assertEquals( 1022745600000L, dt.getSQLDate().getTime() );
+        assertEquals( 1022745600000L, dt.getDate().getTime() );
     }
 
     @Test
     public void testDateTimeFromXsDateTimeLocalTime() {
         DateTime dt = new DateTime( "2002-05-30T09:00:00" );
-        assertTrue( dt.isLocal );        
+        assertTrue( dt.isLocal );
         assertEquals( 2002, dt.getCalendar().get( YEAR ) );
         // month is 0-based
         assertEquals( 4, dt.getCalendar().get( MONTH ) );
@@ -111,7 +111,7 @@ public class TimeInstantTest {
         assertEquals( 0, dt.getCalendar().get( SECOND ) );
         assertEquals( 0, dt.getCalendar().get( MILLISECOND ) );
         int offset = TimeZone.getDefault().getOffset( dt.getTimeInMilliseconds() );
-        assertEquals( 1022749200000L - offset, dt.getTimeInMilliseconds() );        
-        assertEquals( 1022749200000L - offset, dt.getSQLDate().getTime() );
+        assertEquals( 1022749200000L - offset, dt.getTimeInMilliseconds() );
+        assertEquals( 1022749200000L - offset, dt.getDate().getTime() );
     }
 }

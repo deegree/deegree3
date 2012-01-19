@@ -1,5 +1,7 @@
 package org.deegree.client.sos.utils;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -82,7 +84,7 @@ public class DataPrep {
                 try {
                     for ( int i = 0; i < countValues; i++ ) {
                         String[] contents = rawblocks[i].split( tokenSeparator );
-                        dates[i] = org.deegree.commons.tom.datetime.DateUtils.parseISO8601Date( contents[0] ).getSQLDate();
+                        dates[i] = parseISO8601TimeInstant( contents[0] ).getDate();
                         // Time occurs ever(!) first in the values!
 
                         countDiff = contents.length;

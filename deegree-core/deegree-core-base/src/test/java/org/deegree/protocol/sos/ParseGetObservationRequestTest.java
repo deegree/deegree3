@@ -43,7 +43,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.protocol.sos.filter.DurationFilter;
@@ -110,8 +110,8 @@ public class ParseGetObservationRequestTest {
         TimeFilter timeFilter = timeFilters.get( 0 );
         if ( timeFilter instanceof DurationFilter ) {
             DurationFilter durationFilter = (DurationFilter) timeFilter;
-            assertTrue( DateUtils.parseISO8601Date( "2008-11-05T17:18:58.000-06:00" ).getSQLDate().equals( durationFilter.getBegin() ) );
-            assertTrue( DateUtils.parseISO8601Date( "2008-11-05T21:18:59.000-06:00" ).getSQLDate().equals( durationFilter.getEnd() ) );
+            assertTrue( ISO8601Converter.parseISO8601TimeInstant( "2008-11-05T17:18:58.000-06:00" ).getDate().equals( durationFilter.getBegin() ) );
+            assertTrue( ISO8601Converter.parseISO8601TimeInstant( "2008-11-05T21:18:59.000-06:00" ).getDate().equals( durationFilter.getEnd() ) );
         } else {
             fail( "filter is not parsed as DurationFilter" );
         }

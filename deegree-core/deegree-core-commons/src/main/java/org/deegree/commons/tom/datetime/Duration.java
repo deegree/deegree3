@@ -140,7 +140,7 @@ public class Duration {
 
     @Override
     public String toString() {
-        return DateUtils.formatISO8601Duration( this );
+        return ISO8601Converter.formatISO8601Duration( this );
     }
 
     /**

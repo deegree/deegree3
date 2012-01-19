@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.model.layers;
 
-import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601Date;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601Date;
 import static org.deegree.commons.tom.primitive.BaseType.DATE;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;

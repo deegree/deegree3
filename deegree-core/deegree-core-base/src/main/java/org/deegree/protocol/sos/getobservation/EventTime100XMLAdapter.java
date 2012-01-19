@@ -43,7 +43,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -180,7 +180,7 @@ public class EventTime100XMLAdapter extends XMLAdapter {
             } else if ( indeterminate.equals( "unknown" ) ) {
                 return "";
             } else if ( indeterminate.equals( "now" ) ) {
-                return DateUtils.formatISO8601Date( new Date() );
+                return ISO8601Converter.formatISO8601Date( new Date() );
             } else if ( indeterminate.equals( "after" ) ) {
                 return begin.getText();
             } else if ( indeterminate.equals( "before" ) ) {
@@ -204,7 +204,7 @@ public class EventTime100XMLAdapter extends XMLAdapter {
             } else if ( indeterminate.equals( "unknown" ) ) {
                 return "";
             } else if ( indeterminate.equals( "now" ) ) {
-                return DateUtils.formatISO8601Date( new Date() );
+                return ISO8601Converter.formatISO8601Date( new Date() );
             } else if ( indeterminate.equals( "after" ) ) {
                 return "";
             } else if ( indeterminate.equals( "before" ) ) {
@@ -218,7 +218,7 @@ public class EventTime100XMLAdapter extends XMLAdapter {
         OMElement tpos = getElement( timeInstant, new XPath( "gml:timePosition", nsContext ) );
         if ( tpos.getText().trim().length() > 0 ) {
             try {
-                return DateUtils.parseISO8601Date( tpos.getText() ).getSQLDate();
+                return ISO8601Converter.parseISO8601TimeInstant( tpos.getText() ).getDate();
             } catch ( ParseException e ) {
                 throw new EventTimeXMLParsingException( this, tpos );
             }

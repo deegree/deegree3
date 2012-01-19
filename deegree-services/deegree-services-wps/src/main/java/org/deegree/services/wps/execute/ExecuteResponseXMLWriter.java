@@ -48,7 +48,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.util.Base64;
-import org.deegree.commons.tom.datetime.DateUtils;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
@@ -432,7 +432,7 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
             // use creation time of document if process execution has not been finished yet
             creationTime = System.currentTimeMillis();
         }
-        writer.writeAttribute( "creationTime", DateUtils.formatISO8601Date( new Date( creationTime ) ) );
+        writer.writeAttribute( "creationTime", ISO8601Converter.formatISO8601Date( new Date( creationTime ) ) );
 
         switch ( state.getExecutionState() ) {
         case ACCEPTED:
