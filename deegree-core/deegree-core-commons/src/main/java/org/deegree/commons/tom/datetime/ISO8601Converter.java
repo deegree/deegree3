@@ -47,6 +47,9 @@ import java.util.regex.Pattern;
 /**
  * Converts between <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> representations and deegree's
  * temporal primitives.
+ * 
+ * TODO finish refactoring (http://tracker.deegree.org/deegree-services/ticket/301)
+ * 
  * <p>
  * <h4>Differences between deegree's temporal primitive model a
  * </p>
@@ -156,6 +159,7 @@ public final class ISO8601Converter {
      */
     public static DateTime parseISO8601TimeInstant( final String dateString )
                             throws ParseException {
+        // TODO check if want to go back to supporting more ISO-style (non-XSD) formats
         return new DateTime( dateString );
     }
 
