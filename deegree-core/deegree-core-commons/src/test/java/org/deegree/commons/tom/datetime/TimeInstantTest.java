@@ -51,7 +51,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 /**
- * Test cases for {@link DateTime}.
+ * Test cases for {@link TimeInstant}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -64,10 +64,7 @@ public class TimeInstantTest {
     public void testDateTimeFromXsDateTimeUtc() {
         DateTime dt = new DateTime( "2002-05-30T09:00:00Z" );
         assertFalse( dt.isLocal );
-        assertEquals( 2002, dt.getCalendar().get( YEAR ) );
-        // month is 0-based
-        assertEquals( 4, dt.getCalendar().get( MONTH ) );
-        assertEquals( 30, dt.getCalendar().get( DAY_OF_MONTH ) );
+        assertTestDate( dt );
         assertEquals( 9, dt.getCalendar().get( HOUR_OF_DAY ) );
         assertEquals( 0, dt.getCalendar().get( MINUTE ) );
         assertEquals( 0, dt.getCalendar().get( SECOND ) );
@@ -83,10 +80,7 @@ public class TimeInstantTest {
     public void testDateTimeFromXsDateTimeWithOffset() {
         DateTime dt = new DateTime( "2002-05-30T09:00:00+01:00" );
         assertFalse( dt.isLocal );
-        assertEquals( 2002, dt.getCalendar().get( YEAR ) );
-        // month is 0-based
-        assertEquals( 4, dt.getCalendar().get( MONTH ) );
-        assertEquals( 30, dt.getCalendar().get( DAY_OF_MONTH ) );
+        assertTestDate( dt );
         assertEquals( 9, dt.getCalendar().get( HOUR_OF_DAY ) );
         assertEquals( 0, dt.getCalendar().get( MINUTE ) );
         assertEquals( 0, dt.getCalendar().get( SECOND ) );
@@ -102,10 +96,7 @@ public class TimeInstantTest {
     public void testDateTimeFromXsDateTimeLocalTime() {
         DateTime dt = new DateTime( "2002-05-30T09:00:00" );
         assertTrue( dt.isLocal );
-        assertEquals( 2002, dt.getCalendar().get( YEAR ) );
-        // month is 0-based
-        assertEquals( 4, dt.getCalendar().get( MONTH ) );
-        assertEquals( 30, dt.getCalendar().get( DAY_OF_MONTH ) );
+        assertTestDate( dt );
         assertEquals( 9, dt.getCalendar().get( HOUR_OF_DAY ) );
         assertEquals( 0, dt.getCalendar().get( MINUTE ) );
         assertEquals( 0, dt.getCalendar().get( SECOND ) );
@@ -113,5 +104,13 @@ public class TimeInstantTest {
         int offset = TimeZone.getDefault().getOffset( dt.getTimeInMilliseconds() );
         assertEquals( 1022749200000L - offset, dt.getTimeInMilliseconds() );
         assertEquals( 1022749200000L - offset, dt.getDate().getTime() );
+    }
+
+    private static void assertTestDate( TimeInstant dt ) {
+        assertEquals( 2002, dt.getCalendar().get( YEAR ) );
+        // month is 0-based
+        assertEquals( 4, dt.getCalendar().get( MONTH ) );
+        assertEquals( 30, dt.getCalendar().get( DAY_OF_MONTH ) );
+        assertEquals( 9, dt.getCalendar().get( HOUR_OF_DAY ) );
     }
 }

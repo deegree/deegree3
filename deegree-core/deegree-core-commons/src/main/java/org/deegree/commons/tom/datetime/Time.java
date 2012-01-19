@@ -36,10 +36,10 @@
 package org.deegree.commons.tom.datetime;
 
 import static javax.xml.bind.DatatypeConverter.parseTime;
+import static javax.xml.bind.DatatypeConverter.printTime;
 
 import java.util.Calendar;
-
-import javax.xml.bind.DatatypeConverter;
+import java.util.TimeZone;
 
 /**
  * Represents an <code>xs:time</code> instance.
@@ -64,12 +64,16 @@ public class Time extends TimeInstant {
         super( parseTime( xsDate ), isLocal( xsDate ) );
     }
 
+    public Time( java.util.Date date, TimeZone tz ) {
+        super( date, tz );
+    }
+
     public Time( Calendar cal, boolean isUnknown ) {
         super( cal, isUnknown );
     }
 
     @Override
     public String toString() {
-        return DatatypeConverter.printTime( getCalendar() );
+        return printTime( getCalendar() );
     }
 }

@@ -127,6 +127,10 @@ public class GenericXMLElement implements ElementNode {
         children.add( node );
     }
 
+    public void setChildren( List<TypedObjectNode> newChildren ) {
+        this.children = newChildren;
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
@@ -136,9 +140,5 @@ public class GenericXMLElement implements ElementNode {
             }
         }
         return s.toString();
-    }
-
-    public void setChildren( List<TypedObjectNode> newChildren ) {
-        this.children = newChildren;
     }
 }

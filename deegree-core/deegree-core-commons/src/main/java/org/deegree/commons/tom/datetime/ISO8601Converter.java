@@ -48,6 +48,9 @@ import java.util.regex.Pattern;
  * Converts between <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> representations and deegree's
  * temporal primitives.
  * <p>
+ * <h4>Differences between deegree's temporal primitive model a
+ * </p>
+ * <p>
  * Many of the methods that convert dates to and from strings utilize the <a
  * href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> standard string format
  * <code>yyyy-MM-ddTHH:mm:ss.SSSZ</code>, where <blockquote>
@@ -276,17 +279,6 @@ public final class ISO8601Converter {
         sdf.setTimeZone( GMT );
         return sdf.format( date.getDate() );
     }
-
-    // /**
-    // * Obtain an ISO 8601:2004 string representation of the date given the supplied milliseconds since the epoch.
-    // *
-    // * @param date
-    // * the date in calendar form
-    // * @return the string in the {@link #ISO_8601_2004_FORMAT_GMT standard format}
-    // */
-    // public static String formatISO8601Date( final Calendar date ) {
-    // return formatISO8601Date( date.getTime() );
-    // }
 
     /**
      * Obtain an ISO 8601:2004 string representation of the duration given.

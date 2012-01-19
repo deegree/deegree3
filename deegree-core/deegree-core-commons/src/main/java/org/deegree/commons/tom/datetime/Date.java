@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
+import static javax.xml.bind.DatatypeConverter.printDate;
+
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -62,12 +65,16 @@ public class Date extends TimeInstant {
         super( DatatypeConverter.parseDate( xsDate ), isLocal( xsDate ) );
     }
 
+    public Date( java.util.Date date, TimeZone tz ) {
+        super( date, tz );
+    }
+
     public Date( Calendar cal, boolean isUnknown ) {
         super( cal, isUnknown );
     }
 
     @Override
     public String toString() {
-        return DatatypeConverter.printDate( getCalendar() );
+        return printDate( getCalendar() );
     }
 }

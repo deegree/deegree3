@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base primitive type system.
+ * Enumeration for discriminating the different primitive types used in deegree's "Typed Object Model".
  * <p>
  * Based on XML schema types, but stripped down to leave out distinctions that are not needed in the type model.
  * </p>
@@ -61,24 +61,24 @@ import org.slf4j.LoggerFactory;
 public enum BaseType {
 
     /** Property value is of class <code>String</code>. */
-    STRING( "string", String.class, Types.VARCHAR ),
+    STRING( "string", String.class ),
     /** Property value is of class <code>Boolean</code>. */
-    BOOLEAN( "boolean", Boolean.class, Types.BOOLEAN ),
+    BOOLEAN( "boolean", Boolean.class ),
     /** Property value is of class <code>BigDecimal</code>. */
-    DECIMAL( "decimal", BigDecimal.class, Types.NUMERIC ),
+    DECIMAL( "decimal", BigDecimal.class ),
     /**
      * Property value is of class <code>Double</code> (needed because BigDecimal cannot express "NaN", "-INF" and
      * "INF"), which are required by <code>xs:double</code> / <code>xs:float</code>.
      */
-    DOUBLE( "double", Double.class, Types.DOUBLE ),
+    DOUBLE( "double", Double.class ),
     /** Property value is of class <code>BigInteger</code>. */
-    INTEGER( "integer", BigInteger.class, Types.INTEGER ),
+    INTEGER( "integer", BigInteger.class ),
     /** Property value is of class {@link Date}. */
-    DATE( "date", Date.class, Types.DATE ),
+    DATE( "date", Date.class ),
     /** Property value is of class {@link DateTime}. */
-    DATE_TIME( "dateTime", DateTime.class, Types.TIMESTAMP ),
+    DATE_TIME( "dateTime", DateTime.class ),
     /** Property value is of class {@link Time}. */
-    TIME( "time", Time.class, Types.TIME );
+    TIME( "time", Time.class );
 
     private static final Logger LOG = LoggerFactory.getLogger( BaseType.class );
 
@@ -86,18 +86,15 @@ public enum BaseType {
 
     private Class<?> valueClass;
 
-    private int sqlType;
-
-    private BaseType( String xsTypeName, Class<?> valueClass, int sqlType ) {
+    private BaseType( String xsTypeName, Class<?> valueClass ) {
         this.xsTypeName = xsTypeName;
         this.valueClass = valueClass;
-        this.sqlType = sqlType;
     }
 
     /**
-     * Returns the class that primitive values of this type must have.
+     * Returns the class that values of this type use.
      * 
-     * @return the corresponding class for values
+     * @return the corresponding class for values, never <code>null</code>
      */
     public Class<?> getValueClass() {
         return valueClass;
@@ -108,14 +105,6 @@ public enum BaseType {
      */
     public String getXSTypeName() {
         return xsTypeName;
-    }
-
-    /**
-     * Returns the
-     * @return
-     */
-    public int getSQLType() {
-        return sqlType;
     }
 
     /**
@@ -191,7 +180,7 @@ public enum BaseType {
             pt = BOOLEAN;
             break;
         }
-            
+
         case Types.ARRAY:
         case Types.BINARY:
         case Types.BLOB:

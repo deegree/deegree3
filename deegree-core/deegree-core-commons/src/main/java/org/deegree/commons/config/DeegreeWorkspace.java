@@ -399,8 +399,6 @@ public class DeegreeWorkspace {
     public synchronized void initAll()
                             throws ResourceInitException {
         ImageIO.scanForPlugins();
-        LOG.warn( "FixMe: Setting VM-global TimeZone to GMT. This *will* cause severe problems depending on your environment, e.g. strange JSF errors on WebLogic." );
-        TimeZone.setDefault( TimeZone.getTimeZone( "GMT" ) );
         initManagers();
         for ( ResourceManager m : managers ) {
             m.startup( this );

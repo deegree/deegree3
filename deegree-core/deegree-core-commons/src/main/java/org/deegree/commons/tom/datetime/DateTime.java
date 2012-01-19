@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
+import static javax.xml.bind.DatatypeConverter.printDateTime;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -90,6 +92,6 @@ public class DateTime extends TimeInstant {
 
     @Override
     public String toString() {
-        return DatatypeConverter.printDateTime( getCalendar() );
+        return printDateTime( getCalendar() );
     }
 }

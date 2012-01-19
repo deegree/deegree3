@@ -36,6 +36,8 @@
 package org.deegree.commons.tom.primitive;
 
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.XMLValueMangler.internalToXML;
+import static org.deegree.commons.tom.primitive.XMLValueMangler.xmlToInternal;
 
 import java.math.BigDecimal;
 
@@ -50,8 +52,9 @@ import org.deegree.commons.utils.Pair;
 /**
  * {@link TypedObjectNode} that represents a typed primitive value, e.g. an XML text node or an XML attribute value with
  * type information.
- * 
- * TODO Should the aspect of textual representation of the value really be reflected here?
+ * <p>
+ * This class wraps both the normalized primitive value and a textual representation.
+ * </p>
  * 
  * @see BaseType
  * 
@@ -72,9 +75,10 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
      * Creates a new {@link PrimitiveValue} instance.
      * 
      * @param value
-     *            object value, must not be <code>null</code> and correspond to type
+     *            object value, must not be <code>null</code> and correspond to type (see {@link BaseType})
      * @param textValue
-     *            textual representation of the value, can be <code>null</code> (auto-generated from value)
+     *            textual representation of the value, can be <code>null</code> (representation will be auto-generated
+     *            from value)
      * @param type
      *            primitive type, must not be <code>null</code>
      * @throws IllegalArgumentException
@@ -84,41 +88,66 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
         if ( textValue != null ) {
             this.textValue = textValue;
         } else {
-            this.textValue = XMLValueMangler.internalToXML( value, type.getBaseType() );
+            this.textValue = internalToXML( value, type.getBaseType() );
         }
         this.type = type;
     }
 
-    public PrimitiveValue( Object value, PrimitiveType type ) throws IllegalArgumentException {
-        this.textValue = XMLValueMangler.internalToXML( value, type.getBaseType() );
+    /**
+     * Creates a new {@link PrimitiveValue} instance.
+     * <p>
+     * Textual representation will be derived from value.
+     * </p>
+     * 
+     * @param value
+     *            object value, must not be <code>null</code> and correspond to type (see {@link BaseType})
+     * @param type
+     *            primitive type, must not be <code>null</code>
+     */
+    public PrimitiveValue( Object value, PrimitiveType type ) {
+        this.textValue = internalToXML( value, type.getBaseType() );
         this.type = type;
         this.value = value;
     }
 
     /**
+     * Creates a new {@link PrimitiveValue} instance.
+     * <p>
+     * Primitive type will be determined from value, as well the textual representation.
+     * </p>
+     * 
      * @param value
-     * @param type
+     *            object value, must not be <code>null</code> and correspond to a supported type (see {@link BaseType})
+     * @throws IllegalArgumentException
+     */
+    public PrimitiveValue( Object value ) throws IllegalArgumentException {
+        this.type = new PrimitiveType( BaseType.valueOf( value ) );
+        this.textValue = internalToXML( value, type.getBaseType() );
+        this.value = value;
+    }
+
+    /**
+     * Creates a new {@link PrimitiveValue} instance.
+     * <p>
+     * Object value be determined from textual representation.
+     * </p>
+     * 
+     * @param value
+     *            textual representation, must not be <code>null</code> and be valid according to the primitive type
+     *            (see {@link BaseType})
      * @throws IllegalArgumentException
      */
     public PrimitiveValue( String value, PrimitiveType type ) throws IllegalArgumentException {
-        this.value = XMLValueMangler.xmlToInternal( value, type.getBaseType() );
+        this.value = xmlToInternal( value, type.getBaseType() );
         this.textValue = value;
         this.type = type;
     }
 
     /**
-     * @param value
-     * @throws IllegalArgumentException
-     */
-    @Deprecated
-    public PrimitiveValue( Object value ) throws IllegalArgumentException {
-        this.type = new PrimitiveType( BaseType.valueOf( value ) );
-        this.textValue = XMLValueMangler.internalToXML( value, type.getBaseType() );
-        this.value = value;
-    }
-
-    /**
      * Returns the canonical object representation of the value.
+     * <p>
+     * See {@link BaseType} for used Java types.
+     * </p>
      * 
      * @return the canonical object representation of the value, never <code>null</code>
      */
@@ -127,9 +156,13 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
     }
 
     /**
-     * Returns the text representation of the value.
+     * Returns the textual representation of the value.
+     * <p>
+     * This may differ from the value returned by {@link #getValue()} (e.g. number of trailing zeros of a decimal
+     * fraction).
+     * </p>
      * 
-     * @return the text representation of the value, never <code>null</code>
+     * @return the textual representation of the value, never <code>null</code>
      */
     public String getAsText() {
         return textValue;
@@ -144,6 +177,7 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
         return type;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public int compareTo( PrimitiveValue o ) {
         Pair<Object, Object> comparables = makeComparable( value, o.value );
