@@ -71,13 +71,13 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case DATE:
-                sqlValue = new java.sql.Date( ( (Date) value ).getDate().getTime() );
+                sqlValue = new java.sql.Date( ( (Date) value ).getCalendar().getTimeInMillis() );
                 break;
             case DATE_TIME:
-                sqlValue = new Timestamp( ( (DateTime) value ).getValue().getTime() );
+                sqlValue = new Timestamp( ( (DateTime) value ).getCalendar().getTimeInMillis() );
                 break;
             case TIME:
-            	sqlValue = new java.sql.Time( ( (Time) value ).getDate().getTime() );
+                sqlValue = new java.sql.Time( ( (Time) value ).getCalendar().getTimeInMillis() );
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
@@ -119,13 +119,13 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case DATE:
-                sqlValue = new java.sql.Date( ( (Date) value ).getDate().getTime() );
+                sqlValue = new java.sql.Date( ( (Date) value ).getCalendar().getTimeInMillis() );
                 break;
             case DATE_TIME:
-                sqlValue = new Timestamp( ( (DateTime) value ).getValue().getTime() );
+                sqlValue = new Timestamp( ( (DateTime) value ).getCalendar().getTimeInMillis() );
                 break;
             case TIME:
-            	sqlValue = new java.sql.Time( ( (Time) value ).getDate().getTime() );
+                sqlValue = new java.sql.Time( ( (Time) value ).getCalendar().getTimeInMillis() );
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();

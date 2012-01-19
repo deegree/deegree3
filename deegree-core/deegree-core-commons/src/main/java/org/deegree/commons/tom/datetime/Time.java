@@ -35,9 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
-import java.text.ParseException;
-import java.util.Date;
+import static javax.xml.bind.DatatypeConverter.parseTime;
 
+import java.util.Calendar;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Represents an <code>xs:time</code> instance.
@@ -47,50 +49,37 @@ import java.util.Date;
  * 
  * @version $Revision$, $Date$
  */
-public class Time implements Comparable<Time> {
-
-    private final String isoDate;
-
-    private final Date date;
+public class Time extends TimeInstant {
 
     /**
-     * @param isoDate
-     * @throws ParseException
+     * Creates a new {@link Time} instance from the given <code>xs:time</code> encoded value.
+     * 
+     * @param time
+     *            encoded time, must not be <code>null</code>
+     * @throws IllegalArgumentException
+     *             if parameter does not conform to lexical value space defined in XML Schema Part 2: Datatypes for
+     *             <code>xs:time</code>
      */
-    public Time( String isoDate ) throws ParseException {
-    	isoDate = "1970-01-01T" + isoDate;
-        this.isoDate = isoDate;
-        date = DateUtils.parseISO8601Date( isoDate );
+    public Time( String xsDate ) throws IllegalArgumentException {
+        super( parseTime( xsDate ), isLocal( xsDate ) );
     }
 
-    @Override
-    public int compareTo( Time o ) {
-        return this.date.compareTo( o.date );
+    public Time( Calendar cal, boolean isLocal ) {
+        super( cal, isLocal );
     }
 
+    /**
+     * Returns this time instant as a {@link java.sql.Time}.
+     * 
+     * @return SQL date, never <code>null</code>
+     */
     @Override
-    public boolean equals( Object o ) {
-        if ( !( o instanceof Time ) ) {
-            return false;
-        }
-        return this.date.equals( ( (Time) o ).date );
-    }
-
-    @Override
-    public int hashCode() {
-        return date.hashCode();
+    public java.sql.Time getSQLDate() {
+        return new java.sql.Time( getTimeInMilliseconds() );
     }
 
     @Override
     public String toString() {
-        return isoDate;
+        return DatatypeConverter.printTime( getCalendar() );
     }
-
-    /**
-     * @return the actual Date value
-     */
-    public Date getDate() {
-        return date;
-    }
-    
 }

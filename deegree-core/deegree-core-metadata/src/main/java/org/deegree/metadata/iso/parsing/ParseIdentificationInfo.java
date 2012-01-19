@@ -38,7 +38,6 @@ package org.deegree.metadata.iso.parsing;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -567,7 +566,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                             tempBeg = new Date( temporalExtentBegin );
                             tempEnd = new Date( temporalExtentEnd );
                         }
-                    } catch ( ParseException e ) {
+                    } catch ( Exception e ) {
                         String msg = Messages.getMessage( "ERROR_PARSING_TEMP_EXTENT", temporalExtentBegin,
                                                           temporalExtentEnd, e.getMessage() );
                         LOG.debug( msg );
@@ -753,7 +752,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             } else {
                 date = null;
             }
-        } catch ( ParseException e ) {
+        } catch ( Exception e ) {
             throw new IllegalArgumentException( "Could not parse revision date ('" + revisionDateString + "'), cause: "
                                                 + e.getMessage() );
         }
@@ -769,7 +768,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             } else {
                 date = null;
             }
-        } catch ( ParseException e ) {
+        } catch ( Exception e ) {
             throw new IllegalArgumentException( "Could not creation revision date ('" + revisionDateString
                                                 + "'), cause: " + e.getMessage() );
         }
@@ -785,7 +784,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             } else {
                 date = null;
             }
-        } catch ( ParseException e ) {
+        } catch ( Exception e ) {
             throw new IllegalArgumentException( "Could not parse publication date ('" + revisionDateString
                                                 + "'), cause: " + e.getMessage() );
         }

@@ -45,7 +45,7 @@ class AnyTextHelper {
                 sb.append( r.getLanguage() ).append( STOPWORD );
             }
             if ( r.getModified() != null ) {
-                sb.append( r.getModified().getDate() ).append( STOPWORD );
+                sb.append( r.getModified().getSQLDate() ).append( STOPWORD );
             }
             for ( String f : r.getRelation() ) {
                 sb.append( f ).append( STOPWORD );

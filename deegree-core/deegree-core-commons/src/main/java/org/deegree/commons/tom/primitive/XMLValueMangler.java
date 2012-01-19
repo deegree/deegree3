@@ -41,7 +41,6 @@ import static org.deegree.commons.tom.datetime.DateUtils.formatISO8601Time;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.ParseException;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
@@ -88,7 +87,7 @@ public class XMLValueMangler {
         case DATE: {
             try {
                 value = new Date( s );
-            } catch ( ParseException e ) {
+            } catch ( Exception e ) {
                 String msg = "Value ('" + s + "') is not valid with respect to the xs:date type.";
                 throw new IllegalArgumentException( msg );
             }
@@ -97,7 +96,7 @@ public class XMLValueMangler {
         case DATE_TIME: {
             try {
                 value = new DateTime( s );
-            } catch ( ParseException e ) {
+            } catch ( Exception e ) {
                 String msg = "Value ('" + s + "') is not valid with respect to the xs:dateTime type.";
                 throw new IllegalArgumentException( msg );
             }
@@ -121,7 +120,7 @@ public class XMLValueMangler {
         case TIME: {
             try {
                 value = new Time( s );
-            } catch ( ParseException e ) {
+            } catch ( Exception e ) {
                 String msg = "Value ('" + s + "') is not valid with respect to the xs:time type.";
                 throw new IllegalArgumentException( msg );
             }

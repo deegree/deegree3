@@ -709,7 +709,7 @@ public class Filter200XMLDecoder {
         if ( startDateString != null ) {
             try {
                 startDate = new DateTime( startDateString );
-            } catch ( ParseException e ) {
+            } catch ( Exception e ) {
                 throw new XMLParsingException( xmlStream, e.getMessage() );
             }
         }
@@ -718,7 +718,7 @@ public class Filter200XMLDecoder {
         if ( endDateString != null ) {
             try {
                 endDate = new DateTime( endDateString );
-            } catch ( ParseException e ) {
+            } catch ( Exception e ) {
                 throw new XMLParsingException( xmlStream, e.getMessage() );
             }
         }

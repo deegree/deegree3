@@ -37,21 +37,20 @@ package org.deegree.commons.tom.primitive;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Time;
 import java.sql.Types;
 
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Base primitive type system.
  * <p>
- * Based on XML schema types, but stripped down to leave out any distinctions that are not strictly necessary in the
- * feature model.
+ * Based on XML schema types, but stripped down to leave out distinctions that are not needed in the type model.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

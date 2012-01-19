@@ -284,7 +284,7 @@ public class DCRecord implements MetadataRecord {
             write( writer, "relation", r, dc );
         }
         if ( getModified() != null ) {
-            write( writer, "modified", getModified().getDate().toString(), dct );
+            write( writer, "modified", getModified().getCalendar().getTime().toString(), dct );
         }
         for ( String a : getAbstract() ) {
             write( writer, "abstract", a, dct );

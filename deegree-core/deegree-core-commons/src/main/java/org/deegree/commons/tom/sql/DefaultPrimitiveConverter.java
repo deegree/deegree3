@@ -40,7 +40,6 @@ import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
@@ -154,19 +153,15 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
     protected PrimitiveValue toDateParticle( Object sqlValue ) {
         Date value = null;
         if ( sqlValue instanceof java.util.Date ) {
-            try {
-                value = new Date( DateUtils.formatISO8601DateWOTime( (java.util.Date) sqlValue ) );
-            } catch ( ParseException e ) {
-                throw new IllegalArgumentException( e.getMessage(), e );
-            }
+            value = new Date( DateUtils.formatISO8601DateWOTime( (java.util.Date) sqlValue ) );
         } else if ( sqlValue != null ) {
             try {
                 value = new Date( sqlValue.toString() );
-            } catch ( ParseException e ) {
-                LOG.error(e.getMessage(), e );
+            } catch ( Exception e ) {
+                LOG.error( e.getMessage(), e );
                 try {
-                    value = new Date("1970-01-01");
-                } catch ( ParseException e1 ) {
+                    value = new Date( "1970-01-01" );
+                } catch ( Exception e1 ) {
                     // should never happen
                 }
             }
@@ -179,7 +174,7 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         if ( sqlValue instanceof java.util.Date ) {
             try {
                 value = new DateTime( DateUtils.formatISO8601DateWOMS( (java.util.Date) sqlValue ) );
-            } catch ( ParseException e ) {
+            } catch ( Exception e ) {
                 throw new IllegalArgumentException( "Unable to convert sql result value of type '"
                                                     + sqlValue.getClass() + "' to DateTime object." );
             }
@@ -195,7 +190,7 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         if ( sqlValue instanceof java.util.Date ) {
             try {
                 value = new Time( DateUtils.formatISO8601Time( (java.util.Date) sqlValue ) );
-            } catch ( ParseException e ) {
+            } catch ( Exception e ) {
                 throw new IllegalArgumentException( e.getMessage(), e );
             }
         } else {

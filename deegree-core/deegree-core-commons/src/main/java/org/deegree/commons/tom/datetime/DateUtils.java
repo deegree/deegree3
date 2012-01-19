@@ -36,6 +36,8 @@
 
 package org.deegree.commons.tom.datetime;
 
+import static java.util.Calendar.MILLISECOND;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -271,7 +273,7 @@ public final class DateUtils {
             if ( milliseconds.length() == 2 ) {
                 ms *= 10;
             }
-            calendar.set( Calendar.MILLISECOND, ms );
+            calendar.set( MILLISECOND, ms );
         }
         if ( timeZoneHour != null ) {
             int zoneOffsetInMillis = Integer.parseInt( timeZoneHour ) * 60 * 60 * 1000;

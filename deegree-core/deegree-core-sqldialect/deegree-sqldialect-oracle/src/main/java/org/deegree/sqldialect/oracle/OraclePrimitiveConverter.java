@@ -35,9 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle;
 
-import java.sql.SQLException;
-import java.text.ParseException;
-
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.DateUtils;
@@ -65,9 +62,7 @@ public class OraclePrimitiveConverter extends DefaultPrimitiveConverter {
         if ( sqlValue instanceof oracle.sql.TIMESTAMP ) {
             try {
                 value = new Date( DateUtils.formatISO8601DateWOTime( ( (oracle.sql.TIMESTAMP) sqlValue ).dateValue() ) );
-            } catch ( ParseException e ) {
-                throw new IllegalArgumentException( e.getMessage(), e );
-            } catch ( SQLException e ) {
+            } catch ( Exception e ) {
                 throw new IllegalArgumentException( e.getMessage(), e );
             }
         } else {
@@ -83,11 +78,9 @@ public class OraclePrimitiveConverter extends DefaultPrimitiveConverter {
         if ( sqlValue instanceof oracle.sql.TIMESTAMP ) {
             try {
                 value = new DateTime( DateUtils.formatISO8601DateWOMS( ( (oracle.sql.TIMESTAMP) sqlValue ).dateValue() ) );
-            } catch ( ParseException e ) {
+            } catch ( Exception e ) {
                 throw new IllegalArgumentException( "Unable to convert sql result value of type '"
                                                     + sqlValue.getClass() + "' to DateTime object." );
-            } catch ( SQLException e ) {
-                throw new IllegalArgumentException( e.getMessage(), e );
             }
         } else {
             throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()

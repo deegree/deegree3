@@ -35,60 +35,76 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
-import java.text.ParseException;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 
+import javax.xml.bind.DatatypeConverter;
 
 /**
- * Represents an <code>xs:dateTime</code> instance.
+ * {@link TimeInstant} for representing dates with time information (e.g. <code>xs:dateTime</code>).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DateTime implements Comparable<DateTime> {
+public class DateTime extends TimeInstant {
 
-    private final String isoDate;
+    private static final String ISO_8601_FORMAT_GMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
-    private final Date date;
+    private static final String ISO_8601_FORMAT_NO_MILLISECONDS_GMT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     /**
-     * @param isoDate
-     * @throws ParseException
+     * Creates a new {@link DateTime} instance from the given <code>xs:dateTime</code> encoded value.
+     * 
+     * @param xsDateTime
+     *            encoded dateTime, must not be <code>null</code>
+     * @throws IllegalArgumentException
+     *             if parameter does not conform to lexical value space defined in XML Schema Part 2: Datatypes for
+     *             <code>xs:dateTime</code>
      */
-    public DateTime( String isoDate ) throws ParseException {
-        this.isoDate = isoDate;
-        date = DateUtils.parseISO8601Date( isoDate );
+    public DateTime( String xsDateTime ) throws IllegalArgumentException {
+        super( DatatypeConverter.parseDateTime( xsDateTime ), isLocal( xsDateTime ) );
     }
 
-    @Override
-    public int compareTo( DateTime o ) {
-        return this.date.compareTo( o.date );
+    public DateTime( java.util.Date date, TimeZone tz ) {
+        super( date, tz );
     }
 
-    @Override
-    public boolean equals( Object o ) {
-        if ( !( o instanceof DateTime ) ) {
-            return false;
-        }
-        return this.date.equals( ( (DateTime) o ).date );
+    public DateTime( Calendar cal, boolean isLocal ) {
+        super( cal, isLocal );
     }
 
+    /**
+     * Returns this time instant as a {@link Timestamp}.
+     * 
+     * @return SQL date, never <code>null</code>
+     */
     @Override
-    public int hashCode() {
-        return date.hashCode();
+    public Timestamp getSQLDate() {
+        return new Timestamp( getTimeInMilliseconds() );
+    }
+
+    public String format( String pattern ) {
+        return null;
+    }
+
+    public String toXsDateTimeGmt() {
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_FORMAT_GMT );
+        sdf.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+        return sdf.format( getCalendar().getTime() );
+    }
+
+    public String toXsDateTimeNoMillisecondsGmt() {
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_FORMAT_NO_MILLISECONDS_GMT );
+        sdf.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+        return sdf.format( getCalendar().getTime() );
     }
 
     @Override
     public String toString() {
-        return isoDate;
-    }
-
-    /**
-     * @return the actual Date value
-     */
-    public Date getValue() {
-        return date;
+        return DatatypeConverter.printDateTime( getCalendar() );
     }
 }

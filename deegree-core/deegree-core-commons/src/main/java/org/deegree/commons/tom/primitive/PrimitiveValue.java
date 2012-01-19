@@ -38,7 +38,6 @@ package org.deegree.commons.tom.primitive;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.Date;
@@ -196,23 +195,11 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
             } else if ( value1 instanceof Boolean ) {
                 result = new Pair<Object, Object>( value1, XMLValueMangler.xmlToInternal( value2.toString(), BOOLEAN ) );
             } else if ( value1 instanceof Date ) {
-                try {
-                    result = new Pair<Object, Object>( value1, new Date( value2.toString() ) );
-                } catch ( ParseException e ) {
-                    throw new IllegalArgumentException( e.getMessage() );
-                }
+                result = new Pair<Object, Object>( value1, new Date( value2.toString() ) );
             } else if ( value1 instanceof DateTime ) {
-                try {
-                    result = new Pair<Object, Object>( value1, new DateTime( value2.toString() ) );
-                } catch ( ParseException e ) {
-                    throw new IllegalArgumentException( e.getMessage() );
-                }
+                result = new Pair<Object, Object>( value1, new DateTime( value2.toString() ) );
             } else if ( value1 instanceof Time ) {
-                try {
-                    result = new Pair<Object, Object>( value1, new Time( value2.toString() ) );
-                } catch ( ParseException e ) {
-                    throw new IllegalArgumentException( e.getMessage() );
-                }
+                result = new Pair<Object, Object>( value1, new Time( value2.toString() ) );
             } else if ( value1 instanceof CodeType ) {
                 result = new Pair<Object, Object>( value1, new CodeType( value2.toString(),
                                                                          ( (CodeType) value1 ).getCodeSpace() ) );
@@ -226,23 +213,11 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
             } else if ( value1 instanceof Boolean ) {
                 result = new Pair<Object, Object>( XMLValueMangler.xmlToInternal( value1.toString(), BOOLEAN ), value2 );
             } else if ( value2 instanceof Date ) {
-                try {
-                    result = new Pair<Object, Object>( new Date( value1.toString() ), value2 );
-                } catch ( ParseException e ) {
-                    throw new IllegalArgumentException( e.getMessage() );
-                }
+                result = new Pair<Object, Object>( new Date( value1.toString() ), value2 );
             } else if ( value2 instanceof DateTime ) {
-                try {
-                    result = new Pair<Object, Object>( new DateTime( value1.toString() ), value2 );
-                } catch ( ParseException e ) {
-                    throw new IllegalArgumentException( e.getMessage() );
-                }
+                result = new Pair<Object, Object>( new DateTime( value1.toString() ), value2 );
             } else if ( value2 instanceof Time ) {
-                try {
-                    result = new Pair<Object, Object>( new Time( value1.toString() ), value2 );
-                } catch ( ParseException e ) {
-                    throw new IllegalArgumentException( e.getMessage() );
-                }
+                result = new Pair<Object, Object>( new Time( value1.toString() ), value2 );
             } else if ( value1 instanceof CodeType ) {
                 result = new Pair<Object, Object>( new CodeType( value1.toString(),
                                                                  ( (CodeType) value2 ).getCodeSpace() ), value2 );

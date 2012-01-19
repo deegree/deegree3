@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -67,6 +68,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -77,6 +79,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.DateUtils;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
@@ -377,7 +380,7 @@ public class GMLFormat implements Format {
 
         // open "wfs:ValueCollection" element
         xmlStream.writeStartElement( "wfs", "ValueCollection", WFS_200_NS );
-        xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+        xmlStream.writeAttribute( "timeStamp", "" + new DateTime( Calendar.getInstance( TimeZone.getDefault() ), false ) );
         xmlStream.writeAttribute( "numberMatched", "UNKNOWN" );
         xmlStream.writeAttribute( "numberReturned", "UNKNOWN" );
 

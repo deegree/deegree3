@@ -38,7 +38,6 @@ package org.deegree.metadata.iso.parsing;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -219,7 +218,7 @@ public final class ISOQPParsing extends XMLAdapter {
                     }
                 }
             }
-        } catch ( ParseException e ) {
+        } catch ( Exception e ) {
             String msg = Messages.getMessage( "ERROR_PARSING", dateString[0], e.getMessage() );
             LOG.debug( msg );
             throw new IllegalArgumentException( msg );
@@ -536,7 +535,7 @@ public final class ISOQPParsing extends XMLAdapter {
             if ( specificationDateString != null ) {
                 dateSpecificationDate = new Date( specificationDateString );
             }
-        } catch ( ParseException e ) {
+        } catch ( Exception e ) {
 
             String msg = Messages.getMessage( "ERROR_PARSING", specificationDateString, e.getMessage() );
             LOG.debug( msg );
@@ -547,5 +546,4 @@ public final class ISOQPParsing extends XMLAdapter {
             qp.setSpecificationDate( dateSpecificationDate );
         }
     }
-
 }

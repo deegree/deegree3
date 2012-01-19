@@ -232,7 +232,8 @@ public class DBFIndex {
                     case DATE:
                     case DATE_TIME:
                     case TIME:
-                        stmt.setDate( ++idx, new java.sql.Date( ( (Date) primVal.getValue() ).getDate().getTime() ) );
+                        // TODO should this use the corresponding subclass of java.sql.Date?
+                        stmt.setDate( ++idx, new java.sql.Date( ( (Date) primVal.getValue() ).getTimeInMilliseconds() ) );
                         break;
                     case DECIMAL:
                     case DOUBLE:

@@ -277,7 +277,7 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "language", rec.getLanguage() );
         Timestamp modified = null;
         if ( rec.getModified() != null ) {
-            modified = new Timestamp( rec.getModified().getDate().getTime() );
+            modified = new Timestamp( rec.getModified().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "modified", modified );
         tr.addPreparedArgument( "parentid", rec.getParentIdentifier() );
@@ -290,17 +290,17 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "alternateTitles", concatenate( qp.getAlternateTitle() ) );
         Timestamp revDate = null;
         if ( qp.getRevisionDate() != null ) {
-            revDate = new Timestamp( qp.getRevisionDate().getDate().getTime() );
+            revDate = new Timestamp( qp.getRevisionDate().getTimeInMilliseconds()  );
         }
         tr.addPreparedArgument( "revisiondate", revDate );
         Timestamp createDate = null;
         if ( qp.getCreationDate() != null ) {
-            createDate = new Timestamp( qp.getCreationDate().getDate().getTime() );
+            createDate = new Timestamp( qp.getCreationDate().getTimeInMilliseconds()  );
         }
         tr.addPreparedArgument( "creationdate", createDate );
         Timestamp pubDate = null;
         if ( qp.getPublicationDate() != null ) {
-            pubDate = new Timestamp( qp.getPublicationDate().getDate().getTime() );
+            pubDate = new Timestamp( qp.getPublicationDate().getTimeInMilliseconds()  );
         }
         tr.addPreparedArgument( "publicationdate", pubDate );
         tr.addPreparedArgument( "organisationname", qp.getOrganisationName() );
@@ -312,12 +312,12 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "distanceuom", qp.getDistanceUOM() );
         Timestamp begTmpExten = null;
         if ( qp.getTemporalExtentBegin() != null ) {
-            begTmpExten = new Timestamp( qp.getTemporalExtentBegin().getDate().getTime() );
+            begTmpExten = new Timestamp( qp.getTemporalExtentBegin().getTimeInMilliseconds()  );
         }
         tr.addPreparedArgument( "tempextent_begin", begTmpExten );
         Timestamp endTmpExten = null;
         if ( qp.getTemporalExtentEnd() != null ) {
-            endTmpExten = new Timestamp( qp.getTemporalExtentEnd().getDate().getTime() );
+            endTmpExten = new Timestamp( qp.getTemporalExtentEnd().getTimeInMilliseconds()  );
         }
         tr.addPreparedArgument( "tempextent_end", endTmpExten );
         tr.addPreparedArgument( "servicetype", qp.getServiceType() );
@@ -331,7 +331,7 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "spectitle", concatenate( qp.getSpecificationTitle() ) );
         Timestamp specDate = null;
         if ( qp.getSpecificationDate() != null ) {
-            specDate = new Timestamp( qp.getSpecificationDate().getDate().getTime() );
+            specDate = new Timestamp( qp.getSpecificationDate().getTimeInMilliseconds()  );
         }
         tr.addPreparedArgument( "specdate", specDate );
         tr.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
