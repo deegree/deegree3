@@ -65,6 +65,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.tom.datetime.TimeInstant;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
@@ -529,6 +530,10 @@ public class FeatureLayer extends Layer {
                     theVal = new Date( currentTimeMillis() );
                 } else if ( o instanceof Date ) {
                     theVal = (Date) o;
+                } else if ( o instanceof TimeInstant ) {
+                    theVal = ( (TimeInstant) o ).getDate();
+                } else {
+                    throw new RuntimeException( "Unexpected type: " + o.getClass() );
                 }
                 if ( theVal != null ) {
                     if ( time.getNearestValue() ) {
