@@ -57,7 +57,9 @@ import static org.deegree.commons.utils.CollectionUtils.addAllUncontained;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
 import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
 import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
@@ -951,7 +953,16 @@ public class MapService {
         List<Feature> list = new LinkedList<Feature>();
         LinkedList<String> warnings = new LinkedList<String>();
         Iterator<Style> styles = fi.getStyles().iterator();
+        double scale = calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(), fi.getCoordinateSystem(),
+                                        DEFAULT_PIXEL_SIZE );
         for ( Layer layer : fi.getQueryLayers() ) {
+            DoublePair scales = layer.getScaleHint();
+            LOG.debug( "Scale settings are: {}, current scale is {}.", scales, scale );
+            if ( scales.first > scale || scales.second < scale ) {
+                LOG.debug( "Not showing layer '{}' because of its scale constraint.",
+                           layer.getName() == null ? layer.getTitle() : layer.getName() );
+                continue;
+            }
             warnings.addAll( getFeatures( list, layer, fi, styles.next() ) );
         }
 
