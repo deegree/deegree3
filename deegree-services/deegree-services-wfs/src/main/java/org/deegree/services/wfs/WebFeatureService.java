@@ -865,11 +865,10 @@ public class WebFeatureService extends AbstractOWS {
             }
         };
         Collection<FeatureType> sortedFts = new TreeSet<FeatureType>( comp );
-        for ( FeatureStore fs : service.getStores() ) {
-            for ( FeatureType ft : fs.getSchema().getFeatureTypes( null, false, false ) ) {
-                if ( fs.isMapped( ft.getName() ) ) {
-                    sortedFts.add( ft );
-                }
+        for ( FeatureType ft : service.getFeatureTypes() ) {
+            FeatureStore fs = service.getStore( ft.getName() );
+            if ( fs.isMapped( ft.getName() ) ) {
+                sortedFts.add( ft );
             }
         }
 

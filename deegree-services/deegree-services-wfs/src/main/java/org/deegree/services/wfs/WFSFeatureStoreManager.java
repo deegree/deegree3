@@ -244,7 +244,7 @@ public class WFSFeatureStoreManager {
                 LOG.error( msg );
                 throw new IllegalArgumentException( msg );
             }
-            for ( FeatureType ft : fs.getSchema().getFeatureTypes() ) {
+            for ( FeatureType ft : fs.getSchema().getFeatureTypes( null, false, false ) ) {
                 if ( ft.getName().getNamespaceURI().equals( GMLNS )
                      || ft.getName().getNamespaceURI().equals( GML3_2_NS ) ) {
                     continue;
