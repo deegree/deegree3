@@ -41,7 +41,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
-import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
@@ -70,6 +70,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.Version;
@@ -93,6 +95,7 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
@@ -191,7 +194,7 @@ class TransactionHandler {
                 throw new OWSException( "Cannot acquire lock manager: " + e.getMessage(),
                                         OWSException.NO_APPLICABLE_CODE );
             }
-            if ( lockId != null && manager != null) {
+            if ( lockId != null && manager != null ) {
                 lock = manager.getLock( lockId );
             }
 
@@ -301,8 +304,7 @@ class TransactionHandler {
         QName ftName = delete.getTypeName();
         FeatureStore fs = service.getStore( ftName );
         if ( fs == null ) {
-            throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
-                                    INVALID_PARAMETER_VALUE );
+            throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ), INVALID_PARAMETER_VALUE );
         }
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
@@ -518,8 +520,7 @@ class TransactionHandler {
         try {
             updated += ta.performUpdate( ftName, replacementProps, filter, lock );
         } catch ( FeatureStoreException e ) {
-            throw new OWSException( "Error performing update: " + e.getMessage(), e,
-                                    NO_APPLICABLE_CODE );
+            throw new OWSException( "Error performing update: " + e.getMessage(), e, NO_APPLICABLE_CODE );
         }
     }
 
@@ -541,7 +542,8 @@ class TransactionHandler {
             if ( xmlStream != null ) {
                 try {
                     xmlStream.require( START_ELEMENT, WFS_NS, "Value" );
-                    GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, xmlStream );
+                    GMLStreamReader gmlReader = createGMLStreamReader( inputFormat, xmlStream );
+                    gmlReader.setApplicationSchema( ft.getSchema() );
                     GeometryFactory geomFac = new GeometryFactory();
                     geomFac.addInspector( new CoordinateValidityInspector() );
                     gmlReader.setGeometryFactory( geomFac );
@@ -550,6 +552,13 @@ class TransactionHandler {
                     ICRS crs = master.getDefaultQueryCrs();
                     Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt,
                                                                  crs, 1 );
+
+                    // TODO make this hack unnecessary
+                    TypedObjectNode propValue = prop.getValue();
+                    if ( pt instanceof CustomPropertyType && propValue instanceof GenericXMLElement) {
+                        prop.setValue( ((GenericXMLElement) propValue).getValue());
+                    }
+
                     newProperties.add( prop );
 
                     // contract: skip to "wfs:Property" END_ELEMENT
@@ -558,6 +567,7 @@ class TransactionHandler {
                     // contract: skip to next ELEMENT_EVENT
                     xmlStream.nextTag();
                 } catch ( Exception e ) {
+                    e.printStackTrace();
                     LOG.debug( e.getMessage(), e );
                     throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
                 }
@@ -581,8 +591,7 @@ class TransactionHandler {
                 ta = fs.acquireTransaction();
                 acquiredTransactions.put( fs, ta );
             } catch ( FeatureStoreException e ) {
-                throw new OWSException( Messages.get( "WFS_CANNOT_ACQUIRE_TA", e.getMessage() ),
-                                        NO_APPLICABLE_CODE );
+                throw new OWSException( Messages.get( "WFS_CANNOT_ACQUIRE_TA", e.getMessage() ), NO_APPLICABLE_CODE );
             }
         }
         return ta;
