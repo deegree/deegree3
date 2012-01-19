@@ -51,6 +51,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.datetime.Duration;
+import org.deegree.commons.tom.datetime.TimeInstant;
 
 /**
  * <code>Dimension</code>
@@ -199,7 +200,7 @@ public class Dimension<T> {
                 }
             } else {
                 if ( time ) {
-                    sb.append( formatISO8601DateWOMS( (Date) o ) );
+                    sb.append( formatISO8601DateWOMS( (TimeInstant) o ) );
                 } else {
                     sb.append( o );
                 }
