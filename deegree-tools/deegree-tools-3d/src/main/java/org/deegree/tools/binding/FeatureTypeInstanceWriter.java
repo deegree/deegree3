@@ -84,7 +84,6 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.StandardGMLFeatureProps;
 import org.slf4j.Logger;
 
 /**
@@ -125,7 +124,6 @@ public class FeatureTypeInstanceWriter {
         imports.add( List.class.getCanonicalName() );
         imports.add( GMLVersion.class.getCanonicalName() );
         imports.add( LinkedHashMap.class.getCanonicalName() );
-        imports.add( StandardGMLFeatureProps.class.getCanonicalName() );
         imports.add( Collection.class.getCanonicalName() );
 
     }
@@ -396,8 +394,6 @@ public class FeatureTypeInstanceWriter {
         params.add( new StringPair( QNAME, "propName" ) );
         params.add( new StringPair( GML, "version" ) );
         openMethod( out, "public", PTYPE, "getPropertyDeclaration", params, null, true );
-        out.write( SP2 + PTYPE + " pt = " + StandardGMLFeatureProps.class.getSimpleName()
-                   + ".getPropertyType( propName, version );\n" );
         out.write( SP2 + oif( true, "pt == null" ) );
         out.write( SP3 + "pt = " + FIELD_N2PROPS + ".get( propName );\n" );
         out.write( SP2 + "}\n" );
@@ -413,8 +409,6 @@ public class FeatureTypeInstanceWriter {
         // public List<PropertyType> getPropertyDeclarations( GMLVersion version );
         params.add( new StringPair( GML, "version" ) );
         openMethod( out, "public", "List<" + PTYPE + ">", "getPropertyDeclarations", params, null, true );
-        out.write( SP2 + Collection.class.getSimpleName() + "<" + PTYPE + "> stdProps = "
-                   + StandardGMLFeatureProps.class.getSimpleName() + ".getPropertyTypes( version );\n" );
         out.write( SP2 + ModelClass.newList( PTYPE, "result" ) );
         out.write( SP2 + oif( true, "stdProps.size() > 0" ) );
         out.write( SP3 + "result.addAll( stdProps );\n" );

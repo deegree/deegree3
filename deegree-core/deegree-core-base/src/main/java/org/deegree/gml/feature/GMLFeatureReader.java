@@ -37,6 +37,8 @@ package org.deegree.gml.feature;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
@@ -45,8 +47,6 @@ import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_GEOMETRY;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
-import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
-import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -102,6 +102,10 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
     private static String FID = "fid";
 
     private static String GMLID = "id";
+    
+    public static final QName BOUNDED_BY_GML31 = new QName (GMLNS, "boundedBy", "gml");
+
+    public static final QName BOUNDED_BY_GML32 = new QName (GML3_2_NS, "boundedBy", "gml");
 
     /**
      * Creates a new {@link GMLFeatureReader} instance that is configured from the given {@link GMLStreamReader}.
@@ -188,8 +192,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
             if ( property != null ) {
                 // if this is the "gml:boundedBy" property, override active CRS
                 // (see GML spec. (where???))
-                if ( PT_BOUNDED_BY_GML31.getName().equals( propDecl.getName() )
-                     || PT_BOUNDED_BY_GML32.getName().equals( propDecl.getName() ) ) {
+                if ( BOUNDED_BY_GML31.equals( propDecl.getName() ) || BOUNDED_BY_GML32.equals( propDecl.getName() ) ) {
                     Envelope bbox = (Envelope) property.getValue();
                     if ( bbox.getCoordinateSystem() != null ) {
                         activeCRS = bbox.getCoordinateSystem();
@@ -367,8 +370,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
             if ( property != null ) {
                 // if this is the "gml:boundedBy" property, override active CRS
                 // (see GML spec. (where???))
-                if ( PT_BOUNDED_BY_GML31.getName().equals( activeDecl.getName() )
-                     || PT_BOUNDED_BY_GML32.getName().equals( activeDecl.getName() ) ) {
+                if ( BOUNDED_BY_GML31.equals( activeDecl.getName() ) || BOUNDED_BY_GML32.equals( activeDecl.getName() ) ) {
                     Envelope bbox = (Envelope) property.getValue();
                     if ( bbox.getCoordinateSystem() != null ) {
                         activeCRS = bbox.getCoordinateSystem();

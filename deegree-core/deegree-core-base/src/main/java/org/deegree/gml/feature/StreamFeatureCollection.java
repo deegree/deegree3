@@ -37,8 +37,8 @@ package org.deegree.gml.feature;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
-import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
+import static org.deegree.gml.feature.GMLFeatureReader.BOUNDED_BY_GML31;
+import static org.deegree.gml.feature.GMLFeatureReader.BOUNDED_BY_GML32;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -210,8 +210,8 @@ public class StreamFeatureCollection implements FeatureInputStream {
                 if ( property != null ) {
                     // if this is the "gml:boundedBy" property, override active CRS
                     // (see GML spec. (where???))
-                    if ( PT_BOUNDED_BY_GML31.getName().equals( activeDecl.getName() )
-                         || PT_BOUNDED_BY_GML32.getName().equals( activeDecl.getName() ) ) {
+                    if ( BOUNDED_BY_GML31.equals( activeDecl.getName() )
+                         || BOUNDED_BY_GML32.equals( activeDecl.getName() ) ) {
                         Envelope bbox = (Envelope) property.getValue();
                         if ( bbox.getCoordinateSystem() != null ) {
                             activeCRS = bbox.getCoordinateSystem();

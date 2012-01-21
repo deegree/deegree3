@@ -1854,7 +1854,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiCurve parseMultiCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
+    public MultiCurve<?> parseMultiCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
@@ -1884,7 +1884,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
         xmlStream.require( END_ELEMENT, gmlNs, "MultiCurve" );
-        MultiCurve multiCurve = geomFac.createMultiCurve( gid, crs, members );
+        MultiCurve<?> multiCurve = geomFac.createMultiCurve( gid, crs, members );
         multiCurve.setGMLProperties( standardProps );
         idContext.addObject( multiCurve );
         return multiCurve;
@@ -1949,7 +1949,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiSurface parseMultiSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
+    public MultiSurface<?> parseMultiSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId( xmlStream );
@@ -1979,7 +1979,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
         xmlStream.require( END_ELEMENT, gmlNs, "MultiSurface" );
-        MultiSurface multiSurface = geomFac.createMultiSurface( gid, crs, members );
+        MultiSurface<?> multiSurface = geomFac.createMultiSurface( gid, crs, members );
         multiSurface.setGMLProperties( standardProps );
         idContext.addObject( multiSurface );
         return multiSurface;

@@ -49,7 +49,6 @@ import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.feature.StandardGMLFeatureProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

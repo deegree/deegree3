@@ -45,8 +45,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
@@ -64,7 +62,8 @@ public class GMLGeometryVersionHelper {
 
     private static Logger LOG = LoggerFactory.getLogger( GMLGeometryVersionHelper.class );
 
-    public static GMLGeometryReader getGeometryReader( QName elName, XMLStreamReader xmlStream ) throws XMLStreamException {
+    public static GMLGeometryReader getGeometryReader( QName elName, XMLStreamReader xmlStream )
+                            throws XMLStreamException {
 
         String ns = elName.getNamespaceURI();
         GMLVersion gmlVersion = null;
