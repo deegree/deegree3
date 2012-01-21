@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
+import static org.deegree.commons.tom.gml.GMLObjectCategory.FEATURE;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
@@ -47,6 +48,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
@@ -136,6 +138,11 @@ public class DynamicFeatureType implements FeatureType {
         props.add( props.indexOf( pre ) + 1, pt );
         propNameToDecl.put( propName, pt );
         return pt;
+    }
+
+    @Override
+    public GMLObjectCategory getCategory() {
+        return FEATURE;
     }
 
     @Override

@@ -35,14 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.FEATURE;
+
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.gml.GMLObjectType;
+import org.deegree.commons.tom.gml.GenericGMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
@@ -58,65 +57,27 @@ import org.deegree.feature.types.property.GeometryPropertyType;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GenericFeatureType implements GMLObjectType, FeatureType {
-
-    private QName name;
-
-    // maps property names to their declaration (LinkedHashMap respects the correct key order)
-    private Map<QName, PropertyType> propNameToDecl = new LinkedHashMap<QName, PropertyType>();
-
-    private boolean isAbstract;
+public class GenericFeatureType extends GenericGMLObjectType implements FeatureType {
 
     private AppSchema schema;
 
     public GenericFeatureType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
-        this.name = name;
-        for ( PropertyType propDecl : propDecls ) {
-            propNameToDecl.put( propDecl.getName(), propDecl );
-        }
-        this.isAbstract = isAbstract;
-    }
-
-    @Override
-    public QName getName() {
-        return name;
-    }
-
-    @Override
-    public PropertyType getPropertyDeclaration( QName propName ) {
-        return propNameToDecl.get( propName );
-    }
-
-    @Override
-    public List<PropertyType> getPropertyDeclarations() {
-        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() );
-        for ( QName propName : propNameToDecl.keySet() ) {
-            propDecls.add( propNameToDecl.get( propName ) );
-        }
-        return propDecls;
+        super( FEATURE, name, propDecls, isAbstract );
     }
 
     @Override
     public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
-        GeometryPropertyType geoPt = null;
-        for ( QName propName : propNameToDecl.keySet() ) {
-            PropertyType pt = propNameToDecl.get( propName );
+        for ( PropertyType pt : getPropertyDeclarations() ) {
             if ( pt instanceof GeometryPropertyType ) {
-                geoPt = (GeometryPropertyType) pt;
-                break;
+                return (GeometryPropertyType) pt;
             }
         }
-        return geoPt;
+        return null;
     }
 
     @Override
     public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
         return new GenericFeature( this, fid, props, extraProps );
-    }
-
-    @Override
-    public boolean isAbstract() {
-        return isAbstract;
     }
 
     @Override
@@ -132,15 +93,5 @@ public class GenericFeatureType implements GMLObjectType, FeatureType {
      */
     void setSchema( AppSchema schema ) {
         this.schema = schema;
-    }
-
-    @Override
-    public String toString() {
-        String s = "- Feature type '" + name + "', abstract: " + isAbstract;
-        for ( QName ptName : propNameToDecl.keySet() ) {
-            PropertyType pt = propNameToDecl.get( ptName );
-            s += "\n" + pt;
-        }
-        return s;
     }
 }

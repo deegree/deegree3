@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.gml.property.PropertyType;
 
 /**
@@ -52,6 +53,13 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 public interface GMLObjectType {
 
     /**
+     * Returns the GML object category.
+     * 
+     * @returns GML object category, never <code>null</code>
+     */
+    GMLObjectCategory getCategory();
+
+    /**
      * Returns the name that objects of this type have.
      * <p>
      * In a GML encoding, this corresponds to the objects's element name.
@@ -59,7 +67,14 @@ public interface GMLObjectType {
      * 
      * @return the name of the object, never <code>null</code>
      */
-    public QName getName();
+    QName getName();
+
+    /**
+     * Returns whether this type definition is abstract or not.
+     * 
+     * @return <code>true</code>, if this type is abstract, <code>false</code> otherwise
+     */
+    boolean isAbstract();
 
     /**
      * Returns the declaration of the property with the given name.
@@ -68,19 +83,19 @@ public interface GMLObjectType {
      *            name of the property
      * @return the declaration of the property, or <code>null</code> if no such property is defined
      */
-    public PropertyType getPropertyDeclaration( QName propName );
+    PropertyType getPropertyDeclaration( QName propName );
 
     /**
-     * Returns all property declarations of the feature type, excluding those that any GML feature allows for.
+     * Returns all property declarations of the object type.
      * 
      * @return property declarations (in order), may be empty, but never <code>null</code>
      */
-    public List<PropertyType> getPropertyDeclarations();
+    List<PropertyType> getPropertyDeclarations();
 
-    /**
-     * Returns whether this type is abstract or not.
-     * 
-     * @return <code>true</code>, if this feature type is abstract, <code>false</code> otherwise
-     */
-    public boolean isAbstract();
+//    /**
+//     * Returns the corresponding XML schema element declaration (if available).
+//     * 
+//     * @return XML schema element declaration, can be <code>null</code> (not based on an XML schema declaration)
+//     */
+//    XSElementDeclaration getXSElementDeclaration();
 }

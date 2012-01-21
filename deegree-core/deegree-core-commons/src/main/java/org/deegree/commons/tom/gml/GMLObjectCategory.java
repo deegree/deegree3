@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -35,36 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.gml;
 
-import org.deegree.commons.tom.Object;
-
 /**
- * Base interface for GML objects.
+ * Enum for discriminating between the different categories objects and object types supported by GML.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author last edited by: $Author: markus $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public interface GMLObject extends Object {
+public enum GMLObjectCategory {
 
-    /**
-     * Returns the id of the GML object.
-     * <p>
-     * In a GML encoding of the object, this corresponds to the <code>gml:id</code> (GML 3 and later) or
-     * <code>fid</code> (GML 2) attribute of the object element.
-     * </p>
-     * 
-     * @return the id of the object, may be <code>null</code>
-     */
-    @Override
-    public String getId();
-
-    /**
-     * Returns the type declaration for this object.
-     * 
-     * TODO type declaration should always be available
-     * 
-     * @return type declaration, may be <code>null</code> (no type declaration available)
-     */
-    public GMLObjectType getType();
+    /** Coordinate reference system */
+    CRS,
+    /** Feature ("geo object") */
+    FEATURE,
+    /** Geometry */
+    GEOMETRY,
+    /** Time Object */
+    TIME_OBJECT,
+    /** Topology */
+    TOPOLOGY,
+    /** Style */
+    STYLE,
+    /** Value */
+    VALUE;
 }
