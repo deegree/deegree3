@@ -384,10 +384,7 @@ public class GMLStreamReader {
      */
     public GMLFeatureReader getFeatureReader() {
         if ( featureReader == null ) {
-            featureReader = new GMLFeatureReader( version, schema, idContext, defaultCoordDim, resolver );
-            if ( geometryReader != null ) {
-                featureReader.setGeometryReader( geometryReader );
-            }
+            featureReader = new GMLFeatureReader( this );
         }
         return featureReader;
     }
@@ -425,5 +422,17 @@ public class GMLStreamReader {
             dictReader = new GMLDictionaryReader( version, xmlStream, idContext );
         }
         return dictReader;
+    }
+
+    public GMLReferenceResolver getResolver() {
+        return resolver;
+    }
+
+    public GMLVersion getVersion() {
+        return version;
+    }
+
+    public AppSchema getAppSchema() {
+        return schema;
     }
 }

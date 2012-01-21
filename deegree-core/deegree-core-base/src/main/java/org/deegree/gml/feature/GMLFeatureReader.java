@@ -35,17 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
-import static java.util.Collections.EMPTY_LIST;
-import static javax.xml.stream.XMLStreamConstants.CDATA;
-import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
-import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
-import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -60,38 +50,18 @@ import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML3
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
-import org.apache.xerces.xs.XSAttributeDeclaration;
-import org.apache.xerces.xs.XSAttributeUse;
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.array.TypedObjectNodeArray;
-import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.uom.Measure;
-import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -101,46 +71,31 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.DynamicAppSchema;
 import org.deegree.feature.types.DynamicFeatureType;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.ArrayPropertyType;
-import org.deegree.feature.types.property.CodePropertyType;
-import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.feature.types.property.MeasurePropertyType;
-import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.refs.GeometryReference;
-import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML2GeometryReader;
-import org.deegree.gml.geometry.GML3GeometryReader;
-import org.deegree.gml.geometry.GMLGeometryReader;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.commons.AbstractGMLObjectReader;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream-based reader for GML-encoded features and feature collections.
+ * {@link AbstractGMLObjectReader} for features and feature collections.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLFeatureReader extends XMLAdapter {
+public class GMLFeatureReader extends AbstractGMLObjectReader {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureReader.class );
 
@@ -148,65 +103,14 @@ public class GMLFeatureReader extends XMLAdapter {
 
     private static String GMLID = "id";
 
-    private final String gmlNs;
-
-    private AppSchema schema;
-
-    private final GeometryFactory geomFac;
-
-    private final GMLDocumentIdContext idContext;
-
-    private GMLGeometryReader geomReader;
-
-    private GMLReferenceResolver specialResolver;
-
-    final GMLVersion version;
-
-    private static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
-
     /**
-     * Creates a new {@link GMLFeatureReader} instance that is configured for building features with the specified
-     * feature types.
+     * Creates a new {@link GMLFeatureReader} instance that is configured from the given {@link GMLStreamReader}.
      * 
-     * @param version
-     *            GML version, must not be <code>null</code>
-     * @param schema
-     *            application schema that defines the feature types, can be <code>null</code>. If <code>null</code>, the
-     *            <code>xsi:schemaLocation</code> attribute is used to construct the schema. If this doesn't exist
-     *            either, the parser falls back to dynamic feature type generation from the input GML.
-     * @param idContext
-     *            id context to be used for registering gml:ids (features and geometries) and resolving local xlinks,
-     *            can be <code>null</code>
-     * @param defaultCoordDim
-     *            defaultValue for coordinate dimension, only used when a gml:posList is parsed and no dimension
-     *            information from CRS is available (unknown CRS)
-     * @param resolver
-     *            used for resolving xlink-references, can be <code>null</code>
+     * @param gmlStreamReader
+     *            provides the configuration, must not be <code>null</code>
      */
-    public GMLFeatureReader( GMLVersion version, AppSchema schema, GMLDocumentIdContext idContext, int defaultCoordDim,
-                             GMLReferenceResolver resolver ) {
-        this.schema = schema;
-        this.geomFac = new GeometryFactory();
-        this.idContext = idContext != null ? idContext : new GMLDocumentIdContext( version );
-        this.specialResolver = resolver;
-        if ( version.equals( GMLVersion.GML_2 ) ) {
-            this.geomReader = new GML2GeometryReader( geomFac, idContext );
-        } else {
-            this.geomReader = new GML3GeometryReader( version, geomFac, idContext, defaultCoordDim );
-        }
-        this.version = version;
-        if ( version.equals( GMLVersion.GML_32 ) ) {
-            gmlNs = CommonNamespaces.GML3_2_NS;
-        } else {
-            gmlNs = CommonNamespaces.GMLNS;
-        }
-    }
-
-    /**
-     * @param geomReader
-     */
-    public void setGeometryReader( GMLGeometryReader geomReader ) {
-        this.geomReader = geomReader;
+    public GMLFeatureReader( GMLStreamReader gmlStreamReader ) {
+        super( gmlStreamReader );
     }
 
     /**
@@ -219,15 +123,6 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     /**
-     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifiers and references.
-     * 
-     * @return the {@link GMLDocumentIdContext}, never <code>null</code>
-     */
-    public GMLDocumentIdContext getDocumentIdContext() {
-        return idContext;
-    }
-
-    /**
      * Returns the object representation for the feature (or feature collection) element event that the cursor of the
      * given <code>XMLStreamReader</code> points at.
      * 
@@ -235,7 +130,7 @@ public class GMLFeatureReader extends XMLAdapter {
      *            cursor must point at the <code>START_ELEMENT</code> event of the feature element, afterwards points at
      *            the next event after the <code>END_ELEMENT</code> event of the feature element
      * @param crs
-     *            default CRS for all descendant geometry properties
+     *            default CRS for all descendant geometry properties, can be <code>null</code>
      * @return object representation for the given feature element
      * @throws XMLStreamException
      * @throws UnknownCRSException
@@ -271,7 +166,6 @@ public class GMLFeatureReader extends XMLAdapter {
             LOG.debug( "- found feature type '" + featureName + "'" );
         }
 
-        int propOccurences = 0;
         ICRS activeCRS = crs;
         List<Property> props = new ArrayList<Property>();
         PropertyType lastPropDecl = null;
@@ -288,7 +182,7 @@ public class GMLFeatureReader extends XMLAdapter {
                 property = parsePropertyDynamic( propName, xmlStream, activeCRS, ft, lastPropDecl, appSchema );
                 propDecl = property.getType();
             } else {
-                property = parseProperty( xmlStream, propDecl, activeCRS, propOccurences );
+                property = parseProperty( xmlStream, propDecl, activeCRS );
             }
 
             if ( property != null ) {
@@ -309,9 +203,6 @@ public class GMLFeatureReader extends XMLAdapter {
             xmlStream.nextTag();
             if ( lastPropDecl != propDecl ) {
                 lastPropDecl = propDecl;
-                propOccurences = 1;
-            } else {
-                propOccurences++;
             }
         }
 
@@ -437,7 +328,7 @@ public class GMLFeatureReader extends XMLAdapter {
                     pt = new SimplePropertyType( propName, 1, 1, STRING, null, null );
                 }
 
-                Property prop = parseProperty( xmlStream, pt, activeCRS, 0 );
+                Property prop = parseProperty( xmlStream, pt, activeCRS );
                 extraPropertyList.add( prop );
                 xmlStream.nextTag();
                 continue;
@@ -472,8 +363,7 @@ public class GMLFeatureReader extends XMLAdapter {
                 }
             }
 
-            Property property = parseProperty( xmlStream, findConcretePropertyType( propName, activeDecl ), activeCRS,
-                                               propOccurences );
+            Property property = parseProperty( xmlStream, findConcretePropertyType( propName, activeDecl ), activeCRS );
             if ( property != null ) {
                 // if this is the "gml:boundedBy" property, override active CRS
                 // (see GML spec. (where???))
@@ -519,6 +409,7 @@ public class GMLFeatureReader extends XMLAdapter {
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of a feature collection element
      * @param crs
+     *            default CRS for all descendant geometry properties, can be <code>null</code>
      * @return
      * @throws XMLStreamException
      */
@@ -566,542 +457,13 @@ public class GMLFeatureReader extends XMLAdapter {
         // TODO handle multi-namespace schemas
         AppSchema schema = null;
         try {
-            GMLAppSchemaReader decoder = new GMLAppSchemaReader( version, null, schemaUrls );
+            GMLAppSchemaReader decoder = new GMLAppSchemaReader( gmlStreamReader.getVersion(), null, schemaUrls );
             schema = decoder.extractAppSchema();
         } catch ( Throwable t ) {
             LOG.warn( Messages.getMessage( "BROKEN_SCHEMA", xmlStream.getSystemId(), t.getMessage() ), t );
             return new DynamicAppSchema();
         }
         return schema;
-    }
-
-    final PropertyType findConcretePropertyType( final QName elemName, final PropertyType pt ) {
-        // LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
-
-        for ( final PropertyType substitutionPt : pt.getSubstitutions() ) {
-            // TODO !substitutionPt.isAbstract()
-            if ( elemName.equals( substitutionPt.getName() ) ) {
-                // LOG.debug( "Yep. Substitutable for '" + substitutionPt.getName() + "'" );
-                return substitutionPt;
-            }
-        }
-        // LOG.debug( "Nope." );
-        return null;
-    }
-
-    /**
-     * Returns the object representation for the given property element.
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event of the property, afterwards points at the
-     *            next event after the <code>END_ELEMENT</code> of the property
-     * @param propDecl
-     *            property declaration
-     * @param crs
-     *            default SRS for all a descendant geometry properties
-     * @param occurence
-     * @return object representation for the given property element.
-     * @throws XMLParsingException
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     */
-    public Property parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, ICRS crs, int occurence )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
-
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
-            LOG.debug( "- property declaration: " + propDecl );
-        }
-
-        Property property = null;
-        if ( propDecl instanceof SimplePropertyType ) {
-            property = parseSimpleProperty( xmlStream, (SimplePropertyType) propDecl );
-        } else if ( propDecl instanceof GeometryPropertyType ) {
-            property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
-        } else if ( propDecl instanceof FeaturePropertyType ) {
-            property = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
-        } else if ( propDecl instanceof CustomPropertyType ) {
-            property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs );
-        } else if ( propDecl instanceof EnvelopePropertyType ) {
-            property = parseEnvelopeProperty( xmlStream, (EnvelopePropertyType) propDecl, crs );
-        } else if ( propDecl instanceof CodePropertyType ) {
-            property = parseCodeProperty( xmlStream, (CodePropertyType) propDecl );
-        } else if ( propDecl instanceof MeasurePropertyType ) {
-            property = parseMeasureProperty( xmlStream, (MeasurePropertyType) propDecl );
-        } else if ( propDecl instanceof StringOrRefPropertyType ) {
-            property = parseStringOrRefProperty( xmlStream, (StringOrRefPropertyType) propDecl );
-        } else if ( propDecl instanceof ArrayPropertyType ) {
-            property = parseArrayProperty( xmlStream, (ArrayPropertyType) propDecl, crs );
-        } else {
-            throw new RuntimeException( "Internal error in GMLFeatureReader: property type " + propDecl.getClass()
-                                        + " not handled." );
-        }
-
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( " - parsing property (end): " + xmlStream.getCurrentEventInfo() );
-        }
-        return property;
-    }
-
-    private Property parseSimpleProperty( XMLStreamReaderWrapper xmlStream, SimplePropertyType propDecl )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
-
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        Property property = null;
-        if ( attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue() ) {
-            property = new GenericProperty( propDecl, propName, null, true );
-            // TODO need to check that element is indeed empty?
-            XMLStreamUtils.nextElement( xmlStream );
-        } else {
-            property = createSimpleProperty( xmlStream, propDecl, xmlStream.getElementText().trim() );
-        }
-        return property;
-    }
-
-    private Property parseFeatureProperty( XMLStreamReaderWrapper xmlStream, FeaturePropertyType propDecl, ICRS crs )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
-
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        Property property = null;
-
-        String href = xmlStream.getAttributeValue( XLNNS, "href" );
-        if ( href != null ) {
-            FeatureReference refFeature = null;
-            if ( specialResolver != null ) {
-                refFeature = new FeatureReference( specialResolver, href, xmlStream.getSystemId() );
-            } else {
-                refFeature = new FeatureReference( idContext, href, xmlStream.getSystemId() );
-            }
-            idContext.addReference( refFeature );
-            List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
-            values.add( refFeature );
-            property = new GenericProperty( propDecl, propName, refFeature, attrs, values );
-            XMLStreamUtils.skipElement( xmlStream );
-        } else {
-            // inline feature
-            if ( xmlStream.nextTag() == START_ELEMENT ) {
-                // TODO make this check (no constraints on contained feature
-                // type) better
-                if ( propDecl.getFTName() != null ) {
-                    FeatureType expectedFt = propDecl.getValueFt();
-                    FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName(), true );
-                    if ( !schema.isSubType( expectedFt, presentFt ) ) {
-                        String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE", expectedFt.getName(),
-                                                          propName, presentFt.getName() );
-                        throw new XMLParsingException( xmlStream, msg );
-                    }
-                }
-                Feature subFeature = parseFeature( xmlStream, crs );
-                List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
-                values.add( subFeature );
-                property = new GenericProperty( propDecl, propName, subFeature, attrs, values );
-                xmlStream.skipElement();
-            } else {
-                // yes, empty feature property elements are actually valid
-                property = new GenericProperty( propDecl, propName, null, attrs, EMPTY_LIST );
-            }
-        }
-        return property;
-    }
-
-    private Property parseGeometryProperty( XMLStreamReaderWrapper xmlStream, GeometryPropertyType propDecl, ICRS crs )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
-
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
-        Property property = null;
-
-        String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-        if ( href != null ) {
-            GeometryReference<Geometry> refGeometry = null;
-            // TODO respect allowed geometry types (Point, Surface, etc.)
-            if ( specialResolver != null ) {
-                refGeometry = new GeometryReference<Geometry>( specialResolver, href, xmlStream.getSystemId() );
-            } else {
-                refGeometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
-            }
-            idContext.addReference( refGeometry );
-            property = new GenericProperty( propDecl, propName, refGeometry, isNilled );
-            XMLStreamUtils.skipElement( xmlStream );
-        } else {
-            if ( xmlStream.nextTag() == START_ELEMENT ) {
-                Geometry geometry = geomReader.parse( xmlStream, crs );
-                boolean compatible = false;
-                for ( GeometryType allowedType : propDecl.getAllowedGeometryTypes() ) {
-                    if ( allowedType.isCompatible( geometry ) ) {
-                        compatible = true;
-                        break;
-                    }
-                }
-                // check required for wfs-1.1.0-Transaction-tc10.1.2 (maybe move it to feature store level)
-                if ( !compatible ) {
-                    String msg = "Value for geometry property is invalid. Specified geometry value "
-                                 + geometry.getClass() + " is not allowed here. Allowed geometries are: "
-                                 + propDecl.getAllowedGeometryTypes();
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-                property = new GenericProperty( propDecl, propName, geometry, isNilled );
-                xmlStream.nextTag();
-            } else {
-                // yes, empty geometry property elements are actually valid
-                property = new GenericProperty( propDecl, propName, null, isNilled );
-            }
-        }
-        return property;
-    }
-
-    private Property parseEnvelopeProperty( XMLStreamReaderWrapper xmlStream, EnvelopePropertyType propDecl, ICRS crs )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
-
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
-        Property property = null;
-        Envelope env = null;
-        xmlStream.nextTag();
-        if ( xmlStream.getName().equals( new QName( gmlNs, "Null" ) ) ) {
-            // TODO extract
-            XMLStreamUtils.skipElement( xmlStream );
-        } else if ( xmlStream.getName().equals( new QName( gmlNs, "null" ) ) ) {
-            // GML 2 uses "null" instead of "Null"
-            // TODO
-            XMLStreamUtils.skipElement( xmlStream );
-        } else {
-            env = geomReader.parseEnvelope( xmlStream, crs );
-            property = new GenericProperty( propDecl, propName, env, isNilled );
-        }
-        xmlStream.nextTag();
-        return property;
-    }
-
-    private Property parseCodeProperty( XMLStreamReaderWrapper xmlStream, CodePropertyType propDecl )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
-
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
-        String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
-        String code = xmlStream.getElementText().trim();
-        CodeType value = new CodeType( code, codeSpace );
-        return new GenericProperty( propDecl, propName, value, isNilled );
-    }
-
-    private Property parseMeasureProperty( XMLStreamReaderWrapper xmlStream, MeasurePropertyType propDecl )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
-
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
-        String uom = xmlStream.getAttributeValue( null, "uom" );
-        Measure value = new Measure( xmlStream.getElementText(), uom );
-        return new GenericProperty( propDecl, propName, value, isNilled );
-    }
-
-    private Property parseStringOrRefProperty( XMLStreamReaderWrapper xmlStream, StringOrRefPropertyType propDecl )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
-
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
-        String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-        String string = xmlStream.getElementText().trim();
-        return new GenericProperty( propDecl, propName, new StringOrRef( string, ref ), isNilled );
-    }
-
-    private Property parseArrayProperty( XMLStreamReaderWrapper xmlStream, ArrayPropertyType propDecl, ICRS crs )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
-
-        List<Feature> elems = new ArrayList<Feature>();
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
-        XMLStreamUtils.nextElement( xmlStream );
-        while ( !xmlStream.isEndElement() ) {
-            Feature elem = parseFeature( xmlStream, crs );
-            elems.add( elem );
-            XMLStreamUtils.nextElement( xmlStream );
-        }
-        Feature[] elemArray = elems.toArray( new Feature[elems.size()] );
-        TypedObjectNodeArray<Feature> value = new TypedObjectNodeArray<Feature>( elemArray );
-        return new GenericProperty( propDecl, propName, value, isNilled );
-    }
-
-    private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, ICRS crs )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
-
-        QName propName = xmlStream.getName();
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
-        TypedObjectNode ton = parseComplexXMLElement( xmlStream, propDecl.getElementDecl(), crs );
-        List<TypedObjectNode> children = null;
-        XSElementDeclaration elDecl = null;
-        if ( ton instanceof ElementNode ) {
-            GenericXMLElement xmlEl = (GenericXMLElement) ton;
-            children = xmlEl.getChildren();
-            return new GenericProperty( propDecl, propName, null, attrs, children, xmlEl.getXSType() );
-        }
-        // TODO should the property value actually be null?
-        return new GenericProperty( propDecl, propName, ton, attrs, children, elDecl );
-    }
-
-    /**
-     * <ul>
-     * <li>Precondition: cursor must point at <code>START_ELEMENT</code> event</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event</li>
-     * </ul>
-     */
-    private TypedObjectNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl,
-                                                    ICRS crs )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
-
-        QName startElName = xmlStream.getName();
-
-        TypedObjectNode node = null;
-        XSTypeDefinition xsdValueType = elDecl.getTypeDefinition();
-        if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
-            node = parseSimpleXMLElement( xmlStream, elDecl );
-        } else {
-            ObjectPropertyType propDecl = schema.getCustomElDecl( elDecl );
-            if ( propDecl != null ) {
-                if ( propDecl instanceof GeometryPropertyType ) {
-                    node = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
-                } else if ( propDecl instanceof FeaturePropertyType ) {
-                    node = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
-                } else {
-                    throw new RuntimeException( "Internal error. Unhandled GML object property type "
-                                                + propDecl.getClass().getName() );
-                }
-            } else {
-                node = parseComplexXMLElement( xmlStream, elDecl, crs );
-            }
-        }
-        xmlStream.require( END_ELEMENT, startElName.getNamespaceURI(), startElName.getLocalPart() );
-        return node;
-    }
-
-    private GenericXMLElement parseSimpleXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl )
-                            throws XMLStreamException {
-        XSSimpleTypeDefinition xsType = (XSSimpleTypeDefinition) elDecl.getTypeDefinition();
-        TypedObjectNode child = new PrimitiveValue( xmlStream.getElementText(), new PrimitiveType( xsType ) );
-        return new GenericXMLElement( xmlStream.getName(), elDecl, null, Collections.singletonList( child ) );
-    }
-
-    private TypedObjectNode parseComplexXMLElement( XMLStreamReaderWrapper xmlStream, XSElementDeclaration elDecl,
-                                                    ICRS crs )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
-
-        QName elName = xmlStream.getName();
-        LOG.debug( "Parsing complex XML element " + elName );
-        if ( geomReader.isGeometryElement( xmlStream ) ) {
-            return geomReader.parse( xmlStream );
-        } else if ( schema.getFeatureType( elName ) != null ) {
-            return parseFeature( xmlStream, crs );
-        }
-
-        XSComplexTypeDefinition xsdValueType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
-
-        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, xsdValueType );
-        List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
-
-        Map<QName, XSElementDeclaration> childElementDecls = schema.getAllowedChildElementDecls( xsdValueType );
-
-        switch ( xsdValueType.getContentType() ) {
-        case CONTENTTYPE_ELEMENT: {
-            // TODO respect order + multiplicity of child elements
-            int eventType = 0;
-            while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
-                if ( eventType == START_ELEMENT ) {
-                    QName childElName = xmlStream.getName();
-                    if ( !childElementDecls.containsKey( childElName ) ) {
-                        String msg = "Element '" + childElName + "' is not allowed at this position.";
-                        throw new XMLParsingException( xmlStream, msg );
-                    }
-                    TypedObjectNode child = parseGenericXMLElement( xmlStream, childElementDecls.get( childElName ),
-                                                                    crs );
-                    // LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
-                    children.add( child );
-                }
-            }
-            break;
-        }
-        case CONTENTTYPE_SIMPLE: {
-            int eventType = 0;
-            while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
-                if ( eventType == CDATA || eventType == CHARACTERS ) {
-                    PrimitiveValue pb = new PrimitiveValue( xmlStream.getText(),
-                                                            new PrimitiveType( xsdValueType.getSimpleType() ) );
-                    children.add( pb );
-                } else if ( eventType == START_ELEMENT ) {
-                    QName childElName = xmlStream.getName();
-                    if ( !childElementDecls.containsKey( childElName ) ) {
-                        String msg = "Element '" + childElName + "' is not allowed at this position.";
-                        throw new XMLParsingException( xmlStream, msg );
-                    }
-                }
-            }
-            break;
-        }
-        case CONTENTTYPE_MIXED: {
-            int eventType = 0;
-            while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
-                if ( eventType == START_ELEMENT ) {
-                    QName childElName = xmlStream.getName();
-
-                    if ( !childElementDecls.containsKey( childElName ) ) {
-                        String msg = "Element '" + childElName + "' is not allowed at this position.";
-                        throw new XMLParsingException( xmlStream, msg );
-                    }
-                    TypedObjectNode child = parseGenericXMLElement( xmlStream, childElementDecls.get( childElName ),
-                                                                    crs );
-                    children.add( child );
-                } else if ( eventType == CDATA || eventType == CHARACTERS ) {
-                    // mixed content -> use string as primitive type
-                    String s = xmlStream.getText();
-                    if ( !s.trim().isEmpty() ) {
-                        children.add( new PrimitiveValue( s ) );
-                    }
-                }
-            }
-            break;
-        }
-        case CONTENTTYPE_EMPTY: {
-            if ( XMLStreamUtils.nextElement( xmlStream ) != END_ELEMENT ) {
-                throw new XMLParsingException( xmlStream, "Empty element types don't allow content." );
-            }
-            break;
-        }
-        }
-
-        return new GenericXMLElement( xmlStream.getName(), elDecl, attrs, children );
-    }
-
-    @Deprecated
-    private Map<QName, PrimitiveValue> parseAttributes( XMLStreamReader xmlStream, XSComplexTypeDefinition xsdValueType ) {
-
-        Map<QName, XSAttributeDeclaration> attrDecls = new HashMap<QName, XSAttributeDeclaration>();
-        for ( int i = 0; i < xsdValueType.getAttributeUses().getLength(); i++ ) {
-            XSAttributeDeclaration attrDecl = ( (XSAttributeUse) xsdValueType.getAttributeUses().item( i ) ).getAttrDeclaration();
-            QName name = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-            attrDecls.put( name, attrDecl );
-        }
-
-        Map<QName, PrimitiveValue> attrs = new LinkedHashMap<QName, PrimitiveValue>();
-        for ( int i = 0; i < xmlStream.getAttributeCount(); i++ ) {
-            QName name = xmlStream.getAttributeName( i );
-            XSAttributeDeclaration attrDecl = attrDecls.get( name );
-            if ( attrDecl == null && !XSINS.equals( name.getNamespaceURI() ) ) {
-                String msg = "Attribute '" + name + "' is not allowed at this position.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
-            if ( attrDecl != null && !XSINS.equals( name.getNamespaceURI() ) ) {
-                String value = xmlStream.getAttributeValue( i );
-                // TODO evaluate and check primitive type information
-                PrimitiveValue xmlValue = new PrimitiveValue( value, new PrimitiveType( attrDecl.getTypeDefinition() ) );
-                attrs.put( name, xmlValue );
-            }
-        }
-
-        for ( int i = 0; i < xsdValueType.getAttributeUses().getLength(); i++ ) {
-            XSAttributeUse attrUse = (XSAttributeUse) xsdValueType.getAttributeUses().item( i );
-            if ( attrUse.getRequired() ) {
-                XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
-                QName name = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-                if ( !attrs.containsKey( name ) ) {
-                    String msg = "Required attribute '" + name + "' is missing.";
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-            }
-        }
-
-        // TODO check if element actually is nillable
-        String nilled = xmlStream.getAttributeValue( XSINS, "nil" );
-        if ( nilled != null ) {
-            PrimitiveValue xmlValue = new PrimitiveValue( nilled, new PrimitiveType( BOOLEAN ) );
-            attrs.put( new QName( XSINS, "nil", "xsi" ), xmlValue );
-        }
-        return attrs;
-    }
-
-    /**
-     * Parses / validates the attributes for the current START_ELEMENT event.
-     * 
-     * @param xmlStream
-     *            XML stream reader, must point at at START_ELEMENT event (cursor is not moved)
-     * @param elDecl
-     *            element declaration, can be <code>null</code> (no validation will be performed)
-     * @return attributes, never <code>null</code>
-     */
-    private Map<QName, PrimitiveValue> parseAttributes( XMLStreamReader xmlStream, XSElementDeclaration elDecl ) {
-
-        Map<QName, XSAttributeDeclaration> attrDecls = null;
-        if ( elDecl != null && elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) {
-            XSComplexTypeDefinition xsdValueType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
-            attrDecls = new HashMap<QName, XSAttributeDeclaration>();
-            for ( int i = 0; i < xsdValueType.getAttributeUses().getLength(); i++ ) {
-                XSAttributeDeclaration attrDecl = ( (XSAttributeUse) xsdValueType.getAttributeUses().item( i ) ).getAttrDeclaration();
-                QName name = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-                attrDecls.put( name, attrDecl );
-            }
-        }
-
-        Map<QName, PrimitiveValue> attrs = new LinkedHashMap<QName, PrimitiveValue>();
-        for ( int i = 0; i < xmlStream.getAttributeCount(); i++ ) {
-            QName name = xmlStream.getAttributeName( i );
-            String value = xmlStream.getAttributeValue( i );
-            if ( XSI_NIL.equals( name ) ) {
-                if ( elDecl != null && !elDecl.getNillable() ) {
-                    String msg = "Attribute '" + name + "' is not allowed at this position.";
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-                attrs.put( XSI_NIL, new PrimitiveValue( value, new PrimitiveType( BOOLEAN ) ) );
-            } else if ( attrDecls != null ) {
-                XSAttributeDeclaration attrDecl = attrDecls.get( name );
-                if ( attrDecl == null ) {
-                    String msg = "Attribute '" + name + "' is not allowed at this position.";
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-                if ( attrDecl != null ) {
-                    // TODO evaluate and check primitive type information
-                    PrimitiveValue xmlValue = new PrimitiveValue( value,
-                                                                  new PrimitiveType( attrDecl.getTypeDefinition() ) );
-                    attrs.put( name, xmlValue );
-                }
-            } else {
-                PrimitiveValue xmlValue = new PrimitiveValue( value );
-                attrs.put( name, xmlValue );
-            }
-        }
-
-        if ( attrDecls != null ) {
-            XSComplexTypeDefinition xsdValueType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
-            for ( int i = 0; i < xsdValueType.getAttributeUses().getLength(); i++ ) {
-                XSAttributeUse attrUse = (XSAttributeUse) xsdValueType.getAttributeUses().item( i );
-                if ( attrUse.getRequired() ) {
-                    XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
-                    QName name = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-                    if ( !attrs.containsKey( name ) ) {
-                        String msg = "Required attribute '" + name + "' is missing.";
-                        throw new XMLParsingException( xmlStream, msg );
-                    }
-                }
-            }
-        }
-        return attrs;
-    }
-
-    private SimpleProperty createSimpleProperty( XMLStreamReader xmlStream, SimplePropertyType pt, String s )
-                            throws XMLParsingException {
-
-        SimpleProperty prop = null;
-        try {
-            prop = new SimpleProperty( pt, s );
-        } catch ( IllegalArgumentException e ) {
-            String msg = "Property '" + pt.getName() + "' is not valid: " + e.getMessage();
-            throw new XMLParsingException( xmlStream, msg );
-        }
-        return prop;
     }
 
     /**

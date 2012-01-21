@@ -550,13 +550,12 @@ class TransactionHandler {
                     GMLFeatureReader featureReader = gmlReader.getFeatureReader();
 
                     ICRS crs = master.getDefaultQueryCrs();
-                    Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt,
-                                                                 crs, 1 );
+                    Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt, crs );
 
                     // TODO make this hack unnecessary
                     TypedObjectNode propValue = prop.getValue();
-                    if ( pt instanceof CustomPropertyType && propValue instanceof GenericXMLElement) {
-                        prop.setValue( ((GenericXMLElement) propValue).getValue());
+                    if ( pt instanceof CustomPropertyType && propValue instanceof GenericXMLElement ) {
+                        prop.setValue( ( (GenericXMLElement) propValue ).getValue() );
                     }
 
                     newProperties.add( prop );

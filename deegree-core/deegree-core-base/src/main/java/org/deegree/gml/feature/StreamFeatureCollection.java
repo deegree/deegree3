@@ -197,7 +197,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
 
             PropertyType pt = featureReader.findConcretePropertyType( propName, activeDecl );
             if ( pt instanceof FeaturePropertyType ) {
-                Property property = featureReader.parseProperty( xmlStream, pt, activeCRS, propOccurences );
+                Property property = featureReader.parseProperty( xmlStream, pt, activeCRS );
                 if ( property != null ) {
                     feature = (Feature) property.getValue();
                 }
@@ -206,7 +206,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
                 LOG.debug( "Switching to feature array state" );
                 featureArrayMode = true;
             } else {
-                Property property = featureReader.parseProperty( xmlStream, pt, activeCRS, propOccurences );
+                Property property = featureReader.parseProperty( xmlStream, pt, activeCRS );
                 if ( property != null ) {
                     // if this is the "gml:boundedBy" property, override active CRS
                     // (see GML spec. (where???))
@@ -238,7 +238,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
         final Feature nextFeature;
         try {
             nextFeature = read();
-        } catch ( IOException e ) {            
+        } catch ( IOException e ) {
             throw new RuntimeException();
         }
         return new Iterator<Feature>() {
