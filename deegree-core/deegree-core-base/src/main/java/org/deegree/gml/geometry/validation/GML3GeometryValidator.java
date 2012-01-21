@@ -37,6 +37,7 @@ package org.deegree.gml.geometry.validation;
 
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,14 +51,14 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.validation.GeometryValidationEventHandler;
 import org.deegree.geometry.validation.GeometryValidator;
-import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.slf4j.Logger;
@@ -95,12 +96,14 @@ public class GML3GeometryValidator extends XMLAdapter {
      * @param defaultCoordDim
      *            defaultValue for coordinate dimension, only used when a posList is parsed and no dimension information
      *            from CRS is available (unknown CRS)
+     * @throws XMLStreamException 
      */
     public GML3GeometryValidator( GMLVersion version, XMLStreamReaderWrapper xmlStream,
-                                  GMLValidationEventHandler gmlErrorHandler, int defaultCoordDim ) {
+                                  GMLValidationEventHandler gmlErrorHandler, int defaultCoordDim ) throws XMLStreamException {
         this.xmlStream = xmlStream;
-        geomParser = new GML3GeometryReader( version, new GeometryFactory(),
-                                             new GMLDocumentIdContext( GMLVersion.GML_31 ), defaultCoordDim );
+        GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( GML_31, xmlStream );
+        gmlStreamReader.setDefaultCoordinateDimension( defaultCoordDim );
+        geomParser = (GML3GeometryReader) gmlStreamReader.getGeometryReader();
         this.gmlErrorHandler = gmlErrorHandler;
     }
 

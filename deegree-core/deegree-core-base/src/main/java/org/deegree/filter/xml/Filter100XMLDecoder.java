@@ -43,6 +43,8 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeVa
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,10 +92,10 @@ import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Sub;
-import org.deegree.filter.expression.custom.CustomExpressionManager;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.custom.CustomExpression;
+import org.deegree.filter.expression.custom.CustomExpressionManager;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.i18n.Messages;
@@ -115,6 +117,7 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -807,8 +810,9 @@ public class Filter100XMLDecoder {
         nextElement( xmlStream );
 
         // TODO remove this after GML parser is adapted
-        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-        GML2GeometryReader geomParser = new GML2GeometryReader();
+        GMLStreamReader gmlStream = createGMLStreamReader( GML_2, xmlStream );
+        GML2GeometryReader geomParser = (GML2GeometryReader) gmlStream.getGeometryReader();
+        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( gmlStream.getXMLReader(), null );
 
         // always first parameter: 'ogc:PropertyName'
         ValueReference param1 = parsePropertyName( xmlStream );

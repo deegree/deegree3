@@ -111,7 +111,6 @@ import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.gml.feature.GMLFeatureReader;
-import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,8 +138,6 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     protected final GMLDocumentIdContext idContext;
 
-    protected final GMLGeometryReader geomReader;
-
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
     // TODO should be final, but is currently modified by GMLFeatureReader
@@ -158,7 +155,6 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         this.idContext = gmlStreamReader.getIdContext();
         // TODO
         this.schema = gmlStreamReader.getAppSchema();
-        this.geomReader = gmlStreamReader.getGeometryReader();
         this.gmlNs = gmlStreamReader.getVersion().getNamespace();
     }
 
@@ -357,7 +353,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             // TODO
             XMLStreamUtils.skipElement( xmlStream );
         } else {
-            env = geomReader.parseEnvelope( xmlStream, crs );
+            env = gmlStreamReader.getGeometryReader().parseEnvelope( xmlStream, crs );
             property = new GenericProperty( propDecl, propName, env, isNilled );
         }
         xmlStream.nextTag();
@@ -481,8 +477,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
         QName elName = xmlStream.getName();
         LOG.debug( "Parsing complex XML element " + elName );
-        if ( geomReader.isGeometryElement( xmlStream ) ) {
-            return geomReader.parse( xmlStream );
+        if ( gmlStreamReader.getGeometryReader().isGeometryElement( xmlStream ) ) {
+            return gmlStreamReader.getGeometryReader().parse( xmlStream );
         } else if ( schema.getFeatureType( elName ) != null ) {
             return gmlStreamReader.getFeatureReader().parseFeature( xmlStream, crs );
         }

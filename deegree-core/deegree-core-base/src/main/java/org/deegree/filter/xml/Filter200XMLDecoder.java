@@ -1168,7 +1168,7 @@ public class Filter200XMLDecoder {
 
     private static Geometry parseGeomOrEnvelope( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        GMLGeometryReader gmlReader = GMLGeometryVersionHelper.getGeometryReader( xmlStream.getName() );
+        GMLGeometryReader gmlReader = GMLGeometryVersionHelper.getGeometryReader( xmlStream.getName(), xmlStream );
         try {
             return gmlReader.parseGeometryOrEnvelope( new XMLStreamReaderWrapper( xmlStream, null ), null );
         } catch ( XMLParsingException e ) {

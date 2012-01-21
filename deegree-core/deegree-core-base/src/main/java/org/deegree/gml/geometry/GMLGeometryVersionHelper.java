@@ -42,9 +42,12 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +64,7 @@ public class GMLGeometryVersionHelper {
 
     private static Logger LOG = LoggerFactory.getLogger( GMLGeometryVersionHelper.class );
 
-    public static GMLGeometryReader getGeometryReader( QName elName ) {
+    public static GMLGeometryReader getGeometryReader( QName elName, XMLStreamReader xmlStream ) throws XMLStreamException {
 
         String ns = elName.getNamespaceURI();
         GMLVersion gmlVersion = null;
@@ -77,10 +80,6 @@ public class GMLGeometryVersionHelper {
             LOG.warn( "Unable to determine GML version for element: " + elName + ". Falling back to GML 2." );
             gmlVersion = GML_2;
         }
-
-        if ( gmlVersion == GML_2 ) {
-            return new GML2GeometryReader( new GeometryFactory(), new GMLDocumentIdContext( gmlVersion ) );
-        }
-        return new GML3GeometryReader( gmlVersion, new GeometryFactory(), new GMLDocumentIdContext( gmlVersion ), 2 );
+        return GMLInputFactory.createGMLStreamReader( gmlVersion, xmlStream ).getGeometryReader();
     }
 }

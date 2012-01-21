@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
+import static org.deegree.gml.GMLVersion.GML_2;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +62,8 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
@@ -121,7 +125,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Box" ), xmlReader.getName() );
 
-        Envelope envelope = new GML2GeometryReader().parseEnvelope( xmlReader, null );
+        Envelope envelope = getGML2GeometryReader(xmlReader).parseEnvelope( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Box" ), xmlReader.getName() );
         Assert.assertEquals( 0.0, envelope.getMin().get0(), DELTA );
@@ -172,7 +176,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Point" ), xmlReader.getName() );
 
-        Point point = new GML2GeometryReader().parsePoint( xmlReader, null );
+        Point point = getGML2GeometryReader(xmlReader).parsePoint( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Point" ), xmlReader.getName() );
         Assert.assertEquals( 5.0, point.get0(), DELTA );
@@ -211,7 +215,7 @@ public class GML2GeometryTest extends TestCase {
                                                                        this.getClass().getResource( BASE_DIR
                                                                                                                             + POINT2_FILE ) );
         xmlReader.nextTag();
-        Point point = new GML2GeometryReader().parsePoint( xmlReader, null );
+        Point point = getGML2GeometryReader(xmlReader).parsePoint( xmlReader, null );
         Assert.assertEquals( 5.0, point.get0(), DELTA );
         Assert.assertEquals( 30.0, point.get1(), DELTA );
 
@@ -250,7 +254,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Polygon" ), xmlReader.getName() );
 
-        Polygon polygon = new GML2GeometryReader().parsePolygon( xmlReader, null );
+        Polygon polygon = getGML2GeometryReader(xmlReader).parsePolygon( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Polygon" ), xmlReader.getName() );
 
@@ -315,7 +319,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "LineString" ), xmlReader.getName() );
 
-        LineString lineString = new GML2GeometryReader().parseLineString( xmlReader, null );
+        LineString lineString = getGML2GeometryReader(xmlReader).parseLineString( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "LineString" ), xmlReader.getName() );
 
@@ -363,7 +367,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "MultiGeometry" ), xmlReader.getName() );
 
-        MultiGeometry<?> multiGeometry = new GML2GeometryReader().parseMultiGeometry( xmlReader, null );
+        MultiGeometry<?> multiGeometry = getGML2GeometryReader(xmlReader).parseMultiGeometry( xmlReader, null );
         assertEquals( "c731", multiGeometry.getId() );
 
         Point firstMember = (Point) multiGeometry.get( 0 );
@@ -423,7 +427,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "MultiLineString" ), xmlReader.getName() );
 
-        MultiLineString multiLineString = new GML2GeometryReader().parseMultiLineString( xmlReader, null );
+        MultiLineString multiLineString = getGML2GeometryReader(xmlReader).parseMultiLineString( xmlReader, null );
         LineString firstMember = multiLineString.get( 0 );
 
         Points controlPoints = firstMember.getControlPoints();
@@ -478,7 +482,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "MultiPoint" ), xmlReader.getName() );
 
-        MultiPoint multiPoint = new GML2GeometryReader().parseMultiPoint( xmlReader, null );
+        MultiPoint multiPoint = getGML2GeometryReader(xmlReader).parseMultiPoint( xmlReader, null );
 
         Point firstMember = multiPoint.get( 0 );
         comparePoint( 5.0, 40.0, firstMember );
@@ -522,7 +526,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "MultiPolygon" ), xmlReader.getName() );
 
-        MultiPolygon multiPolygon = new GML2GeometryReader().parseMultiPolygon( xmlReader, null );
+        MultiPolygon multiPolygon = getGML2GeometryReader(xmlReader).parseMultiPolygon( xmlReader, null );
 
         Polygon firstMember = multiPolygon.get( 0 );
         Points points = firstMember.getExteriorRing().getControlPoints();
@@ -573,6 +577,11 @@ public class GML2GeometryTest extends TestCase {
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
+    }
+
+    private GML2GeometryReader getGML2GeometryReader( XMLStreamReaderWrapper xmlReader ) throws XMLStreamException {
+        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_2, xmlReader);
+        return (GML2GeometryReader) gmlStream.getGeometryReader();
     }
 
     private void comparePoint( double x, double y, Point point ) {

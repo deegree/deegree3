@@ -64,7 +64,7 @@ import org.deegree.gml.geometry.GMLGeometryReader;
 /**
  * Stream-based reader for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
  * 
- * <h4>Initialization</h4> A {@link GMLStreamReader} always works on top of a {@link XMLStreamReader} instance. Use the
+ * <h4>Initialization</h4> A {@link GMLStreamReader} works by wrapping a {@link XMLStreamReader} instance. Use the
  * methods provided in {@link GMLInputFactory} to create a {@link GMLStreamReader} instance.
  * 
  * <pre>
@@ -88,7 +88,7 @@ import org.deegree.gml.geometry.GMLGeometryReader;
  * 
  * Depending on the actual element, a corresponding {@link GMLObject} instance will be created ({@link Geometry},
  * {@link FeatureCollection}, {@link Feature}, etc.). In order to work with the object, it has to be cast to the
- * concrete type. Alternatively (if one knows the type of element to be read beforehand), use on of the specific
+ * concrete type. Alternatively (if one knows the category of GML element to be read beforehand), use on of the specific
  * <code>read</code> methods to avoid the cast:
  * 
  * <pre>
@@ -131,6 +131,8 @@ public class GMLStreamReader {
 
     private ICRS defaultCRS;
 
+    private GeometryFactory geomFac;
+
     private int defaultCoordDim = 2;
 
     private GMLGeometryReader geometryReader;
@@ -151,6 +153,15 @@ public class GMLStreamReader {
         this.version = version;
         this.xmlStream = xmlStream;
         this.idContext = new GMLDocumentIdContext( version );
+        this.geomFac = new GeometryFactory();
+    }
+
+    public GMLVersion getVersion() {
+        return version;
+    }
+
+    public AppSchema getAppSchema() {
+        return schema;
     }
 
     /**
@@ -165,6 +176,18 @@ public class GMLStreamReader {
         idContext.setApplicationSchema( schema );
     }
 
+    public GMLReferenceResolver getResolver() {
+        return resolver;
+    }
+
+    public int getDefaultCoordinateDimension() {
+        return defaultCoordDim;
+    }
+
+    public void setDefaultCoordinateDimension( int defaultCoordDim ) {
+        this.defaultCoordDim = defaultCoordDim;
+    }
+
     /**
      * Controls the default CRS that is assumed when GML objects (especially geometries) without SRS information are
      * parsed.
@@ -176,6 +199,10 @@ public class GMLStreamReader {
         this.defaultCRS = defaultCRS;
     }
 
+    public GeometryFactory getGeometryFactory() {
+        return geomFac;
+    }
+
     /**
      * Controls the {@link GeometryFactory} instance to be used for creating geometries.
      * 
@@ -183,18 +210,7 @@ public class GMLStreamReader {
      *            geometry factory, can be <code>null</code> (use a default factory)
      */
     public void setGeometryFactory( GeometryFactory geomFac ) {
-        switch ( version ) {
-        case GML_2: {
-            geometryReader = new GML2GeometryReader( geomFac, idContext );
-            break;
-        }
-        case GML_30:
-        case GML_31:
-        case GML_32: {
-            geometryReader = new GML3GeometryReader( version, geomFac, idContext, defaultCoordDim );
-            break;
-        }
-        }
+        this.geomFac = geomFac;
     }
 
     /**
@@ -398,13 +414,13 @@ public class GMLStreamReader {
         if ( geometryReader == null ) {
             switch ( version ) {
             case GML_2: {
-                geometryReader = new GML2GeometryReader( new GeometryFactory(), idContext );
+                geometryReader = new GML2GeometryReader( this );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
-                geometryReader = new GML3GeometryReader( version, new GeometryFactory(), idContext, defaultCoordDim );
+                geometryReader = new GML3GeometryReader( this );
                 break;
             }
             }
@@ -422,17 +438,5 @@ public class GMLStreamReader {
             dictReader = new GMLDictionaryReader( version, xmlStream, idContext );
         }
         return dictReader;
-    }
-
-    public GMLReferenceResolver getResolver() {
-        return resolver;
-    }
-
-    public GMLVersion getVersion() {
-        return version;
-    }
-
-    public AppSchema getAppSchema() {
-        return schema;
     }
 }

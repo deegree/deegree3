@@ -48,7 +48,6 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
@@ -60,6 +59,7 @@ import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.Triangle;
+import org.deegree.gml.GMLStreamReader;
 
 /**
  * Handles the parsing of <code>gml:_SurfacePatch</code> elements, i.e concrete element declarations that are in the
@@ -87,11 +87,10 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
 
     /**
      * @param geometryParser
-     * @param geomFac
-     * @param defaultCoordDim 
+     * @param gmlStream
      */
-    GML3SurfacePatchReader( GML3GeometryReader geometryParser, GeometryFactory geomFac, int defaultCoordDim ) {
-        super( geometryParser.version, geomFac, defaultCoordDim );
+    GML3SurfacePatchReader( GML3GeometryReader geometryParser, GMLStreamReader gmlStream ) {
+        super( gmlStream );
         this.geometryParser = geometryParser;
     }
 
@@ -165,8 +164,8 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
      * 
      * @param xmlStream
      * @param defaultCRS
-     *            default CoordinateSystem for the geometry, this is only used if the "gml:Cone" has no <code>srsName</code>
-     *            attribute
+     *            default CoordinateSystem for the geometry, this is only used if the "gml:Cone" has no
+     *            <code>srsName</code> attribute
      * @return corresponding {@link Cone} object
      * @throws XMLStreamException
      * @throws XMLParsingException

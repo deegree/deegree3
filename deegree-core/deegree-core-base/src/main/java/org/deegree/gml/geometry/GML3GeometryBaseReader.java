@@ -48,7 +48,6 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.uom.Angle;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.CRS;
@@ -56,7 +55,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.gml.GMLVersion;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.commons.AbstractGMLObjectReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,17 +68,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-class GML3GeometryBaseReader {
+class GML3GeometryBaseReader extends AbstractGMLObjectReader {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryBaseReader.class );
-
-    protected final GMLVersion version;
-
-    /**
-     * Namespace for the parsed GML elements, either {@link CommonNamespaces#GMLNS} or
-     * {@link CommonNamespaces#GML3_2_NS}.
-     */
-    protected final String gmlNs;
 
     protected final GeometryFactory geomFac;
 
@@ -90,11 +82,10 @@ class GML3GeometryBaseReader {
 
     private final int defaultCoordDim;
 
-    protected GML3GeometryBaseReader( GMLVersion version, GeometryFactory geomFac, int defaultCoordDim ) {
-        this.version = version;
-        this.gmlNs = version.getNamespace();
-        this.geomFac = geomFac;
-        this.defaultCoordDim = defaultCoordDim;
+    protected GML3GeometryBaseReader( GMLStreamReader gmlStream ) {
+        super( gmlStream );
+        this.geomFac = gmlStream.getGeometryFactory();
+        this.defaultCoordDim = gmlStream.getDefaultCoordinateDimension();
         GML_X = new QName( gmlNs, "X" );
         GML_Y = new QName( gmlNs, "Y" );
         GML_Z = new QName( gmlNs, "Z" );

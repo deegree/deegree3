@@ -57,10 +57,8 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.feature.types.AppSchema;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -105,8 +103,7 @@ import org.deegree.geometry.refs.PointReference;
 import org.deegree.geometry.refs.PolygonReference;
 import org.deegree.geometry.refs.SolidReference;
 import org.deegree.geometry.refs.SurfaceReference;
-import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.GMLVersion;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.props.GMLStdPropsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,10 +166,6 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     private final GML3CurveSegmentReader curveSegmentParser;
 
     private final GML3SurfacePatchReader surfacePatchParser;
-
-    private final GMLDocumentIdContext idContext;
-
-    private final AppSchema schema = null;
 
     // local names of all concrete elements substitutable for "gml:_Curve"
     private static final Set<String> curveElements = new HashSet<String>();
@@ -247,35 +240,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     }
 
     /**
-     * Creates a new {@link GML3GeometryReader} instance.
+     * Creates a new {@link GML3GeometryReader} for the given {@link GMLStreamReader}.
      * 
-     * @param version
-     *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
-     * @param geomFac
-     *            geometry factory to be used for creating geometry objects, can be <code>null</code>
-     * @param idContext
-     *            id context for keeping track of objects and references, can be <code>null</code>
+     * @param gmlStream
+     *            gml stream reader, must not be <code>null</code>
      */
-    public GML3GeometryReader( GMLVersion version, GeometryFactory geomFac, GMLDocumentIdContext idContext,
-                               int defaultCoordDim ) {
-        super( version, geomFac != null ? geomFac : new GeometryFactory(), defaultCoordDim );
-        if ( idContext != null ) {
-            this.idContext = idContext;
-        } else {
-            this.idContext = new GMLDocumentIdContext( version );
-        }
-        propsParser = new GMLStdPropsReader( version );
-        curveSegmentParser = new GML3CurveSegmentReader( this, this.geomFac, defaultCoordDim );
-        surfacePatchParser = new GML3SurfacePatchReader( this, this.geomFac, defaultCoordDim );
-    }
-
-    /**
-     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifieres and references.
-     * 
-     * @return the {@link GMLDocumentIdContext}, never <code>null</code>
-     */
-    public GMLDocumentIdContext getDocumentIdContext() {
-        return idContext;
+    public GML3GeometryReader( GMLStreamReader gmlStream ) {
+        super( gmlStream );
+        propsParser = new GMLStdPropsReader( gmlStream.getVersion() );
+        curveSegmentParser = new GML3CurveSegmentReader( this, gmlStream );
+        surfacePatchParser = new GML3SurfacePatchReader( this, gmlStream );
     }
 
     public boolean isGeometryElement( XMLStreamReader reader ) {
@@ -324,7 +298,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @return true, if the element is a GML 3.1.1 geometry or a GML 3.1.1 envelope element, false otherwise
      */
     public boolean isGeometryOrEnvelopeElement( QName elName ) {
-        if (elName.getLocalPart().equals( "Envelope" ) && gmlNs.equals( elName ) ) {
+        if ( elName.getLocalPart().equals( "Envelope" ) && gmlNs.equals( elName ) ) {
             return true;
         }
         return isGeometryElement( elName );
@@ -2646,5 +2620,13 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             throw new IllegalArgumentException( msg );
         }
         return gid;
+    }
+
+    GML3CurveSegmentReader getCurveSegmentReader() {
+        return curveSegmentParser;
+    }
+
+    GML3SurfacePatchReader getSurfacePatchReader() {
+        return surfacePatchParser;
     }
 }

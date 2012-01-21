@@ -246,7 +246,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
                 propDecl = ( (DynamicFeatureType) ft ).addSimplePropertyDeclaration( lastPropDecl, propName );
             }
         } else {
-            if ( geomReader.isGeometryElement( xmlStream ) ) {
+            if ( gmlStreamReader.getGeometryReader().isGeometryElement( xmlStream ) ) {
                 LOG.debug( "Detected geometry property '" + propName + "'." );
                 propDecl = ( (DynamicFeatureType) ft ).addGeometryPropertyDeclaration( lastPropDecl, propName );
             } else {
@@ -263,7 +263,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
         if ( propDecl instanceof SimplePropertyType ) {
             value = new PrimitiveValue( text.toString().trim(), new PrimitiveType( STRING ) );
         } else if ( propDecl instanceof GeometryPropertyType ) {
-            value = geomReader.parse( xmlStream, activeCRS );
+            value = gmlStreamReader.getGeometryReader().parse( xmlStream, activeCRS );
             XMLStreamUtils.nextElement( xmlStream );
         } else if ( propDecl instanceof FeaturePropertyType ) {
             String href = propAttributes.get( new QName( XLNNS, "href" ) );

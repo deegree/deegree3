@@ -44,6 +44,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeVa
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,8 +96,8 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.Sub;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.expression.custom.CustomExpressionManager;
 import org.deegree.filter.expression.custom.CustomExpression;
+import org.deegree.filter.expression.custom.CustomExpressionManager;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.i18n.Messages;
@@ -118,7 +119,8 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLVersion;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -832,7 +834,8 @@ public class Filter110XMLDecoder {
         nextElement( xmlStream );
 
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-        GML3GeometryReader geomParser = new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 );
+        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_31, xmlStream );
+        GML3GeometryReader geomParser = (GML3GeometryReader) gmlStream.getGeometryReader();
 
         try {
             switch ( type ) {

@@ -39,6 +39,7 @@ import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.Assert;
 
@@ -61,7 +62,8 @@ import org.deegree.geometry.primitive.segments.Geodesic;
 import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
-import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.junit.Before;
 import org.junit.Test;
@@ -247,8 +249,7 @@ public class GML3CurveSegmentReaderTest {
     public void parseCircleByCenterPoint()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
-        ArcByCenterPoint arc = (ArcByCenterPoint) getParser().parseCurveSegment(
-                                                                                 getReader( "CircleByCenterPoint.gml" ),
+        ArcByCenterPoint arc = (ArcByCenterPoint) getParser().parseCurveSegment( getReader( "CircleByCenterPoint.gml" ),
                                                                                  CRSManager.getCRSRef( "EPSG:4326" ) );
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().get0() );
@@ -334,8 +335,7 @@ public class GML3CurveSegmentReaderTest {
     public void parseLineStringSegment()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
-        LineStringSegment arc = (LineStringSegment) getParser().parseCurveSegment(
-                                                                                   getReader( "LineStringSegment.gml" ),
+        LineStringSegment arc = (LineStringSegment) getParser().parseCurveSegment( getReader( "LineStringSegment.gml" ),
                                                                                    null );
         Assert.assertEquals( 3, arc.getControlPoints().size() );
         Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).get0() );
@@ -368,7 +368,14 @@ public class GML3CurveSegmentReaderTest {
 
     private GML3CurveSegmentReader getParser()
                             throws FactoryConfigurationError {
-        new GMLDocumentIdContext( GMLVersion.GML_31 );
-        return new GML3CurveSegmentReader( new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ), geomFac, 2 );
+        XMLStreamReader xmlStream = null;
+        GMLStreamReader gmlStream = null;
+        try {
+            // TODO yes, this is evil (null XMLStreamReader). Get rid of this method and deprecated constructor.
+            gmlStream = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
+        } catch ( XMLStreamException e ) {
+            // should never happen
+        }
+        return ( (GML3GeometryReader) gmlStream.getGeometryReader() ).getCurveSegmentReader();
     }
 }

@@ -76,6 +76,10 @@ public class GMLInputFactory {
      */
     public static GMLStreamReader createGMLStreamReader( GMLVersion version, XMLStreamReader xmlStream )
                             throws XMLStreamException {
+        // TODO remove this (get rid of deprecated GML3GeometryReader constructor first)
+        if (xmlStream == null) {
+            return new GMLStreamReader( version, null );
+        }
         if ( xmlStream.getEventType() == XMLStreamConstants.START_DOCUMENT ) {
             xmlStream.nextTag();
         }

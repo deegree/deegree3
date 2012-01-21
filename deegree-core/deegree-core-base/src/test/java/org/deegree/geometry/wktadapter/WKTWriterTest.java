@@ -49,9 +49,7 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.TestCase;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
@@ -64,12 +62,11 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.CurveSegment;
-import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReaderTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -294,7 +291,7 @@ public class WKTWriterTest extends TestCase {
 
     @Test
     public void test_EnvelopeDKT()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -329,7 +326,7 @@ public class WKTWriterTest extends TestCase {
 
     @Test
     public void test_Envelope_FLAGEnvelope()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_ENVELOPE );
@@ -483,7 +480,7 @@ public class WKTWriterTest extends TestCase {
 
     @Test
     public void test_Envelope()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
@@ -525,13 +522,11 @@ public class WKTWriterTest extends TestCase {
 
     // ############################## PARSING THE ENVELOPE-FILE
     private Geometry parseEnvelope( String fileName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
 
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       this.getClass().getResource( BASE_DIR + fileName ) );
-        xmlReader.nextTag();
-        Envelope envelope = new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parseEnvelope( xmlReader, null );
-        return envelope;
+        URL gmlDocURL = GML3GeometryReaderTest.class.getResource( BASE_DIR + fileName );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, gmlDocURL );
+        return gmlReader.readGeometryOrEnvelope();
     }
 
     private String writeSegments( Points points ) {

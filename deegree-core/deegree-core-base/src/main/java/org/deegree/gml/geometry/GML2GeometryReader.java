@@ -74,8 +74,8 @@ import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.refs.LineStringReference;
 import org.deegree.geometry.refs.PointReference;
 import org.deegree.geometry.refs.PolygonReference;
-import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.GMLVersion;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.commons.AbstractGMLObjectReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +98,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class GML2GeometryReader implements GMLGeometryReader {
+public class GML2GeometryReader extends AbstractGMLObjectReader implements GMLGeometryReader {
 
     private static Logger LOG = LoggerFactory.getLogger( GML2GeometryReader.class );
 
@@ -154,31 +154,15 @@ public class GML2GeometryReader implements GMLGeometryReader {
 
     private GeometryFactory geomFac;
 
-    private GMLDocumentIdContext idContext;
-
     /**
+     * Creates a new {@link GML2GeometryReader} for the given {@link GMLStreamReader}.
      * 
+     * @param gmlStream
+     *            gml stream reader, must not be <code>null</code>
      */
-    public GML2GeometryReader() {
-        this( new GeometryFactory(), new GMLDocumentIdContext( GMLVersion.GML_2 ) );
-    }
-
-    /**
-     * @param geomFac
-     * @param idContext
-     */
-    public GML2GeometryReader( GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
-        this.geomFac = geomFac;
-        this.idContext = idContext;
-    }
-
-    /**
-     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifieres and references.
-     * 
-     * @return the {@link GMLDocumentIdContext}, never <code>null</code>
-     */
-    public GMLDocumentIdContext getDocumentIdContext() {
-        return idContext;
+    public GML2GeometryReader( GMLStreamReader gmlStream ) {
+        super( gmlStream );
+        this.geomFac = gmlStream.getGeometryFactory();
     }
 
     /**
@@ -988,5 +972,4 @@ public class GML2GeometryReader implements GMLGeometryReader {
         }
         return gid;
     }
-
 }

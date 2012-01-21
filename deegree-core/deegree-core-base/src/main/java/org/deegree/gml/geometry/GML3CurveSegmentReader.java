@@ -51,7 +51,6 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -73,6 +72,7 @@ import org.deegree.geometry.primitive.segments.Knot;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
+import org.deegree.gml.GMLStreamReader;
 
 /**
  * Handles the parsing of <code>gml:_CurveSegment</code> elements, i.e concrete element declarations that are in the
@@ -110,8 +110,8 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @param geometryParser
      * @param geomFac
      */
-    GML3CurveSegmentReader( GML3GeometryReader geometryParser, GeometryFactory geomFac, int defaultCoordDim ) {
-        super( geometryParser.version, geomFac, defaultCoordDim );
+    GML3CurveSegmentReader( GML3GeometryReader geometryParser, GMLStreamReader gmlStream ) {
+        super( gmlStream );
         this.geometryParser = geometryParser;
     }
 

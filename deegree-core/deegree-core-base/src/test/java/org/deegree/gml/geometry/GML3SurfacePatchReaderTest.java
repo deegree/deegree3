@@ -39,6 +39,7 @@ import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.Assert;
 
@@ -46,13 +47,14 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.patches.Cone;
 import org.deegree.geometry.primitive.patches.Cylinder;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.Triangle;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.junit.Test;
 
@@ -139,7 +141,15 @@ public class GML3SurfacePatchReaderTest {
     }
 
     private GML3SurfacePatchReader getPatchParser() {
-        GeometryFactory geomFac = new GeometryFactory();
-        return new GML3SurfacePatchReader( new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ), geomFac, 2 );
+
+        XMLStreamReader xmlStream = null;
+        GMLStreamReader gmlStream = null;
+        try {
+            // TODO yes, this is evil (null XMLStreamReader). Get rid of this method and deprecated constructor.
+            gmlStream = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
+        } catch ( XMLStreamException e ) {
+            // should never happen
+        }
+        return ( (GML3GeometryReader) gmlStream.getGeometryReader() ).getSurfacePatchReader();
     }
 }

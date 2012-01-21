@@ -55,10 +55,11 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
@@ -171,11 +172,9 @@ public class GMLGeometryWriterTest {
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String source : sources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-            GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
             URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
-            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
-            xmlReader.nextTag();
-            Geometry geom = parser.parse( xmlReader, null );
+            GMLStreamReader parser = getGML31StreamReader( docURL );
+            Geometry geom = parser.readGeometry();
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -212,16 +211,13 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String patchSource : patchSources ) {
-            GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-            GeometryFactory geomFactory = new GeometryFactory();
-            GML3GeometryReader geometryParser = new GML3GeometryReader( GMLVersion.GML_31, geomFactory, idContext, 2 );
-            GML3SurfacePatchReader parser = new GML3SurfacePatchReader( geometryParser, geomFactory, 2 );
             URL docURL = GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource );
             if ( docURL == null )
                 LOG.debug( "patch dir: " + GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource ) );
-            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
-            xmlReader.nextTag();
-            SurfacePatch surfPatch = parser.parseSurfacePatch( xmlReader, null );
+            GMLStreamReader parser = getGML31StreamReader( docURL );
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( parser.getXMLReader(), docURL.toString() );
+            SurfacePatch surfPatch = ( (GML3GeometryReader) parser.getGeometryReader() ).getSurfacePatchReader().parseSurfacePatch( xmlReader,
+                                                                                                                                    null );
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -258,14 +254,11 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String segmentSource : segmentSources ) {
-            GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-            GeometryFactory geomFactory = new GeometryFactory();
-            GML3GeometryReader geometryParser = new GML3GeometryReader( GMLVersion.GML_31, geomFactory, idContext, 2 );
-            GML3CurveSegmentReader parser = new GML3CurveSegmentReader( geometryParser, geomFactory, 2 );
             URL docURL = GMLGeometryWriterTest.class.getResource( SEGMENT_DIR + segmentSource );
-            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
-            xmlReader.nextTag();
-            CurveSegment curveSegment = parser.parseCurveSegment( xmlReader, null );
+            GMLStreamReader parser = getGML31StreamReader( docURL );
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( parser.getXMLReader(), docURL.toString() );
+            CurveSegment curveSegment = ( (GML3GeometryReader) parser.getGeometryReader() ).getCurveSegmentReader().parseCurveSegment( xmlReader,
+                                                                                                                                       null );
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -302,12 +295,9 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, TransformationException {
         for ( String envelopeSource : envelopeSources ) {
-            GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-            GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
             URL docURL = GMLGeometryWriterTest.class.getResource( DIR + envelopeSource );
-            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
-            xmlReader.nextTag();
-            Geometry geom = parser.parseEnvelope( xmlReader, null );
+            GMLStreamReader parser = getGML31StreamReader( docURL );
+            Geometry geom = parser.readGeometryOrEnvelope();
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -346,14 +336,10 @@ public class GMLGeometryWriterTest {
                             ReferenceResolvingException {
 
         String source = "XLinkMultiGeometry1.gml";
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
         URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
-        xmlReader.nextTag();
-        Geometry geom = parser.parseMultiGeometry( xmlReader, null );
-
-        idContext.resolveLocalRefs();
+        GMLStreamReader parser = getGML31StreamReader( docURL );
+        Geometry geom = parser.readGeometry();
+        parser.getIdContext().resolveLocalRefs();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -379,14 +365,10 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, TransformationException, ReferenceResolvingException {
         String source = "XLinkMultiGeometry2.gml";
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
         URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
-        xmlReader.nextTag();
-        Geometry geom = parser.parseMultiCurve( xmlReader, null );
-
-        idContext.resolveLocalRefs();
+        GMLStreamReader parser = getGML31StreamReader( docURL );
+        Geometry geom = parser.readGeometry();
+        parser.getIdContext().resolveLocalRefs();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -412,14 +394,10 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, TransformationException, ReferenceResolvingException {
         String source = "XLinkMultiLineString.gml";
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
         URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
-        xmlReader.nextTag();
-        Geometry geom = parser.parseMultiLineString( xmlReader, null );
-
-        idContext.resolveLocalRefs();
+        GMLStreamReader parser = getGML31StreamReader( docURL );
+        Geometry geom = parser.readGeometry();
+        parser.getIdContext().resolveLocalRefs();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -439,6 +417,11 @@ public class GMLGeometryWriterTest {
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
 
+    }
+
+    private GMLStreamReader getGML31StreamReader( URL docURL )
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        return GMLInputFactory.createGMLStreamReader( GML_31, docURL );
     }
 
 }
