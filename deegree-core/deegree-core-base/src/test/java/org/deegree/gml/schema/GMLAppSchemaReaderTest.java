@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import static javax.xml.namespace.QName.valueOf;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -56,7 +57,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * Tests that check the extraction of {@link FeatureType}s from various GML application schemas.
+ * Tests that check the correct extraction of {@link GMLObjectType}s from various GML application schemas.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -248,7 +249,7 @@ public class GMLAppSchemaReaderTest {
     }
 
     @Test
-    public void testParsingAIXM()
+    public void testParsingAIXMNumberOfFeatureTypes()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -257,10 +258,56 @@ public class GMLAppSchemaReaderTest {
         AppSchema schema = adapter.extractAppSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 157, fts.length );
+    }
+
+    @Test
+    public void testParsingAIXMNumberOfGeometryTypes()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
         Assert.assertEquals( 35, schema.getGeometryTypes().size() );
+    }
+
+    @Test
+    public void testParsingAIXMElevatedPoint()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
 
         QName elevatedCurveName = QName.valueOf( "{http://www.aixm.aero/schema/5.1}ElevatedCurve" );
-        GMLObjectType geometryType = schema.getGeometryType( elevatedCurveName );
-        Assert.assertEquals( 13, geometryType.getPropertyDeclarations().size() );
+        GMLObjectType gt = schema.getGeometryType( elevatedCurveName );
+        Assert.assertEquals( 13, gt.getPropertyDeclarations().size() );
+        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}metaDataProperty" ),
+                      gt.getPropertyDeclarations().get( 0 ).getName() );
+        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}description" ),
+                      gt.getPropertyDeclarations().get( 1 ).getName() );
+        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}descriptionReference" ),
+                      gt.getPropertyDeclarations().get( 2 ).getName() );
+        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}identifier" ),
+                      gt.getPropertyDeclarations().get( 3 ).getName() );
+        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}name" ),
+                      gt.getPropertyDeclarations().get( 4 ).getName() );
+        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}segments" ),
+                      gt.getPropertyDeclarations().get( 5 ).getName() );
+        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}horizontalAccuracy" ),
+                      gt.getPropertyDeclarations().get( 6 ).getName() );
+        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}annotation" ),
+                      gt.getPropertyDeclarations().get( 7 ).getName() );
+        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}elevation" ),
+                      gt.getPropertyDeclarations().get( 8 ).getName() );
+        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}geoidUndulation" ),
+                      gt.getPropertyDeclarations().get( 9 ).getName() );
+        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}verticalDatum" ),
+                      gt.getPropertyDeclarations().get( 10 ).getName() );
+        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}verticalAccuracy" ),
+                      gt.getPropertyDeclarations().get( 11 ).getName() );
+        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}extension" ),
+                      gt.getPropertyDeclarations().get( 12 ).getName() );
     }
 }
