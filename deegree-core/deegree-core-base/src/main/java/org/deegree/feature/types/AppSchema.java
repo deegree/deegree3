@@ -200,4 +200,12 @@ public interface AppSchema {
      * @return the geometry type with the given name, or <code>null</code> if no such geometry type exists
      */
     GMLObjectType getGeometryType( QName name );
+    
+    List<GMLObjectType> getSubstitutions( QName name );
+
+    List<GMLObjectType> getDirectSubstitutions( QName name );
+    
+    AppSchemaGeometryHierarchy getGeometryHierarchy();
+
+    Map<GMLObjectType, GMLObjectType> getGeometryToSuperType();
 }

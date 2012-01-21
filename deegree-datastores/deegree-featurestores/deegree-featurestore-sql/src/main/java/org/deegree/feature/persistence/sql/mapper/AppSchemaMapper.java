@@ -188,7 +188,8 @@ public class AppSchemaMapper {
         BlobMapping blobMapping = createBlobMapping ? generateBlobMapping() : null;
 
         this.mappedSchema = new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping,
-                                                 blobMapping, geometryParams, true, null, null );
+                                                 blobMapping, geometryParams, true, null, appSchema.getGeometryTypes(),
+                                                 appSchema.getGeometryToSuperType() );
     }
 
     /**
@@ -234,9 +235,7 @@ public class AppSchemaMapper {
         String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
         if ( useIntegerFids ) {
             IDGenerator generator = new AutoIDGenerator();
-            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>(
-                                                                                         new SQLIdentifier(
-                                                                                                            "gid" ),
+            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( "gid" ),
                                                                                          BaseType.INTEGER );
             fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
         } else {

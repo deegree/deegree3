@@ -109,6 +109,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.schema.WellKnownGMLTypes;
@@ -131,6 +132,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
     private static final Logger LOG = LoggerFactory.getLogger( AbstractGMLObjectReader.class );
 
     protected final String gmlNs;
+    
+    protected final GMLVersion version;
 
     protected final GMLStreamReader gmlStreamReader;
 
@@ -156,6 +159,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         // TODO
         this.schema = gmlStreamReader.getAppSchema();
         this.gmlNs = gmlStreamReader.getVersion().getNamespace();
+        this.version = gmlStreamReader.getVersion();
     }
 
     /**

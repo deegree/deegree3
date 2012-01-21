@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -99,6 +100,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     private GMLObjectType type;
 
+    private List<Property> props;
+    
     /** Reference to a coordinate system. */
     protected ICRS crs;
 
@@ -295,6 +298,16 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
         throw new UnsupportedOperationException( "#buildJTSGeometry() is not implemented for "
                                                  + this.getClass().getName() );
+    }
+
+    @Override
+    public List<Property> getProperties() {
+        return props;
+    }
+
+    @Override
+    public void setProperties( List<Property> props ) {
+        this.props = props;
     }
 
     @Override

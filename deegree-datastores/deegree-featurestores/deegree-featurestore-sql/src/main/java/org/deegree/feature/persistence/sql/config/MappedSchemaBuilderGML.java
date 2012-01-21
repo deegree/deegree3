@@ -270,7 +270,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         GMLSchemaInfoSet xsModel = gmlSchema.getGMLSchema();
         return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping, blobMapping,
-                                    geometryParams, deleteCascadingByDB, null, gmlSchema.getGeometryTypes() );
+                                    geometryParams, deleteCascadingByDB, null, gmlSchema.getGeometryTypes(),
+                                    gmlSchema.getGeometryToSuperType() );
     }
 
     private AppSchema buildGMLSchema( String configURL, List<String> gmlSchemas )

@@ -109,9 +109,13 @@ public class GMLAppSchemaReader {
 
     // key: name of feature type, value: feature type
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
+    
+    private Map<QName, GMLObjectType> typeNameToType = new HashMap<QName, GMLObjectType>();
 
     // key: name of ft A, value: name of ft B (A is in substitionGroup B)
     private Map<QName, QName> ftNameToSubstitutionGroupName = new HashMap<QName, QName>();
+
+    private Map<QName, QName> geometryNameToSubstitutionGroupName = new HashMap<QName, QName>();
 
     private Map<QName, PropertyType> propNameToGlobalDecl = new HashMap<QName, PropertyType>();
 
@@ -126,8 +130,6 @@ public class GMLAppSchemaReader {
     private int prefixIndex = 0;
 
     private final GMLVersion gmlVersion;
-
-    private final String gmlNs;
 
     /**
      * Creates a new {@link GMLAppSchemaReader} from the given schema URL(s).
@@ -149,7 +151,6 @@ public class GMLAppSchemaReader {
 
         analyzer = new GMLSchemaInfoSet( gmlVersion, schemaUrls );
         this.gmlVersion = analyzer.getVersion();
-        gmlNs = this.gmlVersion.getNamespace();
 
         for ( Entry<String, String> nsToPrefix : analyzer.getNamespacePrefixes().entrySet() ) {
             this.nsToPrefix.put( nsToPrefix.getKey(), nsToPrefix.getValue() );
@@ -187,7 +188,12 @@ public class GMLAppSchemaReader {
         for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
             QName elName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
             geometryNameToGeometryElement.put( elName, elementDecl );
-            LOG.debug( "Geometry element " + elName );
+            XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
+            if ( substitutionElement != null ) {
+                QName substitutionElementName = createQName( substitutionElement.getNamespace(),
+                                                             substitutionElement.getName() );
+                geometryNameToSubstitutionGroupName.put( elName, substitutionElementName );
+            }
         }
     }
 
@@ -211,7 +217,6 @@ public class GMLAppSchemaReader {
 
         analyzer = new GMLSchemaInfoSet( gmlVersion, inputs );
         this.gmlVersion = analyzer.getVersion();
-        gmlNs = this.gmlVersion.getNamespace();
 
         for ( Entry<String, String> nsToPrefix : analyzer.getNamespacePrefixes().entrySet() ) {
             this.nsToPrefix.put( nsToPrefix.getKey(), nsToPrefix.getValue() );
@@ -244,7 +249,12 @@ public class GMLAppSchemaReader {
         for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
             QName elName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
             geometryNameToGeometryElement.put( elName, elementDecl );
-            LOG.debug( "Geometry element " + elName );
+            XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
+            if ( substitutionElement != null ) {
+                QName substitutionElementName = createQName( substitutionElement.getNamespace(),
+                                                             substitutionElement.getName() );
+                geometryNameToSubstitutionGroupName.put( elName, substitutionElementName );
+            }
         }
     }
 
@@ -317,10 +327,20 @@ public class GMLAppSchemaReader {
 
         List<GMLObjectType> geometryTypes = new ArrayList<GMLObjectType>();
         for ( QName geometryName : geometryNameToGeometryElement.keySet() ) {
-            geometryTypes.add( buildGeometryType( geometryNameToGeometryElement.get( geometryName ) ) );
+            GMLObjectType type = buildGeometryType( geometryNameToGeometryElement.get( geometryName ) );
+            geometryTypes.add( type );
+            typeNameToType.put( geometryName, type );
         }
 
-        return new GenericAppSchema( fts, ftSubstitution, prefixToNs, analyzer, geometryTypes );
+        Map<GMLObjectType, GMLObjectType> typeToSuperType = new HashMap<GMLObjectType, GMLObjectType>();
+        for ( QName ftName : geometryNameToSubstitutionGroupName.keySet() ) {
+            QName substitutionFtName = geometryNameToSubstitutionGroupName.get( ftName );
+            if ( substitutionFtName != null ) {
+                typeToSuperType.put( typeNameToType.get( ftName ), typeNameToType.get( substitutionFtName ) );
+            }
+        }
+
+        return new GenericAppSchema( fts, ftSubstitution, prefixToNs, analyzer, geometryTypes, typeToSuperType );
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {

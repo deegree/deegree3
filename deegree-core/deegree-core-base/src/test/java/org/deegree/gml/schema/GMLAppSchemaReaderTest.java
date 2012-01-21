@@ -37,6 +37,7 @@ package org.deegree.gml.schema;
 
 import static javax.xml.namespace.QName.valueOf;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -249,7 +250,7 @@ public class GMLAppSchemaReaderTest {
     }
 
     @Test
-    public void testParsingAIXMNumberOfFeatureTypes()
+    public void testAIXMNumberOfFeatureTypes()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -261,7 +262,7 @@ public class GMLAppSchemaReaderTest {
     }
 
     @Test
-    public void testParsingAIXMNumberOfGeometryTypes()
+    public void testAIXMNumberOfGeometryTypes()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -272,7 +273,35 @@ public class GMLAppSchemaReaderTest {
     }
 
     @Test
-    public void testParsingAIXMElevatedPoint()
+    public void testAIXMCustomGeometryHierarchy()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
+       
+        // gml:Point
+        GMLObjectType pointType = schema.getGeometryType( valueOf( "{http://www.opengis.net/gml/3.2}Point" ) );
+        assertNotNull( pointType );
+        List<GMLObjectType> pointSubstitutions = schema.getSubstitutions( pointType.getName() );
+        assertEquals( 2, pointSubstitutions.size() );
+
+        // gml:Curve
+        GMLObjectType curveType = schema.getGeometryType( valueOf( "{http://www.opengis.net/gml/3.2}Curve" ) );
+        assertNotNull( curveType );
+        List<GMLObjectType> curveSubstitutions = schema.getSubstitutions( curveType.getName() );
+        assertEquals( 2, curveSubstitutions.size() );
+
+        // gml:Surface
+        GMLObjectType surfaceType = schema.getGeometryType( valueOf( "{http://www.opengis.net/gml/3.2}Surface" ) );
+        assertNotNull( surfaceType );
+        List<GMLObjectType> surfaceSubstitutions = schema.getSubstitutions( surfaceType.getName() );
+        assertEquals( 5, surfaceSubstitutions.size() );                
+    }
+
+    @Test
+    public void testAIXMElevatedPoint()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 

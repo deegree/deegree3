@@ -37,9 +37,12 @@ package org.deegree.gml.geometry;
 
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.ARC;
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.LINE_STRING_SEGMENT;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_32;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -48,10 +51,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeGeometry;
@@ -85,6 +90,8 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.deegree.gml.schema.GMLAppSchemaReaderTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -848,6 +855,33 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
     }
 
+    @Test
+    public void parseCustomAIXMElevatedPoint()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaUrl = GMLAppSchemaReaderTest.class.getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
+
+        String fileName = "Custom_AIXM_ElevatedPoint.gml";
+        GMLStreamReader gmlStream = createGMLStreamReader( GML_32, this.getClass().getResource( BASE_DIR + fileName ) );
+        gmlStream.setApplicationSchema( schema );
+
+        XMLStreamReader xmlReader = gmlStream.getXMLReader();
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.aixm.aero/schema/5.1", "ElevatedPoint" ), xmlReader.getName() );
+        Assert.assertTrue( gmlStream.isGeometryElement() );
+        Geometry geom = gmlStream.readGeometry();
+        List<Property> props = geom.getProperties();
+        Assert.assertNotNull( props );
+        Assert.assertEquals( 1, props.size() );
+        Assert.assertEquals( QName.valueOf( "{http://www.aixm.aero/schema/5.1}elevation" ), props.get( 0 ).getName() );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.aixm.aero/schema/5.1", "ElevatedPoint" ), xmlReader.getName() );
+    }
+
     private GMLStreamReader getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31,
@@ -855,4 +889,4 @@ public class GML3GeometryReaderTest {
                                                                                                                          + fileName ) );
         return gmlStream;
     }
- }
+}

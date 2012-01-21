@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
+import java.util.List;
+
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -192,7 +195,24 @@ public interface Geometry extends GMLObject {
     public void setCoordinateSystem( ICRS crs );
 
     /**
+     * Returns the attached properties.
+     * 
+     * @return attached properties, can be <code>null</code> (no properties attached)
+     */
+    public List<Property> getProperties();
+    
+    /**
+     * Sets the attached properties.
+     * 
+     * @param props
+     *            properties to be attached
+     */
+    public void setProperties( List<Property> props );
+    
+    /**
      * Sets the attached properties (e.g. GML standard properties, such as <code>gml:name</code>).
+     * 
+     * TODO deprecate this
      * 
      * @param props
      *            properties to be attached

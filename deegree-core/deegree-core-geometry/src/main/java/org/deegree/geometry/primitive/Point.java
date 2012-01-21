@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
+import java.util.List;
+
+import org.deegree.commons.tom.gml.property.Property;
+
 /**
  * 0-dimensional primitive.
  * 

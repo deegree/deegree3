@@ -182,4 +182,28 @@ public class DynamicAppSchema implements AppSchema {
     public GMLObjectType getGeometryType( QName name ) {
         return null;
     }
+
+    @Override
+    public List<GMLObjectType> getSubstitutions( QName name ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<GMLObjectType> getDirectSubstitutions( QName name ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public AppSchemaGeometryHierarchy getGeometryHierarchy() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Map<GMLObjectType, GMLObjectType> getGeometryToSuperType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

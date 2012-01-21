@@ -120,9 +120,10 @@ public class MappedAppSchema extends GenericAppSchema {
                             Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel, FeatureTypeMapping[] ftMappings,
                             BBoxTableMapping bboxMapping, BlobMapping blobMapping,
                             GeometryStorageParams geometryParams, boolean deleteCascadingByDB,
-                            RelationalModel relationalModel, List<GMLObjectType> geometryTypes ) {
+                            RelationalModel relationalModel, List<GMLObjectType> geometryTypes,
+                            Map<GMLObjectType, GMLObjectType> typeToSuperType ) {
 
-        super( fts, ftToSuperFt, prefixToNs, xsModel, geometryTypes );
+        super( fts, ftToSuperFt, prefixToNs, xsModel, geometryTypes, typeToSuperType );
         if ( ftMappings != null ) {
             for ( FeatureTypeMapping ftMapping : ftMappings ) {
                 ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );

@@ -36,10 +36,13 @@
 
 package org.deegree.geometry.refs;
 
+import java.util.List;
+
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.gml.GMLStdProps;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -180,6 +183,16 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
         return getReferencedObject().getUnion( geometry );
     }
 
+    @Override
+    public List<Property> getProperties() {
+        return getReferencedObject().getProperties();
+    }
+
+    @Override
+    public void setProperties( List<Property> props ) {
+        getReferencedObject().setProperties( props );        
+    }
+    
     @Override
     public GMLStdProps getGMLProperties() {
         return getReferencedObject().getGMLProperties();

@@ -37,7 +37,9 @@ package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,13 +52,17 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeCurve;
@@ -369,28 +375,56 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
+        AppSchemaGeometryHierarchy geomHierarchy = getGeometryHierarchy();
 
-        if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
-            String msg = "Invalid gml:_Geometry element: " + xmlStream.getName()
-                         + "' is not a GML geometry element. Not in the gml namespace.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
+        if ( geomHierarchy != null ) {
+            GMLObjectType type = schema.getGeometryType( xmlStream.getName() );
+            if ( type == null ) {
+                String msg = "Invalid geometry element: '" + xmlStream.getName()
+                             + "'. Not defined in application/core schema in use.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
 
-        String name = xmlStream.getLocalName();
-        if ( primitiveElements.contains( name ) ) {
-            geometry = parseGeometricPrimitive( xmlStream, defaultCRS );
-        } else if ( ringElements.contains( name ) ) {
-            geometry = parseAbstractRing( xmlStream, defaultCRS );
-        } else if ( aggregateElements.contains( name ) ) {
-            geometry = parseGeometricAggregate( xmlStream, defaultCRS );
-        } else if ( "GeometricComplex".equals( name ) ) {
-            geometry = parseGeometricComplex( xmlStream, defaultCRS );
-        } else if ( implictGeometryElements.contains( name ) ) {
-            geometry = parseImplicitGeometry( xmlStream, defaultCRS );
+            QName elName = xmlStream.getName();
+            String name = xmlStream.getLocalName();
+            if ( geomHierarchy.getPrimitiveElementNames().contains( elName ) ) {
+                geometry = parseGeometricPrimitive( xmlStream, defaultCRS );
+            } else if ( ringElements.contains( name ) ) {
+                geometry = parseAbstractRing( xmlStream, defaultCRS );
+            } else if ( aggregateElements.contains( name ) ) {
+                geometry = parseGeometricAggregate( xmlStream, defaultCRS );
+            } else if ( "GeometricComplex".equals( name ) ) {
+                geometry = parseGeometricComplex( xmlStream, defaultCRS );
+            } else if ( implictGeometryElements.contains( name ) ) {
+                geometry = parseImplicitGeometry( xmlStream, defaultCRS );
+            } else {
+                String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                             + "' does not denote a well-known/application-schema defined GML geometry element.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
         } else {
-            String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' does not denote a GML 3.1.1 geometry element.";
-            throw new XMLParsingException( xmlStream, msg );
+            if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
+                String msg = "Invalid gml:_Geometry element: " + xmlStream.getName()
+                             + "' is not a GML geometry element. Not in the gml namespace.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+
+            String name = xmlStream.getLocalName();
+            if ( primitiveElements.contains( name ) ) {
+                geometry = parseGeometricPrimitive( xmlStream, defaultCRS );
+            } else if ( ringElements.contains( name ) ) {
+                geometry = parseAbstractRing( xmlStream, defaultCRS );
+            } else if ( aggregateElements.contains( name ) ) {
+                geometry = parseGeometricAggregate( xmlStream, defaultCRS );
+            } else if ( "GeometricComplex".equals( name ) ) {
+                geometry = parseGeometricComplex( xmlStream, defaultCRS );
+            } else if ( implictGeometryElements.contains( name ) ) {
+                geometry = parseImplicitGeometry( xmlStream, defaultCRS );
+            } else {
+                String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                             + "' does not denote a well-known GML geometry element.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
         }
         return geometry;
     }
@@ -497,28 +531,42 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         GeometricPrimitive primitive = null;
+        AppSchemaGeometryHierarchy geomHierarchy = getGeometryHierarchy();
 
-        if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
-            String msg = "Invalid gml:_GeometricPrimitive element: " + xmlStream.getName()
-                         + "' is not a GML geometry element. Not in the gml namespace.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
-
-        String name = xmlStream.getLocalName();
-        if ( name.equals( "Point" ) ) {
-            primitive = parsePoint( xmlStream, defaultCRS );
-        } else if ( curveElements.contains( name ) ) {
-            primitive = parseAbstractCurve( xmlStream, defaultCRS );
-        } else if ( ringElements.contains( name ) ) {
-            primitive = parseAbstractRing( xmlStream, defaultCRS );
-        } else if ( surfaceElements.contains( name ) ) {
-            primitive = parseAbstractSurface( xmlStream, defaultCRS );
-        } else if ( solidElements.contains( name ) ) {
-            primitive = parseAbstractSolid( xmlStream, defaultCRS );
+        if ( geomHierarchy != null ) {
+            QName elName = xmlStream.getName();
+            if ( geomHierarchy.getPointElementNames().contains( elName ) ) {
+                primitive = parsePoint( xmlStream, defaultCRS );
+            } else if ( geomHierarchy.getCurveElementNames().contains( elName ) ) {
+                primitive = parseAbstractCurve( xmlStream, defaultCRS );
+            } else if ( geomHierarchy.getRingElementNames().contains( elName ) ) {
+                primitive = parseAbstractRing( xmlStream, defaultCRS );
+            } else if ( geomHierarchy.getSurfaceElementNames().contains( elName ) ) {
+                primitive = parseAbstractSurface( xmlStream, defaultCRS );
+            } else if ( geomHierarchy.getSolidElementNames().contains( elName ) ) {
+                primitive = parseAbstractSolid( xmlStream, defaultCRS );
+            } else {
+                String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                             + "' does not denote a well-known/application-schema defined GML geometry element.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
         } else {
-            String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' is not a GML 3.1.1 primitive geometry element (gml:_GeometricPrimitive).";
-            throw new XMLParsingException( xmlStream, msg );
+            String name = xmlStream.getLocalName();
+            if ( name.equals( "Point" ) ) {
+                primitive = parsePoint( xmlStream, defaultCRS );
+            } else if ( curveElements.contains( name ) ) {
+                primitive = parseAbstractCurve( xmlStream, defaultCRS );
+            } else if ( ringElements.contains( name ) ) {
+                primitive = parseAbstractRing( xmlStream, defaultCRS );
+            } else if ( surfaceElements.contains( name ) ) {
+                primitive = parseAbstractSurface( xmlStream, defaultCRS );
+            } else if ( solidElements.contains( name ) ) {
+                primitive = parseAbstractSolid( xmlStream, defaultCRS );
+            } else {
+                String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                             + "' is not a well-known GML primitive geometry element (gml:_GeometricPrimitive).";
+                throw new XMLParsingException( xmlStream, msg );
+            }
         }
 
         return primitive;
@@ -991,6 +1039,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Point point = null;
+        GMLObjectType type = getType( xmlStream );
+        QName elName = xmlStream.getName();
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
@@ -1024,9 +1074,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                          + " or 'gml:coord'.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, gmlNs, "Point" );
+       
+        nextElement( xmlStream );
+
+        List<Property> props = readAdditionalProperties( xmlStream, type, crs );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         point.setGMLProperties( standardProps );
+        point.setType( type );
+        point.setProperties (props);
+
         idContext.addObject( point );
         return point;
     }
@@ -2628,5 +2685,47 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
     GML3SurfacePatchReader getSurfacePatchReader() {
         return surfacePatchParser;
+    }
+
+    private AppSchemaGeometryHierarchy getGeometryHierarchy() {
+        if ( schema != null ) {
+            return schema.getGeometryHierarchy();
+        }
+        return null;
+    }
+
+    private GMLObjectType getType( XMLStreamReader xmlStream ) {
+
+        GMLObjectType type = null;
+
+        if ( schema != null && schema.getGMLSchema() != null ) {
+            QName name = xmlStream.getName();
+            type = schema.getGeometryType( name );
+            if ( type == null ) {
+                String msg = "GML geometry element '" + name + "' is not defined in application schema.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        }
+        return type;
+    }
+
+    private List<Property> readAdditionalProperties( XMLStreamReaderWrapper xmlStream, GMLObjectType type, ICRS crs )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+        List<Property> props = null;
+        if ( type != null ) {
+            props = new ArrayList<Property>();
+            while ( xmlStream.isStartElement() ) {
+                QName propName = xmlStream.getName();
+                // TODO cope with order, cardinality and substitutable properties
+                PropertyType pt = type.getPropertyDeclaration( propName );
+                if ( pt == null ) {
+                    String msg = "Geometry property element '" + propName + "' is not defined in application schema.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                props.add( parseProperty( xmlStream, pt, crs ) );
+                XMLStreamUtils.nextElement( xmlStream );
+            }
+        }
+        return props;
     }
 }

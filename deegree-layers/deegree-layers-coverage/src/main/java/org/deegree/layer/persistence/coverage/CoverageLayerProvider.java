@@ -135,7 +135,7 @@ public class CoverageLayerProvider implements LayerStoreProvider {
         FeatureType featureType = new GenericFeatureType( new QName( "http://www.deegree.org/app", "data", "app" ),
                                                           pts, false );
         // needed to get the back reference to the schema into the featureType (it's a strange mechanism indeed)
-        new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null );
+        new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null, null );
         md.getFeatureTypes().add( featureType );
 
         if ( sstore != null ) {
@@ -186,7 +186,7 @@ public class CoverageLayerProvider implements LayerStoreProvider {
                 FeatureType featureType = new GenericFeatureType( new QName( "http://www.deegree.org/app", "data",
                                                                              "app" ), pts, false );
                 // needed to get the back reference to the schema into the featureType (it's a strange mechanism indeed)
-                new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null );
+                new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null, null );
                 md.getFeatureTypes().add( featureType );
 
                 if ( smd.getEnvelope() == null ) {
