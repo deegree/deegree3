@@ -95,7 +95,7 @@ import org.deegree.gml.geometry.GMLGeometryReader;
  * <code>read</code> methods to avoid the cast:
  * 
  * <pre>
- * ...
+ * ..
  *   Feature feature = gmlReader.readFeature();
  * ...
  * </pre>
@@ -159,6 +159,11 @@ public class GMLStreamReader {
         this.geomFac = new GeometryFactory();
     }
 
+    /**
+     * Returns the version of the GML input.
+     * 
+     * @return the version of the GML input, never <code>null</code>
+     */
     public GMLVersion getVersion() {
         return version;
     }
