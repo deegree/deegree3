@@ -51,6 +51,7 @@ import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.feature.types.AppSchema;
+import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.gml.GMLVersion;
@@ -180,6 +181,25 @@ public class GMLAppSchemaReaderTest {
     }
 
     @Test
+    public void testCite100GeometryFeatureCollection()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = this.getClass().getResource( "cite/all.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
+        FeatureCollectionType ft = (FeatureCollectionType) schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/gml}_FeatureCollection" ) );
+        System.out.println (ft);
+        ft = (FeatureCollectionType) schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/cite/geometry}GeometryFeatureCollection" ) );
+        System.out.println (ft);
+        List<PropertyType> newPropertyDecls = schema.getNewPropertyDecls( ft );
+        System.out.println (newPropertyDecls.size());
+        for ( PropertyType pt : newPropertyDecls ) {
+            System.out.println (pt);    
+        }
+    }
+
+    @Test
     public void testParsingXPlanGML20()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
@@ -280,7 +300,7 @@ public class GMLAppSchemaReaderTest {
         String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
-       
+
         // gml:Point
         GMLObjectType pointType = schema.getGeometryType( valueOf( "{http://www.opengis.net/gml/3.2}Point" ) );
         assertNotNull( pointType );
@@ -297,7 +317,7 @@ public class GMLAppSchemaReaderTest {
         GMLObjectType surfaceType = schema.getGeometryType( valueOf( "{http://www.opengis.net/gml/3.2}Surface" ) );
         assertNotNull( surfaceType );
         List<GMLObjectType> surfaceSubstitutions = schema.getSubstitutions( surfaceType.getName() );
-        assertEquals( 5, surfaceSubstitutions.size() );                
+        assertEquals( 5, surfaceSubstitutions.size() );
     }
 
     @Test

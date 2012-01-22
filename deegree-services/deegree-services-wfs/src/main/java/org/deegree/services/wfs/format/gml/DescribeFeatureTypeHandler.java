@@ -212,8 +212,8 @@ class DescribeFeatureTypeHandler {
         GMLAppSchemaWriter exporter = new GMLAppSchemaWriter( version, targetNs, importMap, prefixToNs );
 
         List<FeatureType> fts = new ArrayList<FeatureType>();
-        for ( FeatureType ft : service.getFeatureTypes() ) {
-            if ( ft.getName().getNamespaceURI().equals( targetNs ) ) {
+        for ( FeatureStore fs : service.getStores() ) {
+            for ( FeatureType ft : fs.getSchema().getFeatureTypes( targetNs, true, true ) ) {
                 fts.add( ft );
             }
         }
@@ -439,7 +439,7 @@ class DescribeFeatureTypeHandler {
             set.addAll( add );
             add = findUnhandledNs( set );
         }
-        
+
         set.remove( GMLNS );
         set.remove( GML3_2_NS );
 
