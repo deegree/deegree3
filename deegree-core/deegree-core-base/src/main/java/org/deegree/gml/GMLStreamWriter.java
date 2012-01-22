@@ -56,7 +56,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
-import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -77,6 +76,9 @@ import org.deegree.protocol.wfs.query.ProjectionClause;
  * Stream-based writer for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
  * <p>
  * Instances of this class are not thread-safe.
+ * </p>
+ * <p>
+ * TODO: Refactor, so configuration settings cannot be modified after creation (e.g. like in XMLOutputFactory).
  * </p>
  * 
  * @see GMLObject
@@ -143,10 +145,20 @@ public class GMLStreamWriter {
         prefixToNs.put( "dxtra-geometry", EXTRA_PROP_NS_GEOMETRY );
     }
 
+    /**
+     * Returns the GML version of the generated output.
+     * 
+     * @return GML version of the generated output, never <code>null</code>
+     */
     public GMLVersion getVersion() {
         return version;
     }
 
+    /**
+     * Returns the CRS used for writing geometries.
+     * 
+     * @return CRS used for writing geometries, can be <code>null</code> (keeps the original CRS of the geometries)
+     */
     public ICRS getOutputCrs() {
         return crs;
     }
@@ -157,27 +169,42 @@ public class GMLStreamWriter {
      * @param crs
      *            crs to be used for the geometries, can be <code>null</code> (keeps the original CRS)
      */
-    public void setOutputCRS( ICRS crs ) {
+    public void setOutputCrs( ICRS crs ) {
         this.crs = crs;
     }
 
+    /**
+     * Returns the {@link CoordinateFormatter} used for writing geometry coordinates.
+     * 
+     * @return the coordinate formatter, can be <code>null</code> (use default formatting)
+     */
     public CoordinateFormatter getCoordinateFormatter() {
         return formatter;
     }
 
     /**
-     * Controls the format (e.g. number of decimal places) for written coordinates.
+     * Controls the format (e.g. number of decimal places) for written geometry coordinates.
      * 
      * @param formatter
-     *            formatter to use, may be <code>null</code> (don't do any formatting)
+     *            formatter to use, may be <code>null</code> (use default formatting)
      */
     public void setCoordinateFormatter( CoordinateFormatter formatter ) {
         this.formatter = formatter;
     }
 
     /**
-     * Controls the namespace prefixes that are used whenever a qualified element or attribute is written (and no
-     * namespace prefix has been bound on the stream).
+     * Returns the namespace bindings that are used whenever a qualified element or attribute is written (and no
+     * namespace prefix has been bound for the namespace on the stream already).
+     * 
+     * @return keys: prefix, value: namespace, may be <code>null</code>
+     */
+    public Map<String, String> getNamespaceBindings() {
+        return prefixToNs;
+    }
+
+    /**
+     * Controls the namespace bindings that are used whenever a qualified element or attribute is written (and no
+     * namespace prefix has been bound for the namespace on the stream already).
      * 
      * @param prefixToNs
      *            keys: prefix, value: namespace, may be <code>null</code>
@@ -186,7 +213,12 @@ public class GMLStreamWriter {
         this.prefixToNs.putAll( prefixToNs );
     }
 
-    public int getTraverseXlinkDepth() {
+    /**
+     * Returns the number of xlink levels that will be expanded inside property elements.
+     * 
+     * @return the number of xlink levels that will be expanded inside property elements, -1 means to expand all levels
+     */
+    public int getXlinkDepth() {
         return inlineXLinklevels;
     }
 
@@ -210,6 +242,13 @@ public class GMLStreamWriter {
         this.traverseXLinkExpiry = traverseXLinkExpiry;
     }
 
+    /**
+     * Returns the template for representing xlinks that point to objects that are not included in the written GML
+     * document (but are local to the system).
+     * 
+     * @return template for representing xlinks that point to objects that are not included in the written GML, never
+     *         <code>null</code>
+     */
     public String getRemoteXlinkTemplate() {
         return remoteXlinkTemplate;
     }
@@ -220,10 +259,19 @@ public class GMLStreamWriter {
      * @param remoteXlinkTemplate
      *            template used to create references to document-remote objects, e.g.
      *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
-     *            , the substring <code>{}</code> is replaced by the object id
+     *            , the substring <code>{}</code> is replaced by the object id, must not be <code>null</code>
      */
     public void setRemoteXLinkTemplate( String remoteXlinkTemplate ) {
         this.remoteXlinkTemplate = remoteXlinkTemplate;
+    }
+
+    /**
+     * Returns the feature properties to be included for exported {@link Feature} instances.
+     * 
+     * @return feature properties to be included, or <code>null</code> (include all feature props)
+     */
+    public List<ProjectionClause> getProjections() {
+        return projection;
     }
 
     /**
@@ -237,6 +285,16 @@ public class GMLStreamWriter {
     }
 
     /**
+     * Returns the {@link GMLForwardReferenceHandler} that copes with {@link GMLReference}s that are processed during
+     * export.
+     * 
+     * @return handler, may be <code>null</code>
+     */
+    public GMLForwardReferenceHandler getAdditionalObjectHandler() {
+        return additionalObjectHandler;
+    }
+
+    /**
      * Sets an {@link GMLForwardReferenceHandler} that copes with {@link GMLReference}s that are processed during
      * export.
      * 
@@ -247,29 +305,41 @@ public class GMLStreamWriter {
         this.additionalObjectHandler = handler;
     }
 
+    public boolean getOutputGeometries() {
+        return outputGeometries;
+    }
+
+    public void setExportGeometries( boolean exportGeometries ) {
+        this.outputGeometries = exportGeometries;
+    }
+
+    public boolean getExportExtraProps() {
+        return exportExtraProps;
+    }
+
     /**
      * Controls whether {@link ExtraProps} associated with feature objects should be exported as property elements.
      * 
      * @param exportExtraProps
-     *            true, if extra props should be exported, false otherwise
+     *            <code>true</code>, if extra props should be exported, <code>false</code> otherwise
      */
     public void setExportExtraProps( boolean exportExtraProps ) {
         this.exportExtraProps = exportExtraProps;
     }
 
     /**
-     * Returns whether the specified gml object has already been exported.
+     * Returns whether the {@link GMLObject} with the specified id has already been exported.
      * 
      * @param gmlId
      *            id of the object, must not be <code>null</code>
-     * @return true, if the object has been exported, false otherwise
+     * @return <code>true</code>, if the object has been exported, <code>false</code> otherwise
      */
     public boolean isObjectExported( String gmlId ) {
-        // TODO do this properly
-        if ( featureWriter != null ) {
-            return featureWriter.isExported( gmlId );
-        }
-        return false;
+        return exportedIds.contains( gmlId );
+    }
+
+    public Set<String> getExportedIds() {
+        return exportedIds;
     }
 
     /**
@@ -298,7 +368,7 @@ public class GMLStreamWriter {
      * Writes a GML representation of the given {@link Feature} to the stream.
      * 
      * @param feature
-     *            object to be written, must not be <code>null</code>
+     *            feature to be written, must not be <code>null</code>
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws TransformationException
@@ -312,7 +382,7 @@ public class GMLStreamWriter {
      * Writes a GML representation of the given {@link Geometry} to the stream.
      * 
      * @param geometry
-     *            object to be written, must not be <code>null</code>
+     *            geometry to be written, must not be <code>null</code>
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws TransformationException
@@ -383,33 +453,5 @@ public class GMLStreamWriter {
             dictionaryWriter = new GMLDictionaryWriter( version, xmlStream );
         }
         return dictionaryWriter;
-    }
-
-    public List<ProjectionClause> getProjections() {
-        return projection;
-    }
-
-    public boolean getOutputGeometries() {
-        return outputGeometries;
-    }
-
-    public Map<String, String> getPrefixToNs() {
-        return prefixToNs;
-    }
-
-    public Set<String> getExportedIds() {
-        return exportedIds;
-    }
-
-    public GMLForwardReferenceHandler getAdditionalObjectHandler() {
-        return additionalObjectHandler;
-    }
-
-    public boolean exportExtraProps() {
-        return exportExtraProps;
-    }
-
-    public void setExportGeometries( boolean exportGeometries ) {
-        this.outputGeometries = exportGeometries;
     }
 }

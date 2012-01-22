@@ -675,7 +675,7 @@ public class WMSController extends AbstractOWS {
                 bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
 
                 GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_2, xmlWriter );
-                gmlWriter.setOutputCRS( crs );
+                gmlWriter.setOutputCrs( crs );
                 gmlWriter.setNamespaceBindings( nsBindings );
                 gmlWriter.setExportGeometries( geometries );
                 gmlWriter.getFeatureWriter().export( col, ns == null ? loc : null, bindings );

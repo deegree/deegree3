@@ -66,6 +66,9 @@ import org.deegree.gml.geometry.GMLGeometryReader;
  * 
  * <h4>Initialization</h4> A {@link GMLStreamReader} works by wrapping a {@link XMLStreamReader} instance. Use the
  * methods provided in {@link GMLInputFactory} to create a {@link GMLStreamReader} instance.
+ * <p>
+ * TODO: Refactor, so configuration settings cannot be modified after creation (e.g. like in XMLInputFactory).
+ * </p>
  * 
  * <pre>
  * ...

@@ -89,7 +89,7 @@ public class AbstractGMLObjectWriter {
         this.version = gmlStreamWriter.getVersion();
         this.gmlNs = version.getNamespace();
         this.exportedIds = gmlStreamWriter.getExportedIds();
-        this.prefixToNs = gmlStreamWriter.getPrefixToNs();
+        this.prefixToNs = gmlStreamWriter.getNamespaceBindings();
         remoteXlinkTemplate = gmlStreamWriter.getRemoteXlinkTemplate();
 
         if ( prefixToNs != null ) {

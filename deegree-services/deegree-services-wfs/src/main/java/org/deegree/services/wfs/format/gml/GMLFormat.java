@@ -328,7 +328,7 @@ public class GMLFormat implements Format {
         String contentType = getContentType( outputFormat, version );
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
-        gmlStream.setOutputCRS( master.getDefaultQueryCrs() );
+        gmlStream.setOutputCrs( master.getDefaultQueryCrs() );
         gmlStream.setRemoteXLinkTemplate( getObjectXlinkTemplate( version, gmlVersion ) );
         gmlStream.setXLinkDepth( resolveDepth );
         gmlStream.setCoordinateFormatter( formatter );
@@ -389,7 +389,7 @@ public class GMLFormat implements Format {
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setXLinkExpiry( resolveTimeout == null ? -1 : resolveTimeout.intValue() );
         gmlStream.setProjection( analyzer.getProjection() );
-        gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
+        gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
         XlinkedObjectsHandler additionalObjects = new XlinkedObjectsHandler( (BufferableXMLStreamWriter) xmlStream,
@@ -545,7 +545,7 @@ public class GMLFormat implements Format {
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setXLinkExpiry( resolveTimeout == null ? -1 : resolveTimeout.intValue() );
         gmlStream.setProjection( analyzer.getProjection() );
-        gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
+        gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
         XlinkedObjectsHandler additionalObjects = new XlinkedObjectsHandler( (BufferableXMLStreamWriter) xmlStream,

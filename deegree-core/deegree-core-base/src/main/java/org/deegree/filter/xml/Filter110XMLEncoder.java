@@ -443,7 +443,7 @@ public class Filter110XMLEncoder {
 
         // serializing the geometry
         if ( geometry != null ) {
-            gmlWriter.setOutputCRS( geometry.getCoordinateSystem() );
+            gmlWriter.setOutputCrs( geometry.getCoordinateSystem() );
             gmlWriter.write( geometry );
         }
 

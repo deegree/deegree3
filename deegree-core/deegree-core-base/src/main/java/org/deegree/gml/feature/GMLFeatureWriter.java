@@ -134,7 +134,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     public GMLFeatureWriter( GMLStreamWriter gmlStreamWriter ) {
         super( gmlStreamWriter );
 
-        traverseXlinkDepth = gmlStreamWriter.getTraverseXlinkDepth();
+        traverseXlinkDepth = gmlStreamWriter.getXlinkDepth();
 
         if ( gmlStreamWriter.getProjections() != null ) {
             for ( ProjectionClause projection : gmlStreamWriter.getProjections() ) {
@@ -158,7 +158,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         this.outputGeometries = gmlStreamWriter.getOutputGeometries();
         this.exportSf = false;
         this.additionalObjectHandler = gmlStreamWriter.getAdditionalObjectHandler();
-        this.exportExtraProps = gmlStreamWriter.exportExtraProps();
+        this.exportExtraProps = gmlStreamWriter.getExportExtraProps();
     }
 
     /**
@@ -247,17 +247,6 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writer.writeEndElement();
         }
         writer.writeEndElement();
-    }
-
-    /**
-     * Returns whether the specified feature has already been written.
-     * 
-     * @param fid
-     *            feature id, must not be <code>null</code>
-     * @return true, if the feature has been exported, false otherwise
-     */
-    public boolean isExported( String fid ) {
-        return exportedIds.contains( fid );
     }
 
     private void export( Feature feature, int currentLevel, int maxInlineLevels )
