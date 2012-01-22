@@ -41,6 +41,7 @@ import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_
 import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_ID;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -118,7 +119,7 @@ public class QueryAnalyzer {
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
 
-    private ProjectionClause[] projections = null;
+    private List<ProjectionClause> projections = null;
 
     private ICRS requestedCrs;
 
@@ -179,7 +180,7 @@ public class QueryAnalyzer {
 
             // TODO cope with more queries than one
             if ( wfsQuery.getProjectionClauses() != null ) {
-                this.projections = wfsQuery.getProjectionClauses();
+                this.projections = Arrays.asList( wfsQuery.getProjectionClauses() );
             }
         }
 
@@ -290,7 +291,7 @@ public class QueryAnalyzer {
      * 
      * @return specific XLink-behaviour or <code>null</code> (no specific behaviour)
      */
-    public ProjectionClause[] getProjection() {
+    public List<ProjectionClause> getProjection() {
         return projections;
     }
 

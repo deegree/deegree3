@@ -37,7 +37,6 @@ package org.deegree.gml.geometry;
 import static org.deegree.gml.GMLVersion.GML_2;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -63,7 +62,9 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLStreamWriter;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
@@ -125,7 +126,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Box" ), xmlReader.getName() );
 
-        Envelope envelope = getGML2GeometryReader(xmlReader).parseEnvelope( xmlReader, null );
+        Envelope envelope = getGML2GeometryReader( xmlReader ).parseEnvelope( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Box" ), xmlReader.getName() );
         Assert.assertEquals( 0.0, envelope.getMin().get0(), DELTA );
@@ -141,7 +142,7 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
 
         // writer.setPrefix( "app", "http://www.deegree.org" );
         // writer.setPrefix( "app", "http://www.deegree.org/app" );
@@ -151,7 +152,7 @@ public class GML2GeometryTest extends TestCase {
         // writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         // writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
 
-        exporter.export( envelope );
+        exporter.write( envelope );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -176,7 +177,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Point" ), xmlReader.getName() );
 
-        Point point = getGML2GeometryReader(xmlReader).parsePoint( xmlReader, null );
+        Point point = getGML2GeometryReader( xmlReader ).parsePoint( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Point" ), xmlReader.getName() );
         Assert.assertEquals( 5.0, point.get0(), DELTA );
@@ -190,11 +191,9 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
-
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-
-        exporter.export( point );
+        exporter.write( point );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -215,7 +214,7 @@ public class GML2GeometryTest extends TestCase {
                                                                        this.getClass().getResource( BASE_DIR
                                                                                                                             + POINT2_FILE ) );
         xmlReader.nextTag();
-        Point point = getGML2GeometryReader(xmlReader).parsePoint( xmlReader, null );
+        Point point = getGML2GeometryReader( xmlReader ).parsePoint( xmlReader, null );
         Assert.assertEquals( 5.0, point.get0(), DELTA );
         Assert.assertEquals( 30.0, point.get1(), DELTA );
 
@@ -225,11 +224,9 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
-
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-
-        exporter.export( point );
+        exporter.write( point );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -254,7 +251,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Polygon" ), xmlReader.getName() );
 
-        Polygon polygon = getGML2GeometryReader(xmlReader).parsePolygon( xmlReader, null );
+        Polygon polygon = getGML2GeometryReader( xmlReader ).parsePolygon( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Polygon" ), xmlReader.getName() );
 
@@ -289,12 +286,10 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
-
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-
-        exporter.export( polygon );
+        exporter.write( polygon );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -319,7 +314,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "LineString" ), xmlReader.getName() );
 
-        LineString lineString = getGML2GeometryReader(xmlReader).parseLineString( xmlReader, null );
+        LineString lineString = getGML2GeometryReader( xmlReader ).parseLineString( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "LineString" ), xmlReader.getName() );
 
@@ -337,12 +332,10 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
-
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-
-        exporter.export( lineString );
+        exporter.write( lineString );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -367,7 +360,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "MultiGeometry" ), xmlReader.getName() );
 
-        MultiGeometry<?> multiGeometry = getGML2GeometryReader(xmlReader).parseMultiGeometry( xmlReader, null );
+        MultiGeometry<?> multiGeometry = getGML2GeometryReader( xmlReader ).parseMultiGeometry( xmlReader, null );
         assertEquals( "c731", multiGeometry.getId() );
 
         Point firstMember = (Point) multiGeometry.get( 0 );
@@ -397,12 +390,10 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
-
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-
-        exporter.export( multiGeometry );
+        exporter.write( multiGeometry );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -427,7 +418,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "MultiLineString" ), xmlReader.getName() );
 
-        MultiLineString multiLineString = getGML2GeometryReader(xmlReader).parseMultiLineString( xmlReader, null );
+        MultiLineString multiLineString = getGML2GeometryReader( xmlReader ).parseMultiLineString( xmlReader, null );
         LineString firstMember = multiLineString.get( 0 );
 
         Points controlPoints = firstMember.getControlPoints();
@@ -452,12 +443,10 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
-
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-
-        exporter.export( multiLineString );
+        exporter.write( multiLineString );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -482,7 +471,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "MultiPoint" ), xmlReader.getName() );
 
-        MultiPoint multiPoint = getGML2GeometryReader(xmlReader).parseMultiPoint( xmlReader, null );
+        MultiPoint multiPoint = getGML2GeometryReader( xmlReader ).parseMultiPoint( xmlReader, null );
 
         Point firstMember = multiPoint.get( 0 );
         comparePoint( 5.0, 40.0, firstMember );
@@ -496,12 +485,10 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
-
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-
-        exporter.export( multiPoint );
+        exporter.write( multiPoint );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -526,7 +513,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "MultiPolygon" ), xmlReader.getName() );
 
-        MultiPolygon multiPolygon = getGML2GeometryReader(xmlReader).parseMultiPolygon( xmlReader, null );
+        MultiPolygon multiPolygon = getGML2GeometryReader( xmlReader ).parseMultiPolygon( xmlReader, null );
 
         Polygon firstMember = multiPolygon.get( 0 );
         Points points = firstMember.getExteriorRing().getControlPoints();
@@ -568,19 +555,18 @@ public class GML2GeometryTest extends TestCase {
 
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
                                                                                   SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
-
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-
-        exporter.export( multiPolygon );
+        exporter.write( multiPolygon );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
     }
 
-    private GML2GeometryReader getGML2GeometryReader( XMLStreamReaderWrapper xmlReader ) throws XMLStreamException {
-        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_2, xmlReader);
+    private GML2GeometryReader getGML2GeometryReader( XMLStreamReaderWrapper xmlReader )
+                            throws XMLStreamException {
+        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_2, xmlReader );
         return (GML2GeometryReader) gmlStream.getGeometryReader();
     }
 

@@ -48,14 +48,11 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -71,7 +68,6 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.stax.StAXExportingHelper;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -90,18 +86,14 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.io.CoordinateFormatter;
-import org.deegree.geometry.io.DecimalCoordinateFormatter;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML2GeometryWriter;
-import org.deegree.gml.geometry.GML3GeometryWriter;
-import org.deegree.gml.geometry.GMLGeometryWriter;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.commons.AbstractGMLObjectWriter;
 import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream-based writer for GML-encoded features and feature collections.
+ * Stream-based GML writer for features and feature collections.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -109,25 +101,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLFeatureWriter {
+public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureWriter.class );
-
-    private final GMLVersion version;
-
-    private final String gmlNs;
 
     private final QName fidAttr;
 
     private final String gmlNull;
-
-    private final Set<String> exportedIds = new HashSet<String>();
-
-    private final XMLStreamWriter writer;
-
-    private final GMLGeometryWriter geometryWriter;
-
-    private final String remoteXlinkTemplate;
 
     // TODO handle properties that are more complex XPath-expressions
     private final Map<QName, ProjectionClause> projections = new HashMap<QName, ProjectionClause>();
@@ -135,13 +115,9 @@ public class GMLFeatureWriter {
     // export all levels by default
     private final int traverseXlinkDepth;
 
-    // private int traverseXlinkExpiry;
-
     private final boolean exportSf;
 
     private final boolean outputGeometries;
-
-    private final Map<String, String> nsToPrefix = new HashMap<String, String>();
 
     private final GMLForwardReferenceHandler additionalObjectHandler;
 
@@ -152,84 +128,37 @@ public class GMLFeatureWriter {
     /**
      * Creates a new {@link GMLFeatureWriter} instance.
      * 
-     * @param version
-     *            GML version of the output, must not be <code>null</code>
-     * @param writer
-     *            xml stream to write to, must not be <code>null</code>
-     * @param outputCRS
-     *            crs used for exported geometries, may be <code>null</code> (in this case, the original crs of the
-     *            geometries is used)
-     * @param formatter
-     *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
-     *            <code>null</code> (fallback to default {@link DecimalCoordinateFormatter})
-     * @param remoteXlinkTemplate
-     *            URI template used to create references to subfeatures that will not be included in the document, e.g.
-     *            <code>#{}</code>, substring <code>{}</code> is replaced by the object id
-     * @param projections
-     *            controls the properties to be exported, may be <code>null</code> (export all properties)
-     * @param traverseXlinkDepth
-     *            number of subfeature levels to export (0...) or -1 (unlimited)
-     * @param traverseXlinkExpiry
-     *            timeout for resolving remote feature references (currently unsupported)
-     * @param exportSfGeometries
-     *            if true, geometries are exported as SFS geometries (only applies to complex geometries)
-     * @param outputGeometries
-     *            if false, geometry properties are omitted from the output
-     * @param prefixToNs
-     *            namespace bindings to use, may be <code>null</code>
-     * @param additionalObjectHandler
-     *            handler that is invoked when a feature property has to be expanded, may be <code>null</code>
-     * @param exportExtraProps
-     *            if true, {@link ExtraProps} associated with features are exported as property elements
+     * @param gmlStreamWriter
+     *            GML stream writer, must not be <code>null</code>
      */
-    public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, ICRS outputCRS, CoordinateFormatter formatter,
-                             String remoteXlinkTemplate, ProjectionClause[] projections, int traverseXlinkDepth,
-                             int traverseXlinkExpiry, boolean exportSfGeometries, boolean outputGeometries,
-                             Map<String, String> prefixToNs, GMLForwardReferenceHandler additionalObjectHandler,
-                             boolean exportExtraProps ) {
+    public GMLFeatureWriter( GMLStreamWriter gmlStreamWriter ) {
+        super( gmlStreamWriter );
 
-        this.version = version;
-        this.writer = writer;
-        if ( remoteXlinkTemplate != null ) {
-            this.remoteXlinkTemplate = remoteXlinkTemplate;
-        } else {
-            this.remoteXlinkTemplate = "#{}";
-        }
-        if ( projections != null ) {
-            for ( ProjectionClause projection : projections ) {
+        traverseXlinkDepth = gmlStreamWriter.getTraverseXlinkDepth();
+
+        if ( gmlStreamWriter.getProjections() != null ) {
+            for ( ProjectionClause projection : gmlStreamWriter.getProjections() ) {
                 QName qName = projection.getPropertyName().getAsQName();
                 if ( qName != null ) {
-                    this.projections.put( qName, projection );
+                    projections.put( qName, projection );
                 } else {
                     LOG.warn( "Currently, only simple qualified names are supported for projection." );
                 }
             }
         }
-        this.traverseXlinkDepth = traverseXlinkDepth;
-        // this.traverseXlinkExpiry = traverseXlinkExpiry;
 
-        gmlNs = version.getNamespace();
-        if ( !version.equals( GMLVersion.GML_2 ) ) {
-            geometryWriter = new GML3GeometryWriter( version, writer, outputCRS, formatter, exportSfGeometries,
-                                                     exportedIds );
+        if ( !version.equals( GML_2 ) ) {
             fidAttr = new QName( gmlNs, "id" );
             gmlNull = "Null";
         } else {
-            geometryWriter = new GML2GeometryWriter( writer, outputCRS, formatter, exportedIds );
             fidAttr = new QName( NULL_NS_URI, "fid" );
             gmlNull = "null";
         }
 
-        this.outputGeometries = outputGeometries;
+        this.outputGeometries = gmlStreamWriter.getOutputGeometries();
         this.exportSf = false;
-
-        if ( prefixToNs != null ) {
-            for ( Entry<String, String> prefixAndNs : prefixToNs.entrySet() ) {
-                nsToPrefix.put( prefixAndNs.getValue(), prefixAndNs.getKey() );
-            }
-        }
-        this.additionalObjectHandler = additionalObjectHandler;
-        this.exportExtraProps = exportExtraProps;
+        this.additionalObjectHandler = gmlStreamWriter.getAdditionalObjectHandler();
+        this.exportExtraProps = gmlStreamWriter.exportExtraProps();
     }
 
     /**
@@ -305,7 +234,7 @@ public class GMLFeatureWriter {
         writer.writeStartElement( gmlNs, "boundedBy" );
         Envelope fcEnv = fc.getEnvelope();
         if ( fcEnv != null ) {
-            geometryWriter.exportEnvelope( fc.getEnvelope() );
+            gmlStreamWriter.getGeometryWriter().exportEnvelope( fc.getEnvelope() );
         } else {
             writer.writeStartElement( gmlNs, gmlNull );
             writer.writeCharacters( "missing" );
@@ -402,7 +331,7 @@ public class GMLFeatureWriter {
         return traverseXlinkDepth;
     }
 
-    private void export( Property property, int currentLevel, int maxInlineLevels )
+    public void export( Property property, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
@@ -477,7 +406,7 @@ public class GMLFeatureWriter {
                         // WFS CITE 1.1.0 test requirement (wfs:GetFeature.XLink-POST-XML-10)
                         writer.writeComment( "Inlined geometry '" + gValue.getId() + "'" );
                     }
-                    geometryWriter.export( (Geometry) value );
+                    gmlStreamWriter.getGeometryWriter().export( (Geometry) value );
                     writer.writeEndElement();
                 }
             }
@@ -504,7 +433,7 @@ public class GMLFeatureWriter {
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( value != null ) {
-                    geometryWriter.exportEnvelope( (Envelope) value );
+                    gmlStreamWriter.getGeometryWriter().exportEnvelope( (Envelope) value );
                 } else {
                     writeStartElementWithNS( gmlNs, gmlNull );
                     writer.writeCharacters( "missing" );
@@ -676,7 +605,7 @@ public class GMLFeatureWriter {
             if ( node instanceof Feature ) {
                 export( (Feature) node, currentLevel, maxInlineLevels );
             } else if ( node instanceof Geometry ) {
-                geometryWriter.export( (Geometry) node );
+                gmlStreamWriter.getGeometryWriter().export( (Geometry) node );
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -705,65 +634,6 @@ public class GMLFeatureWriter {
             LOG.warn( "Null node encountered!?" );
         } else {
             throw new RuntimeException( "Unhandled node type '" + node.getClass() + "'" );
-        }
-    }
-
-    private void writeStartElementWithNS( String namespaceURI, String localname )
-                            throws XMLStreamException {
-        if ( namespaceURI == null || namespaceURI.length() == 0 ) {
-            writer.writeStartElement( localname );
-        } else {
-            if ( writer.getNamespaceContext().getPrefix( namespaceURI ) == null ) {
-                String prefix = nsToPrefix.get( namespaceURI );
-                if ( prefix != null ) {
-                    writer.setPrefix( prefix, namespaceURI );
-                    writer.writeStartElement( prefix, localname, namespaceURI );
-                    writer.writeNamespace( prefix, namespaceURI );
-                } else {
-                    LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
-                              namespaceURI );
-                    writer.writeStartElement( namespaceURI, localname );
-                }
-            } else {
-                writer.writeStartElement( namespaceURI, localname );
-            }
-        }
-    }
-
-    private void writeAttributeWithNS( String namespaceURI, String localname, String value )
-                            throws XMLStreamException {
-        if ( namespaceURI == null || namespaceURI.length() == 0 ) {
-            writer.writeAttribute( localname, value );
-        } else {
-            String prefix = writer.getNamespaceContext().getPrefix( namespaceURI );
-            if ( prefix == null ) {
-                prefix = nsToPrefix.get( namespaceURI );
-                if ( prefix != null ) {
-                    writer.writeNamespace( prefix, namespaceURI );
-                } else {
-                    LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
-                              namespaceURI );
-                }
-            }
-            writer.writeAttribute( prefix, namespaceURI, localname, value );
-        }
-    }
-
-    private void writeEmptyElementWithNS( String namespaceURI, String localname )
-                            throws XMLStreamException {
-        if ( namespaceURI == null || namespaceURI.length() == 0 ) {
-            writer.writeEmptyElement( localname );
-        } else {
-            if ( writer.getNamespaceContext().getPrefix( namespaceURI ) == null ) {
-                String prefix = nsToPrefix.get( namespaceURI );
-                if ( prefix != null ) {
-                    writer.setPrefix( prefix, namespaceURI );
-                } else {
-                    LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
-                              namespaceURI );
-                }
-            }
-            writer.writeEmptyElement( namespaceURI, localname );
         }
     }
 

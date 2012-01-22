@@ -46,6 +46,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -53,7 +54,9 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.types.AppSchema;
@@ -88,10 +91,13 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.GMLAppSchemaReaderTest;
+import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -856,10 +862,10 @@ public class GML3GeometryReaderTest {
     }
 
     @Test
-    public void parseCustomAIXMElevatedPoint()
+    public void parseAIXMElevatedPoint()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException {
+                            IllegalAccessException, TransformationException {
 
         String schemaUrl = GMLAppSchemaReaderTest.class.getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
@@ -880,6 +886,21 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( QName.valueOf( "{http://www.aixm.aero/schema/5.1}elevation" ), props.get( 0 ).getName() );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.aixm.aero/schema/5.1", "ElevatedPoint" ), xmlReader.getName() );
+
+//        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+//        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+//        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+//        IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
+//        writer.setPrefix( "app", "http://www.deegree.org/app" );
+//        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+//        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+//        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+//        writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+//        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+//        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_32, writer );
+//        exporter.write( geom );
+//        writer.flush();
+//        System.out.println( memoryWriter );
     }
 
     private GMLStreamReader getParser( String fileName )

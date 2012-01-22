@@ -40,15 +40,15 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_32;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -112,7 +112,8 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
-import org.deegree.gml.GMLVersion;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.commons.AbstractGMLObjectWriter;
 import org.deegree.gml.props.GMLStdPropsWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,21 +130,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GML3GeometryWriter implements GMLGeometryWriter {
+public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGeometryWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryWriter.class );
 
-    private final GMLVersion version;
-
-    private final String gmlNs;
-
-    private final XMLStreamWriter writer;
-
-    private final Set<String> exportedIds;
-
     private final ICRS outputCRS;
 
-    private final CoordinateFormatter formatter;
+    private CoordinateFormatter formatter;
 
     private CoordinateTransformer transformer;
 
@@ -157,81 +150,37 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private final GMLStdPropsWriter stdPropsWriter;
 
     /**
-     * Creates a new {@link GML3GeometryWriter} instance, with no default crs, the default formatter and no simple
-     * feature support.
-     * 
-     * @param version
-     *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
-     * @param writer
-     *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
-     */
-    public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer ) {
-        this( version, writer, null, null, false, null );
-    }
-
-    /**
      * Creates a new {@link GML3GeometryWriter} instance.
      * 
-     * @param version
-     *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
-     * @param writer
-     *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
-     * @param outputCrs
-     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
-     *            used)
-     * @param formatter
-     *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
-     *            <code>null</code> (use default {@link DecimalCoordinateFormatter})
-     * @param exportSf
-     *            if true, the generated GML must conform to the GML-SF profile (only simple geometries are used and
-     *            they are exported without id attributes)
-     * @param exportedIds
-     *            for the creation of xlinks, may be <code>null</code>
+     * @param gmlStreamWriter
+     *            gml stream writer, must not be <code>null</code>
      */
-    public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer, ICRS outputCrs,
-                               CoordinateFormatter formatter, boolean exportSf, Set<String> exportedIds ) {
-        this.version = version;
-        this.gmlNs = version.getNamespace();
-        this.writer = writer;
-        this.outputCRS = outputCrs;
+    public GML3GeometryWriter( GMLStreamWriter gmlStreamWriter ) {
+
+        super( gmlStreamWriter );
+        this.outputCRS = gmlStreamWriter.getOutputCrs();
         // TODO
         this.exportSf = false;
         IUnit crsUnits = null;
-        if ( outputCrs != null ) {
+        if ( outputCRS != null ) {
             try {
-                ICRS crs = outputCrs;
+                ICRS crs = outputCRS;
                 crsUnits = crs.getAxis()[0].getUnits();
                 transformer = new CoordinateTransformer( crs );
                 transformedOrdinates = new double[crs.getDimension()];
                 geoTransformer = new GeometryTransformer( crs );
             } catch ( Exception e ) {
-                LOG.debug( "Could not create transformer for CRS '" + outputCrs + "': " + e.getMessage()
+                LOG.debug( "Could not create transformer for CRS '" + outputCRS + "': " + e.getMessage()
                            + ". Encoding will fail if a transformation is actually necessary." );
             }
         }
+        formatter = gmlStreamWriter.getCoordinateFormatter();
         if ( formatter == null ) {
-            this.formatter = new DecimalCoordinateFormatter( crsUnits );
-        } else {
-            this.formatter = formatter;
-        }
-        if ( exportedIds == null ) {
-            this.exportedIds = new HashSet<String>();
-        } else {
-            this.exportedIds = exportedIds;
+            formatter = new DecimalCoordinateFormatter( crsUnits );
         }
         this.stdPropsWriter = new GMLStdPropsWriter( version, writer );
     }
 
-    /**
-     * Exporting a geometry via the XMLStreamWriter given when the class was constructed
-     * 
-     * @param geometry
-     *            the {@link Geometry} to be exported
-     * @throws XMLStreamException
-     *             if an error occured writing to the xml stream
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
     @SuppressWarnings("unchecked")
     @Override
     public void export( Geometry geometry )
@@ -457,6 +406,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "Point", point );
         exportAsPos( point );
+        exportProps( point );
         writer.writeEndElement();
     }
 
@@ -499,6 +449,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
                 exportCurveSegment( curveSeg );
             }
             writer.writeEndElement(); // segments
+            exportProps( curve );
             writer.writeEndElement(); // Curve
             break;
 
@@ -508,6 +459,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             startGeometry( "LineString", lineString );
             int dim = lineString.getCoordinateDimension();
             export( lineString.getControlPoints(), dim );
+            exportProps( lineString );
             writer.writeEndElement();
             break;
 
@@ -528,6 +480,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
                 exportCurve( baseCurve );
                 writer.writeEndElement();
             }
+            exportProps( orientableCurve );
             writer.writeEndElement();
             break;
 
@@ -575,6 +528,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
                 exportSurfacePatch( surfacePatch );
             }
             writer.writeEndElement();
+            exportProps( surface );
             writer.writeEndElement();
             break;
         }
@@ -713,6 +667,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
                 }
             }
         }
+        exportProps( polygon );
         writer.writeEndElement();
     }
 
@@ -1574,7 +1529,16 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private void startGeometry( String localName, Geometry geometry )
                             throws XMLStreamException {
 
-        writer.writeStartElement( "gml", localName, gmlNs );
+        GMLObjectType gmlType = geometry.getType();
+        if ( gmlType == null ) {
+            writer.writeStartElement( "gml", localName, gmlNs );
+        } else {
+            QName elName = gmlType.getName();
+//            if ( elName.getPrefix() != null ) {
+//                writer.setPrefix( elName.getPrefix(), elName.getNamespaceURI() );
+//            }
+            writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
+        }
 
         if ( !exportSf && geometry.getId() != null ) {
             exportedIds.add( geometry.getId() );
@@ -1593,6 +1557,15 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         GMLStdProps props = geometry.getGMLProperties();
         if ( props != null ) {
             stdPropsWriter.write( props );
+        }
+    }
+
+    private void exportProps( Geometry geom )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        if ( geom.getProperties() != null ) {
+            for ( Property prop : geom.getProperties() ) {
+                gmlStreamWriter.getFeatureWriter().export( prop, 0, -1 );
+            }
         }
     }
 

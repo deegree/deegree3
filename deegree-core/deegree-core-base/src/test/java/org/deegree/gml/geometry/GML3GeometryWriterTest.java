@@ -41,7 +41,6 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -57,10 +56,10 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLVersion;
+import org.deegree.gml.GMLStreamWriter;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
@@ -75,9 +74,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GMLGeometryWriterTest {
+public class GML3GeometryWriterTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLGeometryWriterTest.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryWriterTest.class );
 
     final static String DIR = "../../geometry/gml/testdata/geometries/";
 
@@ -171,8 +170,7 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String source : sources ) {
-            GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-            URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
+            URL docURL = GML3GeometryWriterTest.class.getResource( DIR + source );
             GMLStreamReader parser = getGML31StreamReader( docURL );
             Geometry geom = parser.readGeometry();
 
@@ -189,9 +187,8 @@ public class GMLGeometryWriterTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                  new HashSet<String>() );
-            exporter.export( geom );
+            GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_31, writer );
+            exporter.write( geom );
             writer.flush();
 
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -211,9 +208,9 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String patchSource : patchSources ) {
-            URL docURL = GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource );
+            URL docURL = GML3GeometryWriterTest.class.getResource( PATCH_DIR + patchSource );
             if ( docURL == null )
-                LOG.debug( "patch dir: " + GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource ) );
+                LOG.debug( "patch dir: " + GML3GeometryWriterTest.class.getResource( PATCH_DIR + patchSource ) );
             GMLStreamReader parser = getGML31StreamReader( docURL );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( parser.getXMLReader(), docURL.toString() );
             SurfacePatch surfPatch = ( (GML3GeometryReader) parser.getGeometryReader() ).getSurfacePatchReader().parseSurfacePatch( xmlReader,
@@ -231,10 +228,8 @@ public class GMLGeometryWriterTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                  new HashSet<String>() );
-
-            exporter.exportSurfacePatch( surfPatch );
+            GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_31, writer );
+            ( (GML3GeometryWriter) exporter.getGeometryWriter() ).exportSurfacePatch( surfPatch );
             writer.flush();
 
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -254,7 +249,7 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String segmentSource : segmentSources ) {
-            URL docURL = GMLGeometryWriterTest.class.getResource( SEGMENT_DIR + segmentSource );
+            URL docURL = GML3GeometryWriterTest.class.getResource( SEGMENT_DIR + segmentSource );
             GMLStreamReader parser = getGML31StreamReader( docURL );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( parser.getXMLReader(), docURL.toString() );
             CurveSegment curveSegment = ( (GML3GeometryReader) parser.getGeometryReader() ).getCurveSegmentReader().parseCurveSegment( xmlReader,
@@ -272,10 +267,8 @@ public class GMLGeometryWriterTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                  new HashSet<String>() );
-
-            exporter.exportCurveSegment( curveSegment );
+            GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_31, writer );
+            ( (GML3GeometryWriter) exporter.getGeometryWriter() ).exportCurveSegment( curveSegment );
             writer.flush();
 
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -295,7 +288,7 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, TransformationException {
         for ( String envelopeSource : envelopeSources ) {
-            URL docURL = GMLGeometryWriterTest.class.getResource( DIR + envelopeSource );
+            URL docURL = GML3GeometryWriterTest.class.getResource( DIR + envelopeSource );
             GMLStreamReader parser = getGML31StreamReader( docURL );
             Geometry geom = parser.readGeometryOrEnvelope();
 
@@ -311,9 +304,8 @@ public class GMLGeometryWriterTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                  new HashSet<String>() );
-            exporter.export( geom );
+            GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_31, writer );
+            exporter.write( geom );
             writer.flush();
 
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -336,7 +328,7 @@ public class GMLGeometryWriterTest {
                             ReferenceResolvingException {
 
         String source = "XLinkMultiGeometry1.gml";
-        URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
+        URL docURL = GML3GeometryWriterTest.class.getResource( DIR + source );
         GMLStreamReader parser = getGML31StreamReader( docURL );
         Geometry geom = parser.readGeometry();
         parser.getIdContext().resolveLocalRefs();
@@ -352,9 +344,8 @@ public class GMLGeometryWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false, new HashSet<String>() );
-
-        exporter.export( geom );
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_31, writer );
+        exporter.write( geom );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -365,7 +356,7 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, TransformationException, ReferenceResolvingException {
         String source = "XLinkMultiGeometry2.gml";
-        URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
+        URL docURL = GML3GeometryWriterTest.class.getResource( DIR + source );
         GMLStreamReader parser = getGML31StreamReader( docURL );
         Geometry geom = parser.readGeometry();
         parser.getIdContext().resolveLocalRefs();
@@ -381,8 +372,8 @@ public class GMLGeometryWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false, new HashSet<String>() );
-        exporter.export( geom );
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_31, writer );
+        exporter.write( geom );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
@@ -394,7 +385,7 @@ public class GMLGeometryWriterTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, TransformationException, ReferenceResolvingException {
         String source = "XLinkMultiLineString.gml";
-        URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
+        URL docURL = GML3GeometryWriterTest.class.getResource( DIR + source );
         GMLStreamReader parser = getGML31StreamReader( docURL );
         Geometry geom = parser.readGeometry();
         parser.getIdContext().resolveLocalRefs();
@@ -410,9 +401,8 @@ public class GMLGeometryWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false, new HashSet<String>() );
-
-        exporter.export( geom );
+        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_31, writer );
+        exporter.write( geom );
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );

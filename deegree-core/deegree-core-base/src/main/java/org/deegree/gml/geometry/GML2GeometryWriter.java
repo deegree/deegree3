@@ -37,12 +37,9 @@ package org.deegree.gml.geometry;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.IUnit;
@@ -76,6 +73,8 @@ import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.points.PointsArray;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.commons.AbstractGMLObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,17 +86,15 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class GML2GeometryWriter implements GMLGeometryWriter {
+public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGeometryWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML2GeometryWriter.class );
 
     private static final String GML21NS = "http://www.opengis.net/gml";
 
-    private final XMLStreamWriter writer;
-
-    private final Set<String> exportedIds;
-
-    private final CoordinateFormatter formatter;
+    private final ICRS outputCRS;
+    
+    private CoordinateFormatter formatter;
 
     private CoordinateTransformer transformer;
 
@@ -105,58 +102,31 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
 
     // private GeometryTransformer geoTransformer;
 
-    private ICRS outputCRS;
-
     /**
      * Creates a new {@link GML2GeometryWriter} instance.
      * 
-     * @param writer
-     *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
+     * @param gmlStream
+     *            gml stream writer, must not be <code>null</code>
      */
-    public GML2GeometryWriter( XMLStreamWriter writer ) {
-        this( writer, null, null, null );
-    }
-
-    /**
-     * Creates a new {@link GML2GeometryWriter} instance.
-     * 
-     * @param writer
-     *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
-     * @param outputCrs
-     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
-     *            used)
-     * @param formatter
-     *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
-     *            <code>null</code> (use default {@link DecimalCoordinateFormatter})
-     * @param exportedIds
-     *            may be <code>null</code>
-     */
-    public GML2GeometryWriter( XMLStreamWriter writer, ICRS outputCrs, CoordinateFormatter formatter,
-                               Set<String> exportedIds ) {
-        this.writer = writer;
-        this.outputCRS = outputCrs;
-        if ( exportedIds == null ) {
-            this.exportedIds = new HashSet<String>();
-        } else {
-            this.exportedIds = exportedIds;
-        }
+    public GML2GeometryWriter( GMLStreamWriter gmlStream ) {
+        super( gmlStream );
+        this.outputCRS = gmlStream.getOutputCrs();
         IUnit crsUnits = null;
-        if ( outputCrs != null ) {
+        if ( outputCRS != null ) {
             try {
-                ICRS crs = outputCrs;
+                ICRS crs = outputCRS;
                 crsUnits = crs.getAxis()[0].getUnits();
                 transformer = new CoordinateTransformer( crs );
                 transformedOrdinates = new double[crs.getDimension()];
                 // geoTransformer = new GeometryTransformer( crs );
             } catch ( Exception e ) {
-                LOG.debug( "Could not create transformer for CRS '" + outputCrs + "': " + e.getMessage()
+                LOG.debug( "Could not create transformer for CRS '" + outputCRS + "': " + e.getMessage()
                            + ". Encoding will fail if a transformation is actually necessary." );
             }
         }
+        formatter = gmlStream.getCoordinateFormatter();
         if ( formatter == null ) {
-            this.formatter = new DecimalCoordinateFormatter( crsUnits );
-        } else {
-            this.formatter = formatter;
+            formatter = new DecimalCoordinateFormatter( crsUnits );
         }
     }
 

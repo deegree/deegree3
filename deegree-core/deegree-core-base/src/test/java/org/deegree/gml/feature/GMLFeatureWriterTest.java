@@ -36,6 +36,7 @@
 
 package org.deegree.gml.feature;
 
+import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 
@@ -110,9 +111,8 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_2, new IndentingXMLStreamWriter( writer ), null, null,
-                                                          null, null, 0, -1, false, true, null, null, false );
-        exporter.export( feature );
+        GMLStreamWriter exporter = createGMLStreamWriter( GML_2, new IndentingXMLStreamWriter( writer ) );
+        exporter.write( feature );
         writer.flush();
         writer.close();
         // XMLAssert.assertValidity( memoryWriter.getReader() );
@@ -145,9 +145,8 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_31, writer, null, null, null, null, 0, -1, false, true,
-                                                          null, null, false );
-        exporter.export( feature );
+        GMLStreamWriter exporter = createGMLStreamWriter( GML_31, writer );
+        exporter.write( feature );
         writer.flush();
         writer.close();
         // XMLAssert.assertValidity( memoryWriter.getReader() );
@@ -214,6 +213,6 @@ public class GMLFeatureWriterTest {
         GMLStreamWriter gmlwriter = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, writer );
         gmlwriter.setNamespaceBindings( reader.getFeatureReader().getAppSchema().getNamespaceBindings() );
         gmlwriter.write( fc );
-        gmlwriter.close ();
+        gmlwriter.close();
     }
 }

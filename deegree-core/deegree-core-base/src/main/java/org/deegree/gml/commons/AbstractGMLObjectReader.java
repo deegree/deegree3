@@ -150,7 +150,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
      * Creates a new {@link AbstractGMLObjectReader} instance.
      * 
      * @param gmlStreamReader
-     *            GML version, must not be <code>null</code>
+     *            GML stream reader, must not be <code>null</code>
      */
     protected AbstractGMLObjectReader( GMLStreamReader gmlStreamReader ) {
         this.gmlStreamReader = gmlStreamReader;

@@ -44,7 +44,6 @@ import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
-import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
@@ -111,8 +110,9 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.utils.templating.TemplatingLexer;
 import org.deegree.feature.utils.templating.TemplatingParser;
 import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
+import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.layer.LayerRef;
 import org.deegree.metadata.iso.ISORecord;
@@ -674,12 +674,11 @@ public class WMSController extends AbstractOWS {
                 }
                 bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
 
-                // GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GMLVersion.GML_2,xmlWriter );
-                // gmlWriter.setOutputCRS(fi.getCoordinateSystem() );
-                // gmlWriter.set
-                GMLFeatureWriter fwriter = new GMLFeatureWriter( GML_2, xmlWriter, crs, null, "#{}", null, 0, -1,
-                                                                 false, geometries, nsBindings, null, false );
-                fwriter.export( col, ns == null ? loc : null, bindings );
+                GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_2, xmlWriter );
+                gmlWriter.setOutputCRS( crs );
+                gmlWriter.setNamespaceBindings( nsBindings );
+                gmlWriter.setExportGeometries( geometries );
+                gmlWriter.getFeatureWriter().export( col, ns == null ? loc : null, bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );

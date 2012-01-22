@@ -47,13 +47,16 @@ import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -90,9 +93,9 @@ public class GMLStreamWriter {
 
     private XMLStreamWriter xmlStream;
 
-    private int inlineXLinklevels;
+    private String remoteXlinkTemplate;
 
-    private String remoteXLinkTemplate;
+    private int inlineXLinklevels;
 
     private ICRS crs;
 
@@ -104,7 +107,7 @@ public class GMLStreamWriter {
 
     private GMLDictionaryWriter dictionaryWriter;
 
-    private ProjectionClause[] projection;
+    private List<ProjectionClause> projection;
 
     private int traverseXLinkExpiry;
 
@@ -112,7 +115,11 @@ public class GMLStreamWriter {
 
     private GMLForwardReferenceHandler additionalObjectHandler;
 
-    private boolean exportExtraProps;
+    private boolean exportExtraProps = false;
+
+    private boolean outputGeometries = true;
+
+    private final Set<String> exportedIds = new HashSet<String>();
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -126,6 +133,7 @@ public class GMLStreamWriter {
     GMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) throws XMLStreamException {
         this.version = version;
         this.xmlStream = xmlStream;
+        this.remoteXlinkTemplate = "#{}";
         prefixToNs.put( "ogc", OGCNS );
         prefixToNs.put( "gml", version != GML_32 ? GMLNS : GML3_2_NS );
         prefixToNs.put( "xlink", XLNNS );
@@ -133,6 +141,14 @@ public class GMLStreamWriter {
         prefixToNs.put( "dxtra", EXTRA_PROP_NS );
         prefixToNs.put( "dxtra-string", EXTRA_PROP_NS_STRING );
         prefixToNs.put( "dxtra-geometry", EXTRA_PROP_NS_GEOMETRY );
+    }
+
+    public GMLVersion getVersion() {
+        return version;
+    }
+
+    public ICRS getOutputCrs() {
+        return crs;
     }
 
     /**
@@ -143,6 +159,10 @@ public class GMLStreamWriter {
      */
     public void setOutputCRS( ICRS crs ) {
         this.crs = crs;
+    }
+
+    public CoordinateFormatter getCoordinateFormatter() {
+        return formatter;
     }
 
     /**
@@ -166,6 +186,10 @@ public class GMLStreamWriter {
         this.prefixToNs.putAll( prefixToNs );
     }
 
+    public int getTraverseXlinkDepth() {
+        return inlineXLinklevels;
+    }
+
     /**
      * Controls the number of xlink levels that will be expanded inside property elements.
      * 
@@ -186,16 +210,20 @@ public class GMLStreamWriter {
         this.traverseXLinkExpiry = traverseXLinkExpiry;
     }
 
+    public String getRemoteXlinkTemplate() {
+        return remoteXlinkTemplate;
+    }
+
     /**
      * Controls the representation of xlinks that point to objects that are not included in the written GML document.
      * 
-     * @param remoteXLinkTemplate
+     * @param remoteXlinkTemplate
      *            template used to create references to document-remote objects, e.g.
      *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
      *            , the substring <code>{}</code> is replaced by the object id
      */
-    public void setRemoteXLinkTemplate( String remoteXLinkTemplate ) {
-        this.remoteXLinkTemplate = remoteXLinkTemplate;
+    public void setRemoteXLinkTemplate( String remoteXlinkTemplate ) {
+        this.remoteXlinkTemplate = remoteXlinkTemplate;
     }
 
     /**
@@ -204,7 +232,7 @@ public class GMLStreamWriter {
      * @param projection
      *            feature properties to be included, or <code>null</code> (include all feature props)
      */
-    public void setProjection( ProjectionClause[] projection ) {
+    public void setProjection( List<ProjectionClause> projection ) {
         this.projection = projection;
     }
 
@@ -327,27 +355,22 @@ public class GMLStreamWriter {
 
     public GMLFeatureWriter getFeatureWriter() {
         if ( featureWriter == null ) {
-            featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, remoteXLinkTemplate, projection,
-                                                  inlineXLinklevels, traverseXLinkExpiry, false, true, prefixToNs,
-                                                  additionalObjectHandler, exportExtraProps );
+            featureWriter = new GMLFeatureWriter( this );
         }
         return featureWriter;
     }
 
-    private GMLGeometryWriter getGeometryWriter() {
+    public GMLGeometryWriter getGeometryWriter() {
         if ( geometryWriter == null ) {
             switch ( version ) {
             case GML_2: {
-                // TODO
-                geometryWriter = new GML2GeometryWriter( xmlStream, crs, formatter, new HashSet<String>() );
+                geometryWriter = new GML2GeometryWriter( this );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
-                // TODO
-                geometryWriter = new GML3GeometryWriter( version, xmlStream, crs, formatter, false,
-                                                         new HashSet<String>() );
+                geometryWriter = new GML3GeometryWriter( this );
                 break;
             }
             }
@@ -360,5 +383,33 @@ public class GMLStreamWriter {
             dictionaryWriter = new GMLDictionaryWriter( version, xmlStream );
         }
         return dictionaryWriter;
+    }
+
+    public List<ProjectionClause> getProjections() {
+        return projection;
+    }
+
+    public boolean getOutputGeometries() {
+        return outputGeometries;
+    }
+
+    public Map<String, String> getPrefixToNs() {
+        return prefixToNs;
+    }
+
+    public Set<String> getExportedIds() {
+        return exportedIds;
+    }
+
+    public GMLForwardReferenceHandler getAdditionalObjectHandler() {
+        return additionalObjectHandler;
+    }
+
+    public boolean exportExtraProps() {
+        return exportExtraProps;
+    }
+
+    public void setExportGeometries( boolean exportGeometries ) {
+        this.outputGeometries = exportGeometries;
     }
 }
