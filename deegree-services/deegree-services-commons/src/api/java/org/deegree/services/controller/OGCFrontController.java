@@ -267,6 +267,20 @@ public class OGCFrontController extends HttpServlet {
         return url;
     }
 
+    private static void addHeaders( HttpServletResponse response ) {
+        // add cache control headers
+        response.addHeader( "Cache-Control", "no-cache, no-store" );
+        // add deegree header
+        String version = null;
+        for ( ModuleInfo moduleInfo : getModulesInfo() ) {
+            if ( moduleInfo.getArtifactId().equals( "deegree-core-base" ) && moduleInfo.getVersion() != null ) {
+                version = moduleInfo.getVersion();
+                break;
+            }
+        }
+        response.addHeader( "deegree-version", version == null ? "unknown" : version );
+    }
+
     /**
      * Handles HTTP GET requests.
      * <p>
@@ -291,8 +305,7 @@ public class OGCFrontController extends HttpServlet {
                 }
             }
 
-            // add cache control headers
-            response.addHeader( "Cache-Control", "no-cache, no-store" );
+            addHeaders( response );
 
             response = handleCompression( response );
 
@@ -305,7 +318,7 @@ public class OGCFrontController extends HttpServlet {
                                                         "MissingParameterValue" );
                     OWS ows = null;
                     try {
-                        ows = determineOWSByPathQuirk( request, response );
+                        ows = determineOWSByPathQuirk( request );
                     } catch ( OWSException e ) {
                         sendException( null, e, response, null );
                         return;
@@ -393,6 +406,8 @@ public class OGCFrontController extends HttpServlet {
                     LOG.debug( "- " + headerName + "='" + request.getHeader( headerName ) + "'" );
                 }
             }
+
+            addHeaders( response );
 
             response = handleCompression( response );
 
@@ -503,7 +518,7 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private OWS determineOWSByPath( HttpServletRequest request, HttpServletResponse response )
+    private OWS determineOWSByPath( HttpServletRequest request )
                             throws OWSException {
         OWS ows = null;
         String pathInfo = request.getPathInfo();
@@ -520,7 +535,7 @@ public class OGCFrontController extends HttpServlet {
         return ows;
     }
 
-    private OWS determineOWSByPathQuirk( HttpServletRequest request, HttpServletResponse response )
+    private OWS determineOWSByPathQuirk( HttpServletRequest request )
                             throws OWSException {
         OWS ows = null;
         String pathInfo = request.getPathInfo();
@@ -630,7 +645,7 @@ public class OGCFrontController extends HttpServlet {
 
         OWS ows = null;
         try {
-            ows = determineOWSByPath( requestWrapper, response );
+            ows = determineOWSByPath( requestWrapper );
         } catch ( OWSException e ) {
             sendException( null, e, response, null );
             return;
@@ -794,7 +809,7 @@ public class OGCFrontController extends HttpServlet {
 
         OWS ows = null;
         try {
-            ows = determineOWSByPath( requestWrapper, response );
+            ows = determineOWSByPath( requestWrapper );
         } catch ( OWSException e ) {
             sendException( null, e, response, null );
             return;
@@ -881,7 +896,7 @@ public class OGCFrontController extends HttpServlet {
 
         OWS ows = null;
         try {
-            ows = determineOWSByPath( requestWrapper, response );
+            ows = determineOWSByPath( requestWrapper );
         } catch ( OWSException e ) {
             sendException( null, e, response, null );
             return;
@@ -1220,7 +1235,7 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private void writeWebappToWsMappings( Properties props, File file )
+    private static void writeWebappToWsMappings( Properties props, File file )
                             throws IOException {
 
         if ( file.exists() && !file.canWrite() ) {
@@ -1242,7 +1257,7 @@ public class OGCFrontController extends HttpServlet {
         LOG.info( "Successfully saved webapp-to-workspace mapping in file '" + file + "'." );
     }
 
-    private Properties loadWebappToWsMappings( File file )
+    private static Properties loadWebappToWsMappings( File file )
                             throws IOException {
 
         Properties props = new Properties();
