@@ -6,207 +6,156 @@
     </gml:Box>
   </gml:boundedBy>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_21">
+    <wstxns1:SGID500_ZipCodes xmlns:wstxns1="http://www.deegree.org/app" fid="SGID500_ZIPCODES_21">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">388999.403,4600998.550 407839.303,4623340.550</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>22</app0:OBJECTID>
-      <app0:ZIP>84337</app0:ZIP>
-      <app0:PO_NAME>Tremonton</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>6617.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>8259.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>253604088.500</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>93198.4618086</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns1:OBJECTID>22</wstxns1:OBJECTID>
+      <wstxns1:ZIP>84337</wstxns1:ZIP>
+      <wstxns1:PO_NAME>Tremonton</wstxns1:PO_NAME>
+      <wstxns1:STATE>UT</wstxns1:STATE>
+      <wstxns1:SUMBLKPOP>6617.00000000</wstxns1:SUMBLKPOP>
+      <wstxns1:POP1999>8259.00000000</wstxns1:POP1999>
+      <wstxns1:SHAPE_AREA>253604088.500</wstxns1:SHAPE_AREA>
+      <wstxns1:SHAPE_LEN>93198.4618086</wstxns1:SHAPE_LEN>
+    </wstxns1:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_25">
+    <wstxns2:SGID500_ZipCodes xmlns:wstxns2="http://www.deegree.org/app" fid="SGID500_ZIPCODES_25">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">345620.303,4563076.050 408218.903,4620836.050</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>26</app0:OBJECTID>
-      <app0:ZIP>84307</app0:ZIP>
-      <app0:PO_NAME>Corinne</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>974.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>1165.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>1260797740.15</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>329801.326323</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns2:OBJECTID>26</wstxns2:OBJECTID>
+      <wstxns2:ZIP>84307</wstxns2:ZIP>
+      <wstxns2:PO_NAME>Corinne</wstxns2:PO_NAME>
+      <wstxns2:STATE>UT</wstxns2:STATE>
+      <wstxns2:SUMBLKPOP>974.00000000</wstxns2:SUMBLKPOP>
+      <wstxns2:POP1999>1165.00000000</wstxns2:POP1999>
+      <wstxns2:SHAPE_AREA>1260797740.15</wstxns2:SHAPE_AREA>
+      <wstxns2:SHAPE_LEN>329801.326323</wstxns2:SHAPE_LEN>
+    </wstxns2:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_32">
+    <wstxns3:SGID500_ZipCodes xmlns:wstxns3="http://www.deegree.org/app" fid="SGID500_ZIPCODES_32">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">400728.703,4585992.550 419122.603,4606592.550</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>33</app0:OBJECTID>
-      <app0:ZIP>84302</app0:ZIP>
-      <app0:PO_NAME>Brigham City</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>17529.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>20483.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>182869711.950</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>94018.4354418</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns3:OBJECTID>33</wstxns3:OBJECTID>
+      <wstxns3:ZIP>84302</wstxns3:ZIP>
+      <wstxns3:PO_NAME>Brigham City</wstxns3:PO_NAME>
+      <wstxns3:STATE>UT</wstxns3:STATE>
+      <wstxns3:SUMBLKPOP>17529.00000000</wstxns3:SUMBLKPOP>
+      <wstxns3:POP1999>20483.00000000</wstxns3:POP1999>
+      <wstxns3:SHAPE_AREA>182869711.950</wstxns3:SHAPE_AREA>
+      <wstxns3:SHAPE_LEN>94018.4354418</wstxns3:SHAPE_LEN>
+    </wstxns3:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_37">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">393683.603,4592772.550 400913.303,4597459.550</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
-      <app0:OBJECTID>38</app0:OBJECTID>
-      <app0:ZIP></app0:ZIP>
-      <app0:PO_NAME></app0:PO_NAME>
-      <app0:STATE></app0:STATE>
-      <app0:SUMBLKPOP>0E-8</app0:SUMBLKPOP>
-      <app0:POP1999>0E-8</app0:POP1999>
-      <app0:SHAPE_AREA>19128247.8500</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>23968.0541301</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_38">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">387637.703,4585613.550 403601.603,4596497.050</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
-      <app0:OBJECTID>39</app0:OBJECTID>
-      <app0:ZIP></app0:ZIP>
-      <app0:PO_NAME></app0:PO_NAME>
-      <app0:STATE></app0:STATE>
-      <app0:SUMBLKPOP>0E-8</app0:SUMBLKPOP>
-      <app0:POP1999>0E-8</app0:POP1999>
-      <app0:SHAPE_AREA>82258697.1250</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>85470.7581139</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_39">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">381113.603,4569761.550 412745.503,4593271.050</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
-      <app0:OBJECTID>40</app0:OBJECTID>
-      <app0:ZIP></app0:ZIP>
-      <app0:PO_NAME></app0:PO_NAME>
-      <app0:STATE></app0:STATE>
-      <app0:SUMBLKPOP>0E-8</app0:SUMBLKPOP>
-      <app0:POP1999>0E-8</app0:POP1999>
-      <app0:SHAPE_AREA>263411578.150</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>160769.718610</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_40">
+    <wstxns4:SGID500_ZipCodes xmlns:wstxns4="http://www.deegree.org/app" fid="SGID500_ZIPCODES_40">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">393255.603,4589020.550 398113.803,4593093.050</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>41</app0:OBJECTID>
-      <app0:ZIP>84302</app0:ZIP>
-      <app0:PO_NAME>Brigham City</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>17529.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>20483.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>7505162.92500</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>17045.0517107</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns4:OBJECTID>41</wstxns4:OBJECTID>
+      <wstxns4:ZIP>84302</wstxns4:ZIP>
+      <wstxns4:PO_NAME>Brigham City</wstxns4:PO_NAME>
+      <wstxns4:STATE>UT</wstxns4:STATE>
+      <wstxns4:SUMBLKPOP>17529.00000000</wstxns4:SUMBLKPOP>
+      <wstxns4:POP1999>20483.00000000</wstxns4:POP1999>
+      <wstxns4:SHAPE_AREA>7505162.92500</wstxns4:SHAPE_AREA>
+      <wstxns4:SHAPE_LEN>17045.0517107</wstxns4:SHAPE_LEN>
+    </wstxns4:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_41">
+    <wstxns5:SGID500_ZipCodes xmlns:wstxns5="http://www.deegree.org/app" fid="SGID500_ZIPCODES_41">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">397938.503,4591254.550 398381.103,4591910.550</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>42</app0:OBJECTID>
-      <app0:ZIP>84302</app0:ZIP>
-      <app0:PO_NAME>Brigham City</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>17529.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>20483.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>100533.700000</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>1629.47574423</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns5:OBJECTID>42</wstxns5:OBJECTID>
+      <wstxns5:ZIP>84302</wstxns5:ZIP>
+      <wstxns5:PO_NAME>Brigham City</wstxns5:PO_NAME>
+      <wstxns5:STATE>UT</wstxns5:STATE>
+      <wstxns5:SUMBLKPOP>17529.00000000</wstxns5:SUMBLKPOP>
+      <wstxns5:POP1999>20483.00000000</wstxns5:POP1999>
+      <wstxns5:SHAPE_AREA>100533.700000</wstxns5:SHAPE_AREA>
+      <wstxns5:SHAPE_LEN>1629.47574423</wstxns5:SHAPE_LEN>
+    </wstxns5:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_42">
+    <wstxns6:SGID500_ZipCodes xmlns:wstxns6="http://www.deegree.org/app" fid="SGID500_ZIPCODES_42">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">394559.703,4588684.050 395537.503,4590540.550</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>43</app0:OBJECTID>
-      <app0:ZIP>84302</app0:ZIP>
-      <app0:PO_NAME>Brigham City</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>17529.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>20483.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>1180779.02500</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>4858.06337433</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns6:OBJECTID>43</wstxns6:OBJECTID>
+      <wstxns6:ZIP>84302</wstxns6:ZIP>
+      <wstxns6:PO_NAME>Brigham City</wstxns6:PO_NAME>
+      <wstxns6:STATE>UT</wstxns6:STATE>
+      <wstxns6:SUMBLKPOP>17529.00000000</wstxns6:SUMBLKPOP>
+      <wstxns6:POP1999>20483.00000000</wstxns6:POP1999>
+      <wstxns6:SHAPE_AREA>1180779.02500</wstxns6:SHAPE_AREA>
+      <wstxns6:SHAPE_LEN>4858.06337433</wstxns6:SHAPE_LEN>
+    </wstxns6:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_43">
+    <wstxns7:SGID500_ZipCodes xmlns:wstxns7="http://www.deegree.org/app" fid="SGID500_ZIPCODES_43">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">392082.103,4590082.550 392311.003,4590486.050</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>44</app0:OBJECTID>
-      <app0:ZIP>84307</app0:ZIP>
-      <app0:PO_NAME>Corinne</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>974.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>1165.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>43306.2000000</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>1037.31779268</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns7:OBJECTID>44</wstxns7:OBJECTID>
+      <wstxns7:ZIP>84307</wstxns7:ZIP>
+      <wstxns7:PO_NAME>Corinne</wstxns7:PO_NAME>
+      <wstxns7:STATE>UT</wstxns7:STATE>
+      <wstxns7:SUMBLKPOP>974.00000000</wstxns7:SUMBLKPOP>
+      <wstxns7:POP1999>1165.00000000</wstxns7:POP1999>
+      <wstxns7:SHAPE_AREA>43306.2000000</wstxns7:SHAPE_AREA>
+      <wstxns7:SHAPE_LEN>1037.31779268</wstxns7:SHAPE_LEN>
+    </wstxns7:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_48">
+    <wstxns8:SGID500_ZipCodes xmlns:wstxns8="http://www.deegree.org/app" fid="SGID500_ZIPCODES_48">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">398894.403,4587492.050 399442.103,4587964.550</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>49</app0:OBJECTID>
-      <app0:ZIP>84302</app0:ZIP>
-      <app0:PO_NAME>Brigham City</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>17529.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>20483.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>150036.025000</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>1570.86581088</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns8:OBJECTID>49</wstxns8:OBJECTID>
+      <wstxns8:ZIP>84302</wstxns8:ZIP>
+      <wstxns8:PO_NAME>Brigham City</wstxns8:PO_NAME>
+      <wstxns8:STATE>UT</wstxns8:STATE>
+      <wstxns8:SUMBLKPOP>17529.00000000</wstxns8:SUMBLKPOP>
+      <wstxns8:POP1999>20483.00000000</wstxns8:POP1999>
+      <wstxns8:SHAPE_AREA>150036.025000</wstxns8:SHAPE_AREA>
+      <wstxns8:SHAPE_LEN>1570.86581088</wstxns8:SHAPE_LEN>
+    </wstxns8:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_49">
+    <wstxns9:SGID500_ZipCodes xmlns:wstxns9="http://www.deegree.org/app" fid="SGID500_ZIPCODES_49">
       <gml:boundedBy>
         <gml:Box srsName="EPSG:26912">
           <gml:coordinates decimal="." cs="," ts=" ">389779.403,4579538.550 405010.603,4587558.050</gml:coordinates>
         </gml:Box>
       </gml:boundedBy>
-      <app0:OBJECTID>50</app0:OBJECTID>
-      <app0:ZIP>84302</app0:ZIP>
-      <app0:PO_NAME>Brigham City</app0:PO_NAME>
-      <app0:STATE>UT</app0:STATE>
-      <app0:SUMBLKPOP>17529.00000000</app0:SUMBLKPOP>
-      <app0:POP1999>20483.00000000</app0:POP1999>
-      <app0:SHAPE_AREA>44913043.5250</app0:SHAPE_AREA>
-      <app0:SHAPE_LEN>42480.9664585</app0:SHAPE_LEN>
-    </app0:SGID500_ZipCodes>
+      <wstxns9:OBJECTID>50</wstxns9:OBJECTID>
+      <wstxns9:ZIP>84302</wstxns9:ZIP>
+      <wstxns9:PO_NAME>Brigham City</wstxns9:PO_NAME>
+      <wstxns9:STATE>UT</wstxns9:STATE>
+      <wstxns9:SUMBLKPOP>17529.00000000</wstxns9:SUMBLKPOP>
+      <wstxns9:POP1999>20483.00000000</wstxns9:POP1999>
+      <wstxns9:SHAPE_AREA>44913043.5250</wstxns9:SHAPE_AREA>
+      <wstxns9:SHAPE_LEN>42480.9664585</wstxns9:SHAPE_LEN>
+    </wstxns9:SGID500_ZipCodes>
   </gml:featureMember>
 </FeatureCollection>
