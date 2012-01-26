@@ -302,6 +302,10 @@ public class WorkspaceBean implements Serializable {
                                                                  workspaceImportName.length()
                                                                                          - ".deegree-workspace".length() );
         }
+        if ( workspaceImportName.endsWith( ".zip" ) ) {
+            workspaceImportName = workspaceImportName.substring( 0, workspaceImportName.length() - ".zip".length() );
+        }
+
         return WS_UPLOAD_VIEW;
     }
 
