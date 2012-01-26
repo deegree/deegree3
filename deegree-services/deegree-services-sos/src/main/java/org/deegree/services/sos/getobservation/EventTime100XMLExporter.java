@@ -132,7 +132,7 @@ public class EventTime100XMLExporter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( GML_NS, "TimeInstant" );
         writer.writeStartElement( GML_NS, "timePosition" );
-        writer.writeCharacters( ISO8601Converter.formatISO8601Date( timeInstant.getTime() ) );
+        writer.writeCharacters( ISO8601Converter.formatDateTime( timeInstant.getTime() ) );
         writer.writeEndElement();
         writer.writeEndElement();
     }
@@ -148,10 +148,10 @@ public class EventTime100XMLExporter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( GML_NS, "TimePeriod" );
         writer.writeStartElement( GML_NS, "beginPosition" );
-        writer.writeCharacters( ISO8601Converter.formatISO8601Date( timePeriod.getBegin() ) );
+        writer.writeCharacters( ISO8601Converter.formatDateTime( timePeriod.getBegin() ) );
         writer.writeEndElement();
         writer.writeStartElement( GML_NS, "endPosition" );
-        writer.writeCharacters( ISO8601Converter.formatISO8601Date( timePeriod.getEnd() ) );
+        writer.writeCharacters( ISO8601Converter.formatDateTime( timePeriod.getEnd() ) );
         writer.writeEndElement();
         writer.writeEndElement();
     }

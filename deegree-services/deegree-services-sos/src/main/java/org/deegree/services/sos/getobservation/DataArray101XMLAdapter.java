@@ -151,7 +151,7 @@ public class DataArray101XMLAdapter extends XMLAdapter {
 
     private static void exportValue( XMLStreamWriter writer, Measurement m, List<Property> properties )
                             throws XMLStreamException {
-        writer.writeCharacters( ISO8601Converter.formatISO8601Date( m.getSamplingTime().getTime() ) );
+        writer.writeCharacters( ISO8601Converter.formatDateTime( m.getSamplingTime().getTime() ) );
         for ( Property property : properties ) {
             writer.writeCharacters( tokenSeparator );
             writer.writeCharacters( m.getResult( property ).getResultAsString() );

@@ -151,7 +151,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
      */
     public String getStartMessage() {
         if ( startedMessage == null ) {
-            return "Process execution started@" + ISO8601Converter.formatISO8601Date( new Date( startTime ) );
+            return "Process execution started@" + ISO8601Converter.formatDateTime( new Date( startTime ) );
         }
         return startedMessage;
     }
@@ -202,7 +202,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
      */
     public String getSucceededMessage() {
         if ( succeededMessage == null && finishTime >= 0 ) {
-            return "Process execution succeeded@" + ISO8601Converter.formatISO8601Date( new Date( finishTime ) );
+            return "Process execution succeeded@" + ISO8601Converter.formatDateTime( new Date( finishTime ) );
         }
         return succeededMessage;
     }

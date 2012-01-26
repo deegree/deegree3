@@ -35,14 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
-import static javax.xml.bind.DatatypeConverter.parseTime;
-import static javax.xml.bind.DatatypeConverter.printTime;
+import static java.util.Calendar.getInstance;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * Represents an <code>xs:time</code> instance.
+ * {@link TimeInstant} for representing times (e.g. <code>xs:time</code>).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -52,28 +51,46 @@ import java.util.TimeZone;
 public class Time extends TimeInstant {
 
     /**
-     * Creates a new {@link Time} instance from the given <code>xs:time</code> encoded value.
+     * Creates a new {@link Time} instance.
      * 
-     * @param time
-     *            encoded time, must not be <code>null</code>
-     * @throws IllegalArgumentException
-     *             if parameter does not conform to lexical value space defined in XML Schema Part 2: Datatypes for
-     *             <code>xs:time</code>
+     * @param cal
+     *            point in time, must not be <code>null</code>
+     * @param isUnknown
+     *            <code>true</code>, if the time zone was not available when creating the <code>Calendar</code> 
+     *            (system's local time zone was assumed), <code>false</code> otherwise (time zone was available and
+     *            used)
      */
-    public Time( String xsDate ) throws IllegalArgumentException {
-        super( parseTime( xsDate ), isLocal( xsDate ) );
-    }
-
-    public Time( java.util.Date date, TimeZone tz ) {
-        super( date, tz );
-    }
-
     public Time( Calendar cal, boolean isUnknown ) {
         super( cal, isUnknown );
     }
 
+    /**
+     * Creates a new {@link Time} instance.
+     * 
+     * @param date
+     *            point in time, must not be <code>null</code>
+     * @param tz
+     *            time zone, can be <code>null</code> (no timezone information, <code>Date</code> will be interpreted
+     *            according to system's local time zone)
+     */
+    public Time( java.util.Date date, TimeZone tz ) {
+        super( date, tz );
+    }
+
+    @Override
+    public Time toTimeZone( TimeZone tz ) {
+        Calendar cal = null;
+        if ( tz == null ) {
+            cal = getInstance();
+        } else {
+            cal = getInstance( tz );
+        }
+        cal.setTimeInMillis( this.cal.getTimeInMillis() );
+        return new Time( cal, tz == null );
+    }
+
     @Override
     public String toString() {
-        return printTime( getCalendar() );
+        return ISO8601Converter.formatTime( this );
     }
 }

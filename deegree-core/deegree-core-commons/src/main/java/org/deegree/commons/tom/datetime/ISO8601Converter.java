@@ -36,13 +36,16 @@
 
 package org.deegree.commons.tom.datetime;
 
+import static java.util.Calendar.MILLISECOND;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Converts between <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> representations and deegree's
@@ -87,80 +90,81 @@ import java.util.regex.Pattern;
  */
 public final class ISO8601Converter {
 
-    private static final String ISO_8601_2004_FORMAT_GMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private static final String ISO_8601_2004_FORMAT_TIME = "HH:mm:ss.SSS";
 
-    private static final String ISO_8601_2004_FORMAT_GMT_WO_TIME = "yyyy-MM-dd";
+    private static final String ISO_8601_2004_FORMAT_TIME_NO_MS = "HH:mm:ss";
 
-    private static final String ISO_8601_2004_FORMAT_GMT_WO_MS = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static final String ISO_8601_2004_FORMAT_DATE = "yyyy-MM-dd";
 
-    private static final String ISO_8601_2004_FORMAT_GMT_TIME = "HH:mm:ss";
+    private static final String ISO_8601_2004_FORMAT_DATE_TIME = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+
+    private static final String ISO_8601_2004_FORMAT_DATE_TIME_NO_MS = "yyyy-MM-dd'T'HH:mm:ss";
 
     private final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
 
     /**
-     * Parse the date contained in the supplied string and return a UTC Calendar object. The date must follow one of the
-     * standard ISO 8601 formats, of the form <code><i>datepart</i>T<i>timepart</i></code>, where
-     * <code><i>datepart</i></code> is one of the following forms:
-     * <p>
-     * <dl>
-     * <dt>YYYYMMDD</dt>
-     * <dd>The 4-digit year, the 2-digit month (00-12), and the 2-digit day of the month (00-31). The month and day are
-     * optional, but the month is required if the day is given.</dd>
-     * <dt>YYYY-MM-DD</dt>
-     * <dd>The 4-digit year, the 2-digit month (00-12), and the 2-digit day of the month (00-31). The month and day are
-     * optional, but the month is required if the day is given.</dd>
-     * <dt>YYYY-Www-D</dt>
-     * <dd>The 4-digit year followed by 'W', the 2-digit week number (00-53), and the day of the week (1-7). The day of
-     * week number is optional.</dd>
-     * <dt>YYYYWwwD</dt>
-     * <dd>The 4-digit year followed by 'W', the 2-digit week number (00-53), and the day of the week (1-7). The day of
-     * week number is optional.</dd>
-     * <dt>YYYY-DDD</dt>
-     * <dd>The 4-digit year followed by the 3-digit day of the year (000-365)</dd>
-     * <dt>YYYYDDD</dt>
-     * <dd>The 4-digit year followed by the 3-digit day of the year (000-365)</dd>
-     * </dl>
-     * </p>
-     * <p>
-     * The <code><i>timepart</i></code> consists of one of the following forms that contain the 2-digit hour (00-24),
-     * the 2-digit minutes (00-59), the 2-digit seconds (00-59), and the 1-to-3 digit milliseconds. The minutes, seconds
-     * and milliseconds are optional, but any component is required if it is followed by another component (e.g.,
-     * minutes are required if the seconds are given).
-     * <dl>
-     * <dt>hh:mm:ss.SSS</dt>
-     * <dt>hhmmssSSS</dt>
-     * </dl>
-     * </p>
-     * <p>
-     * followed by one of the following time zone definitions:
-     * <dt>Z</dt>
-     * <dd>The uppercase or lowercase 'Z' to denote UTC time</dd>
-     * <dt>&#177;hh:mm</dt>
-     * <dd>The 2-digit hour and the 2-digit minute offset from UTC</dd>
-     * <dt>&#177;hhmm</dt>
-     * <dd>The 2-digit hour and the 2-digit minute offset from UTC</dd>
-     * <dt>&#177;hh</dt>
-     * <dd>The 2-digit hour offset from UTC</dd>
-     * <dt>hh:mm</dt>
-     * <dd>The 2-digit hour and the 2-digit minute offset from UTC</dd>
-     * <dt>hhmm</dt>
-     * <dd>The 2-digit hour and the 2-digit minute offset from UTC</dd>
-     * <dt>hh</dt>
-     * <dd>The 2-digit hour offset from UTC</dd>
-     * </dl>
-     * </p>
+     * Parses the given <code>xs:date</code> string.
      * 
-     * @param dateString
-     *            the string containing the date to be parsed
-     * @return the parsed date as a {@link Calendar} object. The return value is always in UTC time zone. Conversion
-     *         occurs when necessary.
-     * @throws ParseException
-     *             if there is a problem parsing the string
+     * @param xsDate
+     *            the <code>xs:date</code> to be parsed, must not be <code>null</code>
+     * @return the parsed date, never <code>null</code> (available timezone information is kept)
+     * @throws IllegalArgumentException
+     *             if parameter does not conform to lexical value space defined in XML Schema Part 2: Datatypes for
+     *             <code>xs:date</code>
      */
-    public static DateTime parseISO8601TimeInstant( final String dateString )
-                            throws ParseException {
-        // TODO check if want to go back to supporting more ISO-style (non-XSD) formats
-        return new DateTime( dateString );
+    public static Date parseDate( final String xsDate )
+                            throws IllegalArgumentException {
+        Calendar cal = DatatypeConverter.parseDate( xsDate );
+        boolean isTimeZoneUnknown = isLocal( xsDate );
+        return new org.deegree.commons.tom.datetime.Date( cal, isTimeZoneUnknown );
+    }
+
+    /**
+     * Parses the given <code>xs:time</code> string.
+     * 
+     * @param xsTime
+     *            the <code>xs:time/code> to be parsed, must not be <code>null</code>
+     * @return the parsed date, never <code>null</code> (available timezone information is kept)
+     * @throws IllegalArgumentException
+     *             if parameter does not conform to lexical value space defined in XML Schema Part 2: Datatypes for
+     *             <code>xs:date</code>
+     */
+    public static Time parseTime( final String xsTime )
+                            throws IllegalArgumentException {
+        Calendar cal = DatatypeConverter.parseTime( xsTime );
+        boolean isTimeZoneUnknown = isLocal( xsTime );
+        return new Time( cal, isTimeZoneUnknown );
+    }
+
+    /**
+     * Parses the given <code>xs:dateTime</code> string.
+     * 
+     * @param xsDateTime
+     *            the <code>xs:dateTime</code> to be parsed, must not be <code>null</code>
+     * @return the parsed date, never <code>null</code> (available timezone information is kept)
+     * @throws IllegalArgumentException
+     *             if parameter does not conform to lexical value space defined in XML Schema Part 2: Datatypes for
+     *             <code>xs:dateTime</code>
+     */
+    public static DateTime parseDateTime( final String xsDateTime )
+                            throws IllegalArgumentException {
+        Calendar cal = DatatypeConverter.parseDateTime( xsDateTime );
+        boolean isTimeZoneUnknown = isLocal( xsDateTime );
+        return new DateTime( cal, isTimeZoneUnknown );
+    }
+
+    private static boolean isLocal( final String s ) {
+        if ( s.endsWith( "Z" ) ) {
+            return false;
+        }
+        int len = s.length();
+        if ( len < 6 ) {
+            return true;
+        }
+        if ( s.charAt( len - 3 ) == ':' && ( s.charAt( len - 6 ) == '-' ) || ( s.charAt( len - 6 ) == '+' ) ) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -217,71 +221,91 @@ public final class ISO8601Converter {
     }
 
     /**
-     * Obtain an ISO 8601:2004 string representation of the supplied date.
+     * Returns an encoding of the given {@link TimeInstant} that complies with <code>xs:date</code>.
+     * <p>
+     * The returned format is <code<YYYY-MM-DD[TZ]</code>. The timezone is used from the {@link TimeInstant} object, if
+     * time zone is unknown {@link TimeInstant#isTimeZoneUnknown()}, no time zone information is appended (= local
+     * time).
+     * </p>
      * 
      * @param date
-     *            the date
-     * @return the string in the {@link #ISO_8601_2004_FORMAT_GMT standard format}
+     *            point in time to be encoded, must not be <code>null</code>
+     * @return encoded <code>xs:date</code>, never <code>null</code>
      */
-    public static String formatISO8601Date( TimeInstant date ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT );
-        sdf.setTimeZone( GMT );
-        return sdf.format( date.getDate() );
-    }
+    public static String formatDate( TimeInstant date ) {
 
-    public static String formatISO8601Date( java.util.Date date ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT );
-        sdf.setTimeZone( GMT );
-        return sdf.format( date );
+        TimeZone tz = date.getCalendar().getTimeZone();
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_DATE );
+
+        sdf.setTimeZone( tz );
+        String s = sdf.format( date.getDate() );
+
+        if ( !date.isTimeZoneUnknown() ) {
+            s += getTzString( tz, date.getTimeInMilliseconds() );
+        }
+        return s;
     }
 
     /**
-     * @param date
-     * @return the date string WithOutMilliSeconds
-     */
-    public static String formatISO8601DateWOMS( final TimeInstant date ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_MS );
-        sdf.setTimeZone( GMT );
-        return sdf.format( date.getDate() );
-    }
-
-    /**
-     * @param date
-     * @return the date string WithOutMilliSeconds
-     */
-    public static String formatISO8601DateWOMS( final Date date ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_MS );
-        sdf.setTimeZone( GMT );
-        return sdf.format( date );
-    }
-
-    /**
-     * @param date
-     * @return the date string without time
-     */
-    public static String formatISO8601DateWOTime( final TimeInstant date ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_TIME );
-        sdf.setTimeZone( GMT );
-        return sdf.format( date.getDate() );
-    }
-
-    public static String formatISO8601DateWOTime( final Date date ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_TIME );
-        sdf.setTimeZone( GMT );
-        return sdf.format( date );
-    }
-
-    /**
-     * Obtain an ISO 8601:2004 string representation of the supplied date.
+     * Returns an encoding of the given {@link TimeInstant} that complies with <code>xs:time</code>.
+     * <p>
+     * The returned format is <code>hh:mm:ss[.SSS][TZ]</code>. The timezone is used from the {@link TimeInstant} object,
+     * if time zone is unknown {@link TimeInstant#isTimeZoneUnknown()}, no time zone information is appended (= local
+     * time).
+     * </p>
      * 
      * @param date
-     *            the date
-     * @return the string representation (only time)
+     *            point in time to be encoded, must not be <code>null</code>
+     * @return encoded <code>xs:date</code>, never <code>null</code>
      */
-    public static String formatISO8601Time( final TimeInstant date ) {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_TIME );
-        sdf.setTimeZone( GMT );
-        return sdf.format( date.getDate() );
+    public static String formatTime( TimeInstant date ) {
+
+        TimeZone tz = date.getCalendar().getTimeZone();
+        SimpleDateFormat sdf = null;
+        if ( date.getCalendar().get( MILLISECOND ) == 0 ) {
+            sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_TIME_NO_MS );
+        } else {
+            sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_TIME );
+        }
+
+        sdf.setTimeZone( tz );
+        String s = sdf.format( date.getDate() );
+
+        if ( !date.isTimeZoneUnknown() ) {
+            s += getTzString( tz, date.getTimeInMilliseconds() );
+        }
+        return s;
+    }
+
+    /**
+     * Returns an encoding of the given {@link TimeInstant} that complies with <code>xs:dateTime</code>.
+     * <p>
+     * The returned format is <code<YYYY-MM-DDThh:mm:ss[.SSS][TZ]</code>. The timezone is used from the
+     * {@link TimeInstant} object, if time zone is unknown {@link TimeInstant#isTimeZoneUnknown()}, no time zone
+     * information is appended (= local time).
+     * </p>
+     * 
+     * @param date
+     *            point in time to be encoded, must not be <code>null</code>
+     * @return encoded <code>xs:dateTime</code>, never <code>null</code>
+     */
+    public static String formatDateTime( TimeInstant date ) {
+
+        TimeZone tz = date.getCalendar().getTimeZone();
+        SimpleDateFormat sdf = null;
+        if ( date.getCalendar().get( MILLISECOND ) == 0 ) {
+            sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_DATE_TIME_NO_MS );
+        } else {
+            sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_DATE_TIME );
+        }
+
+        sdf.setTimeZone( tz );
+        String s = sdf.format( date.getDate() );
+
+        if ( !date.isTimeZoneUnknown() ) {
+            s += getTzString( tz, date.getTimeInMilliseconds() );
+        }
+        return s;
     }
 
     /**
@@ -311,6 +335,40 @@ public final class ISO8601Converter {
             }
         }
         return result.toString();
+    }
+
+    private static String getTzString( TimeZone tz, long date ) {
+        int offset = tz.getOffset( date );
+        if ( offset == 0 ) {
+            return "Z";
+        }
+
+        String sign = "+";
+        int offsetHours = 0;
+        int offsetMin = 0;
+
+        if ( offset > 0 ) {
+            offsetHours = offset / 3600000;
+            offsetMin = offset % 3600000;
+        } else {
+            offsetHours = -offset / 3600000;
+            offsetMin = -offset % 3600000;
+        }
+
+        String offsetHourString = offsetHours >= 10 ? "" + offsetHours : "0" + offsetHours;
+        String offsetMinString = offsetMin >= 10 ? "" + offsetMin : "0" + offsetMin;
+
+        return sign + offsetHourString + ":" + offsetMinString;
+    }
+
+    @Deprecated
+    public static String formatDate( final java.util.Date date ) {
+        return formatDate( new org.deegree.commons.tom.datetime.Date( date, GMT ) );
+    }
+
+    @Deprecated
+    public static String formatDateTime( java.util.Date date ) {
+        return formatDate( new DateTime( date, GMT ) );
     }
 
     private ISO8601Converter() {

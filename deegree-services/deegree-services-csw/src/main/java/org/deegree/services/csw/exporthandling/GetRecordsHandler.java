@@ -192,7 +192,7 @@ public class GetRecordsHandler {
                 throw new IllegalArgumentException( errorMessage );
             }
             writer.writeStartElement( CSW_PREFIX, "Acknowledgement", CSW_202_NS );
-            writer.writeAttribute( "timeStamp", ISO8601Converter.formatISO8601Date( new Date() ) );
+            writer.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
             writer.writeStartElement( CSW_202_NS, "EchoedRequest" );
             readXMLFragment( getRec.getXMLRequest().toString(), writer );
             writer.writeEndElement();
@@ -204,7 +204,7 @@ public class GetRecordsHandler {
     private void exportSearchStatus202( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( CSW_202_NS, "SearchStatus" );
-        writer.writeAttribute( "timestamp", ISO8601Converter.formatISO8601Date( new Date() ) );
+        writer.writeAttribute( "timestamp", ISO8601Converter.formatDateTime( new Date() ) );
         // SearchStatus
         writer.writeEndElement();
     }
@@ -288,7 +288,7 @@ public class GetRecordsHandler {
                 writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
                 writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( returnedRecords ) );
                 writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
-                writer.writeAttribute( "expires", ISO8601Converter.formatISO8601Date( new Date() ) );
+                writer.writeAttribute( "expires", ISO8601Converter.formatDateTime( new Date() ) );
 
                 if ( rs != null ) {
                     while ( rs.next() ) {
@@ -332,7 +332,7 @@ public class GetRecordsHandler {
                 writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( matches ) );
                 writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( records.size() ) );
                 writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
-                writer.writeAttribute( "expires", ISO8601Converter.formatISO8601Date( new Date() ) );
+                writer.writeAttribute( "expires", ISO8601Converter.formatDateTime( new Date() ) );
                 for ( MetadataRecord record : records ) {
                     writeRecord( writer, record, asDC, elementSetName, returnElements );
                 }

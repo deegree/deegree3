@@ -1,8 +1,7 @@
 package org.deegree.client.sos.utils;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -84,7 +83,7 @@ public class DataPrep {
                 try {
                     for ( int i = 0; i < countValues; i++ ) {
                         String[] contents = rawblocks[i].split( tokenSeparator );
-                        dates[i] = parseISO8601TimeInstant( contents[0] ).getDate();
+                        dates[i] = parseDateTime( contents[0] ).getDate();
                         // Time occurs ever(!) first in the values!
 
                         countDiff = contents.length;
@@ -109,7 +108,7 @@ public class DataPrep {
                     chartInput.setDates( dates );
                     chartInput.setData( data );
                     chartInput.setTimeResolution( determineTimeResolution( dates ) );
-                } catch ( ParseException e ) {
+                } catch ( IllegalArgumentException e ) {
                     e.printStackTrace();
                     LOG.error( "error occured while parsing the dates" );
                 }

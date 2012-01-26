@@ -437,7 +437,7 @@ public class ExecutionManager {
 
             // process execution has finished successfully
             state.setSucceeded( "Process execution finished@"
-                                + ISO8601Converter.formatISO8601Date( new Date( System.currentTimeMillis() ) ) );
+                                + ISO8601Converter.formatDateTime( new Date( System.currentTimeMillis() ) ) );
         } catch ( ProcessletException e ) {
             OWSException oe = null;
             if ( e.hasOWSException() ) {

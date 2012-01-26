@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.parsing;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -213,7 +214,7 @@ public final class ISOQPParsing extends XMLAdapter {
             if ( dateString != null ) {
                 for ( String ds : dateString ) {
                     if ( ds != null && ds.length() > 0 ) {
-                        qp.setModified( new Date( ds ) );
+                        qp.setModified( parseDate( ds ) );
                         break;
                     }
                 }
@@ -533,7 +534,7 @@ public final class ISOQPParsing extends XMLAdapter {
 
         try {
             if ( specificationDateString != null ) {
-                dateSpecificationDate = new Date( specificationDateString );
+                dateSpecificationDate = parseDate( specificationDateString );
             }
         } catch ( Exception e ) {
 

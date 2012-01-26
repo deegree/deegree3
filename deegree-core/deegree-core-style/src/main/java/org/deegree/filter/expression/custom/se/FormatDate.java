@@ -40,7 +40,6 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -108,9 +107,9 @@ public class FormatDate extends AbstractCustomExpression {
             dateValueContn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
         }
         try {
-            DateTime value = ISO8601Converter.parseISO8601TimeInstant( sb.toString().trim() );
+            DateTime value = ISO8601Converter.parseDateTime( sb.toString().trim() );
             return new TypedObjectNode[] { new PrimitiveValue( formatter.format( value ) ) };
-        } catch ( ParseException e ) {
+        } catch ( IllegalArgumentException e ) {
             LOG.warn( "Evaluated value could not be parsed as a date (in an argument to FormatDate)." );
         }
 

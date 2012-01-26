@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.sos.getobservation;
 
-import java.text.ParseException;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -180,7 +181,7 @@ public class EventTime100XMLAdapter extends XMLAdapter {
             } else if ( indeterminate.equals( "unknown" ) ) {
                 return "";
             } else if ( indeterminate.equals( "now" ) ) {
-                return ISO8601Converter.formatISO8601Date( new Date() );
+                return ISO8601Converter.formatDateTime( new Date() );
             } else if ( indeterminate.equals( "after" ) ) {
                 return begin.getText();
             } else if ( indeterminate.equals( "before" ) ) {
@@ -204,7 +205,7 @@ public class EventTime100XMLAdapter extends XMLAdapter {
             } else if ( indeterminate.equals( "unknown" ) ) {
                 return "";
             } else if ( indeterminate.equals( "now" ) ) {
-                return ISO8601Converter.formatISO8601Date( new Date() );
+                return ISO8601Converter.formatDateTime( new Date() );
             } else if ( indeterminate.equals( "after" ) ) {
                 return "";
             } else if ( indeterminate.equals( "before" ) ) {
@@ -218,8 +219,8 @@ public class EventTime100XMLAdapter extends XMLAdapter {
         OMElement tpos = getElement( timeInstant, new XPath( "gml:timePosition", nsContext ) );
         if ( tpos.getText().trim().length() > 0 ) {
             try {
-                return ISO8601Converter.parseISO8601TimeInstant( tpos.getText() ).getDate();
-            } catch ( ParseException e ) {
+                return parseDateTime( tpos.getText() ).getDate();
+            } catch ( IllegalArgumentException e ) {
                 throw new EventTimeXMLParsingException( this, tpos );
             }
         }

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.sos.getobservation;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;
 import static org.deegree.commons.utils.kvp.KVPUtils.splitAll;
 
@@ -85,11 +85,11 @@ public class GetObservation100KVPAdapter {
         if ( time != null ) {
             if ( time.contains( "/" ) ) {
                 String[] timeParts = time.split( "/" );
-                Date begin = parseISO8601TimeInstant( timeParts[0] ).getDate();
-                Date end = parseISO8601TimeInstant( timeParts[1] ).getDate();
+                Date begin = parseDateTime( timeParts[0] ).getDate();
+                Date end = parseDateTime( timeParts[1] ).getDate();
                 result.add( new DurationFilter( begin, true, end, false ) );
             } else {
-                Date instant = parseISO8601TimeInstant( time ).getDate();
+                Date instant = parseDateTime( time ).getDate();
                 result.add( new TimeInstantFilter( instant ) );
             }
         }

@@ -432,7 +432,7 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
             // use creation time of document if process execution has not been finished yet
             creationTime = System.currentTimeMillis();
         }
-        writer.writeAttribute( "creationTime", ISO8601Converter.formatISO8601Date( new Date( creationTime ) ) );
+        writer.writeAttribute( "creationTime", ISO8601Converter.formatDateTime( new Date( creationTime ) ) );
 
         switch ( state.getExecutionState() ) {
         case ACCEPTED:

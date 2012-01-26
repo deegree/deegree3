@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.model.layers;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601Date;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.tom.primitive.BaseType.DATE;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
@@ -174,7 +174,7 @@ public class StatisticsLayer extends FeatureLayer {
                     }
                     List<Property> props = new ArrayList<Property>();
                     props.add( new SimpleProperty( queryProp, req.second ) );
-                    props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ) ) );
+                    props.add( new SimpleProperty( timeProp, formatDateTime( new Date( req.first ) ) ) );
                     props.add( new GenericProperty( boxProp, box ) );
 
                     GenericFeature f = new GenericFeature( featureType, null, props, null );
@@ -234,7 +234,7 @@ public class StatisticsLayer extends FeatureLayer {
                     }
                     List<Property> props = new ArrayList<Property>();
                     props.add( new SimpleProperty( queryProp, req.second ) );
-                    props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ) ) );
+                    props.add( new SimpleProperty( timeProp, formatDateTime( new Date( req.first ) ) ) );
                     props.add( new GenericProperty( boxProp, box ) );
 
                     GenericFeature f = new GenericFeature( featureType, null, props, null );

@@ -37,10 +37,10 @@
 package org.deegree.layer.dims;
 
 import static java.lang.Math.abs;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601DateWOMS;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601Duration;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601Duration;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 
 import java.text.ParseException;
@@ -186,9 +186,9 @@ public class Dimension<T> {
             if ( o instanceof DimensionInterval<?, ?, ?> ) {
                 DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
                 if ( time ) {
-                    sb.append( formatISO8601DateWOMS( (Date) iv.min ) ).append( "/" );
+                    sb.append( formatDateTime( (Date) iv.min ) ).append( "/" );
                     if ( iv.max instanceof Date ) {
-                        sb.append( formatISO8601DateWOMS( (Date) iv.max ) ).append( "/" );
+                        sb.append( formatDateTime( (Date) iv.max ) ).append( "/" );
                     } else {
                         sb.append( "current/" );
                     }
@@ -200,7 +200,7 @@ public class Dimension<T> {
                 }
             } else {
                 if ( time ) {
-                    sb.append( formatISO8601DateWOMS( (TimeInstant) o ) );
+                    sb.append( formatDateTime( (TimeInstant) o ) );
                 } else {
                     sb.append( o );
                 }
@@ -232,7 +232,7 @@ public class Dimension<T> {
                 if ( ( (String) o ).equalsIgnoreCase( "current" ) ) {
                     return "current";
                 }
-                return parseISO8601TimeInstant( (String) o );
+                return parseDateTime( (String) o );
             }
             try {
                 return Integer.valueOf( (String) o );
@@ -247,12 +247,12 @@ public class Dimension<T> {
         if ( o instanceof DimensionInterval<?, ?, ?> ) {
             DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
             if ( time ) {
-                Date min = parseISO8601TimeInstant( (String) iv.min ).getDate();
+                Date min = parseDateTime( (String) iv.min ).getDate();
                 Date max;
                 if ( ( (String) iv.max ).equalsIgnoreCase( "current" ) ) {
                     max = new Date();
                 } else {
-                    max = parseISO8601TimeInstant( (String) iv.max ).getDate();
+                    max = parseDateTime( (String) iv.max ).getDate();
                 }
                 if ( iv.res instanceof Integer ) {
                     return new DimensionInterval<Date, Date, Object>( min, max, null );

@@ -40,6 +40,7 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
@@ -49,7 +50,6 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 import static org.deegree.filter.MatchAction.ALL;
 import static org.deegree.gml.GMLVersion.GML_32;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -695,7 +695,8 @@ public class Filter200XMLDecoder {
         return new IdFilter( selectedIds );
     }
 
-    private static ResourceId parseAbstractId( XMLStreamReader xmlStream ) throws NoSuchElementException, XMLStreamException {
+    private static ResourceId parseAbstractId( XMLStreamReader xmlStream )
+                            throws NoSuchElementException, XMLStreamException {
         if ( !RESOURCE_ID_ELEMENT.equals( xmlStream.getName() ) ) {
             String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               RESOURCE_ID_ELEMENT, RESOURCE_ID_ELEMENT );
@@ -708,7 +709,7 @@ public class Filter200XMLDecoder {
         String startDateString = xmlStream.getAttributeValue( null, "startDate" );
         if ( startDateString != null ) {
             try {
-                startDate = new DateTime( startDateString );
+                startDate = parseDateTime( startDateString );
             } catch ( Exception e ) {
                 throw new XMLParsingException( xmlStream, e.getMessage() );
             }
@@ -717,7 +718,7 @@ public class Filter200XMLDecoder {
         String endDateString = xmlStream.getAttributeValue( null, "endDate" );
         if ( endDateString != null ) {
             try {
-                endDate = new DateTime( endDateString );
+                endDate = parseDateTime( endDateString );
             } catch ( Exception e ) {
                 throw new XMLParsingException( xmlStream, e.getMessage() );
             }

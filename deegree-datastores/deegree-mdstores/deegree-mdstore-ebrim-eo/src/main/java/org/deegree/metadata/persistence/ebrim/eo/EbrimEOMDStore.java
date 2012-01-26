@@ -36,7 +36,7 @@
 
 package org.deegree.metadata.persistence.ebrim.eo;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import static org.deegree.commons.utils.JDBCUtils.executeQuery;
 import static org.deegree.metadata.ebrim.RIMType.AdhocQuery;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -222,9 +222,9 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                     try {
                         String date = result.getString( 1 );
                         if ( date != null ) {
-                            lastInserted = parseISO8601TimeInstant( date ).getDate();
+                            lastInserted = parseDateTime( date ).getDate();
                         }
-                    } catch ( ParseException e ) {
+                    } catch ( IllegalArgumentException e ) {
                         LOG.info( "Could not parse lastInserted Date. Handle as never insertd!" );
                     }
                 }
@@ -249,7 +249,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
                     ir = new InsertRow( new TableName( "management" ), null );
                     ir.addPreparedArgument( new SQLIdentifier( "key" ), "LAST_INSERTED" );
-                    ir.addPreparedArgument( new SQLIdentifier( "value" ), ISO8601Converter.formatISO8601Date( new Date() ) );
+                    ir.addPreparedArgument( new SQLIdentifier( "value" ), ISO8601Converter.formatDateTime( new Date() ) );
                     ir.performInsert( conn );
 
                     conn.commit();

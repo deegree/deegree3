@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseTime;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -81,11 +85,11 @@ public class XMLValueMangler {
             break;
         }
         case DATE: {
-            value = new Date( s );
+            value = parseDate( s );
             break;
         }
         case DATE_TIME: {
-            value = new DateTime( s );
+            value = parseDateTime(  s );
             break;
         }
         case DECIMAL: {
@@ -105,7 +109,7 @@ public class XMLValueMangler {
         }
         case TIME: {
             try {
-                value = new Time( s );
+                value = parseTime( s );
             } catch ( Exception e ) {
                 String msg = "Value ('" + s + "') is not valid with respect to the xs:time type.";
                 throw new IllegalArgumentException( msg );

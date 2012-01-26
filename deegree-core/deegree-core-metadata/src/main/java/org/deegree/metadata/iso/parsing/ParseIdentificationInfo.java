@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.parsing;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -563,8 +564,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                            nsContextParseII ), null );
                     try {
                         if ( temporalExtentBegin != null && temporalExtentEnd != null ) {
-                            tempBeg = new Date( temporalExtentBegin );
-                            tempEnd = new Date( temporalExtentEnd );
+                            tempBeg = parseDate( temporalExtentBegin );
+                            tempEnd = parseDate( temporalExtentEnd );
                         }
                     } catch ( Exception e ) {
                         String msg = Messages.getMessage( "ERROR_PARSING_TEMP_EXTENT", temporalExtentBegin,
@@ -748,7 +749,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
         Date date = null;
         try {
             if ( revisionDateString != null ) {
-                date = new Date( revisionDateString );
+                date = parseDate( revisionDateString );
             } else {
                 date = null;
             }
@@ -764,7 +765,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                 nsContextParseII ), null );
         try {
             if ( creationDateString != null ) {
-                date = new Date( creationDateString );
+                date = parseDate( creationDateString );
             } else {
                 date = null;
             }
@@ -780,7 +781,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                    nsContextParseII ), null );
         try {
             if ( publicationDateString != null ) {
-                date = new Date( publicationDateString );
+                date = parseDate( publicationDateString );
             } else {
                 date = null;
             }

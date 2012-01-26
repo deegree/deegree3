@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.sos.time;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -124,8 +124,8 @@ public class TimePeriod implements SamplingTime {
     private static Date parseDateOrNull( String date ) {
         if ( date != null && !date.equals( "" ) ) {
             try {
-                return parseISO8601TimeInstant( date ).getDate();
-            } catch ( ParseException e ) {
+                return parseDateTime( date ).getDate();
+            } catch ( IllegalArgumentException e ) {
                 return null;
             }
         }
@@ -194,8 +194,8 @@ public class TimePeriod implements SamplingTime {
 
     @Override
     public String toString() {
-        return "TimePeriod: from " + ISO8601Converter.formatISO8601Date( begin ) + " to "
-               + ISO8601Converter.formatISO8601Date( end );
+        return "TimePeriod: from " + ISO8601Converter.formatDateTime( begin ) + " to "
+               + ISO8601Converter.formatDateTime( end );
     }
 
     @Override

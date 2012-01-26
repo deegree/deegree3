@@ -37,8 +37,7 @@
 package org.deegree.services.wms.model.layers;
 
 import static java.lang.System.currentTimeMillis;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601Date;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601DateWOMS;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.utils.CollectionUtils.clearNulls;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
@@ -513,14 +512,14 @@ public class FeatureLayer extends Layer {
             int i = 0;
             for ( Object o : vals ) {
                 if ( !time.getNearestValue() && !time.isValid( o ) ) {
-                    throw new InvalidDimensionValue( "time", o instanceof Date ? formatISO8601DateWOMS( (Date) o )
+                    throw new InvalidDimensionValue( "time", o instanceof Date ? formatDateTime( (Date) o )
                                                                               : o.toString() );
                 }
                 Date theVal = null;
                 if ( o instanceof DimensionInterval<?, ?, ?> ) {
                     DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
-                    final String min = formatISO8601DateWOMS( (Date) iv.min );
-                    final String max = formatISO8601DateWOMS( (Date) iv.max );
+                    final String min = formatDateTime( (Date) iv.min );
+                    final String max = formatDateTime( (Date) iv.max );
                     os[i++] = new PropertyIsBetween( property, new Literal<PrimitiveValue>( min ),
                                                      new Literal<PrimitiveValue>( max ), false, null );
                 } else if ( o.toString().equalsIgnoreCase( "current" ) ) {
@@ -540,11 +539,11 @@ public class FeatureLayer extends Layer {
                         Object nearest = time.getNearestValue( theVal );
                         if ( !nearest.equals( theVal ) ) {
                             theVal = (Date) nearest;
-                            warnings.add( "99 Nearest value used: time=" + formatISO8601DateWOMS( theVal ) + " "
+                            warnings.add( "99 Nearest value used: time=" + formatDateTime( theVal ) + " "
                                           + time.getUnits() );
                         }
                     }
-                    Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>( formatISO8601DateWOMS( theVal ) );
+                    Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>( formatDateTime( theVal ) );
                     os[i++] = new PropertyIsEqualTo( property, lit, false, null );
                 }
             }
@@ -599,15 +598,15 @@ public class FeatureLayer extends Layer {
                     DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
                     final String min;
                     if ( iv.min instanceof Date ) {
-                        min = formatISO8601Date( (Date) iv.min );
+                        min = formatDateTime( (Date) iv.min );
                     } else {
                         min = ( (Number) iv.min ).toString();
                     }
                     final String max;
                     if ( iv.max instanceof Date ) {
-                        max = formatISO8601Date( (Date) iv.max );
+                        max = formatDateTime( (Date) iv.max );
                     } else if ( iv.max instanceof String ) {
-                        max = formatISO8601Date( new Date() );
+                        max = formatDateTime( new Date() );
                     } else {
                         max = ( (Number) iv.max ).toString();
                     }

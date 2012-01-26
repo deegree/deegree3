@@ -36,6 +36,7 @@
 
 package org.deegree.services.wpvs.controller.getview;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import static org.deegree.commons.utils.kvp.KVPUtils.getBoolean;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequiredDouble;
@@ -299,7 +300,7 @@ public class GetViewKVPAdapter {
         Calendar cal = DEFAULT_CAL;
         if ( date != null ) {
             try {
-                DateTime requestedDate = new DateTime( date );
+                DateTime requestedDate = parseDateTime(  date );
                 cal = requestedDate.getCalendar();
             } catch ( IllegalArgumentException e ) {
                 String msg = "Requested DATETIME: "

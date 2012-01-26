@@ -37,6 +37,7 @@ package org.deegree.commons.tom.datetime;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
@@ -56,7 +57,20 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
 
     protected final Calendar cal;
 
-    protected final boolean isLocal;
+    protected final boolean tzIsUnknown;
+
+    /**
+     * Creates a new {@link TimeInstant} instance.
+     * 
+     * @param cal
+     *            calendar, must not be <code>null</code>
+     * @param tzIsUnknown
+     *            <code>true</code>, if the timezone is unknown, <code>false</code> otherwise
+     */
+    TimeInstant( Calendar cal, boolean tzIsUnknown ) {
+        this.cal = cal;
+        this.tzIsUnknown = tzIsUnknown;
+    }
 
     /**
      * Creates a new {@link TimeInstant} instance.
@@ -70,26 +84,13 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
         Calendar cal = null;
         if ( tz != null ) {
             cal = Calendar.getInstance( tz );
-            isLocal = false;
+            tzIsUnknown = false;
         } else {
             cal = Calendar.getInstance();
-            isLocal = true;
+            tzIsUnknown = true;
         }
         this.cal = cal;
         cal.setTime( date );
-    }
-
-    /**
-     * Creates a new {@link TimeInstant} instance.
-     * 
-     * @param cal
-     *            calendar, must not be <code>null</code>
-     * @param isLocal
-     *            <code>true</code>, if the timezone is unknown, <code>false</code> otherwise
-     */
-    TimeInstant( Calendar cal, boolean isLocal ) {
-        this.cal = cal;
-        this.isLocal = isLocal;
     }
 
     protected static boolean isLocal( String s ) {
@@ -109,8 +110,7 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
     /**
      * Returns this time instant as a {@link Calendar}.
      * <p>
-     * NOTE: When the time zone is unknown, this method will assume the default time zone ({@link TimeZone#getDefault()}
-     * ).
+     * NOTE: When the time zone is unknown, the default time zone is used ({@link TimeZone#getDefault()} ).
      * </p>
      * 
      * @return calendar, never <code>null</code>
@@ -122,8 +122,7 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
     /**
      * Returns this time instant as a {@link Date}.
      * <p>
-     * NOTE: When the time zone is unknown, this method will assume the default time zone ({@link TimeZone#getDefault()}
-     * ).
+     * NOTE: When the time zone is unknown, the default time zone is used ({@link TimeZone#getDefault()} ).
      * </p>
      * 
      * @return calendar, never <code>null</code>
@@ -152,8 +151,17 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
      *         otherwise
      */
     public boolean isTimeZoneUnknown() {
-        return isLocal;
+        return tzIsUnknown;
     }
+
+    /**
+     * Returns a new {@link TimeInstant} that represents the same point in time, but using the specified time zone.
+     * 
+     * @param tz
+     *            time zone can be <code>null</code> (use system's local time zone)
+     * @return time instant using the given time zone, never <code>null</code>
+     */
+    public abstract TimeInstant toTimeZone( TimeZone tz );
 
     @Override
     public boolean equals( Object o ) {

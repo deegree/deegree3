@@ -36,7 +36,7 @@
 package org.deegree.observation.persistence.continuous;
 
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601Duration;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601TimeInstant;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -104,7 +104,7 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
                             throws ObservationDatastoreException {
         super( jdbcId, tableName, columnMap, optionMap, properties );
         try {
-            begin = parseISO8601TimeInstant( optionMap.get( "beginDate" ) ).getDate();
+            begin = parseDateTime( optionMap.get( "beginDate" ) ).getDate();
             Duration duration = parseISO8601Duration( optionMap.get( "interval" ) );
             interval = duration.getDateAfter( begin ).getTime() - begin.getTime();
             String firstID = optionMap.get( "firstID" );

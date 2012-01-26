@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseTime;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.XMLValueMangler.internalToXML;
 import static org.deegree.commons.tom.primitive.XMLValueMangler.xmlToInternal;
@@ -229,11 +232,11 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
             } else if ( value1 instanceof Boolean ) {
                 result = new Pair<Object, Object>( value1, XMLValueMangler.xmlToInternal( value2.toString(), BOOLEAN ) );
             } else if ( value1 instanceof Date ) {
-                result = new Pair<Object, Object>( value1, new Date( value2.toString() ) );
+                result = new Pair<Object, Object>( value1, parseDate( value2.toString() ) );
             } else if ( value1 instanceof DateTime ) {
-                result = new Pair<Object, Object>( value1, new DateTime( value2.toString() ) );
+                result = new Pair<Object, Object>( value1, parseDateTime( value2.toString() ) );
             } else if ( value1 instanceof Time ) {
-                result = new Pair<Object, Object>( value1, new Time( value2.toString() ) );
+                result = new Pair<Object, Object>( value1, parseTime( value2.toString() ) );
             } else if ( value1 instanceof CodeType ) {
                 result = new Pair<Object, Object>( value1, new CodeType( value2.toString(),
                                                                          ( (CodeType) value1 ).getCodeSpace() ) );
@@ -247,11 +250,11 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
             } else if ( value1 instanceof Boolean ) {
                 result = new Pair<Object, Object>( XMLValueMangler.xmlToInternal( value1.toString(), BOOLEAN ), value2 );
             } else if ( value2 instanceof Date ) {
-                result = new Pair<Object, Object>( new Date( value1.toString() ), value2 );
+                result = new Pair<Object, Object>( parseDate( value1.toString() ), value2 );
             } else if ( value2 instanceof DateTime ) {
-                result = new Pair<Object, Object>( new DateTime( value1.toString() ), value2 );
+                result = new Pair<Object, Object>( parseDateTime( value1.toString() ), value2 );
             } else if ( value2 instanceof Time ) {
-                result = new Pair<Object, Object>( new Time( value1.toString() ), value2 );
+                result = new Pair<Object, Object>( parseTime( value1.toString() ), value2 );
             } else if ( value1 instanceof CodeType ) {
                 result = new Pair<Object, Object>( new CodeType( value1.toString(),
                                                                  ( (CodeType) value2 ).getCodeSpace() ), value2 );

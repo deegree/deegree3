@@ -110,7 +110,7 @@ public class SimpleMeasurement implements Measurement {
 
     @Override
     public String toString() {
-        return ISO8601Converter.formatISO8601Date( getSamplingTime().getTime() ) + ": ["
+        return ISO8601Converter.formatDateTime( getSamplingTime().getTime() ) + ": ["
                + getResults().get( 0 ).getResultAsString() + ",...]";
     }
 }

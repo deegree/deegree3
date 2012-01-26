@@ -35,13 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
+import static java.util.Calendar.getInstance;
 import static javax.xml.bind.DatatypeConverter.printDateTime;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
-
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * {@link TimeInstant} for representing dates with time information (e.g. <code>xs:dateTime</code>).
@@ -53,41 +51,43 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class DateTime extends TimeInstant {
 
-    private static final String ISO_8601_FORMAT_GMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-
-    private static final String ISO_8601_FORMAT_NO_MILLISECONDS_GMT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-
     /**
-     * Creates a new {@link DateTime} instance from the given <code>xs:dateTime</code> encoded value.
+     * Creates a new {@link DateTime} instance.
      * 
-     * @param xsDateTime
-     *            encoded dateTime, must not be <code>null</code>
-     * @throws IllegalArgumentException
-     *             if parameter does not conform to lexical value space defined in XML Schema Part 2: Datatypes for
-     *             <code>xs:dateTime</code>
+     * @param cal
+     *            point in time, must not be <code>null</code>
+     * @param isUnknown
+     *            <code>true</code>, if the time zone was not available when creating the <code>Calendar</code> 
+     *            (system's local time zone was assumed), <code>false</code> otherwise (time zone was available and
+     *            used)
      */
-    public DateTime( String xsDateTime ) throws IllegalArgumentException {
-        super( DatatypeConverter.parseDateTime( xsDateTime ), isLocal( xsDateTime ) );
-    }
-
-    public DateTime( java.util.Date date, TimeZone tz ) {
-        super( date, tz );
-    }
-
     public DateTime( Calendar cal, boolean isUnknown ) {
         super( cal, isUnknown );
     }
 
-    public String toXsDateTimeGmt() {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_FORMAT_GMT );
-        sdf.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-        return sdf.format( getCalendar().getTime() );
+    /**
+     * Creates a new {@link DateTime} instance.
+     * 
+     * @param date
+     *            point in time, must not be <code>null</code>
+     * @param tz
+     *            time zone, can be <code>null</code> (no timezone information, <code>Date</code> will be interpreted
+     *            according to system's local time zone)
+     */
+    public DateTime( java.util.Date date, TimeZone tz ) {
+        super( date, tz );
     }
 
-    public String toXsDateTimeNoMillisecondsGmt() {
-        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_FORMAT_NO_MILLISECONDS_GMT );
-        sdf.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-        return sdf.format( getCalendar().getTime() );
+    @Override
+    public DateTime toTimeZone( TimeZone tz ) {
+        Calendar cal = null;
+        if ( tz == null ) {
+            cal = getInstance();
+        } else {
+            cal = getInstance( tz );
+        }
+        cal.setTimeInMillis( this.cal.getTimeInMillis() );
+        return new DateTime( cal, tz == null );
     }
 
     @Override
