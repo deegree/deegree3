@@ -351,7 +351,7 @@ public final class ISO8601Converter {
 
     @Deprecated
     public static String formatDateTime( java.util.Date date ) {
-        return formatDate( new DateTime( date, GMT ) );
+        return formatDateTime( new DateTime( date, GMT ) );
     }
 
     private ISO8601Converter() {
