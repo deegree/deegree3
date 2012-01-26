@@ -933,7 +933,16 @@ public class MapService {
                 warnings.addAll( pair.second );
             }
         }
+        double scale = calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(), fi.getCoordinateSystem(),
+                                        DEFAULT_PIXEL_SIZE );
         for ( Layer c : l.getChildren() ) {
+            DoublePair scales = c.getScaleHint();
+            LOG.debug( "Scale settings are: {}, current scale is {}.", scales, scale );
+            if ( scales.first > scale || scales.second < scale ) {
+                LOG.debug( "Not showing layer '{}' because of its scale constraint.",
+                           c.getName() == null ? c.getTitle() : c.getName() );
+                continue;
+            }
             if ( c.getName() != null ) {
                 s = registry.get( c.getName(), null );
             }
