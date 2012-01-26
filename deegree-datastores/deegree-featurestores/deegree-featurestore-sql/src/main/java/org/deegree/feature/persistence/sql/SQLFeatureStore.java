@@ -57,6 +57,7 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -145,6 +146,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(info = "logs particle converter initialization", debug = "logs the SQL statements sent to the SQL server and startup/shutdown information")
 public class SQLFeatureStore implements FeatureStore {
 
     private static final Logger LOG = getLogger( SQLFeatureStore.class );
