@@ -35,25 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDuration;
+
 import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 /**
- * This class stores a time duration.
+ * Represents a temporal duration (e.g. <code>xs:duration</code>).
  * 
- * <p>
- * A {@link Duration} object is immutable.
- * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class Duration {
-
-    private final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
 
     private final int years;
 
@@ -68,6 +63,8 @@ public class Duration {
     private final int seconds;
 
     /**
+     * Creates a new {@link Duration} instance.
+     * 
      * @param years
      * @param months
      * @param days
@@ -82,65 +79,6 @@ public class Duration {
         this.hours = hours;
         this.minutes = minutes;
         this.seconds = seconds;
-    }
-
-    /**
-     * @param date
-     * @return a new date that is before the given date
-     */
-    public Date getDateBefore( Date date ) {
-        Calendar tmp = Calendar.getInstance( GMT );
-        tmp.setTime( date );
-        tmp.add( Calendar.YEAR, -years );
-        tmp.add( Calendar.MONTH, -months );
-        tmp.add( Calendar.DAY_OF_MONTH, -days );
-        tmp.add( Calendar.HOUR_OF_DAY, -hours );
-        tmp.add( Calendar.MINUTE, -minutes );
-        tmp.add( Calendar.SECOND, -seconds );
-        return tmp.getTime();
-    }
-
-    /**
-     * @param date
-     * @return a new date that is after the given date
-     */
-    public Date getDateAfter( Date date ) {
-        Calendar tmp = Calendar.getInstance( GMT );
-        tmp.setTime( date );
-        tmp.add( Calendar.YEAR, years );
-        tmp.add( Calendar.MONTH, months );
-        tmp.add( Calendar.DAY_OF_MONTH, days );
-        tmp.add( Calendar.HOUR_OF_DAY, hours );
-        tmp.add( Calendar.MINUTE, minutes );
-        tmp.add( Calendar.SECOND, seconds );
-        return tmp.getTime();
-    }
-
-    @Override
-    public boolean equals( Object obj ) {
-        if ( obj == null || !( obj instanceof Duration ) ) {
-            return false;
-        }
-        Duration that = (Duration) obj;
-        return this.years == that.years && this.months == that.months && this.days == that.days
-               && this.hours == that.hours && this.minutes == that.minutes && this.seconds == that.seconds;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 31 * hash + this.years;
-        hash = 31 * hash + this.months;
-        hash = 31 * hash + this.days;
-        hash = 31 * hash + this.hours;
-        hash = 31 * hash + this.minutes;
-        hash = 31 * hash + this.seconds;
-        return hash;
-    }
-
-    @Override
-    public String toString() {
-        return ISO8601Converter.formatISO8601Duration( this );
     }
 
     /**
@@ -185,4 +123,68 @@ public class Duration {
         return years;
     }
 
+    /**
+     * Returns the point in time that is at the beginning of this duration (relative to the given {@link DateTime}.
+     * 
+     * @param end
+     *            end of the duration interval, must not be <code>null</code>
+     * @return the point in time that marks the begin of the duration interval, never <code>null</code>
+     */
+    public DateTime getBegin( DateTime end ) {
+        Calendar before = Calendar.getInstance( end.getCalendar().getTimeZone() );
+        before.setTime( end.getDate() );
+        before.add( Calendar.YEAR, -years );
+        before.add( Calendar.MONTH, -months );
+        before.add( Calendar.DAY_OF_MONTH, -days );
+        before.add( Calendar.HOUR_OF_DAY, -hours );
+        before.add( Calendar.MINUTE, -minutes );
+        before.add( Calendar.SECOND, -seconds );
+        return new DateTime( before, end.isTimeZoneUnknown() );
+    }
+
+    /**
+     * Returns the point in time that is at the end of this duration (relative to the given {@link DateTime}.
+     * 
+     * @param begin
+     *            begin of the duration interval, must not be <code>null</code>
+     * @return the point in time that marks the end of the duration interval, never <code>null</code>
+     */
+    public DateTime getEnd( DateTime begin ) {
+        Calendar after = Calendar.getInstance( begin.getCalendar().getTimeZone() );
+        after.setTime( begin.getDate() );
+        after.add( Calendar.YEAR, years );
+        after.add( Calendar.MONTH, months );
+        after.add( Calendar.DAY_OF_MONTH, days );
+        after.add( Calendar.HOUR_OF_DAY, hours );
+        after.add( Calendar.MINUTE, minutes );
+        after.add( Calendar.SECOND, seconds );
+        return new DateTime( after, begin.isTimeZoneUnknown() );
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        if ( obj == null || !( obj instanceof Duration ) ) {
+            return false;
+        }
+        Duration that = (Duration) obj;
+        return this.years == that.years && this.months == that.months && this.days == that.days
+               && this.hours == that.hours && this.minutes == that.minutes && this.seconds == that.seconds;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + this.years;
+        hash = 31 * hash + this.months;
+        hash = 31 * hash + this.days;
+        hash = 31 * hash + this.hours;
+        hash = 31 * hash + this.minutes;
+        hash = 31 * hash + this.seconds;
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        return formatDuration( this );
+    }
 }

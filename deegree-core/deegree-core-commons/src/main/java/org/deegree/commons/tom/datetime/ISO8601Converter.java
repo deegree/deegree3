@@ -48,44 +48,22 @@ import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 
 /**
- * Converts between <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> representations and deegree's
- * temporal primitives.
- * 
- * TODO finish refactoring (http://tracker.deegree.org/deegree-services/ticket/301)
- * 
+ * Converts between <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> encodings and deegree's temporal
+ * primitives.
  * <p>
- * <h4>Differences between deegree's temporal primitive model a
- * </p>
- * <p>
- * Many of the methods that convert dates to and from strings utilize the <a
- * href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> standard string format
- * <code>yyyy-MM-ddTHH:mm:ss.SSSZ</code>, where <blockquote>
+ * Currently, not the full lexical space of ISO 8601 is supported, but only the subset that's used by the following XML
+ * schema types:
+ * <ul>
+ * <li><code>xs:date</code></li>
+ * <li><code>xs:dateTime</code></li>
+ * <li><code>xs:time</code></li>
+ * <li><code>xs:duration</code></li>
+ * </ul>
  * 
- * <pre>
- * Symbol   Meaning                 Presentation        Example
- * ------   -------                 ------------        -------
- * y        year                    (Number)            1996
- * M        month in year           (Number)            07
- * d        day in month            (Number)            10
- * h        hour in am/pm (1&tilde;12)    (Number)            12
- * H        hour in day (0&tilde;23)      (Number)            0
- * m        minute in hour          (Number)            30
- * s        second in minute        (Number)            55
- * S        millisecond             (Number)            978
- * Z        time zone               (Number)            -0600
- * </pre>
- * 
- * </blockquote>
- * </p>
- * <p>
- * This class is written to be thread safe. As {@link SimpleDateFormat} is not threadsafe, no shared instances are used.
- * </p>
- * 
- * @author Randall Hauch
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
- * @version r304 http://anonsvn.jboss.org/repos/dna/trunk/dna-common/src/main/java/org/jboss/dna/common/util/
  * @version $Revision$, $Date$
  */
 public final class ISO8601Converter {
@@ -174,7 +152,7 @@ public final class ISO8601Converter {
      * @return a new duration
      * @throws ParseException
      */
-    public static Duration parseISO8601Duration( final String duration )
+    public static Duration parseDuration( final String duration )
                             throws ParseException {
         // Example: P2Y3M14DT10H23M42S
         //
@@ -309,18 +287,23 @@ public final class ISO8601Converter {
     }
 
     /**
-     * Obtain an ISO 8601:2004 string representation of the duration given.
+     * Returns an encoding of the given {@link Duration} that complies with <code>xs:duration</code>.
      * 
      * @param duration
-     * @return the duration string (eg. P1Y3M, PT6H30M, ...)
+     *            to be encoded, must not be <code>null</code>
+     * @return encoded <code>xs:duration</code>, never <code>null</code>
      */
-    public static String formatISO8601Duration( final Duration duration ) {
+    public static String formatDuration( final Duration duration ) {
+
         StringBuilder result = new StringBuilder( "P" );
         if ( duration.getYears() > 0 ) {
             result.append( duration.getYears() ).append( 'Y' );
         }
         if ( duration.getMonths() > 0 ) {
             result.append( duration.getMonths() ).append( 'M' );
+        }
+        if ( duration.getDays() > 0 ) {
+            result.append( duration.getDays() ).append( 'D' );
         }
         if ( duration.getHours() > 0 || duration.getMinutes() > 0 || duration.getSeconds() > 0 ) {
             result.append( 'T' );

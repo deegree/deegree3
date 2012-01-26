@@ -28,6 +28,7 @@ class AnyTextHelper {
     private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
     public static String getAnyText( ISORecord r, AnyText anyText ) {
+
         String anyTextString = null;
         if ( anyText == null || anyText.getCore() != null ) {
             StringBuilder sb = new StringBuilder();

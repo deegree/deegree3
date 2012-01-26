@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.observation.persistence.continuous;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601Duration;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDuration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Duration;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.observation.model.MeasurementBase;
@@ -105,8 +106,8 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
         super( jdbcId, tableName, columnMap, optionMap, properties );
         try {
             begin = parseDateTime( optionMap.get( "beginDate" ) ).getDate();
-            Duration duration = parseISO8601Duration( optionMap.get( "interval" ) );
-            interval = duration.getDateAfter( begin ).getTime() - begin.getTime();
+            Duration duration = parseDuration( optionMap.get( "interval" ) );
+            interval = duration.getEnd( new DateTime( begin, null ) ).getTimeInMilliseconds() - begin.getTime();
             String firstID = optionMap.get( "firstID" );
             int id = 1;
             if ( firstID != null ) {
@@ -192,7 +193,7 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
             if ( resultSet.next() ) {
                 int count = resultSet.getInt( "n" );
                 Duration dur = new Duration( 0, 0, 0, 0, 0, (int) ( ( count - 1 ) * interval / 1000.0 ) );
-                Date end = dur.getDateAfter( begin );
+                Date end = dur.getEnd( new DateTime( begin, null ) ).getDate();
                 result = new TimePeriod( begin, end );
             }
         } catch ( SQLException e ) {

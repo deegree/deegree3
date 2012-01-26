@@ -40,6 +40,7 @@ import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Duration;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 
@@ -92,19 +93,20 @@ public class TimePeriod implements SamplingTime {
      *             if more than one value is null or empty, or if begin, end and duration doesn't match
      */
     public static TimePeriod createTimePeriod( String isoBegin, String isoEnd, String isoDuration ) {
+
         Date begin = parseDateOrNull( isoBegin );
         Date end = parseDateOrNull( isoEnd );
         Duration duration = parseDurationOrNull( isoDuration );
 
         if ( begin != null && end == null && duration != null ) {
             // end is indetermined
-            end = duration.getDateAfter( begin );
+            end = duration.getEnd( new DateTime( begin, null ) ).getDate();
         } else if ( begin == null && end != null && duration != null ) {
             // begin is indetermined
-            begin = duration.getDateBefore( end );
+            begin = duration.getBegin( new DateTime( end, null ) ).getDate();
         } else if ( begin != null && end != null && duration != null ) {
             // all given
-            Date testEnd = duration.getDateAfter( begin );
+            Date testEnd = duration.getEnd( new DateTime( begin, null ) ).getDate();
             if ( !end.equals( testEnd ) ) {
                 throw new IllegalArgumentException( "Duration dosn't match to begin and end time." );
             }
@@ -138,7 +140,7 @@ public class TimePeriod implements SamplingTime {
     private static Duration parseDurationOrNull( String duration ) {
         if ( duration != null && !duration.equals( "" ) ) {
             try {
-                return ISO8601Converter.parseISO8601Duration( duration );
+                return ISO8601Converter.parseDuration( duration );
             } catch ( ParseException e ) {
                 return null;
             }

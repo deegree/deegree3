@@ -38,9 +38,9 @@ package org.deegree.layer.dims;
 
 import static java.lang.Math.abs;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatISO8601Duration;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDuration;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601Duration;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDuration;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 
 import java.text.ParseException;
@@ -50,6 +50,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Duration;
 import org.deegree.commons.tom.datetime.TimeInstant;
 
@@ -193,7 +194,7 @@ public class Dimension<T> {
                         sb.append( "current/" );
                     }
                     if ( iv.res instanceof Duration ) {
-                        sb.append( formatISO8601Duration( (Duration) iv.res ) );
+                        sb.append( formatDuration( (Duration) iv.res ) );
                     }
                 } else {
                     sb.append( iv.min ).append( "/" ).append( iv.max ).append( "/" ).append( iv.res );
@@ -257,7 +258,7 @@ public class Dimension<T> {
                 if ( iv.res instanceof Integer ) {
                     return new DimensionInterval<Date, Date, Object>( min, max, null );
                 }
-                return new DimensionInterval<Date, Date, Duration>( min, max, parseISO8601Duration( (String) iv.res ) );
+                return new DimensionInterval<Date, Date, Duration>( min, max, parseDuration( (String) iv.res ) );
             }
             try {
                 Integer min = Integer.valueOf( (String) iv.min );
@@ -292,7 +293,7 @@ public class Dimension<T> {
             return ( (Date) o ).getTime();
         }
         if ( o instanceof Duration ) {
-            return ( (Duration) o ).getDateAfter( new Date( 0 ) ).getTime();
+            return ( (Duration) o ).getEnd( new DateTime( new Date( 0 ), null ) ).getTimeInMilliseconds();
         }
         return 0; // what else?
     }

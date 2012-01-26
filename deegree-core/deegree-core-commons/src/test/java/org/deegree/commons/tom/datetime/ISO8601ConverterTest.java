@@ -47,9 +47,10 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDate;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDuration;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseISO8601Duration;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDuration;
 
 import java.text.ParseException;
 import java.util.TimeZone;
@@ -173,11 +174,22 @@ public class ISO8601ConverterTest {
     @Test
     public void testDuration()
                             throws ParseException {
-        DateTime date = parseDateTime( "1981-08-31T12:12:23Z" );
-        Duration duration = parseISO8601Duration( "P1Y5M5DT3H90M" );
-//        java.util.Date dateAfter = duration.getDateAfter( date.getDate() );
-        // assertTestDate( dateAfter );
-        // assertTime( 16, 42, 23, 0, dateAfter );
+
+        Duration duration = parseDuration( "P1Y5M5DT3H90M" );
+        assertEquals( 1, duration.getYears() );
+        assertEquals( 5, duration.getMonths() );
+        assertEquals( 5, duration.getDays() );
+        assertEquals( 3, duration.getHours() );
+        assertEquals( 90, duration.getMinutes() );
+
+        assertEquals( "P1Y5M5DT3H90M", formatDuration( duration ) );
+
+        DateTime dt = parseDateTime( "2002-05-30T09:00:00" );
+        DateTime after = duration.getEnd( dt );
+        assertEquals( "2003-11-04T13:30:00", formatDateTime( after ) );
+        
+        DateTime begin = duration.getBegin( after );
+        assertEquals( "2002-05-30T09:00:00", formatDateTime( begin ) );
     }
 
     private static void assertTestDate( TimeInstant dt ) {
