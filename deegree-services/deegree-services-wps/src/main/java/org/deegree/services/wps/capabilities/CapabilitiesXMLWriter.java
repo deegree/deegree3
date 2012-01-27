@@ -106,7 +106,8 @@ public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
                                   DeegreeServicesMetadataType serviceMetadata, WSDL serviceWSDL )
                             throws XMLStreamException {
 
-        writer.writeStartElement( WPS_PREFIX, "Capabilities", WPS_NS );
+        writer.writeStartElement( WPS_NS, "Capabilities" );
+        writer.writeNamespace( WPS_PREFIX, WPS_NS );
         writer.writeNamespace( OWS_PREFIX, OWS_NS );
         writer.writeNamespace( OGC_PREFIX, OGC_NS );
         writer.writeNamespace( GML_PREFIX, GML_NS );

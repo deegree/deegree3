@@ -115,6 +115,7 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
 
         // "wps:ExecuteResponse" (minOccurs="1", maxOccurs="1")
         writer.writeStartElement( WPS_PREFIX, "ExecuteResponse", WPS_NS );
+        writer.writeNamespace( WPS_PREFIX, WPS_NS );
         writer.writeNamespace( OWS_PREFIX, OWS_NS );
         writer.writeNamespace( OGC_PREFIX, OGC_NS );
         writer.writeNamespace( "xlink", XLN_NS );
