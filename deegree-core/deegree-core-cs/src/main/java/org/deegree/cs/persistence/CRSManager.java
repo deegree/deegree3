@@ -605,7 +605,9 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             eT = currentTimeMillis() - sT;
             LOG.debug( "Getting crs ( " + name + " )from provider: " + crsStore + " took: " + eT + " ms." );
         } catch ( CRSConfigurationException e ) {
-            throw new RuntimeException( Messages.get( "CRSManager.BROKEN_CRS_CONFIG", name, e.getMessage() ), e );
+            String msg = Messages.get( "CRSManager.BROKEN_CRS_CONFIG", name, e.getMessage() );
+            LOG.debug( msg, e );
+            throw new RuntimeException( msg, e );
         }
         if ( realCRS == null ) {
             throw new UnknownCRSException( name );
