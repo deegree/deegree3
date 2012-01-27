@@ -39,7 +39,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.gml.property.PropertyType;
 
 /**
@@ -92,10 +91,10 @@ public interface GMLObjectType {
      */
     List<PropertyType> getPropertyDeclarations();
 
-//    /**
-//     * Returns the corresponding XML schema element declaration (if available).
-//     * 
-//     * @return XML schema element declaration, can be <code>null</code> (not based on an XML schema declaration)
-//     */
-//    XSElementDeclaration getXSElementDeclaration();
+    // /**
+    // * Returns the corresponding XML schema element declaration (if available).
+    // *
+    // * @return XML schema element declaration, can be <code>null</code> (not based on an XML schema declaration)
+    // */
+    // XSElementDeclaration getXSElementDeclaration();
 }
