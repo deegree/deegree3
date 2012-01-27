@@ -299,6 +299,7 @@ public abstract class AbstractOWS implements OWS {
         String soapEnvNS = "http://www.w3.org/2003/05/soap-envelope";
         String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
         xmlWriter.writeStartElement( "soapenv", "Envelope", soapEnvNS );
+        xmlWriter.writeNamespace( "soapenv", soapEnvNS );
         xmlWriter.writeNamespace( "xsi", xsiNS );
         xmlWriter.writeAttribute( xsiNS, "schemaLocation",
                                   "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope" );
