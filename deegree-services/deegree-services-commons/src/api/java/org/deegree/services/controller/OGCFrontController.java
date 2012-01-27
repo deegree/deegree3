@@ -75,6 +75,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
@@ -91,6 +92,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.codehaus.plexus.util.StringInputStream;
+import org.codehaus.plexus.util.StringOutputStream;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -1035,6 +1038,10 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "- default encoding   " + DEFAULT_ENCODING );
             LOG.info( "- system encoding    " + Charset.defaultCharset().displayName() );
             LOG.info( "- temp directory     " + defaultTMPDir );
+            LOG.info( "- StAX writer        "
+                      + XMLOutputFactory.newInstance().createXMLStreamWriter( new StringOutputStream() ).getClass().getCanonicalName() );
+            LOG.info( "- StAX reader        "
+                      + XMLInputFactory.newInstance().createXMLStreamReader( new StringInputStream( "<test>test</test>" ) ).getClass().getCanonicalName() );
             LOG.info( "" );
 
             initWorkspace();
