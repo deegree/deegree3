@@ -864,7 +864,7 @@ public class XMLAdapter {
             try {
                 return new BigInteger( s );
             } catch ( NumberFormatException e ) {
-                throw new XMLParsingException (this, context, e.getMessage());
+                throw new XMLParsingException( this, context, e.getMessage() );
             }
         }
         return defaultValue;
@@ -1385,17 +1385,21 @@ public class XMLAdapter {
                 break;
             }
             case START_ELEMENT: {
-                if ( inStream.getNamespaceURI() == NULL_NS_URI
-                     && ( inStream.getPrefix() == DEFAULT_NS_PREFIX || inStream.getPrefix() == null ) ) {
+                String prefix = inStream.getPrefix();
+                String namespaceURI = inStream.getNamespaceURI();
+                if ( namespaceURI == NULL_NS_URI && ( prefix == DEFAULT_NS_PREFIX || prefix == null ) ) {
                     writer.writeStartElement( inStream.getLocalName() );
                 } else {
-                    if ( inStream.getPrefix() != null
-                         && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                    if ( prefix != null && writer.getNamespaceContext().getPrefix( prefix ) == XMLConstants.NULL_NS_URI ) {
                         // TODO handle special cases for prefix binding, see
                         // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
-                        writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
+                        writer.setPrefix( prefix, namespaceURI );
                     }
-                    writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+                    if ( prefix == null ) {
+                        writer.writeStartElement( namespaceURI, inStream.getLocalName() );
+                    } else {
+                        writer.writeStartElement( prefix, inStream.getLocalName(), namespaceURI );
+                    }
                 }
                 // copy all namespace bindings
                 for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
