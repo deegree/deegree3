@@ -326,6 +326,8 @@ public abstract class DefinitionParser {
      */
     public boolean moveReaderToNextIdentifiable( XMLStreamReader reader, Set<QName> allowedElements )
                             throws XMLStreamException {
+        if ( XMLStreamConstants.END_DOCUMENT == reader.getEventType() )
+            return false;
         return XMLStreamUtils.moveReaderToFirstMatch( reader, allowedElements );
     }
 
