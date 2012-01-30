@@ -250,6 +250,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         try {
             return new QueryHelper( dialect, queryables ).executeCounting( query, getConnection() );
         } catch ( Throwable t ) {
+            LOG.debug( t.getMessage(), t );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
