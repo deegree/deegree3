@@ -224,6 +224,7 @@ public class SchemaLocationXMLStreamWriter implements XMLStreamWriter {
         writer.writeStartElement( localName );
         if ( firstElement ) {
             writer.writeAttribute( CommonNamespaces.XSINS, "schemaLocation", schemaLocation );
+            writer.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
             firstElement = false;
         }
     }
@@ -233,6 +234,7 @@ public class SchemaLocationXMLStreamWriter implements XMLStreamWriter {
         writer.writeStartElement( namespaceURI, localName );
         if ( firstElement ) {
             writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
+            writer.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
             firstElement = false;
         }
     }
@@ -242,6 +244,7 @@ public class SchemaLocationXMLStreamWriter implements XMLStreamWriter {
         writer.writeStartElement( prefix, localName, namespaceURI );
         if ( firstElement ) {
             writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
+            writer.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
             firstElement = false;
         }
     }
