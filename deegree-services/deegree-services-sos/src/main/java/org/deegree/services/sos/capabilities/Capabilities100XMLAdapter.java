@@ -117,6 +117,7 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
                             throws XMLStreamException, ObservationDatastoreException {
 
         writer.writeStartElement( SOS_PREFIX, "Capabilities", SOS_NS );
+        writer.writeNamespace( SOS_PREFIX, SOS_NS );
         writer.writeNamespace( OWS_PREFIX, OWS_NS );
         writer.writeNamespace( OGC_PREFIX, OGC_NS );
         writer.writeNamespace( GML_PREFIX, GML_NS );
