@@ -64,6 +64,7 @@ public class ServiceException120XMLAdapter extends XMLExceptionSerializer<OWSExc
                             throws XMLStreamException {
 
         writer.writeStartElement( DEFAULT_NS_PREFIX, "ServiceExceptionReport", OGC_NS );
+        writer.writeNamespace( DEFAULT_NS_PREFIX, OGC_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OGC_NS + " " + OGC_SCHEMA );
         writer.writeAttribute( "version", "1.2.0" );

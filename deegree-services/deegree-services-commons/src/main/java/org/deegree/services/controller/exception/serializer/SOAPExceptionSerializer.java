@@ -108,6 +108,7 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer<SOAPExceptio
         String prefix = factory.getNamespace().getPrefix();
 
         writer.writeStartElement( "soapenv", envelope.getLocalName(), ns );
+        writer.writeNamespace( "soapenv", ns );
         writer.writeNamespace( "xsi", XSINS );
         boolean isSoap11 = false;
         if ( ns.equalsIgnoreCase( "http://schemas.xmlsoap.org/soap/envelope" )

@@ -67,6 +67,7 @@ public class OWSException110XMLAdapter extends XMLExceptionSerializer<OWSExcepti
             return;
         }
         writer.writeStartElement( "ows", "ExceptionReport", OWS_NS );
+        writer.writeNamespace( "ows", OWS_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
         writer.writeAttribute( "version", "1.1.0" );
