@@ -37,7 +37,9 @@ package org.deegree.services.csw.exporthandling;
 
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_100;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
@@ -138,11 +140,14 @@ public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter imple
                          ServiceProviderType provider )
                             throws XMLStreamException {
         writer.writeStartElement( WRS_PREFIX, "Capabilities", WRS_NS );
-        writer.writeNamespace( "ows", OWS_NS );
+        writer.writeNamespace( WRS_PREFIX, WRS_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
         writer.writeNamespace( OGC_PREFIX, OGCNS );
-        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeNamespace( XLINK_PREFIX, XLN_NS );
+        writer.writeNamespace( XSINS, XSI_PREFIX );
         writer.writeAttribute( "version", "2.0.2" );
-        writer.writeAttribute( "xsi", XSINS, "schemaLocation", WRS_NS + " " + WRS_SCHEMA );
+        writer.writeAttribute( "schemaLocation", WRS_NS + " " + WRS_SCHEMA, XSINS );
+
         // ows:ServiceIdentification
         if ( sections.isEmpty() || sections.contains( Sections.ServiceIdentification ) ) {
             gcHelper.exportServiceIdentification( writer, identification,

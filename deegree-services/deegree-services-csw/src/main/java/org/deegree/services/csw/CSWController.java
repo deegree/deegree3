@@ -376,6 +376,7 @@ public class CSWController extends AbstractOWS {
                 String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
                 String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
                 xmlWriter.writeStartElement( "soap", "Envelope", soapEnvNS );
+                xmlWriter.writeNamespace( "soap", soapEnvNS );
                 xmlWriter.writeNamespace( "xsi", xsiNS );
                 xmlWriter.writeAttribute( xsiNS, "schemaLocation",
                                           "http://schemas.xmlsoap.org/soap/envelope/ http://schemas.xmlsoap.org/soap/envelope/" );

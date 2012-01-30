@@ -180,7 +180,6 @@ public class GetRecordsHandler {
         if ( getRec.getResultType() != ResultType.validate ) {
             writer.writeStartElement( CSW_PREFIX, "GetRecordsResponse", CSW_202_NS );
             writer.writeNamespace( CSW_PREFIX, CSW_202_NS );
-            writer.writeNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
             exportSearchStatus202( writer );
             exportSearchResults202( writer, getRec, store );
         } else {
@@ -280,6 +279,7 @@ public class GetRecordsHandler {
                         nextRecord = computeNext( countRows, getRec.getMaxRecords(), getRec.getStartPosition() );
                     }
                 } catch ( MetadataStoreException e ) {
+                    LOG.debug( e.getMessage(), e );
                     throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
                 }
 

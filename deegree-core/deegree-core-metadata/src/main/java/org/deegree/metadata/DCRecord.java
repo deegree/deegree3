@@ -232,6 +232,7 @@ public class DCRecord implements MetadataRecord {
     private void toDCFull( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( csw.getPrefix(), "Record", csw.getNamespaceURI() );
+        writer.writeNamespace( csw.getPrefix(), csw.getNamespaceURI() );
         writeBriefElements( writer );
         writeSummaryElements( writer );
         writeFullElements( writer );
@@ -265,6 +266,7 @@ public class DCRecord implements MetadataRecord {
     private void toDCSummary( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( csw.getPrefix(), "SummaryRecord", csw.getNamespaceURI() );
+        writer.writeNamespace( csw.getPrefix(), csw.getNamespaceURI() );
         writeBriefElements( writer );
         writeSummaryElements( writer );
         writeBoundingBox( writer );
@@ -295,6 +297,7 @@ public class DCRecord implements MetadataRecord {
                             throws XMLStreamException {
         if ( value != null ) {
             writer.writeStartElement( ns.getPrefix(), elementName, ns.getNamespaceURI() );
+            writer.writeNamespace( ns.getPrefix(), ns.getNamespaceURI() );
             writer.writeCharacters( value );
             writer.writeEndElement();
         }
@@ -303,6 +306,7 @@ public class DCRecord implements MetadataRecord {
     private void toDCBrief( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( csw.getPrefix(), "BriefRecord", csw.getNamespaceURI() );
+        writer.writeNamespace( csw.getPrefix(), csw.getNamespaceURI() );
         writeBriefElements( writer );
         writeBoundingBox( writer );
         writer.writeEndElement();
@@ -326,6 +330,7 @@ public class DCRecord implements MetadataRecord {
                             throws XMLStreamException {
         for ( Envelope b : getBoundingBox() ) {
             writer.writeStartElement( ows.getPrefix(), "BoundingBox", ows.getNamespaceURI() );
+            writer.writeNamespace( ows.getPrefix(), ows.getNamespaceURI() );
             writer.writeStartElement( ows.getPrefix(), "LowerCorner", ows.getNamespaceURI() );
             writer.writeCharacters( b.getMin().get0() + " " + b.getMin().get1() );
             writer.writeEndElement();

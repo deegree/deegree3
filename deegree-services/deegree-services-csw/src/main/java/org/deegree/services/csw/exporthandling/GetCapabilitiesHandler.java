@@ -37,7 +37,9 @@ package org.deegree.services.csw.exporthandling;
 
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
@@ -241,11 +243,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements
                             throws XMLStreamException {
 
         writer.writeStartElement( CSW_PREFIX, "Capabilities", CSW_202_NS );
-        writer.writeNamespace( "ows", OWS_NS );
+        writer.writeNamespace( CSW_PREFIX, CSW_202_NS );
+        writer.writeNamespace( OWS_PREFIX, OWS_NS );
         writer.writeNamespace( OGC_PREFIX, OGCNS );
-        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeNamespace( XLINK_PREFIX, XLN_NS );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
         writer.writeAttribute( "version", "2.0.2" );
-        writer.writeAttribute( "xsi", XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
+        writer.writeAttribute( XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
 
         // ows:ServiceIdentification
         if ( sections.isEmpty() || sections.contains( Sections.ServiceIdentification ) ) {

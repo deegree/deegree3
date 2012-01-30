@@ -143,6 +143,7 @@ public class GetRecordByIdHandler {
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
         writer.writeStartElement( CSW_PREFIX, "GetRecordByIdResponse", CSW_202_NS );
+        writer.writeNamespace( CSW_PREFIX, CSW_202_NS );
 
         MetadataResultSet<?> resultSet = null;
         int countIdList = 0;
