@@ -1396,7 +1396,7 @@ public class XMLAdapter {
                         writer.setPrefix( prefix, namespaceURI );
                     }
                     if ( prefix == null ) {
-                        writer.writeStartElement( namespaceURI, inStream.getLocalName() );
+                        writer.writeStartElement( XMLConstants.NULL_NS_URI, inStream.getLocalName(), namespaceURI );
                     } else {
                         writer.writeStartElement( prefix, inStream.getLocalName(), namespaceURI );
                     }
