@@ -76,7 +76,6 @@ public abstract class XMLExceptionSerializer<T extends OWSException> extends XML
     public final void serializeException( OutputStream outputStream, T exception, String requestedEncoding )
                             throws IOException {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
         try {
             IndentingXMLStreamWriter xmlWriter = new IndentingXMLStreamWriter(
                                                                                factory.createXMLStreamWriter( outputStream,
