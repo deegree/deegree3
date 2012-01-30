@@ -40,6 +40,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.slf4j.Logger;
@@ -123,7 +124,11 @@ public class SQLValueMangler {
                 sqlValue = new java.sql.Date( ( (Date) value ).getTimeInMilliseconds() );
                 break;
             case DATE_TIME:
-                sqlValue = new Timestamp( ( (Date) value ).getTimeInMilliseconds() );
+                if ( value instanceof DateTime ) {
+                    sqlValue = new Timestamp( ( (DateTime) value ).getTimeInMilliseconds() );
+                } else {
+                    sqlValue = new Timestamp( ( (Date) value ).getTimeInMilliseconds() );
+                }
                 break;
             case TIME:
                 sqlValue = new Time( ( (Date) value ).getTimeInMilliseconds() );
