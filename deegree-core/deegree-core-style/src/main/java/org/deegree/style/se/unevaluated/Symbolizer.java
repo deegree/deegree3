@@ -176,7 +176,7 @@ public class Symbolizer<T extends Styling<T>> {
      */
     public Pair<T, LinkedList<Geometry>> evaluate( Feature f, XPathEvaluator<Feature> evaluator ) {
         LinkedList<Geometry> geoms = new LinkedList<Geometry>();
-        if ( geometry != null ) {
+        if ( geometry != null && evaluator != null ) {
             try {
                 TypedObjectNode[] os = geometry.evaluate( f, evaluator );
 
