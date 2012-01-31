@@ -37,7 +37,7 @@ package org.deegree.protocol.ows.metadata;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +69,7 @@ import org.deegree.protocol.ows.metadata.operation.Operation;
  */
 public class OperationsMetadata {
 
-    private final Map<String, Operation> operationNameToMD = new HashMap<String, Operation>();
+    private final Map<String, Operation> operationNameToMD = new LinkedHashMap<String, Operation>();
 
     private final List<Domain> parameters;
 

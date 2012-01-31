@@ -55,9 +55,11 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
+import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.controller.OGCFrontController.getHttpPostURL;
 
@@ -765,9 +767,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 // should never happen
             }
 
-            // DescribeFeatureType
-            operations.add( new Operation( DescribeFeatureType.name(), dcps, null, null, null ) );
-
             // GetCapabilities
             List<Domain> params = new ArrayList<Domain>();
             params.add( new Domain( "AcceptVersions", offeredVersionStrings ) );
@@ -780,6 +779,15 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             sections.add( "Filter_Capabilities" );
             params.add( new Domain( "Sections", sections ) );
             operations.add( new Operation( GetCapabilities.name(), dcps, params, null, null ) );
+
+            // DescribeFeatureType
+            operations.add( new Operation( DescribeFeatureType.name(), dcps, null, null, null ) );
+           
+            // ListStoredQueries
+            operations.add( new Operation( ListStoredQueries.name(), dcps, null, null, null ) );
+            
+            // DescribeStoredQueries
+            operations.add( new Operation( DescribeStoredQueries.name(), dcps, null, null, null ) );
 
             // GetFeature
             operations.add( new Operation( GetFeature.name(), dcps, null, null, null ) );
