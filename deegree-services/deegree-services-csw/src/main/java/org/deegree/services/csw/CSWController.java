@@ -634,7 +634,7 @@ public class CSWController extends AbstractOWS {
                            request.getCharacterEncoding() );
     }
 
-    MetadataStore<?> getStore() {
+    public MetadataStore<?> getStore() {
         return store;
     }
 }

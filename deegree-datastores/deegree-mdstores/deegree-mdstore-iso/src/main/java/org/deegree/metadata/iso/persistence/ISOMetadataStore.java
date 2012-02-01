@@ -171,7 +171,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                 for ( Name n : name ) {
                     names.add( new QName( n.getNamespace(), n.getValue() ) );
                 }
-                queryables.add( new Queryable( xpath, names, qp.isIsMultiple(), qp.getColumn(), converter ) );
+                getQueryables().add( new Queryable( xpath, names, qp.isIsMultiple(), qp.getColumn(), converter ) );
             }
         }
     }
@@ -234,7 +234,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
 
-        QueryHelper exe = new QueryHelper( dialect, queryables );
+        QueryHelper exe = new QueryHelper( dialect, getQueryables() );
         return exe.execute( query, getConnection() );
     }
 
@@ -248,7 +248,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String resultTypeName = "hits";
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         try {
-            return new QueryHelper( dialect, queryables ).executeCounting( query, getConnection() );
+            return new QueryHelper( dialect, getQueryables() ).executeCounting( query, getConnection() );
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
@@ -261,7 +261,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        QueryHelper qh = new QueryHelper( dialect, queryables );
+        QueryHelper qh = new QueryHelper( dialect, getQueryables() );
         return qh.executeGetRecordById( idList, getConnection() );
     }
 
@@ -271,7 +271,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         ISOMetadataStoreTransaction ta = null;
         Connection conn = getConnection();
         try {
-            ta = new ISOMetadataStoreTransaction( conn, dialect, inspectorChain, queryables, config.getAnyText() );
+            ta = new ISOMetadataStoreTransaction( conn, dialect, inspectorChain, getQueryables(), config.getAnyText() );
         } catch ( Throwable e ) {
             LOG.error( "error " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );
@@ -307,5 +307,9 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     @Override
     public String getType() {
         return "iso";
+    }
+
+    public List<Queryable> getQueryables() {
+        return queryables;
     }
 }
