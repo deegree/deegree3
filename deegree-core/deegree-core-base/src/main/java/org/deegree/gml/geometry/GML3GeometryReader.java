@@ -537,11 +537,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             QName elName = xmlStream.getName();
             if ( geomHierarchy.getPointElementNames().contains( elName ) ) {
                 primitive = parsePoint( xmlStream, defaultCRS );
-            } else if ( geomHierarchy.getCurveElementNames().contains( elName ) ) {
+            } else if ( geomHierarchy.getAbstractCurveSubstitutions().contains( elName ) ) {
                 primitive = parseAbstractCurve( xmlStream, defaultCRS );
             } else if ( geomHierarchy.getRingElementNames().contains( elName ) ) {
                 primitive = parseAbstractRing( xmlStream, defaultCRS );
-            } else if ( geomHierarchy.getSurfaceElementNames().contains( elName ) ) {
+            } else if ( geomHierarchy.getAbstractSurfaceElementNames().contains( elName ) ) {
                 primitive = parseAbstractSurface( xmlStream, defaultCRS );
             } else if ( geomHierarchy.getSolidElementNames().contains( elName ) ) {
                 primitive = parseAbstractSolid( xmlStream, defaultCRS );
@@ -781,41 +781,63 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         Curve curve = null;
 
-        if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
-            String msg = "Invalid gml:_Curve element: " + xmlStream.getName()
-                         + "' is not a GML geometry element. Not in the gml namespace.";
-            throw new XMLParsingException( xmlStream, msg );
+        QName elName = xmlStream.getName();
+        AppSchemaGeometryHierarchy geometryHierarchy = getGeometryHierarchy();
+        if ( geometryHierarchy != null ) {
+            if ( !geometryHierarchy.getAbstractCurveSubstitutions().contains( elName ) ) {
+                String msg = "Invalid curve geometry element. '" + xmlStream.getName()
+                             + "' is not defined in the active application schema.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            if ( geometryHierarchy.getCurveSubstitutions().contains( elName ) ) {
+                curve = parseCurve( xmlStream, defaultCRS );
+            } else if ( geometryHierarchy.getLineStringSubstitutions().contains( elName ) ) {
+                curve = parseLineString( xmlStream, defaultCRS );
+            } else if ( geometryHierarchy.getCompositeCurveSubstitutions().contains( elName ) ) {
+                curve = parseCompositeCurve( xmlStream, defaultCRS );
+            } else if ( geometryHierarchy.getOrientableCurveSubstitutions().contains( elName ) ) {
+                curve = parseOrientableCurve( xmlStream, defaultCRS );
+            } else {
+                String msg = "Unhandled curve geometry element: '" + xmlStream.getName() + "'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        } else {
+            if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
+                String msg = "Invalid gml:_Curve element: " + xmlStream.getName()
+                             + "' is not a GML geometry element. Not in the gml namespace.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+
+            CurveType type = null;
+            try {
+                type = CurveType.valueOf( xmlStream.getLocalName() );
+            } catch ( IllegalArgumentException e ) {
+                String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                             + "' is not a valid substitution for 'gml:_Curve'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            switch ( type ) {
+            case Curve: {
+                curve = parseCurve( xmlStream, defaultCRS );
+                break;
+            }
+            case LineString: {
+                curve = parseLineString( xmlStream, defaultCRS );
+                break;
+            }
+            case CompositeCurve: {
+                curve = parseCompositeCurve( xmlStream, defaultCRS );
+                break;
+            }
+            case OrientableCurve: {
+                curve = parseOrientableCurve( xmlStream, defaultCRS );
+                break;
+            }
+            default:
+                // cannot happen by construction
+            }
         }
 
-        CurveType type = null;
-        try {
-            type = CurveType.valueOf( xmlStream.getLocalName() );
-        } catch ( IllegalArgumentException e ) {
-            String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' is not a valid substitution for 'gml:_Curve'.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
-
-        switch ( type ) {
-        case Curve: {
-            curve = parseCurve( xmlStream, defaultCRS );
-            break;
-        }
-        case LineString: {
-            curve = parseLineString( xmlStream, defaultCRS );
-            break;
-        }
-        case CompositeCurve: {
-            curve = parseCompositeCurve( xmlStream, defaultCRS );
-            break;
-        }
-        case OrientableCurve: {
-            curve = parseOrientableCurve( xmlStream, defaultCRS );
-            break;
-        }
-        default:
-            // cannot happen by construction
-        }
         return curve;
     }
 
@@ -908,52 +930,69 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         Surface surface = null;
 
-        if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
-            String msg = "Invalid gml:_Surface element: " + xmlStream.getName()
-                         + "' is not a GML geometry element. Not in the gml namespace.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
+        QName elName = xmlStream.getName();
+        AppSchemaGeometryHierarchy geometryHierarchy = getGeometryHierarchy();
+        if ( geometryHierarchy != null ) {
+            if ( !geometryHierarchy.getAbstractSurfaceElementNames().contains( elName ) ) {
+                String msg = "Invalid surface geometry element. '" + xmlStream.getName()
+                             + "' is not defined in the active application schema.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            if ( geometryHierarchy.getSurfaceSubstitutions().contains( elName ) ) {
+                surface = parseSurface( xmlStream, defaultCRS );
+            } else {
+                String msg = "Unhandled surface geometry element: '" + xmlStream.getName() + "'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        } else {
 
-        SurfaceType type = null;
-        try {
-            type = SurfaceType.valueOf( xmlStream.getLocalName() );
-        } catch ( IllegalArgumentException e ) {
-            String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' is not a valid substitution for 'gml:_Surface'.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
+            if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
+                String msg = "Invalid gml:_Surface element: " + xmlStream.getName()
+                             + "' is not a GML geometry element. Not in the gml namespace.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
 
-        switch ( type ) {
-        case CompositeSurface: {
-            surface = parseCompositeSurface( xmlStream, defaultCRS );
-            break;
-        }
-        case OrientableSurface: {
-            surface = parseOrientableSurface( xmlStream, defaultCRS );
-            break;
-        }
-        case Polygon: {
-            surface = parsePolygon( xmlStream, defaultCRS );
-            break;
-        }
-        case PolyhedralSurface: {
-            surface = parsePolyhedralSurface( xmlStream, defaultCRS );
-            break;
-        }
-        case Surface: {
-            surface = parseSurface( xmlStream, defaultCRS );
-            break;
-        }
-        case TriangulatedSurface: {
-            surface = parseTriangulatedSurface( xmlStream, defaultCRS );
-            break;
-        }
-        case Tin: {
-            surface = parseTin( xmlStream, defaultCRS );
-            break;
-        }
-        default:
-            // cannot happen by construction
+            SurfaceType type = null;
+            try {
+                type = SurfaceType.valueOf( xmlStream.getLocalName() );
+            } catch ( IllegalArgumentException e ) {
+                String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                             + "' is not a valid substitution for 'gml:_Surface'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+
+            switch ( type ) {
+            case CompositeSurface: {
+                surface = parseCompositeSurface( xmlStream, defaultCRS );
+                break;
+            }
+            case OrientableSurface: {
+                surface = parseOrientableSurface( xmlStream, defaultCRS );
+                break;
+            }
+            case Polygon: {
+                surface = parsePolygon( xmlStream, defaultCRS );
+                break;
+            }
+            case PolyhedralSurface: {
+                surface = parsePolyhedralSurface( xmlStream, defaultCRS );
+                break;
+            }
+            case Surface: {
+                surface = parseSurface( xmlStream, defaultCRS );
+                break;
+            }
+            case TriangulatedSurface: {
+                surface = parseTriangulatedSurface( xmlStream, defaultCRS );
+                break;
+            }
+            case Tin: {
+                surface = parseTin( xmlStream, defaultCRS );
+                break;
+            }
+            default:
+                // cannot happen by construction
+            }
         }
         return surface;
     }
@@ -1055,7 +1094,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             } else if ( "coordinates".equals( name ) ) {
                 List<Point> points = parseCoordinates( xmlStream, crs );
                 if ( points.size() != 1 ) {
-                    String msg = "A gml:Point element must contain exactly one tuple of coordinates.";
+                    String msg = "A gml:Point (or derived) element must contain exactly one tuple of coordinates.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
                 point = points.get( 0 );
@@ -1074,15 +1113,14 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                          + " or 'gml:coord'.";
             throw new XMLParsingException( xmlStream, msg );
         }
-       
+
         nextElement( xmlStream );
 
         List<Property> props = readAdditionalProperties( xmlStream, type, crs );
-
         xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         point.setGMLProperties( standardProps );
         point.setType( type );
-        point.setProperties (props);
+        point.setProperties( props );
 
         idContext.addObject( point );
         return point;
@@ -1173,6 +1211,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public Curve parseCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
@@ -1183,12 +1223,18 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             segments.add( curveSegmentParser.parseCurveSegment( xmlStream, crs ) );
         }
+        nextElement( xmlStream );
 
-        xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, gmlNs, "Curve" );
         Curve curve = geomFac.createCurve( gid, crs, segments.toArray( new CurveSegment[segments.size()] ) );
-        idContext.addObject( curve );
+        curve.setType( type );
         curve.setGMLProperties( standardProps );
+
+        List<Property> props = readAdditionalProperties( xmlStream, type, crs );
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
+        curve.setProperties( props );
+
+        idContext.addObject( curve );
+
         return curve;
     }
 
@@ -1400,6 +1446,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public Surface parseSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         GMLStdProps standardProps = propsParser.read( xmlStream );
@@ -1426,11 +1474,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             }
             xmlStream.require( END_ELEMENT, gmlNs, "polygonPatches" );
         }
+        nextElement( xmlStream );
 
-        xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, gmlNs, "Surface" );
         Surface surface = geomFac.createSurface( gid, memberPatches, crs );
+        surface.setType( type );
         surface.setGMLProperties( standardProps );
+
+        List<Property> props = readAdditionalProperties( xmlStream, type, crs );
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
+        surface.setProperties( props );
+
         idContext.addObject( surface );
         return surface;
     }

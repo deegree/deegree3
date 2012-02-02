@@ -43,13 +43,12 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.gml.GMLObjectType;
-import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 
 /**
- * TODO add class documentation here
+ * Provides convenient access to the names of geometry elements defined in an {@link AppSchema}.
  * 
- * @author <a href="mailto:name@company.com">Your Name</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
  * 
  * @version $Revision: $, $Date: $
@@ -58,12 +57,22 @@ public class AppSchemaGeometryHierarchy {
 
     private final Set<QName> pointElements;
 
+    private final Set<QName> abstractCurveElements;
+
     private final Set<QName> curveElements;
+
+    private final Set<QName> lineStringElements;
+
+    private final Set<QName> compositeCurveElements;
+
+    private final Set<QName> orientableCurveElements;
+
+    private final Set<QName> abstractSurfaceElements;
 
     private final Set<QName> surfaceElements;
 
     private final Set<QName> solidElements;
-    
+
     private final Set<QName> ringElements;
 
     private final Set<QName> primitiveElements;
@@ -74,26 +83,41 @@ public class AppSchemaGeometryHierarchy {
         pointElements = getConcreteSubstitutions( appSchema, elName );
 
         elName = getAbstractElementName( "Curve", gmlVersion );
+        abstractCurveElements = getConcreteSubstitutions( appSchema, elName );
+
+        elName = new QName( gmlVersion.getNamespace(), "Curve" );
         curveElements = getConcreteSubstitutions( appSchema, elName );
+
+        elName = new QName( gmlVersion.getNamespace(), "LineString" );
+        lineStringElements = getConcreteSubstitutions( appSchema, elName );
+
+        elName = new QName( gmlVersion.getNamespace(), "CompositeCurve" );
+        compositeCurveElements = getConcreteSubstitutions( appSchema, elName );
+
+        elName = new QName( gmlVersion.getNamespace(), "OrientableCurve" );
+        orientableCurveElements = getConcreteSubstitutions( appSchema, elName );
 
         elName = getAbstractElementName( "Ring", gmlVersion );
         ringElements = getConcreteSubstitutions( appSchema, elName );
 
         elName = getAbstractElementName( "Surface", gmlVersion );
+        abstractSurfaceElements = getConcreteSubstitutions( appSchema, elName );
+
+        elName = new QName( gmlVersion.getNamespace(), "Surface" );
         surfaceElements = getConcreteSubstitutions( appSchema, elName );
 
         elName = getAbstractElementName( "Solid", gmlVersion );
         solidElements = getConcreteSubstitutions( appSchema, elName );
-        
+
         elName = getAbstractElementName( "GeometricPrimitive", gmlVersion );
         primitiveElements = getConcreteSubstitutions( appSchema, elName );
     }
 
     private QName getAbstractElementName( String localPart, GMLVersion version ) {
         if ( version == GML_32 ) {
-            return new QName (version.getNamespace(), "Abstract" + localPart);
+            return new QName( version.getNamespace(), "Abstract" + localPart );
         }
-        return new QName (version.getNamespace(), "_" + localPart);
+        return new QName( version.getNamespace(), "_" + localPart );
     }
 
     private Set<QName> getConcreteSubstitutions( AppSchema appSchema, QName elName ) {
@@ -120,11 +144,31 @@ public class AppSchemaGeometryHierarchy {
         return pointElements;
     }
 
-    public Set<QName> getCurveElementNames() {
+    public Set<QName> getAbstractCurveSubstitutions() {
+        return abstractCurveElements;
+    }
+
+    public Set<QName> getCurveSubstitutions() {
         return curveElements;
     }
 
-    public Set<QName> getSurfaceElementNames() {
+    public Set<QName> getLineStringSubstitutions() {
+        return lineStringElements;
+    }
+
+    public Set<QName> getCompositeCurveSubstitutions() {
+        return compositeCurveElements;
+    }
+
+    public Set<QName> getOrientableCurveSubstitutions() {
+        return orientableCurveElements;
+    }
+
+    public Set<QName> getAbstractSurfaceElementNames() {
+        return abstractSurfaceElements;
+    }
+
+    public Set<QName> getSurfaceSubstitutions() {
         return surfaceElements;
     }
 

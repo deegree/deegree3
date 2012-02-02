@@ -46,7 +46,7 @@ import org.deegree.commons.tom.gml.GMLObject;
 /**
  * A property of a {@link GMLObject}.
  * <p>
- * Encapsulates a (qualified) name, type information and a value of a certain type.
+ * Encapsulates a (qualified) name, type information and a value.
  * </p>
  * 
  * @see Feature

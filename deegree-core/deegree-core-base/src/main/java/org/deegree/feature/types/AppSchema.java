@@ -14,7 +14,7 @@ import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 
 /**
- * Defines a number of {@link FeatureType}s and their derivation hierarchy.
+ * Defines {@link GMLObjectType}s (e.g. feature types) and their derivation hierarchy.
  * <p>
  * May be based on a {@link GMLSchemaInfoSet}. If it is build from a GML schema, {@link #getGMLSchema()} can be used to
  * access the full schema infoset.
@@ -200,11 +200,11 @@ public interface AppSchema {
      * @return the geometry type with the given name, or <code>null</code> if no such geometry type exists
      */
     GMLObjectType getGeometryType( QName name );
-    
+
     List<GMLObjectType> getSubstitutions( QName name );
 
     List<GMLObjectType> getDirectSubstitutions( QName name );
-    
+
     AppSchemaGeometryHierarchy getGeometryHierarchy();
 
     Map<GMLObjectType, GMLObjectType> getGeometryToSuperType();
