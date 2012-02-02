@@ -303,7 +303,10 @@ public class GMLAppSchemaWriter {
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
         for ( String prefix : prefixesToNs.keySet() ) {
             String ns = prefixesToNs.get( prefix );
-            writer.writeNamespace( prefix, ns );
+            // avoid double writing of the namespace (required since IS_REPAIRING_NAMESPACE=FALSE)
+            if ( prefix != GML_PREFIX && prefix != XSNS ) {
+                writer.writeNamespace( prefix, ns );
+            }
         }
 
         if ( targetNs != null && !targetNs.isEmpty() ) {
