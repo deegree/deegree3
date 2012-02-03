@@ -226,11 +226,9 @@ class FeatureNavigator extends DefaultNavigator {
     public Iterator<?> getChildAxisIterator( Object node ) {
         Iterator<?> iter = EMPTY_ITERATOR;
         if ( node instanceof GMLObjectNode<?, ?> ) {
-            GMLObjectNode<?, ?> gmlObjectNode = (GMLObjectNode<?, ?>) node;
-            if ( gmlObjectNode.getValue() instanceof Feature ) {
-                @SuppressWarnings("unchecked")
-                GMLObjectNode<Feature, Feature> typedGmlObjectNode = (GMLObjectNode) gmlObjectNode;
-                iter = new PropertyNodeIterator( typedGmlObjectNode, version );
+            GMLObjectNode<GMLObject, GMLObject> gmlObjectNode = (GMLObjectNode<GMLObject, GMLObject>) node;
+            if ( gmlObjectNode.getValue() != null ) {
+                iter = new PropertyNodeIterator( gmlObjectNode, version );
             }
         } else if ( node instanceof DocumentNode ) {
             iter = new SingleObjectIterator( ( (DocumentNode) node ).getRootNode() );

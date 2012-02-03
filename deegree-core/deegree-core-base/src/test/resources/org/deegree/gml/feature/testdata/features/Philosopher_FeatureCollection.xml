@@ -29,6 +29,16 @@
               <app:name>Germany</app:name>
               <app:geom>
                 <gml:MultiPolygon gml:id="MULTIPOLYGON_1" srsName="EPSG:4326">
+                  <gml:metaDataProperty>
+                    <gml:GenericMetaData>Example for metadata.</gml:GenericMetaData>
+                  </gml:metaDataProperty>
+                  <gml:metaDataProperty>
+                    <MyMetaData xmlns="http://www.myns.com">Actually, in GML 3.1.1, anything may appear here, content is not constrained.</MyMetaData>
+                  </gml:metaDataProperty>
+                  <gml:description>This is just for testing the parsing of standard GML properties.</gml:description>
+                  <gml:name>POLYGON_1</gml:name>
+                  <gml:name>P1</gml:name>
+                  <gml:name>POLYGON_P1</gml:name>                
                   <gml:polygonMember>
                     <gml:Polygon gml:id="POLYGON_1" srsName="EPSG:4326">
                       <gml:outerBoundaryIs>

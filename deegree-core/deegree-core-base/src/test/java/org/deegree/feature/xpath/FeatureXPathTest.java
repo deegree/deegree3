@@ -332,7 +332,7 @@ public class FeatureXPathTest {
         assertEquals( 1, result.length );
         assertEquals( "Philosopher", ( (PrimitiveValue) result[0] ).getAsText() );
     }
-    
+
     @Test
     public void testXPath20()
                             throws FilterEvaluationException {
@@ -342,7 +342,7 @@ public class FeatureXPathTest {
         assertEquals( 7, result.length );
         assertEquals( "PHILOSOPHER_1", ( (PrimitiveValue) result[0] ).getAsText() );
     }
-    
+
     @Test
     public void testXPath21()
                             throws FilterEvaluationException {
@@ -352,7 +352,7 @@ public class FeatureXPathTest {
         assertEquals( 7, result.length );
         assertEquals( "PLACE_2", ( (PrimitiveValue) result[0] ).getAsText() );
     }
-        
+
     @Test
     public void testXPath22()
                             throws FilterEvaluationException {
@@ -362,7 +362,26 @@ public class FeatureXPathTest {
         assertEquals( 6, result.length );
         assertEquals( "COUNTRY_2", ( (PrimitiveValue) result[0] ).getAsText() );
     }
-    
+
+    @Test
+    public void testXPath23()
+                            throws FilterEvaluationException {
+        String xpath = "gml:featureMember/app:Philosopher[@gml:id='PHILOSOPHER_1']/app:placeOfBirth/app:Place/app:country/app:Country/app:geom/gml:MultiPolygon/gml:name";
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new ValueReference( xpath, nsContext ) );
+        assertNotNull( result );
+        assertEquals( 3, result.length );
+    }
+
+    @Test
+    public void testXPath24()
+                            throws FilterEvaluationException {
+        String xpath = "gml:featureMember/app:Philosopher[@gml:id='PHILOSOPHER_1']/app:placeOfBirth/app:Place/app:country/app:Country/app:geom/gml:MultiPolygon/gml:name[1]/text()";
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new ValueReference( xpath, nsContext ) );
+        assertNotNull( result );
+        assertEquals( 1, result.length );
+        assertEquals( "POLYGON_1", ( (PrimitiveValue) result[0] ).getAsText() );
+    }
+
     // @Test
     // public void testXPath23()
     // throws FilterEvaluationException {

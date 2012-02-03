@@ -38,8 +38,8 @@ package org.deegree.feature.xpath;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
-import org.deegree.feature.Feature;
 import org.deegree.gml.GMLVersion;
 
 /**
@@ -52,20 +52,20 @@ import org.deegree.gml.GMLVersion;
  */
 class PropertyNodeIterator implements Iterator<PropertyNode> {
 
-    private GMLObjectNode<Feature, Feature> parent;
-
-    private Iterator<Property> stdProps;
+    private GMLObjectNode<GMLObject, GMLObject> parent;
 
     private Iterator<Property> props;
 
-    PropertyNodeIterator( GMLObjectNode<Feature, Feature> parent, GMLVersion version ) {
+    PropertyNodeIterator( GMLObjectNode<GMLObject, GMLObject> parent, GMLVersion version ) {
         this.parent = parent;
-        this.props = parent.getValue().getProperties().iterator();
+        if ( parent.getValue().getProperties() != null ) {
+            this.props = parent.getValue().getProperties().iterator();
+        }
     }
 
     @Override
     public boolean hasNext() {
-        return ( stdProps != null && stdProps.hasNext() ) || props.hasNext();
+        return props != null && props.hasNext();
     }
 
     @Override
@@ -74,9 +74,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
             throw new NoSuchElementException();
         }
         Property prop = null;
-        if ( stdProps != null && stdProps.hasNext() ) {
-            prop = stdProps.next();
-        } else {
+        if ( props != null && props.hasNext() ) {
             prop = props.next();
         }
         return new PropertyNode( parent, prop );

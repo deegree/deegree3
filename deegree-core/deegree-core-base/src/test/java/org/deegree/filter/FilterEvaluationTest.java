@@ -222,6 +222,14 @@ public class FilterEvaluationTest {
     }
 
     @Test
+    public void filterCollection28()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+        Filter filter = parseFilter110( "testfilter28.xml" );
+        assertResultSet( fc.getMembers( filter, new FeatureXPathEvaluator( GML_32 ) ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
+    }
+
+    
+    @Test
     public void filter20Collection1()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter20( "testfilter1.xml" );

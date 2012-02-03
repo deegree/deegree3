@@ -66,6 +66,9 @@ public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> exten
     }
 
     private static QName getName( GMLObject object, GMLVersion version ) {
+        if ( object.getType() != null ) {
+            return object.getType().getName();
+        }
         if ( object instanceof Feature ) {
             return ( (Feature) object ).getName();
         } else if ( object instanceof Geometry ) {
