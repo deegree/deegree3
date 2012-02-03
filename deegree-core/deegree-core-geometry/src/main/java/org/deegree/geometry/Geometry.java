@@ -110,7 +110,20 @@ import org.deegree.geometry.primitive.Polygon;
  * If the geometry is not SFS-compliant, {@link SFSProfiler} can be used to simplify it into an SFS geometry.
  * </p>
  * <p>
- * <h4>Notes on GML properties</h4> TODO
+ * <h4>Notes on GML properties</h4>
+ * GML geometries allow for non-geometric properties, such as the ones from the
+ * <code>gml:StandardObjectProperties</code> attribute group. Additionally, extensions of core GML geometry elements
+ * (e.g. <code>aixm:ElevatedPoint</code> from the AIXM 5.1 application schema) may define even more properties which
+ * don't actually add to the geometric semantics of the element. The properties of GML geometry can hence be divided
+ * like this:
+ * <ul>
+ * <li>Standard GML properties (e.g. <code>gml:name</code>)</li>
+ * <li>Properties with a geometric semantics (e.g. <code>gml:pos/code>)</li>
+ * <li>Additional properties (for application-schema defined geometry elements)</li>
+ * </ul>
+ * Note that the methods operating on properties ({@link #getProperties()},
+ * {@link #getProperties(javax.xml.namespace.QName), {@link #setProperties(List)}) currently only deal with the
+ * standard and additional properties.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
