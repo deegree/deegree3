@@ -44,8 +44,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.tom.gml.GMLStdProps;
-import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -1380,54 +1378,6 @@ public class WKTWriter {
         } else
             writer.append( "" );
         writer.append( '\'' );
-
-        GMLStdProps props = geom.getGMLProperties();
-        if ( props != null ) {
-            int counter = 0;
-            writer.append( ',' );
-
-            // metadataproperties
-            writer.append( "metadataproperty=(" );
-            for ( Object c : props.getMetadata() ) {
-
-                counter++;
-                writer.append( '\'' );
-                writer.append( c.toString() );
-                writer.append( '\'' );
-                if ( counter != props.getMetadata().length ) {
-                    writer.append( ',' );
-                }
-
-            }
-            writer.append( ')' );
-            writer.append( ',' );
-
-            // description
-            writer.append( "description='" );
-            if ( props.getDescription() != null ) {
-                writer.append( props.getDescription().toString() );
-            }
-            writer.append( '\'' );
-            writer.append( ',' );
-
-            // name
-            writer.append( "name=(" );
-            counter = 0;
-            for ( CodeType c : props.getNames() ) {
-                counter++;
-                writer.append( '\'' );
-                writer.append( c.toString() );
-                writer.append( '\'' );
-                if ( counter != props.getNames().length ) {
-                    writer.append( ',' );
-                }
-
-            }
-            writer.append( ')' );
-
-        }
-
         writer.append( ']' );
     }
-
 }

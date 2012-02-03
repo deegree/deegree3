@@ -6,7 +6,7 @@
     <gml:GenericMetaData>Example for metadata: Ce point ne pas une point.</gml:GenericMetaData>
   </gml:metaDataProperty>
   <gml:metaDataProperty>
-    <MyMetaData>Actually, in GML 3.1.1, anything may appear here, content is not constrained.</MyMetaData>
+    <MyMetaData xmlns="http://www.myns.com">Actually, in GML 3.1.1, anything may appear here, content is not constrained.</MyMetaData>
   </gml:metaDataProperty>
   <gml:description>This is just for testing the parsing of standard GML properties.</gml:description>
   <gml:name>Point P1</gml:name>

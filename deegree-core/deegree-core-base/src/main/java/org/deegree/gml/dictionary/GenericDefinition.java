@@ -35,8 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 
@@ -89,6 +94,16 @@ public class GenericDefinition implements Definition {
 
     @Override
     public GMLObjectType getType() {
+        throw new UnsupportedOperationException ("Implement me");
+    }
+
+    @Override
+    public List<Property> getProperties() {
+        throw new UnsupportedOperationException ("Implement me");
+    }
+
+    @Override
+    public List<Property> getProperties( QName propName ) {
         throw new UnsupportedOperationException ("Implement me");
     }
 }

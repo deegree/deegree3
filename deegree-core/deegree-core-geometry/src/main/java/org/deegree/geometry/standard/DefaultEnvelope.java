@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -248,5 +253,4 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         return box1.getMin().get0() <= box2.getMin().get0() && box2.getMax().get0() <= box1.getMax().get0()
                && box2.getMin().get1() <= box1.getMin().get1() && box1.getMax().get1() <= box2.getMax().get1();
     }
-
 }

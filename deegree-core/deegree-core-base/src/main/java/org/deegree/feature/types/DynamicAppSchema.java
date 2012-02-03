@@ -51,6 +51,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSTerm;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
@@ -154,7 +155,7 @@ public class DynamicAppSchema implements AppSchema {
     }
 
     @Override
-    public Map<QName, XSElementDeclaration> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
+    public Map<QName, XSTerm> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
         return emptyMap();
     }
 

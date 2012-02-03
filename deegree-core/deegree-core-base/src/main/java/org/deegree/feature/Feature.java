@@ -98,23 +98,6 @@ public interface Feature extends GMLObject {
     public FeatureType getType();
 
     /**
-     * Returns all properties in order.
-     * 
-     * @return all properties, in order, may be empty, but never <code>null</code>
-     */
-    public List<Property> getProperties();
-
-    /**
-     * Returns all properties with the given name, in order.
-     * 
-     * @param propName
-     *            name of the requested properties, must not be <code>null</code>
-     * @return the properties with the given name, in order, may be empty (no such properties), but never
-     *         <code>null</code>
-     */
-    public List<Property> getProperties( QName propName );
-
-    /**
      * Returns all {@link Geometry}-valued properties in order.
      * <p>
      * NOTE: This excludes {@link Envelope}-valued properties, such as <code>gml:boundedBy</code>.

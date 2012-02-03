@@ -36,8 +36,13 @@
 
 package org.deegree.commons.tom.gml;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.ReferenceResolver;
+import org.deegree.commons.tom.gml.property.Property;
 
 /**
  * A {@link Reference} to a {@link GMLObject}, corresponds to a GML property with an <code>xlink:href</code> attribute.
@@ -69,5 +74,15 @@ public class GMLReference<T extends GMLObject> extends Reference<T> implements G
     @Override
     public GMLObjectType getType() {
         return getReferencedObject().getType();
+    }
+
+    @Override
+    public List<Property> getProperties() {
+        return getReferencedObject().getProperties();
+    }
+
+    @Override
+    public List<Property> getProperties( QName propName ) {
+        return getReferencedObject().getProperties( propName );
     }
 }

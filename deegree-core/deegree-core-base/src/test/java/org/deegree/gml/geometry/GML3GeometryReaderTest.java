@@ -35,10 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.ARC;
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.LINE_STRING_SEGMENT;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -46,15 +50,16 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -91,13 +96,10 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.GMLAppSchemaReaderTest;
-import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -846,19 +848,96 @@ public class GML3GeometryReaderTest {
     }
 
     @Test
-    public void parseStandardProps()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
-        GMLStreamReader gmlReader = getParser( "StandardProps.gml" );
+    public void parseStandardPropsGML311()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        String schemaUrl = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_31, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
+
+        GMLStreamReader gmlReader = getParser( "StandardPropsGML311.gml" );
+        gmlReader.setApplicationSchema( schema );
         XMLStreamReader xmlReader = gmlReader.getXMLReader();
-        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
-        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
+        assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Point point = (Point) gmlReader.readGeometry();
-        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
-        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
-        Assert.assertEquals( 7.12, point.get0(), DELTA );
-        Assert.assertEquals( 50.72, point.get1(), DELTA );
-        Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
+        assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
+
+        // geometry value
+        assertEquals( 7.12, point.get0(), DELTA );
+        assertEquals( 50.72, point.get1(), DELTA );
+        assertEquals( 2, point.getCoordinateDimension() );
+        assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
+
+        // standard properties
+        assertEquals( 6, point.getProperties().size() );
+
+        // gml:metaDataProperty
+        assertEquals( QName.valueOf( "{http://www.opengis.net/gml}metaDataProperty" ),
+                      point.getProperties().get( 0 ).getName() );
+        GenericXMLElement mdProp1 = (GenericXMLElement) point.getProperties().get( 0 ).getValue();
+        assertNotNull( mdProp1.getXSType() );
+        assertEquals( 1, mdProp1.getChildren().size() );
+        GenericXMLElement genericMetadata = (GenericXMLElement) mdProp1.getChildren().get( 0 );
+        Assert.assertNull( genericMetadata.getXSType() );
+        assertEquals( QName.valueOf( "{http://www.opengis.net/gml}GenericMetaData" ), genericMetadata.getName() );
+        assertEquals( 1, genericMetadata.getChildren().size() );
+        PrimitiveValue pv = (PrimitiveValue) genericMetadata.getChildren().get( 0 );
+        assertEquals( BaseType.STRING, pv.getType().getBaseType() );
+        assertEquals( "Example for metadata: Ce point ne pas une point.", pv.getValue() );
+
+        // gml:metaDataProperty
+        assertEquals( QName.valueOf( "{http://www.opengis.net/gml}metaDataProperty" ),
+                      point.getProperties().get( 1 ).getName() );
+        GenericXMLElement mdProp2 = (GenericXMLElement) point.getProperties().get( 1 ).getValue();
+        assertNotNull( mdProp2.getXSType() );
+        assertEquals( 1, mdProp2.getChildren().size() );
+        GenericXMLElement myMetadata = (GenericXMLElement) mdProp2.getChildren().get( 0 );
+        Assert.assertNull( myMetadata.getXSType() );
+        assertEquals( QName.valueOf( "{http://www.myns.com}MyMetaData" ), myMetadata.getName() );
+        assertEquals( 1, myMetadata.getChildren().size() );
+        pv = (PrimitiveValue) myMetadata.getChildren().get( 0 );
+        assertEquals( STRING, pv.getType().getBaseType() );
+        assertEquals( "Actually, in GML 3.1.1, anything may appear here, content is not constrained.", pv.getValue() );
+
+        // gml:description
+        assertEquals( QName.valueOf( "{http://www.opengis.net/gml}description" ),
+                      point.getProperties().get( 2 ).getName() );
+        GenericXMLElement descriptionProp = (GenericXMLElement) point.getProperties().get( 2 ).getValue();
+        assertNotNull( descriptionProp.getXSType() );
+        assertEquals( 1, descriptionProp.getChildren().size() );
+        pv = (PrimitiveValue) descriptionProp.getChildren().get( 0 );
+        assertEquals( STRING, pv.getType().getBaseType() );
+        assertEquals( "This is just for testing the parsing of standard GML properties.", pv.getValue() );
+
+        // gml:name
+        assertEquals( QName.valueOf( "{http://www.opengis.net/gml}name" ), point.getProperties().get( 3 ).getName() );
+        GenericXMLElement nameProp1 = (GenericXMLElement) point.getProperties().get( 3 ).getValue();
+        assertNotNull( nameProp1.getXSType() );
+        assertEquals( 1, nameProp1.getChildren().size() );
+        pv = (PrimitiveValue) nameProp1.getChildren().get( 0 );
+        assertEquals( STRING, pv.getType().getBaseType() );
+        assertEquals( "Point P1", pv.getValue() );
+        
+        // gml:name
+        assertEquals( QName.valueOf( "{http://www.opengis.net/gml}name" ), point.getProperties().get( 4 ).getName() );
+        GenericXMLElement nameProp2 = (GenericXMLElement) point.getProperties().get( 4 ).getValue();
+        assertNotNull( nameProp2.getXSType() );
+        assertEquals( 1, nameProp2.getChildren().size() );
+        pv = (PrimitiveValue) nameProp2.getChildren().get( 0 );
+        assertEquals( STRING, pv.getType().getBaseType() );
+        assertEquals( "P1", pv.getValue() );
+        
+        // gml:name
+        assertEquals( QName.valueOf( "{http://www.opengis.net/gml}name" ), point.getProperties().get( 5 ).getName() );
+        GenericXMLElement nameProp3 = (GenericXMLElement) point.getProperties().get( 5 ).getValue();
+        assertNotNull( nameProp3.getXSType() );
+        assertEquals( 1, nameProp3.getChildren().size() );
+        pv = (PrimitiveValue) nameProp3.getChildren().get( 0 );
+        assertEquals( STRING, pv.getType().getBaseType() );
+        assertEquals( "Point_P1", pv.getValue() );        
     }
 
     @Test
@@ -887,20 +966,20 @@ public class GML3GeometryReaderTest {
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.aixm.aero/schema/5.1", "ElevatedPoint" ), xmlReader.getName() );
 
-//        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-//        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-//        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-//        IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
-//        writer.setPrefix( "app", "http://www.deegree.org/app" );
-//        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-//        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
-//        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
-//        writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-//        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-//        GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_32, writer );
-//        exporter.write( geom );
-//        writer.flush();
-//        System.out.println( memoryWriter );
+        // XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        // outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+        // XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        // IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
+        // writer.setPrefix( "app", "http://www.deegree.org/app" );
+        // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        // writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+        // writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        // writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        // writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        // GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_32, writer );
+        // exporter.write( geom );
+        // writer.flush();
+        // System.out.println( memoryWriter );
     }
 
     private GMLStreamReader getParser( String fileName )
@@ -909,5 +988,13 @@ public class GML3GeometryReaderTest {
                                                                            GML3SurfacePatchReaderTest.class.getResource( BASE_DIR
                                                                                                                          + fileName ) );
         return gmlStream;
+    }
+
+    public void testParseLineString() {
+
+    }
+
+    public void testParseOrientableCurve() {
+
     }
 }

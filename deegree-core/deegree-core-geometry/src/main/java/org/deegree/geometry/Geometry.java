@@ -39,7 +39,6 @@ import java.util.List;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLObjectType;
-import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
@@ -111,13 +110,7 @@ import org.deegree.geometry.primitive.Polygon;
  * If the geometry is not SFS-compliant, {@link SFSProfiler} can be used to simplify it into an SFS geometry.
  * </p>
  * <p>
- * <h4>Representation of GML geometries</h4>
- * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
- * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
- * They are modelled using the {@link GMLStdProps} class. This design decision has been driven by the goal to make the
- * implementation less GML (and GML-version) specific and to allow for example to export a {@link Geometry} instance as
- * either GML 2, GML 3.1 or GML 3.2 (different namespaces and types for the standard properties).
- * </p>
+ * <h4>Notes on GML properties</h4> TODO
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
@@ -195,29 +188,12 @@ public interface Geometry extends GMLObject {
     public void setCoordinateSystem( ICRS crs );
 
     /**
-     * Returns the attached properties.
-     * 
-     * @return attached properties, can be <code>null</code> (no properties attached)
-     */
-    public List<Property> getProperties();
-    
-    /**
      * Sets the attached properties.
      * 
      * @param props
      *            properties to be attached
      */
     public void setProperties( List<Property> props );
-    
-    /**
-     * Sets the attached properties (e.g. GML standard properties, such as <code>gml:name</code>).
-     * 
-     * TODO deprecate this
-     * 
-     * @param props
-     *            properties to be attached
-     */
-    public void setGMLProperties( GMLStdProps props );
 
     /**
      * Returns whether this geometry complies with the <i>Simple Feature Specification (SFS)</i>.
@@ -406,11 +382,4 @@ public interface Geometry extends GMLObject {
      * @return shortest distance between the two geometries
      */
     public Measure getDistance( Geometry geometry, Unit requestedUnits );
-
-    /**
-     * Returns the standard GML properties (e.g. <code>gml:name</code>).
-     * 
-     * @return the standard GML properties, may be <code><null</code>
-     */
-    public GMLStdProps getGMLProperties();
 }

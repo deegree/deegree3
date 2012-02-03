@@ -38,6 +38,8 @@ package org.deegree.geometry.standard;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.gml.property.Property;
@@ -304,20 +306,16 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     public List<Property> getProperties() {
         return props;
     }
+    
+    @Override
+    public List<Property> getProperties( QName propName ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     @Override
     public void setProperties( List<Property> props ) {
         this.props = props;
-    }
-
-    @Override
-    public GMLStdProps getGMLProperties() {
-        return standardProps;
-    }
-
-    @Override
-    public void setGMLProperties( GMLStdProps standardProps ) {
-        this.standardProps = standardProps;
     }
 
     /**

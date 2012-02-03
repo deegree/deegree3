@@ -8,6 +8,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
@@ -145,16 +147,16 @@ public interface AppSchema {
     Map<String, String> getNamespaceBindings();
 
     /**
-     * Returns the child elements that the given complex type definition allows for.
+     * Returns the {@link XSElementDeclaration}s/{@link XSWildcard}s that the given complex type definition allows for.
      * <p>
      * TODO: Respect order and cardinality of child elements.
      * </p>
      * 
      * @param type
      *            complex type definition, must not be <code>null</code>
-     * @return the child elements, never <code>null</code>
+     * @return allowed child element declarations, never <code>null</code>
      */
-    Map<QName, XSElementDeclaration> getAllowedChildElementDecls( XSComplexTypeDefinition type );
+    Map<QName, XSTerm> getAllowedChildElementDecls( XSComplexTypeDefinition type );
 
     /**
      * Returns the application namespaces.

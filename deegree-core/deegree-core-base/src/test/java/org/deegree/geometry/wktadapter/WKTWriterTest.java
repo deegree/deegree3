@@ -107,8 +107,7 @@ public class WKTWriterTest extends TestCase {
         WKTwriter.writeGeometry( geom, writer );
         // System.out.print( writer.toString() + "\n" );
 
-        assertEquals(
-                      "LINEARRING [id='',metadataproperty=(),description='',name=()](2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)",
+        assertEquals( "LINEARRING [id=''](2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)",
                       writer.toString() );
 
     }
@@ -127,7 +126,7 @@ public class WKTWriterTest extends TestCase {
         WKTwriter.writeGeometry( geom, writer );
         // System.out.print( writer.toString() + "\n" );
 
-        assertEquals( "POINT [id='P1',metadataproperty=(),description='',name=()](7.12 50.72)", writer.toString() );
+        assertEquals( "POINT [id='P1'](7.12 50.72)", writer.toString() );
 
     }
 
@@ -145,10 +144,7 @@ public class WKTWriterTest extends TestCase {
         WKTwriter.writeGeometry( geom, writer );
         // System.out.print( writer.toString() + "\n" );
 
-        assertEquals(
-                      "LINESTRING [id='L1',metadataproperty=(),description='',name=()](7.12 50.72,9.98 53.55,13.42 52.52)",
-                      writer.toString() );
-
+        assertEquals( "LINESTRING [id='L1'](7.12 50.72,9.98 53.55,13.42 52.52)", writer.toString() );
     }
 
     @Test
@@ -165,10 +161,8 @@ public class WKTWriterTest extends TestCase {
         WKTwriter.writeGeometry( geom, writer );
         // System.out.print( writer.toString() + "\n" );
 
-        assertEquals(
-                      "POLYGON [id='',metadataproperty=(),description='',name=()]((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))",
+        assertEquals( "POLYGON [id='']((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))",
                       writer.toString() );
-
     }
 
     @Test
@@ -185,8 +179,7 @@ public class WKTWriterTest extends TestCase {
         WKTwriter.writeGeometry( geom, writer );
         // System.out.print( writer.toString() + "\n" );
 
-        assertEquals(
-                      "SURFACE [id='',metadataproperty=(),description='',name=()](((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0))"
+        assertEquals( "SURFACE [id=''](((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0))"
                                               + ","
                                               + "((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)))",
                       writer.toString() );
@@ -264,34 +257,14 @@ public class WKTWriterTest extends TestCase {
         // System.out.print( "CURVE-DKT: " + s + "\n" );
         // System.out.print( "CURVE-DKT: " + writer.toString() + "\n" );
 
-        assertEquals( "CURVE [id='C1',metadataproperty=(),description='',name=()](" + s + ")", writer.toString() );
-
-    }
-
-    @Test
-    public void test_StandartPropsDKT()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
-                            UnknownCRSException {
-
-        Set<WKTFlag> flag = new HashSet<WKTFlag>();
-        flag.add( WKTFlag.USE_DKT );
-        Writer writer = new StringWriter();
-        decimalFormatter = new DecimalCoordinateFormatter( 2 );
-        WKTWriter WKTwriter = new WKTWriter( flag, decimalFormatter );
-        Geometry geom = parseGeometry( "StandardProps.gml" );
-        WKTwriter.writeGeometry( geom, writer );
-        // System.out.print( writer.toString() + "\n" );
-
-        // TODO no metaDataProperty available from parsing
-        assertEquals(
-                      "POINT [id='P1',metadataproperty=(),description='This is just for testing the parsing of standard GML properties.',name=('Point P1','P1','Point_P1')](7.12 50.72)",
-                      writer.toString() );
+        assertEquals( "CURVE [id='C1'](" + s + ")", writer.toString() );
 
     }
 
     @Test
     public void test_EnvelopeDKT()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
@@ -326,7 +299,8 @@ public class WKTWriterTest extends TestCase {
 
     @Test
     public void test_Envelope_FLAGEnvelope()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_ENVELOPE );
@@ -403,8 +377,7 @@ public class WKTWriterTest extends TestCase {
         WKTwriter.writeGeometry( geom, writer );
         // System.out.print( writer.toString() + "\n" );
 
-        assertEquals(
-                      "POLYGON ((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))",
+        assertEquals( "POLYGON ((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))",
                       writer.toString() );
 
     }
@@ -470,8 +443,7 @@ public class WKTWriterTest extends TestCase {
         WKTwriter.writeGeometry( geom, writer );
         // System.out.print( writer.toString() + "\n" );
 
-        assertEquals(
-                      "MULTIPOLYGON (((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0))"
+        assertEquals( "MULTIPOLYGON (((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0))"
                                               + ","
                                               + "((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)))",
                       writer.toString() );
@@ -480,7 +452,8 @@ public class WKTWriterTest extends TestCase {
 
     @Test
     public void test_Envelope()
-                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
@@ -504,8 +477,7 @@ public class WKTWriterTest extends TestCase {
         Geometry geom = parseGeometry( "MultiPolygon.gml" );
         WKTwriter.writeGeometry( geom, writer );
         // System.out.print( writer.toString() + "\n" );
-        assertEquals(
-                      "MULTIPOLYGON (((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)),((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)))",
+        assertEquals( "MULTIPOLYGON (((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)),((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)))",
                       writer.toString() );
 
     }
@@ -522,7 +494,8 @@ public class WKTWriterTest extends TestCase {
 
     // ############################## PARSING THE ENVELOPE-FILE
     private Geometry parseEnvelope( String fileName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
 
         URL gmlDocURL = GML3GeometryReaderTest.class.getResource( BASE_DIR + fileName );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, gmlDocURL );

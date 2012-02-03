@@ -47,7 +47,7 @@ public enum GMLObjectCategory {
 
     /** Coordinate reference system */
     CRS,
-    /** Feature ("geo object") */
+    /** Feature (geospatial data object) */
     FEATURE,
     /** Geometry */
     GEOMETRY,

@@ -66,6 +66,7 @@ import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -132,7 +133,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
     private static final Logger LOG = LoggerFactory.getLogger( AbstractGMLObjectReader.class );
 
     protected final String gmlNs;
-    
+
     protected final GMLVersion version;
 
     protected final GMLStreamReader gmlStreamReader;
@@ -167,7 +168,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
      * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of the property, afterwards points at the
-     *            next event after the <code>END_ELEMENT</code> of the property
+     *            corresponding <code>END_ELEMENT</code> event
      * @param propDecl
      *            property declaration
      * @param crs
@@ -446,23 +447,29 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         QName startElName = xmlStream.getName();
 
         TypedObjectNode node = null;
-        XSTypeDefinition xsdValueType = elDecl.getTypeDefinition();
-        if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
-            node = parseSimpleXMLElement( xmlStream, elDecl );
-        } else {
-            ObjectPropertyType propDecl = schema.getCustomElDecl( elDecl );
-            if ( propDecl != null ) {
-                if ( propDecl instanceof GeometryPropertyType ) {
-                    node = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
-                } else if ( propDecl instanceof FeaturePropertyType ) {
-                    node = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
-                } else {
-                    throw new RuntimeException( "Internal error. Unhandled GML object property type "
-                                                + propDecl.getClass().getName() );
-                }
+        if ( elDecl != null ) {
+            // parsing with schema information
+            XSTypeDefinition xsdValueType = elDecl.getTypeDefinition();
+            if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
+                node = parseSimpleXMLElement( xmlStream, elDecl );
             } else {
-                node = parseComplexXMLElement( xmlStream, elDecl, crs );
+                ObjectPropertyType propDecl = schema.getCustomElDecl( elDecl );
+                if ( propDecl != null ) {
+                    if ( propDecl instanceof GeometryPropertyType ) {
+                        node = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
+                    } else if ( propDecl instanceof FeaturePropertyType ) {
+                        node = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
+                    } else {
+                        throw new RuntimeException( "Internal error. Unhandled GML object property type "
+                                                    + propDecl.getClass().getName() );
+                    }
+                } else {
+                    node = parseComplexXMLElement( xmlStream, elDecl, crs );
+                }
             }
+        } else {
+            // parsing without schema information
+            node = parseComplexXMLElement( xmlStream, crs );
         }
         xmlStream.require( END_ELEMENT, startElName.getNamespaceURI(), startElName.getLocalPart() );
         return node;
@@ -492,7 +499,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, xsdValueType );
         List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
 
-        Map<QName, XSElementDeclaration> childElementDecls = schema.getAllowedChildElementDecls( xsdValueType );
+        Map<QName, XSTerm> childElementDecls = schema.getAllowedChildElementDecls( xsdValueType );
 
         switch ( xsdValueType.getContentType() ) {
         case CONTENTTYPE_ELEMENT: {
@@ -501,11 +508,13 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
                 if ( eventType == START_ELEMENT ) {
                     QName childElName = xmlStream.getName();
-                    if ( !childElementDecls.containsKey( childElName ) ) {
+                    if ( !childElementDecls.containsKey( new QName( "*" ) )
+                         && !childElementDecls.containsKey( childElName ) ) {
                         String msg = "Element '" + childElName + "' is not allowed at this position.";
                         throw new XMLParsingException( xmlStream, msg );
                     }
-                    TypedObjectNode child = parseGenericXMLElement( xmlStream, childElementDecls.get( childElName ),
+                    TypedObjectNode child = parseGenericXMLElement( xmlStream,
+                                                                    (XSElementDeclaration) childElementDecls.get( childElName ),
                                                                     crs );
                     // LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
                     children.add( child );
@@ -536,11 +545,13 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
                 if ( eventType == START_ELEMENT ) {
                     QName childElName = xmlStream.getName();
 
-                    if ( !childElementDecls.containsKey( childElName ) ) {
+                    if ( !childElementDecls.containsKey( new QName( "*" ) )
+                         && !childElementDecls.containsKey( childElName ) ) {
                         String msg = "Element '" + childElName + "' is not allowed at this position.";
                         throw new XMLParsingException( xmlStream, msg );
                     }
-                    TypedObjectNode child = parseGenericXMLElement( xmlStream, childElementDecls.get( childElName ),
+                    TypedObjectNode child = parseGenericXMLElement( xmlStream,
+                                                                    (XSElementDeclaration) childElementDecls.get( childElName ),
                                                                     crs );
                     children.add( child );
                 } else if ( eventType == CDATA || eventType == CHARACTERS ) {
@@ -562,6 +573,37 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         }
 
         return new GenericXMLElement( xmlStream.getName(), elDecl, attrs, children );
+    }
+
+    private TypedObjectNode parseComplexXMLElement( XMLStreamReaderWrapper xmlStream, ICRS crs )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        QName elName = xmlStream.getName();
+        LOG.debug( "Parsing complex XML element " + elName + " (without schema information)" );
+        if ( gmlStreamReader.getGeometryReader().isGeometryElement( xmlStream ) ) {
+            return gmlStreamReader.getGeometryReader().parse( xmlStream );
+        } else if ( schema.getFeatureType( elName ) != null ) {
+            return gmlStreamReader.getFeatureReader().parseFeature( xmlStream, crs );
+        }
+
+        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream );
+        List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
+
+        int eventType = 0;
+        while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
+            if ( eventType == START_ELEMENT ) {
+                TypedObjectNode child = parseGenericXMLElement( xmlStream, null, crs );
+                children.add( child );
+            } else if ( eventType == CDATA || eventType == CHARACTERS ) {
+                // mixed content -> use string as primitive type
+                String s = xmlStream.getText();
+                if ( !s.trim().isEmpty() ) {
+                    children.add( new PrimitiveValue( s ) );
+                }
+            }
+        }
+
+        return new GenericXMLElement( xmlStream.getName(), null, attrs, children );
     }
 
     @Deprecated
@@ -675,6 +717,23 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
                 }
             }
         }
+        return attrs;
+    }
+
+    private Map<QName, PrimitiveValue> parseAttributes( XMLStreamReader xmlStream ) {
+
+        Map<QName, PrimitiveValue> attrs = new LinkedHashMap<QName, PrimitiveValue>();
+        for ( int i = 0; i < xmlStream.getAttributeCount(); i++ ) {
+            QName name = xmlStream.getAttributeName( i );
+            String value = xmlStream.getAttributeValue( i );
+            if ( XSI_NIL.equals( name ) ) {
+                attrs.put( XSI_NIL, new PrimitiveValue( value, new PrimitiveType( BOOLEAN ) ) );
+            } else {
+                PrimitiveValue xmlValue = new PrimitiveValue( value );
+                attrs.put( name, xmlValue );
+            }
+        }
+
         return attrs;
     }
 

@@ -38,6 +38,7 @@ package org.deegree.gml.geometry;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,7 +52,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.gml.GMLObjectType;
-import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.uom.Length;
@@ -110,7 +110,6 @@ import org.deegree.geometry.refs.PolygonReference;
 import org.deegree.geometry.refs.SolidReference;
 import org.deegree.geometry.refs.SurfaceReference;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.props.GMLStdPropsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,8 +165,6 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     private static String FID = "gid";
 
     private static String GMLID = "id";
-
-    private final GMLStdPropsReader propsParser;
 
     private final GML3CurveSegmentReader curveSegmentParser;
 
@@ -253,7 +250,6 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      */
     public GML3GeometryReader( GMLStreamReader gmlStream ) {
         super( gmlStream );
-        propsParser = new GMLStdPropsReader( gmlStream.getVersion() );
         curveSegmentParser = new GML3CurveSegmentReader( this, gmlStream );
         surfacePatchParser = new GML3SurfacePatchReader( this, gmlStream );
     }
@@ -940,6 +936,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             }
             if ( geometryHierarchy.getSurfaceSubstitutions().contains( elName ) ) {
                 surface = parseSurface( xmlStream, defaultCRS );
+            } else if ( "Polygon".equals( elName.getLocalPart() ) ) {
+                surface = parsePolygon( xmlStream, defaultCRS );
             } else {
                 String msg = "Unhandled surface geometry element: '" + xmlStream.getName() + "'.";
                 throw new XMLParsingException( xmlStream, msg );
@@ -1082,7 +1080,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         QName elName = xmlStream.getName();
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         // must contain one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
         if ( xmlStream.getEventType() == START_ELEMENT ) {
@@ -1109,20 +1107,21 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 throw new XMLParsingException( xmlStream, msg );
             }
         } else {
-            String msg = "Error in 'gml:Point' element. Must contain one of the following child elements: 'gml:pos', 'gml:coordinates'"
+            String msg = "Error in 'gml:Point' element. Expected one of the following properties: 'gml:pos', 'gml:coordinates'"
                          + " or 'gml:coord'.";
             throw new XMLParsingException( xmlStream, msg );
         }
 
         nextElement( xmlStream );
 
-        List<Property> props = readAdditionalProperties( xmlStream, type, crs );
-        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
-        point.setGMLProperties( standardProps );
         point.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
         point.setProperties( props );
 
         idContext.addObject( point );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return point;
     }
 
@@ -1148,7 +1147,9 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Point> points = null;
         if ( xmlStream.getEventType() == XMLStreamConstants.START_ELEMENT ) {
@@ -1187,9 +1188,15 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             String msg = "Error in 'gml:LineString' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
+
         LineString lineString = geomFac.createLineString( gid, crs, geomFac.createPoints( points ) );
-        lineString.setGMLProperties( standardProps );
+        lineString.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        lineString.setProperties( props );
         idContext.addObject( lineString );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return lineString;
     }
 
@@ -1215,7 +1222,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "segments" );
         List<CurveSegment> segments = new LinkedList<CurveSegment>();
@@ -1227,14 +1234,12 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         Curve curve = geomFac.createCurve( gid, crs, segments.toArray( new CurveSegment[segments.size()] ) );
         curve.setType( type );
-        curve.setGMLProperties( standardProps );
 
-        List<Property> props = readAdditionalProperties( xmlStream, type, crs );
-        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
         curve.setProperties( props );
 
         idContext.addObject( curve );
-
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return curve;
     }
 
@@ -1256,19 +1261,26 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public OrientableCurve parseOrientableCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
-        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "baseCurve" );
+        xmlStream.require( START_ELEMENT, gmlNs, "baseCurve" );
         Curve baseCurve = parseCurveProperty( xmlStream, crs );
-        xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, gmlNs, "OrientableCurve" );
+        nextElement( xmlStream );
 
         OrientableCurve orientableCurve = geomFac.createOrientableCurve( gid, crs, baseCurve, isReversed );
-        orientableCurve.setGMLProperties( standardProps );
+        orientableCurve.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        orientableCurve.setProperties( props );
+
         idContext.addObject( orientableCurve );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return orientableCurve;
     }
 
@@ -1290,19 +1302,26 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public LinearRing parseLinearRing( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         Points points = curveSegmentParser.parseControlPoints( xmlStream, crs );
         if ( points.size() < 4 ) {
             String msg = "Error in 'gml:LinearRing' element. Must specify at least four points.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "LinearRing" );
+
         LinearRing linearRing = geomFac.createLinearRing( gid, crs, points );
-        linearRing.setGMLProperties( standardProps );
+        linearRing.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        linearRing.setProperties( props );
+
         idContext.addObject( linearRing );
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return linearRing;
     }
 
@@ -1324,9 +1343,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public Ring parseRing( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
@@ -1340,10 +1361,15 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             xmlStream.require( END_ELEMENT, gmlNs, "curveMember" );
             xmlStream.nextTag();
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "Ring" );
         Ring ring = geomFac.createRing( gid, crs, memberCurves );
-        ring.setGMLProperties( standardProps );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        ring.setType( type );
+        ring.setProperties( props );
+
         idContext.addObject( ring );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return ring;
     }
 
@@ -1365,9 +1391,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public Polygon parsePolygon( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         Ring exteriorRing = null;
         List<Ring> interiorRings = new LinkedList<Ring>();
@@ -1421,10 +1449,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             }
             xmlStream.nextTag();
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "Polygon" );
+
         Polygon polygon = geomFac.createPolygon( gid, crs, exteriorRing, interiorRings );
-        polygon.setGMLProperties( standardProps );
+        polygon.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        polygon.setProperties( props );
+
         idContext.addObject( polygon );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return polygon;
     }
 
@@ -1450,7 +1484,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
         if ( xmlStream.getEventType() != START_ELEMENT || !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
@@ -1478,13 +1512,13 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         Surface surface = geomFac.createSurface( gid, memberPatches, crs );
         surface.setType( type );
-        surface.setGMLProperties( standardProps );
 
-        List<Property> props = readAdditionalProperties( xmlStream, type, crs );
-        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
         surface.setProperties( props );
 
         idContext.addObject( surface );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return surface;
     }
 
@@ -1506,9 +1540,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public PolyhedralSurface parsePolyhedralSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<PolygonPatch> memberPatches = new LinkedList<PolygonPatch>();
         xmlStream.require( START_ELEMENT, gmlNs, "polygonPatches" );
@@ -1516,11 +1552,17 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             memberPatches.add( surfacePatchParser.parsePolygonPatch( xmlStream, crs ) );
         }
         xmlStream.require( END_ELEMENT, gmlNs, "polygonPatches" );
-        xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, gmlNs, "PolyhedralSurface" );
+        nextElement( xmlStream );
+
         PolyhedralSurface polyhedralSurface = geomFac.createPolyhedralSurface( gid, crs, memberPatches );
-        polyhedralSurface.setGMLProperties( standardProps );
+        polyhedralSurface.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        polyhedralSurface.setProperties( props );
+
         idContext.addObject( polyhedralSurface );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return polyhedralSurface;
     }
 
@@ -1542,9 +1584,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public TriangulatedSurface parseTriangulatedSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
         xmlStream.require( START_ELEMENT, gmlNs, "trianglePatches" );
@@ -1552,11 +1596,18 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             memberPatches.add( surfacePatchParser.parseTriangle( xmlStream, crs ) );
         }
         xmlStream.require( END_ELEMENT, gmlNs, "trianglePatches" );
-        xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, gmlNs, "TriangulatedSurface" );
+        nextElement( xmlStream );
+
         TriangulatedSurface triangulatedSurface = geomFac.createTriangulatedSurface( gid, crs, memberPatches );
-        triangulatedSurface.setGMLProperties( standardProps );
+        triangulatedSurface.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        triangulatedSurface.setProperties( props );
+
         idContext.addObject( triangulatedSurface );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
+
         return triangulatedSurface;
     }
 
@@ -1581,9 +1632,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public Tin parseTin( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
         xmlStream.require( START_ELEMENT, gmlNs, "trianglePatches" );
@@ -1649,17 +1702,23 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
             }
         }
-        xmlStream.nextTag();
+        nextElement( xmlStream );
 
         if ( controlPoints.size() < 3 ) {
             String msg = "Error in 'gml:Tin' element. Must specify three control points (=one triangle) at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        xmlStream.require( END_ELEMENT, gmlNs, "Tin" );
         Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, geomFac.createPoints( controlPoints ),
                                      memberPatches );
-        tin.setGMLProperties( standardProps );
+        tin.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        tin.setProperties( props );
+
+        idContext.addObject( tin );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         idContext.addObject( tin );
         return tin;
     }
@@ -1682,20 +1741,27 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public OrientableSurface parseOrientableSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
-        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "baseSurface" );
         Surface baseSurface = parseSurfaceProperty( xmlStream, defaultCRS );
         xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "baseSurface" );
-        xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, gmlNs, "OrientableSurface" );
+        nextElement( xmlStream );
 
         OrientableSurface orientableSurface = geomFac.createOrientableSurface( gid, crs, baseSurface, isReversed );
-        orientableSurface.setGMLProperties( standardProps );
+        orientableSurface.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        orientableSurface.setProperties( props );
+
         idContext.addObject( orientableSurface );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return orientableSurface;
     }
 
@@ -1717,9 +1783,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public Solid parseSolid( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         Surface exteriorSurface = null;
         List<Surface> interiorSurfaces = new LinkedList<Surface>();
@@ -1745,10 +1813,15 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             }
             xmlStream.nextTag();
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "Solid" );
         Solid solid = geomFac.createSolid( gid, crs, exteriorSurface, interiorSurfaces );
-        solid.setGMLProperties( standardProps );
+        solid.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        solid.setProperties( props );
+
         idContext.addObject( solid );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return solid;
     }
 
@@ -1770,9 +1843,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public CompositeCurve parseCompositeCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
@@ -1781,10 +1856,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             memberCurves.add( parseCurveProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, gmlNs, "curveMember" );
         } while ( xmlStream.nextTag() == START_ELEMENT );
-        xmlStream.require( END_ELEMENT, gmlNs, "CompositeCurve" );
+
         CompositeCurve curve = geomFac.createCompositeCurve( gid, crs, memberCurves );
-        curve.setGMLProperties( standardProps );
+        curve.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        curve.setProperties( props );
+
         idContext.addObject( curve );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return curve;
     }
 
@@ -1806,9 +1887,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public CompositeSurface parseCompositeSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Surface> memberSurfaces = new LinkedList<Surface>();
 
@@ -1817,10 +1900,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             memberSurfaces.add( parseSurfaceProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, gmlNs, "surfaceMember" );
         } while ( xmlStream.nextTag() == START_ELEMENT );
-        xmlStream.require( END_ELEMENT, gmlNs, "CompositeSurface" );
+
         CompositeSurface compositeSurface = geomFac.createCompositeSurface( gid, crs, memberSurfaces );
-        compositeSurface.setGMLProperties( standardProps );
+        compositeSurface.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        compositeSurface.setProperties( props );
+
         idContext.addObject( compositeSurface );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return compositeSurface;
     }
 
@@ -1842,9 +1931,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public CompositeSolid parseCompositeSolid( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Solid> memberSolids = new LinkedList<Solid>();
         do {
@@ -1852,10 +1943,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             memberSolids.add( parseSolidProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, gmlNs, "solidMember" );
         } while ( xmlStream.nextTag() == START_ELEMENT );
-        xmlStream.require( END_ELEMENT, gmlNs, "CompositeSolid" );
+
         CompositeSolid compositeSolid = geomFac.createCompositeSolid( gid, crs, memberSolids );
-        compositeSolid.setGMLProperties( standardProps );
+        compositeSolid.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        compositeSolid.setProperties( props );
+
         idContext.addObject( compositeSolid );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return compositeSolid;
     }
 
@@ -1878,9 +1975,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                                                                         ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<GeometricPrimitive> memberSolids = new LinkedList<GeometricPrimitive>();
 
@@ -1889,11 +1988,17 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             memberSolids.add( parseGeometricPrimitiveProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, gmlNs, "element" );
         } while ( xmlStream.nextTag() == START_ELEMENT );
-        xmlStream.require( END_ELEMENT, gmlNs, "GeometricComplex" );
+
         CompositeGeometry<GeometricPrimitive> compositeGeometry = geomFac.createCompositeGeometry( gid, crs,
                                                                                                    memberSolids );
-        compositeGeometry.setGMLProperties( standardProps );
+        compositeGeometry.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        compositeGeometry.setProperties( props );
+
         idContext.addObject( compositeGeometry );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return compositeGeometry;
     }
 
@@ -1915,9 +2020,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public MultiPoint parseMultiPoint( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Point> members = new LinkedList<Point>();
 
@@ -1942,10 +2049,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 }
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "MultiPoint" );
+
         MultiPoint multiPoint = geomFac.createMultiPoint( gid, crs, members );
-        multiPoint.setGMLProperties( standardProps );
+        multiPoint.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        multiPoint.setProperties( props );
+
         idContext.addObject( multiPoint );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return multiPoint;
     }
 
@@ -1967,9 +2080,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public MultiCurve<?> parseMultiCurve( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Curve> members = new LinkedList<Curve>();
 
@@ -1993,10 +2108,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 }
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "MultiCurve" );
+
         MultiCurve<?> multiCurve = geomFac.createMultiCurve( gid, crs, members );
-        multiCurve.setGMLProperties( standardProps );
+        multiCurve.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        multiCurve.setProperties( props );
+
         idContext.addObject( multiCurve );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return multiCurve;
     }
 
@@ -2018,9 +2139,12 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public MultiLineString parseMultiLineString( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
+
         List<LineString> members = new LinkedList<LineString>();
 
         if ( xmlStream.isStartElement() ) {
@@ -2037,10 +2161,15 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
 
-        xmlStream.require( END_ELEMENT, gmlNs, "MultiLineString" );
         MultiLineString multiLineString = geomFac.createMultiLineString( gid, crs, members );
-        multiLineString.setGMLProperties( standardProps );
+        multiLineString.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        multiLineString.setProperties( props );
+
         idContext.addObject( multiLineString );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return multiLineString;
     }
 
@@ -2062,9 +2191,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public MultiSurface<?> parseMultiSurface( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Surface> members = new LinkedList<Surface>();
 
@@ -2088,10 +2219,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 }
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "MultiSurface" );
+
         MultiSurface<?> multiSurface = geomFac.createMultiSurface( gid, crs, members );
-        multiSurface.setGMLProperties( standardProps );
+        multiSurface.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        multiSurface.setProperties( props );
+
         idContext.addObject( multiSurface );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return multiSurface;
     }
 
@@ -2113,9 +2250,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public MultiPolygon parseMultiPolygon( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Polygon> members = new LinkedList<Polygon>();
 
@@ -2132,10 +2271,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 }
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "MultiPolygon" );
+
         MultiPolygon multiPolygon = geomFac.createMultiPolygon( gid, crs, members );
-        multiPolygon.setGMLProperties( standardProps );
+        multiPolygon.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        multiPolygon.setProperties( props );
+
         idContext.addObject( multiPolygon );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return multiPolygon;
     }
 
@@ -2157,9 +2302,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public MultiSolid parseMultiSolid( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Solid> members = new LinkedList<Solid>();
 
@@ -2183,10 +2330,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 }
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "MultiSolid" );
+
         MultiSolid multiSolid = geomFac.createMultiSolid( gid, crs, members );
-        multiSolid.setGMLProperties( standardProps );
+        multiSolid.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        multiSolid.setProperties( props );
+
         idContext.addObject( multiSolid );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return multiSolid;
     }
 
@@ -2208,9 +2361,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     public MultiGeometry<Geometry> parseMultiGeometry( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName elName = xmlStream.getName();
+        GMLObjectType type = getType( xmlStream );
         String gid = parseGeometryId( xmlStream );
         ICRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        GMLStdProps standardProps = propsParser.read( xmlStream );
+        List<Property> props = readStandardProperties( xmlStream, type, crs );
 
         List<Geometry> members = new LinkedList<Geometry>();
 
@@ -2234,10 +2389,16 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 }
             } while ( xmlStream.nextTag() == START_ELEMENT );
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "MultiGeometry" );
+
         MultiGeometry<Geometry> multiGeometry = geomFac.createMultiGeometry( gid, crs, members );
-        multiGeometry.setGMLProperties( standardProps );
+        multiGeometry.setType( type );
+
+        props.addAll( readAdditionalProperties( xmlStream, type, crs ) );
+        multiGeometry.setProperties( props );
+
         idContext.addObject( multiGeometry );
+
+        xmlStream.require( END_ELEMENT, elName.getNamespaceURI(), elName.getLocalPart() );
         return multiGeometry;
     }
 
@@ -2755,18 +2916,53 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             QName name = xmlStream.getName();
             type = schema.getGeometryType( name );
             if ( type == null ) {
-                String msg = "GML geometry element '" + name + "' is not defined in application schema.";
-                throw new XMLParsingException( xmlStream, msg );
+                LOG.debug( "GML geometry element '" + name + "' is not defined in application schema!?" );
             }
         }
         return type;
     }
 
+    private List<Property> readStandardProperties( XMLStreamReaderWrapper xmlStream, GMLObjectType type, ICRS crs )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+
+        List<Property> props = new ArrayList<Property>();
+        nextElement( xmlStream );
+        while ( xmlStream.isStartElement() && isStandardProperty( xmlStream.getName() ) ) {
+            if ( type != null ) {
+                QName propName = xmlStream.getName();
+                // TODO check order, cardinality and substitutable properties
+                PropertyType pt = type.getPropertyDeclaration( propName );
+                if ( pt == null ) {
+                    String msg = "GML standard property element '" + propName
+                                 + "' is not defined in application schema!?";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                Property prop = parseProperty( xmlStream, pt, crs );
+                props.add( prop );
+            } else {
+                // handle without schema assistance -> skip
+                skipElement( xmlStream );
+            }
+            nextElement( xmlStream );
+        }
+        return props;
+    }
+
+    private boolean isStandardProperty( QName name ) {
+        if ( gmlNs.equals( name.getNamespaceURI() ) ) {
+            String localName = name.getLocalPart();
+            return "metaDataProperty".equals( localName ) || "description".equals( localName )
+                   || "descriptionReference".equals( localName ) || "identifier".equals( localName )
+                   || "name".equals( localName );
+        }
+        return false;
+    }
+
     private List<Property> readAdditionalProperties( XMLStreamReaderWrapper xmlStream, GMLObjectType type, ICRS crs )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
-        List<Property> props = null;
+
+        List<Property> props = new ArrayList<Property>();
         if ( type != null ) {
-            props = new ArrayList<Property>();
             while ( xmlStream.isStartElement() ) {
                 QName propName = xmlStream.getName();
                 // TODO cope with order, cardinality and substitutable properties

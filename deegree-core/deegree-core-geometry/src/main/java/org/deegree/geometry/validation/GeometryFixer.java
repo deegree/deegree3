@@ -50,8 +50,8 @@ import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.ArcByCenterPoint;
 import org.deegree.geometry.primitive.segments.ArcString;
 import org.deegree.geometry.primitive.segments.CurveSegment;
-import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.composite.DefaultCompositeCurve;
 import org.deegree.geometry.standard.curvesegments.DefaultArc;
 import org.deegree.geometry.standard.curvesegments.DefaultArcByCenterPoint;
@@ -103,7 +103,7 @@ public class GeometryFixer {
             break;
         }
         }
-        repaired.setGMLProperties( ring.getGMLProperties() );
+        repaired.setProperties( ring.getProperties() );
         return repaired;
     }
 
@@ -169,7 +169,7 @@ public class GeometryFixer {
             }
         }
         }
-        fixedCurve.setGMLProperties( curve.getGMLProperties() );
+        fixedCurve.setProperties( curve.getProperties() );
         return fixedCurve;
     }
 
@@ -228,7 +228,7 @@ public class GeometryFixer {
             break;
         }
         }
-        fixedCurve.setGMLProperties( curve.getGMLProperties() );
+        fixedCurve.setProperties( curve.getProperties() );
         return fixedCurve;
     }
 
@@ -251,7 +251,7 @@ public class GeometryFixer {
             break;
         }
         }
-        fixedRing.setGMLProperties( ring.getGMLProperties() );
+        fixedRing.setProperties( ring.getProperties() );
         return fixedRing;
     }
 

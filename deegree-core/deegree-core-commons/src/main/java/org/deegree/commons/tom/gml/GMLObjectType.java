@@ -52,9 +52,9 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 public interface GMLObjectType {
 
     /**
-     * Returns the GML object category.
+     * Returns the category of GML object type definition.
      * 
-     * @returns GML object category, never <code>null</code>
+     * @returns category, never <code>null</code>
      */
     GMLObjectCategory getCategory();
 
@@ -79,7 +79,7 @@ public interface GMLObjectType {
      * Returns the declaration of the property with the given name.
      * 
      * @param propName
-     *            name of the property
+     *            name of the property, must not be <code>null</code>
      * @return the declaration of the property, or <code>null</code> if no such property is defined
      */
     PropertyType getPropertyDeclaration( QName propName );

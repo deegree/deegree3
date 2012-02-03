@@ -47,7 +47,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.gml.GMLObjectType;
-import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.IUnit;
@@ -406,7 +405,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "Point", point );
         exportAsPos( point );
-        exportProps( point );
+        exportAdditionalProps( point );
         writer.writeEndElement();
     }
 
@@ -449,7 +448,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                 exportCurveSegment( curveSeg );
             }
             writer.writeEndElement(); // segments
-            exportProps( curve );
+            exportAdditionalProps( curve );
             writer.writeEndElement(); // Curve
             break;
 
@@ -459,7 +458,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             startGeometry( "LineString", lineString );
             int dim = lineString.getCoordinateDimension();
             export( lineString.getControlPoints(), dim );
-            exportProps( lineString );
+            exportAdditionalProps( lineString );
             writer.writeEndElement();
             break;
 
@@ -480,7 +479,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                 exportCurve( baseCurve );
                 writer.writeEndElement();
             }
-            exportProps( orientableCurve );
+            exportAdditionalProps( orientableCurve );
             writer.writeEndElement();
             break;
 
@@ -528,7 +527,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                 exportSurfacePatch( surfacePatch );
             }
             writer.writeEndElement();
-            exportProps( surface );
+            exportAdditionalProps( surface );
             writer.writeEndElement();
             break;
         }
@@ -667,7 +666,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                 }
             }
         }
-        exportProps( polygon );
+        exportAdditionalProps( polygon );
         writer.writeEndElement();
     }
 
@@ -1527,16 +1526,16 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
     }
 
     private void startGeometry( String localName, Geometry geometry )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
 
         GMLObjectType gmlType = geometry.getType();
         if ( gmlType == null ) {
             writer.writeStartElement( "gml", localName, gmlNs );
         } else {
             QName elName = gmlType.getName();
-//            if ( elName.getPrefix() != null ) {
-//                writer.setPrefix( elName.getPrefix(), elName.getNamespaceURI() );
-//            }
+            // if ( elName.getPrefix() != null ) {
+            // writer.setPrefix( elName.getPrefix(), elName.getNamespaceURI() );
+            // }
             writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
         }
 
@@ -1554,17 +1553,37 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getAlias() );
         }
 
-        GMLStdProps props = geometry.getGMLProperties();
-        if ( props != null ) {
-            stdPropsWriter.write( props );
-        }
+        exportStandardProps( geometry );
     }
 
-    private void exportProps( Geometry geom )
+    private void exportStandardProps( Geometry geom )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( geom.getProperties() != null ) {
             for ( Property prop : geom.getProperties() ) {
-                gmlStreamWriter.getFeatureWriter().export( prop, 0, -1 );
+                if ( isStandardProperty( prop.getName() ) ) {
+                    gmlStreamWriter.getFeatureWriter().export( prop, 0, -1 );
+                }
+            }
+        }
+    }
+
+    private boolean isStandardProperty( QName name ) {
+        if ( gmlNs.equals( name.getNamespaceURI() ) ) {
+            String localName = name.getLocalPart();
+            return "metaDataProperty".equals( localName ) || "description".equals( localName )
+                   || "descriptionReference".equals( localName ) || "identifier".equals( localName )
+                   || "name".equals( localName );
+        }
+        return false;
+    }
+
+    private void exportAdditionalProps( Geometry geom )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        if ( geom.getProperties() != null ) {
+            for ( Property prop : geom.getProperties() ) {
+                if ( !isStandardProperty( prop.getName() ) ) {
+                    gmlStreamWriter.getFeatureWriter().export( prop, 0, -1 );
+                }
             }
         }
     }

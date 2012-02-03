@@ -57,6 +57,7 @@ import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -102,7 +103,7 @@ public class GenericAppSchema implements AppSchema {
 
     private final GMLSchemaInfoSet gmlSchema;
 
-    private final Map<XSComplexTypeDefinition, Map<QName, XSElementDeclaration>> typeToAllowedChildDecls = new HashMap<XSComplexTypeDefinition, Map<QName, XSElementDeclaration>>();
+    private final Map<XSComplexTypeDefinition, Map<QName, XSTerm>> typeToAllowedChildDecls = new HashMap<XSComplexTypeDefinition, Map<QName, XSTerm>>();
 
     private final Map<String, List<String>> nsToDependencies = new HashMap<String, List<String>>();
 
@@ -412,41 +413,46 @@ public class GenericAppSchema implements AppSchema {
     }
 
     @Override
-    public synchronized Map<QName, XSElementDeclaration> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
+    public synchronized Map<QName, XSTerm> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
 
-        Map<QName, XSElementDeclaration> childDeclMap = typeToAllowedChildDecls.get( type );
+        Map<QName, XSTerm> childDeclMap = typeToAllowedChildDecls.get( type );
 
         if ( childDeclMap == null ) {
-            childDeclMap = new HashMap<QName, XSElementDeclaration>();
+            childDeclMap = new HashMap<QName, XSTerm>();
             typeToAllowedChildDecls.put( type, childDeclMap );
-            List<XSElementDeclaration> childDecls = new ArrayList<XSElementDeclaration>();
+            List<XSTerm> childDecls = new ArrayList<XSTerm>();
             addChildElementDecls( type.getParticle(), childDecls );
 
-            for ( XSElementDeclaration decl : childDecls ) {
-                QName name = new QName( decl.getNamespace(), decl.getName() );
-                childDeclMap.put( name, decl );
-                for ( XSElementDeclaration substitution : gmlSchema.getSubstitutions( decl, null, true, true ) ) {
-                    name = new QName( substitution.getNamespace(), substitution.getName() );
-                    LOG.debug( "Adding: " + name );
-                    childDeclMap.put( name, substitution );
+            for ( XSTerm term : childDecls ) {
+                if ( term instanceof XSElementDeclaration ) {
+                    XSElementDeclaration decl = (XSElementDeclaration) term;
+                    QName name = new QName( decl.getNamespace(), decl.getName() );
+                    childDeclMap.put( name, decl );
+                    for ( XSElementDeclaration substitution : gmlSchema.getSubstitutions( decl, null, true, true ) ) {
+                        name = new QName( substitution.getNamespace(), substitution.getName() );
+                        LOG.debug( "Adding: " + name );
+                        childDeclMap.put( name, substitution );
+                    }
+                } else if ( term instanceof XSWildcard ) {
+                    childDeclMap.put( new QName( "*" ), term );
                 }
             }
         }
         return childDeclMap;
     }
 
-    private void addChildElementDecls( XSParticle particle, List<XSElementDeclaration> propDecls ) {
+    private void addChildElementDecls( XSParticle particle, List<XSTerm> propDecls ) {
         if ( particle != null ) {
             XSTerm term = particle.getTerm();
-            if ( term instanceof XSElementDeclaration ) {
-                propDecls.add( (XSElementDeclaration) term );
-            } else if ( term instanceof XSModelGroup ) {
+            if ( term instanceof XSModelGroup ) {
                 XSObjectList particles = ( (XSModelGroup) term ).getParticles();
                 for ( int i = 0; i < particles.getLength(); i++ ) {
                     addChildElementDecls( (XSParticle) particles.item( i ), propDecls );
                 }
+            } else if ( term instanceof XSWildcard || term instanceof XSElementDeclaration ) {
+                propDecls.add( term );
             } else {
-                LOG.warn( "Unhandled term type: " + term.getClass() );
+                throw new RuntimeException( "Unhandled term type: " + term.getClass() );
             }
         }
     }

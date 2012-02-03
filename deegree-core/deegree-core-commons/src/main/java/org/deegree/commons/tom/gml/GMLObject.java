@@ -35,7 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.gml;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.Object;
+import org.deegree.commons.tom.gml.property.Property;
 
 /**
  * Base interface for GML objects.
@@ -67,4 +72,21 @@ public interface GMLObject extends Object {
      * @return type declaration, may be <code>null</code> (no type declaration available)
      */
     public GMLObjectType getType();
+
+    /**
+     * Returns all properties of this object, in order.
+     * 
+     * @return all properties, in order, may be empty, but never <code>null</code>
+     */
+    public List<Property> getProperties();
+
+    /**
+     * Returns all properties with the given name, in order.
+     * 
+     * @param propName
+     *            name of the requested properties, must not be <code>null</code>
+     * @return the properties with the given name, in order, may be empty (no such properties), but never
+     *         <code>null</code>
+     */
+    public List<Property> getProperties( QName propName );
 }
