@@ -84,7 +84,6 @@ abstract class MappableStep {
             } else if ( step instanceof TextNodeStep ) {
                 steps.add( new TextStep() );
             } else if ( !( step instanceof NameStep ) ) {
-                System.out.println( propName + ": " + step );
                 String msg = "Unable to map PropertyName '" + propName.getAsText()
                              + "': contains a step that is not a NameStep.";
                 throw new UnmappableException( msg );
