@@ -182,7 +182,7 @@ public class MappedXPath {
             List<MappableStep> mapSteps = MappableNameStep.extractSteps( mapping.getPath() );
             if ( mapSteps.isEmpty() ) {
                 matchFound = true;
-            } else if ( !( steps.isEmpty() ) ) {
+            } else if ( steps.size() == 1 ) {
                 matchFound = true;
                 matchFound = mapSteps.get( 0 ).equals( steps.get( 0 ) );
             } else if ( mapSteps.get( 0 ) instanceof TextStep ) {
@@ -211,6 +211,7 @@ public class MappedXPath {
                 }
                 break;
             }
+            
         }
         if ( !matchFound ) {
             String msg = "No mapping for PropertyName '" + propName.getAsText() + "' available.";

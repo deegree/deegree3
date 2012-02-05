@@ -60,6 +60,7 @@ import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -74,9 +75,15 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.gml.GMLVersion;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -510,11 +517,59 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, children );
                 }
             }
+
+            QName elName = getName( mapping.getPath() );
+            if ( particle instanceof GenericXMLElement && fs.getSchema().getGeometryType( elName ) != null ) {
+                particle = unwrapCustomGeometry( (GenericXMLElement) particle );
+            }
+
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
         }
 
         return particle;
+    }
+
+    // TODO where should this happen in the end?
+    private TypedObjectNode unwrapCustomGeometry( GenericXMLElement particle ) {
+
+        GMLObjectType ot = fs.getSchema().getGeometryType( particle.getName() );
+        Geometry geom = null;
+        List<Property> props = new ArrayList<Property>();
+        for ( TypedObjectNode child : particle.getChildren() ) {
+            if ( child instanceof Geometry ) {
+                geom = (Geometry) child;
+            } else if ( child instanceof GenericXMLElement ) {
+                GenericXMLElement xmlEl = (GenericXMLElement) child;
+                PropertyType pt = ot.getPropertyDeclaration( xmlEl.getName() );
+                props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(), xmlEl.getChildren() ) );
+            } else {
+                LOG.warn( "Unhandled particle: " + child );
+            }
+        }
+
+        AppSchemaGeometryHierarchy hierarchy = fs.getSchema().getGeometryHierarchy();
+
+        if ( hierarchy != null ) {
+            if ( hierarchy.getSurfaceSubstitutions().contains( particle.getName() ) && geom instanceof Polygon ) {
+                // constructed as Polygon, but needs to become a Surface
+                Polygon p = (Polygon) geom;
+                GeometryFactory geomFac = new GeometryFactory();
+                List<SurfacePatch> patches = new ArrayList<SurfacePatch>();
+                patches.add( geomFac.createPolygonPatch( p.getExteriorRing(), p.getInteriorRings() ) );
+                geom = geomFac.createSurface( geom.getId(), patches, geom.getCoordinateSystem() );
+            } else if ( hierarchy.getCurveSubstitutions().contains( particle.getName() ) && geom instanceof LineString ) {
+                // constructed as LineString, but needs to become a Curve
+                LineString p = (LineString) geom;
+                GeometryFactory geomFac = new GeometryFactory();
+                CurveSegment[] segments = new CurveSegment[1];
+                segments[0] = geomFac.createLineStringSegment( p.getControlPoints() );
+                geom = geomFac.createCurve( geom.getId(), geom.getCoordinateSystem(), segments );
+            }
+            geom.setType( fs.getSchema().getGeometryType( particle.getName() ) );
+            geom.setProperties( props );
+        }
+        return geom;
     }
 
     private Map<QName, PrimitiveValue> getNilledAttributes( XSElementDeclaration elDecl,
