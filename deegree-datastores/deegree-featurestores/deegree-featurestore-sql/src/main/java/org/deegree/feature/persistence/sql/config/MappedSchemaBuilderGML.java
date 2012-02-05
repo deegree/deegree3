@@ -414,7 +414,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         ObjectPropertyType pt = gmlSchema.getGMLSchema().getGMLPropertyDecl( elDecl.first, ptName, 1, 1, null );
         GeometryType type = GeometryType.GEOMETRY;
         if ( !( pt instanceof GeometryPropertyType ) ) {
-            String msg = "Mapping '" + path + "' (in context of table '" + currentTable
+            String msg = "Mapping '" + path.getAsText() + "' (in context of table '" + currentTable
                          + "') does not target the container element of a GML geometry element.";
             LOG.warn( msg );
         } else {
