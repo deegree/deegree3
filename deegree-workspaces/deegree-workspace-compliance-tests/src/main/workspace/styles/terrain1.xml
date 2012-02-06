@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RasterSymbolizer xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/se/1.1.0/Symbolizer.xsd">
+  <Name>terrain1</Name>
+  <Opacity>1.0</Opacity>
+  <OverlapBehavior>AVERAGE</OverlapBehavior>
+  <ColorMap>
+    <Categorize fallbackValue="#78c818">
+      <LookupValue>Rasterdata</LookupValue>
+      <Value>#00000000</Value>
+      <Threshold>1</Threshold>
+      <Value>#223000</Value>
+      <Threshold>240</Threshold>
+      <Value>#963000</Value>
+      <Threshold>300</Threshold>
+      <Value>#3c0200</Value>
+      <Threshold>340</Threshold>
+      <Value>#0000cc</Value>
+      <Threshold>400</Threshold>
+      <Value>#ffffff</Value>
+    </Categorize>
+  </ColorMap>
+</RasterSymbolizer>

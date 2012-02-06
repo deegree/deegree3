@@ -139,6 +139,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-workspace-compliance-tests</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.0.1</version>

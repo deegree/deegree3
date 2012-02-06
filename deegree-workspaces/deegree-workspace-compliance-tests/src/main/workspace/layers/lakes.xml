@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/feature feature.xsd" xmlns:g="http://www.deegree.org/metadata/spatial" configVersion="3.2.0">
+  <FeatureStoreId>lakes</FeatureStoreId>
+  <FeatureLayer>
+    <l:Name>Lakes</l:Name>
+    <d:Title>cite:Lakes</d:Title>
+    <l:Dimension isElevation="true">
+      <l:Source xmlns:app="http://www.deegree.org/app">app:ELEV</l:Source>
+      <l:DefaultValue>500</l:DefaultValue>
+      <l:NearestValue>true</l:NearestValue>
+      <l:Extent>500,490,480</l:Extent>
+    </l:Dimension>
+    <l:StyleRef>
+      <l:StyleStoreId>Lakes</l:StyleStoreId>
+    </l:StyleRef>
+  </FeatureLayer>
+</FeatureLayers>

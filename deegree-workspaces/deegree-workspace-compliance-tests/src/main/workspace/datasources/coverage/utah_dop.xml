@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MultiResolutionRaster configVersion="3.0.0" xmlns="http://www.deegree.org/datasource/coverage/raster"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd">
+  <StorageCRS>EPSG:26912</StorageCRS>
+  <Resolution res="16.0">
+    <RasterDirectory recursive="true">../../data/utah/raster/dop/16.0</RasterDirectory>
+  </Resolution>
+  <Resolution res="32.0">
+    <RasterDirectory recursive="true">../../data/utah/raster/dop/32.0</RasterDirectory>
+  </Resolution>
+</MultiResolutionRaster>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/feature feature.xsd" xmlns:g="http://www.deegree.org/metadata/spatial" configVersion="3.2.0">
+  <AutoLayers>
+    <FeatureStoreId>streams</FeatureStoreId>
+    <StyleStoreId>Streams</StyleStoreId>
+  </AutoLayers>
+</FeatureLayers>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<CoverageLayers xmlns="http://www.deegree.org/layers/coverage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/coverage coverage.xsd" configVersion="3.2.0">
+  <CoverageStoreId>terrain</CoverageStoreId>
+  <CoverageLayer>
+    <l:Name>Terrain</l:Name>
+    <d:Title>cite:Terrain</d:Title>
+    <l:Dimension isElevation="true">
+      <l:Source>raster</l:Source>
+      <l:DefaultValue>0/425</l:DefaultValue>
+      <l:MultipleValues>true</l:MultipleValues>
+      <l:NearestValue>false</l:NearestValue>
+      <l:Extent>0/425/1</l:Extent>
+    </l:Dimension>
+    <l:StyleRef>
+      <l:StyleStoreId>terrain1</l:StyleStoreId>
+    </l:StyleRef>
+    <l:StyleRef>
+      <l:StyleStoreId>terrain2</l:StyleStoreId>
+    </l:StyleRef>
+  </CoverageLayer>
+</CoverageLayers>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/feature feature.xsd" xmlns:g="http://www.deegree.org/metadata/spatial" configVersion="3.2.0">
+  <FeatureStoreId>autos</FeatureStoreId>
+  <FeatureLayer>
+    <l:Name>Autos</l:Name>
+    <d:Title>cite:Autos</d:Title>
+    <l:Dimension isTime="true">
+      <l:Source xmlns:app="http://www.deegree.org/app">app:TIME</l:Source>
+      <l:DefaultValue>2000-01-01T00:00:00Z</l:DefaultValue>
+      <l:MultipleValues>true</l:MultipleValues>
+      <l:NearestValue>true</l:NearestValue>
+      <l:Current>true</l:Current>
+      <l:Extent>2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S</l:Extent>
+    </l:Dimension>
+    <l:StyleRef>
+      <l:StyleStoreId>Autos</l:StyleStoreId>
+    </l:StyleRef>
+  </FeatureLayer>
+</FeatureLayers>
