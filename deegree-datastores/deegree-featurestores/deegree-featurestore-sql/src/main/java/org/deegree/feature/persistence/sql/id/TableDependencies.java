@@ -104,11 +104,9 @@ public class TableDependencies {
                     String msg = "Feature type joins with more than one table are not supported yet.";
                     throw new UnsupportedOperationException( msg );
                 }
-                TableJoin join = joins.get( 0 );
-                if ( f.getValueFtName() == null || join.getToTable().getName().equals( "?" ) ) {
-                    LOG.debug( "Found special key propagation (involving ambigous feature table). Needs implementation." );
-                    return;
-                }
+                // feature type joins are "special" (as features are independent objects), so
+                // don't treat such a join as a dependency
+                return;
             }
 
             for ( TableJoin join : joins ) {

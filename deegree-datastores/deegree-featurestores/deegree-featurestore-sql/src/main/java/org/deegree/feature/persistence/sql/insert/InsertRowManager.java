@@ -70,6 +70,7 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
@@ -372,8 +373,18 @@ public class InsertRowManager {
         QName ftName = getSchema().getFtMappings().keySet().iterator().next();
         if ( mapping.getValueFtName() != null ) {
             ftName = mapping.getValueFtName();
-            // may be abstract, so take any concrete substitution feature type
-            ftName = getSchema().getConcreteSubtypes( getSchema().getFeatureType( ftName ) )[0].getName();
+            if ( getSchema().getFeatureType( ftName ).isAbstract() ) {
+                // may be abstract, so take any concrete substitution feature type
+
+                FeatureType[] concreteSubtypes = getSchema().getConcreteSubtypes( getSchema().getFeatureType( ftName ) );
+                if ( concreteSubtypes.length == 0 ) {
+                    String msg = "Error in mapping. Feature-particle mapping " + mapping
+                                 + " has an abstract value feature type ('" + ftName
+                                 + "') with no concrete substitutions.";
+                    throw new FeatureStoreException( msg );
+                }
+                ftName = getSchema().getConcreteSubtypes( getSchema().getFeatureType( ftName ) )[0].getName();
+            }
         }
         FeatureTypeMapping ftMapping = getSchema().getFtMapping( ftName );
         TableName ftTable = ftMapping.getFtTable();
@@ -383,15 +394,8 @@ public class InsertRowManager {
         }
 
         // must be the other way round
-        throw new UnsupportedOperationException(
-                                                 "Propagating feature property fks from join tables into target feature tables is not supported yet. " );
-        // Set<SQLIdentifier> joinTableGenColumns = tableDeps.getGenColumns( join.getFromTable() );
-        // if ( !joinTableGenColumns.contains( fromColumn ) ) {
-        // String msg = "Invalid feature property join configuration.";
-        // throw new FeatureStoreException( msg );
-        // }
-        //
-        // return new KeyPropagation( join.getFromTable(), fromColumn, ftTable, toColumn );
+        String msg = "Propagating feature property fks from join tables into target feature tables is not supported yet.";
+        throw new UnsupportedOperationException( msg );
     }
 
     private JoinRow buildJoinRow( InsertRow row, TableJoin join )
