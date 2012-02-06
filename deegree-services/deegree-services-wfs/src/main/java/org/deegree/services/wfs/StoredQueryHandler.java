@@ -149,6 +149,7 @@ class StoredQueryHandler {
         XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
         writer.setDefaultNamespace( WFS_200_NS );
         writer.writeStartElement( WFS_200_NS, "DescribeStoredQueriesResponse" );
+        writer.writeDefaultNamespace( WFS_200_NS );
         for ( StoredQueryDefinition queryDef : returnedDescriptions ) {
             writer.writeStartElement( WFS_200_NS, "StoredQueryDescription" );
             writer.writeAttribute( "id", queryDef.getId() );
@@ -301,6 +302,7 @@ class StoredQueryHandler {
         XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
         writer.setDefaultNamespace( WFS_200_NS );
         writer.writeStartElement( WFS_200_NS, "ListStoredQueriesResponse" );
+        writer.writeDefaultNamespace( WFS_200_NS );
 
         for ( StoredQueryDefinition queryDef : idToQuery.values() ) {
             writer.writeStartElement( WFS_200_NS, "StoredQuery" );

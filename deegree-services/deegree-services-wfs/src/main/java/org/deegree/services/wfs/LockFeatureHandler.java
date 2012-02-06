@@ -141,9 +141,13 @@ class LockFeatureHandler {
 
             XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter( response, "text/xml", schemaLocation );
             if ( request.getVersion() == WFSConstants.VERSION_100 ) {
-                writer.writeStartElement( "wfs", "WFS_LockFeatureResponse", ns );
+                writer.setPrefix( "wfs", ns );
+                writer.writeStartElement( ns, "WFS_LockFeatureResponse" );
+                writer.writeNamespace( "wfs", ns );
             } else {
-                writer.writeStartElement( "wfs", "LockFeatureResponse", ns );
+                writer.setPrefix( "wfs", ns );
+                writer.writeStartElement( ns, "LockFeatureResponse" );
+                writer.writeNamespace( "wfs", ns );
             }
             writer.writeNamespace( "ogc", OGCNS );
             XMLAdapter.writeElement( writer, WFS_NS, "LockId", lock.getId() );

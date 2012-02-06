@@ -39,6 +39,7 @@ import static java.math.BigInteger.ZERO;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
@@ -54,6 +55,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
+import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -326,8 +328,8 @@ public class GMLFormat implements Format {
         }
 
         String contentType = getContentType( outputFormat, version );
-        XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
-        GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
+        XMLStreamWriter xmlStream = getXMLResponseWriter( response, contentType, schemaLocation );
+        GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCrs( master.getDefaultQueryCrs() );
         gmlStream.setRemoteXLinkTemplate( getObjectXlinkTemplate( version, gmlVersion ) );
         gmlStream.setXLinkDepth( resolveDepth );
@@ -379,7 +381,9 @@ public class GMLFormat implements Format {
         xmlStream = new BufferableXMLStreamWriter( xmlStream, xLinkTemplate );
 
         // open "wfs:ValueCollection" element
-        xmlStream.writeStartElement( "wfs", "ValueCollection", WFS_200_NS );
+        xmlStream.setPrefix( "wfs", WFS_200_NS );
+        xmlStream.writeStartElement( WFS_200_NS, "ValueCollection" );
+        xmlStream.writeNamespace( "wfs", WFS_200_NS );
         xmlStream.writeAttribute( "timeStamp", "" + new DateTime( Calendar.getInstance( TimeZone.getDefault() ), false ) );
         xmlStream.writeAttribute( "numberMatched", "UNKNOWN" );
         xmlStream.writeAttribute( "numberReturned", "UNKNOWN" );
@@ -391,11 +395,12 @@ public class GMLFormat implements Format {
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
-        gmlStream.setNamespaceBindings( service.getPrefixToNs() );
+        Map<String, String> prefixToNs = new HashMap<String, String>( service.getPrefixToNs() );
+        prefixToNs.putAll( getFeatureTypeNsPrefixes( xmlStream, analyzer.getFeatureTypes() ) );
+        gmlStream.setNamespaceBindings( prefixToNs );
         XlinkedObjectsHandler additionalObjects = new XlinkedObjectsHandler( (BufferableXMLStreamWriter) xmlStream,
                                                                              localReferencesPossible, xLinkTemplate );
         gmlStream.setAdditionalObjectHandler( additionalObjects );
-        bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 
         // retrieve and write result features
         int numberReturned = 0;
@@ -506,27 +511,40 @@ public class GMLFormat implements Format {
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
             if ( responseContainerEl != null ) {
-                xmlStream.writeStartElement( responseContainerEl.getPrefix(), responseContainerEl.getLocalPart(),
-                                             responseContainerEl.getNamespaceURI() );
+                xmlStream.setPrefix( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
+                xmlStream.writeStartElement( responseContainerEl.getNamespaceURI(), responseContainerEl.getLocalPart() );
+                xmlStream.writeNamespace( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
+                xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
             } else {
-                xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
+                xmlStream.setPrefix( "wfs", WFS_NS );
+                xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
+                xmlStream.writeNamespace( "wfs", WFS_NS );
+                xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
                 if ( lockId != null ) {
                     xmlStream.writeAttribute( "lockId", lockId );
                 }
             }
         } else if ( request.getVersion().equals( VERSION_110 ) ) {
             if ( responseContainerEl != null ) {
-                xmlStream.writeStartElement( responseContainerEl.getPrefix(), responseContainerEl.getLocalPart(),
-                                             responseContainerEl.getNamespaceURI() );
+                xmlStream.setPrefix( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
+                xmlStream.writeStartElement( responseContainerEl.getNamespaceURI(), responseContainerEl.getLocalPart() );
+                xmlStream.writeNamespace( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
+                xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
             } else {
-                xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
+                xmlStream.setPrefix( "wfs", WFS_NS );
+                xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
+                xmlStream.writeNamespace( "wfs", WFS_NS );
+                xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
                 if ( lockId != null ) {
                     xmlStream.writeAttribute( "lockId", lockId );
                 }
                 xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
             }
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
-            xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
+            xmlStream.setPrefix( "wfs", WFS_200_NS );
+            xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
+            xmlStream.writeNamespace( "wfs", WFS_200_NS );
+            xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
             xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
         }
 
@@ -547,11 +565,12 @@ public class GMLFormat implements Format {
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
-        gmlStream.setNamespaceBindings( service.getPrefixToNs() );
+        Map<String, String> prefixToNs = new HashMap<String, String>( service.getPrefixToNs() );
+        prefixToNs.putAll( getFeatureTypeNsPrefixes( xmlStream, analyzer.getFeatureTypes() ) );
+        gmlStream.setNamespaceBindings( prefixToNs );
         XlinkedObjectsHandler additionalObjects = new XlinkedObjectsHandler( (BufferableXMLStreamWriter) xmlStream,
                                                                              localReferencesPossible, xLinkTemplate );
         gmlStream.setAdditionalObjectHandler( additionalObjects );
-        bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 
         if ( disableStreaming ) {
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, xLinkTemplate,
@@ -806,24 +825,22 @@ public class GMLFormat implements Format {
         }
     }
 
-    private void bindFeatureTypePrefixes( XMLStreamWriter xmlStream, Collection<FeatureType> fts )
+    private Map<String, String> getFeatureTypeNsPrefixes( XMLStreamWriter xmlStream, Collection<FeatureType> fts )
                             throws XMLStreamException {
 
         if ( fts == null ) {
             fts = service.getFeatureTypes();
         }
 
-        Map<String, String> nsToPrefix = new HashMap<String, String>();
+        Map<String, String> prefixToNs = new HashMap<String, String>();
         for ( FeatureType ft : fts ) {
             QName ftName = ft.getName();
             if ( ftName.getPrefix() != null ) {
-                nsToPrefix.put( ftName.getNamespaceURI(), ftName.getPrefix() );
+                prefixToNs.put( ftName.getPrefix(), ftName.getNamespaceURI() );
             }
         }
 
-        for ( Map.Entry<String, String> nsBinding : nsToPrefix.entrySet() ) {
-            xmlStream.setPrefix( nsBinding.getValue(), nsBinding.getKey() );
-        }
+        return prefixToNs;
     }
 
     private void doHits( GetFeature request, HttpResponseBuffer response )
@@ -875,20 +892,26 @@ public class GMLFormat implements Format {
 
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
-            xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
+            xmlStream.setPrefix( "wfs", WFS_NS );
+            xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
+            xmlStream.writeNamespace( "wfs", WFS_NS );
             if ( lockId != null ) {
                 xmlStream.writeAttribute( "lockId", lockId );
             }
             xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
         } else if ( request.getVersion().equals( VERSION_110 ) ) {
-            xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
+            xmlStream.setPrefix( "wfs", WFS_NS );
+            xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
+            xmlStream.writeNamespace( "wfs", WFS_NS );
             if ( lockId != null ) {
                 xmlStream.writeAttribute( "lockId", lockId );
             }
             xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
             xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
-            xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
+            xmlStream.setPrefix( "wfs", WFS_200_NS );
+            xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
+            xmlStream.writeNamespace( "wfs", WFS_200_NS );
             xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
             xmlStream.writeAttribute( "numberMatched", "" + hitsTotal );
             xmlStream.writeAttribute( "numberReturned", "0" );

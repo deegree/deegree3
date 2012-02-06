@@ -601,7 +601,9 @@ class TransactionHandler {
 
         String schemaLocation = WFS_NS + " " + WFS_100_TRANSACTION_URL;
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
-        xmlWriter.writeStartElement( "wfs", "WFS_TransactionResponse", WFS_NS );
+        xmlWriter.setPrefix( "wfs", WFS_NS );
+        xmlWriter.writeStartElement( WFS_NS, "WFS_TransactionResponse" );
+        xmlWriter.writeNamespace( "wfs", WFS_NS );
         xmlWriter.writeAttribute( "version", VERSION_100.toString() );
 
         if ( inserted > 0 ) {
@@ -669,7 +671,9 @@ class TransactionHandler {
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
         if ( VERSION_110.equals( request.getVersion() ) ) {
-            xmlWriter.writeStartElement( "wfs", "TransactionResponse", WFS_NS );
+            xmlWriter.setPrefix( "wfs", WFS_NS );
+            xmlWriter.writeStartElement( WFS_NS, "TransactionResponse" );
+            xmlWriter.writeNamespace( "wfs", WFS_NS );
         }
 
         if ( VERSION_110.equals( request.getVersion() ) ) {

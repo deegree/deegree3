@@ -254,7 +254,9 @@ class DescribeFeatureTypeHandler {
     private void writeWFSSchema( XMLStreamWriter writer, Version version, GMLVersion gmlVersion )
                             throws XMLStreamException {
 
-        writer.writeStartElement( XS_PREFIX, "schema", XSNS );
+        writer.setPrefix( XS_PREFIX, XSNS );
+        writer.writeStartElement( XSNS, "schema" );
+        writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeAttribute( "attributeFormDefault", "unqualified" );
         writer.writeAttribute( "elementFormDefault", "qualified" );
 

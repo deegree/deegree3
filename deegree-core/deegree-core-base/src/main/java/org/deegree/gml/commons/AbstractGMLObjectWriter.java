@@ -108,7 +108,7 @@ public class AbstractGMLObjectWriter {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
                     writer.setPrefix( prefix, namespaceURI );
-                    writer.writeStartElement( prefix, localname, namespaceURI );
+                    writer.writeStartElement( namespaceURI, localname );
                     writer.writeNamespace( prefix, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
@@ -149,12 +149,16 @@ public class AbstractGMLObjectWriter {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
                     writer.setPrefix( prefix, namespaceURI );
+                    writer.writeEmptyElement( namespaceURI, localname );
+                    writer.writeNamespace( prefix, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
                               namespaceURI );
+                    writer.writeEmptyElement( namespaceURI, localname );
                 }
+            } else {
+                writer.writeEmptyElement( namespaceURI, localname );
             }
-            writer.writeEmptyElement( namespaceURI, localname );
         }
     }
 }
