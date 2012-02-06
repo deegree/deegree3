@@ -85,6 +85,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -304,7 +305,7 @@ public class GMLAppSchemaWriter {
         for ( String prefix : prefixesToNs.keySet() ) {
             String ns = prefixesToNs.get( prefix );
             // avoid double writing of the namespace (required since IS_REPAIRING_NAMESPACE=FALSE)
-            if ( prefix != GML_PREFIX && prefix != XSNS ) {
+            if ( !prefix.equals(GML_PREFIX) && !prefix.equals(DEFAULT_NS_PREFIX) ) {
                 writer.writeNamespace( prefix, ns );
             }
         }
