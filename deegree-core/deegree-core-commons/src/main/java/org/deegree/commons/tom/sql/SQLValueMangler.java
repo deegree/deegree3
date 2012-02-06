@@ -39,8 +39,7 @@ import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import org.deegree.commons.tom.datetime.Date;
-import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.TimeInstant;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.slf4j.Logger;
@@ -73,13 +72,16 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case DATE:
-                sqlValue = new java.sql.Date( ( (Date) value ).getTimeInMilliseconds() );
+                // TODO handling of SQL timezone
+                sqlValue = new java.sql.Date( ( (TimeInstant) value ).getTimeInMilliseconds() );
                 break;
             case DATE_TIME:
-                sqlValue = new Timestamp( ( (Date) value ).getTimeInMilliseconds() );
+                // TODO handling of SQL timezone                
+                sqlValue = new Timestamp( ( (TimeInstant) value ).getTimeInMilliseconds() );
                 break;
             case TIME:
-                sqlValue = new Time( ( (Date) value ).getTimeInMilliseconds() );
+                // TODO handling of SQL timezone                
+                sqlValue = new Time( ( (TimeInstant) value ).getTimeInMilliseconds() );
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
@@ -121,17 +123,16 @@ public class SQLValueMangler {
                 sqlValue = value;
                 break;
             case DATE:
-                sqlValue = new java.sql.Date( ( (Date) value ).getTimeInMilliseconds() );
+                // TODO handling of SQL timezone                
+                sqlValue = new java.sql.Date( ( (TimeInstant) value ).getTimeInMilliseconds() );
                 break;
             case DATE_TIME:
-                if ( value instanceof DateTime ) {
-                    sqlValue = new Timestamp( ( (DateTime) value ).getTimeInMilliseconds() );
-                } else {
-                    sqlValue = new Timestamp( ( (Date) value ).getTimeInMilliseconds() );
-                }
+                // TODO handling of SQL timezone                
+                sqlValue = new Timestamp( ( (TimeInstant) value ).getTimeInMilliseconds() );
                 break;
             case TIME:
-                sqlValue = new Time( ( (Date) value ).getTimeInMilliseconds() );
+                // TODO handling of SQL timezone                
+                sqlValue = new Time( ( (TimeInstant) value ).getTimeInMilliseconds() );
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();
