@@ -53,7 +53,6 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
@@ -80,7 +79,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
@@ -210,7 +208,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeNamespace( OGC_PREFIX, OGCNS );
         writer.writeNamespace( GML_PREFIX, GMLNS );
         writer.writeNamespace( XLINK_PREFIX, XLN_NS );
-        writer.writeAttribute( "xsi", XSINS, "schemaLocation", WFS_NS + " " + WFS_100_CAPABILITIES_SCHEMA_URL );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
+        writer.writeAttribute( XSINS, "schemaLocation", WFS_NS + " " + WFS_100_CAPABILITIES_SCHEMA_URL );
 
         // wfs:Service (type="wfs:ServiceType")
         exportService100();
@@ -498,7 +497,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeNamespace( OGC_PREFIX, OGCNS );
         writer.writeNamespace( GML_PREFIX, GMLNS );
         writer.writeNamespace( XLINK_PREFIX, XLNNS );
-        writer.writeAttribute( XSI_PREFIX, XSINS, "schemaLocation", WFS_NS + " " + WFS_110_SCHEMA_URL );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
+        writer.writeAttribute( XSINS, "schemaLocation", WFS_NS + " " + WFS_110_SCHEMA_URL );
 
         // ows:ServiceIdentification
         if ( sections == null || sections.contains( "SERVICEIDENTIFICATION" ) ) {
@@ -717,9 +717,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private void writeOutputFormats110( XMLStreamWriter writer )
                             throws XMLStreamException {
-        writer.writeStartElement( WFS_PREFIX, "OutputFormats", WFS_NS );
+        writer.writeStartElement( WFS_NS, "OutputFormats" );
         for ( String format : master.getOutputFormats() ) {
-            writer.writeStartElement( WFS_PREFIX, "Format", WFS_NS );
+            writer.writeStartElement( WFS_NS, "Format" );
             writer.writeCharacters( format );
             writer.writeEndElement();
         }
@@ -745,7 +745,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeNamespace( FES_PREFIX, FES_20_NS );
         writer.writeNamespace( GML_PREFIX, GMLNS );
         writer.writeNamespace( XLINK_PREFIX, XLN_NS );
-        writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", WFS_200_NS + " " + WFS_200_SCHEMA_URL );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
+        writer.writeAttribute( XSINS, "schemaLocation", WFS_200_NS + " " + WFS_200_SCHEMA_URL );
 
         // ows:ServiceIdentification
         if ( sections == null || sections.contains( "ServiceIdentification" ) ) {
@@ -782,10 +783,10 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
             // DescribeFeatureType
             operations.add( new Operation( DescribeFeatureType.name(), dcps, null, null, null ) );
-           
+
             // ListStoredQueries
             operations.add( new Operation( ListStoredQueries.name(), dcps, null, null, null ) );
-            
+
             // DescribeStoredQueries
             operations.add( new Operation( DescribeStoredQueries.name(), dcps, null, null, null ) );
 
