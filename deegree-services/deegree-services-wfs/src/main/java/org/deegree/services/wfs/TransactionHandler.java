@@ -674,6 +674,7 @@ class TransactionHandler {
             xmlWriter.setPrefix( "wfs", WFS_NS );
             xmlWriter.writeStartElement( WFS_NS, "TransactionResponse" );
             xmlWriter.writeNamespace( "wfs", WFS_NS );
+            xmlWriter.writeNamespace( "ogc", OGCNS );
         }
 
         if ( VERSION_110.equals( request.getVersion() ) ) {
@@ -682,20 +683,20 @@ class TransactionHandler {
 
         if ( VERSION_110.equals( request.getVersion() ) ) {
 
-            xmlWriter.writeStartElement( "wfs", "TransactionSummary", WFS_NS );
+            xmlWriter.writeStartElement( WFS_NS, "TransactionSummary" );
             writeElement( xmlWriter, WFS_NS, "totalInserted", "" + inserted );
             writeElement( xmlWriter, WFS_NS, "totalUpdated", "" + updated );
             writeElement( xmlWriter, WFS_NS, "totalDeleted", "" + deleted );
             xmlWriter.writeEndElement();
             if ( inserted > 0 ) {
-                xmlWriter.writeStartElement( "wfs", "InsertResults", WFS_NS );
+                xmlWriter.writeStartElement( WFS_NS, "InsertResults" );
                 for ( String handle : insertHandleToFids.keySet() ) {
                     Collection<String> fids = insertHandleToFids.get( handle );
                     for ( String fid : fids ) {
                         LOG.debug( "Inserted fid: " + fid );
-                        xmlWriter.writeStartElement( "wfs", "Feature", WFS_NS );
+                        xmlWriter.writeStartElement( WFS_NS, "Feature" );
                         xmlWriter.writeAttribute( "handle", handle );
-                        xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
+                        xmlWriter.writeStartElement( OGCNS, "FeatureId" );
                         xmlWriter.writeAttribute( "fid", fid );
                         xmlWriter.writeEndElement();
                         xmlWriter.writeEndElement();
@@ -703,8 +704,8 @@ class TransactionHandler {
                 }
                 for ( String fid : insertedFidswithoutHandle ) {
                     LOG.debug( "Inserted fid: " + fid );
-                    xmlWriter.writeStartElement( "wfs", "Feature", WFS_NS );
-                    xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
+                    xmlWriter.writeStartElement( WFS_NS, "Feature" );
+                    xmlWriter.writeStartElement( OGCNS, "FeatureId" );
                     xmlWriter.writeAttribute( "fid", fid );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();

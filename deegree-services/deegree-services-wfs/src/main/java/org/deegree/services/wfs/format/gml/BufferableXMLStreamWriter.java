@@ -48,7 +48,6 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import java.io.IOException;
 import java.util.Iterator;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -136,15 +135,16 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                          || inStream.getPrefix() == null ) {
                         sink.writeStartElement( inStream.getLocalName() );
                     } else {
-                        if ( sink.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
-                            // TODO handle special cases for prefix binding, see
-                            // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
+                        if ( sink.getPrefix( inStream.getNamespaceURI() ) == null ) {
                             sink.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
+                            sink.writeStartElement( inStream.getNamespaceURI(), inStream.getLocalName() );
+                            sink.writeNamespace( inStream.getPrefix(), inStream.getNamespaceURI() );
+                        } else {
+                            sink.writeStartElement( inStream.getNamespaceURI(), inStream.getLocalName() );
                         }
-                        sink.writeStartElement( inStream.getPrefix(), inStream.getLocalName(),
-                                                inStream.getNamespaceURI() );
                     }
                 }
+
                 // copy all namespace bindings
                 for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
                     String nsPrefix = inStream.getNamespacePrefix( i );
@@ -158,7 +158,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                     String nsPrefix = inStream.getAttributePrefix( i );
                     String value = inStream.getAttributeValue( i );
                     String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null ) {
+                    if ( nsURI == null || nsURI.equals( NULL_NS_URI )) {
                         sink.writeAttribute( localName, value );
                     } else {
                         if ( localName.equals( "href" ) && nsURI.equals( XLNNS ) ) {
@@ -171,7 +171,12 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                                 }
                             }
                         }
-                        sink.writeAttribute( nsPrefix, nsURI, localName, value );
+
+                        if ( sink.getPrefix( nsURI ) == null ) {
+                            sink.writeNamespace( nsPrefix, nsURI );
+                        }
+
+                        sink.writeAttribute( nsURI, localName, value );
                     }
                 }
                 break;
@@ -201,7 +206,6 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
             LOG.debug( "Switching to buffered XMLStreamWriter, openElements: " + openElements );
             buffer = new StreamBufferStore( 10 * 1024 * 1024 );
             XMLOutputFactory of = XMLOutputFactory.newInstance();
-            of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
             activeWriter = of.createXMLStreamWriter( buffer, "UTF-8" );
 
             activeWriter.writeStartElement( "WrapperElement" );
