@@ -83,6 +83,7 @@ public abstract class XMLExceptionSerializer<T extends OWSException> extends XML
             xmlWriter.writeStartDocument( "UTF-8", "1.0" );
             serializeExceptionToXML( xmlWriter, exception );
             xmlWriter.writeEndDocument();
+            xmlWriter.close();
         } catch ( XMLStreamException e ) {
             throw new IOException( e );
         }
