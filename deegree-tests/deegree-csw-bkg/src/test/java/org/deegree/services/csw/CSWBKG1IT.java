@@ -83,9 +83,8 @@ public class CSWBKG1IT {
     }
 
     private static boolean isCSWAvailable() {
-        System.out.println("Check if CSW is available!");
-        String port = System.getProperty( "portnumber" );
-        String url = "http://localhost:" + port + "/deegree-csw-bkg/services";
+        String url = System.getProperty( "cswUrl" );
+        System.out.println("Check if CSW to test with URL '" + url + "' is available!");
         try {
             InputStream postBody = CSWBKG1IT.class.getResourceAsStream( "testGetRecordsRequest.xml" );
             XMLAdapter resp = HttpUtils.post( HttpUtils.XML, url, postBody, null );
