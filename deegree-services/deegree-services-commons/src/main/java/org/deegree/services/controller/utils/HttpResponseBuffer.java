@@ -232,7 +232,6 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
 
         if ( xmlWriter == null ) {
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
             String xmlEncoding = "UTF-8";
             xmlWriter = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), xmlEncoding ) );
             xmlWriter.writeStartDocument( xmlEncoding, "1.0" );
