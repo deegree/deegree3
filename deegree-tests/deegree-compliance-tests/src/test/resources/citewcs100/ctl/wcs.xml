@@ -72,7 +72,7 @@
       <ctl:assertion>The WCS 1.0.0 implementation being tested behaves properly</ctl:assertion>
       <ctl:code>
       <!-- wcs test url -->
-      <xsl:variable name="VAR_WCS_CAPABILITIES_URL">http://localhost:${portnumber}/deegree-compliance-tests/services/wcs?request=GetCapabilities&amp;service=WCS</xsl:variable>
+      <xsl:variable name="VAR_WCS_CAPABILITIES_URL">${serviceUrl}/services/wcs?request=GetCapabilities&amp;service=WCS</xsl:variable>
       <!-- MIME header -->
       <xsl:variable name="VAR_WCS_FORMAT_1_HEADER">image/tiff</xsl:variable>
       <!-- A value that is lexically higher than the current updateSequence value-->

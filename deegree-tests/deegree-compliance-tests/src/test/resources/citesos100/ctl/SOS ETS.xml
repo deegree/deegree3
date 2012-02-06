@@ -37,7 +37,7 @@
 
                         <xsl:variable name="form-values">
                         <values>
-                                <value key="service-url">http://localhost:${portnumber}/deegree-compliance-tests/services/sos</value>
+                                <value key="service-url">${serviceUrl}/services/sos</value>
                         </values>
                         </xsl:variable>
 
