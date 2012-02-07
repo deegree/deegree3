@@ -64,8 +64,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.Location;
@@ -727,8 +725,6 @@ public class XMLStreamUtils {
         return doc;
     }
 
-
-
     /**
      * Copies an XML element (including all attributes and subnodes) from the given {@link XMLStreamReader} to the given
      * {@link XMLStreamWriter}.
@@ -769,5 +765,12 @@ public class XMLStreamUtils {
             tmpStore.close();
         }
         return tmpStore;
+    }
+
+    public static void writeNamespaceIfNotBound( XMLStreamWriter xmlStream, String prefix, String nsUri )
+                            throws XMLStreamException {
+        if ( !prefix.equals( xmlStream.getPrefix( nsUri ) ) ) {
+            xmlStream.writeNamespace( prefix, nsUri );
+        }
     }
 }

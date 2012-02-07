@@ -39,6 +39,7 @@ import static java.math.BigInteger.ZERO;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.writeNamespaceIfNotBound;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
@@ -420,7 +421,7 @@ public class GMLFormat implements Format {
                 for ( Feature member : rs ) {
                     TypedObjectNode[] values = evaluator.eval( member, request.getValueReference() );
                     for ( TypedObjectNode value : values ) {
-                        xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
+                        xmlStream.writeStartElement( WFS_200_NS, "member" );
                         featureWriter.export( value, 0, traverseXLinkDepth );
                         xmlStream.writeEndElement();
                         numberReturned++;
@@ -439,10 +440,10 @@ public class GMLFormat implements Format {
         }
 
         if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
-            xmlStream.writeStartElement( "wfs", "additionalValues", WFS_200_NS );
-            xmlStream.writeStartElement( "wfs", "SimpleFeatureCollection", WFS_200_NS );
+            xmlStream.writeStartElement( WFS_200_NS, "additionalValues" );
+            xmlStream.writeStartElement( WFS_200_NS, "SimpleFeatureCollection" );
             writeAdditionalObjects( request.getVersion(), gmlStream, additionalObjects, traverseXLinkDepth,
-                                    xLinkTemplate );
+                                    xLinkTemplate, new QName( WFS_200_NS, "member" ) );
             xmlStream.writeEndElement();
             xmlStream.writeEndElement();
         }
@@ -508,18 +509,18 @@ public class GMLFormat implements Format {
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         xmlStream = new BufferableXMLStreamWriter( xmlStream, xLinkTemplate );
 
+        QName memberElementName = determineFeatureMemberElement( request.getVersion() );
+
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
             if ( responseContainerEl != null ) {
                 xmlStream.setPrefix( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
                 xmlStream.writeStartElement( responseContainerEl.getNamespaceURI(), responseContainerEl.getLocalPart() );
                 xmlStream.writeNamespace( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
-                xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
             } else {
                 xmlStream.setPrefix( "wfs", WFS_NS );
                 xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
                 xmlStream.writeNamespace( "wfs", WFS_NS );
-                xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
                 if ( lockId != null ) {
                     xmlStream.writeAttribute( "lockId", lockId );
                 }
@@ -529,12 +530,10 @@ public class GMLFormat implements Format {
                 xmlStream.setPrefix( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
                 xmlStream.writeStartElement( responseContainerEl.getNamespaceURI(), responseContainerEl.getLocalPart() );
                 xmlStream.writeNamespace( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
-                xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
             } else {
                 xmlStream.setPrefix( "wfs", WFS_NS );
                 xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
                 xmlStream.writeNamespace( "wfs", WFS_NS );
-                xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
                 if ( lockId != null ) {
                     xmlStream.writeAttribute( "lockId", lockId );
                 }
@@ -544,9 +543,14 @@ public class GMLFormat implements Format {
             xmlStream.setPrefix( "wfs", WFS_200_NS );
             xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
             xmlStream.writeNamespace( "wfs", WFS_200_NS );
-            xmlStream.writeNamespace( "gml", gmlVersion.getNamespace() );
             xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
         }
+
+        // ensure that namespace for feature member elements is bound
+        writeNamespaceIfNotBound( xmlStream, memberElementName.getPrefix(), memberElementName.getNamespaceURI() );
+
+        // ensure that namespace for gml (e.g. geometry elements) is bound
+        writeNamespaceIfNotBound( xmlStream, "gml", gmlVersion.getNamespace() );
 
         if ( GML_32 == gmlVersion && !request.getVersion().equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "WFS_RESPONSE" );
@@ -574,10 +578,10 @@ public class GMLFormat implements Format {
 
         if ( disableStreaming ) {
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, xLinkTemplate,
-                                       traverseXLinkDepth, maxFeatures );
+                                       traverseXLinkDepth, maxFeatures, memberElementName );
         } else {
             writeFeatureMembersStream( request.getVersion(), gmlStream, analyzer, gmlVersion, xLinkTemplate,
-                                       traverseXLinkDepth, maxFeatures );
+                                       traverseXLinkDepth, maxFeatures, memberElementName );
         }
 
         if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
@@ -588,7 +592,7 @@ public class GMLFormat implements Format {
                 xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
             }
             writeAdditionalObjects( request.getVersion(), gmlStream, additionalObjects, traverseXLinkDepth,
-                                    xLinkTemplate );
+                                    xLinkTemplate, memberElementName );
             if ( request.getVersion().equals( VERSION_200 ) ) {
                 xmlStream.writeEndElement();
                 xmlStream.writeEndElement();
@@ -603,6 +607,26 @@ public class GMLFormat implements Format {
         if ( ( (BufferableXMLStreamWriter) xmlStream ).hasBuffered() ) {
             ( (BufferableXMLStreamWriter) xmlStream ).appendBufferedXML( gmlStream );
         }
+    }
+
+    private QName determineFeatureMemberElement( Version version ) {
+        QName memberElementName = null;
+        if ( VERSION_200.equals( version ) ) {
+            // WFS 2.0.0 response -> hard-wired wfs:FeatureCollection response, always use wfs:member
+            memberElementName = new QName( WFS_200_NS, "member", "wfs" );
+        } else if ( responseFeatureMemberEl != null ) {
+            // WFS 1.0.0 / 1.1.0 with a custom configured member element
+            memberElementName = new QName( responseFeatureMemberEl.getNamespaceURI(),
+                                           responseFeatureMemberEl.getLocalPart(),
+                                           responseFeatureMemberEl.getPrefix());
+        } else if ( gmlVersion == GML_32 ) {
+            // WFS 1.0.0 / 1.1.0 without custom configured member element, GML 3.2 -> wfs:featureMember
+            memberElementName = new QName( WFS_NS, "member", "wfs" );
+        } else {
+            // WFS 1.0.0 / 1.1.0 without custom configured member element, non-GML 3.2 -> gml:featureMember
+            memberElementName = new QName( gmlVersion.getNamespace(), "featureMember", "gml" );
+        }
+        return memberElementName;
     }
 
     private boolean localReferencesPossible( QueryAnalyzer analyzer, int traverseXLinkDepth ) {
@@ -633,7 +657,7 @@ public class GMLFormat implements Format {
 
     private void writeFeatureMembersStream( Version wfsVersion, GMLStreamWriter gmlStream, QueryAnalyzer analyzer,
                                             GMLVersion outputFormat, String xLinkTemplate, int traverseXLinkDepth,
-                                            int maxFeatures )
+                                            int maxFeatures, QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, IOException {
 
@@ -666,7 +690,7 @@ public class GMLFormat implements Format {
                         // limit the number of features written to maxfeatures
                         break;
                     }
-                    writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0 );
+                    writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0, featureMemberEl );
                     featuresAdded++;
                 }
             } finally {
@@ -678,7 +702,7 @@ public class GMLFormat implements Format {
 
     private void writeFeatureMembersCached( Version wfsVersion, GMLStreamWriter gmlStream, QueryAnalyzer analyzer,
                                             GMLVersion outputFormat, String xLinkTemplate, int traverseXLinkDepth,
-                                            int maxFeatures )
+                                            int maxFeatures, QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, IOException {
 
@@ -722,13 +746,13 @@ public class GMLFormat implements Format {
 
         // retrieve and write result features
         for ( Feature member : allFeatures ) {
-            writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0 );
+            writeMemberFeature( member, gmlStream, xmlStream, wfsVersion, xLinkTemplate, 0, featureMemberEl );
         }
     }
 
     private void writeAdditionalObjects( Version wfsVersion, GMLStreamWriter gmlStream,
                                          XlinkedObjectsHandler additionalObjects, int traverseXLinkDepth,
-                                         String xLinkTemplate )
+                                         String xLinkTemplate, QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         int currentLevel = 1;
@@ -739,7 +763,7 @@ public class GMLFormat implements Format {
             for ( GMLReference<?> gmlReference : includeObjects ) {
                 Feature feature = (Feature) gmlReference;
                 writeMemberFeature( feature, gmlStream, gmlStream.getXMLStream(), wfsVersion, xLinkTemplate,
-                                    currentLevel );
+                                    currentLevel, featureMemberEl );
             }
             includeObjects = additionalObjects.getAdditionalRefs();
             currentLevel++;
@@ -747,34 +771,14 @@ public class GMLFormat implements Format {
     }
 
     private void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
-                                     Version wfsVersion, String xLinkTemplate, int level )
+                                     Version wfsVersion, String xLinkTemplate, int level, QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( gmlStream.isObjectExported( member.getId() ) ) {
-            if ( VERSION_200.equals( wfsVersion ) ) {
-                xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
-            } else if ( responseFeatureMemberEl != null ) {
-                xmlStream.writeEmptyElement( responseFeatureMemberEl.getPrefix(),
-                                             responseFeatureMemberEl.getLocalPart(),
-                                             responseFeatureMemberEl.getNamespaceURI() );
-            } else if ( GML_32 == gmlVersion ) {
-                xmlStream.writeEmptyElement( "wfs", "member", GML3_2_NS );
-            } else {
-                xmlStream.writeEmptyElement( "gml", "featureMember", WFS_NS );
-            }
+            xmlStream.writeEmptyElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
             xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
         } else {
-            if ( VERSION_200.equals( wfsVersion ) ) {
-                xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
-            } else if ( responseFeatureMemberEl != null ) {
-                xmlStream.writeStartElement( responseFeatureMemberEl.getPrefix(),
-                                             responseFeatureMemberEl.getLocalPart(),
-                                             responseFeatureMemberEl.getNamespaceURI() );
-            } else if ( GML_32 == gmlVersion ) {
-                xmlStream.writeStartElement( "wfs", "member", WFS_NS );
-            } else {
-                xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
-            }
+            xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
             gmlStream.getFeatureWriter().export( member, level );
             xmlStream.writeEndElement();
         }
