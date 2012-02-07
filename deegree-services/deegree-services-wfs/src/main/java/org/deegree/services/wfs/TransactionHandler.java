@@ -604,6 +604,7 @@ class TransactionHandler {
         xmlWriter.setPrefix( "wfs", WFS_NS );
         xmlWriter.writeStartElement( WFS_NS, "WFS_TransactionResponse" );
         xmlWriter.writeNamespace( "wfs", WFS_NS );
+        xmlWriter.writeNamespace( "ogc", OGCNS );
         xmlWriter.writeAttribute( "version", VERSION_100.toString() );
 
         if ( inserted > 0 ) {
