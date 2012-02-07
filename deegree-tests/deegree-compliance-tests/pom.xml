@@ -53,9 +53,9 @@
         <artifactId>deegree-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>attach-workspace</id>
+            <id>workspace-inplace</id>
             <goals>
-              <goal>attach-workspace</goal>
+              <goal>workspace-inplace</goal>
             </goals>
           </execution>
         </executions>
@@ -146,44 +146,9 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-wms</artifactId>
+      <artifactId>deegree-workspace-compliance-tests</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xalan</groupId>
-          <artifactId>xalan</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-sos</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-wcs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-observation</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-layers-feature</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-layers-coverage</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <version>10.7.1.1</version>
+      <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
