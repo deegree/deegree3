@@ -81,7 +81,7 @@ CREATE TABLE IDXTB_Constraint (
 	id number(38) NOT NULL,
 	fk_main number(38) NOT NULL,
 	ConditionAppToAcc CLOB,
-	AccessConstraints varchar(30),
+	AccessConstraints varchar(500),
 	OtherConstraints CLOB,
 	Classification varchar(20)
 );
