@@ -45,7 +45,7 @@
     <module>deegree-workspace-wps</module>
     <module>deegree-workspace-wpvs</module>
     <module>deegree-workspace-xplan40</module>
-    <module>deegree-workspace-compliance-tests</module>
+    <module>deegree-workspace-csw-tests</module>
   </modules>
 
 </project>

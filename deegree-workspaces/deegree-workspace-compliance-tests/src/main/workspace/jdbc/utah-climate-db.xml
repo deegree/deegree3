@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<JDBCConnection xmlns="http://www.deegree.org/jdbc" configVersion="3.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd">
-  <Url>jdbc:derby:classpath:utah_climate_2004</Url>
-  <User />
-  <Password />
-  <ReadOnly>true</ReadOnly>
-</JDBCConnection>
