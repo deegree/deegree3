@@ -642,7 +642,7 @@ public class RasterFactory {
                 // create a default geoRef
                 geoRef = new RasterGeoReference( OriginLocation.OUTER, 1, -1, 0, 0 );
             }
-            result = RasterDataFactory.createRasterData( width, height, rdi, geoRef, byteBuffer, true, null );
+            result = RasterDataFactory.createRasterData( width, height, rdi, geoRef, byteBuffer, false, null );
             // CacheRasterReader reader = new CacheRasterReader( byteBuffer, width, height, null, rdi, geoRef );
             byteBuffer = null;
             // result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, reader,
