@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.gml;
+package org.deegree.gml.utils;
 
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
@@ -63,6 +63,9 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
 
 /**
  * The <code>XMLTransformer</code> transforms any xml documents containing gml geometries. Only the geometries will be

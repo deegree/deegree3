@@ -131,7 +131,6 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     public List<Property> getProperties() {
         if ( props == null ) {
             List<Property> props = new ArrayList<Property>( memberFeatures.size() );
-            int i = 0;
             for ( Feature feature : memberFeatures ) {
                 props.add( new GenericProperty( getType().getMemberDeclarations().get( 0 ), null, feature ) );
             }

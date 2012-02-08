@@ -67,7 +67,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.XMLTransformer;
+import org.deegree.gml.utils.XMLTransformer;
 import org.slf4j.Logger;
 
 /**

@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -102,7 +101,7 @@ public class Features {
     public static FeatureCollection sortFc( final FeatureCollection fc, final SortProperty[] sortCrits ) {
 
         // TODO
-        final GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
+        final GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
 
         FeatureCollection sortedFc = fc;
         if ( sortCrits != null && sortCrits.length > 0 ) {
@@ -122,7 +121,7 @@ public class Features {
                                     for ( TypedObjectNode value2 : values2 ) {
                                         if ( value2 != null ) {
                                             Pair<Object, Object> comparablePair = getPrimitives( value1, value2 );
-                                            order = ( (Comparable) comparablePair.first ).compareTo( comparablePair.second );
+                                            order = ( (Comparable<Object>) comparablePair.first ).compareTo( comparablePair.second );
                                             if ( !sortCrit.getSortOrder() ) {
                                                 order *= -1;
                                             }

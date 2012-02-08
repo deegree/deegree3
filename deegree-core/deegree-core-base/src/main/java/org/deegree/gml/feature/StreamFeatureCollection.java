@@ -279,7 +279,8 @@ public class StreamFeatureCollection implements FeatureInputStream {
     @Override
     public int count() {
         int i = 0;
-        for ( Feature f : this ) {
+        for ( @SuppressWarnings("unused")
+        Feature f : this ) {
             i++;
         }
         close();

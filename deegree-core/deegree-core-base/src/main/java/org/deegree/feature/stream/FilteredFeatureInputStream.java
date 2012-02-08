@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.stream;
 
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -88,7 +87,7 @@ public class FilteredFeatureInputStream implements FeatureInputStream {
         return new Iterator<Feature>() {
 
             // TODO
-            GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
+            GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
 
             Iterator<Feature> iter = rs.iterator();
 
@@ -136,7 +135,8 @@ public class FilteredFeatureInputStream implements FeatureInputStream {
     @Override
     public int count() {
         int i = 0;
-        for ( Feature f : this ) {
+        for ( @SuppressWarnings("unused")
+        Feature f : this ) {
             i++;
         }
         close();

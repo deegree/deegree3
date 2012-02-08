@@ -118,7 +118,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Each concrete extension is a parser for a specific category of GML objects.
+ * Concrete extensions are parsers for a specific category of GML objects.
  * 
  * @see GMLObjectCategory
  * @see GMLFeatureReader

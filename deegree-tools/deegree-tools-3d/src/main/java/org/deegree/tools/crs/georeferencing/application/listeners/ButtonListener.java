@@ -73,7 +73,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.XMLTransformer;
+import org.deegree.gml.utils.XMLTransformer;
 import org.deegree.remoteows.wms.RemoteWMSStore;
 import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
 import org.deegree.services.wms.MapService;
