@@ -115,8 +115,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * Tests that check the correct decoding of GML 3.1.1 geometry elements (elements substitutable for
- * <code>gml:_Geometry</code> and <code>gml:Envelope</code>).
+ * Tests that check the correct decoding of GML 3 geometry elements.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -957,14 +956,14 @@ public class GML3GeometryReaderTest {
                             IllegalAccessException, TransformationException, FilterEvaluationException {
 
         String aixmNs = "http://www.aixm.aero/schema/5.1";
-        Point point = (Point) readAIXMGeometry( "AIXMPoint.gml" );
+        Point geom = (Point) readAIXMGeometry( "AIXMPoint.gml" );
 
-        assertEquals( 7.12, point.get0(), DELTA );
-        assertEquals( 50.72, point.get1(), DELTA );
-        assertEquals( 2, point.getCoordinateDimension() );
-        assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
+        assertEquals( 7.12, geom.get0(), DELTA );
+        assertEquals( 50.72, geom.get1(), DELTA );
+        assertEquals( 2, geom.getCoordinateDimension() );
+        assertEquals( CRSManager.lookup( "EPSG:4326" ), geom.getCoordinateSystem() );
 
-        List<Property> props = point.getProperties();
+        List<Property> props = geom.getProperties();
         assertEquals( 8, props.size() );
         assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
         assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
@@ -976,20 +975,194 @@ public class GML3GeometryReaderTest {
         assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
 
         assertEquals( "Example for metadata: Ce point ne pas une GML point, c'est une AIXM point.",
-                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", point ).getAsText() );
+                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
         assertEquals( "This is just for testing the parsing of standard GML properties.",
-                      getPrimitive( "gml:description/text()", point ).getAsText() );
-        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", point ).getAsText() );
-        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", point ).getAsText() );
-        assertEquals( "Point P1", getPrimitive( "gml:name[1]/text()", point ).getAsText() );
-        assertEquals( "P1", getPrimitive( "gml:name[2]/text()", point ).getAsText() );
-        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", point ).getAsText() );
-        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", point ).getAsText() );
+                      getPrimitive( "gml:description/text()", geom ).getAsText() );
+        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getAsText() );
+        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getAsText() );
+        assertEquals( "Point P1", getPrimitive( "gml:name[1]/text()", geom ).getAsText() );
+        assertEquals( "P1", getPrimitive( "gml:name[2]/text()", geom ).getAsText() );
+        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
+    }
+
+    @Test
+    public void parseAIXMElevatedPoint()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, TransformationException, FilterEvaluationException {
+
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+        Point geom = (Point) readAIXMGeometry( "AIXMElevatedPoint.gml" );
+
+        assertEquals( 7.12, geom.get0(), DELTA );
+        assertEquals( 50.72, geom.get1(), DELTA );
+        assertEquals( 2, geom.getCoordinateDimension() );
+        assertEquals( CRSManager.lookup( "EPSG:4326" ), geom.getCoordinateSystem() );
+
+        List<Property> props = geom.getProperties();
+        assertEquals( 9, props.size() );
+        assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( 3 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 4 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 5 ).getName() );
+        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
+        assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
+        assertEquals( new QName( aixmNs, "elevation" ), props.get( 8 ).getName() );
+
+        assertEquals( "Example for metadata: Ce point ne pas une GML point, c'est une AIXM point.",
+                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
+        assertEquals( "This is just for testing the parsing of standard GML properties.",
+                      getPrimitive( "gml:description/text()", geom ).getAsText() );
+        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getAsText() );
+        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getAsText() );
+        assertEquals( "Point P1", getPrimitive( "gml:name[1]/text()", geom ).getAsText() );
+        assertEquals( "P1", getPrimitive( "gml:name[2]/text()", geom ).getAsText() );
+        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
+        assertEquals( "47.11", getPrimitive( "aixm:elevation/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getAsText() );
+    }
+
+    @Test
+    public void parseAIXMCurve()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, TransformationException, FilterEvaluationException {
+
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+        Curve geom = (Curve) readAIXMGeometry( "AIXMCurve.gml" );
+
+        List<Property> props = geom.getProperties();
+        assertEquals( 8, props.size() );
+        assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( 3 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 4 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 5 ).getName() );
+        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
+        assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
+
+        assertEquals( "Example for metadata: Ce curve ne pas une GML curve, c'est une AIXM curve.",
+                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
+        assertEquals( "This is just for testing the parsing of standard GML properties.",
+                      getPrimitive( "gml:description/text()", geom ).getAsText() );
+        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getAsText() );
+        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getAsText() );
+        assertEquals( "Curve C1", getPrimitive( "gml:name[1]/text()", geom ).getAsText() );
+        assertEquals( "C1", getPrimitive( "gml:name[2]/text()", geom ).getAsText() );
+        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
+    }
+
+    @Test
+    public void parseAIXMElevatedCurve()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, TransformationException, FilterEvaluationException {
+
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+        Curve geom = (Curve) readAIXMGeometry( "AIXMElevatedCurve.gml" );
+
+        List<Property> props = geom.getProperties();
+        assertEquals( 9, props.size() );
+        assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( 3 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 4 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 5 ).getName() );
+        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
+        assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
+        assertEquals( new QName( aixmNs, "elevation" ), props.get( 8 ).getName() );
+
+        assertEquals( "Example for metadata: Ce curve ne pas une GML curve, c'est une AIXM curve.",
+                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
+        assertEquals( "This is just for testing the parsing of standard GML properties.",
+                      getPrimitive( "gml:description/text()", geom ).getAsText() );
+        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getAsText() );
+        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getAsText() );
+        assertEquals( "Curve C1", getPrimitive( "gml:name[1]/text()", geom ).getAsText() );
+        assertEquals( "C1", getPrimitive( "gml:name[2]/text()", geom ).getAsText() );
+        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
+        assertEquals( "47.11", getPrimitive( "aixm:elevation/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getAsText() );
+    }
+
+    @Test
+    public void parseAIXMSurface()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, TransformationException, FilterEvaluationException {
+
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+        Surface geom = (Surface) readAIXMGeometry( "AIXMSurface.gml" );
+
+        List<Property> props = geom.getProperties();
+        assertEquals( 8, props.size() );
+        assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( 3 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 4 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 5 ).getName() );
+        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
+        assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
+
+        assertEquals( "Example for metadata: Ce surface ne pas une GML surface, c'est une AIXM surface.",
+                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
+        assertEquals( "This is just for testing the parsing of standard GML properties.",
+                      getPrimitive( "gml:description/text()", geom ).getAsText() );
+        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getAsText() );
+        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getAsText() );
+        assertEquals( "Surface S1", getPrimitive( "gml:name[1]/text()", geom ).getAsText() );
+        assertEquals( "S1", getPrimitive( "gml:name[2]/text()", geom ).getAsText() );
+        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
+    }
+
+    @Test
+    public void parseAIXMElevatedSurface()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, TransformationException, FilterEvaluationException {
+
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+        Surface geom = (Surface) readAIXMGeometry( "AIXMElevatedSurface.gml" );
+
+        List<Property> props = geom.getProperties();
+        assertEquals( 9, props.size() );
+        assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( 3 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 4 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 5 ).getName() );
+        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
+        assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
+        assertEquals( new QName( aixmNs, "elevation" ), props.get( 8 ).getName() );
+
+        assertEquals( "Example for metadata: Ce surface ne pas une GML surface, c'est une AIXM surface.",
+                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
+        assertEquals( "This is just for testing the parsing of standard GML properties.",
+                      getPrimitive( "gml:description/text()", geom ).getAsText() );
+        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getAsText() );
+        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getAsText() );
+        assertEquals( "Surface S1", getPrimitive( "gml:name[1]/text()", geom ).getAsText() );
+        assertEquals( "S1", getPrimitive( "gml:name[2]/text()", geom ).getAsText() );
+        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
+        assertEquals( "47.11", getPrimitive( "aixm:elevation/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getAsText() );
     }
 
     private PrimitiveValue getPrimitive( String xpath, GMLObject object )
                             throws FilterEvaluationException {
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "gml", GML3_2_NS );
         nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );
@@ -1028,13 +1201,5 @@ public class GML3GeometryReaderTest {
                                                                            GML3SurfacePatchReaderTest.class.getResource( BASE_DIR
                                                                                                                          + fileName ) );
         return gmlStream;
-    }
-
-    public void testParseLineString() {
-
-    }
-
-    public void testParseOrientableCurve() {
-
     }
 }
