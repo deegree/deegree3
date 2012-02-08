@@ -106,7 +106,7 @@ public class Operation {
             for ( Pair<URL, List<Domain>> urls : dcp.getGetEndpoints() ) {
                 getUrls.add( urls.first );
             }
-            for ( Pair<URL, List<Domain>> urls : dcp.getGetEndpoints() ) {
+            for ( Pair<URL, List<Domain>> urls : dcp.getPostEndpoints() ) {
                 postUrls.add( urls.first );
             }
         }
